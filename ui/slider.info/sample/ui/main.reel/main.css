@@ -23,7 +23,7 @@ header {
 }
 
 .slider-container {
-    width: 300px;
+    width: 60%;
     margin-top: 40px;
     display: flex;
     align-items: center;
@@ -33,7 +33,7 @@ header {
 .slider[aria-orientation="horizontal"], .slider.A, .slider.D  {
     position: relative;
     height: 40px;
-    width: 150px;
+    width: 100%;
     outline: 1px #777 solid;
     box-sizing: border-box;
 }
@@ -55,6 +55,39 @@ header {
     box-sizing: border-box;
     background-color: blue;
 }
+
+.montage-Slider[aria-orientation="vertical"] .slider-thumb {
+    position: relative;
+    width: 100%;
+    min-height:20px;
+    height: 20px;
+}
+
+
+.montage-Slider[aria-orientation="horizontal"] .montage-Slider--track {
+    height:100%;
+    background-color: #777799;
+    opacity: 0.5;
+}
+.montage-Slider[aria-orientation="horizontal"] .montage-Slider--track:first-child {
+  background-color: red;
+  opacity: 0.5;
+}
+
+.montage-Slider[aria-orientation="horizontal"] .montage-Slider--track:last-child {
+  background-color: lime;
+  opacity: 0.5;
+}
+
+.montage-Slider[aria-orientation="vertical"] .montage-Slider--track {
+    width:100%;
+}
+
+.montage-Slider[aria-orientation="vertical"] .montage-Slider--thumb {
+    width:100%;
+}
+
+
 
 input[type="range"].slider::-webkit-slider-thumb {
     width: 200px;
@@ -80,6 +113,7 @@ div.input-text {
 }
 .slider-thumb.B {
     background-color: green;
+    width: 50px;
 }
 .slider-thumb.C, .slider.D .montage-Slider--thumb {
     background-color: blue;

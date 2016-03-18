@@ -18,41 +18,55 @@
             "properties": {
                 "element": {"#": "slider"},
                 "thumbElement": {"#": "sliderThumb"},
-                "values": [0,0,180],
+                "values": [],
                 "min":0,
                 "max":180
-
+            },
+            "bindings": {
+                "values.0": {"<->": "@sliderFieldMin.value"},
+                "values.1": {"<->": "@sliderFieldMid.value"},
+                "values.2": {"<->": "@sliderFieldMax.value"}
             }
+
         },
 
         "sliderFieldMin": {
             "prototype": "montage/ui/text-field.reel",
             "properties": {
                 "element": {"#": "slider-field-min"}
-            },
-            "bindings": {
-                "value": {"<->": "@slider.values.0"}
             }
         },
         "sliderFieldMid": {
             "prototype": "montage/ui/text-field.reel",
             "properties": {
                 "element": {"#": "slider-field-mid"}
-            },
-            "bindings": {
-                "value": {"<->": "@slider.values.1"}
             }
         },
         "sliderFieldMax": {
             "prototype": "montage/ui/text-field.reel",
             "properties": {
                 "element": {"#": "slider-field-max"}
-            },
-            "bindings": {
-                "value": {"<->": "@slider.values.2"}
             }
         },
 
+        "sliderWithBareKnob": {
+            "prototype": "montage/ui/slider.reel",
+            "properties": {
+                "element": {"#": "sliderWithBareKnob"},
+                "step": 15,
+                "min":5,
+                "max":500
+            }
+        },
+        "sliderWithComplexKnob": {
+            "prototype": "montage/ui/slider.reel",
+            "properties": {
+                "element": {"#": "sliderWithComplexKnob"},
+                "step": 15,
+                "min":5,
+                "max":500
+            }
+        },
         "sliderWithStep": {
             "prototype": "montage/ui/slider.reel",
             "properties": {
@@ -151,6 +165,7 @@
                 "value": {"<->": "@sliderRange.value"}
             }
         }
+
     }
     </script>
 </head>
@@ -172,6 +187,21 @@
                     <input type="text" data-montage-id="slider-field-max" class="input-text">
                 </div>
 
+            </div>
+
+
+            <div class="slider-container">
+                <div data-montage-id="sliderWithBareKnob" class="slider">
+                    <div></div>
+                </div>
+            </div>
+
+            <div class="slider-container">
+                <div data-montage-id="sliderWithComplexKnob" class="slider">
+                    <div>
+                        <span>🍥</span>
+                    </div>
+                </div>
             </div>
 
             <div class="slider-container">
@@ -202,6 +232,9 @@
             <div class="slider-container">
                 <input type="range" min="20" max="80" value="34" data-montage-id="slider-range">
                 <input type="text" data-montage-id="slider-range-field" class="input-text">
+            </div>
+            <div class="slider-container">
+                <div data-montage-id="custom-slider"></div>
             </div>
 
         </section>
