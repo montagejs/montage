@@ -120,6 +120,11 @@ div.input-text {
     min-width:15px;
     min-height:40px;
 }
+
+.sliderWithComplexKnob .montage-Slider--track div:nth-child(2) {
+    background-color: red;
+}
+
 /*.slider.E .montage-Slider--thumb{
     background-color: blue;
     min-width:100%;

@@ -185,10 +185,11 @@ var Slider = exports.Slider = Control.specialize({
 
                         iTrackElement = ownerDocument.createElement("div");
                         iTrackElement.className = "montage-Slider--track";
+                        iTrackElement.setAttribute("data-montage-index",i);
 
-                        iDimension = isHorizontal ? iThumbElementWithClass.clientWidth : iThumbElementWithClass.clientHeight;
+                        iDimension = isHorizontal ? iThumbElementWithClass.offsetWidth : iThumbElementWithClass.offsetHeight;
                         //If the thumb has no size, or if it's horizontak and occupy the whole width, we're stepping in
-                        if(iDimension == 0 || (isHorizontal && iDimension === spacer.clientWidth)) {
+                        if(iDimension == 0 || (isHorizontal && iDimension === spacer.offsetWidth)) {
                             iThumbElementWithClass.classList.add("montage-Slider-thumb--default");
                         }
 
@@ -199,6 +200,8 @@ var Slider = exports.Slider = Control.specialize({
                         this.trackElements.push(iTrackElement);
                         this.thumbWrappers.push(iThumbWrapper);
                         this.thumbElements.push(iThumbElementWithClass);
+
+                        i++;
                     }
 
                     //Last track element:
@@ -213,9 +216,9 @@ var Slider = exports.Slider = Control.specialize({
                     while((iThumbWrapper = this.thumbWrappers[i])) {
                         iThumbElement = this.thumbElements[i];
 
-                        iDimension = isHorizontal ? iThumbElement.clientWidth : iThumbElement.clientHeight;
+                        iDimension = isHorizontal ? iThumbElement.offsetWidth : iThumbElement.offseteight;
                         // //If the thumb has no size, or if it's horizontak and occupy the whole width, we're stepping in
-                        // if(iDimension == 0 || (isHorizontal && iDimension === spacer.clientWidth)) {
+                        // if(iDimension == 0 || (isHorizontal && iDimension === spacer.offsetWidth)) {
                         //     iThumbElement.classList.add("montage-Slider-thumb--default");
                         // }
 
@@ -312,12 +315,12 @@ var Slider = exports.Slider = Control.specialize({
             var computedStyle = window.getComputedStyle(this._element);
             return (this.orientation === "vertical")
             ? (
-                this._spacer.clientHeight -
+                this._spacer.offsetHeight -
                 parseFloat(computedStyle.getPropertyValue("padding-top")) -
                 parseFloat(computedStyle.getPropertyValue("padding-bottom"))
             )
             : (
-            this._spacer.clientWidth -
+            this._spacer.offsetWidth -
             parseFloat(computedStyle.getPropertyValue("padding-left")) -
             parseFloat(computedStyle.getPropertyValue("padding-right"))
             );
@@ -354,7 +357,7 @@ var Slider = exports.Slider = Control.specialize({
                     trackElement = this.trackElements[index+1];
                     //We need the size of user-land element.
                     trackElement.style.top = percent+"%";
-                    trackElement.style.marginTop = (cumulatedThumbSize + thumbElement.clientHeight)+"px";
+                    trackElement.style.marginTop = (cumulatedThumbSize + thumbElement.offsetHeight)+"px";
                     trackElement.style.height = 100-percent+"%";
                 }
 
@@ -388,7 +391,7 @@ var Slider = exports.Slider = Control.specialize({
                     trackElement = this.trackElements[index+1];
                     //We need the size of user-land element.
                     trackElement.style.left = percent+"%";
-                    trackElement.style.marginLeft = (cumulatedThumbSize + thumbElement.clientWidth)+"px";
+                    trackElement.style.marginLeft = (cumulatedThumbSize + thumbElement.offsetWidth)+"px";
                     trackElement.style.width = 100-percent+"%";
                 }
 
@@ -401,11 +404,11 @@ var Slider = exports.Slider = Control.specialize({
             if(!this.hasStandardElement) {
                 //console.log("this._values is ", this._values);
                 var isVertical = (this.orientation === "vertical"),
-                    sliderMagnitude = isVertical ? this._spacer.clientHeight: this._spacer.clientWidth;
+                    sliderMagnitude = isVertical ? this._spacer.offsetHeight: this._spacer.offsetWidth;
 
                 for(var i=0, iThumbElementWrapper, iThumbElement, countI = this.thumbWrappers.length, cumulatedThumbSize = 0;(iThumbElementWrapper = this.thumbWrappers[i]);i++) {
                     this._drawThumbElement(iThumbElementWrapper,(iThumbElement = this.thumbElements[i]), i,isVertical,sliderMagnitude, countI, cumulatedThumbSize);
-                    cumulatedThumbSize += isVertical ? iThumbElement.clientHeight : iThumbElement.clientWidth;
+                    cumulatedThumbSize += isVertical ? iThumbElement.offsetHeight : iThumbElement.offsetWidth;
                 }
                 this.element.setAttribute("aria-valuemax", this.max);
                 this.element.setAttribute("aria-valuemin", this.min);
@@ -447,8 +450,7 @@ var Slider = exports.Slider = Control.specialize({
             } else {
                 this._startTranslateValues[index]= e.translateX;
             }
-            this._startBoundingClientRect = e.target.element.clientX;
-            this._startValues[index] = this.values[index];
+            this._startValues[index] = this.values[index]||0;
         }
     },
 
