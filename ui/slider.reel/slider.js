@@ -102,7 +102,7 @@ var Slider = exports.Slider = Control.specialize({
     },
     values: {
         get: function() {
-            return this._values;
+            return this._values || (this._values = []);
         },
         set: function (values) {
             if (this._values !== values) {
