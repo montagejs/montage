@@ -1,7 +1,8 @@
 /**
     @module montage/ui/text-input
 */
-var Control = require("ui/control").Control;
+var Control = require("ui/control").Control,
+    deprecate = require("core/deprecate");
 
 /**
     The base class for all text-based input components. You typically won't create instances of this prototype.
@@ -29,7 +30,15 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
         }
     },
 
+    _hasStandardElement: {
+        value: true
+    },
 
+    /**
+        Hard to imagine a text-input that is not using a input nor textarea
+        @type {boolean}
+        @default true
+    */
     _updateOnInput: {
         value: true
     },
@@ -64,27 +73,25 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
                     this.value = this.originalElement ? this.originalElement.textContent : this._element.textContent;
                 }
 
+                if(this.hasStandardElement || this.element.contentEditable === "true") {
+                    this.element.addEventListener('input', this);
+                    this.element.addEventListener('change', this);
+                }
+
             }
         }
     },
-
-    prepareForActivationEvents: {
-        value: function () {
-            Control.prototype.prepareForActivationEvents.call(this);
-            var el = this.element;
-
-            if(this.hasStandardElement || el.contentEditable === "true") {
-                el.addEventListener('input', this);
-                el.addEventListener('change', this);
-            }
-        }
-    },
-
 
     _setElementValue: {
         value: function(value) {
-            if (value !== this.element.value) {
-                this.element.value = (value == null ? '' : value);
+            var drawValue;
+            if (value === null ||  typeof value === "undefined") {
+                drawValue = "";
+            }
+            else drawValue = String((value == null ? '' : value));
+
+            if (drawValue !== this.element.value) {
+                this.element.value = drawValue;
             }
         }
     },
@@ -168,7 +175,17 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
             this.takeValueFromElement();
             this.dispatchActionEvent();
         }
-    }
+    },
+
+    placeholderValue: {
+        set: function (value) {
+            deprecate.deprecationWarning("placeholderValue", "placeholder")
+            this.placeholder = value;
+        },
+        get: function () {
+            return this.placeholder;
+        }
+    },
 
 });
 

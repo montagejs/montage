@@ -13,7 +13,7 @@ var Component = require("ui/component").Component,
 var Control = exports.Control = Component.specialize(/** @lends module:montage/ui/control.Control# */ {
 
     constructor: {
-        value: function AbstractCheckbox () {
+        value: function Control () {
             this.defineBindings({
                 // classList management
                 "classList.has('montage--disabled')": {
@@ -288,7 +288,8 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         set: function (value, fromInput) {
 
             if(value !== this._value) {
-                if (!this.delegate || this.callDelegateMethod("shouldAcceptValue", this, value) === false) {
+                var shouldAcceptValue
+                if (!this.delegate ||  (shouldAcceptValue = this.callDelegateMethod("shouldAcceptValue", this, value) ) === undefined ? true : shouldAcceptValue ){
                     // console.log("_setValue past first step value is ",value);
                     if(this.converter) {
                         var convertedValue;

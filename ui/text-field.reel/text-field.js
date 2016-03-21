@@ -35,7 +35,7 @@ exports.TextField = TextInput.specialize({
 
     prepareForActivationEvents: {
         value: function () {
-            this.super() ;
+            TextInput.prototype.prepareForActivationEvents.call(this) ;
             this._keyComposer.addEventListener("keyPress", this, false);
         }
     }
