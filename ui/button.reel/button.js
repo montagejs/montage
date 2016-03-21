@@ -133,7 +133,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 }
             }
 
-            this._label = "" + value;
+            this._label = String(value);
 
             if (this.isInputElement) {
                 this._value = value;
@@ -188,6 +188,16 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     prepareForActivationEvents: {
         value: function () {
             this._pressComposer.addEventListener("pressStart", this, false);
+        }
+    },
+
+    // Optimisation
+    addEventListener: {
+        value: function (type, listener, useCapture) {
+            Control.prototype.addEventListener.call(this, type, listener, useCapture);
+            if (type === "longAction") {
+                this._pressComposer.addEventListener("longPress", this, false);
+            }
         }
     },
 
@@ -266,8 +276,14 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     If this is an input element then the label is handled differently.
     @private
     */
+    _isInputElement: {
+        value: undefined,
+        enumerable: false
+    },
     isInputElement: {
-        value: false,
+        get: function() {
+            return this._isInputElement !== undefined ? this._isInputElement : (this._isInputElement = (this.element ? (this.element.tagName === "INPUT") : false));
+        },
         enumerable: false
     },
 
@@ -278,7 +294,6 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
             }
 
             if (firstDraw) {
-                this.isInputElement = (this.originalElement.tagName === "INPUT");
                 // Only take the value from the element if it hasn't been set
                 // elsewhere (i.e. in the serialization)
                 if (this.isInputElement) {
