@@ -1,0 +1,10 @@
+{
+    "name": "number-field-sample",
+    "version": "0.1.0",
+    "dependencies": {
+        "montage": "*"
+    },
+    "mappings": {
+        "montage": "../../../"
+    }
+}

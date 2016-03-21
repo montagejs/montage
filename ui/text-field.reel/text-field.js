@@ -10,39 +10,36 @@ var TextInput = require("ui/text-input").TextInput,
 
  */
 exports.TextField = TextInput.specialize({
+    constructor: {
+        value: function TextField() {
+            TextInput.constructor.call(this); // super
 
-    acceptsActiveTarget: {
-        get: function () {
-            var shouldBeginEditing = this.callDelegateMethod("shouldBeginEditing", this);
-            return (shouldBeginEditing !== false);
+            this._keyComposer = new KeyComposer();
+            this._keyComposer.component = this;
+            this._keyComposer.keys = "enter";
+            this.addComposer(this._keyComposer);
+
         }
     },
 
-    willBecomeActiveTarget: {
-        value: function (event) {
-            this._hasFocus = true;
-            this.callDelegateMethod("didBeginEditing", this);
-        }
-    },
-
-    surrendersActiveTarget: {
-        value: function (event) {
-            var shouldEnd = this.callDelegateMethod("shouldEndEditing", this);
-            if (shouldEnd === false) {
-                return false;
-            } else {
-                this._hasFocus = false;
-                this.callDelegateMethod("didEndEditing", this);
+    handleKeyPress: {
+        value: function (evt) {
+            if (!this.enabled || evt.keyComposer !== this._keyComposer) {
+                return;
             }
-            return true;
+            //this._setValue();
+            this.takeValueFromElement();
+            this.dispatchActionEvent();
         }
     },
 
-    select: {
-        value: function() {
-            this._element.select();
+    prepareForActivationEvents: {
+        value: function () {
+            TextInput.prototype.prepareForActivationEvents.call(this) ;
+            this._keyComposer.addEventListener("keyPress", this, false);
         }
     }
 
-});
 
+
+});

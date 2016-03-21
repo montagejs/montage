@@ -1,0 +1,69 @@
+html, body, .Main {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+}
+
+.Main, .buttons {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    flex: 1;
+    -webkit-font-smoothing: antialiased;
+}
+
+header {
+    margin-top: 20px;
+    font-size: 42px;
+    font-weight: bold;
+    color: #333;
+}
+
+.buttons {
+    height: 100%;
+    width: 100%;
+}
+
+.button {
+    height: 80px;
+    width: 200px;
+    outline: none;
+    font-size: 15px;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #AAA;
+    color: #666;
+    background: white;
+    border-radius: 4px;
+    margin-top: 40px;
+    text-transform: capitalize;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.button:hover {
+    cursor: pointer;
+}
+
+.button.montage--active {
+    background: #DDD;
+    color: white;
+}
+
+.button.custom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.montage-Text {
+    display: block;
+    margin-top: 40px;
+    font-size: 13px;
+    color: #666;
+}

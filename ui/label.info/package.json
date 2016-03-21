@@ -1,7 +1,0 @@
-{
-	"name": "label.info",
-	"private": true,
-	"dependencies": {
-		"montage": "../.."
-	}
-}

@@ -2,7 +2,7 @@
     "blueprint_textfield_updateOnInput": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
-            "name": "enabled",
+            "name": "updateOnInput",
             "blueprint": {
                 "@": "root"
             },
@@ -18,7 +18,7 @@
     "maxlength_property": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
-            "name": "value",
+            "name": "maxlength",
             "valueType": "number",
             "blueprint": {
                 "@": "root"

@@ -104,5 +104,7 @@ require("montage-testing").run(require, [
     "ui/slot-spec",
     "ui/substitution-spec",
     "ui/text/text-spec",
+    "ui/text-input-spec",
+    "ui/slider-spec",
     "ui/segmented-bar/segmented-bar-spec"
 ]);

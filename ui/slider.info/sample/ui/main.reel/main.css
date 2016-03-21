@@ -1,0 +1,132 @@
+html, body, .Main {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+}
+
+.Main, .sliders {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    flex: 1;
+    -webkit-font-smoothing: antialiased;
+    width: 100%;
+}
+
+header {
+    margin-top: 20px;
+    font-size: 42px;
+    font-weight: bold;
+    color: #333;
+}
+
+.slider-container {
+    width: 60%;
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slider[aria-orientation="horizontal"], .slider.A, .slider.D  {
+    position: relative;
+    height: 40px;
+    width: 100%;
+    outline: 1px #777 solid;
+    box-sizing: border-box;
+}
+
+.slider[aria-orientation="vertical"]  {
+    position: relative;
+    height: 150px;
+    width: 40px;
+    outline: 1px #777 solid;
+    box-sizing: border-box;
+}
+
+
+.slider-thumb {
+    position: relative;
+    width: 10%;
+    height: 80%;
+    min-height:2vh;
+    box-sizing: border-box;
+    background-color: blue;
+}
+
+.montage-Slider[aria-orientation="vertical"] .slider-thumb {
+    position: relative;
+    width: 100%;
+    min-height:20px;
+    height: 20px;
+}
+
+
+.montage-Slider[aria-orientation="horizontal"] .montage-Slider--track {
+    height:100%;
+    background-color: #777799;
+    opacity: 0.5;
+}
+.montage-Slider[aria-orientation="horizontal"] .montage-Slider--track:first-child {
+  background-color: red;
+  opacity: 0.5;
+}
+
+.montage-Slider[aria-orientation="horizontal"] .montage-Slider--track:last-child {
+  background-color: lime;
+  opacity: 0.5;
+}
+
+.montage-Slider[aria-orientation="vertical"] .montage-Slider--track {
+    width:100%;
+}
+
+.montage-Slider[aria-orientation="vertical"] .montage-Slider--thumb {
+    width:100%;
+}
+
+
+
+input[type="range"].slider::-webkit-slider-thumb {
+    width: 200px;
+}
+
+.input-text {
+    margin-left: auto;
+    text-align: right;
+}
+
+div.input-text {
+    width:122px
+}
+
+.slider-thumb.A, .slider-thumb.B {
+    min-width:20px;
+    min-height:40px;
+    outline: 1px #777 solid;
+}
+
+.slider-thumb.A {
+    background-color: red;
+}
+.slider-thumb.B {
+    background-color: green;
+    width: 50px;
+}
+.slider-thumb.C, .slider.D .montage-Slider--thumb {
+    background-color: blue;
+    min-width:15px;
+    min-height:40px;
+}
+
+.sliderWithComplexKnob .montage-Slider--track div:nth-child(2) {
+    background-color: red;
+}
+
+/*.slider.E .montage-Slider--thumb{
+    background-color: blue;
+    min-width:100%;
+    min-height:20px;
+}*/

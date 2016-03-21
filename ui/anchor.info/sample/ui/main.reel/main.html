@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "properties": {
+                    "element": {"#": "main"}
+                }
+            },
+
+            "custom": {
+                "prototype": "montage/ui/anchor.reel",
+                "properties": {
+                    "element": {"#": "anchor-custom"}
+                }
+            },
+
+            "native": {
+                "prototype": "montage/ui/anchor.reel",
+                "properties": {
+                    "element": {"#": "anchor-native"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>Anchor Sample</header>
+        <section class="anchors">
+            <span data-montage-id="anchor-custom" class="anchor custom">test</span>
+
+            <a href="#" data-montage-id="anchor-native" class="anchor native">test</a>
+            <span data-montage-id="text"></span>
+        </section>
+    </div>
+</body>
+</html>

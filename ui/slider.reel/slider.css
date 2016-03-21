@@ -1,0 +1,79 @@
+
+.montage-Slider {
+    position: relative;
+}
+
+.montage-Slider[aria-orientation="horizontal"] .montage-Slider--track {
+}
+.montage-Slider[aria-orientation="vertical"] .montage-Slider--track {
+}
+
+.montage-Slider--spacer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    /* margin-right: 60px; */
+    /* This spacer thing only used to add that margin */
+    /* The margin value must be the sum of the width of all thumbs */
+    /* 40px + 40px + 40px = 120px */
+}
+
+/*.montage-Slider[aria-orientation="horizontal"] .montage-Slider--spacer {
+    height:100%;
+}
+.montage-Slider[aria-orientation="vertical"] .montage-Slider--spacer {
+    width:100%;
+}*/
+
+.montage-Slider .montage-Slider--track{
+    position: absolute;
+    z-index:0;
+}
+
+.montage-Slider .montage-Slider--thumbWrapper {
+    position: absolute;
+    z-index:1;
+    /*display:flex;*/
+    /*align-items: center;*/
+    /*top: 0;
+    left: 30%;
+    width: 10px;
+    height: 40px;
+    border-radius: 5px;
+    background: black;*/
+}
+
+/* Create */
+
+.montage-Slider-thumb--default {
+    position: absolute;
+    width:20px;
+    height:20px;
+    border-radius:20px;
+    background-color: gray;
+}
+
+.montage-Slider[aria-orientation="horizontal"] .montage-Slider-thumb--default {
+    top:50%;
+    transform: translate3d(0px, -50%, 0px);
+}
+.montage-Slider[aria-orientation="vertical"] .montage-Slider-thumb--default {
+    left:50%;
+    transform: translate3d(-50%, 0px, 0px);
+}
+
+
+.montage-Slider[aria-orientation="horizontal"] .montage-Slider--thumbWrapper {
+    height:100%;
+}
+.montage-Slider[aria-orientation="vertical"] .montage-Slider--thumbWrapper {
+    width:100%;
+}
+
+
+/*.montage-Slider > * {
+    position: relative;
+}*/

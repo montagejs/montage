@@ -1,0 +1,136 @@
+{
+    "enabled_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "enabled",
+            "valueType": "boolean",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "value_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "value",
+            "valueType": "object",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "min_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "min",
+            "valueType": "number",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "max_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "max",
+            "valueType": "number",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "step_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "step",
+            "valueType": "number",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "axis_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "axis",
+            "valueType": "enum",
+            "enumValues": [
+                "horizontal",
+                "vertical"
+            ],
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Control",
+                "prototypeName": "Control",
+                "blueprintModule": {
+                    "%": "ui/control.meta"
+                }
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "Slider",
+            "parent": {
+                "@": "blueprint_parent"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "enabled_property"
+                },
+                {
+                    "@": "value_property"
+                },
+                {
+                    "@": "min_property"
+                },
+                {
+                    "@": "max_property"
+                },
+                {
+                    "@": "step_property"
+                },
+                {
+                    "@": "axis_property"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "Main": [
+                    {
+                        "@": "enabled_property"
+                    },
+                    {
+                        "@": "value_property"
+                    },
+                    {
+                        "@": "min_property"
+                    },
+                    {
+                        "@": "max_property"
+                    },
+                    {
+                        "@": "step_property"
+                    },
+                    {
+                        "@": "axis_property"
+                    }
+                ]
+            },
+            "blueprintModule": {
+                "%": "ui/slider.meta"
+            },
+            "exportName": "Slider",
+            "module": {
+                "%": "ui/slider.reel"
+            }
+        }
+    }
+}

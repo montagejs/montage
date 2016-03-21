@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="main.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "main"}
+            },
+            "listeners": [
+                {"type": "action", "listener": {"@": "owner"}}
+            ]
+        },
+
+        "slider": {
+            "prototype": "montage/ui/slider.reel",
+            "properties": {
+                "element": {"#": "slider"},
+                "thumbElement": {"#": "sliderThumb"},
+                "values": [],
+                "min":0,
+                "max":180
+            },
+            "bindings": {
+                "values.0": {"<->": "@sliderFieldMin.value"},
+                "values.1": {"<->": "@sliderFieldMid.value"},
+                "values.2": {"<->": "@sliderFieldMax.value"}
+            }
+
+        },
+
+        "sliderFieldMin": {
+            "prototype": "montage/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "slider-field-min"}
+            }
+        },
+        "sliderFieldMid": {
+            "prototype": "montage/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "slider-field-mid"}
+            }
+        },
+        "sliderFieldMax": {
+            "prototype": "montage/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "slider-field-max"}
+            }
+        },
+
+        "sliderWithBareKnob": {
+            "prototype": "montage/ui/slider.reel",
+            "properties": {
+                "element": {"#": "sliderWithBareKnob"},
+                "step": 15,
+                "min":5,
+                "max":500
+            }
+        },
+        "sliderWithComplexKnob": {
+            "prototype": "montage/ui/slider.reel",
+            "properties": {
+                "element": {"#": "sliderWithComplexKnob"},
+                "values": [],
+                "step": 15,
+                "min":5,
+                "max":500
+            }
+        },
+        "sliderWithStep": {
+            "prototype": "montage/ui/slider.reel",
+            "properties": {
+                "element": {"#": "sliderWithStep"},
+                "step": 15,
+                "min":5,
+                "max":500
+            },
+            "bindings": {
+                "value": {"<->": "@sliderWithStepField.value"}
+            }
+        },
+
+        "sliderWithStepField": {
+            "prototype": "montage/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "sliderWithStepField"}
+            }
+        },
+
+        "verticalSliderWithStep": {
+            "prototype": "montage/ui/slider.reel",
+            "properties": {
+                "element": {"#": "verticalSliderWithStep"},
+                "orientation": "vertical",
+                "step": 15,
+                "min":5,
+                "max":500
+            }
+        },
+
+        "verticalSliderWithStepField": {
+            "prototype": "montage/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "verticalSliderWithStepField"}
+            },
+            "bindings": {
+                "value": {"<->": "@verticalSliderWithStep.value"}
+            }
+        },
+
+        "verticalSlider": {
+            "prototype": "montage/ui/slider.reel",
+            "properties": {
+                "element": {"#": "verticalSlider"},
+                "orientation": "vertical",
+                "values": [0,0,180],
+                "min":0,
+                "max":180
+
+            }
+        },
+
+        "verticalSliderFieldMin": {
+            "prototype": "montage/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "vertical-slider-field-min"}
+            },
+            "bindings": {
+                "value": {"<->": "@verticalSlider.values.0"}
+            }
+        },
+        "verticalSliderFieldMid": {
+            "prototype": "montage/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "vertical-slider-field-mid"}
+            },
+            "bindings": {
+                "value": {"<->": "@verticalSlider.values.1"}
+            }
+        },
+        "verticalSliderFieldMax": {
+            "prototype": "montage/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "vertical-slider-field-max"}
+            },
+            "bindings": {
+                "value": {"<->": "@verticalSlider.values.2"}
+            }
+        },
+
+
+        "sliderRange": {
+            "prototype": "montage/ui/slider.reel",
+            "properties": {
+                "element": {"#": "slider-range"}
+            }
+        },
+
+        "sliderRangeField": {
+            "prototype": "montage/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "slider-range-field"}
+            },
+            "bindings": {
+                "value": {"<->": "@sliderRange.value"}
+            }
+        }
+
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>Slider Sample</header>
+
+        <section class="sliders">
+
+            <div class="slider-container">
+                <div data-montage-id="slider" class="slider A">
+                    <div data-montage-id="sliderThumb" class="slider-thumb A"></div>
+                    <div data-montage-id="sliderThumb" class="slider-thumb B"></div>
+                    <div data-montage-id="sliderThumb" class="slider-thumb C"></div>
+                </div>
+                <div class="input-text">
+                    <input type="text" data-montage-id="slider-field-min" class="input-text">
+                    <input type="text" data-montage-id="slider-field-mid" class="input-text">
+                    <input type="text" data-montage-id="slider-field-max" class="input-text">
+                </div>
+
+            </div>
+
+
+            <div class="slider-container">
+                <div data-montage-id="sliderWithBareKnob" class="slider">
+                    <div></div>
+                </div>
+            </div>
+
+            <div class="slider-container">
+                <div data-montage-id="sliderWithComplexKnob" class="slider sliderWithComplexKnob">
+                    <div>
+                        <span class="montage-Slider--thumb">🍥</span>
+                    </div>
+                    <div>
+                        <span class="montage-Slider--thumb">🍥</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slider-container">
+                <div data-montage-id="sliderWithStep" class="slider D"></div>
+                <input type="text" data-montage-id="sliderWithStepField" class="input-text">
+            </div>
+
+            <div class="slider-container">
+                <div data-montage-id="verticalSliderWithStep" class="slider E"></div>
+                <input type="text" data-montage-id="verticalSliderWithStepField" class="input-text">
+            </div>
+
+            <div class="slider-container">
+                <div data-montage-id="verticalSlider" class="slider A">
+                    <div data-montage-id="sliderThumb" class="slider-thumb A"></div>
+                    <div data-montage-id="sliderThumb" class="slider-thumb B"></div>
+                    <div data-montage-id="sliderThumb" class="slider-thumb C"></div>
+                </div>
+                <div class="input-text">
+                    <input type="text" data-montage-id="vertical-slider-field-min" class="input-text">
+                    <input type="text" data-montage-id="vertical-slider-field-mid" class="input-text">
+                    <input type="text" data-montage-id="vertical-slider-field-max" class="input-text">
+                </div>
+
+            </div>
+
+
+            <div class="slider-container">
+                <input type="range" min="20" max="80" value="34" data-montage-id="slider-range">
+                <input type="text" data-montage-id="slider-range-field" class="input-text">
+            </div>
+            <div class="slider-container">
+                <div data-montage-id="custom-slider"></div>
+            </div>
+
+        </section>
+    </div>
+</body>
+</html>

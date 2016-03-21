@@ -1,0 +1,28 @@
+html, body, .Main {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+}
+
+.Main, .text-fields {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    flex: 1;
+    -webkit-font-smoothing: antialiased;
+    width: 100%;
+}
+
+header {
+    margin-top: 20px;
+    font-size: 42px;
+    font-weight: bold;
+    color: #333;
+}
+
+
+.text-field {
+    margin-top: 40px;
+}

@@ -1,7 +1,0 @@
-{
-	"name": "overview.info",
-	"private": true,
-	"dependencies": {
-		"montage": "../.."
-	}
-}

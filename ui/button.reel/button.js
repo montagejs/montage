@@ -43,6 +43,7 @@ b1.addEventListener("action", function(event) {
 }
 &lt;button data-montage-id="btnElement"></button>
 */
+
 var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/native/button.reel".Button# */ {
 
     /**
@@ -72,7 +73,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     Specifies whether the button should receive focus or not.
     @type {boolean}
     @default false
-    @event longpress
+    @event longpress @benoit: no events here?
 */
     preventFocus: {
         get: function () {
@@ -83,15 +84,20 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
             this.needsDraw = true;
         }
     },
+    standardElementTagName: {
+        value: "BUTTON"
+    },
 
+    /* TODO: remove when adding template capability */
+    hasTemplate: {
+        value: false
+    },
     /**
+        converter
         A Montage converter object used to convert or format the label displayed by the Button instance. When a new value is assigned to <code>label</code>, the converter object's <code>convert()</code> method is invoked, passing it the newly assigned label value.
         @type {Property}
         @default null
     */
-    converter: {
-        value: null
-    },
 
     /**
       Stores the node that contains this button's value. Only used for
@@ -111,10 +117,10 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         @default undefined
     */
     label: {
-        get: function() {
+        get: function () {
             return this._label;
         },
-        set: function(value) {
+        set: function (value) {
             if (typeof value !== "undefined" && this.converter) {
                 try {
                     value = this.converter.convert(value);
@@ -127,8 +133,9 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 }
             }
 
-            this._label = "" + value;
-            if (this.hasStandardElement) {
+            this._label = String(value);
+
+            if (this.isInputElement) {
                 this._value = value;
             }
 
@@ -150,52 +157,67 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         @default 1000
     */
     holdThreshold: {
-        get: function() {
+        get: function () {
             return this._pressComposer.longPressThreshold;
         },
-        set: function(value) {
+        set: function (value) {
             this._pressComposer.longPressThreshold = value;
         }
     },
 
     __pressComposer: {
-        enumberable: false,
+        enumerable: false,
         value: null
     },
 
     _pressComposer: {
-        enumberable: false,
-        get: function() {
-            if(!this.__pressComposer) {
+        enumerable: false,
+        get: function () {
+            if (!this.__pressComposer) {
                 this.__pressComposer = new PressComposer();
-                this.__pressComposer.defineBinding("longPressThreshold ", {"<-": "holdThreshold", source: this});
                 this.addComposer(this.__pressComposer);
             }
+
             return this.__pressComposer;
         }
     },
 
     // HTMLInputElement/HTMLButtonElement methods
-
-    blur: { value: function() { this._element.blur(); } },
-    focus: { value: function() { this._element.focus(); } },
     // click() deliberately omitted (it isn't available on <button> anyways)
 
     prepareForActivationEvents: {
-        value: function() {
+        value: function () {
             this._pressComposer.addEventListener("pressStart", this, false);
-            this._pressComposer.addEventListener("press", this, false);
-            this._pressComposer.addEventListener("pressCancel", this, false);
         }
     },
 
     // Optimisation
     addEventListener: {
-        value: function(type, listener, useCapture) {
-            this.super(type, listener, useCapture);
+        value: function (type, listener, useCapture) {
+            Control.prototype.addEventListener.call(this, type, listener, useCapture);
             if (type === "longAction") {
                 this._pressComposer.addEventListener("longPress", this, false);
             }
+        }
+    },
+
+    _addEventListeners: {
+        value: function () {
+            this._pressComposer.addEventListener("press", this, false);
+            this._pressComposer.addEventListener("pressCancel", this, false);
+
+            //fixme: @benoit: we should maybe have a flag for this kind of event.
+            // can be tricky with the event delegation for example if we don't add it.
+            // same issue for: the pressComposer and the translate composer.
+            this._pressComposer.addEventListener("longPress", this, false);
+        }
+    },
+
+    _removeEventListeners: {
+        value: function () {
+            this._pressComposer.removeEventListener("press", this, false);
+            this._pressComposer.removeEventListener("pressCancel", this, false);
+            this._pressComposer.removeEventListener("longPress", this, false);
         }
     },
 
@@ -205,14 +227,9 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     Called when the user starts interacting with the component.
     */
     handlePressStart: {
-        value: function(event) {
+        value: function (event) {
             this.active = true;
-
-            if (event.touch) {
-                // Prevent default on touchmove so that if we are inside a scroller,
-                // it scrolls and not the webpage
-                document.addEventListener("touchmove", this, false);
-            }
+            this._addEventListeners();
 
             if (!this._preventFocus) {
                 this._element.focus();
@@ -224,20 +241,10 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     Called when the user has interacted with the button.
     */
     handlePress: {
-        value: function(event) {
+        value: function (event) {
             this.active = false;
             this._dispatchActionEvent();
-            document.removeEventListener("touchmove", this, false);
-        }
-    },
-
-    handleKeyup: {
-        value: function(event) {
-            // action event on spacebar
-            if (event.keyCode === 32) {
-                this.active = false;
-                this._dispatchActionEvent();
-            }
+            this._removeEventListeners();
         }
     },
 
@@ -246,6 +253,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
             // When we fire the "hold" event we don't want to fire the
             // "action" event as well.
             this._pressComposer.cancelPress();
+            this._removeEventListeners();
 
             var longActionEvent = document.createEvent("CustomEvent");
             longActionEvent.initCustomEvent("longAction", true, true, null);
@@ -260,13 +268,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     handlePressCancel: {
         value: function(event) {
             this.active = false;
-            document.removeEventListener("touchmove", this, false);
-        }
-    },
-
-    handleTouchmove: {
-        value: function(event) {
-            event.preventDefault();
+            this._removeEventListeners();
         }
     },
 
@@ -274,22 +276,27 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     If this is an input element then the label is handled differently.
     @private
     */
-    // _isInputElement: {
-    //     value: false,
-    //     enumerable: false
-    // },
+    _isInputElement: {
+        value: undefined,
+        enumerable: false
+    },
+    isInputElement: {
+        get: function() {
+            return this._isInputElement !== undefined ? this._isInputElement : (this._isInputElement = (this.element ? (this.element.tagName === "INPUT") : false));
+        },
+        enumerable: false
+    },
 
     enterDocument: {
-        value: function(firstDraw) {
+        value: function (firstDraw) {
             if (Control.prototype.enterDocument) {
-                Control.enterDocument.prototype.apply(this, arguments);
+                Control.prototype.enterDocument.apply(this, arguments);
             }
 
-            if(firstDraw) {
-                // this._isInputElement = (this.originalElement.tagName === "INPUT");
+            if (firstDraw) {
                 // Only take the value from the element if it hasn't been set
                 // elsewhere (i.e. in the serialization)
-                if (this.hasStandardElement) {
+                if (this.isInputElement) {
                     // NOTE: This might not be the best way to do this
                     // With an input element value and label are one and the same
                     Object.defineProperty(this, "value", {
@@ -304,15 +311,19 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                     if (this._label === undefined) {
                         this.label = this.originalElement.value;
                     }
+                    //<button> && Custom
                 } else {
-                    if (!this.originalElement.firstChild) {
-                        this.originalElement.appendChild(document.createTextNode(""));
+                    if(!this.originalElement !== this.element && this._label === undefined) {
+                        this._label = this.originalElement.data;
                     }
-                    this._labelNode = this.originalElement.firstChild;
+                    if (!this.element.firstChild) {
+                        this.element.appendChild(document.createTextNode(""));
+                    }
+                    this._labelNode = this.element.firstChild;
                     // this.setLabelInitialValue(this._labelNode.data)
-                    if (this._label === undefined) {
-                        this._label = this._labelNode.data;
-                    }
+                    // if (this._label === undefined) {
+                    //     this._label = this._labelNode.data;
+                    // }
                 }
 
                 //this.classList.add("montage-Button");
@@ -329,8 +340,8 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     */
     _drawLabel: {
         enumerable: false,
-        value: function(value) {
-            if (this.hasStandardElement) {
+        value: function (value) {
+            if (this.isInputElement) {
                 this._element.value = value;
             } else if (this._labelNode) {
                 this._labelNode.data = value;
@@ -349,7 +360,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     },
 
     draw: {
-        value: function() {
+        value: function () {
             this.super();
 
             if (this._elementNeedsTabIndex()) {
@@ -375,16 +386,17 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         @default null
     */
     detail: {
-        get: function() {
+        get: function () {
             if (this._detail === null) {
                 this._detail = new Dict();
             }
+
             return this._detail;
         }
     },
 
     createActionEvent: {
-        value: function() {
+        value: function () {
             var actionEvent = document.createEvent("CustomEvent"),
                 eventDetail;
 

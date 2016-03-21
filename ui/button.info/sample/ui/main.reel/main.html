@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "properties": {
+                    "element": {"#": "main"}
+                },
+                "listeners":[
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    },
+                    {
+                        "type": "longAction",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+
+            "custom": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "button-custom"},
+                    "label": "custom"
+                }
+            },
+
+            "input": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "button-input"},
+                    "label": "input"
+                }
+            },
+
+            "native": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "button-native"},
+                    "label": "native"
+                }
+            },
+
+            "text": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "text"}
+                },
+                "bindings": {
+                    "value": {"<-": "@owner.message || 'please hit a button'"}
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>Button Sample</header>
+        <section class="buttons">
+            <div data-montage-id="button-custom" class="button custom"></div>
+            <input data-montage-id="button-input" type="button" class="button native"></input>
+            <button data-montage-id="button-native" class="button native"></button>
+            <span data-montage-id="text"></span>
+        </section>
+    </div>
+</body>
+</html>

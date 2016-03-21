@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="main.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "main"}
+            }
+        },
+
+        "native": {
+            "prototype": "montage/ui/text-area.reel",
+            "properties": {
+                "element": {"#": "text-area-native"}
+            }
+        }
+
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>TextAera Sample</header>
+
+        <section class="text-areas">
+            <textarea data-montage-id="text-area-native" class="text-area native"></textarea>
+
+            <!-- @benoit: add a custom one with content editable set to true ?-->
+        </section>
+    </div>
+</body>
+</html>

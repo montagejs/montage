@@ -174,6 +174,9 @@ exports.document = function () {
         _eventListeners: {},
         createElement: function (tagName) {
             return exports.element(this);
+        },
+        createDocumentFragment: function () {
+            return exports.element(this);
         }
     };
     Object.addEach(result, EventTarget);
