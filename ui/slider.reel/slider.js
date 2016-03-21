@@ -25,7 +25,7 @@ var Slider = exports.Slider = Control.specialize({
             Control.constructor.call(this); // super
             //this is so that when we read properties from the dom they are not overwritten
             this._propertyNamesUsed = {};
-            this._values = [0];
+            this._values = [50];
 
             this._isThumbElementTranslating = new WeakMap();
             this._percentageValues = new Array();
@@ -102,7 +102,7 @@ var Slider = exports.Slider = Control.specialize({
     },
     values: {
         get: function() {
-            return this._values || (this._values = []);
+            return this._values || (this._values = [50]);
         },
         set: function (values) {
             if (this._values !== values) {
@@ -216,7 +216,7 @@ var Slider = exports.Slider = Control.specialize({
                     while((iThumbWrapper = this.thumbWrappers[i])) {
                         iThumbElement = this.thumbElements[i];
 
-                        iDimension = isHorizontal ? iThumbElement.offsetWidth : iThumbElement.offseteight;
+                        iDimension = isHorizontal ? iThumbElement.offsetWidth : iThumbElement.offsetHeight;
                         // //If the thumb has no size, or if it's horizontak and occupy the whole width, we're stepping in
                         // if(iDimension == 0 || (isHorizontal && iDimension === spacer.offsetWidth)) {
                         //     iThumbElement.classList.add("montage-Slider-thumb--default");
@@ -839,12 +839,6 @@ Slider.addAttributes( /** @lends module:"montage/ui/native/input-range.reel".Inp
                 }
             }
         }
-    },
+    }
 
-/**
-    The amount the number changes with each step. The step size can be a number, or the string 'any'.
-    @type {number|string}
-    @default null
-*/
-    step: null // number or 'any'
 });
