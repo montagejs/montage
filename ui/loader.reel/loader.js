@@ -375,7 +375,7 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
     mainComponentEnterDocument: {
         value: function () {
             var mainComponent = this._mainComponent,
-                insertionElement = document.body;
+                insertionElement;
 
             if (logger.isDebug) {
                 logger.debug(this, "main preparing to draw");
@@ -388,6 +388,7 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
 
             // If installing classnames on the documentElement (to affect as high a level as possible)
             // make sure content only ends up inside the body
+            insertionElement = this.element === document.documentElement ? document.body : this.element;
             this._contentToRemove.selectNodeContents(insertionElement);
 
             // Add new content so mainComponent can actually draw
