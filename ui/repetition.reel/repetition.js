@@ -582,7 +582,11 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         set: function (value) {
             // TODO if we provide an implicit content controller, it should be
             // excluded from a serialization of the repetition.
-            this.contentController = new RangeController().initWithContent(value);
+            if (this.contentController) {
+                this.contentController.content = value;
+            } else {
+                this.contentController = new RangeController().initWithContent(value);
+            }
         }
     },
 
