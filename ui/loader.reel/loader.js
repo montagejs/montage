@@ -79,15 +79,12 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
     element: {
         get: function () {
             if (!this._element) {
-                if (!this.hasTemplate) {
-                    this.element = document.documentElement;
-
-                } else {
-                    // If a loader component has no element, but has a template we need to create a default element,
-                    // otherwise the html element is going to be used for this component.
-                    this.element = document.createElement("div");
-                    document.body.appendChild(this.element);
+                var loaderElement = document.getElementsByClassName("loading")[0];
+                if (!loaderElement) {
+                    loaderElement = document.createElement("div");
+                    document.body.appendChild(loaderElement);
                 }
+                this.element = loaderElement;
             }
 
             return this._element;
@@ -163,7 +160,7 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
                 RootComponent.classList.remove(BOOTSTRAPPING_CLASS_NAME);
                 RootComponent.classList.add(LOADING_CLASS_NAME);
 
-            } else if (LOADED === currentStage && this._contentToRemove) {
+            } else if (LOADED === currentStage) {
                 RootComponent.classList.remove(BOOTSTRAPPING_CLASS_NAME);
                 RootComponent.classList.remove(LOADING_CLASS_NAME);
                 RootComponent.classList.add(LOADED_CLASS_NAME);
@@ -374,8 +371,7 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
 
     mainComponentEnterDocument: {
         value: function () {
-            var mainComponent = this._mainComponent,
-                insertionElement = document.body;
+            var mainComponent = this._mainComponent;
 
             if (logger.isDebug) {
                 logger.debug(this, "main preparing to draw");
@@ -383,16 +379,9 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
 
             this.isLoadingMainComponent = false;
 
-            // Determine old content
-            this._contentToRemove = document.createRange();
-
-            // If installing classnames on the documentElement (to affect as high a level as possible)
-            // make sure content only ends up inside the body
-            this._contentToRemove.selectNodeContents(insertionElement);
-
             // Add new content so mainComponent can actually draw
             this.childComponents = [this._mainComponent];
-            insertionElement.appendChild(this._mainComponent.element);
+            this.element.parentElement.appendChild(this._mainComponent.element);
 
             this._waitForLoadingIndicatorIfNeeded();
 
@@ -440,50 +429,23 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
         }
     },
 
-    /**
-     * Specifies whether to remove the loading content when load is completed.
-     * @property {boolean} value
-     * @default true
-    */
-    removeContentOnLoad: {
-        value: true
-    },
-
-    _forceContentRemoval: {
-        enumerable: false,
-        value: false
-    },
-
-    _contentToRemove: {
-        enumerable: false,
-        value: null
-    },
-
-    /**
-     * Forces a manual removal of loading content.
-     */
-    removeContent: {
-        value: function () {
-            this._forceContentRemoval = true;
-            this.needsDraw = true;
-        }
-    },
-
     draw: {
         value: function () {
-            if (LOADED === this._currentStage && this._contentToRemove) {
-                if (this.removeContentOnLoad || this._forceContentRemoval) {
-                    this._contentToRemove.extractContents();
-                    this._contentToRemove = null;
-                }
-
-                var loadEvent = document.createEvent("CustomEvent");
-                loadEvent.initCustomEvent("componentLoaded", true, true, this._mainComponent);
-                this.dispatchEvent(loadEvent, true, true);
+            if (LOADED === this._currentStage) {
+                this._dispatchLoadEvent();
                 // Remove the Loader from the component tree, we can only do
                 // this after the last draw the Loader needs to make.
                 this.detachFromParentComponent();
+                this.element.remove();
             }
+        }
+    },
+
+    _dispatchLoadEvent: {
+        value: function() {
+            var loadEvent = document.createEvent("CustomEvent");
+                loadEvent.initCustomEvent("componentLoaded", true, true, this._mainComponent);
+            this.dispatchEvent(loadEvent, true, true);
         }
     }
 
