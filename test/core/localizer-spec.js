@@ -33,7 +33,7 @@ var Montage = require("montage").Montage,
     Localizer = require("montage/core/localizer"),
     Promise = require("montage/core/promise").Promise,
     Bindings = require("montage/core/core").Bindings,
-    Map = require("montage/collections/map");
+    Map = require("montage/core/map");
 
 describe("core/localizer-spec", function () {
 

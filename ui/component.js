@@ -2483,7 +2483,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         value: function (composer) {
             if (this._composerList) {
                 for (var i = 0, length = this._composerList.length; i < length; i++) {
-                    if (this._composerList[i].uuid === composer.uuid) {
+                    if (this._composerList[i] === composer) {
                         this.unloadComposer(this._composerList[i]);
                         this._composerList.splice(i, 1);
                         break;

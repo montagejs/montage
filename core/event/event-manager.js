@@ -9,8 +9,6 @@
 /**
  * @module montage/core/event/event-manager
  * @requires montage/core/core
- * @requires montage/core/uuid
- * @requires montage/core/uuid
  * @requires montage/core/event/mutable-event
  * @requires montage/core/serialization
  * @requires montage/core/event/action-event-listener
@@ -20,7 +18,7 @@ var Montage = require("../core").Montage,
     MutableEvent = require("./mutable-event").MutableEvent,
     Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
     Deserializer = require("../serialization/deserializer/montage-deserializer").MontageDeserializer,
-    Map = require("collections/map"),
+    Map = require("../map"),
     WeakMap = require("collections/weak-map"),
     currentEnvironment = require("../environment").currentEnvironment,
     defaultEventManager;
@@ -28,7 +26,6 @@ var Montage = require("../core").Montage,
 // XXX Does not presently function server-side
 if (typeof window !== "undefined") { // client-side
 
-    Map = window.Map || Map;
     WeakMap = window.WeakMap || WeakMap;
 
     // jshint -W015
@@ -786,15 +783,7 @@ if (typeof window !== "undefined") { // client-side
          * Registered event listeners.
          *
          * @example
-         * ```json
-         * mousedown: {
-         *      target.uuid: {
-         *          target: target,
-         *          listeners: {
-         *            bject1.uuid: {listener: Object1, capture: true, bubble: true},
-         *              Object2.uuid: {listener: Object2, capture: true, bubble: false},
-         *              Object3.uuid: {listener: Object3, capture: false, bubble: true}}}}
-         * ```
+         * ```json         * ```
          *
          * @property {Listeners} value
          * @default {}
@@ -1213,7 +1202,7 @@ if (typeof window !== "undefined") { // client-side
                     this._observedTarget_byEventType_[eventType].delete(listenerTarget);
                     listenerTarget.nativeRemoveEventListener(eventType, this, true);
                 }
-                // console.log("stopped listening: ", eventType, window.uuid)
+                // console.log("stopped listening: ", eventType, window)
             }
         },
 
@@ -2795,7 +2784,7 @@ if (typeof window !== "undefined") { // client-side
         registerEventHandlerForElement: {
             enumerable: false,
             value: function (anElementEventHandler, anElement) {
-                // console.log("registerEventHandlerForElement",anElementEventHandler,anElementEventHandler.uuid,anElement)
+                // console.log("registerEventHandlerForElement",anElementEventHandler,anElementEventHandler,anElement)
                 var oldEventHandler = this.eventHandlerForElement(anElement);
                 // unreference unused event handlers
                 if (oldEventHandler) {

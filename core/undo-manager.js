@@ -6,7 +6,7 @@
 var Montage = require("./core").Montage,
     Target = require("./target").Target,
     Promise = require("./promise").Promise,
-    Map = require("collections/map"),
+    Map = require("./map"),
     List = require("collections/list");
 
 var UNDO_OPERATION = 0,
@@ -649,7 +649,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
             entry.operationType = operationType;
 
             this._operationQueue.push(operationPromise);
-            
+
             return this._flushOperationQueue().thenReturn(deferredOperationPromise);
         }
     },
@@ -707,4 +707,3 @@ Montage.defineProperty(exports, "defaultUndoManager", {
         return _defaultUndoManager;
     }
 });
-

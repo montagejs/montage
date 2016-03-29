@@ -3,7 +3,7 @@
 /**
  * @module montage/ui/base/abstract-control
  * @requires montage/ui/component
- * @requires collections/dict
+ * @requires montage/core/map
  */
 var Component = require("../component").Component,
     Map = require("collections/map");

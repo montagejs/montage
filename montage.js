@@ -878,8 +878,13 @@ if (typeof window !== "undefined") {
             ];
 
             var Promise = montageRequire("core/promise").Promise;
+            var deepLoadPromises = [];
 
-            return Promise.all(dependencies.map(montageRequire.deepLoad))
+            for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {
+              deepLoadPromises.push(montageRequire.deepLoad(iDependency));
+            }
+
+            return Promise.all(deepLoadPromises)
             .then(function () {
 
                 for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {

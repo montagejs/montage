@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage;
 // TODO [June 20 2011 PJYF] This s temporary implementation of WeakMap to let the browser catch up.
 var WeakMap = require("collections/weak-map");
-var Map = require("collections/map");
+var Map = require("montage/core/map");
 var UUID = require("montage/core/uuid");
 
 describe("core/core-spec", function () {

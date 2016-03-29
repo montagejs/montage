@@ -35,7 +35,7 @@ var Montage = require("montage").Montage,
     Serializer = require("montage/core/serialization").Serializer,
     Deserializer = require("montage/core/serialization").Deserializer,
     TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
-    Map = require("montage/collections/map"),
+    Map = require("montage/core/map"),
     Bindings = require("montage/core/bindings").Bindings,
     FrbBindings = require("montage/frb/bindings");
 

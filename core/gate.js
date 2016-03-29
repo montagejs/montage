@@ -5,7 +5,8 @@
  * @requires montage/core/logger
  */
 var Montage = require("./core").Montage,
-    logger = require("./logger").logger("gate");
+    logger = require("./logger").logger("gate"),
+    Map = require("./map");
 
 /**
  * @class Gate
@@ -93,11 +94,9 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate.prototype # */ {
     setField: {
         enumerable: false,
         value: function (aFieldName, value) {
-            var table = this.table,
+            var table = this.table || (this.table = new Map()),
                 fieldValue,
                 oldCount = this.count;
-
-            table = (!table ? this.table = {} : table);
 
             fieldValue = table[aFieldName];
 
@@ -201,4 +200,3 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate.prototype # */ {
     }
 
 });
-

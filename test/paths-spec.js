@@ -1,6 +1,6 @@
 
 var Montage = require("montage").Montage;
-var Map = require("montage/collections/map");
+var Map = require("montage/core/map");
 
 describe("paths-spec", function () {
 
