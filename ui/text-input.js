@@ -138,7 +138,6 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
     handleInput: {
         enumerable: false,
         value: function() {
-            console.log("text-input handleInput");
             if (this.converter) {
                 if (this.converter.allowPartialConversion === true && this.updateOnInput === true) {
                     this.takeValueFromElement();
@@ -156,7 +155,6 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
     handleChange: {
         enumerable: false,
         value: function(event) {
-            console.log("text-input handleChange");
             this.takeValueFromElement();
             this.dispatchActionEvent();
             this._hasFocus = false;
@@ -170,7 +168,6 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
     handleBlur: {
         enumerable: false,
         value: function(event) {
-            console.log("text-input handleBlur");
             this.super(event) ;
             this.takeValueFromElement();
             this.dispatchActionEvent();
