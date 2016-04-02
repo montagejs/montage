@@ -1388,16 +1388,15 @@ var pathPropertyDescriptors = {
             descriptor.cancel();
             descriptorsForPhase.delete(handler);
             if (
-                descriptorsForPath.willChangeListeners.length === 0 &&
-                descriptorsForPath.changeListeners.length === 0
+                descriptorsForPath.willChangeListeners.size === 0 &&
+                descriptorsForPath.changeListeners.size === 0
             ) {
-                delete descriptorsForObject[path];
+                descriptorsForObject.delete(path);
             }
             // if there are no other handlers
-            for (var name in descriptorsForObject) {
-                return;
+            if (descriptorsForObject.size < 1) {
+                pathChangeDescriptors["delete"](this);
             }
-            pathChangeDescriptors["delete"](this);
         }
     },
 
