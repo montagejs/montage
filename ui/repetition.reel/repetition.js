@@ -103,7 +103,33 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      * active iteration.
      * @type {boolean}
      */
-    active: {value: null},
+    _active: {
+        value: false
+    },
+
+    active: {
+        set: function (active) {
+            active = !!active;
+
+            if (this.active !== active) {
+                this._active = active;
+
+                if (this.repetition) {
+                    if (active) {
+                        this.repetition.activeIterations.add(this);
+                    } else {
+                        this.repetition.activeIterations.delete(this);
+                    }
+
+                    this.handlePropertyChange();
+                }
+            }
+
+        },
+        get: function () {
+            return this._active;
+        }
+    },
 
     /**
      * A flag that indicates that the "no-transition" CSS class should be added
@@ -142,8 +168,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             }
             if (this._selected !== value) {
                 this._selected = value;
-                this.repetition._addDirtyClassListIteration(this);
-                this.repetition.needsDraw = true;
+                this.handlePropertyChange();
             }
         }
     },
@@ -182,20 +207,14 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             // of drawn iterations.
             this._drawnIndex = null;
 
-            // Describes whether a user gesture is touching this iteration.
-            this.active = false;
             // Changes to whether a user is touching the iteration are
             // reflected by the "active" CSS class on each element in the
             // iteration.  This gets updated in the draw cycle, in response to
             // operations that handlePropertyChange adds to the repetition draw
             // cycle.
-            // Dispatches handlePropertyChange with the "active" key:
-            this.defineBinding("active", {"<->": "repetition.activeIterations.has(())"});
-
             this._noTransition = false;
 
             // dispatch handlePropertyChange:
-            this.addOwnPropertyChangeListener("active", this);
             this.addOwnPropertyChangeListener("_noTransition", this);
 
             this.addPathChangeListener(
