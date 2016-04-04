@@ -417,17 +417,22 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
     handleComponentModelChange: {
         value: function (onComponentModel) {
             if (onComponentModel) {
-                this._childComponents.forEach(
-                    this.repetition.addChildComponent,
-                    this.repetition
-                );
+                this._addChildComponentToRepetition();
             // the second condition protects against removing before adding in
             // the initial state.
             } else if (this._childComponents) {
-                this._childComponents.forEach(
-                    this.repetition.removeChildComponent,
-                    this.repetition
-                );
+                this._addChildComponentToRepetition();
+            }
+        }
+    },
+
+    _addChildComponentToRepetition: {
+        value: function () {
+            var childComponents = this._childComponents,
+                repetition = this.repetition;
+
+            for (var i = 0, length = childComponents.length; i < length; i++) {
+                repetition.addChildComponent(childComponents[i]);
             }
         }
     },
