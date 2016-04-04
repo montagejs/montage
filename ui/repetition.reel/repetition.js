@@ -87,7 +87,22 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      * the document immediately after the repetition has drawn.
      * @type {number}
      */
-    index: {value: null},
+    _index: {
+        value: null
+    },
+
+    index: {
+        get: function () {
+            return this._index;
+        },
+        set: function (index) {
+            if (this._index !== index) {
+                this._index = index;
+
+                this.handleComponentModelChange();
+            }
+        }
+    },
 
     /**
      * The position of this iteration on the document last time it was drawn,
@@ -216,15 +231,9 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
 
             // dispatch handlePropertyChange:
             this.addOwnPropertyChangeListener("_noTransition", this);
-
-            this.addPathChangeListener(
-                "index.defined() && _childComponents.defined()",
-                this,
-                "handleComponentModelChange"
-            );
+            this.addRangeAtPathChangeListener("_childComponents", this, "handleComponentModelChange");
 
             this.cachedFirstElement = null;
-
         }
     },
 
@@ -415,24 +424,14 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      * @private
      */
     handleComponentModelChange: {
-        value: function (onComponentModel) {
-            if (onComponentModel) {
-                this._addChildComponentToRepetition();
-            // the second condition protects against removing before adding in
-            // the initial state.
-            } else if (this._childComponents) {
-                this._addChildComponentToRepetition();
-            }
-        }
-    },
-
-    _addChildComponentToRepetition: {
         value: function () {
-            var childComponents = this._childComponents,
-                repetition = this.repetition;
+            if (this._childComponents && this._index !== void 0 && this._index !== null) {
+                var childComponents = this._childComponents,
+                    repetition = this.repetition;
 
-            for (var i = 0, length = childComponents.length; i < length; i++) {
-                repetition.addChildComponent(childComponents[i]);
+                for (var i = 0, length = childComponents.length; i < length; i++) {
+                    repetition.addChildComponent(childComponents[i]);
+                }
             }
         }
     },
