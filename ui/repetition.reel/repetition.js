@@ -150,7 +150,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
     isDirty: {value: false},
 
     _selected: {
-        value: null
+        value: false
     },
 
     selected: {
