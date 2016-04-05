@@ -1219,7 +1219,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                 var aComponent;
                 it("should update the classList when the element is set", function () {
                     aComponent = new (Component.specialize( {hasTemplate: { value: false}}))();
-                    var anElement = MockDOM.element();
+                    var anElement = document.createElement("div");
                     anElement.classList.add("foo");
                     expect(aComponent.classList.contains("foo")).toBeFalsy();
                     aComponent.element = anElement;
