@@ -736,7 +736,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
                 if (this._needDispatchSafePress || event.defaultPrevented) {// no simulated event when a touchMove has been raised
                     var self = this,
-                        eventManager = this.element.ownerDocument.defaultView.defaultEventManager;
+                        eventManager = document.defaultView.defaultEventManager;
 
                     // Raise a Press event after the simulated mousedown event has been raised,
                     // in order to avoid elements that are not on the same layer  to get the focus.
