@@ -53,10 +53,13 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                         var cancelListener = testPage.addListener(test.press_composer, null, "pressCancel");
 
                         testPage.touchEvent({target: test.example.element}, "touchend");
+                        // no event filtering within test so the state test need to before raising the mousedown event.
+                        expect(test.press_composer.state).toBe(PressComposer.UNPRESSED);
+
+                        testPage.mouseEvent({target: test.example.element}, "mousedown"); //simulate event emulation
 
                         expect(pressListener).toHaveBeenCalled();
                         expect(cancelListener).not.toHaveBeenCalled();
-                        expect(test.press_composer.state).toBe(PressComposer.UNPRESSED);
                     });
                 }
 
@@ -160,9 +163,11 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                             expect(test.press_composer.state).toBe(PressComposer.PRESSED);
 
                             testPage.touchEvent({target: test.example.element}, "touchend");
-
-                            expect(pressListener).toHaveBeenCalled();
+                            // no event filtering within test so the state test need to before raising the mousedown event.
                             expect(test.press_composer.state).toBe(PressComposer.UNPRESSED);
+
+                            testPage.mouseEvent({target: test.example.element}, "mousedown"); //simulate event emulation
+                            expect(pressListener).toHaveBeenCalled();
                         }
                     });
                 });
@@ -340,6 +345,7 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
 
                         testPage.touchEvent({clientX:clientX, clientY: clientY, target: test.innerComponent.element}, "touchstart");
                         testPage.touchEvent({clientX:clientX, clientY: clientY, target: test.innerComponent.element}, "touchend");
+                        testPage.mouseEvent({target: test.innerComponent.element}, "mousedown"); //simulate event emulation
 
                         expect(inner_listener).toHaveBeenCalled();
                         expect(outer_listener).not.toHaveBeenCalled();

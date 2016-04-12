@@ -105,6 +105,10 @@
                     "label": "selected"
                 }
             ]
+        },
+        {
+            "label": "press composer layers",
+            "arg": "press-composer-layers"
         }
     ]
 }
