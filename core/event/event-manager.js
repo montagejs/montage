@@ -2306,7 +2306,7 @@ if (typeof window !== "undefined") { // client-side
                     touch = trackingTouchList.get(key);
 
                     if (touch.target === mouseTarget ||
-                        this._couldEmulatedEventHasWrongTarget(
+                        this._couldEmulatedEventHaveWrongTarget(
                             touch,
                             mouseEvent,
                             this._emulatedEventRadiusThreshold,
@@ -2329,7 +2329,7 @@ if (typeof window !== "undefined") { // client-side
          * Indeed, Touch Events and simulated Mouse Events can have a different target and not the same position on Chrome.
          *
          */
-        _couldEmulatedEventHasWrongTarget: {
+        _couldEmulatedEventHaveWrongTarget: {
             value: function (touch, mouseEvent, radiusThreshold, timestampThreshold) {
 
                 if (/*dTimestamp*/(mouseEvent.timeStamp - touch.timeStamp) <= timestampThreshold) {

@@ -747,7 +747,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                     // @example: @see press-composer.info
                     window.nativeAddEventListener("mousedown", function _dispatchSafePress (mouseDownEvent) {
                         if (touchEndTargetElement === mouseDownEvent.target ||
-                            eventManager._couldEmulatedEventHasWrongTarget(
+                            eventManager._couldEmulatedEventHaveWrongTarget(
                                 event.changedTouches[0],
                                 mouseDownEvent,
                                 eventManager._emulatedEventRadiusThreshold,
