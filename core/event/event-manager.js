@@ -2297,12 +2297,13 @@ if (typeof window !== "undefined") { // client-side
             value: function (mouseEvent, trackingTouchList) {
                 var mouseTarget = mouseEvent.target,
                     identifier = -1,
+                    key,
                     touch,
                     mapIter;
 
                 mapIter = trackingTouchList.keys();
-                while (identifier = mapIter.next().value) {
-                    touch = trackingTouchList.get(identifier);
+                while (key = mapIter.next().value) {
+                    touch = trackingTouchList.get(key);
 
                     if (touch.target === mouseTarget ||
                         this._couldEmulatedEventHasWrongTarget(
@@ -2310,7 +2311,11 @@ if (typeof window !== "undefined") { // client-side
                             mouseEvent,
                             this._emulatedEventRadiusThreshold,
                             this._emulatedEventTimestampThreshold
-                        )) break;
+                        )) {
+
+                        identifier = key;
+                        break;
+                    }
                 }
 
                 return identifier;
@@ -2331,7 +2336,7 @@ if (typeof window !== "undefined") { // client-side
                     var dX = touch.clientX - mouseEvent.clientX,
                         dY = touch.clientY - mouseEvent.clientY;
 
-                    return dX * dX + dY * dY > radiusThreshold * radiusThreshold;
+                    return dX * dX + dY * dY <= radiusThreshold * radiusThreshold;
                 }
 
                 return false;
