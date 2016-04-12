@@ -734,7 +734,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
             if (touchEndTargetElement) {
                 pressEvent.targetElement = touchEndTargetElement;
 
-                if (this._needDispatchSafePress || event.defaultPrevented) {// no simulated event when a touchMove has been raised
+                if (this._needDispatchSafePress || event.defaultPrevented) {// no simulated events when a touchMove has been raised
                     var self = this,
                         eventManager = document.defaultView.defaultEventManager;
 
@@ -745,7 +745,8 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                     // walking the dom. An issue could happen here when the positioning of elements is changing (z-index)
                     // after the press event has been raised, which could result to giving the focus to a wrong element.
                     // @example: @see press-composer.info
-                    window.nativeAddEventListener("mousedown", function _dispatchSafePress (mouseDownEvent) {
+                    //@todo: should be deprecated when browsers will support PointerEvents.
+                    var dispatchSafePressCallBack = function (mouseDownEvent) {
                         if (touchEndTargetElement === mouseDownEvent.target ||
                             eventManager._couldEmulatedEventHaveWrongTarget(
                                 event.changedTouches[0],
@@ -754,16 +755,31 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                                 eventManager._emulatedEventTimestampThreshold
                             )
                         ) {
-                            window.nativeRemoveEventListener("mousedown", _dispatchSafePress, true);
-                            self.dispatchEvent(pressEvent);
-                            self._state = PressComposer.UNPRESSED;
+                            self._dispatchSafePress(pressEvent, dispatchSafePressCallBack);
                         }
-                    }, true);
+                    };
+
+                    window.nativeAddEventListener("mousedown", dispatchSafePressCallBack, true);
+
+                    // -> long press fallBack: no simulated events with long touch press.
+                    dispatchSafePressCallBack.timeoutID = setTimeout(function () {
+                        self._dispatchSafePress(pressEvent, dispatchSafePressCallBack);
+                    }, 300);
 
                     return void 0;
                 }
             }
 
+            this.dispatchEvent(pressEvent);
+            this._state = PressComposer.UNPRESSED;
+        }
+    },
+
+    _dispatchSafePress: {
+        value: function (pressEvent, dispatchSafePressCallBack) {
+            clearTimeout(dispatchSafePressCallBack.timeoutID);
+            dispatchSafePressCallBack.timeoutID = null;
+            window.nativeRemoveEventListener("mousedown", dispatchSafePressCallBack, true);
             this.dispatchEvent(pressEvent);
             this._state = PressComposer.UNPRESSED;
         }
