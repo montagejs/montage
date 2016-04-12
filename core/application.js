@@ -462,7 +462,12 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                     hasAlreadyBeenLoaded = localStorage.getItem(alreadyLoadedLocalStorageKey);
 
                 if (hasAlreadyBeenLoaded === null) {
-                    localStorage.setItem(alreadyLoadedLocalStorageKey, true);
+                    try {
+                        localStorage.setItem(alreadyLoadedLocalStorageKey, true);
+                    }
+                    catch(error) {
+                        console.log("In private mode you are")
+                    }
                 }
 
                 this._isFirstLoad = !hasAlreadyBeenLoaded;
@@ -592,4 +597,3 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
         }
     }
 });
-
