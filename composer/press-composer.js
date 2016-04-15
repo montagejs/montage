@@ -201,6 +201,10 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         value: false
     },
 
+    _targetElementOnLastTouchMove: {
+        value: null
+    },
+
     /**
      * Remove event listeners after an interaction has finished.
      * @private
@@ -215,6 +219,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 }
 
                 this._observedPointer = null;
+                this._targetElementOnLastTouchMove = null;
                 this._state = PressComposer.UNPRESSED;
                 this._initialCenterPositionX = 0;
                 this._initialCenterPositionY = 0;
@@ -336,8 +341,11 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 target = event.target;
 
             } else if (this._changedTouchisObserved(event.changedTouches) !== false) {
-                var touch = event.changedTouches[0];
-                target = document.elementFromPoint(touch.clientX, touch.clientY);
+                // We need to keep the last element reached by a touchmove because we can't just rely on the position
+                // given by the touchEnd because in some cases, hiding the android keyboard for example, could result
+                // to change the press composer's element position between a touchStart and a touchEnd event. Therefore,
+                // getting the "wrong" target.
+                target = this._targetElementOnLastTouchMove || event.target;
             }
 
             if (target && this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
@@ -371,7 +379,11 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
             if (this._isPositionChanged(event)) {
                 this._cancelPress(event);
+
+                return true;
             }
+
+            return false;
         }
     },
 
@@ -386,7 +398,10 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 (event.changedTouches && this._changedTouchisObserved(event.changedTouches) !== false)) &&
                 this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
 
-                this._cancelPressIfCenterPositionChange(event);
+                if (!this._cancelPressIfCenterPositionChange(event) && event.type === "touchmove") {
+                    var touch = event.changedTouches[0];
+                    this._targetElementOnLastTouchMove = document.elementFromPoint(touch.clientX, touch.clientY);
+                }
             }
         }
     },
