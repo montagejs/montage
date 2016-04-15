@@ -80,6 +80,10 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(/
         }
     },
 
+    errorMessage: {
+        value: null
+    },
+
     /**
      * An optional converter for transforming the `value` into the
      * corresponding rendered text.
@@ -208,7 +212,13 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(/
                 value = displayedValue = this.element.value;
 
             if (this.converter) {
-                value = this.converter.revert(displayedValue);
+                try {
+                    value = this.converter.revert(displayedValue);
+                    this.errorMessage = null;
+
+                } catch (error) {
+                    this.errorMessage = error.message || error;
+                }
             }
 
             if (this._value !== value) {
