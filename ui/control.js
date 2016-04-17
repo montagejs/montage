@@ -3,7 +3,7 @@
 */
 
 var Component = require("ui/component").Component,
-    Dict = require("collections/dict");
+    Map = require("collections/map");
 
 /**
     Base component for all native components, such as RadioButton and Checkbox.
@@ -32,7 +32,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
      *
      * @event AbstractControl#action
      * @type {Event}
-     * @property {Dict} detail - pass custom data in this property
+     * @property {Map} detail - pass custom data in this property
      */
 
     /**
@@ -58,7 +58,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
 
     /**
      * @private
-     * @property {Dict} value
+     * @property {Map} value
      * @default null
      */
     _detail: {
@@ -71,12 +71,12 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
      * Example to toggle the complete class: `"detail.get('selectedItem')" : {
      * "<-" : "@repetition:iteration.object"}`
      *
-     * @returns {Dict}
+     * @returns {Map}
      */
     detail: {
         get: function () {
             if (this._detail == null) {
-                this._detail = new Dict();
+                this._detail = new Map();
             }
             return this._detail;
         }

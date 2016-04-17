@@ -19,7 +19,7 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
      * tap, or when focused and the spacebar is pressed.
      *
      * @event AbstractButton#action
-     * @property {Dict} detail - The detail object as defined in {@link AbstractControl#detail}
+     * @property {Map} detail - The detail object as defined in {@link AbstractControl#detail}
      */
 
     /**
@@ -27,7 +27,7 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
      * {@link AbstractButton#holdThreshold}.
      *
      * @event AbstractButton#longAction
-     * @property {Dict} detail - The detail object as defined in {@link AbstractControl#detail}
+     * @property {Map detail - The detail object as defined in {@link AbstractControl#detail}
      */
 
     /**
@@ -353,4 +353,3 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     }
 
 });
-
