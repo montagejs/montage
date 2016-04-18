@@ -7,8 +7,8 @@ var RangeController = require("../../core/range-controller").RangeController;
 var Promise = require("../../core/promise").Promise;
 var PressComposer = require("../../composer/press-composer").PressComposer;
 
-var Map = global.Map ? global.Map : require("collections/map");
-var Set = global.Set ? global.Set : require("collections/set");
+var Map = require("collections/map");
+var Set = require("collections/set");
 var logger = require("../../core/logger").logger("repetition").color.magenta();
 
 var TIMEOUT_BEFORE_ITERATION_BECOME_ACTIVE = 60;

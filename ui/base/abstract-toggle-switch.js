@@ -19,7 +19,7 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
      * or when focused and the spacebar is pressed.
      * @event action
      * @memberof AbstractToggleSwitch
-     * @property {Dict} detail - The detail object as defined in {@link AbstractControl#detail}
+     * @property {Map} detail - The detail object as defined in {@link AbstractControl#detail}
      */
 
     constructor: {
@@ -138,4 +138,3 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
     }
 
 });
-

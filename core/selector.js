@@ -55,7 +55,7 @@ var Selector = exports.Selector = Montage.specialize({
 // generate methods on Selector for each of the tokens of the language.
 // support invocation both as class and instance methods like
 // Selector.and("a", "b") and aSelector.and("b")
-precedence.keys().forEach(function (type) {
+precedence.forEach(function (value,type, precedence) {
     Montage.defineProperty(Selector.prototype, type, {
         value: function () {
             var args = Array.prototype.map.call(arguments, function (argument) {
@@ -93,4 +93,3 @@ precedence.keys().forEach(function (type) {
         }
     });
 });
-

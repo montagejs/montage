@@ -1,5 +1,5 @@
 
-var Set = require("montage/core/set");
+var Set = require("montage/collections/set");
 
 describe("test/core/set-spec", function () {
 
@@ -136,7 +136,7 @@ describe("test/core/set-spec", function () {
         set.addRangeChangeListener(spy);
         set.add(2);
         expect(set.toArray()).toEqual([1, 3, 2]);
-        expect(spy).toHaveBeenCalledWith([2], [], void 0, set, undefined);
+        expect(spy).toHaveBeenCalledWith([2], [], 2, set, undefined);
     });
 
     it("should dispatch range change on delete", function () {
@@ -145,7 +145,7 @@ describe("test/core/set-spec", function () {
         set.addRangeChangeListener(spy);
         set["delete"](2);
         expect(set.toArray()).toEqual([1, 3]);
-        expect(spy).toHaveBeenCalledWith([], [2], void 0, set, undefined);
+        expect(spy).toHaveBeenCalledWith([], [2], 1, set, undefined);
     });
 
 

@@ -1170,7 +1170,7 @@ var createMessageBinding = function (object, prop, key, defaultMessage, data, de
 
     if (data) {
         // optimisation
-        var dataMap = message._data = Map();
+        var dataMap = message._data = new Map();
 
         var d, property, typeOfProperty;
 
@@ -1255,4 +1255,3 @@ Deserializer.defineDeserializationUnit("localizations", function (deserializer, 
         createMessageBinding(object, prop, key, defaultMessage, desc.data, deserializer);
     }
 });
-

@@ -4,8 +4,7 @@
     @module "montage/ui/native/button.reel"
 */
 var Control = require("ui/control").Control,
-    PressComposer = require("composer/press-composer").PressComposer,
-    Dict = require("collections/dict");
+    PressComposer = require("composer/press-composer").PressComposer;
 
 // TODO migrate away from using undefinedGet and undefinedSet
 
@@ -374,27 +373,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
             this._drawLabel(this.label);
         }
     },
-
-    _detail: {
-        value: null
-    },
-
-    /**
-        The data property of the action event.
-        example to toggle the complete class: "detail.selectedItem" : { "<-" : "@repetition.objectAtCurrentIteration"}
-        @type {Property}
-        @default null
-    */
-    detail: {
-        get: function () {
-            if (this._detail === null) {
-                this._detail = new Dict();
-            }
-
-            return this._detail;
-        }
-    },
-
+    
     createActionEvent: {
         value: function () {
             var actionEvent = document.createEvent("CustomEvent"),

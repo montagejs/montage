@@ -6,7 +6,7 @@
  * @requires collections/dict
  */
 var Component = require("../component").Component,
-    Dict = require("collections/dict");
+    Map = require("collections/map");
 
 /**
  * @class AbstractControl
@@ -21,7 +21,7 @@ exports.AbstractControl = Component.specialize( /** @lends AbstractControl.proto
      *
      * @event AbstractControl#action
      * @type {Event}
-     * @property {Dict} detail - pass custom data in this property
+     * @property {Map} detail - pass custom data in this property
      */
 
     /**
@@ -36,7 +36,7 @@ exports.AbstractControl = Component.specialize( /** @lends AbstractControl.proto
 
     /**
      * @private
-     * @property {Dict} value
+     * @property {Map} value
      * @default null
      */
     _detail: {
@@ -49,12 +49,12 @@ exports.AbstractControl = Component.specialize( /** @lends AbstractControl.proto
      * Example to toggle the complete class: `"detail.get('selectedItem')" : {
      * "<-" : "@repetition:iteration.object"}`
      *
-     * @returns {Dict}
+     * @returns {Map}
      */
     detail: {
         get: function () {
             if (this._detail == null) {
-                this._detail = new Dict();
+                this._detail = new Map();
             }
             return this._detail;
         }

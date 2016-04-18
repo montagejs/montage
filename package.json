@@ -28,10 +28,10 @@
   "production": true,
   "dependencies": {
     "collections": "montagejs/collections#master",
-    "frb": "~0.2.18",
+    "frb": "montagejs/frb#master",
     "htmlparser2": "~3.0.5",
     "mr": "montagejs/mr#master",
-    "bluebird":"~3.3.1",
+    "bluebird":"~3.3.5",
     "q-io": "~1.11.0"
   },
   "devDependencies": {

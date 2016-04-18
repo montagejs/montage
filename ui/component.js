@@ -28,13 +28,7 @@ var Montage = require("../core/core").Montage,
     drawLogger = require("../core/logger").logger("drawing").color.blue(),
     WeakMap = require("collections/weak-map"),
     Map = require("collections/map"),
-    Set = require("core/set");
-
-    if (typeof window !== "undefined") { // client-side
-
-        Map = window.Map || Map;
-        WeakMap = window.WeakMap || WeakMap;
-    }
+    Set = require("collections/set");
 
 /**
  * @const
@@ -408,12 +402,15 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      */
     extractDomArgument: {
         value: function (name) {
-            var argument;
+            if(this._domArguments) {
+                var argument;
 
-            argument = this._domArguments[name];
-            this._domArguments[name] = null;
+                argument = this._domArguments[name];
+                this._domArguments[name] = null;
 
-            return argument;
+                return argument;
+            }
+            return null;
         }
     },
 

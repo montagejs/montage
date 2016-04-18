@@ -374,7 +374,7 @@ describe("paths-spec", function () {
             expect(spy).toHaveBeenCalledWith([1], [], 0);
 
             spy = jasmine.createSpy();
-            object.array = new Map({bogus: 'fogus'});
+            object.array = Map.from({bogus: 'fogus'});
             expect(spy).toHaveBeenCalledWith([], [1], 0);
 
             spy = jasmine.createSpy();
@@ -425,4 +425,3 @@ describe("paths-spec", function () {
     });
 
 });
-
