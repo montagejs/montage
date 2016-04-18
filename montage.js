@@ -700,13 +700,13 @@ if (typeof window !== "undefined") {
                               !(typeof window !== "undefined" &&
                                 window.navigator &&
                                 window.navigator.standalone)) {
-                                    (function() {
-                                        var div = document.createElement("div");
-                                        var opts = {attributes: true, attributeFilter:["class"]};
+                                    (function(DIV,CLASS,FOO) {
+                                        var div = document.createElement(DIV);
+                                        var opts = {attributes: true, attributeFilter:[CLASS]};
                                         var toggleScheduled = false;
-                                        var div2 = document.createElement("div");
+                                        var div2 = document.createElement(DIV);
                                         var o2 = new MutationObserver(function() {
-                                            div.classList.toggle("foo");
+                                            div.classList.toggle(FOO);
                                           toggleScheduled = false;
                                         });
                                         o2.observe(div2, opts);
@@ -714,7 +714,7 @@ if (typeof window !== "undefined") {
                                         var scheduleToggle = function() {
                                             if (toggleScheduled) return;
                                             toggleScheduled = true;
-                                            div2.classList.toggle("foo");
+                                            div2.classList.toggle(FOO);
                                         };
 
                                         scheduledFunctions = [];
@@ -727,7 +727,7 @@ if (typeof window !== "undefined") {
                                           scheduledFunctions.unshift(fn);
                                           scheduleToggle();
                                       });
-                                    })();
+                                  })("div","class","foo");
 
                     } else if(window.postMessage !== void 0) {
                         // Only add setZeroTimeout to the window object, and hide everything
