@@ -1098,7 +1098,7 @@ Montage.defineProperties(Montage.prototype, bindingPropertyDescriptors);
 // Paths
 
 var WeakMap = require("collections/weak-map"),
-    Map = global.Map ? global.Map : require("core/map"),
+    Map = require("collections/map"),
     parse = require("frb/parse"),
     evaluate = require("frb/evaluate"),
     assign = require("frb/assign"),

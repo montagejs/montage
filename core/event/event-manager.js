@@ -18,15 +18,13 @@ var Montage = require("../core").Montage,
     MutableEvent = require("./mutable-event").MutableEvent,
     Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
     Deserializer = require("../serialization/deserializer/montage-deserializer").MontageDeserializer,
-    Map = require("../map"),
+    Map = require("collections/map"),
     WeakMap = require("collections/weak-map"),
     currentEnvironment = require("../environment").currentEnvironment,
     defaultEventManager;
 
 // XXX Does not presently function server-side
 if (typeof window !== "undefined") { // client-side
-
-    WeakMap = window.WeakMap || WeakMap;
 
     // jshint -W015
     /* This is to handle browsers that have TouchEvents but don't have the global constructor function Touch */
