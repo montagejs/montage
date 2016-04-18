@@ -7,7 +7,7 @@
 var Control = require("ui/control").Control,
     TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
     KeyComposer = require("../../composer/key-composer").KeyComposer,
-    Map = global.Map ? global.Map : require("collections/map"),
+    Map = require("collections/map"),
     WeakMap = require("collections/weak-map"),
     MONTAGE_SLIDER_THUMB_CLASS = "montage-Slider--thumb";
 

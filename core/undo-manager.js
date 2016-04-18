@@ -649,7 +649,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
             entry.operationType = operationType;
 
             this._operationQueue.push(operationPromise);
-            
+
             return this._flushOperationQueue().thenReturn(deferredOperationPromise);
         }
     },
@@ -707,4 +707,3 @@ Montage.defineProperty(exports, "defaultUndoManager", {
         return _defaultUndoManager;
     }
 });
-

@@ -552,7 +552,7 @@ if (typeof window !== "undefined") {
                 // Testing for window.URL will not help here as it does exist in IE10 and IE11.
                 // but IE supports just the File API specification.
                 try { // window IE 10+ support
-                    this.__hasURLSupport = !!(new URL("")); // 1 parameter required at least.
+                    this.__hasURLSupport = !!(new URL("http://montagestudio.com")); // 1 parameter required at least.
                 } catch (e) {
                     this.__hasURLSupport = false;
                 }
@@ -878,8 +878,13 @@ if (typeof window !== "undefined") {
             ];
 
             var Promise = montageRequire("core/promise").Promise;
+            var deepLoadPromises = [];
 
-            return Promise.all(dependencies.map(montageRequire.deepLoad))
+            for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {
+              deepLoadPromises.push(montageRequire.deepLoad(iDependency));
+            }
+
+            return Promise.all(deepLoadPromises)
             .then(function () {
 
                 for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {

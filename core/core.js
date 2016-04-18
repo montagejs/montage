@@ -26,8 +26,7 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
         get: void 0,
         set: void 0,
         configurable: false,
-        enumerable: false,
-        writable: false
+        enumerable: false
     },
     valuePropertyDescriptor = {
         value: void 0,
@@ -48,6 +47,26 @@ var Montage = exports.Montage = function Montage() {};
 
 var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;
 var PROTO_PROPERTIES_BLACKLIST = {"_montage_metadata": 1, "__state__": 1};
+
+Montage.defineValueProperty = function Montage_defineValueProperty(object, propertyName, value, configurable, enumerable, writable) {
+    Montage_defineValueProperty.template.value = value;
+    Montage_defineValueProperty.template.configurable = configurable;
+    Montage_defineValueProperty.template.enumerable = enumerable;
+    Montage_defineValueProperty.template.writable = writable;
+
+    this.defineProperty(object, propertyName, Montage_defineValueProperty.template);
+}
+Montage.defineValueProperty.template = valuePropertyDescriptor;
+Montage.defineAccessorProperty = function Montage_defineAccessorProperty(object, propertyName, get, set, configurable, enumerable) {
+    Montage_defineAccessorProperty.template.get = get;
+    Montage_defineAccessorProperty.template.set = set;
+    Montage_defineAccessorProperty.template.configurable = configurable;
+    Montage_defineAccessorProperty.template.enumerable = enumerable;
+
+    this.defineProperty(object, propertyName, Montage_defineValueProperty.template);
+}
+Montage.defineAccessorProperty.template = accessorPropertyDescriptor;
+
 
 valuePropertyDescriptor.value = false;
 Object.defineProperty(Montage, "_hasUserDefinedConstructor", valuePropertyDescriptor);
@@ -183,23 +202,25 @@ valuePropertyDescriptor.value = function specialize(prototypeProperties, constru
             },
 
             _superCache: {
-                value: {},
+                value: new Map,
                 enumerable: false
             }
         });
 
         constructor.prototype = prototype;
 
-        Montage.defineProperty(prototype, "constructor", {
-            value: constructor,
-            enumerable: false
-        });
+        Montage.defineValueProperty(prototype, "constructor",constructor,true,false,true );
+        // Montage.defineProperty(prototype, "constructor", {
+        //     value: constructor,
+        //     enumerable: false
+        // });
 
         // Super needs
-        Montage.defineProperty(constructor, "constructor", {
-            value: constructor,
-            enumerable: false
-        });
+        Montage.defineValueProperty(constructor, "constructor",constructor,true,false,true );
+        // Montage.defineProperty(constructor, "constructor", {
+        //     value: constructor,
+        //     enumerable: false
+        // });
 
         return constructor;
 
@@ -330,26 +351,30 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
             var superDependencies, i, j;
 
             if (typeof descriptor.value === "function") {
-                var propValueKey = prop + ".value";
+                var propValueKey = prop;
+                    propValueKey += ".value"
 
                 if ((superDependencies = obj._superDependencies[propValueKey])) {
                     for (i = 0, j = superDependencies.length; i < j; i++) {
-                        delete superDependencies[i]._superCache[propValueKey];
+                        superDependencies[i]._superCache.delete(propValueKey);
                     }
                 }
             } else {
-                var propGetKey = prop + ".get",
-                    propSetKey = prop + ".set";
+                var propGetKey = prop,
+                    propSetKey = prop;
+
+                    propGetKey += ".get";
+                    propSetKey += ".set";
 
                 if (typeof descriptor.get === "function" && (superDependencies = obj._superDependencies[propGetKey])) {
                     for (i = 0, j = superDependencies.length; i < j; i++) {
-                        delete superDependencies[i]._superCache[propGetKey];
+                        superDependencies[i]._superCache.delete(propGetKey);
                     }
                 }
 
                 if (typeof descriptor.set === "function" && (superDependencies = obj._superDependencies[propSetKey])) {
                     for (i = 0, j = superDependencies.length; i < j; i++) {
-                        delete superDependencies[i]._superCache[propSetKey];
+                        superDependencies[i]._superCache.delete(propSetKey);
                     }
                 }
             }
@@ -398,8 +423,8 @@ var _defaultFunctionValueProperty = {
     serializable: false
 };
 
-function getAttributeProperties(proto, attributeName) {
-    var attributePropertyName = UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES;
+function getAttributeProperties(proto, attributeName, privateAttributeName) {
+    var attributePropertyName = privateAttributeName || (UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES);
 
     if (proto.hasOwnProperty(attributePropertyName)) {
         return proto[attributePropertyName];
@@ -408,7 +433,7 @@ function getAttributeProperties(proto, attributeName) {
             enumerable: false,
             configurable: false,
             writable: true,
-            value: Object.create(getAttributeProperties(Object.getPrototypeOf(proto), attributeName))
+            value: Object.create(getAttributeProperties(Object.getPrototypeOf(proto), attributeName, attributePropertyName))
         })[attributePropertyName];
     }
 }
@@ -420,8 +445,10 @@ Montage.defineProperty(Montage, "didCreate", {
 var getSuper = function (object, method) {
     var propertyNames, proto, i, propCount, propertyName, func, context, foundSuper, property;
     if (!(method._superPropertyName && method._superPropertyType)) {
-        Montage.defineProperty(method, "_superPropertyType", {value:null});
-        Montage.defineProperty(method, "_superPropertyName", {value:null});
+        Montage.defineValueProperty(method, "_superPropertyType",null,true,false,true );
+        Montage.defineValueProperty(method, "_superPropertyName",null,true,false,true );
+        // Montage.defineProperty(method, "_superPropertyType", {value:null});
+        // Montage.defineProperty(method, "_superPropertyName", {value:null});
         context = object;
         while (!foundSuper && context !== null) {
             propertyNames = Object.getOwnPropertyNames(context);
@@ -504,7 +531,7 @@ var superForImplementation = function (object, propertyType, propertyName, metho
     cacheObject = context.constructor;
 
     // is the super for this method in the cache?
-    if (cacheObject._superCache && cacheObject._superCache[cacheId]) {
+    if (cacheObject._superCache && cacheObject._superCache.has(cacheId)) {
         boundSuper = (function (cacheId, object, superObject, superFunction) {
             return function () {
                 object._superContext[cacheId] = superObject;
@@ -512,7 +539,7 @@ var superForImplementation = function (object, propertyType, propertyName, metho
                 delete object._superContext[cacheId];
                 return retVal;
             };
-        })(cacheId, object, cacheObject._superCache[cacheId].owner, cacheObject._superCache[cacheId].func);
+        })(cacheId, object, cacheObject._superCache.get(cacheId).owner, cacheObject._superCache.get(cacheId).func);
         return boundSuper;
     }
 
@@ -520,9 +547,10 @@ var superForImplementation = function (object, propertyType, propertyName, metho
     superObject = context;
     while (typeof superFunction === "undefined" && (superObject = Object.getPrototypeOf(superObject))) {
         if (!superObject._superDependencies) {
-            Montage.defineProperty(superObject, "_superDependencies", {
-                value: {}
-            });
+            Montage.defineValueProperty(superObject, "_superDependencies",{},true,false,true );
+            // Montage.defineProperty(superObject, "_superDependencies", {
+            //     value: {}
+            // });
         }
         if (!superObject._superDependencies[cacheId]) {
             superObject._superDependencies[cacheId] = [];
@@ -555,16 +583,17 @@ var superForImplementation = function (object, propertyType, propertyName, metho
         })(cacheId, object, superObject, superFunction);
 
         if (!cacheObject._superCache) {
-            Montage.defineProperty(cacheObject, "_superCache", {
-                value: {}
-            });
+            Montage.defineValueProperty(cacheObject, "_superCache",new Map,true,true,true );
+            // Montage.defineProperty(cacheObject, "_superCache", {
+            //     value: {}
+            // });
         }
 
         // cache the super and the object we found it on
-        cacheObject._superCache[cacheId] = {
+        cacheObject._superCache.set(cacheId,{
             func: superFunction,
             owner: superObject
-        };
+        });
         return boundSuper;
     } else {
         return Function.noop;
@@ -1069,7 +1098,7 @@ Montage.defineProperties(Montage.prototype, bindingPropertyDescriptors);
 // Paths
 
 var WeakMap = require("collections/weak-map"),
-    Map = global.Map ? global.Map : require("collections/map"),
+    Map = require("collections/map"),
     parse = require("frb/parse"),
     evaluate = require("frb/evaluate"),
     assign = require("frb/assign"),

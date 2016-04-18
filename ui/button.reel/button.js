@@ -372,18 +372,8 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
 
             this._drawLabel(this.label);
         }
-    },
-    
-    createActionEvent: {
-        value: function () {
-            var actionEvent = document.createEvent("CustomEvent"),
-                eventDetail;
-
-            eventDetail = this._detail;
-            actionEvent.initCustomEvent("action", true, true, eventDetail);
-            return actionEvent;
-        }
     }
+
 });
 
 Button.addAttributes( /** @lends module:"montage/ui/native/button.reel".Button# */{
