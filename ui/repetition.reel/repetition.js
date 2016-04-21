@@ -617,6 +617,29 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     isSelectionEnabled: {value: null},
 
+
+    multiSelect: {
+        set: function (multiSelect) {
+            multiSelect = !!multiSelect;
+
+            if (!this.contentController) {
+                this.contentController = new RangeController();
+            }
+
+            if (this.contentController.multiSelect !== multiSelect) {
+                this.contentController.multiSelect = multiSelect;
+
+                if (multiSelect && !this.isSelectionEnabled) {
+                    this.isSelectionEnabled = true;
+                }
+            }
+        },
+        get: function () {
+            return this.contentController !== void 0 && this.contentController !== null ?
+                this.contentController.multiSelect : false;
+        }
+    },
+
     /**
      * The repetition maintains an array of every visible, selected iteration,
      * in the order of its appearance.  The user should not modify the selected
@@ -1936,6 +1959,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
                 if (!iteration.selected) {
                     iteration.selected = true;
+                    
+                } else if (this.multiSelect) {
+                    iteration.selected = false;
                 }
             }
 
