@@ -21,6 +21,7 @@ var Defaults = {
     valueObjectPrototypeName:"",
     valueObjectModuleId:"",
     enumValues:[],
+    defaultValue:void 0,
     helpKey:""
 };
 
@@ -94,6 +95,7 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
             if (this.enumValues.length > 0) {
                 this._setPropertyWithDefaults(serializer, "enumValues", this.enumValues);
             }
+            this._setPropertyWithDefaults(serializer, "defaultValue", this.defaultValue);
             this._setPropertyWithDefaults(serializer, "helpKey", this.helpKey);
         }
     },
@@ -114,6 +116,7 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
             this.valueObjectPrototypeName = this._getPropertyWithDefaults(deserializer, "valueObjectPrototypeName");
             this.valueObjectModuleId = this._getPropertyWithDefaults(deserializer, "valueObjectModuleId");
             this.enumValues = this._getPropertyWithDefaults(deserializer, "enumValues");
+            this.defaultValue = this._getPropertyWithDefaults(deserializer, "defaultValue");
             this.helpKey = this._getPropertyWithDefaults(deserializer, "helpKey");
         }
     },
@@ -299,6 +302,10 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
                 this._enumValues = value;
             }
         }
+    },
+
+    defaultValue: {
+        value: Defaults["defaultValue"]
     },
 
     helpKey:{

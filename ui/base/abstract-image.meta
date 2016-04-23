@@ -41,7 +41,8 @@
                 null,
                 "anonymous",
                 "use-credentials"
-            ]
+            ],
+            "defaultValue": null
         }
     },
     "blueprint_parent": {

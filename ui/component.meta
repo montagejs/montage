@@ -74,6 +74,7 @@
                 "false",
                 "inherit"
             ],
+            "defaultValue": "inherit",
             "helpKey": ""
         }
     },
@@ -110,6 +111,7 @@
                 "rtl",
                 "auto"
             ],
+            "defaultValue": "auto",
             "helpKey": ""
         }
     },
@@ -130,6 +132,7 @@
                 "false",
                 "auto"
             ],
+            "defaultValue": "auto",
             "helpKey": ""
         }
     },

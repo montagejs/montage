@@ -131,6 +131,7 @@
                 "url",
                 "object"
             ],
+            "defaultValue": "string",
             "helpKey": ""
         }
     },
@@ -151,6 +152,7 @@
                 "set",
                 "map"
             ],
+            "defaultValue": "list",
             "helpKey": ""
         }
     },

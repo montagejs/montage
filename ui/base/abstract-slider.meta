@@ -58,6 +58,7 @@
                 "horizontal",
                 "vertical"
             ],
+            "defaultValue": "horizontal",
             "blueprint": {
                 "@": "root"
             }
