@@ -218,7 +218,6 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
                 return false;
             } else {
                 this.hasFocus = false;
-                this.blur();
                 //Check if that's not redundant with "didEndEditing" triggered from handleBlur
                 this.callDelegateMethod("didEndEditing", this);
             }
