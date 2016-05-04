@@ -398,13 +398,12 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * The selection may be any collection that supports range change events
      * like `Array` or `SortedSet`.
      *
-     * @param {Collection} a collection of values to be set as the selection.
-     * @returns {?Array|Set|SortedSet}
-     *
-     * @deprecated: setting the `selection` will not replace it with the provided.
+     * Deprecation warning: setting the `selection` will not replace it with the provided.
      * collection. Instead, it will empty the selection and then shallow-copy the
      * contents of the argument into the existing selection array. This is done to
      * maintain the complicated invariants about what the selection can be.
+     *
+     * @property {?Array|Set|SortedSet}
      */
     selection: {
         get: function () {
@@ -679,7 +678,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     /**
      * Creates a content value for this range controller.
      * If the backing
-     * collection has an intrinsict type, uses its `contentConstructor`.
+     * collection has an intrinsic type, uses its `contentConstructor`.
      * Otherwise, creates and returns simple, empty objects.
      *
      * This property can be set to an alternate content constructor, which will
@@ -705,6 +704,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     /**
      * Dispatched by range changes to the controller's content, arranged in
      * constructor.
+     *
      * Reacts to content changes to ensure that content that no
      * longer exists is removed from the selection, regardless of whether it is
      * from the user or any other entity modifying the backing collection.
@@ -717,7 +717,13 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
                 // remove all values from the selection that were removed (but
                 // not added back)
                 minus.deleteEach(plus, equals);
-                if (this.selection) {
+
+                if (this.selection.length) {
+                    // ensure selection always has content
+                    if (this.content.length && this.avoidsEmptySelection && !this.multiSelect) {
+                        // selection can't contain previous content value as content already changed
+                        this.selection.add(this.content[this.content.length - 1]);
+                    }
                     this.selection.deleteEach(minus);
                 }
             }
@@ -727,7 +733,9 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     /**
      * Watches changes to the private reflection of the public selection,
      * enforcing the `multiSelect` and `avoidsEmptySelection` invariants.
+     *
      * @private
+     * @todo this doesn't seem to be used anywhere
      */
     handleSelectionRangeChange : {
         value: function (plus, minus, index) {
@@ -792,13 +800,11 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     handleAdd: {
         value: function (value) {
             if (this.selectAddedContent && this.selection) {
-                if (
-                    !this.multiSelect &&
-                    this.selection.length >= 1
-                ) {
-                    this.selection.clear();
+                if (!this.multiSelect && this.selection.length) {
+                    this.selection.swap(0, this.selection.length, [value]);
+                } else {
+                    this.selection.add(value);
                 }
-                this.selection.add(value);
             }
         }
     },

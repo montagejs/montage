@@ -190,6 +190,15 @@ describe("core/range-controller-spec", function () {
                     expect(rangeController.selection.length).toBe(1);
                     expect(rangeController.selection.toArray()).not.toEqual([0]);
                 });
+
+                it("should contain last element of content, if it would be empty after content change", function () {
+                    rangeController.multiSelect = false;
+                    rangeController.selection = [2];
+
+                    rangeController.content.delete(2);
+                    expect(rangeController.selection.length).toBe(1);
+                    expect(rangeController.selection.toArray()).toEqual([1]);
+                });
             });
 
             describe("when false", function () {
@@ -205,6 +214,30 @@ describe("core/range-controller-spec", function () {
                 it("allows splice to clear selection", function () {
                     rangeController.selection.splice(0, 100);
                     expect(rangeController.selection.toArray()).toEqual([]);
+                });
+            });
+        });
+
+        describe("constrained by selectAddedContent", function () {
+            beforeEach(function () {
+                rangeController.selectAddedContent = true;
+            });
+
+            describe("when true", function () {
+                it("should select added content", function () {
+                    rangeController.selection.length = 0;
+                    rangeController.add(3);
+                    expect(rangeController.selection.toArray()).toEqual([3]);
+                });
+
+                it("should use swap to ensure selection isn't cleared then content added", function () {
+                    rangeController.selection = [2];
+
+                    rangeController.selection.addRangeChangeListener(function (plus, minus, i) {
+                        expect(plus.length).not.toBe(0);
+                    });
+
+                    rangeController.add(3); // observed change of plus should be [3], not [] then [3]
                 });
             });
         });
