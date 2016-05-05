@@ -87,7 +87,22 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      * the document immediately after the repetition has drawn.
      * @type {number}
      */
-    index: {value: null},
+    _index: {
+        value: null
+    },
+
+    index: {
+        get: function () {
+            return this._index;
+        },
+        set: function (index) {
+            if (this._index !== index) {
+                this._index = index;
+
+                this.handleComponentModelChange();
+            }
+        }
+    },
 
     /**
      * The position of this iteration on the document last time it was drawn,
@@ -103,7 +118,33 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      * active iteration.
      * @type {boolean}
      */
-    active: {value: null},
+    _active: {
+        value: false
+    },
+
+    active: {
+        set: function (active) {
+            active = !!active;
+
+            if (this.active !== active) {
+                this._active = active;
+
+                if (this.repetition) {
+                    if (active) {
+                        this.repetition.activeIterations.add(this);
+                    } else {
+                        this.repetition.activeIterations.delete(this);
+                    }
+
+                    this.handlePropertyChange();
+                }
+            }
+
+        },
+        get: function () {
+            return this._active;
+        }
+    },
 
     /**
      * A flag that indicates that the "no-transition" CSS class should be added
@@ -124,7 +165,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
     isDirty: {value: false},
 
     _selected: {
-        value: null
+        value: false
     },
 
     selected: {
@@ -142,8 +183,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             }
             if (this._selected !== value) {
                 this._selected = value;
-                this.repetition._addDirtyClassListIteration(this);
-                this.repetition.needsDraw = true;
+                this.handlePropertyChange();
             }
         }
     },
@@ -182,30 +222,18 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             // of drawn iterations.
             this._drawnIndex = null;
 
-            // Describes whether a user gesture is touching this iteration.
-            this.active = false;
             // Changes to whether a user is touching the iteration are
             // reflected by the "active" CSS class on each element in the
             // iteration.  This gets updated in the draw cycle, in response to
             // operations that handlePropertyChange adds to the repetition draw
             // cycle.
-            // Dispatches handlePropertyChange with the "active" key:
-            this.defineBinding("active", {"<->": "repetition.activeIterations.has(())"});
-
             this._noTransition = false;
 
             // dispatch handlePropertyChange:
-            this.addOwnPropertyChangeListener("active", this);
             this.addOwnPropertyChangeListener("_noTransition", this);
-
-            this.addPathChangeListener(
-                "index.defined() && _childComponents.defined()",
-                this,
-                "handleComponentModelChange"
-            );
+            this.addRangeAtPathChangeListener("_childComponents", this, "handleComponentModelChange");
 
             this.cachedFirstElement = null;
-
         }
     },
 
@@ -396,19 +424,14 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      * @private
      */
     handleComponentModelChange: {
-        value: function (onComponentModel) {
-            if (onComponentModel) {
-                this._childComponents.forEach(
-                    this.repetition.addChildComponent,
-                    this.repetition
-                );
-            // the second condition protects against removing before adding in
-            // the initial state.
-            } else if (this._childComponents) {
-                this._childComponents.forEach(
-                    this.repetition.removeChildComponent,
-                    this.repetition
-                );
+        value: function () {
+            if (this._childComponents && this._index !== void 0 && this._index !== null) {
+                var childComponents = this._childComponents,
+                    repetition = this.repetition;
+
+                for (var i = 0, length = childComponents.length; i < length; i++) {
+                    repetition.addChildComponent(childComponents[i]);
+                }
             }
         }
     },
