@@ -374,7 +374,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 }
             }
 
-            this._drawLabel(this.label);
+            this._drawLabel(this._label);
         }
     }
 
