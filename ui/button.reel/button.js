@@ -106,6 +106,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     _labelNode: {value:undefined, enumerable: false},
 
     _label: { value: undefined, enumerable: false },
+    _emptyLabel: { value: "", enumerable: false },
 
     /**
         The displayed text on the button. In an &lt;input> element this is taken from the element's <code>value</code> attribute. On any other element (including &lt;button>) this is the first child node which is a text node. If one isn't found then it will be created.
@@ -340,6 +341,9 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     _drawLabel: {
         enumerable: false,
         value: function (value) {
+            if(typeof value !== "string") {
+                value = this._emptyLabel;
+            }
             if (this.isInputElement) {
                 this._element.value = value;
             } else if (this._labelNode) {
@@ -370,7 +374,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 }
             }
 
-            this._drawLabel(this.label);
+            this._drawLabel(this._label);
         }
     }
 
