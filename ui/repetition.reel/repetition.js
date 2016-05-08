@@ -416,18 +416,20 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      */
     handleComponentModelChange: {
         value: function (onComponentModel) {
+            var childComponents = this._childComponents,
+                repetition = this.repetition,
+                i, length;
+
             if (onComponentModel) {
-                this._childComponents.forEach(
-                    this.repetition.addChildComponent,
-                    this.repetition
-                );
+                for (i = 0, length = childComponents.length; i < length; i++) {
+                    repetition.addChildComponent(childComponents[i]);
+                }
             // the second condition protects against removing before adding in
             // the initial state.
             } else if (this._childComponents) {
-                this._childComponents.forEach(
-                    this.repetition.removeChildComponent,
-                    this.repetition
-                );
+                for (i = 0, length = childComponents.length; i < length; i++) {
+                    repetition.removeChildComponent(childComponents[i]);
+                }
             }
         }
     },
