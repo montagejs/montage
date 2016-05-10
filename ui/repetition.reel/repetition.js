@@ -617,6 +617,31 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     isSelectionEnabled: {value: null},
 
+
+    allowsMultipleSelection: {
+        set: function (allowsMultipleSelection) {
+            allowsMultipleSelection = !!allowsMultipleSelection;
+
+            // Fixme: the property contentController is set at several places in the repetition, it need to be consolidate.
+            // (keep in mind contentController from the serialization)
+            if (!this.contentController) {
+                this.contentController = new RangeController();
+            }
+
+            if (this.contentController.allowsMultipleSelection !== allowsMultipleSelection) {
+                this.contentController.allowsMultipleSelection = allowsMultipleSelection;
+
+                if (allowsMultipleSelection && !this.isSelectionEnabled) {
+                    this.isSelectionEnabled = true;
+                }
+            }
+        },
+        get: function () {
+            return this.contentController !== void 0 && this.contentController !== null ?
+                this.contentController.allowsMultipleSelection : false;
+        }
+    },
+
     /**
      * The repetition maintains an array of every visible, selected iteration,
      * in the order of its appearance.  The user should not modify the selected
@@ -1936,6 +1961,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
                 if (!iteration.selected) {
                     iteration.selected = true;
+
+                } else if (this.allowsMultipleSelection) {
+                    iteration.selected = false;
                 }
             }
 

@@ -178,7 +178,7 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function (t
                 it("should properly update the iterations selected property", function () {
                     var i;
 
-                    repetition.contentController.multiSelect = true;
+                    repetition.contentController.allowsMultipleSelection = true;
                     repetition.contentController.selection = [
                         repetition.iterations[0].object,
                         repetition.iterations[1].object
@@ -198,7 +198,7 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function (t
                     expect(repetition.iterations[3].selected).toBeTruthy();
                     expect(repetition.iterations[4].selected).toBeFalsy();
                     expect(repetition.iterations[5].selected).toBeFalsy();
-                    repetition.contentController.multiSelect = false;
+                    repetition.contentController.allowsMultipleSelection = false;
                 });
             });
 

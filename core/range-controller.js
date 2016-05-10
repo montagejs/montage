@@ -4,6 +4,7 @@
 var Montage = require("./core").Montage;
 var GenericCollection = require("collections/generic-collection");
 var observableArrayProperties = require("collections/listen/array-changes").observableArrayProperties;
+var deprecate = require("core/deprecate");
 
 // The content controller is responsible for determining which content from a
 // source collection are visible, their order of appearance, and whether they
@@ -102,7 +103,7 @@ Object.defineProperty(_RangeSelection.prototype, "push", {
 /**
  * A custom version of swap to ensure that changes obey the RangeController
  * invariants:
- *  - if rC.multiSelect is false, only allow one item in set.
+ *  - if rC.allowsMultipleSelection is false, only allow one item in set.
  *  - if rC.avoidsEmtySelection is true, require at least one item in set.
  *  - only add items that are present in rC.content
  *  - enforce uniqueness of items according to the contentEquals of the content
@@ -160,7 +161,7 @@ Object.defineProperty(_RangeSelection.prototype, "swap_or_push", {
         var diff = plus.length - minus.length;
         var newLength = Math.max(this.length + diff, start + plus.length);
 
-        if (!this.rangeController.multiSelect && newLength > 1) {
+        if (!this.rangeController.allowsMultipleSelection && newLength > 1) {
             // use the last-supplied item as the sole element of the set
             var last = plus.length ? plus[plus.length-1] : this.one();
             if(oldLength === 0) {
@@ -241,7 +242,6 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
             this.deselectInvisibleContent = false;
             this.clearSelectionOnOrderChange = false;
             this.avoidsEmptySelection = false;
-            this.multiSelect = false;
 
             // The following establishes a pipeline for projecting the
             // underlying content into organizedContent.
@@ -265,7 +265,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
             this.addRangeAtPathChangeListener("content", this, "handleContentRangeChange");
             this.addPathChangeListener("sortPath", this, "handleOrderChange");
             this.addPathChangeListener("reversed", this, "handleOrderChange");
-            this.addOwnPropertyChangeListener("multiSelect", this);
+            this.addOwnPropertyChangeListener("allowsMultipleSelection", this);
 
             this.iterations = [];
 
@@ -365,7 +365,21 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * @default false
      * @property {boolean}
      */
-    multiSelect: {value: false},
+    allowsMultipleSelection: {value: false},
+
+    /**
+     * @deprecated
+     */
+    multiSelect: {
+        set: function (multiSelect) {
+            deprecate.deprecationWarning("multiSelect", "allowsMultipleSelection");
+            this.allowsMultipleSelection = !!multiSelect;
+        },
+        get: function () {
+            deprecate.deprecationWarning("multiSelect", "allowsMultipleSelection");
+            return this.allowsMultipleSelection;
+        }
+    },
 
 
     // Properties managed by the controller
@@ -421,7 +435,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * A managed interface for adding values to the selection, accounting for
-     * `multiSelect`.
+     * `allowsMultipleSelection`.
      * You can however directly manipulate the selection, but that will update
      * the selection asynchronously because the controller cannot change the
      * selection while handling a selection change event.
@@ -431,7 +445,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      */
     select: {
         value: function (value) {
-            if (!this.multiSelect && this.selection.length >= 1) {
+            if (!this.allowsMultipleSelection && this.selection.length >= 1) {
                 this.selection.clear();
             }
             this.selection.add(value);
@@ -726,7 +740,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Watches changes to the private reflection of the public selection,
-     * enforcing the `multiSelect` and `avoidsEmptySelection` invariants.
+     * enforcing the `allowsMultipleSelection` and `avoidsEmptySelection` invariants.
      * @private
      */
     handleSelectionRangeChange : {
@@ -740,7 +754,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
                         }
                     }
                     this._selection.deleteEach(notInContent);
-                    if (!this.multiSelect && this._selection.length > 1) {
+                    if (!this.allowsMultipleSelection && this._selection.length > 1) {
                         var last = this._selection.pop();
                         this._selection.clear();
                         this._selection.add(last);
@@ -786,14 +800,14 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Dispatched manually by all of the managed methods for adding values to
-     * the underlying content, like `add` and `push`, to support `multiSelect`.
+     * the underlying content, like `add` and `push`, to support `allowsMultipleSelection`.
      * @private
      */
     handleAdd: {
         value: function (value) {
             if (this.selectAddedContent && this.selection) {
                 if (
-                    !this.multiSelect &&
+                    !this.allowsMultipleSelection &&
                     this.selection.length >= 1
                 ) {
                     this.selection.clear();
@@ -804,14 +818,14 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     },
 
     /**
-     * Enforces the `multiSelect` invariant when that property becomes true.
+     * Enforces the `allowsMultipleSelection` invariant when that property becomes true.
      * @private
      */
-    handleMultiSelectChange: {
+    handleAllowsMultipleSelectionChange: {
         value: function () {
             if (this.selection) {
                 var length = this.selection.length;
-                if (!this.multiSelect && length > 1) {
+                if (!this.allowsMultipleSelection && length > 1) {
                     var last = this._selection.pop();
                     this._selection.clear();
                     this._selection.add(last);
@@ -830,7 +844,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
 // TODO @kriskowal scrollIndex, scrollDelegate -> scrollDelegate.scrollBy(offset)
 
-// TODO multiSelectWithModifiers to support ctrl/command/shift selection such
+// TODO allowsMultipleSelectionWithModifiers to support ctrl/command/shift selection such
 // that individual values and ranges of values.
 
 // TODO @kriskowal decouple such that content controllers can be chained using

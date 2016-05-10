@@ -73,7 +73,7 @@ describe("core/range-controller-spec", function () {
                 expect(rangeController.selection.toArray()).toEqual([1]);
             });
         });
-        describe("constrained by multiSelect", function () {
+        describe("constrained by allowsMultipleSelection", function () {
             beforeEach(function () {
                 rangeController.selection.add(0);
                 expect(rangeController.selection.toArray()).toEqual([0]);
@@ -81,7 +81,7 @@ describe("core/range-controller-spec", function () {
 
             describe("when false", function () {
                 beforeEach(function () {
-                    rangeController.multiSelect = false;
+                    rangeController.allowsMultipleSelection = false;
                 });
 
                 it("allows a selected item to be added", function () {
@@ -97,7 +97,7 @@ describe("core/range-controller-spec", function () {
 
                 it("TODO: test two-way bindings with multiple values");
 
-                it("multiSelect splicing and setting", function () {
+                it("allowsMultipleSelection splicing and setting", function () {
                     rangeController.selection.splice(1, 0, 2);
                     expect(rangeController.selection.toArray()).toEqual([2]);
                     rangeController.selection.splice(0, 1, 0, 1);
@@ -134,7 +134,7 @@ describe("core/range-controller-spec", function () {
 
             describe("when true", function () {
                 beforeEach(function () {
-                    rangeController.multiSelect = true;
+                    rangeController.allowsMultipleSelection = true;
                 });
 
                 it("allows multiple selected items to be added", function () {
@@ -152,7 +152,7 @@ describe("core/range-controller-spec", function () {
 
         describe("constrained by avoidsEmptySelection", function () {
             beforeEach(function () {
-                rangeController.multiSelect = true;
+                rangeController.allowsMultipleSelection = true;
                 rangeController.selection.splice(0, 0, 0, 1);
                 expect(rangeController.selection.toArray()).toEqual([0, 1]);
             });
@@ -183,7 +183,7 @@ describe("core/range-controller-spec", function () {
                 });
 
                 it("does not have an empty selection when selected content is removed", function () {
-                    rangeController.multiSelect = false;
+                    rangeController.allowsMultipleSelection = false;
                     rangeController.selection = [0];
 
                     rangeController.content.delete(0);
@@ -245,7 +245,7 @@ describe("core/range-controller-spec", function () {
 
         describe("negative splice inputs", function () {
             it("can be spliced with a negative start", function () {
-                rangeController.multiSelect = true;
+                rangeController.allowsMultipleSelection = true;
                 rangeController.selection = [0, 1, 2];
 
                 expect(rangeController.selection.toArray()).toEqual([0, 1, 2]);
@@ -257,7 +257,7 @@ describe("core/range-controller-spec", function () {
             });
 
             it("can be spliced with a negative start, and howMany more than length", function () {
-                rangeController.multiSelect = true;
+                rangeController.allowsMultipleSelection = true;
                 rangeController.avoidsEmptySelection = true;
                 rangeController.selection = [0, 1, 2];
 
@@ -328,7 +328,7 @@ describe("core/range-controller-spec", function () {
             expect(content.find(42)).toBe(0);
 
             rangeController = (new RangeController()).initWithContent(content);
-            rangeController.multiSelect = true;
+            rangeController.allowsMultipleSelection = true;
             rangeController.selection = [0];
 
             expect(rangeController.selection.toArray()).toEqual([0]);
