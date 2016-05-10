@@ -121,7 +121,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
                         this.repetition.activeIterations.delete(this);
                     }
 
-                    this.handlePropertyChange();
+                    this._updateRepetitionDirtyClassIteration();
                 }
             }
 
@@ -168,7 +168,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             }
             if (this._selected !== value) {
                 this._selected = value;
-                this.handlePropertyChange();
+                this._updateRepetitionDirtyClassIteration();
             }
         }
     },
@@ -212,6 +212,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             // iteration.  This gets updated in the draw cycle, in response to
             // operations that handlePropertyChange adds to the repetition draw
             // cycle.
+            //Fixme: Need to find the purpose of this property, probably dead code.
             this._noTransition = false;
 
             // dispatch handlePropertyChange:
@@ -440,7 +441,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      * lists updated.
      * @private
      */
-    handlePropertyChange: {
+    _updateRepetitionDirtyClassIteration: {
         value: function () {
             if (!this.repetition) {
                 return;
@@ -528,6 +529,10 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
     }
 
 });
+
+
+Iteration.prototype.handlePropertyChange = Iteration.prototype._updateRepetitionDirtyClassIteration;
+
 
 // Here it is, what we have all been waiting for, the prototype of the hour.
 // Give it up for the Repetition...
