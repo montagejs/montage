@@ -86,16 +86,11 @@ exports.Text = Component.specialize( /** @lends Text.prototype # */ {
     draw: {
         value: function () {
             // get correct value
-            var value = this._value, displayValue = (typeof value !== "undefined" && value !== null) ? value : this.defaultValue;
-
-            if (this.converter) {
-                displayValue = this.converter.convert(displayValue);
-            }
+            var displayValue = (typeof this._value !== "undefined" && this._value !== null) ? this._value : this.defaultValue;
 
             //push to DOM
-            this._valueNode.data = displayValue;
+            this._valueNode.data = this.converter ? this.converter.convert(displayValue) : displayValue;
         }
     }
 
 });
-

@@ -556,7 +556,9 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             }
         }
     },
-
+    _application: {
+        value: null
+    },
     // access to the Application object
     /**
      * Convenience to access the application object.
@@ -565,7 +567,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     application: {
         enumerable: false,
         get: function () {
-            return require("../core/application").application;
+            return this._application || (Component.prototype._application = require("../core/application").application);
         }
     },
 
