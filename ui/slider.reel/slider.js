@@ -286,7 +286,7 @@ var Slider = exports.Slider = Control.specialize({
                         iTranslateComposer.axis = this.orientation;
                         iTranslateComposer.hasMomentum = false;
 
-                        this.addComposerForElement(iTranslateComposer, iThumbElement);
+                        this.addComposerForElement(iTranslateComposer, iThumbElement.firstChild);
                         iTranslateComposer.addEventListener('translateStart', this, false);
                         iTranslateComposer.addEventListener('translate', this, false);
                         iTranslateComposer.addEventListener('translateEnd', this, false);
@@ -313,7 +313,7 @@ var Slider = exports.Slider = Control.specialize({
     _dimensionLength : {
         get: function() {
             var computedStyle = window.getComputedStyle(this._element);
-            return (this.orientation === "vertical")
+            return (this.orientation === this._VERTICAL)
             ? (
                 this._spacer.offsetHeight -
                 parseFloat(computedStyle.getPropertyValue("padding-top")) -
@@ -326,39 +326,63 @@ var Slider = exports.Slider = Control.specialize({
             );
         }
     },
+    _VERTICAL: {
+        value: "vertical"
+    },
+    _PERCENT_UNIT: {
+        value: "%"
+    },
+    _PIXEL_UNIT: {
+        value: "px"
+    },
+    _TRANSLATE_RESET: {
+        value: "translate3d(0,0,0)"
+    },
+    _TRANSLATE_VERTICAL_PREFIX: {
+        value: "translate3d(0,"
+    },
+    _TRANSLATE_VERTICAL_SUFFIX: {
+        value: "px,0)"
+    },
+    _TRANSLATE_HORIZONTAL_PREFIX: {
+        value: "translate3d("
+    },
+    _TRANSLATE_HORIZONTAL_SUFFIX: {
+        value: "px,0,0)"
+    },
     _drawThumbElement: {
-        value: function (thumbElementWrapper, thumbElement, index, isVertical, sliderMagnitude, length, cumulatedThumbSize) {
+        value: function (thumbElementWrapper, thumbElement, index, isVertical, sliderMagnitude, length, cumulatedThumbSize, thumbElementOffsetSize) {
             var percent = this._percentageValues[index], position, positionString, trackElement = this.trackElements[index];
 
             if(isVertical) {
                 if (this._isThumbElementTranslating.get(thumbElementWrapper)) {
                     position = (this._percentageValues[index] - this._previousPercentageValues[index]) * sliderMagnitude * 0.01;
-                    positionString = "translate3d(0,";
+                    positionString = this._TRANSLATE_VERTICAL_PREFIX;
                     positionString += position;
-                    positionString += "px,0)";
+                    positionString += this._TRANSLATE_VERTICAL_SUFFIX;
                     thumbElementWrapper.style[this._transform] = positionString;
                 } else {
-                    thumbElementWrapper.style.top = percent + "%";
+                    thumbElementWrapper.style.top = percent + this._PERCENT_UNIT;
                     delete thumbElementWrapper.style.left;
-                    thumbElementWrapper.style[this._transform] = "translate3d(0,0,0)";
+                    thumbElementWrapper.style[this._transform] = this._TRANSLATE_RESET;
                     this._previousPercentageValues[index] = this._percentageValues[index];
                 }
 
                 var trackElemenTopPercent = index === 0 ? 0 : this._percentageValues[index-1],
                     height = index ? percent-this._percentageValues[index-1] : percent;
 
-                trackElement.style.top = trackElemenTopPercent+"%";
-                trackElement.style.marginTop = cumulatedThumbSize+"px";
+                trackElement.style.top = trackElemenTopPercent+this._PERCENT_UNIT;
+                trackElement.style.marginTop = cumulatedThumbSize+this._PIXEL_UNIT;
 
-                trackElement.style.height = height+"%";
+                trackElement.style.height = height+this._PERCENT_UNIT;
 
                 //Last track part if at the end
                 if((index+1) === length) {
                     trackElement = this.trackElements[index+1];
                     //We need the size of user-land element.
-                    trackElement.style.top = percent+"%";
-                    trackElement.style.marginTop = (cumulatedThumbSize + thumbElement.offsetHeight)+"px";
-                    trackElement.style.height = 100-percent+"%";
+                    trackElement.style.top = percent+this._PERCENT_UNIT;
+                    trackElement.style.marginTop = (cumulatedThumbSize + thumbElementOffsetSize)+this._PIXEL_UNIT;
+                    trackElement.style.height = 100-percent+this._PERCENT_UNIT;
                 }
 
             }
@@ -367,32 +391,32 @@ var Slider = exports.Slider = Control.specialize({
                 if (this._isThumbElementTranslating.get(thumbElementWrapper)) {
                     position = (this._percentageValues[index] - this._previousPercentageValues[index]) * sliderMagnitude * 0.01;
 
-                    positionString = "translate3d(";
+                    positionString = this._TRANSLATE_HORIZONTAL_PREFIX;
                     positionString += position;
-                    positionString += "px,0,0)";
+                    positionString += this._TRANSLATE_HORIZONTAL_SUFFIX;
                     thumbElementWrapper.style[this._transform] = positionString;
                 } else {
-                    thumbElementWrapper.style.left = percent+"%";
+                    thumbElementWrapper.style.left = percent+this._PERCENT_UNIT;
                     delete thumbElementWrapper.style.top;
-                    thumbElementWrapper.style[this._transform] = "translate3d(0,0,0)";
+                    thumbElementWrapper.style[this._transform] = this._TRANSLATE_RESET;
                     this._previousPercentageValues[index] = this._percentageValues[index];
                 }
 
                 var trackElementLeftPercent = index === 0 ? 0 : this._percentageValues[index-1],
                     width = index ? percent-this._percentageValues[index-1] : percent;
 
-                trackElement.style.left = trackElementLeftPercent+"%";
-                trackElement.style.marginLeft = cumulatedThumbSize+"px";
+                trackElement.style.left = trackElementLeftPercent+this._PERCENT_UNIT;
+                trackElement.style.marginLeft = cumulatedThumbSize+this._PIXEL_UNIT;
 
-                trackElement.style.width = width+"%";
+                trackElement.style.width = width+this._PERCENT_UNIT;
 
                 //Last track part if at the end
                 if((index+1) === length) {
                     trackElement = this.trackElements[index+1];
                     //We need the size of user-land element.
-                    trackElement.style.left = percent+"%";
-                    trackElement.style.marginLeft = (cumulatedThumbSize + thumbElement.offsetWidth)+"px";
-                    trackElement.style.width = 100-percent+"%";
+                    trackElement.style.left = percent+this._PERCENT_UNIT;
+                    trackElement.style.marginLeft = (cumulatedThumbSize + thumbElementOffsetSize)+this._PIXEL_UNIT;
+                    trackElement.style.width = 100-percent+this._PERCENT_UNIT;
                 }
 
             }
@@ -403,12 +427,14 @@ var Slider = exports.Slider = Control.specialize({
         value: function () {
             if(!this.hasStandardElement) {
                 //console.log("this._values is ", this._values);
-                var isVertical = (this.orientation === "vertical"),
+                var isVertical = (this.orientation === this._VERTICAL),
                     sliderMagnitude = isVertical ? this._spacer.offsetHeight: this._spacer.offsetWidth;
 
-                for(var i=0, iThumbElementWrapper, iThumbElement, countI = this.thumbWrappers.length, cumulatedThumbSize = 0;(iThumbElementWrapper = this.thumbWrappers[i]);i++) {
-                    this._drawThumbElement(iThumbElementWrapper,(iThumbElement = this.thumbElements[i]), i,isVertical,sliderMagnitude, countI, cumulatedThumbSize);
-                    cumulatedThumbSize += isVertical ? iThumbElement.offsetHeight : iThumbElement.offsetWidth;
+                for(var i=0, iThumbElementWrapper, iThumbElement, iThumbElementOffsetSize, countI = this.thumbWrappers.length, cumulatedThumbSize = 0;(iThumbElementWrapper = this.thumbWrappers[i]);i++) {
+                    iThumbElement = this.thumbElements[i];
+                    iThumbElementOffsetSize = isVertical ? iThumbElement.offsetHeight : iThumbElement.offsetWidth;
+                    this._drawThumbElement(iThumbElementWrapper,iThumbElement, i,isVertical,sliderMagnitude, countI, cumulatedThumbSize, iThumbElementOffsetSize);
+                    cumulatedThumbSize += iThumbElementOffsetSize;
                 }
                 this.element.setAttribute("aria-valuemax", this.max);
                 this.element.setAttribute("aria-valuemin", this.min);
@@ -445,7 +471,7 @@ var Slider = exports.Slider = Control.specialize({
             this.active = true;
             var index = this._translateComposers.get(e.target);
             this._currentThumbIndex = index;
-            if(this.orientation === "vertical") {
+            if(this.orientation === this._VERTICAL) {
                 this._startTranslateValues[index] = e.translateY;
             } else {
                 this._startTranslateValues[index]= e.translateX;
@@ -461,7 +487,7 @@ var Slider = exports.Slider = Control.specialize({
                 translate;
                 //sliderMagnitude = this._calculateSliderMagnitude();
             this._currentThumbIndex = index;
-            if(this.orientation === "vertical") {
+            if(this.orientation === this._VERTICAL) {
                 //this.value = this._startValues[index] + ((this._startTranslateValues[index] - event.translateY) / this._sliderMagnitude) * (this._max - this._min);
                 translate = event.translateY;
             } else {
@@ -616,7 +642,6 @@ var Slider = exports.Slider = Control.specialize({
             return this.values[this._currentThumbIndex];
         },
         set: function (value) {
-            // this.values[this._currentThumbIndex] = value;
             this.values.set(this._currentThumbIndex, value)
         }
     },
@@ -703,7 +728,7 @@ Should introduce a validate method
             if (this._translateComposer) {
                 this._translateComposer.axis = this.orientation;
             }
-            if(this.orientation === "vertical") {
+            if(this.orientation === this._VERTICAL) {
                 this.classList.add("montage-Slider--vertical");
                 this.classList.remove("montage-Slider--horizontal");
             } else {
