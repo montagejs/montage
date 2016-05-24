@@ -78,6 +78,7 @@ var AbstractTextArea = exports.AbstractTextArea = Component.specialize(
             if (this._placeholderValue != null) {
                 this.element.setAttribute("placeholder", this._placeholderValue);
             }
+            this.element.disabled = !this.enabled;
         }
     },
 
