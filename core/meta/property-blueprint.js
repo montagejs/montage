@@ -17,6 +17,7 @@ var Defaults = {
     mandatory:false,
     readOnly:false,
     denyDelete:false,
+    denyNullValue:false,
     valueType:"string",
     collectionValueType:"list",
     valueObjectPrototypeName:"",
