@@ -1,3 +1,5 @@
+var Map = require("collections/map");
+
 
 /**
  * Defines extensions to the intrinsic `String` object.

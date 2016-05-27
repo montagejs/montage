@@ -40,7 +40,7 @@ if (typeof window !== "undefined") {
     */
         _initPrototypeWithEvent: {
             value: function (event) {
-                var key, proto = this.__proto__;
+                var key, proto = this.__proto__ || Object.getPrototypeOf(this);
                 for (key in event) {
 
                     //  Don't overwrite keys we have installed

@@ -26,6 +26,21 @@ var Montage = require("../core").Montage,
 // XXX Does not presently function server-side
 if (typeof window !== "undefined") { // client-side
 
+    //This is a quick polyfill for IE10 that is not exposing CustomEvent as a function.
+    //From https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
+    if ( typeof window.CustomEvent !== "function" ) {
+        function CustomEvent ( event, params ) {
+            params = params || { bubbles: false, cancelable: false, detail: undefined };
+            var evt = document.createEvent( 'CustomEvent' );
+            evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+            return evt;
+        }
+
+        CustomEvent.prototype = window.Event.prototype;
+
+        window.CustomEvent = CustomEvent;
+    }
+
     // jshint -W015
     /* This is to handle browsers that have TouchEvents but don't have the global constructor function Touch */
     if (typeof window.Touch === "undefined" && "ontouchstart" in window) {

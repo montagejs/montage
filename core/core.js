@@ -35,6 +35,27 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
         writable: false
     };
 
+    // Fix Function#name on browsers that do not support it (IE10):
+    if (!(function f() {}).name) {
+        var fnNamePrefixRegex = /^[\S\s]*?function\s*/;
+        var fnNameSuffixRegex = /[\s\(\/][\S\s]+$/;
+
+        function _name() {
+          var name = "";
+          if (this === Function || this === Function.prototype.constructor) {
+            name = "Function";
+          }
+          else if (this !== Function.prototype) {
+            name = ("" + this).replace(fnNamePrefixRegex, "").replace(fnNameSuffixRegex, "");
+          }
+          return name;
+        }
+
+        Object.defineProperty(Function.prototype, 'name', {
+            get: _name
+        });
+    }
+
 /**
  * The Montage constructor provides conveniences for sub-typing
  * ([specialize]{@link Montage.specialize}) and common methods for Montage
@@ -46,7 +67,7 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
 var Montage = exports.Montage = function Montage() {};
 
 var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;
-var PROTO_PROPERTIES_BLACKLIST = {"_montage_metadata": 1, "__state__": 1};
+var PROTO_PROPERTIES_BLACKLIST = {"_montage_metadata": 1, "__state__": 1, "_hasUserDefinedConstructor": 1};
 
 Montage.defineValueProperty = function Montage_defineValueProperty(object, propertyName, value, configurable, enumerable, writable) {
     Montage_defineValueProperty.template.value = value;
@@ -226,7 +247,7 @@ valuePropertyDescriptor.value = function specialize(prototypeProperties, constru
 
     };
 valuePropertyDescriptor.writable = false;
-valuePropertyDescriptor.configurable = false;
+valuePropertyDescriptor.configurable = true;
 valuePropertyDescriptor.enumerable = false;
 Object.defineProperty(Montage, "specialize", valuePropertyDescriptor);
 
