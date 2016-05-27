@@ -436,7 +436,7 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
                 // Remove the Loader from the component tree, we can only do
                 // this after the last draw the Loader needs to make.
                 this.detachFromParentComponent();
-                this.element.remove();
+                this.element.parentElement.removeChild(this.element);
             }
         }
     },
@@ -450,4 +450,3 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
     }
 
 });
-

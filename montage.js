@@ -3,7 +3,7 @@ if (typeof window !== "undefined") {
     document._montageTiming = {};
     document._montageTiming.loadStartTime = Date.now();
 
-    console._groupTime = new Map();
+    console._groupTime = Object.create(null);
     console.groupTime = function(name) {
         var groupTimeEntry = this._groupTime.get(name);
         if(!groupTimeEntry) {
@@ -12,24 +12,73 @@ if (typeof window !== "undefined") {
                 start: 0,
                 sum:0
             }
-            this._groupTime.set(name,groupTimeEntry);
+            this._groupTime[name] = groupTimeEntry;
         }
         groupTimeEntry.start = performance.now();
     };
     console.groupTimeEnd = function(name) {
         var end = performance.now();
-        var groupTimeEntry = this._groupTime.get(name);
+        var groupTimeEntry = this._groupTime[name];
         var time = end - groupTimeEntry.start;
 
         groupTimeEntry.count = groupTimeEntry.count+1;
         groupTimeEntry.sum = groupTimeEntry.sum+time;
     }
     console.groupTimeAverage = function(name) {
-        var groupTimeEntry = this._groupTime.get(name);
+        var groupTimeEntry = this._groupTime[name];
         return groupTimeEntry.sum/groupTimeEntry.count;
     }
 
 }
+
+/**
+ * Defines standardized shims for the intrinsic String object.
+ * @see {external:String}
+ * @module montage/core/shim/string
+ */
+
+/**
+ * @external String
+ */
+
+/**
+ * Returns whether this string begins with a given substring.
+ *
+ * @function external:String#startsWith
+ * @param {string} substring a potential substring of this string
+ * @returns {boolean} whether this string starts with the given substring
+ */
+if (!String.prototype.startsWith) {
+    Object.defineProperty(String.prototype, 'startsWith', {
+        value: function (start) {
+            return this.length >= start.length &&
+                this.slice(0, start.length) === start;
+        },
+        writable: true,
+        configurable: true
+    });
+}
+
+/**
+ * Returns whether this string ends with a given substring.
+ *
+ * @function external:String#endsWith
+ * @param {string} substring a potential substring of this string
+ * @returns {boolean} whether this string ends with the given substring
+ */
+if (!String.prototype.endsWith) {
+    Object.defineProperty(String.prototype, 'endsWith', {
+        value: function (end) {
+            var selfLength = this.length,
+                endLength = end.length;
+
+            return selfLength >= endLength && this.indexOf(end, selfLength - endLength) !== -1;
+        },
+        writable: true,
+        configurable: true
+    });
+}
+
 
 (function (definition) {
     if (typeof require !== "undefined") {
@@ -281,7 +330,7 @@ if (typeof window !== "undefined") {
                     //     "scripts": {}
                     // };
 
-                    return [
+                    var result = [
                         montageRequire,
                         montageRequire.loadPackage({
                             location: promiseLocation,
@@ -293,6 +342,24 @@ if (typeof window !== "undefined") {
                         //     hash: undefined
                         // },null,weakMapDescription)
                     ];
+
+                    if(typeof global.WeakMap !== "function") {
+                        result.push(
+                            montageRequire.loadPackage({
+                                location: URL.resolve(montageLocation,"node_modules/collections/node_modules/weak-map"),
+                                hash: undefined
+                            },null,/*weakMapDescription*/{
+                                "name": "weak-map",
+                                "version": "1.0.0",
+                                "main": "weak-map.js",
+                                "readme": "ERROR: No README data found!",
+                                "_id": "weak-map@1.0.0",
+                                "_from": "weak-map@1.0.0",
+                                "scripts": {}
+                            })
+                        );
+                    }
+                    return result;
                 })
                 .spread(function (montageRequire, promiseRequire, weakMapRequire) {
                     montageRequire.inject("core/mini-url", URL);
@@ -300,10 +367,11 @@ if (typeof window !== "undefined") {
                     promiseRequire.inject("bluebird", Promise);
                     //This prevents bluebird to be loaded twice by mousse's code
                     promiseRequire.inject("js/browser/bluebird", Promise);
-                    montageRequire.inject("core/shim/string", String);
+                    // montageRequire.inject("core/shim/string", String);
 
-                    // weakMapRequire.inject("weak-map", window.WeakMap);
-
+                    if(typeof global.WeakMap !== "function") {
+                        weakMapRequire.inject("weak-map", window.WeakMap);
+                    }
                     /*
                     var weakMapLocation = URL.resolve(montageLocation,"node_modules/weak-map");
                     var weakMapDescription = {
@@ -667,8 +735,8 @@ if (typeof window !== "undefined") {
             // determine which scripts to load
             var pending = {
                 "require": "node_modules/mr/require.js",
-                "require/browser": "node_modules/mr/browser.js",
-                "shim-string": "core/shim/string.js" // needed for the `endsWith` function.
+                "require/browser": "node_modules/mr/browser.js"
+                // "shim-string": "core/shim/string.js" // needed for the `endsWith` function.
             };
 
             // register module definitions for deferred,
@@ -790,7 +858,7 @@ if (typeof window !== "undefined") {
                 });
             }
 
-            global.bootstrap("shim-string");
+            // global.bootstrap("shim-string");
 
             // one module loaded for free, for use in require.js, browser.js
             global.bootstrap("mini-url", function (require, exports) {
