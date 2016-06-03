@@ -67,7 +67,6 @@ exports.Slot = Component.specialize( /** @lends Slot.prototype # */ {
                 // If the incoming content was a component; make sure it has an element before we say it needs to draw
                 if (!value.element) {
                     element = document.createElement("div");
-                    element.id = "appendDiv"; // TODO: This should be uniquely generated
 
                     if (this.delegate && typeof this.delegate.slotElementForComponent === "function") {
                         element = this.delegate.slotElementForComponent(this, value, element);
