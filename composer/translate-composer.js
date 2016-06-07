@@ -931,14 +931,20 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 deltaX,
                 deltaY;
 
-            if (event.type === "wheel") {
+            if (event.type === "wheel" || event.type === "mousewheel") {
                 if (this._axis !== "vertical") {
-                    deltaX = ((event.wheelDeltaY || -event.deltaY || 0) * 20) / 120;
+                    deltaX = ((event.wheelDeltaX || -event.deltaX || 0) * 20) / 120;
                 }
 
                 if (this._axis !== "horizontal") {
                     deltaY = ((event.wheelDeltaY || -event.deltaY || 0) * 20) / 120;
                 }
+
+                canMove = !(
+                    (this._axis === "horizontal" && deltaX === 0) ||
+                    (this._axis === "vertical" && deltaY === 0) ||
+                    (deltaX ===  0 && deltaY === 0)
+                );
 
             } else {
                 if (this._axis !== "vertical") {
@@ -950,40 +956,43 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 }
             }
 
-            if (deltaY) {
-                isNegativeDeltaY = this._isNegativeNumber(deltaY);
+            if (canMove) {
+                if (deltaY) {
+                    isNegativeDeltaY = this._isNegativeNumber(deltaY);
 
-                if (minTranslateY !== null) {
-                    // can moves if the current position is at the extreme top, but "scrolling" down or no extreme.
-                    canMove = translateY !== minTranslateY || (translateY === minTranslateY && isNegativeDeltaY);
+                    if (minTranslateY !== null) {
+                        // can moves if the current position is at the extreme top, but "scrolling" down or no extreme.
+                        canMove = translateY !== minTranslateY || (translateY === minTranslateY && isNegativeDeltaY);
+                    }
+
+
+                    if (maxTranslateY !== null) {
+                        if (canMove) {
+                            // can moves if the current position is at the extreme bottom, but "scrolling" up or no extreme.
+                            canMove = translateY !== maxTranslateY || (translateY === maxTranslateY && !isNegativeDeltaY);
+                        }
+                    }
                 }
 
+                if (deltaX) {
+                    isNegativeDeltaX = this._isNegativeNumber(deltaX);
 
-                if (maxTranslateY !== null) {
-                    if (canMove) {
-                        // can moves if the current position is at the extreme bottom, but "scrolling" up or no extreme.
-                        canMove = translateY !== maxTranslateY || (translateY === maxTranslateY && !isNegativeDeltaY);
+                    if (minTranslateX !== null) {
+                        if (canMove) {
+                            // can moves if the current position is at the extreme left, but "scrolling" right or no extreme.
+                            canMove = translateX !== minTranslateX || (translateX === minTranslateX && isNegativeDeltaX);
+                        }
+                    }
+
+                    if (maxTranslateX !== null) {
+                        if (canMove) {
+                            // can moves if the current position is at the extreme right, but "scrolling" left or no extreme.
+                            canMove = translateX !== maxTranslateX || (translateX === maxTranslateX && !isNegativeDeltaX);
+                        }
                     }
                 }
             }
 
-            if (deltaX) {
-                isNegativeDeltaX = this._isNegativeNumber(deltaX);
-
-                if (minTranslateX !== null) {
-                    if (canMove) {
-                        // can moves if the current position is at the extreme left, but "scrolling" right or no extreme.
-                        canMove = translateX !== minTranslateX || (translateX === minTranslateX && isNegativeDeltaX);
-                    }
-                }
-
-                if (maxTranslateX !== null) {
-                    if (canMove) {
-                        // can moves if the current position is at the extreme right, but "scrolling" left or no extreme.
-                        canMove = translateX !== maxTranslateX || (translateX === maxTranslateX && !isNegativeDeltaX);
-                    }
-                }
-            }
 
             return canMove;
         }
@@ -1221,7 +1230,15 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                     this._dispatchTranslateStart();
                 }
 
-                this.translateY = this._translateY - ((event.wheelDeltaY || -event.deltaY || 0)* 20) / 120;
+
+                if (this.axis !== "vertical") {
+                    this.translateX = this._translateX - ((event.wheelDeltaX || -event.deltaX || 0)* 20) / 120;
+                }
+
+                if (this.axis !== "horizontal") {
+                    this.translateY = this._translateY - ((event.wheelDeltaY || -event.deltaY || 0)* 20) / 120;
+                }
+
                 this.isMoving = true;
                 this._dispatchTranslate();
 
