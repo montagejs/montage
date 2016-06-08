@@ -27,8 +27,8 @@
   },
   "production": true,
   "dependencies": {
-    "collections": "montagejs/collections#master",
-    "frb": "montagejs/frb#master",
+    "collections": "~5.0.x",
+    "frb": "~3.0.x",
     "htmlparser2": "~3.0.5",
     "mr": "montagejs/mr#master",
     "bluebird":"~3.3.5",
