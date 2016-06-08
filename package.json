@@ -2,12 +2,7 @@
   "name": "montage",
   "version": "0.16.0",
   "description": "Build your next application with a browser based platform that really gets the web.",
-   "licenses": [
-    {
-      "type": "BSD-3",
-      "url": "https://raw.github.com/montagejs/montage/master/LICENSE.md"
-    }
-  ],
+ "license" : "BSD-3-Clause",
  "repository": {
     "type": "git",
     "url": "https://github.com/montagejs/montage.git"
