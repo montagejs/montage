@@ -1,0 +1,99 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: #555;
+}
+
+.TranslateComposer {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    height: 100%;
+}
+
+.TranslateComposer-cases {
+    display: -webkit-flex;
+    display: flex;
+    height: 60px;
+    width: 100%;
+    border-bottom: 1px solid #DDD;
+}
+
+.TranslateComposer-case {
+    display: -webkit-flex;
+    display: flex;
+    padding: 8px;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    -webkit-align-items: center;
+    -ms-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    -ms-justify-content: center;
+    justify-content: center;
+    border-right: 1px solid #DDD;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    text-transform: capitalize;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.TranslateComposer-case.selected {
+    color: #43b5de;
+}
+
+.TranslateComposer-case.active {
+    opacity: .7;
+}
+
+.TranslateComposer-case:hover {
+    cursor: pointer;
+}
+
+.TranslateComposerCase-label {
+    text-align: center;
+}
+
+.TranslateComposer-substitution {
+    display: -webkit-flex;
+    display: flex;
+    flex: 1;
+    -webkit-justify-content: center;
+    -ms-justify-content: center;
+    justify-content: center;
+    -webkit-align-items: center;
+    -ms-align-items: center;
+    align-items: center;
+}
+
+.OuterDragBox {
+    height: 400px;
+    width: 400px;
+    background: #2ecc71;
+}
+
+@media only screen
+and (max-device-width : 667px) {
+    .TranslateComposer-case {
+        font-size: .75em;
+        padding: 4px;
+    }
+}
+
+.TranslateComposer .Captions {
+    display: -webkit-flex;
+    display: flex;
+    flex: 1;
+    border-top: 1px solid #DDD;
+}

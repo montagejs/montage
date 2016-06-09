@@ -1,0 +1,48 @@
+{
+    "cases": [
+        {
+            "label": "drag box",
+            "arg": "drag-box",
+            "captions": [
+                {
+                    "color": "DDD",
+                    "label": "inactive"
+                },
+                {
+                    "color": "f1e33f",
+                    "label": "active"
+                },
+                {
+                    "color": "43b5de",
+                    "label": "dragging"
+                },
+                {
+                    "color": "e74c3c",
+                    "label": "cancel"
+                }
+            ]
+        },
+        {
+            "label": "nested drag boxes",
+            "arg": "nested-drag-box",
+            "captions": [
+                {
+                    "color": "DDD",
+                    "label": "inactive"
+                },
+                {
+                    "color": "f1e33f",
+                    "label": "active"
+                },
+                {
+                    "color": "43b5de",
+                    "label": "dragging"
+                },
+                {
+                    "color": "e74c3c",
+                    "label": "cancel"
+                }
+            ]
+        }
+    ]
+}

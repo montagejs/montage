@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="caption.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"},
+                "captionCodeElement": {"#": "caption-code"}
+            }
+        },
+
+         "captionLabel": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "caption-label"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.caption.label"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="Caption">
+        <span data-montage-id="caption-code" class="Caption-color"></span>
+        <span data-montage-id="caption-label" class="Caption-label"></span>
+    </div>
+</body>
+</html>

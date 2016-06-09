@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "main"}
+            }
+        },
+
+        "cases": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "cases"},
+                "isSelectionEnabled": true
+            },
+            "bindings": {
+                "content": {"<-": "@owner.configuration.cases"}
+            }
+        },
+
+        "case": {
+            "prototype": "montage/ui/component",
+            "properties": {
+                "element": {"#": "case"},
+                "hasTemplate": false
+            },
+            "bindings": {
+                "case": {"<-": "@cases:iteration.object"}
+            }
+        },
+
+        "caseLabel": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "case-label"}
+            },
+            "bindings": {
+                "value": {"<-": "@cases:iteration.object.label"}
+            }
+        },
+
+        "casesSubstitution": {
+            "prototype": "montage/ui/substitution.reel",
+            "properties": {
+                "element": {"#": "cases-substitution"}
+            },
+            "bindings": {
+                "switchValue": {"<-": "@cases.selection.0.arg"}
+            }
+        },
+
+        "draggableHitBox": {
+            "prototype": "../draggable-square.reel",
+            "properties": {
+                "element": {"#": "drag-box"}
+            }
+        },
+
+        "outerDraggableHitBox": {
+            "prototype": "../draggable-square.reel",
+            "properties": {
+                "element": {"#": "outer-drag-box"}
+            }
+        },
+
+        "innerDraggableHitBox": {
+            "prototype": "../draggable-square.reel",
+            "properties": {
+                "element": {"#": "inner-drag-box"}
+            }
+        },
+
+        "captions": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "captions"},
+                "isSelectionEnabled": true
+            },
+            "bindings": {
+                "content": {"<-": "@cases.selection.0.captions"}
+            }
+        },
+
+         "caption": {
+            "prototype": "../caption.reel",
+            "properties": {
+                "element": {"#": "caption"}
+            },
+            "bindings": {
+                "caption": {"<-": "@captions:iteration.object"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="TranslateComposer">
+        <nav data-montage-id="cases" class="TranslateComposer-cases">
+            <div data-montage-id="case" class="TranslateComposer-case">
+                <div data-montage-id="case-label" class="TranslateComposerCase-label"></div>
+            </div>
+        </nav>
+
+        <div data-montage-id="cases-substitution" class="TranslateComposer-substitution">
+            <div data-arg="drag-box">
+                <div data-montage-id="drag-box-axis"></div>
+                <div data-montage-id="drag-box"></div>
+            </div>
+
+            <div data-arg="nested-drag-box">
+                <div data-montage-id="nested-drag-box-axis"></div>
+                <div data-montage-id="outer-drag-box" class="OuterDragBox">
+                    <div data-montage-id="inner-drag-box"></div>
+                </div>
+            </div>
+        </div>
+        <footer>
+            <div data-montage-id="captions" class="Captions">
+                <div data-montage-id="caption" class="Caption"></div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
