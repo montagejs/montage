@@ -45,6 +45,11 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         writable: false
     },
 
+    _TOUCH_POINTER: {
+        value: "mouse",
+        writable: false
+    },
+
     CLAIM_POINTER_POLICIES: {
         value: {
             DEFAULT: "default", // claiming pointers on the capture phase. (first move event)
@@ -486,6 +491,16 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: false
     },
 
+    _observedPointerType: {
+        get: function () {
+            if (this._observedPointer) {
+                return typeof this._observedPointer === "string" ? this._observedPointer : this._TOUCH_POINTER;
+            }
+
+            return null;
+        }
+    },
+
     listenToWheelEvent: {
         set: function (_listenToWheelEvent) {
             _listenToWheelEvent = !!_listenToWheelEvent;
@@ -583,7 +598,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function (event) {
             if (event.pointerType === this._MOUSE_POINTER || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE)) {
                 this.captureMousedown(event);
-            } else if (event.pointerType === "touch" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
+            } else if (event.pointerType === this._TOUCH_POINTER || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
                 this.captureTouchstart(event);
             }
         }
@@ -593,7 +608,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function (event) {
             if (event.pointerType === this._MOUSE_POINTER || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE)) {
                 this.captureMousemove(event);
-            } else if (event.pointerType === "touch" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
+            } else if (event.pointerType === this._TOUCH_POINTER || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
                 this.captureTouchmove(event);
             }
         }
@@ -603,7 +618,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function (event) {
             if (event.pointerType === this._MOUSE_POINTER || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE)) {
                 this.handleMouseup(event);
-            } else if (event.pointerType === "touch" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
+            } else if (event.pointerType === this._TOUCH_POINTER || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
                 this.handleTouchend(event);
             }
         }
@@ -611,7 +626,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     handlePointercancel: {
         value: function (event) {
-            if (event.pointerType === "touch" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
+            if (event.pointerType === this._TOUCH_POINTER || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
                 this.handleTouchcancel(event);
             }
         }
@@ -1224,6 +1239,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
             // If this composers' component is claiming the "wheel" pointer then handle the event
             if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this)) {
+                this._observedPointer = this._WHEEL_POINTER;
+
                 if (this._translateEndTimeout) {
                     window.clearTimeout(this._translateEndTimeout);
                 } else {
@@ -1294,7 +1311,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             translateStartEvent.translateY = y;
             // Event needs to be the same shape as the one in flow-translate-composer
             translateStartEvent.scroll = 0;
-            translateStartEvent.pointer = this._observedPointer;
+            translateStartEvent.pointer = this._observedPointerType;
             this.dispatchEvent(translateStartEvent);
         }
     },
@@ -1308,6 +1325,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             translateEndEvent.translateY = this._translateY;
             // Event needs to be the same shape as the one in flow-translate-composer
             translateEndEvent.scroll = 0;
+            translateEndEvent.pointer = this._observedPointerType;
             this.dispatchEvent(translateEndEvent);
         }
     },
@@ -1321,6 +1339,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             translateCancelEvent.translateY = this._translateY;
             // Event needs to be the same shape as the one in flow-translate-composer
             translateCancelEvent.scroll = 0;
+            translateCancelEvent.pointer = this._observedPointerType;
             this.dispatchEvent(translateCancelEvent);
         }
     },
@@ -1333,7 +1352,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             translateEvent.translateY = this._translateY;
             // Event needs to be the same shape as the one in flow-translate-composer
             translateEvent.scroll = 0;
-            translateEvent.pointer = this._observedPointer;
+            translateEvent.pointer = this._observedPointerType;
             this.dispatchEvent(translateEvent);
         }
     },
