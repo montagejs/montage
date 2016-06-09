@@ -567,14 +567,15 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     surrenderPointer: {
-        value: function () {
-            var isSurrender = true;
-
-            if (isSurrender && this.isMoving) {
-                this._releaseInterest();
+        value: function (pointer, component) {
+            var shouldSurrender = this.callDelegateMethod("surrenderPointer", pointer, component);
+            if (typeof shouldSurrender !== "undefined" && shouldSurrender === false) {
+                return false;
             }
 
-            return isSurrender;
+            this._cancel();
+
+            return true;
         }
     },
 
