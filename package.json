@@ -31,7 +31,7 @@
     "collections": "~5.0.x",
     "frb": "~3.0.x",
     "htmlparser2": "~3.0.5",
-    "mr": "montagejs/mr#master",
+    "mr": "~16.0.x",
     "bluebird":"~3.4.0",
     "q-io": "~1.11.0"
   },
