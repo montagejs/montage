@@ -490,17 +490,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     _listenToWheelEvent: {
         value: false
     },
-
-    _observedPointerType: {
-        get: function () {
-            if (this._observedPointer) {
-                return typeof this._observedPointer === "string" ? this._observedPointer : this._TOUCH_POINTER;
-            }
-
-            return null;
-        }
-    },
-
+    
     listenToWheelEvent: {
         set: function (_listenToWheelEvent) {
             _listenToWheelEvent = !!_listenToWheelEvent;
@@ -1312,7 +1302,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             translateStartEvent.translateY = y;
             // Event needs to be the same shape as the one in flow-translate-composer
             translateStartEvent.scroll = 0;
-            translateStartEvent.pointer = this._observedPointerType;
+            translateStartEvent.pointer = this._observedPointer;
             this.dispatchEvent(translateStartEvent);
         }
     },
@@ -1326,7 +1316,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             translateEndEvent.translateY = this._translateY;
             // Event needs to be the same shape as the one in flow-translate-composer
             translateEndEvent.scroll = 0;
-            translateEndEvent.pointer = this._observedPointerType;
+            translateEndEvent.pointer = this._observedPointer;
             this.dispatchEvent(translateEndEvent);
         }
     },
@@ -1340,7 +1330,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             translateCancelEvent.translateY = this._translateY;
             // Event needs to be the same shape as the one in flow-translate-composer
             translateCancelEvent.scroll = 0;
-            translateCancelEvent.pointer = this._observedPointerType;
+            translateCancelEvent.pointer = this._observedPointer;
             this.dispatchEvent(translateCancelEvent);
         }
     },
@@ -1353,7 +1343,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             translateEvent.translateY = this._translateY;
             // Event needs to be the same shape as the one in flow-translate-composer
             translateEvent.scroll = 0;
-            translateEvent.pointer = this._observedPointerType;
+            translateEvent.pointer = this._observedPointer;
             this.dispatchEvent(translateEvent);
         }
     },
