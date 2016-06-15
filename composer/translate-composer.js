@@ -46,7 +46,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     _TOUCH_POINTER: {
-        value: "mouse",
+        value: "touch",
         writable: false
     },
 
