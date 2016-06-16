@@ -1,0 +1,35 @@
+.DraggableSquare {
+    height: 250px;
+    width: 250px;
+    background-color: #DDD;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    -ms-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    -ms-justify-content: center;
+    justify-content: center;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    color: white;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+.DraggableSquare:hover {
+    cursor: pointer;
+}
+
+.DraggableSquare.active {
+    background-color: #f1e33f;
+}
+
+.DraggableSquare.canceled {
+    background-color: #e74c3c;
+}
+
+.DraggableSquare.dragging {
+    background-color: #5bc0de;
+}
