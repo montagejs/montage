@@ -490,7 +490,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     _listenToWheelEvent: {
         value: false
     },
-    
+
     listenToWheelEvent: {
         set: function (_listenToWheelEvent) {
             _listenToWheelEvent = !!_listenToWheelEvent;
@@ -692,7 +692,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
             } else {
                 var touch = this._findObservedTouch(event.changedTouches);
-
                 if (touch) {
                     this._handleMove(event, touch);
                 }
@@ -895,8 +894,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                     }
 
                     if (!shouldClaimPointer) {
-                        event.preventDefault();
-
+                        this._preventDefaultIfNeeded(event);
                         return void 0; // let's wait for the next move event
                     }
                 }
@@ -905,7 +903,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             }
 
             if (eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                event.preventDefault();
+                this._preventDefaultIfNeeded(event);
 
                 if (this.allowTranslateOuterExtreme || this._shouldMove(event, contactPoint.clientX, contactPoint.clientY)) {
                     if (this._isFirstMove) {
@@ -1017,7 +1015,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     _move: {
         value: function (x, y) {
             var pointerDelta;
-
             this._isSelfUpdate = true;
 
             if (this._axis !== "vertical") {
