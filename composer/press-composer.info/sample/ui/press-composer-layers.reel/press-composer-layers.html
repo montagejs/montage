@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="press-composer-layers.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"},
+                "overlay": {"@": "overlay"}
+            }
+        },
+
+        "showOverlay": {
+            "prototype": "montage/ui/button.reel",
+            "properties": {
+                "element": {"#": "show-overlay-button"},
+                "label": "Show Overlay"
+            }
+        },
+
+        "textField": {
+            "prototype": "montage/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "text-field"}
+            }
+        },
+
+        "overlay": {
+            "prototype": "montage/ui/overlay.reel",
+            "properties": {
+                "element": {"#": "overlay"},
+                "position" : {
+                    "left" : 105,
+                    "top" : 100
+                }
+            }
+        },
+
+        "dismissOverlay": {
+            "prototype": "montage/ui/button.reel",
+            "properties": {
+                "element": {"#": "dismiss-overlay-button"},
+                "label": "Hide Overlay"
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="PressComposerLayers">
+        <button data-montage-id="show-overlay-button">Show Overlay</button>
+        <input data-montage-id="text-field" type="text" />
+
+        <div data-montage-id="overlay" class="PressComposerLayers-Overlay">
+            <button data-montage-id="dismiss-overlay-button">Show Overlay</button>
+        </div>
+    </div>
+</body>
+</html>

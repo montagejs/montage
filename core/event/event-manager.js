@@ -2299,20 +2299,25 @@ if (typeof window !== "undefined") { // client-side
             value: function (mouseEvent, trackingTouchList) {
                 var mouseTarget = mouseEvent.target,
                     identifier = -1,
+                    key,
                     touch,
                     mapIter;
 
                 mapIter = trackingTouchList.keys();
-                while (identifier = mapIter.next().value) {
-                    touch = trackingTouchList.get(identifier);
+                while (key = mapIter.next().value) {
+                    touch = trackingTouchList.get(key);
 
                     if (touch.target === mouseTarget ||
-                        this._couldEmulatedEventHasWrongTarget(
+                        this._couldEmulatedEventHaveWrongTarget(
                             touch,
                             mouseEvent,
                             this._emulatedEventRadiusThreshold,
                             this._emulatedEventTimestampThreshold
-                        )) break;
+                        )) {
+
+                        identifier = key;
+                        break;
+                    }
                 }
 
                 return identifier;
@@ -2326,14 +2331,14 @@ if (typeof window !== "undefined") { // client-side
          * Indeed, Touch Events and simulated Mouse Events can have a different target and not the same position on Chrome.
          *
          */
-        _couldEmulatedEventHasWrongTarget: {
+        _couldEmulatedEventHaveWrongTarget: {
             value: function (touch, mouseEvent, radiusThreshold, timestampThreshold) {
 
                 if (/*dTimestamp*/(mouseEvent.timeStamp - touch.timeStamp) <= timestampThreshold) {
                     var dX = touch.clientX - mouseEvent.clientX,
                         dY = touch.clientY - mouseEvent.clientY;
 
-                    return dX * dX + dY * dY > radiusThreshold * radiusThreshold;
+                    return dX * dX + dY * dY <= radiusThreshold * radiusThreshold;
                 }
 
                 return false;
