@@ -13,6 +13,8 @@
  */
 var Montage = require("core/core").Montage,
     CHARS = '0123456789ABCDEF'.split(''),
+    PROTO = "__proto__",
+    VALUE = "value",
     hasOwnProperty = Object.prototype.hasOwnProperty,
     FORMAT = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.split(''),
     Uuid = exports.Uuid = Object.create(Object.prototype, /** @lends Uuid# */ {
