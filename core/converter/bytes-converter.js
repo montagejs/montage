@@ -5,7 +5,7 @@
  */
 var Converter = require("./converter").Converter;
 var _numericValueToString = require("./number-converter")._numericValueToString;
-var _stringToNumericValue = require("./number-converter")._stringToNumericValue;
+var _stringToNumericValue = require("./number-converter").stringToNumericValue;
 var NUMERIC_SCALES_BINARY_ = require("./number-converter").NUMERIC_SCALES_BINARY_;
 var isDef = require("./converter").isDef;
 
@@ -113,7 +113,7 @@ exports.BytesConverter = Converter.specialize( /** @lends BytesConverter# */ {
      */
     revert: {
         value: function (v) {
-            return v;
+            return stringToNumBytes(v);
         }
     }
 
