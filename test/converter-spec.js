@@ -161,6 +161,14 @@ describe("converter-spec", function () {
         });
     });
 
+    describe('Test parsing of formatted size string to bytes', function() {
+        it('should return the value corresponding to the string', function() {
+            var string = '1.2GB';
+            var result = bytesConverter.revert(string);
+            expect(result).toBe(1288490188.8);
+        });
+    });
+
 
     describe("Test Date/time formatters", function () {
         it("should format a date to the default mm/dd/yyyy format", function () {
