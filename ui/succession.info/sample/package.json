@@ -1,0 +1,10 @@
+{
+    "name": "succession.info",
+    "private": true,
+    "dependencies": {
+        "montage": "*"
+    },
+    "mappings": {
+        "montage": "../../../"
+    }
+}

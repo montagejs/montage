@@ -61,9 +61,6 @@ exports.Slot = Component.specialize( /** @lends Slot.prototype # */ {
             if (value && typeof value.needsDraw !== "undefined") {
                 content = this._content;
 
-                if (content && typeof content.needsDraw !== "undefined") {
-                    content.detachFromParentComponent();
-                }
                 // If the incoming content was a component; make sure it has an element before we say it needs to draw
                 if (!value.element) {
                     element = document.createElement("div");
@@ -78,7 +75,6 @@ exports.Slot = Component.specialize( /** @lends Slot.prototype # */ {
 
                 // The child component will need to draw; this may trigger a draw for the slot itself
                 this.domContent = element;
-                this.addChildComponent(value);
                 value.needsDraw = true;
 
             } else {
@@ -91,19 +87,15 @@ exports.Slot = Component.specialize( /** @lends Slot.prototype # */ {
     },
 
     /**
-     * Informs the `delegate` that `slotDidSwitchContent(slot, newContent,
-     * oldContent)`
+     * Informs the `delegate` that `slotDidSwitchContent(slot)`
      * @function
-     * @param newContent
-     * @param oldContent
      */
     contentDidChange: {
-        value: function (newContent, oldContent) {
+        value: function () {
             if (this.delegate && typeof this.delegate.slotDidSwitchContent === "function") {
-                this.delegate.slotDidSwitchContent(this, newContent, (newContent ? newContent.component : null), oldContent, (oldContent ? oldContent.component : null));
+                this.delegate.slotDidSwitchContent(this);
             }
         }
     }
 
 });
-

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Foo Component</title>
+
+    <link rel="stylesheet" href="foo.css">
+
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "Foo"}
+            }
+        },
+        "text": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "text"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.title"}
+            }
+        },
+        "data": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "data"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.destinationData"}
+            }
+        },
+        "condition": {
+            "prototype": "montage/ui/condition.reel",
+            "properties": {
+                "element": {"#": "condition"}
+            },
+            "bindings": {
+                "condition": {"<-": "@owner.destinationData"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="Foo" class="foo absolute">
+        <h2 data-montage-id="text"></h2>
+        Data from source of the transition that lead to this component:
+        <div data-montage-id="condition">
+            <pre data-montage-id="data"></pre>
+        </div>
+    </div>
+</body>
+</html>

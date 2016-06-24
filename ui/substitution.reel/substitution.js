@@ -64,6 +64,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
     constructor: {
         value: function Substitution() {
             this._switchElements = Object.create(null);
+            this._switchComponents = Object.create(null);
             this._switchComponentTreeLoaded = Object.create(null);
         }
     },
@@ -112,6 +113,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
             }
 
             this._switchElements[key] = element;
+            this._switchComponents[key] = element.component;
             this._findFringeComponents(element, this._allChildComponents);
         }
     },
@@ -182,6 +184,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
                 argumentNames = this.getDomArgumentNames();
                 for (var i = 0, name; (name = argumentNames[i]); i++) {
                     this._switchElements[name] = this.extractDomArgument(name);
+                    this._switchComponents[name] = this._switchElements[name].component;
                 }
 
                 this._loadContent(this.switchValue);
@@ -196,16 +199,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
 
     _loadContent: {
         value: function (value) {
-            // If the value being loaded is already in the document then use it
-            // instead of the element in the switchElements. The element in the
-            // document could be a diferent one (if it is a component that had
-            // its element replaced by its template).
-            if (value === this._drawnSwitchValue) {
-                this.content = this.element.children[0];
-            } else {
-                this.content = this._switchElements[value] || null;
-            }
-
+            this.content = this._switchElements[value] || null;
             if (!this._switchComponentTreeLoaded[value]) {
                 this._loadSwitchComponentTree(value);
             }
@@ -217,7 +211,9 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
             Slot.prototype.contentDidChange.call(this, newContent, oldContent);
 
             if (this._drawnSwitchValue) {
-                this._switchElements[this._drawnSwitchValue] = oldContent;
+                if (this._switchComponents[this._drawnSwitchValue]) {
+                    this._switchElements[this._drawnSwitchValue] = this._switchComponents[this._drawnSwitchValue].element;
+                }
             }
             this._drawnSwitchValue = this._switchValue;
         }

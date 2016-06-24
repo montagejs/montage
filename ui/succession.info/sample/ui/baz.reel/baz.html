@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Baz Component</title>
+
+    <link rel="stylesheet" href="baz.css">
+
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "Baz"}
+            }
+        },
+        "width": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "width"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.width"}
+            }
+        },
+        "height": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "height"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.height"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="Baz" class="baz absolute">
+        <h2>Width</h2>
+        <span data-montage-id="width"></span>
+        <h2>Height</h2>
+        <span data-montage-id="height"></span>
+    </div>
+</body>
+</html>

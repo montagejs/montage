@@ -1,0 +1,106 @@
+.main {
+    text-align: center;
+}
+
+.wrapper {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+
+    margin: 20px 0 20px 0;
+}
+
+.container,
+.stack {
+    width: 375px;
+    height: 667px;
+    margin: 0 20px 0 20px;
+}
+
+.container {
+    border: 1px lightgray solid;
+    position: relative;
+}
+
+.stack {
+    text-align: left;
+    overflow: scroll;
+}
+
+.stack .top::after,
+.stack .previous::after,
+.stack .first::after {
+    font-size: 0.8em;
+    padding-left: 10px;
+    font-weight: bold;
+}
+
+.stack li {
+    font-family: monospace;
+}
+
+.stack .top::after {
+    content: "top";
+    color: green;
+}
+
+.stack .previous::after {
+    content: "previous";
+    color: orange;
+}
+
+.stack .first::after {
+    content: "first";
+    color: gray;
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.buildInFrom {
+    transform: translateX(100%);
+}
+
+.buildIn {
+    transition: transform .4s linear;
+}
+
+.buildOut {
+    transition: transform .4s linear;
+}
+
+.buildOutTo {
+    transform: translateX(-100%);
+}
+
+.buildInFrom2 {
+    transform: translateY(100%);
+}
+
+.buildIn2 {
+    transition: transform .4s ease-in-out;
+}
+
+.buildOut2 {
+    transition: transform .4s ease-in-out;
+}
+
+.buildOutTo2 {
+    transform: translateY(-100%);
+}
+
+.slot {
+    width: 100%;
+    height: 200px;
+    background: greenyellow;
+}
+
+.absolute {
+    position: absolute;
+}

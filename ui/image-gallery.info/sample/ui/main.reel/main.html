@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Main</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"},
+                "_gallery": {"@": "gallery"}
+            },
+            "bindings": {
+                "_isSliderActive": {"<-": "@slider.active"}
+            }
+        },
+        "index": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "index"}
+            },
+            "bindings": {
+                "value": {"<-": "'Image ' + (@gallery.currentImageIndex + 1) + ' of ' + @gallery.images.length"}
+            }
+        },
+        "gallery": {
+            "prototype": "montage/ui/image-gallery.reel",
+            "properties": {
+                "element": {"#": "gallery"}
+            }
+        },
+        "slider": {
+            "prototype": "ui/slider",
+            "properties": {
+               "element": {"#": "slider"},
+               "_sliderThumbElement": {"#": "sliderKnob"},
+               "hasTemplate": false,
+               "min": 0
+            },
+            "bindings": {
+                "max": {"<-": "@gallery.images.length - 1"},
+                "value": {"<->": "@gallery.scroll"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="Main">
+        <div data-montage-id="gallery" class="Main-gallery"></div>
+        <div data-montage-id="index" class="Main-index"></div>
+        <div class="Main-origin">Courtesy National Gallery of Art, Washington</div>
+        <div data-montage-id="slider" class="Main-slider">
+            <div data-montage-id="sliderTrack" class="Main-sliderTrack"></div>
+            <div data-montage-id="sliderKnob" class="Main-sliderKnob"></div>
+        </div>
+    </div>
+</body>
+</html>

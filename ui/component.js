@@ -40,12 +40,302 @@ var ATTR_LE_COMPONENT = "data-montage-le-component",
     ATTR_LE_ARG_BEGIN = "data-montage-le-arg-begin",
     ATTR_LE_ARG_END = "data-montage-le-arg-end";
 
+var CssBasedAnimation = Montage.specialize({
+
+    component: {
+        value: null
+    },
+
+    fromCssClass: {
+        value: null
+    },
+
+    cssClass: {
+        value: null
+    },
+
+    toCssClass: {
+        value: null
+    },
+
+    hasOneFrameDelay: {
+        value: false
+    },
+
+    _animationAndTransitionProperties: {
+        value: [
+            "-webkit-animation",
+            "-moz-animation",
+            "-ms-animation",
+            "animation",
+            "-webkit-transition",
+            "-moz-transition",
+            "-ms-transition",
+            "transition"
+        ]
+    },
+
+    _emptyArray: {
+        value: []
+    },
+
+    /**
+     * Parses the computed style value for a css time property and
+     * returns an array of numbers representing seconds.
+     * For example, the time value string "1s, 2s" will return [1, 2]
+     */
+    _parseComputedStyleTimeValue: {
+        value: function (timeValue) {
+            var result,
+                i;
+
+            if (typeof timeValue !== "string" || timeValue === "") {
+                return this._emptyArray;
+            }
+            result = timeValue.replace(/s| /g, "").split(",");
+            for (i = 0; i < result.length; i++) {
+                result[i] = +result[i];
+            }
+            return result;
+        }
+    },
+
+    /**
+     * Returns an boundary estimate of the maximum time an element would
+     * take to complete its css animations and/or transitions.
+     */
+    _getMaxAnimationTime: {
+        value: function () {
+            var computedStyle,
+                durations,
+                delays,
+                maxTime = 0,
+                time,
+                length,
+                i, j;
+
+            if (this.component && this.component.element) {
+                computedStyle = window.getComputedStyle(this.component.element)
+                for (i = 0; i < this._animationAndTransitionProperties.length; i++) {
+                    durations = this._parseComputedStyleTimeValue(
+                        computedStyle.getPropertyValue(this._animationAndTransitionProperties[i] + "-duration")
+                    );
+                    delays = this._parseComputedStyleTimeValue(
+                        computedStyle.getPropertyValue(this._animationAndTransitionProperties[i] + "-delay")
+                    );
+                    length = Math.max(durations.length, delays.length);
+                    for (j = 0; j < length; j++) {
+                        if (typeof durations[j] === "undefined") {
+                            time = durations[0] || 0;
+                        } else {
+                            time = durations[j];
+                        }
+                        if (typeof delays[j] === "undefined") {
+                            time += delays[0] || 0;
+                        } else {
+                            time += delays[j];
+                        }
+                        if (time > maxTime) {
+                            maxTime = time;
+                        }
+                    }
+                }
+                if (maxTime > 0) {
+                    // Browsers take several miliseconds since you add the css animation
+                    // or transition property and it really starts. It can range from
+                    // very few miliseconds in desktop to a couple of hundreds in mobile
+                    // devices, so we are adding 300 miliseconds as a safety value that
+                    // should cover the most of the cases.
+                    maxTime += .3;
+                }
+            }
+            return maxTime;
+        }
+    },
+
+    _onAnimationsCompletedTimeout: {
+        value: null
+    },
+
+    _cancelOnAnimationsCompletedEvent: {
+        value: function () {
+            window.clearTimeout(this._onAnimationsCompletedTimeout);
+        }
+    },
+
+    _onAnimationsCompleted: {
+        value: function (callback) {
+            var maxTime = this._getMaxAnimationTime(),
+                self;
+
+            if (!maxTime) {
+                callback.call(this);
+                return;
+            }
+            self = this;
+            this._cancelOnAnimationsCompletedEvent();
+            this._onAnimationsCompletedTimeout = window.setTimeout(function () {
+                callback.call(self);
+            }, maxTime * 1000);
+         }
+    },
+
+    _needsToMeasureAnimationTimeOnNextDraw: {
+        value: false
+    },
+
+    _needsToMeasureAnimationTime: {
+        value: false
+    },
+
+    handleDidDraw: {
+        value: function (event) {
+            if (this._needsToMeasureAnimationTimeOnNextDraw) {
+                if (this.fromCssClass) {
+                    this.component.classList.remove(this.fromCssClass);
+                }
+                if (this.cssClass) {
+                    this.component.classList.add(this.cssClass);
+                }
+                if (this.toCssClass) {
+                    this.component.classList.add(this.toCssClass);
+                }
+                this._needsToMeasureAnimationTimeOnNextDraw = false;
+                this._needsToMeasureAnimationTime = true;
+                this.component.needsDraw = true;
+            } else {
+                if (this._needsToMeasureAnimationTime) {
+                    this._onAnimationsCompleted(function () {
+                        if (this._finishedDeferred) {
+                            this._finishedDeferred.resolve();
+                            this._finishedDeferred = null;
+                        }
+                    });
+                    this.component.removeEventListener("didDraw", this, false);
+                    this._needsToMeasureAnimationTime = false;
+                }
+            }
+        }
+    },
+
+    _finishedDeferred: {
+        value: null
+    },
+
+    finished: {
+        get: function () {
+            if (!this._finishedDeferred) {
+                this._finishedDeferred = Promise.pending();
+            }
+            return this._finishedDeferred.promise;
+        }
+    },
+
+    play: {
+        value: function () {
+            if (this.component) {
+                if (!this._finishedDeferred || this._cancelled) {
+                    this._cancelled = false;
+                    this._finishedDeferred = Promise.pending();
+                }
+                this.component.needsDraw = true;
+                if (this.fromCssClass) {
+                    if (this.fromCssClass) {
+                        this.component.classList.add(this.fromCssClass);
+                    }
+                    if (this.cssClass) {
+                        this.component.classList.remove(this.cssClass);
+                    }
+                    if (this.toCssClass) {
+                        this.component.classList.remove(this.toCssClass);
+                    }
+                    this._needsToMeasureAnimationTime = false;
+                    this._needsToMeasureAnimationTimeOnNextDraw = true;
+                } else {
+                    if (this.hasOneFrameDelay) {
+                        this._needsToMeasureAnimationTime = false;
+                        this._needsToMeasureAnimationTimeOnNextDraw = true;
+                    } else {
+                        if (this.cssClass) {
+                            this.component.classList.add(this.cssClass);
+                        }
+                        if (this.toCssClass) {
+                            this.component.classList.add(this.toCssClass);
+                        }
+                        this._needsToMeasureAnimationTime = true;
+                        this._needsToMeasureAnimationTimeOnNextDraw = false;
+                    }
+                }
+                this.component.addEventListener("didDraw", this, false);
+            }
+        }
+    },
+
+    _cancelled: {
+        value: false
+    },
+
+    cancel: {
+        value: function () {
+            this._cancelled = true;
+            if (this.fromCssClass) {
+                this.component.classList.remove(this.fromCssClass);
+            }
+            if (this.cssClass) {
+                this.component.classList.remove(this.cssClass);
+            }
+            if (this.toCssClass) {
+                this.component.classList.remove(this.toCssClass);
+            }
+            this.component.removeEventListener("didDraw", this, false);
+            if (this._finishedDeferred) {
+                this._finishedDeferred.reject();
+            }
+        }
+    }
+
+});
+
 /**
  * @class Component
  * @classdesc Base class for all Montage components.
  * @extends Target
  */
-var Component = exports.Component = Target.specialize( /** @lends Component.prototype # */ {
+var Component = exports.Component = Target.specialize(/** @lends Component.prototype */{
+    // Virtual Interface
+
+    /**
+     * A human-friendly display title for the component.
+     * Useful when component is used as a view and a view title is needed, e.g. with a navigation bar.
+     * Different than {@link Component.identifier}.
+     *
+     * @example "User Settings Panel"
+     *
+     * @name Component#title
+     * @property {String}
+     */
+
+    /**
+     * An identifier label used to refer to the component in code.
+     * For example, event handler will call `handleIdentifierAction` which uses this identifier.
+     * If not defined, will be the same as serialization object's key.
+     *
+     * Not to be confused with the human-friendly {@link Component.title}.
+     *
+     * @example "userSettingsPanel"
+     *
+     * @name Component#identifier
+     * @property {String}
+     */
+
+    /**
+     * Lifecycle hook for when Component's domContent changes.
+     *
+     * @name Component#contentWillChange
+     * @function
+     * @param {Element} value - The incoming element.
+     */
+
     DOM_ARG_ATTRIBUTE: {value: "data-arg"},
 
     drawListLogger: {
@@ -824,14 +1114,14 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         value: function (childComponent) {
             if (this.childComponents.indexOf(childComponent) === -1) {
                 this.childComponents.push(childComponent);
-                childComponent._prepareForEnterDocument();
                 childComponent._parentComponent = this;
-
+                childComponent._prepareForEnterDocument();
                 if (childComponent.needsDraw &&
                     !this.rootComponent.isComponentWaitingNeedsDraw(childComponent)) {
                     childComponent._addToParentsDrawList();
                 }
             }
+            childComponent._shouldBuildIn = true;
         }
     },
 
@@ -857,7 +1147,6 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                         newParentComponent.addChildComponent(childComponent);
                     }
                 }
-
                 parentComponent.addChildComponent(this);
             }
         }
@@ -1052,6 +1341,10 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         value: null
     },
 
+    _elementsToAppend: {
+        value: null
+    },
+
     domContent: {
         serializable: false,
         get: function () {
@@ -1067,6 +1360,9 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 i,
                 component;
 
+            if (!this._elementsToAppend) {
+                this._elementsToAppend = [];
+            }
             this._newDomContent = value;
             this.needsDraw = true;
 
@@ -1080,21 +1376,33 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
             // cleanup current content
             components = this.childComponents;
-
-            while ((component = components[0])) {
-                component.detachFromParentComponent();
+            if (value) {
+                if (!this._componentsPendingBuildOut) {
+                    this._componentsPendingBuildOut = [];
+                }
+                for (i = components.length - 1; i >= 0; i--) {
+                    if (this._componentsPendingBuildOut.indexOf(components[i]) === -1) {
+                        this._componentsPendingBuildOut.push(components[i]);
+                    }
+                }
+            } else {
+                this._componentsPendingBuildOut = [];
+                for (i = components.length - 1; i >= 0; i--) {
+                    components[i]._shouldBuildOut = true;
+                }
             }
-
             if (value instanceof Element) {
+                this._elementsToAppend.push(value);
                 this._findAndDetachComponents(value, componentsToAdd);
             } else if (value && value[0]) {
                 for (i = 0; i < value.length; i++) {
+                    this._elementsToAppend.push(value[i]);
                     this._findAndDetachComponents(value[i], componentsToAdd);
                 }
             }
 
             // not sure if I can rely on _parentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
-            for (i = 0, component; (component = componentsToAdd[i]); i++) {
+            for (i = 0; (component = componentsToAdd[i]); i++) {
                 this.addChildComponent(component);
             }
         }
@@ -1744,7 +2052,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
             if (this._needsEnterDocument) {
                 this._needsEnterDocument = false;
-                this._inDocument = true;
+                this._willEnterDocument();
                 this._enterDocument(firstDraw);
                 if (typeof this.enterDocument === "function") {
                     this.enterDocument(firstDraw);
@@ -2139,9 +2447,9 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     _performDomContentChanges: {
         value: function () {
             var contents = this._newDomContent,
-                oldContent = this._element.childNodes[0],
-                childNodesCount,
-                element;
+                element,
+                elementToAppend,
+                i;
 
             if (contents || this._shouldClearDomContentOnNextDraw) {
                 element = this._element;
@@ -2149,29 +2457,34 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 // Setting the innerHTML to clear the children will not work on
                 // IE because it modifies the underlying child nodes. Here's the
                 // test case that shows this issue: http://jsfiddle.net/89X6F/
-                childNodesCount = this._element.childNodes.length;
-                for (var i = 0; i < childNodesCount; i++) {
-                    element.removeChild(element.firstChild);
+                for (i = element.childNodes.length - 1; i >= 0; i--) {
+                    if (!element.childNodes[i].component) {
+                        element.removeChild(element.childNodes[i]);
+                    }
                 }
 
-                if (Element.isElement(contents)) {
-                    element.appendChild(contents);
-                } else if(contents != null) {
-                    for (var i = 0, content; (content = contents[i]); i++) {
-                        element.appendChild(content);
+                if (this._elementsToAppend) {
+                    while (this._elementsToAppend.length) {
+                        elementToAppend = this._elementsToAppend.shift();
+                        if (!element.contains(elementToAppend)) {
+                            element.appendChild(elementToAppend);
+                        }
                     }
                 }
 
                 this._newDomContent = null;
                 if (typeof this.contentDidChange === "function") {
-                    this.contentDidChange(this._element.childNodes[0], oldContent);
+                    this.contentDidChange();
                 }
                 this._shouldClearDomContentOnNextDraw = false;
             }
         }
     },
 
-    // TODO: remove
+    /**
+     * @deprecated
+     * @todo remove
+     */
     prepareForDraw: {
         enumerable: false,
         value: null
@@ -2643,6 +2956,267 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         }
     },
 
+    __shouldBuildIn: {
+        value: true
+    },
+
+    _shouldBuildIn: {
+        get: function () {
+            return this.__shouldBuildIn;
+        },
+        set: function (value) {
+            var index;
+
+            value = !!value;
+            this.__shouldBuildIn = value;
+            if (value) {
+                if (this.parentComponent && this.parentComponent._componentsPendingBuildOut) {
+                    index = this.parentComponent._componentsPendingBuildOut.indexOf(this);
+                    if (index !== -1) {
+                        this.parentComponent._componentsPendingBuildOut.splice(index, 1);
+                    }
+                }
+                this._shouldBuildOut = false;
+                if (this._inDocument) {
+                    this._buildIn();
+                }
+            }
+        }
+    },
+
+    __shouldBuildOut: {
+        value: false
+    },
+
+    _shouldBuildOut: {
+        get: function () {
+            return this.__shouldBuildOut;
+        },
+        set: function (value) {
+            value = !!value;
+            this.__shouldBuildOut = value;
+            if (value) {
+                this._shouldBuildIn = false;
+                if (this._inDocument) {
+                    this._buildOut();
+                }
+            }
+        }
+    },
+
+    buildInInitialAnimation: {
+        get: function () {
+            var animation = null;
+
+            if (this._activeBuildInAnimation && typeof this._activeBuildInAnimation === "object") {
+                if (typeof this._activeBuildInAnimation.cssClass !== "undefined") {
+                    animation = new CssBasedAnimation();
+                    animation.component = this;
+                    animation.fromCssClass = this._activeBuildInAnimation.fromCssClass;
+                    animation.cssClass = this._activeBuildInAnimation.cssClass;
+                    animation.toCssClass = this._activeBuildInAnimation.toCssClass;
+                }
+            }
+            return animation;
+        }
+    },
+
+    buildInSwitchAnimation: {
+        get: function () {
+            var animation = null;
+
+            if (this._activeBuildInAnimation && typeof this._activeBuildInAnimation === "object") {
+                if (typeof this._activeBuildInAnimation.cssClass !== "undefined") {
+                    animation = new CssBasedAnimation();
+                    animation.component = this;
+                    animation.cssClass = this._activeBuildInAnimation.cssClass;
+                    animation.toCssClass = this._activeBuildInAnimation.toCssClass;
+                }
+            }
+            return animation;
+        }
+    },
+
+    buildOutInitialAnimation: {
+        get: function () {
+            var animation = null;
+
+            if (this._activeBuildOutAnimation && typeof this._activeBuildOutAnimation === "object") {
+                if (typeof this._activeBuildOutAnimation.cssClass !== "undefined") {
+                    animation = new CssBasedAnimation();
+                    animation.component = this;
+                    animation.hasOneFrameDelay = true;
+                    animation.fromCssClass = this._activeBuildOutAnimation.fromCssClass;
+                    animation.cssClass = this._activeBuildOutAnimation.cssClass;
+                    animation.toCssClass = this._activeBuildOutAnimation.toCssClass;
+                }
+            }
+            return animation;
+        }
+    },
+
+    buildOutSwitchAnimation: {
+        get: function () {
+            var animation = null;
+
+            if (this._activeBuildOutAnimation && typeof this._activeBuildOutAnimation === "object") {
+                if (typeof this._activeBuildOutAnimation.cssClass !== "undefined") {
+                    animation = new CssBasedAnimation();
+                    animation.component = this;
+                    animation.cssClass = this._activeBuildOutAnimation.cssClass;
+                    animation.toCssClass = this._activeBuildOutAnimation.toCssClass;
+                }
+            }
+            return animation;
+        }
+    },
+
+    buildInAnimation: {
+        value: null
+    },
+
+    buildOutAnimation: {
+        value: null
+    },
+
+    buildInAnimationOverride: {
+        value: null
+    },
+
+    buildOutAnimationOverride: {
+        value: null
+    },
+
+    _activeBuildInAnimation: {
+        value: null
+    },
+
+    _activeBuildOutAnimation: {
+        value: null
+    },
+
+    _updateActiveBuildAnimations: {
+        value: function () {
+            if (this.buildInAnimationOverride) {
+                this._activeBuildInAnimation = this.buildInAnimationOverride;
+            } else {
+                this._activeBuildInAnimation = this.buildInAnimation;
+            }
+            if (this.buildOutAnimationOverride) {
+                this._activeBuildOutAnimation = this.buildOutAnimationOverride;
+            } else {
+                this._activeBuildOutAnimation = this.buildOutAnimation;
+            }
+        }
+    },
+
+    _currentBuildAnimation: {
+        value: null
+    },
+
+    _buildIn: {
+        value: function () {
+            var self = this;
+
+            if (this._currentBuildAnimation) {
+                this._currentBuildAnimation.cancel();
+            }
+            if (this._element && this._element.parentNode && this._element.parentNode.component) {
+                if (this._isElementAttachedToParent) {
+                    this._currentBuildAnimation = this.buildInSwitchAnimation;
+                } else {
+                    this._updateActiveBuildAnimations();
+                    this._currentBuildAnimation = this.buildInInitialAnimation;
+                }
+                if (this._currentBuildAnimation) {
+                    this._currentBuildAnimation.play();
+                    this._currentBuildAnimation.finished.then(function () {
+                        self._currentBuildAnimation.cancel();
+                        self._currentBuildAnimation = null;
+                        self.dispatchEventNamed("buildInEnd", true, true);
+                    }, function () {});
+                }
+            }
+        }
+    },
+
+    _buildOut: {
+        value: function () {
+            var self = this;
+
+            if (this._currentBuildAnimation) {
+                this._currentBuildAnimation.cancel();
+                this._currentBuildAnimation = this.buildOutSwitchAnimation;
+            } else {
+                this._updateActiveBuildAnimations();
+                this._currentBuildAnimation = this.buildOutInitialAnimation;
+            }
+            if (this._element && this._element.parentNode && this._element.parentNode.component) {
+                if (this._currentBuildAnimation) {
+                    this._currentBuildAnimation.play();
+                    this._currentBuildAnimation.finished.then(function () {
+                        var parent = self.parentComponent;
+                        self._currentBuildAnimation.cancel();
+                        self._currentBuildAnimation = null;
+                        self.detachFromParentComponent();
+                        self.buildInAnimationOverride = null;
+                        self.buildOutAnimationOverride = null;
+                        if (self._element.parentNode.component) {
+                            self._element.parentNode.removeChild(self._element);
+                        }
+                        self._isElementAttachedToParent = false;
+                        parent.dispatchEventNamed("buildOutEnd", true, true);
+                    }, function () {});
+                } else {
+                    this.detachFromParentComponent();
+                    this.buildInAnimationOverride = null;
+                    this.buildOutAnimationOverride = null;
+                    if (this._isElementAttachedToParent) {
+                        if (this._element.parentNode && this._element.parentNode.component) {
+                            this._element.parentNode.removeChild(this._element);
+                        }
+                        this._isElementAttachedToParent = false;
+                    }
+                }
+            }
+        }
+    },
+    _willEnterDocument: {
+
+        value: function () {
+            var event;
+
+            event = new CustomEvent("willEnterDocument", {
+                details: {
+                    component: this
+                },
+                bubbles: false
+            });
+            this.dispatchEvent(event);
+            this._inDocument = true;
+            if (this.parentComponent) {
+                this.parentComponent._childWillEnterDocument();
+            }
+            if (this.__shouldBuildIn) {
+                this._buildIn();
+            }
+            this._isElementAttachedToParent = true;
+            if (this.__shouldBuildOut) {
+                this._buildOut();
+            }
+        }
+    },
+
+    _childWillEnterDocument: {
+        value: function () {
+            if (this._componentsPendingBuildOut) {
+                while (this._componentsPendingBuildOut.length) {
+                    this._componentsPendingBuildOut.pop()._shouldBuildOut = true;
+                }
+            }
+        }
+    },
+
     /**
      * This function is called when the component element is added to the
      * document's DOM tree.
@@ -2659,7 +3233,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             var originalElement;
 
             if (firstTime) {
-// The element is now ready, so we can read the attributes that
+                // The element is now ready, so we can read the attributes that
                 // have been set on it.
                 originalElement = this.originalElement;
 
@@ -2713,13 +3287,17 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                     }
                 }
             }
-
         }
     },
 
+    /**
+     * @private
+     * @function
+     */
     _draw: {
         value: function () {
-            var element = this.element, descriptor;
+            var element = this.element,
+                descriptor;
 
             //Buffered/deferred element attribute values
             if(this.__elementAttributeValues !== null) {
@@ -2755,13 +3333,13 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                     }
                 }
             }
+
             // classList
             this._drawClassListIntoComponent();
         }
     },
 
     /**
-     * @property {Set} value
      * @private
      */
     _classList: {
@@ -2994,7 +3572,6 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         }
     }
 });
-
 
 /**
  * @class RootComponent
@@ -3673,8 +4250,14 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                 console.groupCollapsed("didDraw - " + needsDrawList.length +
                                     (needsDrawList.length > 1 ? " components." : " component."));
             }
+            if (!this._didDrawEvent) {
+                this._didDrawEvent = new CustomEvent("didDraw", {
+                    bubbles: false
+                });
+            }
             for (i = 0; i < j; i++) {
                 component = needsDrawList[i];
+                component.dispatchEvent(this._didDrawEvent);
                 component.didDraw(this._frameTime);
                 if (!component._completedFirstDraw) {
                     firstDrawEvent = document.createEvent("CustomEvent");
