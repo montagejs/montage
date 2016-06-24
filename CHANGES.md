@@ -1,3 +1,13 @@
+### v16.0.0
+
+-  **Succession**
+
+   A new control-flow component in the vein of repetition, substitution, condition, that helps build linear, hierarchical user interfaces. Samples in .info
+
+-  **Adds ImageGallery component and sample**
+
+-  **Experimental: Build-in/out**
+
 ### v0.15.2
 
 -  **EventManager**
