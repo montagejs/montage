@@ -1,12 +1,28 @@
 ### v16.0.0
 
--  **Succession**
+A big, long due and tested release that brings many bug fixes and performance optimizations through montage, collections and frb, as well as some new features and components. Load time has also improved significantly.
 
-   A new control-flow component in the vein of repetition, substitution, condition, that helps build linear, hierarchical user interfaces. Samples in .info
+-  **Improvements to Event Management**
+  
+    Besides performance improvements, composers improved significantly in stability, support for PointerEvents was added, composers' interactions and nesting was improved as well. Work was donne to suppress "emulated" mouse events on touch within the framework.
+
+-  **Succession**
+   
+    A new control-flow component in the vein of repetition, substitution, condition, that helps build linear, hierarchical user interfaces. Samples in .info
 
 -  **Adds ImageGallery component and sample**
 
--  **Experimental: Build-in/out**
+-  **Improves support for IE10 and IE11**
+
+-  **Replaces Q-based Prommises with Bluebird-based Promises**
+  
+-  **Improvements to Loader and adds a new Montage Studio loader**
+
+-  **Improvements to Localizer**
+
+-  **Experimental: Component Build-in/out**
+    
+    This feature is not final yet and API may change. It allows the ability to address in CSS the moment when a Component enter and exit the document.
 
 ### v0.15.2
 
