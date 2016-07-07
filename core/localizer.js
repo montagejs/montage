@@ -881,20 +881,9 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                     self._isLocalizeQueued = false;
 
                         if (!self._key && !self._defaultMessage) {
-                            // TODO: Revisit when components inside repetitions aren't
-                            // uselessly instatiated.
+                            // TODO: Revisit when components inside repetitions aren't uselessly instatiated.
                             // While it might seem like we should reject here, when
-                            // repetitions get set up both the key and default message
-                            // are null/undefined. By rejecting the developer would
-                            // get an error whenever they use localization with a
-                            // repetition.
-                            // Instead we show a less severe "warning", so the issue
-                            // is still surfaced
-                            console.warn("Both key and default message are falsey for",
-                                self, "If this is in a repetition this warning can be ignored");
-
-                            self._messageFunction = Promise.resolve(EMPTY_STRING_FUNCTION);
-
+                            resolve(EMPTY_STRING_FUNCTION);
                             return;
                         }
 
