@@ -319,49 +319,17 @@ if (!String.prototype.endsWith) {
                         promiseLocation = URL.resolve(montageLocation, "node_modules/bluebird");
                     }
 
-                    // var weakMapLocation = URL.resolve(montageLocation,"node_modules/collections/node_modules/weak-map");
-                    // var weakMapDescription = {
-                    //     "name": "weak-map",
-                    //     "version": "1.0.0",
-                    //     "main": "weak-map.js",
-                    //     "readme": "ERROR: No README data found!",
-                    //     "_id": "weak-map@1.0.0",
-                    //     "_from": "weak-map@1.0.0",
-                    //     "scripts": {}
-                    // };
-
                     var result = [
                         montageRequire,
                         montageRequire.loadPackage({
                             location: promiseLocation,
                             hash: params.promiseHash
                         })
-                        // ,
-                        // montageRequire.loadPackage({
-                        //     location: weakMapLocation,
-                        //     hash: undefined
-                        // },null,weakMapDescription)
                     ];
 
-                    if(typeof global.WeakMap !== "function") {
-                        result.push(
-                            montageRequire.loadPackage({
-                                location: URL.resolve(montageLocation,"node_modules/collections/node_modules/weak-map"),
-                                hash: undefined
-                            },null,/*weakMapDescription*/{
-                                "name": "weak-map",
-                                "version": "1.0.0",
-                                "main": "weak-map.js",
-                                "readme": "ERROR: No README data found!",
-                                "_id": "weak-map@1.0.0",
-                                "_from": "weak-map@1.0.0",
-                                "scripts": {}
-                            })
-                        );
-                    }
                     return result;
                 })
-                .spread(function (montageRequire, promiseRequire, weakMapRequire) {
+                .spread(function (montageRequire, promiseRequire) {
                     montageRequire.inject("core/mini-url", URL);
                     montageRequire.inject("core/promise", {Promise: Promise});
                     promiseRequire.inject("bluebird", Promise);
@@ -369,36 +337,6 @@ if (!String.prototype.endsWith) {
                     promiseRequire.inject("js/browser/bluebird", Promise);
                     // montageRequire.inject("core/shim/string", String);
 
-                    if(typeof global.WeakMap !== "function") {
-                        weakMapRequire.inject("weak-map", window.WeakMap);
-                    }
-                    /*
-                    var weakMapLocation = URL.resolve(montageLocation,"node_modules/weak-map");
-                    var weakMapDescription = {
-                        "name": "weak-map",
-                        "version": "1.0.0",
-                        "main": "weak-map.js",
-                        "readme": "ERROR: No README data found!",
-                        "_id": "weak-map@1.0.0",
-                        "_from": "weak-map@1.0.0",
-                        "scripts": {}
-                    };
-                    var weakMapConfig = Require.makeRequire().config;
-                    var weakMapRequire = function (require, exports) {
-                        module.exports = window.WeakMap;
-                    };
-                    weakMapRequire.config = weakMapConfig;
-                    Require.injectPackageDescription(weakMapLocation, weakMapDescription, montageRequire.config);
-
-                    Require.injectPackageDescription(weakMapLocation, weakMapDescription, weakMapConfig);
-                    Require.injectLoadedPackageDescription(weakMapLocation, weakMapDescription, weakMapConfig, weakMapRequire);
-                    //Require.injectLoadedPackage(weakMapLocation, weakMapDescription, config);
-
-                    //montageRequire.inject("weak-map", );
-                    //montageRequire.inject("weak-map", window.WeakMap);
-                    // montageRequire.inject("collections/weak-map", window.WeakMap);
-                    // montageRequire.inject("weak-map/weak-map", window.WeakMap);
-*/
                     // install the linter, which loads on the first error
                     config.lint = function (module) {
                         montageRequire.async("core/jshint")
@@ -865,13 +803,6 @@ if (!String.prototype.endsWith) {
                 exports.resolve = resolve;
             });
 
-            //Special Case WeakMap for now:
-            // if(typeof window.WeakMap === "function") {
-            //     global.bootstrap("weak-map", function (require, exports) {
-            //         module.exports = window.WeakMap;
-            //     });
-            // }
-
             // miniature module system
             var bootModules = {};
             function bootRequire(id) {
@@ -902,41 +833,9 @@ if (!String.prototype.endsWith) {
             }
 
         },
-        weakMapModule: function weak_map__weak_map(require, exports, module) {
-            module.exports = window.WeakMap;
-        },
-        weakMapPackageDescription: {
-            "name": "weak-map",
-            "version": "1.0.0",
-            "main": "weak-map.js",
-            "readme": "ERROR: No README data found!",
-            "_id": "weak-map@1.0.0",
-            "_from": "weak-map@1.0.0",
-            "scripts": {}
-        },
-
-        requireWillLoadPackageDescriptionAtLocation: function(location,dependency, config) {
-            if(window.WeakMap && location.indexOf("weak-map") !== -1) {
-                return Promise.resolve(JSON.stringify(this.weakMapPackageDescription));
-            }
-            //console.log("requireWillLoadPackageDescriptionAtLocation(",config,location,")");
-        },
-        didCreatePackage: function(package) {
-            if(package.name === "weak-map") {
-                package.delegate = this;
-            }
-        },
-        packageWillLoadModuleAtLocation: function(module,location) {
-            if(module.id === "weak-map") {
-                module.location = location;
-                module.factory = this.weakMapModule;
-                return Promise.resolve(module);
-            }
-        },
-
         initMontage: function (montageRequire, applicationRequire, params) {
 
-            exports.Require.delegate = this;
+            //exports.Require.delegate = this;
 
             var dependencies = [
                 "core/core",
