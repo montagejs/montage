@@ -1,3 +1,10 @@
+### v16.0.1
+
+- Addresses a bug in Mopped Apps caused by special handling of WeakMap shimming in montage.js. The goal was to avoid to require the module that contains the shim in collections at all. We'll re-visit that optimization later and apply it to Map and Set as well. 
+
+- Fixes an infinite loop in localizer in IE11 when key and values are both undefined
+
+
 ### v16.0.0
 
 A big, long due and tested release that brings many bug fixes and performance optimizations through montage, collections and frb, as well as some new features and components. Load time has also improved significantly.
