@@ -2209,6 +2209,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     _leTagArguments: {
         value: function () {
+            if (this === this.rootComponent) {
+                return;
+            }
             //jshint -W106
             var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
             var label = this._montage_metadata.label;
