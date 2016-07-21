@@ -151,6 +151,33 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     //     }
     // },
 
+    _promise: {
+        value: undefined
+    },
+
+    promise: {
+        get: function () {
+            return this._promise;
+        },
+        set: function (value) {
+            var self = this;
+            var test = function promiseResolved(){
+                            if (promiseResolved.promise === self._promise){
+                                self._promise = undefined;
+                            }
+                        };
+
+            if (this._promise !== value) {
+                this._promise = value;
+
+                if (this._promise){
+                    test.promise = value;
+                    this._promise.then(test); 
+                }
+            }
+        }
+    },
+
     /**
         The amount of time in milliseconds the user must press and hold the button a <code>hold</code> event is dispatched. The default is 1 second.
         @type {number}
@@ -228,8 +255,10 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     */
     handlePressStart: {
         value: function (event) {
-            this.active = true;
-            this._addEventListeners();
+            if (!this._promise){
+                this.active = true;
+                this._addEventListeners();
+            }
 
             if (!this._preventFocus) {
                 this._element.focus();
@@ -242,22 +271,26 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     */
     handlePress: {
         value: function (event) {
-            this.active = false;
-            this._dispatchActionEvent();
-            this._removeEventListeners();
+            if (!this._promise){
+                this.active = false;
+                this._dispatchActionEvent();
+                this._removeEventListeners();
+            }
         }
     },
 
     handleLongPress: {
         value: function(event) {
-            // When we fire the "hold" event we don't want to fire the
-            // "action" event as well.
-            this._pressComposer.cancelPress();
-            this._removeEventListeners();
+            if (!this._promise){
+                // When we fire the "hold" event we don't want to fire the
+                // "action" event as well.
+                this._pressComposer.cancelPress();
+                this._removeEventListeners();
 
-            var longActionEvent = document.createEvent("CustomEvent");
-            longActionEvent.initCustomEvent("longAction", true, true, null);
-            this.dispatchEvent(longActionEvent);
+                var longActionEvent = document.createEvent("CustomEvent");
+                longActionEvent.initCustomEvent("longAction", true, true, null);
+                this.dispatchEvent(longActionEvent);
+            }
         }
     },
 
@@ -329,6 +362,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 //this.classList.add("montage-Button");
                 this.element.setAttribute("role", "button");
                 this.element.addEventListener("keyup", this, false);
+                this.defineBinding("classList.has('montage--pending')", {"<-": "this._promise"});
             }
         }
     },

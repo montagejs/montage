@@ -61,6 +61,10 @@ header {
     justify-content: center;
 }
 
+.button.montage--pending {
+    background:red;
+}
+
 .montage-Text {
     display: block;
     margin-top: 40px;
