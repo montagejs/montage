@@ -6,7 +6,8 @@
         {
             "owner": {
                 "properties": {
-                    "element": {"#": "main"}
+                    "element": {"#": "main"},
+                    "promiseButton": {"@": "promiseButton"}
                 },
                 "listeners":[
                     {
@@ -44,6 +45,14 @@
                 }
             },
 
+            "promiseButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "button-promise"},
+                    "label": "promise"
+                }
+            },
+
             "text": {
                 "prototype": "montage/ui/text.reel",
                 "properties": {
@@ -63,6 +72,7 @@
             <div data-montage-id="button-custom" class="button custom"></div>
             <input data-montage-id="button-input" type="button" class="button native"></input>
             <button data-montage-id="button-native" class="button native"></button>
+            <button data-montage-id="button-promise" class="button"></button>
             <span data-montage-id="text"></span>
         </section>
     </div>
