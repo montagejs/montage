@@ -210,6 +210,14 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                 expect(eventManager.registeredEventListenersForEventType_onTarget_phase_("mousedown",testDocument,true)).toBeNull();
             });
 
+            it("should not record a listener already listening to the same event type", function () {
+                var listener = new Montage();
+                testDocument.addEventListener("mousedown", listener, false);
+                testDocument.addEventListener("mousedown", listener, false);
+
+                expect(eventManager.registeredEventListenersForEventType_onTarget_phase_("mousedown", testDocument,false)).toEqual(listener);
+            });
+
             it("should add a native event listener when the first listener for an eventType is added for a target", function () {
                 var listener = {},
                     eventType = UUID.generate();
