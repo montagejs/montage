@@ -28,7 +28,7 @@ function createPage(url) {
                 iframe.onload = null;
                 iframe.onerror = null;
             }
-            
+
             iframe.style.display = "none";
             document.body.appendChild(iframe);
 
@@ -1369,17 +1369,18 @@ describe("reel/template-spec", function () {
             })
         });
 
-        it("should fail when star and other parameters were declared", function () {
+        it("should not fail when star and other parameters were declared", function () {
             var html = require("reel/template/template-parameters-error.html").content;
 
             return template.initWithHtml(html)
             .then(function () {
-                try {
-                    template.getParameters();
-                    expect("call").toBe("fail");
-                } catch (ex) {
-                    expect(true).toBe(true);
-                }
+                var templateParameters = template.getParameters(),
+                    templateParameterKeys = Object.keys(templateParameters);
+
+                expect(templateParameterKeys.length).toBe(3);
+                expect(templateParameterKeys).toContain("*");
+                expect(templateParameterKeys).toContain("leftSide");
+                expect(templateParameterKeys).toContain("rightSide");
             })
         });
 
