@@ -1010,7 +1010,7 @@ if (typeof window !== "undefined") { // client-side
                     }
                     else {
                       listeners = eventTypeRegistration.get(target);
-                      if(Array.isArray(listeners)) {
+                      if (Array.isArray(listeners)) {
                           listenerRegistration = (listeners.indexOf(listener) !== -1);
                           if (listenerRegistration) {
                               returnResult = true;
@@ -1018,15 +1018,15 @@ if (typeof window !== "undefined") { // client-side
                               listeners.push(listener);
                               returnResult = true;
                           }
-                      }
-                      else {
-                          listeners = [listeners,listener];
-                          eventTypeRegistration.set(target,listeners);
+                      } else {
+                          if (listeners !== listener) {
+                              listeners = [listeners,listener];
+                              eventTypeRegistration.set(target,listeners);
+                          }
+
                           returnResult = true;
                       }
-
                     }
-
                 }
 
                 if (isNewTarget && typeof target.nativeAddEventListener === "function") {
