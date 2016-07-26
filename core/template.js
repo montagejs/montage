@@ -469,12 +469,6 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 parameters[parameterName] = element;
             }
 
-            if ("*" in parameters && elementsCount > 1) {
-                throw new Error('The star "*" template parameter was declared' +
-                    ' when other parameters were also present in ' +
-                    this.getBaseUrl() + ': ' + Object.keys(parameters) + '.');
-            }
-
             return parameters;
         }
     },

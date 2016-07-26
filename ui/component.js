@@ -2360,7 +2360,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     _validateTemplateArguments: {
         value: function (templateArguments, templateParameters) {
             var parameterNames = templateParameters ? Object.keys(templateParameters) : void 0,
-                argumentNames,
                 param;
 
             // If the template does not have parameters it is up to the
@@ -2369,38 +2368,24 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 return;
             }
 
-            // if (templateArguments == null) {
-            //     if (parameterNames.length > 0) {
-            //         return new Error('No arguments provided for ' +
-            //         this.templateModuleId + '. Arguments needed: ' +
-            //         parameterNames + '.');
-            //     }
-            // } else {
-                if ("*" in templateParameters) {
-                    argumentNames = templateArguments ? Object.keys(templateArguments) : void 0;
-                    if (argumentNames && argumentNames.length > 0) {
-                        return new Error('Arguments "' + argumentNames +
-                        '" were given to component but no named parameters ' +
-                        'are defined in ' + this.templateModuleId);
-                    }
-                } else {
-                    // All template parameters need to be satisfied.
-                    for (param in templateParameters) {
-                        if (!(param in templateArguments)) {
-                            return new Error('"' + param + '" argument not ' +
-                            'given in ' + this.templateModuleId);
-                        }
-                    }
-                    // Arguments for non-existant parameters are not allowed.
-                    // Only the star argument is allowed.
-                    for (param in templateArguments) {
-                        if (param !== "*" && !(param in templateParameters)) {
-                            return new Error('"' + param + '" parameter does ' +
-                            'not exist in ' + this.templateModuleId);
-                        }
+            // Arguments for non-existant parameters are not allowed.
+            // Only the star argument is allowed.
+            for (param in templateArguments) {
+                if (param !== "*" && !(param in templateParameters)) {
+                    return new Error('"' + param + '" parameter does ' +
+                        'not exist in ' + this.templateModuleId);
+                }
+            }
+
+            var elementWithStarParameter = templateParameters["*"];
+
+            if (elementWithStarParameter) {
+                for (param in templateParameters) {
+                    if (param !== "*" && elementWithStarParameter.contains(templateParameters[param])) {
+                        return new Error('"' + param + '" parameter cannot be used within an element with the star parameter');
                     }
                 }
-            // }
+            }
         }
     },
 

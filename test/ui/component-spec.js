@@ -798,7 +798,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                 expect(validation).toBeDefined();
             });
 
-            it("should fail when no arguments are given and named parameters are not satisfied", function () {
+            it("should not fail when no arguments are given and named parameters are not satisfied", function () {
                 var templateArguments = {
                     },
                     templateParameters = {
@@ -808,10 +808,26 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
 
                 validation = Component.prototype._validateTemplateArguments(
                     templateArguments, templateParameters);
+                expect(validation).not.toBeDefined();
+            });
+
+            it("should fail when a named parameters is within an element within a star parameter", function () {
+                var star = document.createElement("div"),
+                    named = document.createElement("div");
+
+                star.appendChild(named);
+
+                var templateParameters = {
+                        "*": star,
+                        "named": named
+                    },
+                    validation;
+
+                validation = Component.prototype._validateTemplateArguments({}, templateParameters);
                 expect(validation).toBeDefined();
             });
 
-            it("should fail when any parameter is not satisfied", function () {
+            it("should not fail when some parameter are not satisfied", function () {
                 var templateArguments = {
                         "right": document.createElement("div")
                     },
@@ -823,7 +839,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
 
                 validation = Component.prototype._validateTemplateArguments(
                     templateArguments, templateParameters);
-                expect(validation).toBeDefined();
+                expect(validation).not.toBeDefined();
             });
 
             it("should fail when a parameter does not exist", function () {
