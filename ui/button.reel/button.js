@@ -163,6 +163,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
             var self = this;
             var test = function promiseResolved(){
                             if (promiseResolved.promise === self._promise){
+                                self.classList.remove('montage--pending');
                                 self._promise = undefined;
                             }
                         };
@@ -171,6 +172,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 this._promise = value;
 
                 if (this._promise){
+                    this.classList.add('montage--pending')
                     test.promise = value;
                     this._promise.then(test); 
                 }
@@ -362,7 +364,6 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 //this.classList.add("montage-Button");
                 this.element.setAttribute("role", "button");
                 this.element.addEventListener("keyup", this, false);
-                this.defineBinding("classList.has('montage--pending')", {"<-": "this._promise"});
             }
         }
     },
