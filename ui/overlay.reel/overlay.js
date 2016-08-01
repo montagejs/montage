@@ -240,15 +240,18 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
      */
     surrendersActiveTarget: {
         value: function (candidateActiveTarget) {
-            if (!this.isShown || !this.isModal) {
-                return true;
+            var response = !(this.isModal && this.isShown),
+                delegateResponse;
+
+            if (!response && candidateActiveTarget.element) {
+                response =  this.element.contains(candidateActiveTarget.element);
             }
 
-            if (candidateActiveTarget.element) {
-                return this.element.contains(candidateActiveTarget.element);
-            } else {
-                return false;
-            }
+            delegateResponse = this.callDelegateMethod(
+                "overlayShouldDismissOnSurrenderActiveTarget", this, candidateActiveTarget, response
+            );
+
+            return delegateResponse !== void 0 ? delegateResponse : response;
         }
     },
 
