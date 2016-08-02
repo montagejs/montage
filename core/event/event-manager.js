@@ -979,12 +979,7 @@ if (typeof window !== "undefined") { // client-side
         _registerEventListener: {
             enumerable: false,
             value: function _registerEventListener(target, eventType, listener, registeredEventListeners) {
-
-                // console.log("EventManager.registerEventListener", target, eventType, listener, useCapture)
-
                 var eventTypeRegistration = registeredEventListeners.get(eventType),
-                    listenerRegistration,
-                    phase,
                     isNewTarget = false,
                     returnResult = false,
                     listeners;
@@ -1011,8 +1006,7 @@ if (typeof window !== "undefined") { // client-side
                     else {
                       listeners = eventTypeRegistration.get(target);
                       if (Array.isArray(listeners)) {
-                          listenerRegistration = (listeners.indexOf(listener) !== -1);
-                          if (listenerRegistration) {
+                          if (listeners.indexOf(listener) !== -1) {
                               returnResult = true;
                           } else {
                               listeners.push(listener);
@@ -1032,8 +1026,6 @@ if (typeof window !== "undefined") { // client-side
                 if (isNewTarget && typeof target.nativeAddEventListener === "function") {
                     this._observeTarget_forEventType_(target, eventType);
                 }
-
-                // console.log("EventManager.registeredEventListeners", this.registeredEventListeners)
 
                 return returnResult;
             }
