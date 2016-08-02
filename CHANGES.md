@@ -1,3 +1,24 @@
+### v16.0.2
+
+- Addresses a regression around live edit and rootComponent 
+
+- Adds promise property to Button along with "montage--pending" matching CSS state. 
+Useful to handle actions that triggers asynchronous work, now Button when set promise will become
+unresponsive until promise resolves.
+
+- Improvements with the injection of templates:
+    - Named parameters are not mandatory anymore.
+    - Adds support of named parameters and start parameter at the same level.
+
+- Addresses a bug where some events would be dispatched twice when a certain pattern of add/removeEventListener
+
+- Fixes an issue with condition component
+
+- Improvement when the overlay component should surrender when it the active target:
+    - Surrender when the overlay is not a modal and shown.
+    - Add overlayShouldDismissOnSurrenderActiveTarget delegate method in order to override the default response.
+
+
 ### v16.0.1
 
 - Addresses a bug in Mopped Apps caused by special handling of WeakMap shimming in montage.js. The goal was to avoid to require the module that contains the shim in collections at all. We'll re-visit that optimization later and apply it to Map and Set as well. 
