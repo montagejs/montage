@@ -439,6 +439,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         value: function (event) {
             var keyCode,
                 identifierCode,
+                keyIdentifier = event.key || event.keyIdentifier,
                 submap,
                 stopped = false;
 
@@ -457,9 +458,9 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 }
 
                 // Check the keyIdentifier for a match
-                if (!stopped && event.keyIdentifier) {
-                    identifierCode = KEYNAMES_TO_KEYCODES[event.keyIdentifier.toLowerCase()] ||
-                        this._decodeKeyIdentifier(event.keyIdentifier);
+                if (!stopped && keyIdentifier) {
+                    identifierCode = KEYNAMES_TO_KEYCODES[keyIdentifier.toLowerCase()] ||
+                        this._decodeKeyIdentifier(keyIdentifier);
                     if (identifierCode && identifierCode !== keyCode && submap[identifierCode]) {
                         this._dispatchComposerKeyMatches(submap[identifierCode], event);
                     }
@@ -473,6 +474,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     captureKeypress: {
         value: function (event) {
             var charCode = event.charCode,
+                keyIdentifier = event.key || event.keyIdentifier,
                 keyCode,
                 identifierCode,
                 submap,
@@ -498,9 +500,9 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 }
 
                 // Check the keyIdentifier for a match
-                if (!stopped && event.keyIdentifier) {
-                    identifierCode = KEYNAMES_TO_KEYCODES[event.keyIdentifier.toLowerCase()] ||
-                        this._decodeKeyIdentifier(event.keyIdentifier);
+                if (!stopped && keyIdentifier) {
+                    identifierCode = KEYNAMES_TO_KEYCODES[keyIdentifier.toLowerCase()] ||
+                        this._decodeKeyIdentifier(keyIdentifier);
                     if (identifierCode && identifierCode !== keyCode && submap[identifierCode]) {
                         this._dispatchComposerKeyMatches(submap[identifierCode], event);
                     }
@@ -514,6 +516,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     captureKeyup: {
         value: function (event) {
             var keyCode = event.keyCode,
+                keyIdentifier = event.key || event.keyIdentifier,
                 identifierCode,
                 submap,
                 dispatchedKeyCode = 0,
@@ -539,9 +542,9 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 }
 
                 // Check the keyIdentifier for a match
-                if (!stopped && event.keyIdentifier) {
-                    identifierCode = KEYNAMES_TO_KEYCODES[event.keyIdentifier.toLowerCase()] ||
-                        this._decodeKeyIdentifier(event.keyIdentifier);
+                if (!stopped && keyIdentifier) {
+                    identifierCode = KEYNAMES_TO_KEYCODES[keyIdentifier.toLowerCase()] ||
+                        this._decodeKeyIdentifier(keyIdentifier);
                     if (identifierCode && identifierCode !== dispatchedKeyCode && submap[identifierCode]) {
                         stopped = this._dispatchComposerKeyMatches(submap[identifierCode], event);
                     }
@@ -609,6 +612,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
             var thisRef = this,
                 eventType = event.type,
                 keyCode = event.keyCode,
+                keyIdentifier = event.key || event.keyIdentifier,
                 modifiers,
                 value;
 
@@ -663,7 +667,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
 
             if (this._chrome) {
                 // Chrome (at least on Mac) generate the same keycode for the NumKeyPad = and NumKeyPad +
-                if (!this._shiftKey && keyCode == KEYNAMES_TO_KEYCODES.plus && event.keyIdentifier == "U+002B") {
+                if (!this._shiftKey && keyCode == KEYNAMES_TO_KEYCODES.plus && keyIdentifier == "U+002B") {
                     event.keyCode = KEYNAMES_TO_KEYCODES.add;
                 }
             }
@@ -675,7 +679,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
 
             this._submap = this._composerKeyMap[modifiers];
             this._keyCode = event.keyCode;
-            this._keyIdentifier = event.keyIdentifier;
+            this._keyIdentifier = keyIdentifier;
         }
     },
 
