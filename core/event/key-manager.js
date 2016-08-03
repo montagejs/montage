@@ -411,7 +411,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
             // Generate the KEYNAMES dictionary
             KEYCODES_TO_KEYNAMES = {};
             for (var keyName in KEYNAMES_TO_KEYCODES) {
-                var code = KEYNAMES_TO_KEYCODES[keyName];
+                code = KEYNAMES_TO_KEYCODES[keyName];
                 if (KEYCODES_TO_KEYNAMES[code] === undefined) {
                     // If we have more than one name for a keycode, use only the first one
                     KEYCODES_TO_KEYNAMES[code] = keyName;
@@ -421,7 +421,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
             // Generate the NORMALIZED_CHARS dictionary
             NORMALIZED_CHARS = {};
             for (var keyName in NORMALIZED_KEYS) {
-                var code = NORMALIZED_KEYS[keyName];
+                code = NORMALIZED_KEYS[keyName];
                 if (NORMALIZED_CHARS[code] === undefined) {
                     // If we have more than one name for a char, use only the first one
                     NORMALIZED_CHARS[code] = keyName;
