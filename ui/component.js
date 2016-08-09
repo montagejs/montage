@@ -2295,13 +2295,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 range,
                 component;
 
-            if (!this._template.hasParameters() && templateArguments && templateArguments.length === 1) {
-                return;
-            }
-
-            validation = this._validateTemplateArguments(templateArguments, parameters);
-
-            if (validation) {
+            if ((validation = this._validateTemplateArguments(templateArguments, parameters))) {
                 throw validation;
             }
 
