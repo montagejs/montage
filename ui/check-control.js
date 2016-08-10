@@ -46,8 +46,18 @@ exports.CheckControl =  Control.specialize({
             this.addComposer(pressComposer);
             pressComposer.addEventListener("pressStart", this, false);
             pressComposer.addEventListener("press", this, false);
-            
+            pressComposer.addEventListener("cancel", this, false);
             this._element.addEventListener('change', this);
+        }
+    },
+
+    toggleChecked: {
+        value: function () {
+            if (!this.enabled) {
+                return;
+            }
+            this.checked = !this.checked;
+            this.dispatchActionEvent();
         }
     },
 
@@ -92,7 +102,18 @@ exports.CheckControl =  Control.specialize({
 
     handlePressStart: {
         value: function(event) {
-            this._shouldFakeCheck = event.defaultPrevented;
+            if (this.hasStandardElement){
+                this._shouldFakeCheck = event.defaultPrevented;
+            }else {
+                this.active = true;
+
+                if (event.touch) {
+                    // Prevent default on touchmove so that if we are inside a scroller,
+                    // it scrolls and not the webpage
+                    document.addEventListener("touchmove", this, false);
+                }
+            }
+            
         }
     },
 
@@ -102,6 +123,22 @@ exports.CheckControl =  Control.specialize({
             if (this._shouldFakeCheck) {
                 this._shouldFakeCheck = false;
                 this._fakeCheck();
+            }
+
+            if (!this.hasStandardElement) {
+                this.active = false;
+                this.toggleChecked();
+
+            }
+
+        }
+    },
+
+    handlePressCancel: {
+        value: function (/* event */) {
+            if (!this.hasStandardElement) {
+                this.active = false;
+                document.removeEventListener("touchmove", this, false);
             }
         }
     },

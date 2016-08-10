@@ -18,5 +18,9 @@ var Checkbox = exports.Checkbox = CheckControl.specialize({
                 this.element.setAttribute("role", "checkbox");
             }
         }
+    },
+
+    hasTemplate: {
+        value: false
     }
 });
