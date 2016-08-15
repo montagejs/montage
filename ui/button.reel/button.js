@@ -249,7 +249,8 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         value: function (mutableEvent) {
             // when focused action event on spacebar & enter
             // FIXME - property identifier is not set on the mutable event
-            if (mutableEvent._event.identifier === "space" || "enter") {
+            if (mutableEvent._event.identifier === "space" ||
+                mutableEvent._event.identifier === "enter") {
                 this.active = false;
                 this._dispatchActionEvent();
             }
