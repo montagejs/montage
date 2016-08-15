@@ -4,6 +4,7 @@
     @module "montage/ui/native/button.reel"
 */
 var Control = require("ui/control").Control,
+    KeyComposer = require("composer/key-composer").KeyComposer,
     PressComposer = require("composer/press-composer").PressComposer;
 
 // TODO migrate away from using undefinedGet and undefinedSet
@@ -174,7 +175,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 if (this._promise){
                     this.classList.add('montage--pending')
                     test.promise = value;
-                    this._promise.then(test); 
+                    this._promise.then(test);
                 }
             }
         }
@@ -211,12 +212,47 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         }
     },
 
+    __spaceKeyComposer: {
+        value: null
+    },
+
+    _spaceKeyComposer: {
+        get: function () {
+            if (!this.__spaceKeyComposer) {
+                this.__spaceKeyComposer = KeyComposer.createKey(this, "space", "space");
+            }
+            return this.__spaceKeyComposer;
+        }
+    },
+
+    _enterKeyComposer: {
+        get: function () {
+            if (!this.__enterKeyComposer) {
+                this.__enterKeyComposer = KeyComposer.createKey(this, "enter", "enter");
+            }
+            return this.__enterKeyComposer;
+        }
+    },
+
     // HTMLInputElement/HTMLButtonElement methods
     // click() deliberately omitted (it isn't available on <button> anyways)
 
     prepareForActivationEvents: {
         value: function () {
             this._pressComposer.addEventListener("pressStart", this, false);
+            this._spaceKeyComposer.addEventListener("keyPress", this, false);
+            this._enterKeyComposer.addEventListener("keyPress", this, false);
+        }
+    },
+
+    handleKeyPress: {
+        value: function (mutableEvent) {
+            // when focused action event on spacebar & enter
+            // FIXME - property identifier is not set on the mutable event
+            if (mutableEvent._event.identifier === "space" || "enter") {
+                this.active = false;
+                this._dispatchActionEvent();
+            }
         }
     },
 
