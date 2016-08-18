@@ -24,10 +24,15 @@ header {
 
 .slider-container {
     width: 60%;
+    min-height:50px;
     margin-top: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.slider-container.vertical {
+    margin-top: 120px;
 }
 
 .slider[aria-orientation="horizontal"], .slider.A, .slider.D  {
@@ -130,3 +135,30 @@ div.input-text {
     min-width:100%;
     min-height:20px;
 }*/
+
+.sliderWithStickyLabel {
+    color: #252525;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.5;
+    position: relative;
+    height: 40px;
+    width: 100%;
+    outline: 1px #777 solid;
+    box-sizing: border-box;
+}
+
+.sliderWithStickyLabel:focus {
+    outline: none;
+}
+
+.sliderWithStickyLabel .montage-Slider--track{
+    height:3px;
+    background:black;
+}
+
+.stickyThumbLabel{
+    display:inline-block;
+    transform: translate(-10%, -100%);
+    color: black;
+}
