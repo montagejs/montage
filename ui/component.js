@@ -2286,8 +2286,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     _bindTemplateParametersToArguments: {
         value: function () {
             var parameters = this._templateDocumentPart ? this._templateDocumentPart.parameters : null,
-                parameter,
-                templateArguments,
+                templateArguments = this._domArguments,
+                parameterElement,
                 argument,
                 validation,
                 contents,
@@ -2295,52 +2295,35 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 range,
                 component;
 
-            templateArguments = this._domArguments;
-
-            if (!this._template.hasParameters() && templateArguments &&
-                templateArguments.length === 1) {
-                return;
-            }
-
-            //No arguments passed, we're going to check if we have defaults
-            if(!templateArguments) {
-
-            }
-
-
-            validation = this._validateTemplateArguments(
-                templateArguments, parameters);
-            if (validation) {
+            if ((validation = this._validateTemplateArguments(templateArguments, parameters))) {
                 throw validation;
             }
 
             for (var key in parameters) {
-                parameter = parameters[key];
+                parameterElement = parameters[key];
                 argument = templateArguments ? templateArguments[key] : void 0;
 
                 if ((key === "*") || (key === "each")) {
                     if (this._element.childElementCount === 0) {
                      //We're missing an argument, we're going to check if we have a default
-                         if(parameter && parameter.childElementCount > 0) {
+                         if (parameterElement && parameterElement.childElementCount > 0) {
                              range = this._element.ownerDocument.createRange();
-                             range.selectNodeContents(parameter);
-                             parameter.parentNode.replaceChild(range.extractContents(),parameter);
+                             range.selectNodeContents(parameterElement);
+                             parameterElement.parentNode.replaceChild(range.extractContents(), parameterElement);
 
                             //Should we re-construct the structure from the default?
                             //  if(!templateArguments) {
                             //      templateArguments = this._domArguments = {"*":};
                             //
                             //  }
-                         }
-                         else {
+                         } else {
                             //  throw new Error('No arguments provided for ' +
                             //  this.templateModuleId + '. Arguments needed for data-param: ' +
                             //  key + '.');
                             //Remove the data-parm="*" element
-                            parameter.parentNode.removeChild(parameter);
+                            parameterElement.parentNode.removeChild(parameterElement);
                          }
-                    }
-                    else {
+                    } else {
                         range = this._element.ownerDocument.createRange();
                         range.selectNodeContents(this._element);
                         contents = range.extractContents();
@@ -2349,10 +2332,22 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     contents = argument;
                 }
 
-                if(contents) {
+                if (contents) {
+                    var i, length;
+
+                    if (contents instanceof Element) {
+                        var classList = parameterElement.classList,
+                            contentsClassList = contents.component ? contents.component.classList : contents.classList;
+
+                        for (i = 0, length = classList.length; i < length; i++) {
+                            contentsClassList.add(classList[i]);
+                        }
+                    }
+
                     components = this._findAndDetachComponents(contents);
-                    parameter.parentNode.replaceChild(contents, parameter);
-                    for (var i = 0; (component = components[i]); i++) {
+                    parameterElement.parentNode.replaceChild(contents, parameterElement);
+
+                    for (i = 0; (component = components[i]); i++) {
                         component.attachToParentComponent();
                     }
                 }
