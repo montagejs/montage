@@ -667,7 +667,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
 
             if (this._chrome) {
                 // Chrome (at least on Mac) generate the same keycode for the NumKeyPad = and NumKeyPad +
-                if (!this._shiftKey && keyCode == KEYNAMES_TO_KEYCODES.plus && keyIdentifier == "U+002B") {
+                if (!this._shiftKey && keyCode == KEYNAMES_TO_KEYCODES.plus && (keyIdentifier === "U+002B" || keyIdentifier === "+")) {
                     event.keyCode = KEYNAMES_TO_KEYCODES.add;
                 }
             }
