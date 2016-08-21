@@ -3496,7 +3496,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     if((typeof value !== 'undefined') && this[attributeName] !== value) {
                         setter ? setter.call(this,value) : (this[attributeName] = value);
                         this._elementAttributeValues[name] = value;
-                        if(fromInput === false) {
+                        if (!fromInput) {
                             this.needsDraw = true;
                         }
                     }
