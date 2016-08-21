@@ -142,7 +142,9 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
             return !this._disabled;
         },
         set: function (value) {
-            this.disabled = !value;
+            if (typeof value === "boolean") {
+                this.disabled = !value;
+            }
         }
     },
 
