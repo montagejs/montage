@@ -3,6 +3,7 @@
 */
 
 var Component = require("ui/component").Component,
+    deprecate = require("core/deprecate"),
     Map = require("collections/map");
 
 /**
@@ -139,9 +140,11 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
 
     enabled: {
         get: function () {
+            deprecate.deprecationWarning("enabled", "disabled");
             return !this._disabled;
         },
         set: function (value) {
+            deprecate.deprecationWarning("enabled", "disabled");
             if (typeof value === "boolean") {
                 this.disabled = !value;
             }
