@@ -161,8 +161,20 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     return object;
                 }
 
-                return this.reviveValue(value.value, context, label);
+                var revivedValue;
 
+                if (this.getTypeOf(value.value) === "Element") {
+                    revivedValue = this.reviveObjectLiteral(value, context, label);
+
+                    if (!Promise.is(revivedValue)) {
+                        context.setUnitsToDeserialize(revivedValue.value, revivedValue, MontageReviver._unitNames);
+                    }
+                } else {
+                    revivedValue = this.reviveValue(value.value, context, label);
+                }
+
+                return revivedValue;
+                
             } else if (Object.keys(value).length === 0) {
                 // it's an external object
                 if (context.hasUserObject(label)) {
