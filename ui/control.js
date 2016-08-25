@@ -18,7 +18,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
             this.defineBindings({
                 // classList management
                 "classList.has('montage--disabled')": {
-                    "<-": "!enabled"
+                    "<-": "disabled"
                 },
                 "classList.has('montage--active')": {
                     "<-": "active"

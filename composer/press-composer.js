@@ -276,7 +276,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     _shouldPerformPress: {
         value: function () {
-            return !(("enabled" in this.component && !this.component.enabled) || this._observedPointer !== null);
+            return !(this.component.disabled || this._observedPointer !== null);
         }
     },
 
