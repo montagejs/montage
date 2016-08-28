@@ -713,11 +713,9 @@ describe("serialization/montage-deserializer-spec", function () {
             deserializer.init(serializationString, require);
 
             return deserializer.deserialize(null, element).then(function (objects) {
-                var registeredEventListeners;
+                var registeredEventListeners = defaultEventManager._registeredBubbleEventListeners.get("click");
 
-                if ((registeredEventListeners = defaultEventManager._registeredBubbleEventListeners.get("click"))) {
-                    expect(registeredEventListeners.get(element.firstElementChild) === objects.root).toBe(true);
-                }
+                expect(registeredEventListeners.get(element.firstElementChild) === objects.root).toBe(true);
             });
         });
 
