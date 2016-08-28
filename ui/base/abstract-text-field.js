@@ -153,12 +153,17 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(/
     draw: {
         value: function () {
             var displayValue = this.value,
-                typeOfDisplayValue;
+                typeOfDisplayValue,
+                
+                // FIXME: the cursor position should be also check in the new textField control
+                start = this.element.selectionStart,
+                end = this.element.selectionEnd;
 
             if (this.converter) {
                 displayValue = this.converter.convert(displayValue);
             }
 
+            // need to be check after the converter convert the value.
             typeOfDisplayValue = typeof displayValue;
 
             if (displayValue === null || typeOfDisplayValue === "undefined") {
@@ -167,6 +172,12 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(/
                 this.element.value = displayValue.toString();
             } else {
                 this.element.value = displayValue;
+            }
+
+            if (this.eventManager.activeTarget === this && typeof this.element.setSelectionRange === "function") {
+                // restore the previous cursor position.
+                // TODO: contenteditable?
+                this.element.setSelectionRange(start, end);
             }
 
             if (this.placeholderValue != null) {
