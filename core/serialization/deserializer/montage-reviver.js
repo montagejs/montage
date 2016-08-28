@@ -164,10 +164,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 var revivedValue;
 
                 if (this.getTypeOf(value.value) === "Element") {
-                    revivedValue = this.reviveObjectLiteral(value, context, label);
+                    revivedValue = this.reviveElement(value.value, context, label);
 
-                    if (!Promise.is(revivedValue)) {
-                        context.setUnitsToDeserialize(revivedValue.value, revivedValue, MontageReviver._unitNames);
+                    if (!Promise.is(revivedValue)) { 
+                        var montageObjectDesc = this.reviveObjectLiteral(value, context);
+                        context.setUnitsToDeserialize(revivedValue, montageObjectDesc, MontageReviver._unitNames);
                     }
                 } else {
                     revivedValue = this.reviveValue(value.value, context, label);
