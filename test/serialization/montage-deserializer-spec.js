@@ -695,6 +695,32 @@ describe("serialization/montage-deserializer-spec", function () {
             //}
         });
 
+        it("should deserialize an element reference and add event listeners", function () {
+            var serialization = {
+                    "root": {
+                        "value": {"#": "id"},
+                        "listeners": [
+                            {
+                                "type": "click",
+                                "listener": {"@": "root"}
+                            }
+                        ]
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            element.innerHTML = '<div data-montage-id="id">content</div>';
+            deserializer.init(serializationString, require);
+
+            return deserializer.deserialize(null, element).then(function (objects) {
+                var registeredEventListeners;
+
+                if ((registeredEventListeners = defaultEventManager._registeredBubbleEventListeners.get("click"))) {
+                    expect(registeredEventListeners.get(element.firstElementChild) === objects.root).toBe(true);
+                }
+            });
+        });
+
         //it("should deserialize an element reference through data-montage-id over id", function () {
         //    root.innerHTML = '<div id="id">content1</div>' +
         //                     '<div data-montage-id="id">content2</div>';
