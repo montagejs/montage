@@ -734,10 +734,11 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
                 if (this.selection.length) {
                     // ensure selection always has content
-                    if (this.content.length && this.avoidsEmptySelection && !this.allowsMultipleSelection) {
+                    if (this.content && this.content.length && this.avoidsEmptySelection && !this.allowsMultipleSelection) {
                         // selection can't contain previous content value as content already changed
                         this.selection.add(this.content[this.content.length - 1]);
                     }
+                    
                     this.selection.deleteEach(minus);
                 }
             }
