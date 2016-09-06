@@ -4302,7 +4302,7 @@ function loggerToString (object) {
     //jshint +W106
 }
 
-https://github.com/kangax/html-minifier/issues/63
+//https://github.com/kangax/html-minifier/issues/63
 //http://www.w3.org/TR/html-markup/global-attributes.html
 Component.addAttributes( /** @lends module:montage/ui/control.Control# */ {
 
