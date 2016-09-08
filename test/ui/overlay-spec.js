@@ -41,65 +41,71 @@ describe("ui/overlay-spec", function () {
             expect(anOverlay._drawPosition).toEqual({left: 300, top: 275});
         });
 
-        describe("element position", function () {
-            it("should find the position of an element with no offset parent", function () {
-                var anElement = MockDOM.element(),
-                    position;
-
-                anElement.offsetTop = 100;
-                anElement.offsetLeft = 200;
-
-                position = anOverlay._getElementPosition(anElement);
-                expect(position.top).toBe(100);
-                expect(position.left).toBe(200);
-            });
-
-            it("should find the position of an element with an offset parent", function () {
-                var anElement = MockDOM.element(),
-                    anElementParent = MockDOM.element(),
-                    position;
-
-                anElement.offsetTop = 100;
-                anElement.offsetLeft = 200;
-                anElement.offsetParent = anElementParent;
-                anElementParent.offsetTop = 2;
-                anElementParent.offsetLeft = 3;
-
-                position = anOverlay._getElementPosition(anElement);
-                expect(position.top).toBe(102);
-                expect(position.left).toBe(203);
-            });
-        });
-
         describe("anchor position", function () {
             it("should center the element bellow the anchor", function () {
-                var anAnchor = MockDOM.element();
+                var anAnchor = document.createElement("div"),
+                    anOverlayElement;
 
-                anAnchor.offsetTop = 100;
-                anAnchor.offsetLeft = 200;
-                anAnchor.offsetWidth = 100;
-                anAnchor.offsetHeight = 100;
+                anAnchor.style.position = "absolute";
+                anAnchor.style.top = "100px";
+                anAnchor.style.left = "200px";
+                anAnchor.style.width = "100px";
+                anAnchor.style.height = "100px";
+                anAnchor.style.backgroundColor = "red";
+
+                document.body.appendChild(anAnchor);
+
+                anOverlay._element = anOverlayElement = document.createElement("div");
+                anOverlayElement.style.position = "absolute";
+                anOverlayElement.style.top = 0;
+                anOverlayElement.style.left = 0;
+                anOverlayElement.style.zIndex = 9999;
+                anOverlayElement.style.width = "50px";
+                anOverlayElement.style.height = "100px";
+                anOverlayElement.style.backgroundColor = "green";
+
+                document.body.appendChild(anOverlayElement);
 
                 anOverlay.anchor = anAnchor;
-                anOverlay.element.offsetWidth = 50;
-                anOverlay.element.offsetHeight = 100;
                 anOverlay._calculatePosition();
+                anOverlayElement.style.top = anOverlay._drawPosition.top;
+                anOverlayElement.style.left = anOverlay._drawPosition.left;
+
+                document.body.removeChild(anOverlayElement);
+                document.body.removeChild(anAnchor);
 
                 expect(anOverlay._drawPosition).toEqual({left: 225, top: 200});
             });
 
             it("should center the element bellow the anchor and bump it to the right because it's left outside the screen", function () {
-                var anAnchor = MockDOM.element();
+                var anAnchor = document.createElement("div"),
+                    anOverlayElement;
 
-                anAnchor.offsetTop = 100;
-                anAnchor.offsetLeft = 0;
-                anAnchor.offsetWidth = 100;
-                anAnchor.offsetHeight = 100;
+                anAnchor.style.position = "absolute";
+                anAnchor.style.top = "100px";
+                anAnchor.style.left = 0;
+                anAnchor.style.width = "100px";
+                anAnchor.style.height = "100px";
+                anAnchor.style.backgroundColor = "red";
+
+                document.body.appendChild(anAnchor);
+
+                anOverlay._element = anOverlayElement = document.createElement("div");
+                anOverlayElement.style.position = "absolute";
+                anOverlayElement.style.top = 0;
+                anOverlayElement.style.left = 0;
+                anOverlayElement.style.zIndex = 9999;
+                anOverlayElement.style.width = "110px";
+                anOverlayElement.style.height = "100px";
+                anOverlayElement.style.backgroundColor = "green";
+
+                document.body.appendChild(anOverlayElement);
 
                 anOverlay.anchor = anAnchor;
-                anOverlay.element.offsetWidth = 110;
-                anOverlay.element.offsetHeight = 100;
                 anOverlay._calculatePosition();
+
+                document.body.removeChild(anOverlayElement);
+                document.body.removeChild(anAnchor);
 
                 expect(anOverlay._drawPosition).toEqual({left: 0, top: 200});
             });
