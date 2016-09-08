@@ -28,6 +28,12 @@ var KEYNAMES_TO_KEYCODES = {
     down:                   40,
     delete:                 46,
 
+    //https://www.w3.org/TR/uievents-key/
+    arrowup:                38,
+    arrowright:             39,
+    arrowdown:              40,
+    arrowdelete:            46,
+
     // W3C Optional Key Code (mostly for US keyboard layout)
     semicolon:              186,
     colon:                  186,
