@@ -339,23 +339,6 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
         }
     },
 
-    _getElementPosition: {
-        value: function (element) {
-            var left = 0,
-                top = 0;
-
-            do {
-                left += element.offsetLeft;
-                top += element.offsetTop;
-            } while (element = /* assignment */ element.offsetParent);
-
-            return {
-                top: top,
-                left: left
-            };
-        }
-    },
-
     _calculatePosition: {
         value: function () {
             var position,
@@ -383,7 +366,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
         value: function () {
             var anchor = this.anchor,
                 width = this.element.offsetWidth,
-                anchorPosition = this._getElementPosition(anchor),
+                anchorPosition = anchor.getBoundingClientRect(),
                 anchorHeight = anchor.offsetHeight || 0,
                 anchorWidth = anchor.offsetWidth || 0,
                 position;
