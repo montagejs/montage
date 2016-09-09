@@ -673,20 +673,10 @@ Should introduce a validate method
         }
     },
 
-    // /**
-    //  * Enables or disables the Button from user input. When this property is
-    //  * set to `false`, the "disabled" CSS style is applied to the button's DOM
-    //  * element during the next draw cycle. When set to `true` the "disabled"
-    //  * CSS class is removed from the element's class list.
-    //  * @type {boolean}
-    //  */
-    // enabled: {
-    //     value: true
-    // },
-
-    // axis: {
-    //     value: null
-    // },
+    /* this should be renamed orientation */
+    axis: {
+        value: null
+    },
 
     // Machinery
     _currentThumbIndex:  {
