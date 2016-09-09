@@ -12,6 +12,7 @@ require("./extras/function");
 require("./extras/regexp");
 require("./extras/string");
 
+var Map = require("collections/map");
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
     PROTO = "__proto__",
@@ -265,26 +266,6 @@ if (!PROTO_IS_SUPPORTED) {
     };
 }
 
-var extendedPropertyAttributes = [SERIALIZABLE];
-
-// Extended property attributes, the property name format is "_" + attributeName + "AttributeProperties"
-/**
- * @member external:Object#extendedPropertyAttributes
- */
-
- valuePropertyDescriptor.writable = true;
- valuePropertyDescriptor.configurable = false;
- valuePropertyDescriptor.enumerable = false;
-
-extendedPropertyAttributes.forEach(function (name) {
-    var propertyName = UNDERSCORE;
-
-    propertyName += name;
-    propertyName += ATTRIBUTE_PROPERTIES;
-    valuePropertyDescriptor.value = {};
-    Object.defineProperty(Object.prototype, propertyName, valuePropertyDescriptor);
-});
-
 /**
  * Defines a property on an object using a Montage property descriptor.
  * Montage property descriptors extend and slightly vary ECMAScript 5 property
@@ -440,23 +421,34 @@ var _defaultObjectValueProperty = {
 var _defaultFunctionValueProperty = {
     writable: true,
     enumerable: false,
-    configurable: true,
+    configurable: true
+    /*,
     serializable: false
+    */
 };
 
+var ObjectAttributeProperties = new Map();
 function getAttributeProperties(proto, attributeName, privateAttributeName) {
     var attributePropertyName = privateAttributeName || (UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES);
 
-    if (proto.hasOwnProperty(attributePropertyName)) {
-        return proto[attributePropertyName];
-    } else {
-        return Object.defineProperty(proto, attributePropertyName, {
-            enumerable: false,
-            configurable: false,
-            writable: true,
-            value: Object.create(getAttributeProperties(Object.getPrototypeOf(proto), attributeName, attributePropertyName))
-        })[attributePropertyName];
-    }
+        if(proto !== Object.prototype) {
+            if (proto.hasOwnProperty(attributePropertyName)) {
+                return proto[attributePropertyName];
+            } else {
+                return Object.defineProperty(proto, attributePropertyName, {
+                    enumerable: false,
+                    configurable: false,
+                    writable: true,
+                    value: Object.create(getAttributeProperties(Object.getPrototypeOf(proto), attributeName, attributePropertyName))
+                })[attributePropertyName];
+            }
+        }
+        else {
+            if(!ObjectAttributeProperties.has(attributeName)) {
+                ObjectAttributeProperties.set(attributeName,{});
+            }
+            return ObjectAttributeProperties.get(attributeName);
+        }
 }
 
 Montage.defineProperty(Montage, "didCreate", {
@@ -702,18 +694,23 @@ Montage.defineProperty(Montage.prototype, "superForSet", {
  */
 Montage.defineProperty(Montage, "getSerializablePropertyNames", {value: function (anObject) {
 
-    var propertyNames = [],
-        attributes = anObject._serializableAttributeProperties;
+
+    var propertyNames,
+        attributes = getAttributeProperties(anObject, SERIALIZABLE);
 
     if (attributes) {
+        propertyNames = []
         for (var name in attributes) {
             if (attributes[name]) {
                 propertyNames.push(name);
             }
         }
+        return propertyNames;
+    }
+    else {
+        return Array.empty;
     }
 
-    return propertyNames;
 }});
 
 /**
@@ -726,10 +723,7 @@ Montage.defineProperty(Montage, "getSerializablePropertyNames", {value: function
     @returns attributes array
 */
 Montage.defineProperty(Montage, "getPropertyAttribute", {value: function (anObject, propertyName, attributeName) {
-
-    var attributePropertyName = UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES,
-        attributes = anObject[attributePropertyName];
-
+    var attributes = getAttributeProperties(anObject, attributeName);
     if (attributes) {
         return attributes[propertyName];
     }
@@ -742,14 +736,14 @@ Montage.defineProperty(Montage, "getPropertyAttribute", {value: function (anObje
     @returns {Object} TODO getPropertyAttributes returns description
 */
 Montage.defineProperty(Montage, "getPropertyAttributes", {value: function (anObject, attributeName) {
-    var attributeValues = {},
-        attributePropertyName = UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES,
-        attributes = anObject[attributePropertyName];
+    var attributes = getAttributeProperties(anObject, attributeName),
+        attributeValues;
 
     if (!attributes) {
         return;
     }
 
+    attributeValues = {};
     for (var name in attributes) {
         attributeValues[name] = attributes[name];
     }
@@ -783,7 +777,7 @@ Montage.defineProperty(Montage, "getInfoForObject", {
 
         //jshint -W106
 
-        if (hasOwnProperty.call(object, "_montage_metadata")) {
+        if (hasOwnProperty.call(object, "_montage_metadata") && object._montage_metadata) {
             return object._montage_metadata;
         } else {
             metadata = object._montage_metadata || (object.constructor && object.constructor._montage_metadata) || null;
@@ -801,12 +795,28 @@ Montage.defineProperty(Montage, "getInfoForObject", {
             }
 
             try {
-                return Object.defineProperty(object, "_montage_metadata", {
-                    enumerable: false,
-                    // this object needs to be overriden by the SerializationCompiler because this particular code might be executed on an exported object before the Compiler takes action, for instance, if this function is called within the module definition itself (happens with __core__).
-                    writable: true,
-                    value: Object.create(metadata, instanceMetadataDescriptor)
-                })._montage_metadata;
+                //For Object instances we do _montage_metadata per instance
+                if(object.constructor === Object) {
+                    return Object.defineProperty(object, "_montage_metadata", {
+                        enumerable: false,
+                        // this object needs to be overriden by the SerializationCompiler because this particular code might be executed on an exported object before the Compiler takes action, for instance, if this function is called within the module definition itself (happens with __core__).
+                        writable: true,
+                        value: Object.create(metadata, instanceMetadataDescriptor)
+                    })._montage_metadata;
+
+                }
+                //For everything else we go more efficient and declare the property only once per prototype
+                else {
+                    if(!hasOwnProperty.call(object.constructor.prototype, "_montage_metadata")) {
+                        Object.defineProperty(object.constructor.prototype, "_montage_metadata", {
+                            enumerable: false,
+                            // this object needs to be overriden by the SerializationCompiler because this particular code might be executed on an exported object before the Compiler takes action, for instance, if this function is called within the module definition itself (happens with __core__).
+                            writable: true,
+                            value: undefined
+                        });
+                    }
+                    return (object._montage_metadata = Object.create(metadata, instanceMetadataDescriptor)) || object._montage_metadata;
+                }
             } catch(e) {
                 // NOTE Safari (as of Version 5.0.2 (6533.18.5, r78685)
                 // doesn't seem to allow redefining an existing property on a DOM Element

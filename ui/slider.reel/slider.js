@@ -255,6 +255,8 @@ var Slider = exports.Slider = Control.specialize({
                 }
 
                 this.element.setAttribute("role", "slider");
+
+                //Loosk like this should be 0. And when there are multiple thumbs then it should be -1 and each thumb should have a tabIndex of 0
                 this.element.tabIndex = "-1";
 
             }
@@ -292,6 +294,7 @@ var Slider = exports.Slider = Control.specialize({
                         iTranslateComposer.addEventListener('translateEnd', this, false);
                     }
 
+                    //We're missing pageUp and pageDown that would bring slider to max/min
                     this._upKeyComposer = KeyComposer.createKey(this, "up", "increase");
                     this._downKeyComposer = KeyComposer.createKey(this, "down", "decrease");
                     this._rightKeyComposer = KeyComposer.createKey(this, "right", "increase");
@@ -519,6 +522,7 @@ var Slider = exports.Slider = Control.specialize({
 
     handleTranslateEnd: {
         value: function (e) {
+            //TODO: active should only be false when none of the thumbs are being interacted with.
             this.active = false;
             this._isThumbElementTranslating.set(e.target.element,false)
 
@@ -595,7 +599,7 @@ var Slider = exports.Slider = Control.specialize({
     },
 
     _step: {
-        value: "any"
+        value: "any" //???
     },
 
     // min: {
@@ -669,17 +673,7 @@ Should introduce a validate method
         }
     },
 
-    /**
-     * Enables or disables the Button from user input. When this property is
-     * set to `false`, the "disabled" CSS style is applied to the button's DOM
-     * element during the next draw cycle. When set to `true` the "disabled"
-     * CSS class is removed from the element's class list.
-     * @type {boolean}
-     */
-    enabled: {
-        value: true
-    },
-
+    /* this should be renamed orientation */
     axis: {
         value: null
     },
@@ -722,9 +716,13 @@ Should introduce a validate method
         value: null
     },
 
+    /* Axis should be renamed orientation and a setter should be put in place for  
+        backward compatibility
+    */
 
     handleAxisChange: {
         value: function () {
+            //TODO: this should handle all the thumb's translate composer
             if (this._translateComposer) {
                 this._translateComposer.axis = this.orientation;
             }
