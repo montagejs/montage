@@ -1541,7 +1541,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     _updateOwnerCanDrawGate: {
         value: function () {
             if (this._blocksOwnerComponentDraw && this.ownerComponent) {
-                this.ownerComponent.canDrawGate.setField(this.uuid, this.canDrawGate.value);
+                this.ownerComponent.canDrawGate.setField(this, this.canDrawGate.value);
             }
         }
     },
