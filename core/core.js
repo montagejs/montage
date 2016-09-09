@@ -266,26 +266,6 @@ if (!PROTO_IS_SUPPORTED) {
     };
 }
 
-// var extendedPropertyAttributes = [SERIALIZABLE];
-
-// // Extended property attributes, the property name format is "_" + attributeName + "AttributeProperties"
-// /**
-//  * @member external:Object#extendedPropertyAttributes
-//  */
-
-//  valuePropertyDescriptor.writable = true;
-//  valuePropertyDescriptor.configurable = false;
-//  valuePropertyDescriptor.enumerable = false;
-
-// extendedPropertyAttributes.forEach(function (name) {
-//     var propertyName = UNDERSCORE;
-
-//     propertyName += name;
-//     propertyName += ATTRIBUTE_PROPERTIES;
-//     valuePropertyDescriptor.value = {};
-//     Object.defineProperty(Object.prototype, propertyName, valuePropertyDescriptor);
-// });
-
 /**
  * Defines a property on an object using a Montage property descriptor.
  * Montage property descriptors extend and slightly vary ECMAScript 5 property
