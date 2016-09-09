@@ -136,13 +136,6 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
         }
     },
 
-    constructor: {
-        value: function () {
-            // console.log("KEY CREATED")
-            Composer.constructor.call(this);
-        }
-    },
-
     /**
      * Called when a composer is part of a template serialization. Responsible
      * for calling `addComposer` on the component or calling `load` on the

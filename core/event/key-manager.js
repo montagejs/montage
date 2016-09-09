@@ -28,6 +28,12 @@ var KEYNAMES_TO_KEYCODES = {
     down:                   40,
     delete:                 46,
 
+    //https://www.w3.org/TR/uievents-key/
+    arrowup:                38,
+    arrowright:             39,
+    arrowdown:              40,
+    arrowdelete:            46,
+
     // W3C Optional Key Code (mostly for US keyboard layout)
     semicolon:              186,
     colon:                  186,
@@ -411,7 +417,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
             // Generate the KEYNAMES dictionary
             KEYCODES_TO_KEYNAMES = {};
             for (var keyName in KEYNAMES_TO_KEYCODES) {
-                var code = KEYNAMES_TO_KEYCODES[keyName];
+                code = KEYNAMES_TO_KEYCODES[keyName];
                 if (KEYCODES_TO_KEYNAMES[code] === undefined) {
                     // If we have more than one name for a keycode, use only the first one
                     KEYCODES_TO_KEYNAMES[code] = keyName;
@@ -421,7 +427,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
             // Generate the NORMALIZED_CHARS dictionary
             NORMALIZED_CHARS = {};
             for (var keyName in NORMALIZED_KEYS) {
-                var code = NORMALIZED_KEYS[keyName];
+                code = NORMALIZED_KEYS[keyName];
                 if (NORMALIZED_CHARS[code] === undefined) {
                     // If we have more than one name for a char, use only the first one
                     NORMALIZED_CHARS[code] = keyName;
@@ -439,6 +445,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         value: function (event) {
             var keyCode,
                 identifierCode,
+                keyIdentifier = event.key || event.keyIdentifier,
                 submap,
                 stopped = false;
 
@@ -457,9 +464,9 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 }
 
                 // Check the keyIdentifier for a match
-                if (!stopped && event.keyIdentifier) {
-                    identifierCode = KEYNAMES_TO_KEYCODES[event.keyIdentifier.toLowerCase()] ||
-                        this._decodeKeyIdentifier(event.keyIdentifier);
+                if (!stopped && keyIdentifier) {
+                    identifierCode = KEYNAMES_TO_KEYCODES[keyIdentifier.toLowerCase()] ||
+                        this._decodeKeyIdentifier(keyIdentifier);
                     if (identifierCode && identifierCode !== keyCode && submap[identifierCode]) {
                         this._dispatchComposerKeyMatches(submap[identifierCode], event);
                     }
@@ -473,6 +480,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     captureKeypress: {
         value: function (event) {
             var charCode = event.charCode,
+                keyIdentifier = event.key || event.keyIdentifier,
                 keyCode,
                 identifierCode,
                 submap,
@@ -498,9 +506,9 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 }
 
                 // Check the keyIdentifier for a match
-                if (!stopped && event.keyIdentifier) {
-                    identifierCode = KEYNAMES_TO_KEYCODES[event.keyIdentifier.toLowerCase()] ||
-                        this._decodeKeyIdentifier(event.keyIdentifier);
+                if (!stopped && keyIdentifier) {
+                    identifierCode = KEYNAMES_TO_KEYCODES[keyIdentifier.toLowerCase()] ||
+                        this._decodeKeyIdentifier(keyIdentifier);
                     if (identifierCode && identifierCode !== keyCode && submap[identifierCode]) {
                         this._dispatchComposerKeyMatches(submap[identifierCode], event);
                     }
@@ -514,6 +522,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     captureKeyup: {
         value: function (event) {
             var keyCode = event.keyCode,
+                keyIdentifier = event.key || event.keyIdentifier,
                 identifierCode,
                 submap,
                 dispatchedKeyCode = 0,
@@ -539,9 +548,9 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 }
 
                 // Check the keyIdentifier for a match
-                if (!stopped && event.keyIdentifier) {
-                    identifierCode = KEYNAMES_TO_KEYCODES[event.keyIdentifier.toLowerCase()] ||
-                        this._decodeKeyIdentifier(event.keyIdentifier);
+                if (!stopped && keyIdentifier) {
+                    identifierCode = KEYNAMES_TO_KEYCODES[keyIdentifier.toLowerCase()] ||
+                        this._decodeKeyIdentifier(keyIdentifier);
                     if (identifierCode && identifierCode !== dispatchedKeyCode && submap[identifierCode]) {
                         stopped = this._dispatchComposerKeyMatches(submap[identifierCode], event);
                     }
@@ -609,6 +618,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
             var thisRef = this,
                 eventType = event.type,
                 keyCode = event.keyCode,
+                keyIdentifier = event.key || event.keyIdentifier,
                 modifiers,
                 value;
 
@@ -663,7 +673,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
 
             if (this._chrome) {
                 // Chrome (at least on Mac) generate the same keycode for the NumKeyPad = and NumKeyPad +
-                if (!this._shiftKey && keyCode == KEYNAMES_TO_KEYCODES.plus && event.keyIdentifier == "U+002B") {
+                if (!this._shiftKey && keyCode == KEYNAMES_TO_KEYCODES.plus && (keyIdentifier === "U+002B" || keyIdentifier === "+")) {
                     event.keyCode = KEYNAMES_TO_KEYCODES.add;
                 }
             }
@@ -675,7 +685,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
 
             this._submap = this._composerKeyMap[modifiers];
             this._keyCode = event.keyCode;
-            this._keyIdentifier = event.keyIdentifier;
+            this._keyIdentifier = keyIdentifier;
         }
     },
 
