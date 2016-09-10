@@ -2904,14 +2904,42 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
      * Stores values that need to be set on the element. Cleared each draw cycle.
      * @private
      */
-     __elementAttributeValues: {
-         value: null
-     },
-     _elementAttributeValues: {
-         get: function() {
-             return this.__elementAttributeValues || (this.__elementAttributeValues = {});
-         }
-     },
+    __bufferedElementsAttributeValues: {
+        value: null
+    },
+
+    _bufferedElementsAttributeValues: {
+        get: function () {
+            return this.__bufferedElementsAttributeValues || (this.__bufferedElementsAttributeValues = new Map());
+        }
+    },
+
+    setElementAttributeValue: {
+        value: function (element, attribute, value) {
+            var bufferedElementsAttributeValues = this._bufferedElementsAttributeValues,
+                elementAttributeValues;
+
+            if (!(elementAttributeValues = bufferedElementsAttributeValues.get(element))) {
+                bufferedElementsAttributeValues.set(element, (elementAttributeValues = new Map()));
+            }
+
+            elementAttributeValues.set(attribute, value);
+        }
+    },
+
+    getElementAttributeValue: {
+        value: function (element, attribute) {
+            var bufferedElementsAttributeValues = this._bufferedElementsAttributeValues,
+                elementAttributeValues, 
+                value;
+
+            if ((elementAttributeValues = bufferedElementsAttributeValues.get(element))) {
+                value = elementAttributeValues.get(attribute);
+            }
+
+            return value;
+        }
+    },
 
     /**
      * Stores the descriptors of the properties that can be set on this control
@@ -3230,11 +3258,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
                         descriptor = this._getElementAttributeDescriptor(name, this);
                         // check if this attribute from the markup is a well-defined attribute of the component
-                        if(descriptor || (typeof this[name] !== 'undefined')) {
+                        if (descriptor || (typeof this[name] !== 'undefined')) {
                             // only set the value if a value has not already been set by binding
-                            if(typeof this._elementAttributeValues[name] === 'undefined') {
-                                this._elementAttributeValues[name] = value;
-                                if( (typeof this[name] === 'undefined') || this[name] == null) {
+                            if (typeof this.getElementAttributeValue(this.element, name) === 'undefined') {
+                                this.setElementAttributeValue(this.element, name, value);
+
+                                if ((typeof this[name] === 'undefined') || this[name] === null) {
                                     this[name] = value;
                                 }
                             }
@@ -3244,14 +3273,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
                 // textContent is a special case since it isn't an attribute
                 descriptor = this._getElementAttributeDescriptor('textContent', this);
-                if(descriptor) {
+
+                if (descriptor) {
                     // check if this element has textContent
                     var textContent = originalElement.textContent;
 
+                    if (typeof this.getElementAttributeValue(this.element, "textContent") === 'undefined') {
+                        this.setElementAttributeValue(this.element, "textContent", textContent);
 
-                    if(typeof this._elementAttributeValues.textContent === 'undefined') {
-                        this._elementAttributeValues.textContent = textContent;
-                        if( this.textContent == null) {
+                        if (this.textContent === null) {
                             this.textContent = textContent;
                         }
                     }
@@ -3279,19 +3309,29 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
      */
     _draw: {
         value: function () {
-            var element = this.element,
-                descriptor;
-
             //Buffered/deferred element attribute values
-            if(this.__elementAttributeValues !== null) {
-                for(var attributeName in this._elementAttributeValues) {
-                    if(this._elementAttributeValues.hasOwnProperty(attributeName)) {
-                        var value = this[attributeName];
-                        descriptor = this._getElementAttributeDescriptor(attributeName, this);
-                        if(descriptor) {
+            if (this.__bufferedElementsAttributeValues !== null) {
+                var bufferedElementsAttributeValuesMap = this.__bufferedElementsAttributeValues,
+                    bufferedElementsAttributeValuesIterator = bufferedElementsAttributeValuesMap.keys(),
+                    bufferedElementAttributeValues,
+                    elementAttributeValuesIterator,
+                    elementAttributeValuesMap,
+                    element = this.element,
+                    attributeName,
+                    descriptor,
+                    value;
 
-                            if(descriptor.dataType === 'boolean') {
-                                if(value === true) {
+                while (bufferedElementAttributeValues = bufferedElementsAttributeValuesIterator.next().value) {
+                    elementAttributeValuesMap = bufferedElementsAttributeValuesMap.get(bufferedElementAttributeValues);
+                    elementAttributeValuesIterator = elementAttributeValuesMap.keys();
+
+                    while (attributeName = elementAttributeValuesIterator.next().value) {
+                        value = elementAttributeValuesMap.get(attributeName);
+                        descriptor = this._getElementAttributeDescriptor(attributeName, this);
+
+                        if (descriptor) {
+                            if (descriptor.dataType === 'boolean') {
+                                if (value === true) {
                                     element[attributeName] = true;
                                     element.setAttribute(attributeName, attributeName.toLowerCase());
                                 } else {
@@ -3299,21 +3339,19 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                                     element.removeAttribute(attributeName);
                                 }
                             } else {
-                                if(typeof value !== 'undefined') {
-                                    if(attributeName === 'textContent') {
+                                if (typeof value !== 'undefined') {
+                                    if (attributeName === 'textContent') {
                                         element.textContent = value;
                                     } else {
                                         //https://developer.mozilla.org/en/DOM/element.setAttribute
                                         element.setAttribute(attributeName, value);
                                     }
-
                                 }
                             }
-
                         }
-
-                        delete this._elementAttributeValues[attributeName];
                     }
+
+                    bufferedElementsAttributeValuesMap.delete(this.element);
                 }
             }
 
@@ -3493,9 +3531,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     // If the set value is different to the current one,
                     // update it here, and set it to be updated on the
                     // element in the next draw cycle.
-                    if((typeof value !== 'undefined') && this[attributeName] !== value) {
+                    if ((typeof value !== 'undefined') && this[attributeName] !== value) {
                         setter ? setter.call(this,value) : (this[attributeName] = value);
-                        this._elementAttributeValues[name] = value;
+                        this.setElementAttributeValue(this.element, name, value);
+
                         if (!fromInput) {
                             this.needsDraw = true;
                         }
