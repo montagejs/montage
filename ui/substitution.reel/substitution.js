@@ -201,6 +201,16 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
     _loadContent: {
         value: function (value) {
             var typeOfValue = typeof value;
+
+            // Fixme: [workaround] we need a better logic here.
+            // the method extractDomArgument(name) (used in enterDocument) 
+            // keeps a pointer to the original element and not the "new" one (_templateElement).
+            if (this._switchComponents[value] && 
+                this._switchComponents[value].element !== this._switchElements[value]) {
+
+                this._switchElements[value] = this._switchComponents[value].element;
+            }
+
             this.content = this._switchElements[value] || null;
 
             if ((typeOfValue === "string" || typeOfValue === "number") && !this._switchComponentTreeLoaded[value]) {
