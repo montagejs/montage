@@ -3146,16 +3146,21 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         self.detachFromParentComponent();
                         self.buildInAnimationOverride = null;
                         self.buildOutAnimationOverride = null;
+
                         if (self._element.parentNode.component) {
                             self._element.parentNode.removeChild(self._element);
                         }
+
                         self._isElementAttachedToParent = false;
                         parent.dispatchEventNamed("buildOutEnd", true, true);
-                    }, function () {});
+
+                    }, Function.noop);
+
                 } else {
                     this.detachFromParentComponent();
                     this.buildInAnimationOverride = null;
                     this.buildOutAnimationOverride = null;
+
                     if (this._isElementAttachedToParent) {
                         if (this._element.parentNode && this._element.parentNode.component) {
                             this._element.parentNode.removeChild(this._element);
