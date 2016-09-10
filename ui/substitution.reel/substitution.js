@@ -209,14 +209,13 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
     },
 
     contentDidChange: {
-        value: function (newContent, oldContent) {
-            Slot.prototype.contentDidChange.call(this, newContent, oldContent);
+        value: function () {
+            Slot.prototype.contentDidChange.call(this);
 
-            if (this._drawnSwitchValue) {
-                if (this._switchComponents[this._drawnSwitchValue]) {
-                    this._switchElements[this._drawnSwitchValue] = this._switchComponents[this._drawnSwitchValue].element;
-                }
+            if (this._drawnSwitchValue && this._switchComponents[this._drawnSwitchValue]) {
+                this._switchElements[this._drawnSwitchValue] = this._switchComponents[this._drawnSwitchValue].element;
             }
+
             this._drawnSwitchValue = this._switchValue;
         }
     },
