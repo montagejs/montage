@@ -2076,6 +2076,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     }
                 }
                 this._disposeArray(oldDrawList);
+            } else if (this._componentsPendingBuildOut) {
+                this._releaseChildComponentsPendingBuildOut();
             }
         }
     },
@@ -3178,7 +3180,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             this.dispatchEvent(event);
             this._inDocument = true;
             if (this.parentComponent) {
-                this.parentComponent._childWillEnterDocument();
+                this.parentComponent._releaseChildComponentsPendingBuildOut();
             }
             if (this.__shouldBuildIn) {
                 this._buildIn();
@@ -3190,7 +3192,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
-    _childWillEnterDocument: {
+    _releaseChildComponentsPendingBuildOut: {
         value: function () {
             if (this._componentsPendingBuildOut) {
                 while (this._componentsPendingBuildOut.length) {
