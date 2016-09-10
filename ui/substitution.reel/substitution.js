@@ -157,19 +157,20 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
             return this._switchValue;
         },
         set: function (value) {
-
-            if (this._switchValue === value || this._isSwitchingContent) {
-                return;
+            if (typeof value === "number") {
+                value = value.toString();
             }
+            
+            if (this._switchValue !== value) {
+                this._switchValue = value;
 
-            this._switchValue = value;
-
-            // switchElements is only ready after the first draw
-            // At first draw the substitution automatically draws what is in
-            // the switchValue so we defer any content loading until the first
-            // draw.
-            if (!this._firstDraw && !this.isDeserializing) {
-                this._loadContent(value);
+                // switchElements is only ready after the first draw
+                // At first draw the substitution automatically draws what is in
+                // the switchValue so we defer any content loading until the first
+                // draw.
+                if (!this._firstDraw && !this.isDeserializing) {
+                    this._loadContent(value);
+                }
             }
         }
     },
