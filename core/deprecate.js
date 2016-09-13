@@ -1,4 +1,4 @@
-/* global ARRAY_PROTOTYPE: false, Montage: false */
+var Montage = require("core/core").Montage;
 
 /**
  * @module montage/core/deprecate
@@ -83,6 +83,6 @@ exports.callDeprecatedFunction = function callDeprecatedFunction(scope, callback
 
     }
     Error.stackTraceLimit = depth;
-    args = ARRAY_PROTOTYPE.slice.call(arguments, 4);
+    args = Array.prototype.slice.call(arguments, 4);
     return callback.apply(scope ? scope : this, args);
 };

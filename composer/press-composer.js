@@ -263,7 +263,13 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     surrenderPointer: {
         value: function (pointer, component) {
-            var shouldSurrender = this.callDelegateMethod("surrenderPointer", pointer, component);
+            var shouldSurrender = this.callDelegateMethod(
+                "shouldComposerSurrenderPointerToComponent", 
+                this, 
+                pointer, 
+                component
+            );
+
             if (typeof shouldSurrender !== "undefined" && shouldSurrender === false) {
                 return false;
             }
