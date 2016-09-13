@@ -121,16 +121,16 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                 });
 
                 describe("delegate", function () {
-                    it("shouldPressComposerSurrenderPointer should be called", function () {
+                    it("shouldComposerSurrenderPointerToComponent should be called", function () {
                         var pressListener = testPage.addListener(test.press_composer, null, "press");
                         var cancelListener = testPage.addListener(test.press_composer, null, "pressCancel");
 
                         test.press_composer.delegate = {
-                            shouldPressComposerSurrenderPointer: function (pressComposer, pointer, component) {
+                            shouldComposerSurrenderPointerToComponent: function (pressComposer, pointer, component) {
                                 return false;
                             }
                         };
-                        spyOn(test.press_composer.delegate, 'shouldPressComposerSurrenderPointer').andCallThrough();
+                        spyOn(test.press_composer.delegate, 'shouldComposerSurrenderPointerToComponent').andCallThrough();
 
                         testPage.mouseEvent({target: test.example.element}, "mousedown");
 
@@ -149,11 +149,11 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                             cancelListener = testPage.addListener(test.press_composer, null, "pressCancel");
 
                             test.press_composer.delegate = {
-                                shouldPressComposerSurrenderPointer: function (pressComposer, pointer, component) {
+                                shouldComposerSurrenderPointerToComponent: function (pressComposer, pointer, component) {
                                     return false;
                                 }
                             };
-                            spyOn(test.press_composer.delegate, 'shouldPressComposerSurrenderPointer').andCallThrough();
+                            spyOn(test.press_composer.delegate, 'shouldComposerSurrenderPointerToComponent').andCallThrough();
 
                             testPage.touchEvent({target: test.example.element}, "touchstart");
 

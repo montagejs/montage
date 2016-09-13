@@ -236,8 +236,8 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
         value: true
     },
 
-    shouldPressComposerSurrenderPointer: {
-        value: function (pressComposer, pointer, component) {
+    shouldComposerSurrenderPointerToComponent: {
+        value: function (composer, pointer, component) {
             if (component && component.element && !this.element.contains(component.element)) {
                 this.hide();
             }
