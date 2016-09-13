@@ -37,7 +37,7 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     };
 
     // Fix Function#name on browsers that do not support it (IE10):
-    if (!(function f() {}).name) {
+    if (!Object.create.name) {
         var fnNamePrefixRegex = /^[\S\s]*?function\s*/;
         var fnNameSuffixRegex = /[\s\(\/][\S\s]+$/;
 
