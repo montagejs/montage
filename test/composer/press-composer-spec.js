@@ -121,16 +121,16 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                 });
 
                 describe("delegate", function () {
-                    it("surrenderPointer should be called", function () {
+                    it("shouldPressComposerSurrenderPointer should be called", function () {
                         var pressListener = testPage.addListener(test.press_composer, null, "press");
                         var cancelListener = testPage.addListener(test.press_composer, null, "pressCancel");
 
                         test.press_composer.delegate = {
-                            surrenderPointer: function (pointer, component) {
+                            shouldPressComposerSurrenderPointer: function (pressComposer, pointer, component) {
                                 return false;
                             }
                         };
-                        spyOn(test.press_composer.delegate, 'surrenderPointer').andCallThrough();
+                        spyOn(test.press_composer.delegate, 'shouldPressComposerSurrenderPointer').andCallThrough();
 
                         testPage.mouseEvent({target: test.example.element}, "mousedown");
 
@@ -149,15 +149,15 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                             cancelListener = testPage.addListener(test.press_composer, null, "pressCancel");
 
                             test.press_composer.delegate = {
-                                surrenderPointer: function (pointer, component) {
+                                shouldPressComposerSurrenderPointer: function (pressComposer, pointer, component) {
                                     return false;
                                 }
                             };
-                            spyOn(test.press_composer.delegate, 'surrenderPointer').andCallThrough();
+                            spyOn(test.press_composer.delegate, 'shouldPressComposerSurrenderPointer').andCallThrough();
 
                             testPage.touchEvent({target: test.example.element}, "touchstart");
 
-                            test.press_composer.surrenderPointer(-1, test.example);
+                            test.press_composer.surrenderPointer(test.press_composer, -1, test.example);
 
                             expect(cancelListener).not.toHaveBeenCalled();
                             expect(test.press_composer.state).toBe(PressComposer.PRESSED);
