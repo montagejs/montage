@@ -30,6 +30,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
         get: function () {
             if (!this.__pressComposer) {
                 this.__pressComposer = new PressComposer();
+                this.__pressComposer.delegate = this;
                 this.addComposerForElement(this._pressComposer, this.element.ownerDocument);
             }
 
@@ -161,6 +162,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
             }
         }
     },
+    
 
     /**
      * Show the overlay. The overlay is displayed at the position determined by
@@ -234,6 +236,16 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
         value: true
     },
 
+    shouldPressComposerSurrenderPointer: {
+        value: function (pressComposer, pointer, component) {
+            if (component && component.element && !this.element.contains(component.element)) {
+                this.hide();
+            }
+
+            return true;
+        }
+    },
+
     /**
      * The overlay should only surrender focus if it is hidden, non-modal, or
      * if the other component is one of its descendants.
@@ -244,7 +256,8 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
                 delegateResponse;
 
             if (!response && candidateActiveTarget.element) {
-                response =  this.element.contains(candidateActiveTarget.element);
+
+                response = this.element.contains(candidateActiveTarget.element);
             }
 
             delegateResponse = this.callDelegateMethod(
