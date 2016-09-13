@@ -256,7 +256,6 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
                 delegateResponse;
 
             if (!response && candidateActiveTarget.element) {
-
                 response = this.element.contains(candidateActiveTarget.element);
             }
 
