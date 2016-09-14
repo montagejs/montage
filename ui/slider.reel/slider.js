@@ -355,11 +355,11 @@ var Slider = exports.Slider = Control.specialize({
     },
     _drawThumbElement: {
         value: function (thumbElementWrapper, thumbElement, index, isVertical, sliderMagnitude, length, cumulatedThumbSize, thumbElementOffsetSize) {
-            var percent = this._percentageValues[index], position, positionString, trackElement = this.trackElements[index];
+            var percent = this._percentageValueAt(index), position, positionString, trackElement = this.trackElements[index];
 
             if(isVertical) {
                 if (this._isThumbElementTranslating.get(thumbElementWrapper)) {
-                    position = (this._percentageValues[index] - this._previousPercentageValues[index]) * sliderMagnitude * 0.01;
+                    position = (this._percentageValueAt(index) - this._previousPercentageValues[index]) * sliderMagnitude * 0.01;
                     positionString = this._TRANSLATE_VERTICAL_PREFIX;
                     positionString += position;
                     positionString += this._TRANSLATE_VERTICAL_SUFFIX;
@@ -368,11 +368,11 @@ var Slider = exports.Slider = Control.specialize({
                     thumbElementWrapper.style.top = percent + this._PERCENT_UNIT;
                     delete thumbElementWrapper.style.left;
                     thumbElementWrapper.style[this._transform] = this._TRANSLATE_RESET;
-                    this._previousPercentageValues[index] = this._percentageValues[index];
+                    this._previousPercentageValues[index] = this._percentageValueAt(index);
                 }
 
-                var trackElemenTopPercent = index === 0 ? 0 : this._percentageValues[index-1],
-                    height = index ? percent-this._percentageValues[index-1] : percent;
+                var trackElemenTopPercent = index === 0 ? 0 : this._percentageValueAt(index-1),
+                    height = index ? percent-this._percentageValueAt(index-1) : percent;
 
                 trackElement.style.top = trackElemenTopPercent+this._PERCENT_UNIT;
                 trackElement.style.marginTop = cumulatedThumbSize+this._PIXEL_UNIT;
@@ -392,7 +392,7 @@ var Slider = exports.Slider = Control.specialize({
             else {
 
                 if (this._isThumbElementTranslating.get(thumbElementWrapper)) {
-                    position = (this._percentageValues[index] - this._previousPercentageValues[index]) * sliderMagnitude * 0.01;
+                    position = (this._percentageValueAt(index) - this._previousPercentageValues[index]) * sliderMagnitude * 0.01;
 
                     positionString = this._TRANSLATE_HORIZONTAL_PREFIX;
                     positionString += position;
@@ -402,11 +402,11 @@ var Slider = exports.Slider = Control.specialize({
                     thumbElementWrapper.style.left = percent+this._PERCENT_UNIT;
                     delete thumbElementWrapper.style.top;
                     thumbElementWrapper.style[this._transform] = this._TRANSLATE_RESET;
-                    this._previousPercentageValues[index] = this._percentageValues[index];
+                    this._previousPercentageValues[index] = this._percentageValueAt(index);
                 }
 
-                var trackElementLeftPercent = index === 0 ? 0 : this._percentageValues[index-1],
-                    width = index ? percent-this._percentageValues[index-1] : percent;
+                var trackElementLeftPercent = index === 0 ? 0 : this._percentageValueAt(index-1),
+                    width = index ? percent-this._percentageValueAt(index-1) : percent;
 
                 trackElement.style.left = trackElementLeftPercent+this._PERCENT_UNIT;
                 trackElement.style.marginLeft = cumulatedThumbSize+this._PIXEL_UNIT;
@@ -428,6 +428,8 @@ var Slider = exports.Slider = Control.specialize({
     },
     draw: {
         value: function () {
+            var value = this.value;
+
             if(!this.hasStandardElement) {
                 //console.log("this._values is ", this._values);
                 var isVertical = (this.orientation === this._VERTICAL),
@@ -441,12 +443,12 @@ var Slider = exports.Slider = Control.specialize({
                 }
                 this.element.setAttribute("aria-valuemax", this.max);
                 this.element.setAttribute("aria-valuemin", this.min);
-                this.element.setAttribute("aria-valuenow", this.value);
+                this.element.setAttribute("aria-valuenow", value);
                 this.element.setAttribute("aria-orientation", this.orientation);
             }
             else {
-                if (this._value != this.element.value) {
-                    this.element.value = (this._value == null ? '' : this._value);
+                if (value != this.element.value) {
+                    this.element.value = (value == null ? '' : value);
                 }
                 this.element.setAttribute("max", this.max);
                 this.element.setAttribute("min", this.min);
@@ -656,6 +658,12 @@ Should introduce a validate method
 */
     value: {
         get: function () {
+            if (this._value > this._max) {
+                return this._max;
+            } else if (this._value < this._min) {
+                return this._min;
+            }
+            
             return this._value;
         },
         set: function (value) {
@@ -796,6 +804,14 @@ Should introduce a validate method
             }
         }
     },
+
+    _percentageValueAt: {
+        value: function (index) {
+            var value = this._percentageValues[index];
+            return value > 100 ? 100 : (value < 0 ? 0 : value);
+        }
+    },
+
     handleInput: {
         enumerable: false,
         value: function() {
