@@ -312,7 +312,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
                     }
 
                     this.callDelegateMethod("didChange", this);
-                    this.setElementAttributeValue(this.element, "value", value);
+                    this._setElementAttributeValue(this.element, "value", value);
 
                     // if(!this.hasStandardElement || this.elementValue !== value) {
                         this.needsDraw = true;

@@ -2914,7 +2914,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
-    setElementAttributeValue: {
+    _setElementAttributeValue: {
         value: function (element, attribute, value) {
             var bufferedElementsAttributeValues = this._bufferedElementsAttributeValues,
                 elementAttributeValues;
@@ -2927,7 +2927,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
-    getElementAttributeValue: {
+    _getElementAttributeValue: {
         value: function (element, attribute) {
             var bufferedElementsAttributeValues = this._bufferedElementsAttributeValues,
                 elementAttributeValues, 
@@ -3260,8 +3260,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         // check if this attribute from the markup is a well-defined attribute of the component
                         if (descriptor || (typeof this[name] !== 'undefined')) {
                             // only set the value if a value has not already been set by binding
-                            if (typeof this.getElementAttributeValue(this.element, name) === 'undefined') {
-                                this.setElementAttributeValue(this.element, name, value);
+                            if (typeof this._getElementAttributeValue(this.element, name) === 'undefined') {
+                                this._setElementAttributeValue(this.element, name, value);
 
                                 if ((typeof this[name] === 'undefined') || this[name] === null) {
                                     this[name] = value;
@@ -3278,8 +3278,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     // check if this element has textContent
                     var textContent = originalElement.textContent;
 
-                    if (typeof this.getElementAttributeValue(this.element, "textContent") === 'undefined') {
-                        this.setElementAttributeValue(this.element, "textContent", textContent);
+                    if (typeof this._getElementAttributeValue(this.element, "textContent") === 'undefined') {
+                        this._setElementAttributeValue(this.element, "textContent", textContent);
 
                         if (this.textContent === null) {
                             this.textContent = textContent;
@@ -3533,7 +3533,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     // element in the next draw cycle.
                     if ((typeof value !== 'undefined') && this[attributeName] !== value) {
                         setter ? setter.call(this,value) : (this[attributeName] = value);
-                        this.setElementAttributeValue(this.element, name, value);
+                        this._setElementAttributeValue(this.element, name, value);
 
                         if (!fromInput) {
                             this.needsDraw = true;
