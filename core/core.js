@@ -126,14 +126,15 @@ valuePropertyDescriptor.value = function specialize(prototypeProperties, constru
 
         } else {
             if (this._hasUserDefinedConstructor) {
-                constructor = function Anonymous() {
+                constructor = function AnonymousA() {
                     return this.superForValue("constructor")() || this;
                     //return parent.apply(this, arguments) || this;
                 };
             } else {
-                constructor = function Anonymous() {
+                constructor = function AnonymousB() {
                     return this;
                 }
+                constructor.name = this.name+"Specialized";
             }
         }
 
@@ -348,6 +349,7 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
             getAttributeProperties(obj, SERIALIZABLE)[prop] = descriptor.serializable;
         }
 
+/*
         // clear the cache in any descendants that use this property for super()
         if (obj._superDependencies) {
             var superDependencies, i, j;
@@ -381,6 +383,7 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
                 }
             }
         }
+        */
         return Object.defineProperty(obj, prop, descriptor);
     };
 Object.defineProperty(Montage, "defineProperty", valuePropertyDescriptor);
@@ -454,6 +457,9 @@ function getAttributeProperties(proto, attributeName, privateAttributeName) {
 Montage.defineProperty(Montage, "didCreate", {
     value: Function.noop
 });
+
+
+/*
 
 var getSuper = function (object, method) {
     var propertyNames, proto, i, propCount, propertyName, func, context, foundSuper, property;
@@ -623,6 +629,142 @@ var superForSetImplementation = function (propertyName) {
     return superForImplementation(this, "set", propertyName, superForSetImplementation.caller);
 };
 
+
+
+*/
+
+
+
+
+/*
+ * Call a function of the same name in a superclass.
+ *
+ * E.g., if A is a superclass of B, then:
+ *
+ *      A.prototype.calc = function ( x ) {
+ *          return x * 2;
+ *      }
+ *      B.prototype.calc = function ( x ) {
+ *          return this._super( x ) + 1;
+ *      }
+ *
+ *      var b = new B();
+ *      b.calc( 3 );         // = 7
+ *
+ * This assumes a standard prototype-based class system in which all classes have
+ * a member called "superclass" pointing to their parent class, and all instances
+ * have a member called "constructor" pointing to the class which created them.
+ *
+ * This routine has to do some work to figure out which class defined the
+ * calling function. It will have to walk up the class hierarchy and,
+ * if we're running in IE, do a bunch of groveling through function
+ * definitions. To speed things up, the first call to _super() within a
+ * function creates a property called "_superFn" on the calling function;
+ * subsequent calls to _super() will use the memoized answer.
+ *
+ * Some prototype-based class systems provide a _super() function through the
+ * use of closures. The closure approach generally creates overhead whether or
+ * not _super() will ever be called. The approach below adds no overhead if
+ * _super() is never invoked, and adds minimal overhead if it is invoked.
+ * This code relies upon the JavaScript .caller method, which many claims
+ * has slow performance because it cannot be optimized. However, "slow" is
+ * a relative term, and this approach might easily have acceptable performance
+ * for many applications.
+ */
+
+function _superForValue(methodName) {
+  // Figure out which function called us.
+    var callerFn = ( _super && _super.caller )
+                    ? _super.caller             // Modern browser
+                    : arguments.callee.caller,  // IE9 and earlier
+        methodFn = typeof this === "function"
+                    ? callerFn[methodName]
+                    : callerFn.prototype[methodName];
+
+    return __super.call(this,methodFn);
+};
+
+function _super() {
+    // Figure out which function called us.
+    var callerFn = ( _super && _super.caller )
+        ? _super.caller             // Modern browser
+        : arguments.callee.caller;  // IE9 and earlier
+    return __super.call(this,callerFn);
+};
+
+function __super(callerFn) {
+    if ( !callerFn ) {
+        return undefined;
+    }
+
+    // Have we called super() within the calling function before?
+    var superFn = callerFn._superFn;
+    if ( !superFn ) {
+        // Find the class implementing this method.
+        var classInfo = findMethodImplementation( callerFn, typeof this === "function" ? this : this.constructor );
+        if ( classInfo ) {
+
+            var classFn = classInfo.classFn;
+            var callerFnName = classInfo.fnName;
+
+            // Go up one level in the class hierarchy to get the superfunction.
+            superFn = classFn.superclass.prototype[ callerFnName ];
+
+            // Memoize our answer, storing the value on the calling function,
+            // to speed things up next time.
+            callerFn._superFn = superFn;
+        }
+    }
+
+    return superFn
+        ? superFn.apply( this, arguments )  // Invoke superfunction
+        : undefined;
+};
+
+/*
+ * Find which class implements the given method, starting at the given
+ * point in the class hierarchy and walking up.
+ *
+ * This is done by enumerating all class prototype members to find the
+ * function identical to the method we're looking for.
+ *
+ * Returns the class that implements the function, and the name of the class
+ * member that references it. Returns null if the class was not found.
+ */
+function findMethodImplementation( methodFn, classFn ) {
+
+    // See if this particular class defines the function.
+    //var prototype = classFn.prototype;
+    var prototype = Object.getPrototypeOf(classFn);
+
+    for ( var key in prototype ) {
+        if ( prototype[ key ] === methodFn ) {
+            // Found the function implementation.
+            // Check to see whether it's really defined by this class,
+            // or is actually inherited.
+            var methodInherited = classFn.superclass
+                ? prototype[ key ] === classFn.superclass.prototype[ key ]
+                : false;
+            if ( !methodInherited ) {
+                // This particular class defines the function.
+                return {
+                    classFn: classFn,
+                    fnName: key
+                };
+            }
+        }
+    }
+
+    // Didn't find the function.
+    if ( classFn.superclass ) {
+        // Look in parent classes.
+        return findMethodImplementation( methodFn, classFn.superclass );
+    } else {
+        return null;
+    }
+}
+
+
 /**
  * Calls the method with the same name as the caller from the parent of the
  * constructor that contains the caller, falling back to a no-op if no such
@@ -631,7 +773,7 @@ var superForSetImplementation = function (propertyName) {
  * @returns {function} this constructor’s parent constructor.
  */
 Montage.defineProperty(Montage, "super", {
-    get: superImplementation,
+    value: _super,
     enumerable: false
 });
 
@@ -641,7 +783,7 @@ Montage.defineProperty(Montage, "super", {
  * method exists.
  */
 Montage.defineProperty(Montage.prototype, "super", {
-    get: superImplementation,
+    value: _super,
     enumerable: false
 });
 
@@ -652,7 +794,7 @@ Montage.defineProperty(Montage.prototype, "super", {
  * @param ...arguments to forward to the parent method
  */
 Montage.defineProperty(Montage, "superForValue", {
-    value: superForValueImplementation,
+    value: _superForValue,
     enumerable: false
 });
 
@@ -663,25 +805,25 @@ Montage.defineProperty(Montage, "superForValue", {
  * @param ...arguments to forward to the parent method
  */
 Montage.defineProperty(Montage.prototype, "superForValue", {
-    value: superForValueImplementation,
+    value: _superForValue,
     enumerable: false
 });
 
 Montage.defineProperty(Montage, "superForGet", {
-    value: superForGetImplementation,
+    value: _super,
     enumerable: false
 });
 Montage.defineProperty(Montage.prototype, "superForGet", {
-    value: superForGetImplementation,
+    value: _super,
     enumerable: false
 });
 
 Montage.defineProperty(Montage, "superForSet", {
-    value: superForSetImplementation,
+    value: _super,
     enumerable: false
 });
 Montage.defineProperty(Montage.prototype, "superForSet", {
-    value: superForSetImplementation,
+    value: _super,
     enumerable: false
 });
 
