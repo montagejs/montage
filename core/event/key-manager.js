@@ -772,22 +772,19 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                     if (keyDown) {
                         // Reset trigger
                         delete this._triggeredKeys[keyComposer.uuid];
-                        event.preventDefault();
                     } else if (this._triggeredKeys[keyComposer.uuid]) {
                         // that key has already been triggered, let's ignore it...
                         continue;
                     }
+
                     if (keyComposer._shouldDispatchLongPress && !keyComposer._longPressTimeout) {
                         keyComposer._longPressTimeout = setTimeout(function () {
-                            var longPressEvent;
-
-                            keyComposer._longPressTimeout = null;
-
-                            longPressEvent = document.createEvent("CustomEvent");
-                            longPressEvent.initCustomEvent(LONGKEYPRESS_EVENT_TYPE, true, true, null);
+                            var longPressEvent = MutableEvent.fromEvent(longPressEvent);
+                            longPressEvent.type = LONGKEYPRESS_EVENT_TYPE;
                             longPressEvent.activeElement = event.target;
                             longPressEvent.identifier = keyComposer.identifier;
-                            longPressEvent = MutableEvent.fromEvent(longPressEvent);
+
+                            keyComposer._longPressTimeout = null;
                             keyComposer.dispatchEvent(longPressEvent);
                             delete thisRef._longPressKeys[keyComposer.uuid];
                         }, this._longPressThreshold);
@@ -796,26 +793,19 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                         this._longPressKeys[keyComposer.uuid] = keyComposer;
                     }
                 }
-
-                keyComposerEvent = document.createEvent("CustomEvent");
-                keyComposerEvent.initCustomEvent(eventType, true, true, null);
+                
+                keyComposerEvent = MutableEvent.fromEvent(event);
+                keyComposerEvent.type = eventType;
                 keyComposerEvent.activeElement = event.target;
                 keyComposerEvent.identifier = keyComposer.identifier;
                 keyComposerEvent.keyComposer = keyComposer;
-                keyComposerEvent = MutableEvent.fromEvent(keyComposerEvent);
-                if (this._opera) {
-                    keyComposerEvent.type = eventType; // Opera modifes the capitalization of custom event's type when that one is similar to a native event's type
-                }
+
                 keyComposer.dispatchEvent(keyComposerEvent);
 
-                // console.log("keyComposer Event DISPATCHED:", keyComposerEvent, event.target, keyComposer);
-                if (keyComposerEvent.defaultPrevented) {
-                    event.preventDefault();
-                }
                 if (keyComposerEvent.propagationStopped) {
-                    event.stopPropagation();
                     stopped = true;
                 }
+
                 if (keyUp) {
                     // We already dispatched a keyup event for this key, let's remove it
                     delete this._triggeredKeys[keyComposer.uuid];
