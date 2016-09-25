@@ -12,7 +12,6 @@ require("./extras/function");
 require("./extras/regexp");
 require("./extras/string");
 
-var Map = require("collections/map");
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
     PROTO = "__proto__",
@@ -34,7 +33,9 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
         configurable: false,
         enumerable: false,
         writable: false
-    };
+    },
+    Map = require("collections/map");
+    WeakMap = require("collections/weak-map");
 
     // Fix Function#name on browsers that do not support it (IE10):
     if (!Object.create.name) {
@@ -672,6 +673,8 @@ var superForSetImplementation = function (propertyName) {
  * for many applications.
  */
 
+function _empty() {}
+
 function _superForValue(methodName) {
   // Figure out which function called us.
     var callerFn = ( _super && _super.caller )
@@ -679,18 +682,29 @@ function _superForValue(methodName) {
                     : arguments.callee.caller,  // IE9 and earlier
         methodFn = typeof this === "function"
                     ? callerFn[methodName]
-                    : callerFn.prototype[methodName];
+                    : callerFn.prototype[methodName],
+        superFn = __super.call(this,methodFn),
+        self = this;
 
-    return __super.call(this,methodFn);
+    //We may need to cache that at some point if it gets called too often
+    return superFn ? function() {
+        superFn.apply( self, arguments );
+    }
+    : _empty;
 };
 
 function _super() {
     // Figure out which function called us.
     var callerFn = ( _super && _super.caller )
         ? _super.caller             // Modern browser
-        : arguments.callee.caller;  // IE9 and earlier
-    return __super.call(this,callerFn);
+        : arguments.callee.caller,        // IE9 and earlier
+        superFn = __super.call(this,callerFn);
+    return superFn
+        ? superFn.apply( this, arguments )  // Invoke superfunction
+        : undefined;;
 };
+
+__superWeakMap = new WeakMap();
 
 function __super(callerFn) {
     if ( !callerFn ) {
@@ -698,27 +712,20 @@ function __super(callerFn) {
     }
 
     // Have we called super() within the calling function before?
-    var superFn = callerFn._superFn;
+    //var superFn = callerFn._superFn;
+    var superFn = __superWeakMap.get(callerFn);
+
     if ( !superFn ) {
+        var isFunctionSuper = typeof this === "function";
+
         // Find the class implementing this method.
-        var classInfo = findMethodImplementation( callerFn, typeof this === "function" ? this : this.constructor );
-        if ( classInfo ) {
-
-            var classFn = classInfo.classFn;
-            var callerFnName = classInfo.fnName;
-
-            // Go up one level in the class hierarchy to get the superfunction.
-            superFn = classFn.superclass.prototype[ callerFnName ];
-
-            // Memoize our answer, storing the value on the calling function,
-            // to speed things up next time.
-            callerFn._superFn = superFn;
+        superFn = findMethodImplementation( callerFn, isFunctionSuper ? this : this.constructor , isFunctionSuper);
+        if ( superFn ) {
+            __superWeakMap.set(callerFn,superFn);
         }
     }
 
-    return superFn
-        ? superFn.apply( this, arguments )  // Invoke superfunction
-        : undefined;
+    return superFn;
 };
 
 /*
@@ -731,37 +738,81 @@ function __super(callerFn) {
  * Returns the class that implements the function, and the name of the class
  * member that references it. Returns null if the class was not found.
  */
-function findMethodImplementation( methodFn, classFn ) {
+function findMethodImplementation( method, classFn, isFunctionSuper) {
 
     // See if this particular class defines the function.
     //var prototype = classFn.prototype;
-    var prototype = Object.getPrototypeOf(classFn);
+    var Object = global.Object,
+        propertyNames,
+        i, propertyName, property, func,
+        methodPropertyName,
+        isValue = false,
+        isGetter = false,
+        isSetter = false,
+        context, foundSuper;
 
-    for ( var key in prototype ) {
-        if ( prototype[ key ] === methodFn ) {
-            // Found the function implementation.
-            // Check to see whether it's really defined by this class,
-            // or is actually inherited.
-            var methodInherited = classFn.superclass
-                ? prototype[ key ] === classFn.superclass.prototype[ key ]
-                : false;
-            if ( !methodInherited ) {
-                // This particular class defines the function.
-                return {
-                    classFn: classFn,
-                    fnName: key
-                };
+        //context = isFunctionSuper ? Object.getPrototypeOf(classFn) : classFn.prototype;
+        context = isFunctionSuper ? classFn : classFn.prototype;
+
+        while (!foundSuper && context !== null) {
+
+            if(!methodPropertyName) {
+                propertyNames = Object.getOwnPropertyNames(context);
+
+                //As we start, we don't really know which property name points to method, we're going to find out:
+                for (i=0;(propertyName = propertyNames[i]);i++) {
+                    property = Object.getOwnPropertyDescriptor(context, propertyName);
+
+                    if ((func = property.value) != null) {
+                        if (func === method || func.deprecatedFunction === method) {
+                            methodPropertyName = propertyName;
+                            isValue = true;
+                            break;
+                        }
+                    }
+                    else {
+                        if ((func = property.get) != null) {
+                            if (func === method || func.deprecatedFunction === method) {
+                                methodPropertyName = propertyName;
+                                isGetter = true;
+                                break;
+                            }
+                        }
+                        if ((func = property.set) != null) {
+                            if (func === method || func.deprecatedFunction === method) {
+                                methodPropertyName = propertyName;
+                                isSetter = true;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
-        }
-    }
+    //Now that we know the property name pointing to method and wether it's a value or getter/setter
+    //We're going to walk up the tree.
 
-    // Didn't find the function.
-    if ( classFn.superclass ) {
-        // Look in parent classes.
-        return findMethodImplementation( methodFn, classFn.superclass );
-    } else {
-        return null;
-    }
+            if(methodPropertyName) {
+
+                if((property = Object.getOwnPropertyDescriptor(context, methodPropertyName))) {
+                    if (isValue && (func = property.value) != null) {
+                        foundSuper = true;
+                        break;
+                    }
+                    else if (isGetter && (func = property.get) != null) {
+                        foundSuper = true;
+                        break;
+                    }
+                    else if (isSetter && (func = property.set) != null) {
+                        foundSuper = true;
+                        break;
+                    }
+                }
+            }
+            context = Object.getPrototypeOf(context);
+
+        }
+
+        return foundSuper ? func : undefined;
 }
 
 
@@ -1270,9 +1321,7 @@ Montage.defineProperties(Montage.prototype, bindingPropertyDescriptors);
 
 // Paths
 
-var WeakMap = require("collections/weak-map"),
-    Map = require("collections/map"),
-    parse = require("frb/parse"),
+var parse = require("frb/parse"),
     evaluate = require("frb/evaluate"),
     assign = require("frb/assign"),
     bind = require("frb/bind"),
