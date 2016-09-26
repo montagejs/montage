@@ -27,10 +27,6 @@ var KEYPRESS_EVENT_TYPE = "keyPress",
  */
 var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyComposer# */ {
 
-    _isLoaded: {
-        value: false
-    },
-
     _shouldDispatchEvent: {
         value: false
     },

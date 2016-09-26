@@ -131,14 +131,6 @@ if (typeof window !== "undefined") {
         },
 
         /**
-         * @type {Property}
-         * @default {Element} null
-         */
-        target: {
-            value: null
-        },
-
-        /**
          * @function
          */
         stopPropagation: {
