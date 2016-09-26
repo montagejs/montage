@@ -1427,7 +1427,6 @@ var pathPropertyDescriptors = {
      * @function Montage#removePathChangeListener
      * @param {string} path
      * @param {object|function}
-     * @param {string} handlerMethodName
      * @param {boolean} beforeChange
      */
     removePathChangeListener: {
