@@ -19,6 +19,7 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     ENUMERABLE = "enumerable",
     DISTINCT = "distinct",
     SERIALIZABLE = "serializable",
+    FUNCTION = "function",
     UNDERSCORE_UNICODE = 95,
     ARRAY_PROTOTYPE = Array.prototype,
     OBJECT_PROTOTYPE = Object.prototype,
@@ -127,12 +128,12 @@ valuePropertyDescriptor.value = function specialize(prototypeProperties, constru
 
         } else {
             if (this._hasUserDefinedConstructor) {
-                constructor = function AnonymousA() {
-                    return this.superForValue("constructor")() || this;
+                constructor = function() {
+                    return this.super() || this;
                     //return parent.apply(this, arguments) || this;
                 };
             } else {
-                constructor = function AnonymousB() {
+                constructor = function() {
                     return this;
                 }
                 constructor.name = this.name+"Specialized";
@@ -259,7 +260,7 @@ if (!PROTO_IS_SUPPORTED) {
     // If the __proto__ property isn't supported than we need to patch up behavior for constructor functions
     var originalGetPrototypeOf = Object.getPrototypeOf;
     Object.getPrototypeOf = function getPrototypeOf(object) {
-        if (typeof object === "function" && object.__constructorProto__) {
+        if (typeof object === FUNCTION && object.__constructorProto__) {
             // we have set the __constructorProto__ property of the function to be it's parent constructor
             return object.__constructorProto__;
         } else {
@@ -300,7 +301,7 @@ if (!PROTO_IS_SUPPORTED) {
  */
 valuePropertyDescriptor.writable = valuePropertyDescriptor.configurable = valuePropertyDescriptor.enumerable = false;
 valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descriptor) {
-        if (! (typeof obj === "object" || typeof obj === "function") || obj === null) {
+        if (! (typeof obj === "object" || typeof obj === FUNCTION) || obj === null) {
             throw new TypeError("Object must be an object, not '" + obj + "'");
         }
 
@@ -313,11 +314,11 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
 
         //reset defaults appropriately for framework.
         if (PROTO in descriptor) {
-            descriptor.__proto__ = (isValueDescriptor ? (typeof descriptor.value === "function" ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
+            descriptor.__proto__ = (isValueDescriptor ? (typeof descriptor.value === FUNCTION ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
         } else {
             var defaults;
             if (isValueDescriptor) {
-                if (typeof descriptor.value === "function") {
+                if (typeof descriptor.value === FUNCTION) {
                     defaults = _defaultFunctionValueProperty;
                 } else {
                     defaults = _defaultObjectValueProperty;
@@ -385,6 +386,25 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
             }
         }
         */
+
+        // clear the cache for super() for property we're about to redefine.
+        var property = Object.getOwnPropertyDescriptor(obj, prop),
+            func;
+        if(property) {
+            if (typeof (func = property.value) === FUNCTION) {
+                __clearSuperDepencies(func);
+            }
+            else {
+                if (typeof (func = property.get) === FUNCTION) {
+                __clearSuperDepencies(func);
+                }
+                if (typeof (func = property.set) === FUNCTION) {
+                __clearSuperDepencies(func);
+                }
+            }
+        }
+
+
         return Object.defineProperty(obj, prop, descriptor);
     };
 Object.defineProperty(Montage, "defineProperty", valuePropertyDescriptor);
@@ -673,14 +693,12 @@ var superForSetImplementation = function (propertyName) {
  * for many applications.
  */
 
-function _empty() {}
-
 function _superForValue(methodName) {
   // Figure out which function called us.
-    var callerFn = ( _super && _super.caller )
-                    ? _super.caller             // Modern browser
+    var callerFn = ( _superForValue && _superForValue.caller )
+                    ? _superForValue.caller             // Modern browser
                     : arguments.callee.caller,  // IE9 and earlier
-        methodFn = typeof this === "function"
+        methodFn = typeof this === FUNCTION
                     ? callerFn[methodName]
                     : callerFn.prototype[methodName],
         superFn = __super.call(this,methodFn),
@@ -690,7 +708,7 @@ function _superForValue(methodName) {
     return superFn ? function() {
         superFn.apply( self, arguments );
     }
-    : _empty;
+    : Function.noop;
 };
 
 function _super() {
@@ -704,7 +722,9 @@ function _super() {
         : undefined;;
 };
 
-__superWeakMap = new WeakMap();
+var __superWeakMap = new WeakMap();
+//Entry is a function and value is a set containing specialied functions that have been cached
+var _superDependenciesWeakMap = new WeakMap();
 
 function __super(callerFn) {
     if ( !callerFn ) {
@@ -716,17 +736,35 @@ function __super(callerFn) {
     var superFn = __superWeakMap.get(callerFn);
 
     if ( !superFn ) {
-        var isFunctionSuper = typeof this === "function";
+        var isFunctionSuper = typeof this === FUNCTION, dependents;
 
         // Find the class implementing this method.
         superFn = findMethodImplementation( callerFn, isFunctionSuper ? this : this.constructor , isFunctionSuper);
         if ( superFn ) {
             __superWeakMap.set(callerFn,superFn);
+            dependents = _superDependenciesWeakMap.get(superFn);
+            if(!dependents) {
+                _superDependenciesWeakMap.set(superFn,(dependents = new Set()));
+            }
+            dependents.add(callerFn);
         }
     }
 
     return superFn;
 };
+
+function __clearSuperDepencies(aFn) {
+    var superWeakMap = __superWeakMap;
+
+    superWeakMap.delete(aFn);
+    var dependents = _superDependenciesWeakMap.get(aFn);
+    if(dependents) {
+        dependents.forEach(function(eachFn) {
+            superWeakMap.delete(eachFn);
+        });
+    }
+
+}
 
 /*
  * Find which class implements the given method, starting at the given
@@ -749,10 +787,10 @@ function findMethodImplementation( method, classFn, isFunctionSuper) {
         isValue = false,
         isGetter = false,
         isSetter = false,
-        context, foundSuper;
+        startContext, context, foundSuper;
 
         //context = isFunctionSuper ? Object.getPrototypeOf(classFn) : classFn.prototype;
-        context = isFunctionSuper ? classFn : classFn.prototype;
+        startContext = context = isFunctionSuper ? classFn : classFn.prototype;
 
         while (!foundSuper && context !== null) {
 
@@ -791,7 +829,8 @@ function findMethodImplementation( method, classFn, isFunctionSuper) {
     //Now that we know the property name pointing to method and wether it's a value or getter/setter
     //We're going to walk up the tree.
 
-            if(methodPropertyName) {
+            // if(methodPropertyName && startContext !== context) {
+            else {
 
                 if((property = Object.getOwnPropertyDescriptor(context, methodPropertyName))) {
                     if (isValue && (func = property.value) != null) {
@@ -861,20 +900,20 @@ Montage.defineProperty(Montage.prototype, "superForValue", {
 });
 
 Montage.defineProperty(Montage, "superForGet", {
-    value: _super,
+    value: _superForValue,
     enumerable: false
 });
 Montage.defineProperty(Montage.prototype, "superForGet", {
-    value: _super,
+    value: _superForValue,
     enumerable: false
 });
 
 Montage.defineProperty(Montage, "superForSet", {
-    value: _super,
+    value: _superForValue,
     enumerable: false
 });
 Montage.defineProperty(Montage.prototype, "superForSet", {
-    value: _super,
+    value: _superForValue,
     enumerable: false
 });
 
@@ -1065,8 +1104,8 @@ Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
 
         if (delegate) {
 
-            if ((typeof this.identifier === "string") && (typeof (delegateFunction = delegate[this.identifier + name.toCapitalized()]) === "function")) {}
-            else if (typeof (delegateFunction = delegate[name]) === "function") {}
+            if ((typeof this.identifier === "string") && (typeof (delegateFunction = delegate[this.identifier + name.toCapitalized()]) === FUNCTION)) {}
+            else if (typeof (delegateFunction = delegate[name]) === FUNCTION) {}
 
             if (delegateFunction) {
                 if(arguments.length === 2) {
@@ -1584,7 +1623,7 @@ var pathPropertyDescriptors = {
                 emit = function (value) {
                     return handler.handlePathChange.call(handler, value, path, self);
                 };
-            } else if (typeof handler === "function") {
+            } else if (typeof handler === FUNCTION) {
                 emit = function (value) {
                     return handler.call(self, value, path, self);
                 };
@@ -1765,7 +1804,7 @@ exports._blueprintDescriptor = {
         var self = (info && !info.isInstance) ? this : this.constructor;
         if (value === null) {
             _blueprintValue = null;
-        } else if (typeof value.then === "function") {
+        } else if (typeof value.then === FUNCTION) {
             throw new TypeError("Object blueprint should not be a promise");
         } else {
             value.blueprintInstanceModule = self.blueprintModule;
