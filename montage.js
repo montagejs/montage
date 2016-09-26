@@ -378,14 +378,26 @@ if (!String.prototype.endsWith) {
      */
     var MontageMetaData = function(require,id,name) {
       this.require = require;
-      this.module = this.moduleId = id;
+      this.module = id;
       //moduleId: id, // deprecated
-      this.property = this.objectName = name;
+      this.property = name;
       //objectName: name, // deprecated
       this.aliases = [name];
-      this.isInstance = false;
+      //this.isInstance = false;
       return this;
     };
+
+    MontageMetaData.prototype = {
+          get moduleId () {
+              return this.module;
+          },
+           get objectName () {
+              return this.property;
+          },
+          isInstance: false
+   };
+
+
     var reverseReelExpression = /((.*)\.reel)\/\2$/;
     var reverseReelFunction = function ($0, $1) { return $1; };
     exports.SerializationCompiler = function (config, compile) {
