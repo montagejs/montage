@@ -148,7 +148,7 @@ div.input-text {
     box-sizing: border-box;
 }
 
-.sliderWithStickyLabel:focus {
+.sliderWithStickyLabel:focus, .sliderWithStickyLabel .montage-Slider--thumbWrapper:focus {
     outline: none;
 }
 
