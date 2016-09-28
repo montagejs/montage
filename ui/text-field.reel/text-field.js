@@ -24,10 +24,10 @@ exports.TextField = TextInput.specialize({
 
     handleKeyPress: {
         value: function (evt) {
-            if (!this.enabled || evt.keyComposer !== this._keyComposer) {
+            if (this.disabled || evt.keyComposer !== this._keyComposer) {
                 return;
             }
-            //this._setValue();
+
             this.takeValueFromElement();
             this.dispatchActionEvent();
         }
