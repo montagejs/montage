@@ -218,22 +218,27 @@ valuePropertyDescriptor.value = function specialize(prototypeProperties, constru
             Montage.defineProperty(constructor, "blueprintModuleId", prototypeProperties.blueprintModuleId);
         }
 
-        Montage.defineProperties(prototype, prototypeProperties);
+        Montage.defineProperties(prototype, prototypeProperties, true);
 
         // needs to be done afterwards so that it overrides any prototype properties
-        Montage.defineProperties(constructor, constructorProperties);
+        Montage.defineProperties(constructor, constructorProperties, true);
 
-        Montage.defineProperties(constructor, {
-            __isConstructor__: {
+        // Montage.defineProperties(constructor, {
+        //     __isConstructor__: {
+        //         value: true,
+        //         enumerable: false
+        //     },
+
+        //     _superCache: {
+        //         value: new Map,
+        //         enumerable: false
+        //     }
+        // });
+        Montage.defineProperty(constructor,"__isConstructor__", {
                 value: true,
                 enumerable: false
-            },
-
-            _superCache: {
-                value: new Map,
-                enumerable: false
-            }
         });
+
 
         constructor.prototype = prototype;
 
@@ -303,7 +308,7 @@ if (!PROTO_IS_SUPPORTED) {
  * });
  */
 valuePropertyDescriptor.writable = valuePropertyDescriptor.configurable = valuePropertyDescriptor.enumerable = false;
-valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descriptor) {
+valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descriptor, inSpecialize) {
         if (! (typeof obj === "object" || typeof obj === FUNCTION) || obj === null) {
             throw new TypeError("Object must be an object, not '" + obj + "'");
         }
@@ -406,7 +411,9 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
         //         }
         //     }
         // }
-        __clearSuperDepencies(obj,prop, descriptor);
+        //If we're defining a property as part of a Type/Class construction, we most likely don't need to worry about
+        //clearing super calls caches.
+        if(!inSpecialize) __clearSuperDepencies(obj,prop, descriptor);
 
         return Object.defineProperty(obj, prop, descriptor);
     };
@@ -421,14 +428,14 @@ Object.defineProperty(Montage, "defineProperty", valuePropertyDescriptor);
  * @param {Object} properties An object that maps names to Montage property
  * descriptors.
  */
-Object.defineProperty(Montage, "defineProperties", {value: function (obj, properties) {
+Object.defineProperty(Montage, "defineProperties", {value: function (obj, properties, inSpecialize) {
     if (typeof properties !== "object" || properties === null) {
         throw new TypeError("Properties must be an object, not '" + properties + "'");
     }
     var propertyKeys = Object.getOwnPropertyNames(properties);
     for (var i = 0; (property = propertyKeys[i]); i++) {
         if ("_bindingDescriptors" !== property) {
-            this.defineProperty(obj, property, properties[property]);
+            this.defineProperty(obj, property, properties[property], inSpecialize);
         }
     }
     return obj;
@@ -454,15 +461,27 @@ var _defaultFunctionValueProperty = {
     */
 };
 
+
+var _serializableAttributeProperties = "_serializableAttributeProperties";
+Object.defineProperty(Montage.prototype, _serializableAttributeProperties, {
+    enumerable: false,
+    configurable: false,
+    writable: true,
+    value: {}
+});
+
 var ObjectAttributeProperties = new Map();
 function getAttributeProperties(proto, attributeName, privateAttributeName) {
-    var attributePropertyName = privateAttributeName || (UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES);
+    var attributePropertyName = privateAttributeName || (
+        attributeName === SERIALIZABLE
+        ? _serializableAttributeProperties
+        : (UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES));
 
         if(proto !== Object.prototype) {
             if (proto.hasOwnProperty(attributePropertyName)) {
                 return proto[attributePropertyName];
             } else {
-                return Object.defineProperty(proto, attributePropertyName, {
+               return Object.defineProperty(proto, attributePropertyName, {
                     enumerable: false,
                     configurable: false,
                     writable: true,
