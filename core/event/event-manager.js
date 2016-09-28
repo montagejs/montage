@@ -1359,47 +1359,52 @@ if (typeof window !== "undefined") { // client-side
                 this._stopListening();
             }
         },
-
+        _bubbleMethodNameByEventType_: {
+            value: new Map()
+        },
+        _bubbleMethodNameByEventTypeIdentifier_: {
+            value: new Map()
+        },
         /**
          * @function
          */
         methodNameForBubblePhaseOfEventType: {
             enumerable: false,
-            value: (function (_methodNameByEventType_,_methodNameByEventTypeIdentifier_) {
-                return function methodNameForBubblePhaseOfEventType(eventType, identifier, capitalizedEventType, capitalizedIdentifier) {
+            value: function methodNameForBubblePhaseOfEventType(eventType, identifier, capitalizedEventType, capitalizedIdentifier) {
                   var eventTypeBucket;
                   if(identifier) {
-                    eventTypeBucket = _methodNameByEventTypeIdentifier_[eventType] || (_methodNameByEventTypeIdentifier_[eventType] = Object.create(null));
-                    return eventTypeBucket[identifier] || (eventTypeBucket[identifier] = ("handle" + (capitalizedIdentifier || identifier.toCapitalized()) + (capitalizedEventType || eventType.toCapitalized())));
+                    eventTypeBucket = this._bubbleMethodNameByEventTypeIdentifier_.get(eventType) || (this._bubbleMethodNameByEventTypeIdentifier_.set(eventType, new Map())).get(eventType);
+                    return eventTypeBucket.get(identifier) || (eventTypeBucket.set(identifier, ("handle" + (capitalizedIdentifier || identifier.toCapitalized()) + (capitalizedEventType || eventType.toCapitalized())))).get(identifier);
                   }
                   else {
-                    return _methodNameByEventType_[eventType] || (_methodNameByEventType_[eventType] = ("handle" + (capitalizedEventType || eventType.toCapitalized())));
+                    return this._bubbleMethodNameByEventType_.get(eventType) || (this._bubbleMethodNameByEventType_.set(eventType, ("handle" + (capitalizedEventType || eventType.toCapitalized())))).get(eventType);
                   }
-                };
-            })(Object.create(null), Object.create(null))
+                }
         },
 
         /**
          * @private
          */
-        _methodNameForCapturePhaseByEventType_: {
-            value: {}
+        _captureMethodNameByEventType_: {
+            value: new Map()
+        },
+        _catptureMethodNameByEventTypeIdentifier_: {
+            value: new Map()
         },
 
         methodNameForCapturePhaseOfEventType: {
             enumerable: false,
-            value: (function (_methodNameByEventType_,_methodNameByEventTypeIdentifier_) {
-                return function methodNameForCapturePhaseOfEventType(eventType, identifier, capitalizedEventType, capitalizedIdentifier) {
+            value: function methodNameForCapturePhaseOfEventType(eventType, identifier, capitalizedEventType, capitalizedIdentifier) {
                   var eventTypeBucket;
                   if(identifier) {
-                    eventTypeBucket = _methodNameByEventTypeIdentifier_[eventType] || (_methodNameByEventTypeIdentifier_[eventType] = Object.create(null));
-                    return eventTypeBucket[identifier] || (eventTypeBucket[identifier] = ("capture" + (capitalizedIdentifier || identifier.toCapitalized()) + (capitalizedEventType || eventType.toCapitalized())));
+                    eventTypeBucket = this._catptureMethodNameByEventTypeIdentifier_.get(eventType) || (this._catptureMethodNameByEventTypeIdentifier_.set(eventType,new Map())).get(eventType);
+                    return eventTypeBucket.get(identifier) || (eventTypeBucket.set(identifier,("capture" + (capitalizedIdentifier || identifier.toCapitalized()) + (capitalizedEventType || eventType.toCapitalized())))).get(identifier);
                   }
                   else {
-                    return _methodNameByEventType_[eventType] || (_methodNameByEventType_[eventType] = ("capture" + (capitalizedEventType || eventType.toCapitalized())));
+                    return this._captureMethodNameByEventType_.get(eventType)
+                        || (this._captureMethodNameByEventType_.set(eventType, ("capture" + (capitalizedEventType || eventType.toCapitalized())))).get(eventType);
                   }
-                };
-              })(Object.create(null), Object.create(null))
+              }
         },
 
         // Claimed pointer information

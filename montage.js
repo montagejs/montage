@@ -50,9 +50,10 @@ if (typeof window !== "undefined") {
  */
 if (!String.prototype.startsWith) {
     Object.defineProperty(String.prototype, 'startsWith', {
-        value: function (start) {
-            return this.length >= start.length &&
-                this.slice(0, start.length) === start;
+        value: function (searchString, position) {
+            return this.lastIndexOf(searchString, position || 0) === 0;
+            // return this.length >= start.length &&
+            //     this.slice(0, start.length) === start;
         },
         writable: true,
         configurable: true
@@ -68,11 +69,13 @@ if (!String.prototype.startsWith) {
  */
 if (!String.prototype.endsWith) {
     Object.defineProperty(String.prototype, 'endsWith', {
-        value: function (end) {
-            var selfLength = this.length,
-                endLength = end.length;
-
-            return selfLength >= endLength && this.indexOf(end, selfLength - endLength) !== -1;
+        value: function (searchString, position) {
+            if (typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > this.length) {
+                position = this.length;
+            }
+            position -= searchString.length;
+            var lastIndex = this.lastIndexOf(searchString, position);
+            return lastIndex !== -1 && lastIndex === position;
         },
         writable: true,
         configurable: true
