@@ -35,8 +35,11 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
         enumerable: false,
         writable: false
     },
-    Map = require("collections/map");
-    WeakMap = require("collections/weak-map");
+    Map = require("collections/map"),
+    WeakMap = require("collections/weak-map"),
+    __superWeakMap = new WeakMap();
+    //Entry is a function and value is a set containing specialied functions that have been cached
+    _superDependenciesWeakMap = new WeakMap();
 
     // Fix Function#name on browsers that do not support it (IE10):
     if (!Object.create.name) {
@@ -388,22 +391,22 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
         */
 
         // clear the cache for super() for property we're about to redefine.
-        var property = Object.getOwnPropertyDescriptor(obj, prop),
-            func;
-        if(property) {
-            if (typeof (func = property.value) === FUNCTION) {
-                __clearSuperDepencies(func);
-            }
-            else {
-                if (typeof (func = property.get) === FUNCTION) {
-                __clearSuperDepencies(func);
-                }
-                if (typeof (func = property.set) === FUNCTION) {
-                __clearSuperDepencies(func);
-                }
-            }
-        }
-
+        // var property = Object.getOwnPropertyDescriptor(obj, prop),
+        //     func;
+        // if(property) {
+        //     if (typeof (func = property.value) === FUNCTION) {
+        //         __clearSuperDepencies(func);
+        //     }
+        //     else {
+        //         if (typeof (func = property.get) === FUNCTION) {
+        //         __clearSuperDepencies(func);
+        //         }
+        //         if (typeof (func = property.set) === FUNCTION) {
+        //         __clearSuperDepencies(func);
+        //         }
+        //     }
+        // }
+        __clearSuperDepencies(obj,prop, descriptor);
 
         return Object.defineProperty(obj, prop, descriptor);
     };
@@ -694,22 +697,48 @@ var superForSetImplementation = function (propertyName) {
  */
 
 function _superForValue(methodName) {
-  // Figure out which function called us.
-    var callerFn = ( _superForValue && _superForValue.caller )
-                    ? _superForValue.caller             // Modern browser
-                    : arguments.callee.caller,  // IE9 and earlier
-        methodFn = typeof this === FUNCTION
-                    ? callerFn[methodName]
-                    : callerFn.prototype[methodName],
-        superFn = __super.call(this,methodFn),
+      var callerFn = ( _superForValue && _superForValue.caller )
+        ? _superForValue.caller             // Modern browser
+        : arguments.callee.caller,        // IE9 and earlier
+      superFn = __super.call(this,callerFn,methodName,true,false,false),
         self = this;
 
     //We may need to cache that at some point if it gets called too often
     return superFn ? function() {
-        superFn.apply( self, arguments );
+        return superFn.apply( self, arguments );
     }
     : Function.noop;
 };
+
+function _superForGet(methodName) {
+     var callerFn = ( _superForGet && _superForGet.caller )
+        ? _superForGet.caller             // Modern browser
+        : arguments.callee.caller,        // IE9 and earlier
+       superFn = __super.call(this,callerFn,methodName,false,true,false),
+        self = this;
+
+    //We may need to cache that at some point if it gets called too often
+    return superFn ? function() {
+        return superFn.apply( self, arguments );
+    }
+    : Function.noop;
+};
+
+
+function _superForSet(methodName) {
+     var callerFn = ( _superForSet && _superForSet.caller )
+        ? _superForSet.caller             // Modern browser
+        : arguments.callee.caller,        // IE9 and earlier
+       superFn = __super.call(this,callerFn,methodName,false,false,true),
+        self = this;
+
+    //We may need to cache that at some point if it gets called too often
+    return superFn ? function() {
+        return superFn.apply( self, arguments );
+    }
+    : Function.noop;
+};
+
 
 function _super() {
     // Figure out which function called us.
@@ -722,12 +751,29 @@ function _super() {
         : undefined;;
 };
 
-var __superWeakMap = new WeakMap();
-//Entry is a function and value is a set containing specialied functions that have been cached
-var _superDependenciesWeakMap = new WeakMap();
 
-function __super(callerFn) {
-    if ( !callerFn ) {
+
+
+function _superDependenciesFor(anObject) {
+    var dependents = _superDependenciesWeakMap.get(anObject);
+    if(!dependents) {
+        _superDependenciesWeakMap.set(anObject,(dependents = new Set()));
+    }
+    return dependents;
+}
+
+var _superMethodDependenciesMap = new Map();
+function _superMethodDependenciesFor(anObject) {
+    var dependents = _superMethodDependenciesMap.get(anObject);
+    if(!dependents) {
+        _superMethodDependenciesMap.set(anObject,(dependents = new Set()));
+    }
+    return dependents;
+}
+
+
+function __super(callerFn, methodPropertyName, isValue, isGetter, isSetter) {
+    if ( !callerFn && !methodPropertyName) {
         return undefined;
     }
 
@@ -739,44 +785,69 @@ function __super(callerFn) {
         var isFunctionSuper = typeof this === FUNCTION, dependents;
 
         // Find the class implementing this method.
-        superFn = findMethodImplementation( callerFn, isFunctionSuper ? this : this.constructor , isFunctionSuper);
+        superFn = findSuperMethodImplementation( callerFn, isFunctionSuper ? this : this.constructor , isFunctionSuper, methodPropertyName, isValue, isGetter, isSetter);
         if ( superFn ) {
             __superWeakMap.set(callerFn,superFn);
-            dependents = _superDependenciesWeakMap.get(superFn);
-            if(!dependents) {
-                _superDependenciesWeakMap.set(superFn,(dependents = new Set()));
-            }
-            dependents.add(callerFn);
+            _superMethodDependenciesFor(superFn).add(callerFn);
         }
     }
 
     return superFn;
 };
 
-function __clearSuperDepencies(aFn) {
-    var superWeakMap = __superWeakMap;
+function __clearSuperDepencies(obj, prop, replacingDescriptor) {
 
-    superWeakMap.delete(aFn);
-    var dependents = _superDependenciesWeakMap.get(aFn);
+    var superWeakMap = __superWeakMap,
+        descriptor = Object.getOwnPropertyDescriptor(obj, prop),
+        methodFn;
+
+    if(descriptor) {
+        if(typeof descriptor.value === FUNCTION && typeof replacingDescriptor.value === FUNCTION) {
+            superWeakMap.delete(descriptor.value);
+            _superMethodDependenciesFor(descriptor.value).forEach(function(eachObj) {
+                superWeakMap.delete(eachObj);
+            });
+        }
+        else {
+            if(typeof descriptor.get === FUNCTION && typeof replacingDescriptor.get === FUNCTION) {
+                superWeakMap.delete(descriptor.get);
+                _superMethodDependenciesFor(descriptor.get).forEach(function(eachObj) {
+                    superWeakMap.delete(eachObj);
+                });
+
+            }
+            if(typeof descriptor.set === FUNCTION && typeof replacingDescriptor.set === FUNCTION) {
+                superWeakMap.delete(descriptor.set);
+                _superMethodDependenciesFor(descriptor.set).forEach(function(eachObj) {
+                    superWeakMap.delete(eachObj);
+                });
+           }
+        }
+    }
+
+    var dependents = _superDependenciesWeakMap.get(obj);
     if(dependents) {
-        dependents.forEach(function(eachFn) {
-            superWeakMap.delete(eachFn);
+        dependents.forEach(function(eachObj) {
+            __clearSuperDepencies(eachObj, prop, replacingDescriptor);
         });
     }
 
 }
 
 /*
- * Find which class implements the given method, starting at the given
+ * Find the super implementation for the given method, starting at the given
  * point in the class hierarchy and walking up.
  *
- * This is done by enumerating all class prototype members to find the
- * function identical to the method we're looking for.
+ * This is done first by enumerating all object's own prototype members to find the
+ * function identical to the method we're looking for in order to know which property name it's attached to
+ * We walk up until we find one.
  *
- * Returns the class that implements the function, and the name of the class
- * member that references it. Returns null if the class was not found.
+ * Once found, then we continue walking up to find the true super now looking only for that known property.
+ *
+ * Returns the function once found
  */
-function findMethodImplementation( method, classFn, isFunctionSuper) {
+var _propertyNames = [];
+function findSuperMethodImplementation( method, classFn, isFunctionSuper, methodPropertyNameArg, isValueArg, isGetterArg, isSetterArg) {
 
     // See if this particular class defines the function.
     //var prototype = classFn.prototype;
@@ -784,10 +855,10 @@ function findMethodImplementation( method, classFn, isFunctionSuper) {
         propertyNames,
         i, propertyName, property, func,
         methodPropertyName,
-        isValue = false,
-        isGetter = false,
-        isSetter = false,
-        startContext, context, foundSuper;
+        isValue = isValueArg,
+        isGetter = isGetterArg,
+        isSetter = isSetterArg,
+        startContext, previousContext, context, foundSuper;
 
         //context = isFunctionSuper ? Object.getPrototypeOf(classFn) : classFn.prototype;
         startContext = context = isFunctionSuper ? classFn : classFn.prototype;
@@ -795,32 +866,36 @@ function findMethodImplementation( method, classFn, isFunctionSuper) {
         while (!foundSuper && context !== null) {
 
             if(!methodPropertyName) {
-                propertyNames = Object.getOwnPropertyNames(context);
+                //If methodPropertyNameArg is passed as an argument, we know what to look for,
+                //But it may not be there...
+                propertyNames = methodPropertyNameArg
+                    ? (_propertyNames[0] = methodPropertyNameArg) && _propertyNames
+                    : Object.getOwnPropertyNames(context);
 
                 //As we start, we don't really know which property name points to method, we're going to find out:
                 for (i=0;(propertyName = propertyNames[i]);i++) {
-                    property = Object.getOwnPropertyDescriptor(context, propertyName);
-
-                    if ((func = property.value) != null) {
-                        if (func === method || func.deprecatedFunction === method) {
-                            methodPropertyName = propertyName;
-                            isValue = true;
-                            break;
-                        }
-                    }
-                    else {
-                        if ((func = property.get) != null) {
+                    if((property = Object.getOwnPropertyDescriptor(context, propertyName))) {
+                        if ((func = property.value) != null) {
                             if (func === method || func.deprecatedFunction === method) {
                                 methodPropertyName = propertyName;
-                                isGetter = true;
+                                isValue = true;
                                 break;
                             }
                         }
-                        if ((func = property.set) != null) {
-                            if (func === method || func.deprecatedFunction === method) {
-                                methodPropertyName = propertyName;
-                                isSetter = true;
-                                break;
+                        else {
+                            if ((func = property.get) != null) {
+                                if (func === method || func.deprecatedFunction === method) {
+                                    methodPropertyName = propertyName;
+                                    isGetter = true;
+                                    break;
+                                }
+                            }
+                            if ((func = property.set) != null) {
+                                if (func === method || func.deprecatedFunction === method) {
+                                    methodPropertyName = propertyName;
+                                    isSetter = true;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -830,24 +905,45 @@ function findMethodImplementation( method, classFn, isFunctionSuper) {
     //We're going to walk up the tree.
 
             // if(methodPropertyName && startContext !== context) {
+            // else if(startContext !== context) {
+
+            //     if((property = Object.getOwnPropertyDescriptor(context, methodPropertyName))) {
+            //         if (isValue && (func = property.value) !== method && typeof func === FUNCTION) {
+            //             foundSuper = true;
+            //             break;
+            //         }
+            //         else if (isGetter && (func = property.get) !== method) {
+            //             foundSuper = true;
+            //             break;
+            //         }
+            //         else if (isSetter && (func = property.set) !== method) {
+            //             foundSuper = true;
+            //             break;
+            //         }
+            //     }
+            // }
             else {
 
                 if((property = Object.getOwnPropertyDescriptor(context, methodPropertyName))) {
-                    if (isValue && (func = property.value) != null) {
+                    if (isValue && typeof (func = property.value) === FUNCTION) {
                         foundSuper = true;
                         break;
                     }
-                    else if (isGetter && (func = property.get) != null) {
+                    else if (isGetter && (func = property.get)) {
                         foundSuper = true;
                         break;
                     }
-                    else if (isSetter && (func = property.set) != null) {
+                    else if (isSetter && (func = property.set)) {
                         foundSuper = true;
                         break;
                     }
                 }
             }
-            context = Object.getPrototypeOf(context);
+
+            previousContext = context;
+            if(context = Object.getPrototypeOf(context)) {
+                _superDependenciesFor(context).add(previousContext);
+            }
 
         }
 
@@ -900,20 +996,20 @@ Montage.defineProperty(Montage.prototype, "superForValue", {
 });
 
 Montage.defineProperty(Montage, "superForGet", {
-    value: _superForValue,
+    value: _superForGet,
     enumerable: false
 });
 Montage.defineProperty(Montage.prototype, "superForGet", {
-    value: _superForValue,
+    value: _superForGet,
     enumerable: false
 });
 
 Montage.defineProperty(Montage, "superForSet", {
-    value: _superForValue,
+    value: _superForSet,
     enumerable: false
 });
 Montage.defineProperty(Montage.prototype, "superForSet", {
-    value: _superForValue,
+    value: _superForSet,
     enumerable: false
 });
 
