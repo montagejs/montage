@@ -580,13 +580,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             return null;
         },
         set: function (value) {
-            // TODO if we provide an implicit content controller, it should be
-            // excluded from a serialization of the repetition.
-            if (this.contentController) {
-                this.contentController.content = value;
-            } else {
-                this.contentController = new RangeController().initWithContent(value);
-            }
+            this.contentController.content = value;
         }
     },
 
@@ -599,7 +593,24 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * order of their appearance.
      * @type {RangeController}
      */
-    contentController: {value: null},
+    _contentController: {
+        value: null
+    },
+
+    contentController: {
+        set: function (contentController) {
+            if (this._contentController !== contentController) {
+                this._contentController = contentController;
+            }
+        },
+        get: function () {
+            if (!this._contentController) {
+                this._contentController = new RangeController();
+            }
+
+            return this._contentController;
+        }
+    },
 
     /**
      * When selection is enabled, each element in an iteration responds to
@@ -622,18 +633,12 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         set: function (allowsMultipleSelection) {
             allowsMultipleSelection = !!allowsMultipleSelection;
 
-            // Fixme: the property contentController is set at several places in the repetition, it need to be consolidate.
-            // (keep in mind contentController from the serialization)
-            if (!this.contentController) {
-                this.contentController = new RangeController();
-            }
-
             if (this.contentController.allowsMultipleSelection !== allowsMultipleSelection) {
                 this.contentController.allowsMultipleSelection = allowsMultipleSelection;
+            }
 
-                if (allowsMultipleSelection && !this.isSelectionEnabled) {
-                    this.isSelectionEnabled = true;
-                }
+            if (allowsMultipleSelection && !this.isSelectionEnabled) {
+                this.isSelectionEnabled = true;
             }
         },
         get: function () {
@@ -765,56 +770,58 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
     handleSelectionRangeChange: {
         value: function (add, remove) {
-            var iterationsMap,
-                length = this.iterations.length,
-                objectIterations,
-                object,
-                iteration,
-                i, j;
+            if (this.iterations) {
+                var iterationsMap,
+                    length = this.iterations.length,
+                    objectIterations,
+                    object,
+                    iteration,
+                    i, j;
 
-            if ((add.length <= 1) && (remove.length <= 1)) {
-                if (remove.length) {
-                    object = remove[0];
+                if ((add.length <= 1) && (remove.length <= 1)) {
+                    if (remove.length) {
+                        object = remove[0];
+                        for (i = 0; i < length; i++) {
+                            if (this.iterations[i].object === object) {
+                                this.iterations[i].selected = false;
+                            }
+                        }
+                    }
+                    if (add.length) {
+                        object = add[0];
+                        for (i = 0; i < length; i++) {
+                            if (this.iterations[i].object === object) {
+                                this.iterations[i].selected = true;
+                            }
+                        }
+                    }
+                } else {
+                    iterationsMap = new Map();
                     for (i = 0; i < length; i++) {
-                        if (this.iterations[i].object === object) {
-                            this.iterations[i].selected = false;
+                        iteration = this.iterations[i];
+                        object = iteration.object;
+                        if (!(objectIterations = iterationsMap.get(object))) {
+                            objectIterations = [];
+                            iterationsMap.set(object, objectIterations);
+                        }
+                        objectIterations.push(iteration);
+                    }
+                    for (i = 0; i < remove.length; i++) {
+                        if (objectIterations = iterationsMap.get(remove[i])) {
+                            for (j = 0; j < objectIterations.length; j++) {
+                                objectIterations[j].selected = false;
+                            }
+                        }
+                    }
+                    for (i = 0; i < add.length; i++) {
+                        if (objectIterations = iterationsMap.get(add[i])) {
+                            for (j = 0; j < objectIterations.length; j++) {
+                                objectIterations[j].selected = true;
+                            }
                         }
                     }
                 }
-                if (add.length) {
-                    object = add[0];
-                    for (i = 0; i < length; i++) {
-                        if (this.iterations[i].object === object) {
-                            this.iterations[i].selected = true;
-                        }
-                    }
-                }
-            } else {
-                iterationsMap = new Map();
-                for (i = 0; i < length; i++) {
-                    iteration = this.iterations[i];
-                    object = iteration.object;
-                    if (!(objectIterations = iterationsMap.get(object))) {
-                        objectIterations = [];
-                        iterationsMap.set(object, objectIterations);
-                    }
-                    objectIterations.push(iteration);
-                }
-                for (i = 0; i < remove.length; i++) {
-                    if (objectIterations = iterationsMap.get(remove[i])) {
-                        for (j = 0; j < objectIterations.length; j++) {
-                            objectIterations[j].selected = false;
-                        }
-                    }
-                }
-                for (i = 0; i < add.length; i++) {
-                    if (objectIterations = iterationsMap.get(add[i])) {
-                        for (j = 0; j < objectIterations.length; j++) {
-                            objectIterations[j].selected = true;
-                        }
-                    }
-                }
-            }
+            }   
         }
     },
 
@@ -966,7 +973,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             this.defineBinding("selectedIndexes", {
                 "<-": "selectedIterations.map{index}"
             });
-
+            this.defineBinding("allowsMultipleSelection", {
+                "<-": "contentController.allowsMultipleSelection"
+            });
 
             // The iteration template:
             // ---
