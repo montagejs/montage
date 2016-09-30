@@ -1234,7 +1234,9 @@ if (typeof window !== "undefined") { // client-side
                 if (!this._activationHandler) {
                     var eventManager = this;
                     this._activationHandler = function _activationHandler(evt) {
-                        var touchCount;
+                        var eventType = evt.type,
+                            canBecomeActiveTarget = eventType !== "mouseenter" && eventType !== "pointerenter", 
+                            touchCount;
 
                         // Prepare any components associated with elements that may receive this event
                         // They need to registered there listeners before the next step, which is to find the components that
@@ -1242,10 +1244,10 @@ if (typeof window !== "undefined") { // client-side
                         if (evt.changedTouches) {
                             touchCount = evt.changedTouches.length;
                             for (var i = 0; i < touchCount; i++) {
-                                eventManager._prepareComponentsForActivation(evt.changedTouches[i].target);
+                                eventManager._prepareComponentsForActivation(evt.changedTouches[i].target, canBecomeActiveTarget);
                             }
                         } else {
-                            eventManager._prepareComponentsForActivation(evt.target);
+                            eventManager._prepareComponentsForActivation(evt.target, canBecomeActiveTarget);
                         }
                     };
                 }
@@ -2598,8 +2600,7 @@ if (typeof window !== "undefined") { // client-side
          * @private
          */
         _prepareComponentsForActivation: {
-            value: function (eventTarget) {
-
+            value: function (eventTarget, canBecomeActiveTarget) {
                 var target = eventTarget,
                     previousTarget,
                     targetView = target && target.defaultView ? target.defaultView : window,
@@ -2609,7 +2610,6 @@ if (typeof window !== "undefined") { // client-side
                     activeTarget = null;
 
                 do {
-
                     if (target) {
                         associatedComponent = this.eventHandlerForElement(target);
                         if (associatedComponent) {
@@ -2649,7 +2649,9 @@ if (typeof window !== "undefined") { // client-side
 
                 } while (target && previousTarget !== target);
 
-                this.activeTarget = activeTarget;
+                if (canBecomeActiveTarget) {
+                    this.activeTarget = activeTarget;
+                }
             }
         },
 
