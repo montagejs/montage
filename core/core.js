@@ -818,37 +818,46 @@ function __clearSuperDepencies(obj, prop, replacingDescriptor) {
 
     var superWeakMap = __superWeakMap,
         descriptor = Object.getOwnPropertyDescriptor(obj, prop),
+        dependencies,
+        iterator,
+        dependency,
         methodFn;
 
     if(descriptor) {
         if(typeof descriptor.value === FUNCTION && typeof replacingDescriptor.value === FUNCTION) {
             superWeakMap.delete(descriptor.value);
-            _superMethodDependenciesFor(descriptor.value).forEach(function(eachObj) {
-                superWeakMap.delete(eachObj);
-            });
+            dependencies = _superMethodDependenciesFor(descriptor.value);
+            iterator = dependencies.values();
+            while (dependency = iterator.next().value) {
+                superWeakMap.delete(dependency);
+            }
         }
         else {
             if(typeof descriptor.get === FUNCTION && typeof replacingDescriptor.get === FUNCTION) {
                 superWeakMap.delete(descriptor.get);
-                _superMethodDependenciesFor(descriptor.get).forEach(function(eachObj) {
-                    superWeakMap.delete(eachObj);
-                });
-
+                dependencies = _superMethodDependenciesFor(descriptor.get);
+                iterator = dependencies.values();
+                while (dependency = iterator.next().value) {
+                    superWeakMap.delete(dependency);
+                }
             }
             if(typeof descriptor.set === FUNCTION && typeof replacingDescriptor.set === FUNCTION) {
                 superWeakMap.delete(descriptor.set);
-                _superMethodDependenciesFor(descriptor.set).forEach(function(eachObj) {
-                    superWeakMap.delete(eachObj);
-                });
-           }
+                dependencies = _superMethodDependenciesFor(descriptor.set);
+                iterator = dependencies.values();
+                while (dependency = iterator.next().value) {
+                    superWeakMap.delete(dependency);
+                }
+            }
         }
     }
 
-    var dependents = _superDependenciesWeakMap.get(obj);
-    if(dependents) {
-        dependents.forEach(function(eachObj) {
-            __clearSuperDepencies(eachObj, prop, replacingDescriptor);
-        });
+    dependencies = _superDependenciesWeakMap.get(obj);
+    if(dependencies) {
+        iterator = dependencies.values();
+        while (dependency = iterator.next().value) {
+            __clearSuperDepencies(dependency, prop, replacingDescriptor);
+        }
     }
 
 }
@@ -944,15 +953,18 @@ function findSuperMethodImplementation( method, classFn, isFunctionSuper, method
             else {
 
                 if((property = Object.getOwnPropertyDescriptor(context, methodPropertyName))) {
-                    if (isValue && typeof (func = property.value) === FUNCTION) {
+                    if (property.hasOwnProperty("value")) {
+                        func = property.value;
                         foundSuper = true;
                         break;
                     }
-                    else if (isGetter && (func = property.get)) {
+                    else if (isGetter && property.hasOwnProperty("get")) {
+                        func = property.get;
                         foundSuper = true;
                         break;
                     }
-                    else if (isSetter && (func = property.set)) {
+                    else if (isSetter && property.hasOwnProperty("set")) {
+                        func = property.set;
                         foundSuper = true;
                         break;
                     }
@@ -966,7 +978,7 @@ function findSuperMethodImplementation( method, classFn, isFunctionSuper, method
 
         }
 
-        return foundSuper ? func : undefined;
+        return foundSuper && typeof func === FUNCTION ? func : Function.noop;
 }
 
 
