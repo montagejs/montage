@@ -192,7 +192,7 @@ describe("core/range-controller-spec", function () {
                 });
 
                 it("should contain last element of content, if it would be empty after content change", function () {
-                    rangeController.multiSelect = false;
+                    rangeController.allowsMultipleSelection = false;
                     rangeController.selection = [2];
 
                     rangeController.content.delete(2);

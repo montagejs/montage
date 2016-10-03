@@ -199,9 +199,10 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
     },
 
     handleLoad: {
-        value: function () {
+        value: function handleLoad(event) {
             this._isLoadingImage = false;
             this.needsDraw = true;
+            event.target.removeEventListener("load",this,false);
         }
     }
 },

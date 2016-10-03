@@ -47,7 +47,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
                 // "value": {
                 //     "<->": "values.one()"
                 // },
-                "contentController.multiSelect": {
+                "contentController.allowsMultipleSelection": {
                     "<-": "multiSelect"
                 },
                 // classList management
