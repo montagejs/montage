@@ -733,13 +733,14 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
                 minus.deleteEach(plus, equals);
 
                 if (this.selection.length) {
+                    this.selection.deleteEach(minus);
+
                     // ensure selection always has content
-                    if (this.content && this.content.length && this.avoidsEmptySelection && !this.allowsMultipleSelection) {
+                    if (this.selection.length === 0 && this.content && this.content.length &&
+                        this.avoidsEmptySelection && !this.allowsMultipleSelection) {
                         // selection can't contain previous content value as content already changed
                         this.selection.add(this.content[this.content.length - 1]);
                     }
-                    
-                    this.selection.deleteEach(minus);
                 }
             }
         }
