@@ -39,17 +39,21 @@ exports.ImageGalleryItem = Component.specialize(/** @lends ImageGalleryItem# */ 
     },
 
     handleLoad: {
-        value: function () {
+        value: function (event) {
             window.clearTimeout(this._loaderTimeout);
             this._status = null;
+            event.target.removeEventListener("load",this,false);
+            event.target.removeEventListener("error",this,false);
         }
     },
 
     handleError: {
-        value: function () {
+        value: function (event) {
             window.clearTimeout(this._loaderTimeout);
             this._status = "error";
-        }
+            event.target.removeEventListener("load",this,false);
+            event.target.removeEventListener("error",this,false);
+       }
     },
 
     _needsUpdateSource: {
