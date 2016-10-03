@@ -1,3 +1,21 @@
+### v16.0.3
+- overall speed improvements
+- Fixes missing classList on named param DOM element and cleaning up.
+- Fixes a bug when setting the value of an attribute wouldn't triggers a draw.
+- Adds support for event listeners on DOM elements in the serialization.
+- Fixes deprecated warning when accessing the property KeyEvent.keyIdentifier.KeyEvent.keyIdentifier will be remove from Chrome 52. Keep support for old browsers and webkit.
+- Makes sure to have the correct anchor position when centring an overlay.
+- Bug fixes and improvements to Controls:
+    - bug fixes to checkbox
+    - Fixes bug in Slider where order in serialization of setting/binding on min/max/value would modify outcome
+    - adds example of a slider with sticky label
+    - adds space and enter key events to button
+    - Makes sure a control is not disabled after having set a binding on the property enabled/disabled
+    - Deprecates the property enabled within Control, disabled should be used
+    - Removes deprecated enabled usage in Control and the PressComposer
+    - Keeps cursor position within a text input when using a converter
+ 
+
 ### v16.0.2
 
 - Addresses a regression around live edit and rootComponent 
