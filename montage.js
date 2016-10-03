@@ -5,7 +5,7 @@ if (typeof window !== "undefined") {
 
     console._groupTime = Object.create(null);
     console.groupTime = function(name) {
-        var groupTimeEntry = this._groupTime.get(name);
+        var groupTimeEntry = this._groupTime[name];
         if(!groupTimeEntry) {
             groupTimeEntry = {
                 count: 0,
@@ -513,15 +513,17 @@ if (!String.prototype.endsWith) {
         }
     };
 
+    function URLMakeResolve (base, relative) {
+        return new URL(relative, base).href;
+    }
+
     var browser = {
 
         // mini-url library
         makeResolve: function () {
 
           if(this._hasURLSupport()) {
-            return function (base, relative) {
-              return new URL(relative, base).href;
-            }
+            return URLMakeResolve
           }
           else {
             var head = document.querySelector("head"),
@@ -568,17 +570,20 @@ if (!String.prototype.endsWith) {
 
         __hasURLSupport: null,
 
+        _testHasURLSupport: function () {
+            // Testing for window.URL will not help here as it does exist in IE10 and IE11.
+            // but IE supports just the File API specification.
+            try { // window IE 10+ support
+                return !!(new URL("http://montagestudio.com")); // 1 parameter required at least.
+            } catch (e) {
+                return false;
+            }
+        },
+
         _hasURLSupport: function () {
             if (!this.__hasURLSupport) {
-                // Testing for window.URL will not help here as it does exist in IE10 and IE11.
-                // but IE supports just the File API specification.
-                try { // window IE 10+ support
-                    this.__hasURLSupport = !!(new URL("http://montagestudio.com")); // 1 parameter required at least.
-                } catch (e) {
-                    this.__hasURLSupport = false;
-                }
+                this.__hasURLSupport = this._testHasURLSupport();
             }
-
             return this.__hasURLSupport;
         },
 
