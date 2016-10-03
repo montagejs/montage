@@ -295,7 +295,8 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
                 var shouldAcceptValue
                 if (!this.delegate ||  (shouldAcceptValue = this.callDelegateMethod("shouldAcceptValue", this, value) ) === undefined ? true : shouldAcceptValue ){
                     // console.log("_setValue past first step value is ",value);
-                    if(this.converter) {
+
+                    if (value !== "" && value !== void 0 && value !== null && this.converter) {
                         var convertedValue;
                         try {
                             //Where is the matching convert?
