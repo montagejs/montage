@@ -29,7 +29,6 @@ header {
 .button {
     height: 80px;
     width: 200px;
-    outline: none;
     font-size: 15px;
     box-sizing: border-box;
     padding: 0;
