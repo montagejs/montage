@@ -195,25 +195,17 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         }
     },
 
-    enterDocument: {
-        value: function (firstDraw) {
-            this.super(firstDraw);
-            if(firstDraw) {
-                if (this._elementNeedsTabIndex()) {
-                    if (this._preventFocus) {
-                        this.element.removeAttribute("tabindex");
-                    } else {
-                        this.element.setAttribute("tabindex", "0");
-                    }
-                }
-            }
-
-        }
-    },
-
     draw: {
         value: function () {
-            if (this._focusBlur === 1) {
+        if (this._elementNeedsTabIndex()) {
+            if (this._preventFocus) {
+                this.element.removeAttribute("tabindex");
+            } else {
+                this.element.setAttribute("tabindex", "0");
+            }
+        }
+
+          if (this._focusBlur === 1) {
                 this._element.focus();
             } else if (this._focusBlur === 0 || !this.drawsFocusOnPointerActivation) {
                 this._element.blur();
@@ -251,6 +243,27 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
             }
 
             return true;
+        }
+    },
+
+    _preventFocus: {
+        enumerable: false,
+        value: false
+    },
+
+/**
+    Specifies whether the button should receive focus or not.
+    @type {boolean}
+    @default false
+    @event longpress @benoit: no events here?
+*/
+    preventFocus: {
+        get: function () {
+            return this._preventFocus;
+        },
+        set: function (value) {
+            this._preventFocus = !!value;
+            this.needsDraw = true;
         }
     },
 

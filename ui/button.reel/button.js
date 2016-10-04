@@ -64,26 +64,6 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         @param {Event} event
     */
 
-    _preventFocus: {
-        enumerable: false,
-        value: false
-    },
-
-/**
-    Specifies whether the button should receive focus or not.
-    @type {boolean}
-    @default false
-    @event longpress @benoit: no events here?
-*/
-    preventFocus: {
-        get: function () {
-            return this._preventFocus;
-        },
-        set: function (value) {
-            this._preventFocus = !!value;
-            this.needsDraw = true;
-        }
-    },
     standardElementTagName: {
         value: "BUTTON"
     },
