@@ -96,6 +96,10 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
         }
     },
 
+    drawsFocusOnPointerActivation : {
+        value: true
+    },
+
     draw: {
         enumerable: false,
         value: function() {

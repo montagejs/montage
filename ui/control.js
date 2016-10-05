@@ -184,15 +184,30 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         enumerable: false,
         value: false
     },
-    // drawValue {
-    //     value: function () {
-    //     }
-    // },
+
+    _elementNeedsTabIndexRegex: {
+        value: /INPUT|TEXTAREA|A|SELECT|BUTTON|LABEL/
+    },
+
+    _elementNeedsTabIndex: {
+        value: function () {
+            return this.element.tagName.match(this._elementNeedsTabIndexRegex) === null;
+        }
+    },
+
     draw: {
         value: function () {
-            if (this._focusBlur === 1) {
+        if (this._elementNeedsTabIndex()) {
+            if (this._preventFocus) {
+                this.element.removeAttribute("tabindex");
+            } else {
+                this.element.setAttribute("tabindex", "0");
+            }
+        }
+
+          if (this._focusBlur === 1) {
                 this._element.focus();
-            } else if (this._focusBlur === 0) {
+            } else if (this._focusBlur === 0 || !this.drawsFocusOnPointerActivation) {
                 this._element.blur();
             }
             this._focusBlur = void 0;
@@ -231,6 +246,31 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         }
     },
 
+    _preventFocus: {
+        enumerable: false,
+        value: false
+    },
+
+/**
+    Specifies whether the button should receive focus or not.
+    @type {boolean}
+    @default false
+    @event longpress @benoit: no events here?
+*/
+    preventFocus: {
+        get: function () {
+            return this._preventFocus;
+        },
+        set: function (value) {
+            this._preventFocus = !!value;
+            this.needsDraw = true;
+        }
+    },
+
+    drawsFocusOnPointerActivation : {
+        value: false
+    },
+
     /**
      * Description TODO
      * @function
@@ -240,6 +280,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         enumerable: false,
         value: function (event) {
             this.hasFocus = true;
+            this.drawsFocusOnPointerActivation = true;
         }
     },
 
@@ -247,6 +288,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         enumerable: false,
         value: function (event) {
             this.hasFocus = false;
+            this.drawsFocusOnPointerActivation = false;
             this.callDelegateMethod("didEndEditing", this);
             //This create an issue in textfield, to investigate
             this.dispatchActionEvent();

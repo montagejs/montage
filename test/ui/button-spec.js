@@ -96,7 +96,7 @@ describe("test/ui/button-spec", function () {
                 aButton.element = anElement;
                 aButton._draw();
                 aButton.draw();
-                expect(anElement.setAttribute).toHaveBeenCalledWith("tabindex", "-1");
+                expect(anElement.setAttribute).toHaveBeenCalledWith("tabindex", "0");
                 aButton.preventFocus = true;
                 aButton._draw();
                 aButton.draw();

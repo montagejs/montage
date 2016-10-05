@@ -64,26 +64,6 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         @param {Event} event
     */
 
-    _preventFocus: {
-        enumerable: false,
-        value: false
-    },
-
-/**
-    Specifies whether the button should receive focus or not.
-    @type {boolean}
-    @default false
-    @event longpress @benoit: no events here?
-*/
-    preventFocus: {
-        get: function () {
-            return this._preventFocus;
-        },
-        set: function (value) {
-            this._preventFocus = !!value;
-            this.needsDraw = true;
-        }
-    },
     standardElementTagName: {
         value: "BUTTON"
     },
@@ -298,10 +278,6 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 this.active = true;
                 this._addEventListeners();
             }
-
-            if (!this._preventFocus) {
-                this._element.focus();
-            }
         }
     },
 
@@ -424,28 +400,10 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         }
     },
 
-    _elementNeedsTabIndexRegex: {
-        value: /INPUT|TEXTAREA|A|SELECT|BUTTON|LABEL/
-    },
-
-    _elementNeedsTabIndex: {
-        value: function () {
-            return this.element.tagName.match(this._elementNeedsTabIndexRegex) === null;
-        }
-    },
 
     draw: {
         value: function () {
             this.super();
-
-            if (this._elementNeedsTabIndex()) {
-                if (this._preventFocus) {
-                    this.element.removeAttribute("tabindex");
-                } else {
-                    this.element.setAttribute("tabindex", "-1");
-                }
-            }
-
             this._drawLabel(this._label);
         }
     }
