@@ -37,6 +37,7 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     },
     Map = require("collections/map"),
     WeakMap = require("collections/weak-map"),
+    Set = require("collections/set"),
     __superWeakMap = new WeakMap();
     //Entry is a function and value is a set containing specialied functions that have been cached
     _superDependenciesWeakMap = new WeakMap();
