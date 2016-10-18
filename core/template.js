@@ -742,9 +742,11 @@ var Template = Montage.specialize( /** @lends Template# */ {
     createHtmlDocumentWithHtml: {
         value: function (html, baseURI) {
             var htmlDocument = document.implementation.createHTMLDocument("");
+            if(html) {
+                htmlDocument.documentElement.innerHTML = html;
+                if(baseURI) this.normalizeRelativeUrls(htmlDocument, baseURI);
+            }
 
-            htmlDocument.documentElement.innerHTML = html;
-            this.normalizeRelativeUrls(htmlDocument, baseURI);
 
             return htmlDocument;
         }
