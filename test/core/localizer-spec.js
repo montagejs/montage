@@ -350,11 +350,34 @@ describe("core/localizer-spec", function () {
             it("has a timeout", function () {
                 return require.loadPackage(module.directory + "localizer/simple/", {}).then(function (r){
                     l.require = r;
-                    return l.loadMessages(1);
+                    console.log("loadMessages(5..)");
+                    var rAsync = r.async.bind(r),
+                        delayedAsync = function(value) {
+                            return rAsync(value).delay(2000);
+                        };
+                    r.async = delayedAsync;
+
+                    var delegate = {
+                        localizerWillLoadMessages: function (localizer) {
+                            localizer.loadMessagesTimeout =  600;
+                        }
+                    };
+
+                    spyOn(delegate, 'localizerWillLoadMessages').andCallThrough();
+
+                    l.delegate = delegate;
+
+
+                    //A timeout is passed that is overriden by the delegate. It's meant to cause a timeout
+                    return l.loadMessages(500).then(function(value) {
+                        expect(delegate.localizerWillLoadMessages).toHaveBeenCalled();
+                        expect(l.loadMessagesTimeout).toBe(600);
+                    });
+
                 }).then(function () {
                     return Promise.reject("expected a timeout");
                 }, function (err) {
-                    return void 0;
+                   return void 0;
                 });
             });
 
