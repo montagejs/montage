@@ -314,6 +314,10 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
         }
     },
 
+    loadMessagesTimeout: {
+        value: 5000
+    },
+
     /**
      * Load messages for the locale
      * @function
@@ -330,13 +334,18 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
             }
 
             if (typeof timeout !== "number") {
-                timeout = 5000;
+                timeout = this.loadMessagesTimeout;
             }
 
             this.messages = null;
 
             var self = this,
-                promise = this.callDelegateMethod("localizerWillLoadMessages");
+                promise = this.callDelegateMethod("localizerWillLoadMessages",this);
+
+            //A delegate may have set a different timeout:
+            if(this.hasOwnProperty("loadMessagesTimeout")) {
+                timeout = this.loadMessagesTimeout;
+            }
 
             if (promise) {
                 promise = promise.timeout(timeout);
