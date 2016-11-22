@@ -76,5 +76,16 @@ exports.AbstractControl = Component.specialize( /** @lends AbstractControl.proto
             actionEvent.initCustomEvent("action", true, true, eventDetail);
             return actionEvent;
         }
+    },
+
+    disabled: {
+        get: function () {
+            return !this.enabled;
+        },
+        set: function (value) {
+            if (typeof value === "boolean") {
+                this.enabled = !value;
+            }
+        }
     }
 });
