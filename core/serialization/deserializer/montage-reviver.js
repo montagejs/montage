@@ -150,7 +150,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             // and stop the execution. This is intended to provide a certain
             // level of debugging in the serialization.
             if (value.debugger) {
-                debugger;
+                console.log("enable debugger statement here");
+                //debugger;
             }
 
             if ("value" in value) {
@@ -166,7 +167,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 if (this.getTypeOf(value.value) === "Element") {
                     revivedValue = this.reviveElement(value.value, context, label);
 
-                    if (!Promise.is(revivedValue)) { 
+                    if (!Promise.is(revivedValue)) {
                         var montageObjectDesc = this.reviveObjectLiteral(value, context);
                         context.setUnitsToDeserialize(revivedValue, montageObjectDesc, MontageReviver._unitNames);
                     }
@@ -175,7 +176,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 }
 
                 return revivedValue;
-                
+
             } else if (Object.keys(value).length === 0) {
                 // it's an external object
                 if (context.hasUserObject(label)) {

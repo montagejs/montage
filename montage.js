@@ -727,32 +727,42 @@ if (!String.prototype.endsWith) {
                                 window.navigator &&
                                 window.navigator.standalone)) {
                                     (function(DIV,CLASS,FOO) {
-                                        var div = document.createElement(DIV);
-                                        var opts = {attributes: true, attributeFilter:[CLASS]};
-                                        var toggleScheduled = false;
-                                        var div2 = document.createElement(DIV);
-                                        var o2 = new MutationObserver(function() {
-                                            div.classList.toggle(FOO);
-                                          toggleScheduled = false;
-                                        });
+                                        var div = document.createElement(DIV),
+                                            opts = {attributes: true, attributeFilter:[CLASS]},
+                                            toggleScheduled = false,
+                                            div2 = document.createElement(DIV),
+                                            o,
+                                            o2,
+                                            scheduledFunctions = [];
+
+                                        function o2MutationObserver() {
+                                            o2MutationObserver.div.classList.toggle(o2MutationObserver.FOO);
+                                            toggleScheduled = false;
+                                        }
+                                        o2MutationObserver.div = div;
+                                        o2MutationObserver.FOO = FOO;
+                                        o2 = new MutationObserver(o2MutationObserver),
                                         o2.observe(div2, opts);
 
-                                        var scheduleToggle = function() {
-                                            if (toggleScheduled) return;
-                                            toggleScheduled = true;
-                                            div2.classList.toggle(FOO);
-                                        };
 
-                                        scheduledFunctions = [];
-                                        var o = new MutationObserver(function() {
-                                            scheduledFunctions.pop()();
-                                        });
+                                        function oMutationObserver() {
+                                            oMutationObserver.scheduledFunctions.pop()();
+                                        }
+                                        oMutationObserver.scheduledFunctions = scheduledFunctions;
+                                        o = new MutationObserver(oMutationObserver);
                                         o.observe(div, opts);
 
-                                        window.Promise.setScheduler( function montageMutationObserverSchedule(fn) {
-                                          scheduledFunctions.unshift(fn);
-                                          scheduleToggle();
-                                      });
+                                        function montageMutationObserverSchedule(fn) {
+                                            montageMutationObserverSchedule.scheduledFunctions.unshift(fn);
+                                            if (toggleScheduled) return;
+                                            toggleScheduled = true;
+                                            montageMutationObserverSchedule.div2.classList.toggle(montageMutationObserverSchedule.FOO);
+                                        }
+                                        montageMutationObserverSchedule.scheduledFunctions = scheduledFunctions;
+                                        montageMutationObserverSchedule.div2 = div2
+                                        montageMutationObserverSchedule.FOO = FOO
+
+                                        window.Promise.setScheduler(montageMutationObserverSchedule);
                                   })("div","class","foo");
 
                     } else if(window.postMessage !== void 0) {
