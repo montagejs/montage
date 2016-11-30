@@ -733,7 +733,8 @@ if (!String.prototype.endsWith) {
                                             div2 = document.createElement(DIV),
                                             o,
                                             o2,
-                                            scheduledFunctions = [];
+                                            scheduledFunctions = [],
+                                            scheduledFunctionsLength = 0;
 
                                         function o2MutationObserver() {
                                             o2MutationObserver.div.classList.toggle(o2MutationObserver.FOO);
@@ -746,14 +747,19 @@ if (!String.prototype.endsWith) {
 
 
                                         function oMutationObserver() {
-                                            oMutationObserver.scheduledFunctions.pop()();
+                                            oMutationObserver.scheduledFunctions[--scheduledFunctionsLength]();
                                         }
                                         oMutationObserver.scheduledFunctions = scheduledFunctions;
                                         o = new MutationObserver(oMutationObserver);
                                         o.observe(div, opts);
 
                                         function montageMutationObserverSchedule(fn) {
-                                            montageMutationObserverSchedule.scheduledFunctions.unshift(fn);
+                                            var scheduledFunctions = montageMutationObserverSchedule.scheduledFunctions,
+                                                len=scheduledFunctionsLength;
+                                            while (len) { scheduledFunctions[len] = scheduledFunctions[len-1]; len--}
+                                            scheduledFunctions[0] = fn;
+                                            scheduledFunctionsLength++;
+
                                             if (toggleScheduled) return;
                                             toggleScheduled = true;
                                             montageMutationObserverSchedule.div2.classList.toggle(montageMutationObserverSchedule.FOO);
