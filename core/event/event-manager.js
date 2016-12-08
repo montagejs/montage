@@ -1259,7 +1259,7 @@ if (typeof window !== "undefined") { // client-side
                 // before finding event handlers that were registered for these events
                 if (window.PointerEvent) {
                     aWindow.nativeAddEventListener("pointerdown", this._activationHandler, true);
-                    aWindow.nativeAddEventListener("pointerenter", this._activationHandler, true);
+                    aWindow.document.nativeAddEventListener("pointerenter", this._activationHandler, true);
 
                 } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                     aWindow.nativeAddEventListener("MSPointerDown", this._activationHandler, true);
