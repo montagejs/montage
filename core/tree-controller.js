@@ -90,6 +90,17 @@ exports.TreeController = Montage.specialize({
         }
     },
 
+    /**
+     * Whether nodes in the tree should be expanded by default.
+     * This will only apply when the tree's [data]{@link TreeController#data}
+     * property is set. Nodes added dynamically will ignore this flag.
+     *
+     * @type boolean
+     */
+    initiallyExpanded: {
+        value: false
+    },
+
     _data: {
         value: null
     },
@@ -105,7 +116,11 @@ exports.TreeController = Montage.specialize({
             if (this._data !== value) {
                 this._expansionMap = new WeakMap();
                 this._data = value;
-                this.handleTreeChange();
+                if (this.initiallyExpanded) {
+                    this.expandAll();
+                } else {
+                    this.handleTreeChange();
+                }
             }
         }
     },

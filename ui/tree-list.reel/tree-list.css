@@ -1,0 +1,25 @@
+.montage-TreeList {
+    position: relative;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    display: -ms-flexbox;
+    display: flex;
+    z-index: 1;
+    /* TODO: in IE 11, this z-index causes the action menu not to work
+       in Social, Identify, and Area Brief panels. Had to add z-idex to those
+       panels to make it work in IE 11.
+    */
+}
+
+.montage-TreeList-repetition {
+    -ms-flex: 1;
+    flex: 1;
+}
+
+.montage-TreeList-nodeWrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+}
