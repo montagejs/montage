@@ -1,4 +1,4 @@
-.TreeList {
+.montage-TreeList {
     position: relative;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
@@ -11,12 +11,12 @@
     */
 }
 
-.TreeList-repetition {
+.montage-TreeList-repetition {
     -ms-flex: 1;
     flex: 1;
 }
 
-.TreeListNodeWrapper {
+.montage-TreeListNodeWrapper {
     position: absolute;
     top: 0;
     left: 0;
