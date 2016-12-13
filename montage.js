@@ -28,6 +28,14 @@ if (typeof window !== "undefined") {
         var groupTimeEntry = this._groupTime[name];
         return groupTimeEntry.sum/groupTimeEntry.count;
     }
+    console.groupTimeTotal = function(name) {
+        var groupTimeEntry = this._groupTime[name];
+        return groupTimeEntry.sum;
+    }
+    console.groupTimeCount = function(name) {
+        var groupTimeEntry = this._groupTime[name];
+        return groupTimeEntry.count;
+    }
 
 }
 
@@ -377,14 +385,14 @@ if (!String.prototype.endsWith) {
      @param compiler
      */
     var MontageMetaData = function(require,id,name) {
-      this.require = require;
-      this.module = id;
-      //moduleId: id, // deprecated
-      this.property = name;
-      //objectName: name, // deprecated
-      this.aliases = [name];
-      //this.isInstance = false;
-      return this;
+        this.require = require;
+        this.module = id;
+        //moduleId: id, // deprecated
+        this.property = name;
+        //objectName: name, // deprecated
+        //this.aliases = [name];
+        //this.isInstance = false;
+        return this;
     };
 
     MontageMetaData.prototype = {
@@ -394,12 +402,17 @@ if (!String.prototype.endsWith) {
            get objectName () {
               return this.property;
           },
+           get aliases () {
+              return this._aliases || (this._aliases = [this.property]);
+          },
+          _aliases: null,
           isInstance: false
    };
 
 
-    var reverseReelExpression = /((.*)\.reel)\/\2$/;
-    var reverseReelFunction = function ($0, $1) { return $1; };
+    var reverseReelExpression = /((.*)\.reel)\/\2$/,
+        reverseReelFunction = function ($0, $1) { return $1; },
+        _MONTAGE_METADATA = "_montage_metadata";
     exports.SerializationCompiler = function (config, compile) {
         return function (module) {
             compile(module);
@@ -415,16 +428,12 @@ if (!String.prototype.endsWith) {
                     if (((object = exports[name]) instanceof Object)) {
                         // avoid attempting to reinitialize an aliased property
                         //jshint -W106
-                        if (object.hasOwnProperty("_montage_metadata") && !object._montage_metadata.isInstance) {
+                        if (object.hasOwnProperty(_MONTAGE_METADATA) && !object._montage_metadata.isInstance) {
                             object._montage_metadata.aliases.push(name);
                             object._montage_metadata.objectName = name;
                             //jshint +W106
                         } else if (!Object.isSealed(object)) {
-                            var id = module.id.replace(
-                                reverseReelExpression,
-                                reverseReelFunction
-                            );
-                            object._montage_metadata = new MontageMetaData(require,id,name);
+                            object._montage_metadata = new MontageMetaData(require,/*id*/ module.id.replace(reverseReelExpression, reverseReelFunction),name);
                         }
                     }
                 }
@@ -433,7 +442,9 @@ if (!String.prototype.endsWith) {
         };
     };
 
-    var reelExpression = /([^\/]+)\.reel$/;
+    var reelExpression = /([^\/]+)\.reel$/,
+        dotREEL = ".reel"
+        SLASH = "/";
     /**
      * Allows reel directories to load the contained eponymous JavaScript
      * module.
@@ -442,9 +453,11 @@ if (!String.prototype.endsWith) {
      * @param loader the next loader in the chain
      */
     exports.ReelLoader = function (config, load) {
-        return function (id, module) {
-            if (id.endsWith(".reel")) {
-                module.redirect = id + "/" + reelExpression.exec(id)[1];
+        return function reelLoader(id, module) {
+            if (id.endsWith(dotREEL)) {
+                module.redirect = id;
+                module.redirect += SLASH;
+                module.redirect += reelExpression.exec(id)[1];
                 return module;
             } else {
                 return load(id, module);
@@ -453,7 +466,7 @@ if (!String.prototype.endsWith) {
     };
 
     /**
-     * Allows the .meta files to be loaded as json
+     * Allows the .meta and .mjson files to be loaded as json
      * @see Compiler middleware in require/require.js
      * @param config
      * @param compile
@@ -476,6 +489,10 @@ if (!String.prototype.endsWith) {
      * @param config
      * @param compile
      */
+    var directoryExpression = /(.*\/)?(?=[^\/]+)/,
+        dotHTML = ".html",
+        dotHTML_LOAD_JS = ".html.load.js";
+
     exports.TemplateCompiler = function (config, compile) {
         return function (module) {
             var location = module.location;
@@ -483,8 +500,8 @@ if (!String.prototype.endsWith) {
             if (!location)
                 return;
 
-            if (location.endsWith(".html") || location.endsWith(".html.load.js")) {
-                var match = location.match(/(.*\/)?(?=[^\/]+)/);
+            if (location.endsWith(dotHTML) || location.endsWith(dotHTML_LOAD_JS)) {
+                var match = location.match(directoryExpression);
 
                 if (match) {
                     module.dependencies = module.dependencies || [];
@@ -581,7 +598,7 @@ if (!String.prototype.endsWith) {
         },
 
         _hasURLSupport: function () {
-            if (!this.__hasURLSupport) {
+            if (this.__hasURLSupport === null) {
                 this.__hasURLSupport = this._testHasURLSupport();
             }
             return this.__hasURLSupport;
@@ -726,9 +743,9 @@ if (!String.prototype.endsWith) {
                               !(typeof window !== "undefined" &&
                                 window.navigator &&
                                 window.navigator.standalone)) {
-                                    (function(DIV,CLASS,FOO) {
+                                    (function(DIV,ID,FOO) {
                                         var div = document.createElement(DIV),
-                                            opts = {attributes: true, attributeFilter:[CLASS]},
+                                            opts = {attributes: true, attributeFilter:[ID]},
                                             toggleScheduled = false,
                                             div2 = document.createElement(DIV),
                                             o,
@@ -737,7 +754,7 @@ if (!String.prototype.endsWith) {
                                             scheduledFunctionsLength = 0;
 
                                         function o2MutationObserver() {
-                                            o2MutationObserver.div.classList.toggle(o2MutationObserver.FOO);
+                                            o2MutationObserver.div.id = FOO;
                                             toggleScheduled = false;
                                         }
                                         o2MutationObserver.div = div;
@@ -762,14 +779,14 @@ if (!String.prototype.endsWith) {
 
                                             if (toggleScheduled) return;
                                             toggleScheduled = true;
-                                            montageMutationObserverSchedule.div2.classList.toggle(montageMutationObserverSchedule.FOO);
+                                            montageMutationObserverSchedule.div2.id = "";
                                         }
                                         montageMutationObserverSchedule.scheduledFunctions = scheduledFunctions;
                                         montageMutationObserverSchedule.div2 = div2
                                         montageMutationObserverSchedule.FOO = FOO
 
                                         window.Promise.setScheduler(montageMutationObserverSchedule);
-                                  })("div","class","foo");
+                                  })("div","id","foo");
 
                     } else if(window.postMessage !== void 0) {
                         // Only add setZeroTimeout to the window object, and hide everything
