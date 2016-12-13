@@ -853,6 +853,12 @@ var _functionInstanceMetadataDescriptor = {
     isInstance: {value: true}
 };
 
+Object.defineProperty(Montage.prototype, "_montage_metadata", {
+    enumerable: false,
+    writable: true,
+    value: undefined
+});
+
 /**
  * Get the metadata Montage has on the given object.
  * @function Montage.getInfoForObject
@@ -864,7 +870,7 @@ var _functionInstanceMetadataDescriptor = {
  * constructors and prototypes from instances.
  */
 Montage.defineProperty(Montage, "getInfoForObject", {
-    value: function (object) {
+    value: function Montage_getInfoForObject(object) {
         var metadata;
         var instanceMetadataDescriptor;
 
@@ -900,7 +906,8 @@ Montage.defineProperty(Montage, "getInfoForObject", {
                 }
                 //For everything else we go more efficient and declare the property only once per prototype
                 else {
-                    if(!hasOwnProperty.call(object.constructor.prototype, "_montage_metadata")) {
+                    if(!("_montage_metadata" in object.constructor.prototype)) {
+                    //if(!hasOwnProperty.call(object.constructor.prototype, "_montage_metadata")) {
                         Object.defineProperty(object.constructor.prototype, "_montage_metadata", {
                             enumerable: false,
                             // this object needs to be overriden by the SerializationCompiler because this particular code might be executed on an exported object before the Compiler takes action, for instance, if this function is called within the module definition itself (happens with __core__).
@@ -908,6 +915,7 @@ Montage.defineProperty(Montage, "getInfoForObject", {
                             value: undefined
                         });
                     }
+
                     return (object._montage_metadata = Object.create(metadata, instanceMetadataDescriptor)) || object._montage_metadata;
                 }
             } catch(e) {
