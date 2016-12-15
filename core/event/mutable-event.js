@@ -320,9 +320,7 @@ if (typeof window !== "undefined") {
          */
         fromType: {
             value: function (type, canBubbleArg, cancelableArg, detail) {
-                var anEvent = document.createEvent("CustomEvent");
-                anEvent.initCustomEvent(type, canBubbleArg, cancelableArg, detail);
-                return this.fromEvent(anEvent);
+                return this.fromEvent(new CustomEvent(type, {bubbles: canBubbleArg, cancelable:cancelableArg, detail:detail}));
             }
         }
 

@@ -1067,9 +1067,9 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
 
             bindings = FrbBindings.getBindings(this);
 
-            if (bindings && bindings.key) {
+            if (bindings && bindings.get("key")) {
                 result[KEY_KEY] = {};
-                this._serializeBinding(this, result[KEY_KEY], bindings.key, serializer);
+                this._serializeBinding(this, result[KEY_KEY], bindings.get("key"), serializer);
             } else {
                 result[KEY_KEY] = this._key;
             }
@@ -1098,17 +1098,33 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                 }
             }
 
+            var mapIter = dataBindings.keys(),
+                key;
+
             // Loop through bindings seperately in case the bound properties
             // haven't been set on the data object yet.
-            for (var b in dataBindings) {
+            while (b = mapIter.next().value) {
                 // binding is in the form of "get('key')" because it's a map
                 // but we want to serialize into an object literal instead.
-                var key = /\.get\('([^']+)'\)/.exec(b)[1];
+                key = /\.get\('([^']+)'\)/.exec(b)[1];
 
                 if (!result.data) result.data = {};
                 result.data[key] = {};
-                this._serializeBinding(this.data, result.data[key], dataBindings[b], serializer);
+                this._serializeBinding(this.data, result.data[key], dataBindings.get(b), serializer);
             }
+
+
+            // Loop through bindings seperately in case the bound properties
+            // haven't been set on the data object yet.
+            // for (var b in dataBindings) {
+            //     // binding is in the form of "get('key')" because it's a map
+            //     // but we want to serialize into an object literal instead.
+            //     var key = /\.get\('([^']+)'\)/.exec(b)[1];
+
+            //     if (!result.data) result.data = {};
+            //     result.data[key] = {};
+            //     this._serializeBinding(this.data, result.data[key], dataBindings[b], serializer);
+            // }
 
             return result;
         }

@@ -26,12 +26,6 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
 
     init: {
         value: function (serializationString, _require, objectRequires) {
-            try {
-                this._serialization = JSON.parse(serializationString);
-            } catch (ex) {
-                return this._formatSerializationSyntaxError(serializationString);
-            }
-
             this._serializationString = serializationString;
             this._interpreter = new MontageInterpreter().init(_require, objectRequires);
 
@@ -41,7 +35,11 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
 
     deserialize: {
         value: function (instances, element) {
-            var serialization = JSON.parse(this._serializationString);
+            try {
+              var serialization = JSON.parse(this._serializationString);
+            } catch (ex) {
+                return this._formatSerializationSyntaxError(this._serializationString);
+            }
 
             return this._interpreter.instantiate(serialization, instances, element);
         }

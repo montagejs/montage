@@ -3,15 +3,22 @@ var Bindings = require("frb"),
     expand = require("frb/expand"),
     Scope = require("frb/scope"),
     Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
-    Deserializer = require("../serialization/deserializer/montage-deserializer").MontageDeserializer;
+    Deserializer = require("../serialization/deserializer/montage-deserializer").MontageDeserializer,
+    BOUND_OBJECT  = "boundObject" ,
+    ONE_WAY = "<-",
+    TWO_WAY = "<->";
+
 
 Serializer.defineSerializationUnit("bindings", function (serializer, object) {
-    var inputs = Bindings.getBindings(object);
-    var outputs = {};
-    var hasBindings;
+    var inputs = Bindings.getBindings(object),
+        outputs = {},
+        hasBindings,
+        mapIter = inputs.keys(),
+        targetPath;
 
-    for (var targetPath in inputs) {
-        var input = inputs[targetPath];
+    while (targetPath = mapIter.next().value) {
+    //for (var targetPath in inputs) {
+        var input = inputs.get(targetPath);
 
         var output = {};
 
@@ -35,9 +42,9 @@ Serializer.defineSerializationUnit("bindings", function (serializer, object) {
         sourcePath = stringify(syntax, scope);
 
         if (input.twoWay) {
-            output["<->"] = sourcePath;
+            output[TWO_WAY] = sourcePath;
         } else {
-            output["<-"] = sourcePath;
+            output[ONE_WAY] = sourcePath;
         }
 
         if (input.converter) {
@@ -59,38 +66,47 @@ Serializer.defineSerializationUnit("bindings", function (serializer, object) {
 });
 
 Deserializer.defineDeserializationUnit("bindings", function (deserializer, object, bindings) {
-
+    var commonDescriptor = {
+            components: deserializer
+        },
+        targetPath,
+        descriptor;
     // normalize old and busted bindings
-    for (var targetPath in bindings) {
-        var descriptor = bindings[targetPath];
+    for (targetPath in bindings) {
+        descriptor = bindings[targetPath];
 
         if (typeof descriptor !== "object") {
             throw new Error("Binding descriptor must be an object, not " + typeof descriptor);
             // TODO isolate the source document and produce a more useful error
         }
 
-        if ("boundObject" in descriptor) {
+        if (BOUND_OBJECT in descriptor) {
             descriptor.source = deserializer.getObjectByLabel(descriptor.boundObject);
             if (descriptor.oneway) {
-                descriptor["<-"] = descriptor.boundPropertyPath;
+                descriptor[ONE_WAY] = descriptor.boundPropertyPath;
             } else {
-                descriptor["<->"] = descriptor.boundPropertyPath;
+                descriptor[TWO_WAY] = descriptor.boundPropertyPath;
             }
             delete descriptor.boundObject;
             delete descriptor.boundObjectPropertyPath;
             delete descriptor.oneway;
-        } else {
-            if (descriptor["<<->"]) {
-                console.warn("WARNING: <<-> in bindings is deprectated, use <-> only, please update now.");
-                descriptor["<->"] = descriptor["<<->"];
-                delete descriptor["<<->"];
-            }
         }
+        // else {
+        //     if (descriptor["<<->"]) {
+        //         console.warn("WARNING: <<-> in bindings is deprectated, use <-> only, please update now.");
+        //         descriptor[TWO_WAY] = descriptor["<<->"];
+        //         delete descriptor["<<->"];
+        //     }
+        // }
+
+        Bindings.defineBinding(object, targetPath, descriptor, commonDescriptor);
+
     }
 
-    Bindings.defineBindings(object, bindings, {
-        components: deserializer
-    });
+    // Bindings.defineBindings(object, bindings, {
+    //     components: deserializer
+    // });
+
 
 });
 
