@@ -376,6 +376,9 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 //return module[objectName].create();
 
             } else if ("object" in value) {
+                if (value.object.endsWith(".json")) {
+                    return module;
+                }
 
                 if (!(objectName in module)) {
                     throw new Error('Error deserializing "' + label +
