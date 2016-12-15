@@ -1100,7 +1100,7 @@ describe("serialization/montage-deserializer-spec", function () {
                     expect(root.uuid in defaultEventManager.registeredEventListeners.action).toBeFalsy();
                 }
 
-                expect(Object.keys(Bindings.getBindings(root)).length).toBeGreaterThan(0);
+                expect(Bindings.getBindings(root).size).toBeGreaterThan(0);
             }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
@@ -1123,7 +1123,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 var registeredEventListenersForRootAction = defaultEventManager.registeredEventListenersForEventType_onTarget_("action",root);
                 expect(root.prop1).toBe(3.14);
                 expect(registeredEventListenersForRootAction).toBeDefined();
-                expect(Object.keys(Bindings.getBindings(root)).length).toBeGreaterThan(0);
+                expect(Bindings.getBindings(root).size).toBeGreaterThan(0);
             }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
@@ -1217,11 +1217,11 @@ describe("serialization/montage-deserializer-spec", function () {
             }
         });
 
-        it("should fail initialization if serialization is malformed", function () {
+        it("should fail deserialize if serialization is malformed", function () {
             var serializationString = "{root:}";
 
             // return a promise when failling.
-            return deserializer.init(serializationString, require).catch(function (ex) {
+            return deserializer.init(serializationString, require).deserialize().catch(function (ex) {
                 expect(ex).toBeDefined();
             });
         });
@@ -1347,8 +1347,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 var serializationString = '{string: "a string"}';
 
                 return new Promise(function (resolve, reject) {
-                    deserialize(serializationString, require); // will fail
-
+                    resolve(deserialize(serializationString, require)); // will fail
                 }).then(function(objects) {
                     // never executed
                 }, function(reason) {
