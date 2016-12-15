@@ -623,6 +623,27 @@ describe("serialization/montage-deserializer-spec", function () {
                 });
         });
 
+        it("should deserialize using object: module.mjson", function () {
+            var serialization = {
+                    "root": {
+                        "object": "serialization/testmjson.mjson"
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(
+                serializationString, require);
+
+            return deserializer.deserializeObject()
+                .then(function (object) {
+                    var info = Montage.getInfoForObject(object);
+                    expect(info.moduleId).toBe("core/meta/blueprint");
+                    expect(info.isInstance).toBe(true);
+                    expect(object.type).toBeUndefined();
+                    expect(object.name).toBe("RootBlueprint");
+                });
+        });
+
         //it("should deserialize using instance after compilation", function () {
         //    var latch, objects;
         //
