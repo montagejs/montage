@@ -92,7 +92,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (_require, objectRequires) {
             this.moduleLoader = new ModuleLoader()
                                  .init(_require, objectRequires);
-
+            this._require = _require;
             return this;
         }
     },
@@ -247,7 +247,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
             if (Promise.is(module)) {
                 return module.then(function(exports) {
-                    return self.instantiateMontageObject(value, exports, objectName, context, label);
+                    if ("object" in value && value.object.endsWith(".mjson")) {
+                        return self.instantiateMjsonObject(exports, locationDesc.moduleId);
+                    } else {
+                        return self.instantiateMontageObject(value, exports, objectName, context, label);
+                    }
                 }, function (error) {
                     if (error.stack) {
                         console.error(error.stack);
@@ -259,6 +263,37 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             } else {
                 return this.instantiateMontageObject(value, module, objectName, context, label);
             }
+        }
+    },
+
+    instantiateMjsonObject: {
+        value: function (json, moduleId) {
+            var self = this,
+                getModelRequire = function (parentRequire, modelId) {
+                    // TODO: This utility function is also defined in core/meta/module-blueprint.js.
+                    // Maybe it should be a helper module or baked in to deserializers.
+                    var topId = parentRequire.resolve(modelId);
+                    var module = parentRequire.getModuleDescriptor(topId);
+                    while (module.redirect || module.mappingRedirect) {
+                        if (module.redirect) {
+                            topId = module.redirect;
+                        } else {
+                            parentRequire = module.mappingRequire;
+                            topId = module.mappingRedirect;
+                        }
+                        module = parentRequire.getModuleDescriptor(topId);
+                    }
+                    return module.require;
+                };
+            // Need to require deserializer asynchronously because it depends on montage-interpreter, which
+            // depends on this module, montage-reviver. A synchronous require would create a circular dependency.
+            // TODO: Maybe this could be passed in from above instead of required here.
+            return require.async("core/serialization/deserializer/montage-deserializer")
+                .then(function (deserializerModule) {
+                    return new deserializerModule.MontageDeserializer()
+                        .init(JSON.stringify(json), getModelRequire(self._require, moduleId)) // TODO: MontageDeserializer needs an API to pass in an object instead of the stringified version of the object
+                        .deserializeObject();
+                });
         }
     },
 
@@ -376,6 +411,9 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 //return module[objectName].create();
 
             } else if ("object" in value) {
+                if (value.object.endsWith(".json")) {
+                    return module;
+                }
 
                 if (!(objectName in module)) {
                     throw new Error('Error deserializing "' + label +
