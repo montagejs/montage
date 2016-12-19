@@ -1,6 +1,7 @@
 /**
  * @module montage/core/meta/association-reference
  * @requires core/logger
+ * @deprecated Use the [valueDescriptor]{@link PropertyBlueprint#valueDescriptor} property of PropertyBlueprint instead.
  */
 var BlueprintReference = require("./blueprint-reference").BlueprintReference;
 var PropertyBlueprint = require("./property-blueprint").PropertyBlueprint;

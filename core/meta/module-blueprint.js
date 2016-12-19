@@ -86,8 +86,8 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize(/** @lends 
      */
     getBlueprintWithModuleId: {
         value: function (moduleId, _require) {
-            if (moduleId.search(/\.meta$/) === -1) {
-                throw new Error(moduleId + " blueprint module id does not end in '.meta'");
+            if (moduleId.search(/\.meta$/) === -1 && moduleId.search(/\.mjson$/) === -1) {
+                throw new Error(moduleId + " blueprint module id does not end in '.meta' or '.mjson'");
             }
             if (!_require) {
                 throw new Error("Require needed to get blueprint " + moduleId);

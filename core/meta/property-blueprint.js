@@ -4,6 +4,7 @@
  * @requires core/logger
  */
 
+var BlueprintReference = require("./blueprint-reference").BlueprintReference;
 var Montage = require("../core").Montage;
 var logger = require("../logger").logger("blueprint");
 
@@ -21,6 +22,7 @@ var Defaults = {
     collectionValueType:"list",
     valueObjectPrototypeName:"",
     valueObjectModuleId:"",
+    valueDescriptor:void 0,
     enumValues:[],
     defaultValue:void 0,
     helpKey:""
@@ -93,6 +95,7 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
             this._setPropertyWithDefaults(serializer, "collectionValueType", this.collectionValueType);
             this._setPropertyWithDefaults(serializer, "valueObjectPrototypeName", this.valueObjectPrototypeName);
             this._setPropertyWithDefaults(serializer, "valueObjectModuleId", this.valueObjectModuleId);
+            this._setPropertyWithDefaults(serializer, "valueDescriptor", this._valueDescriptorReference);
             if (this.enumValues.length > 0) {
                 this._setPropertyWithDefaults(serializer, "enumValues", this.enumValues);
             }
@@ -116,6 +119,7 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
             this.collectionValueType = this._getPropertyWithDefaults(deserializer, "collectionValueType");
             this.valueObjectPrototypeName = this._getPropertyWithDefaults(deserializer, "valueObjectPrototypeName");
             this.valueObjectModuleId = this._getPropertyWithDefaults(deserializer, "valueObjectModuleId");
+            this._valueDescriptorReference = this._getPropertyWithDefaults(deserializer, "valueDescriptor");
             this.enumValues = this._getPropertyWithDefaults(deserializer, "enumValues");
             this.defaultValue = this._getPropertyWithDefaults(deserializer, "defaultValue");
             this.helpKey = this._getPropertyWithDefaults(deserializer, "helpKey");
@@ -229,7 +233,7 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
      */
     isAssociationBlueprint:{
         get:function () {
-            return false;
+            return !!this._valueDescriptorReference;
         }
     },
 
@@ -281,6 +285,26 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
      */
     valueObjectModuleId:{
         value: Defaults["valueObjectModuleId"]
+    },
+
+    /**
+     * Promise for the blueprint targeted by this association.
+     *
+     * **Note**: The setter expects an actual blueprint but the getter will
+     * return a promise.
+     * @type {string}
+     */
+    valueDescriptor: {
+        serializable: false,
+        get: function () {
+            return this._valueDescriptorReference.promise(this.require);
+        },
+        set: function (blueprint) {
+            this._valueDescriptorReference = new BlueprintReference().initWithValue(blueprint);
+        }
+    },
+    _targetBlueprintReference: {
+        value: null
     },
 
     _enumValues:{
