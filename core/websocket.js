@@ -116,7 +116,6 @@ var _WebSocket = global.WebSocket,
                 break;
                 case "message":
                     this._isMessagePending = false;
-                    //this._messageQueue.shift().callback(JSON.parse(event.data));
                     this._messageQueue.shift();
                     this.dispatchEvent(event);
                     this._sendNextMessage();
