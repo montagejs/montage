@@ -420,7 +420,15 @@ if (!String.prototype.endsWith) {
                 return;
             var defaultFactory = module.factory;
             module.factory = function (require, exports, module) {
-                defaultFactory.call(this, require, exports, module);
+                        //call it to validate:
+                try{
+                        defaultFactory.call(this, require, exports, module);
+                }catch(e){
+                    if(e instanceof SyntaxError) {
+                        config.lint(module);
+                    }
+                }
+
                 var keys = Object.keys(exports),
                     i, object;
                 for (var i=0, name;(name=keys[i]); i++) {
