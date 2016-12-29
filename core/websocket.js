@@ -85,7 +85,8 @@ var _WebSocket = global.WebSocket,
         value: function () {
             var self;
 
-            if (this._messageQueue.length && !this._isReconnecting) {
+            //if (this._messageQueue.length && !this._isReconnecting) {
+            if (!this._isReconnecting) {
                 self = this;
                 this._webSocket = null;
                 this._isMessagePending = false;
