@@ -32,7 +32,7 @@
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
     "mr": "~16.0.3",
-    "bluebird":"~3.4.6",
+    "bluebird":"~3.4.7",
     "q-io": "~1.11.0"
   },
   "devDependencies": {
