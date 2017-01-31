@@ -17,7 +17,6 @@ var Defaults = {
     mandatory:false,
     readOnly:false,
     denyDelete:false,
-    denyNullValue:false,
     valueType:"string",
     collectionValueType:"list",
     valueObjectPrototypeName:"",
@@ -261,6 +260,9 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
 
     /**
      * @type {string}
+     * TODO: This is semantically similar to valueDescriptor
+     * We should check if valueDescriptor can do the same job and eliminate
+     * this.
      */
     valueType:{
         value: Defaults["valueType"]
