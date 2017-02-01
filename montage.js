@@ -767,6 +767,7 @@ if (!String.prototype.endsWith) {
 
                 window.nativePromise = window.Promise;
                 Object.defineProperty(window,"Promise", {
+                    configurable: true,
                     set: function(PromiseValue) {
                         Object.defineProperty(window,"Promise",{value:PromiseValue});
 
