@@ -8,13 +8,13 @@ var parse = require("frb/parse"),
     Scope = require("frb/scope"),
     compile = require("frb/compile-evaluator");
 
-var Predicate = exports.Predicate = Montage.specialize({
+var Criteria = exports.Criteria = Montage.specialize({
     _expression: {
         value: null
     },
 
     /**
-     * returns Predicate's expression, which is not expected to change after being
+     * returns Criteria's expression, which is not expected to change after being
      * initialized
      *
      * @type {string}
@@ -60,10 +60,10 @@ var Predicate = exports.Predicate = Montage.specialize({
     },
 
     /**
-     * Initialize a Predicate with a compiled syntax.
+     * Initialize a Criteria with a compiled syntax.
      *
      * @method
-     * @returns {Predicate} - The Predicate initialized.
+     * @returns {Criteria} - The Criteria initialized.
      */
     initWithSyntax: {
         value: function (syntax, parameters) {
@@ -74,7 +74,7 @@ var Predicate = exports.Predicate = Montage.specialize({
     },
 
     /**
-     * Initialize a Predicate with an expression as string representation
+     * Initialize a Criteria with an expression as string representation
      *
      * for example expression: "(firstName= $firstName) && (lastName = $lastName)"
      *             parameters: {
@@ -83,11 +83,11 @@ var Predicate = exports.Predicate = Montage.specialize({
      *             }
      *
      * @method
-     * @argument {string} expression - A string representaton of the predicate
+     * @argument {string} expression - A string representaton of the criteria
      *                                  expected to be a valid Montage expression.
      * @argument {object} parameters - Optional object containing value for an expressions' prameters
      *
-     * @returns {Predicate} - The Predicate initialized.
+     * @returns {Criteria} - The Criteria initialized.
      */
     initWithExpression: {
         value: function (expression,parameters) {
@@ -105,6 +105,15 @@ var Predicate = exports.Predicate = Montage.specialize({
    initWithPath: {
         value: function (path) {
             return this.initWithExpression(path);
+        }
+    },
+
+
+    criteriaWithParameters: {
+        value: function (parameters) {
+            var clone = (new this.constructor).initWithExpression(this.expression);
+            clone.parameters = parameters;
+            return clone;
         }
     },
 
@@ -143,11 +152,11 @@ var Predicate = exports.Predicate = Montage.specialize({
 
 });
 
-// generate methods on Predicate for each of the tokens of the language.
+// generate methods on Criteria for each of the tokens of the language.
 // support invocation both as class and instance methods like
 // Selector.and("a", "b") and aSelector.and("b")
 precedence.forEach(function (value,type, precedence) {
-    Montage.defineProperty(Predicate.prototype, type, {
+    Montage.defineProperty(Criteria.prototype, type, {
         value: function () {
             var args = Array.prototype.map.call(arguments, function (argument) {
                 if (typeof argument === "string") {
@@ -165,7 +174,7 @@ precedence.forEach(function (value,type, precedence) {
             });
         }
     });
-    Montage.defineProperty(Predicate, type, {
+    Montage.defineProperty(Criteria, type, {
         value: function () {
             var args = Array.prototype.map.call(arguments, function (argument) {
                 if (typeof argument === "string") {

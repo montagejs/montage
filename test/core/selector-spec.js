@@ -27,7 +27,7 @@ describe("core/selector-spec", function () {
         var json = JSON.parse(serialization);
         expect(json).toEqual({
             root: {
-                prototype: "montage/core/predicate",
+                prototype: "montage/core/criteria",
                 properties: {
                     expression: "a.b"
                 }
