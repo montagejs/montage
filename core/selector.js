@@ -1,3 +1,3 @@
 
-var Predicate = require("./predicate").Predicate;
-exports.Selector = Predicate;
+var Criteria = require("./criteria").Criteria;
+exports.Selector = Criteria;
