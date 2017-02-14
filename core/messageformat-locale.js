@@ -315,6 +315,12 @@ exports.mt = function (n) {
   }
   return 'other';
 };
+exports.ne = function ( n ) {
+    if ( n === 1 ) {
+        return "one";
+    }
+    return "other";
+};
 exports.nl = function ( n ) {
   if ( n === 1 ) {
     return "one";
