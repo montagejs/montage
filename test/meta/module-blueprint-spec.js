@@ -27,6 +27,27 @@ describe("meta/module-blueprint-spec", function () {
         }
     };
 
+    var objectDescriptorSerialization = {
+        "objectDescriptor_one_a": {
+            "prototype": "montage/core/meta/property-descriptor",
+            "properties": {
+                "name": "a",
+                "objectDescriptor": {"@": "root"}
+            }
+        },
+        "root": {
+            "prototype": "montage/core/meta/module-object-descriptor",
+            "properties": {
+                "name": "One",
+                "propertyDescriptors": [
+                    {"@": "objectDescriptor_one_a"}
+                ],
+                "module": {"%": "meta/module-blueprint-spec"},
+                "exportName": "One"
+            }
+        }
+    };
+
     describe("ModuleBlueprint", function () {
 
         var blueprintOne;
@@ -49,7 +70,7 @@ describe("meta/module-blueprint-spec", function () {
                 var expectedSerialization,
                     serialization;
 
-                expectedSerialization = blueprintSerialization;
+                expectedSerialization = objectDescriptorSerialization;
 
                 serialization = serializer.serializeObject(blueprintOne);
                 expect(JSON.parse(serialization))

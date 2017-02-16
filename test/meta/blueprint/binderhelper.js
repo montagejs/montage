@@ -21,16 +21,16 @@ exports.BinderHelper = Montage.specialize( {
             var companyBlueprint = companyBinder.addBlueprintNamed("Company", "meta/blueprint/company");
             companyBlueprint.addToOnePropertyBlueprintNamed("name");
 
-            companyBlueprint.addToManyAssociationBlueprintNamed("directReports", personBlueprint.addToOneAssociationBlueprintNamed("supervisor"));
+            // companyBlueprint.addToManyAssociationBlueprintNamed("directReports", personBlueprint.addToOneAssociationBlueprintNamed("supervisor"));
 
             var projectBlueprint = companyBinder.addBlueprintNamed("Project", "meta/blueprint/project");
             projectBlueprint.addToOnePropertyBlueprintNamed("name");
             projectBlueprint.addToOnePropertyBlueprintNamed("startDate");
             projectBlueprint.addToOnePropertyBlueprintNamed("endDate");
 
-            companyBlueprint.addToManyAssociationBlueprintNamed("projects", personBlueprint.addToOneAssociationBlueprintNamed("company"));
-
-            personBlueprint.addToManyAssociationBlueprintNamed("projects", projectBlueprint.addToManyAssociationBlueprintNamed("contributors"));
+            // companyBlueprint.addToManyAssociationBlueprintNamed("projects", personBlueprint.addToOneAssociationBlueprintNamed("company"));
+            //
+            // personBlueprint.addToManyAssociationBlueprintNamed("projects", projectBlueprint.addToManyAssociationBlueprintNamed("contributors"));
 
             Binder.manager.addBinder(companyBinder);
 

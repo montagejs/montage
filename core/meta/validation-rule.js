@@ -5,29 +5,29 @@
  * @requires core/promise
  * @requires core/logger
  */
-var Montage = require("../core").Montage;
-var Selector = require("../selector").Selector;
-var PropertyValidationSemantics = require("./validation-semantics").PropertyValidationSemantics;
-
-var logger = require("../logger").logger("blueprint");
+var Montage = require("../core").Montage,
+    PropertyValidationSemantics = require("./validation-semantics").PropertyValidationSemantics,
+    Selector = require("../selector").Selector,
+    logger = require("../logger").logger("objectDescriptor"),
+    deprecate = require("../deprecate");
 
 /**
  * @class PropertyValidationRule
  * @extends Montage
  */
-var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidationRule# */ {
+exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidationRule# */ {
 
     /**
-     * Initialize a newly allocated blueprint validation rule.
+     * Initialize a newly allocated object descriptor validation rule.
      * @function
      * @param {string} rule name
      * @param {Blueprint} blueprint
      * @returns itself
      */
-    initWithNameAndBlueprint: {
-        value: function (name, blueprint) {
+    initWithNameAndObjectDescriptor: {
+        value: function (name, objectDescriptor) {
             this._name = name;
-            this._owner = blueprint;
+            this._owner = objectDescriptor;
             return this;
         }
     },
@@ -35,7 +35,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
     serializeSelf: {
         value: function (serializer) {
             serializer.setProperty("name", this.name);
-            serializer.setProperty("blueprint", this.owner, "reference");
+            serializer.setProperty("objectDescriptor", this.owner, "reference");
             //            serializer.setProperty("validationSelector", this._validationSelector, "reference");
             serializer.setProperty("messageKey", this.messageKey);
             serializer.setAllProperties();
@@ -45,7 +45,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
     deserializeSelf: {
         value: function (deserializer) {
             this._name = deserializer.getProperty("name");
-            this._owner = deserializer.getProperty("blueprint");
+            this._owner = deserializer.getProperty("objectDescriptor") || deserializer.getProperty("blueprint");
             //            this._validationSelector = deserializer.getProperty("validationSelector");
             this._messageKey = deserializer.getProperty("messageKey");
             // FIXME [PJYF Jan 8 2013] There is an API issue in the deserialization
@@ -160,8 +160,29 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
         }
     },
 
-    blueprintModuleId: require("../core")._blueprintModuleIdDescriptor,
+    objectDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
+    objectDescriptor: require("../core")._objectDescriptorDescriptor,
 
-    blueprint: require("../core")._blueprintDescriptor
+    /*********************************************************************
+     * Deprecated methods
+     */
+
+    /**
+     * @deprecated
+     * Initialize a newly allocated blueprint validation rule.
+     * @function
+     * @param {string} rule name
+     * @param {Blueprint} blueprint
+     * @returns itself
+     */
+    initWithNameAndBlueprint: {
+        value: deprecate.deprecateMethod(void 0, function (name, blueprint) {
+            return this.initWithNameAndObjectDescriptor(name, blueprint);
+        }, "initWithNameAndBlueprint", "initWithNameAndObjectDescriptor")
+    },
+
+
+    blueprintModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
+    blueprint: require("../core")._objectDescriptorDescriptor
 
 });

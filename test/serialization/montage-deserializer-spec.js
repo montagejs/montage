@@ -637,7 +637,7 @@ describe("serialization/montage-deserializer-spec", function () {
             return deserializer.deserializeObject()
                 .then(function (object) {
                     var info = Montage.getInfoForObject(object);
-                    expect(info.moduleId).toBe("core/meta/blueprint");
+                    expect(info.moduleId).toBe("core/meta/object-descriptor");
                     expect(info.isInstance).toBe(true);
                     expect(object.type).toBeUndefined();
                     expect(object.name).toBe("RootBlueprint");

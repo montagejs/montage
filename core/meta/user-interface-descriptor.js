@@ -30,7 +30,7 @@ When serializing their states, a table view that is data driven, the user tweaks
  * @class UserInterfaceDescriptor
  * @extends Montage
  */
-var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.specialize( /** @lends UserInterfaceDescriptor.prototype # */ {
+exports.UserInterfaceDescriptor = Montage.specialize( /** @lends UserInterfaceDescriptor.prototype # */ {
     /**
      * The object a UserInterfaceDescriptor describes. This is intented be an ObjectDescriptor/blueprint or a PropertyDescriptor/PropertyBlueprint
      *
