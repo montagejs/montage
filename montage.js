@@ -1,4 +1,4 @@
-/*global BUNDLE, module: false */
+/*global module: false */
 if (typeof window !== "undefined") {
     document._montageTiming = {};
     document._montageTiming.loadStartTime = Date.now();
@@ -11,7 +11,7 @@ if (typeof window !== "undefined") {
                 count: 0,
                 start: 0,
                 sum:0
-            }
+            };
             this._groupTime[name] = groupTimeEntry;
         }
         groupTimeEntry.start = performance.now();
@@ -23,19 +23,19 @@ if (typeof window !== "undefined") {
 
         groupTimeEntry.count = groupTimeEntry.count+1;
         groupTimeEntry.sum = groupTimeEntry.sum+time;
-    }
+    };
     console.groupTimeAverage = function(name) {
         var groupTimeEntry = this._groupTime[name];
         return groupTimeEntry.sum/groupTimeEntry.count;
-    }
+    };
     console.groupTimeTotal = function(name) {
         var groupTimeEntry = this._groupTime[name];
         return groupTimeEntry.sum;
-    }
+    };
     console.groupTimeCount = function(name) {
         var groupTimeEntry = this._groupTime[name];
         return groupTimeEntry.count;
-    }
+    };
 
 }
 
@@ -152,10 +152,10 @@ if (!String.prototype.endsWith) {
                 );
             };
 
-            var location = URL.resolve(config.location, params["package"] || ".");
+            var location = URL.resolve(config.location, params.package || ".");
             var applicationHash = params.applicationHash;
 
-            if (typeof BUNDLE === "object") {
+            if (typeof global.BUNDLE === "object") {
                 var bundleDefinitions = {};
                 var getDefinition = function (name) {
                      if(!bundleDefinitions[name]) {
@@ -184,7 +184,7 @@ if (!String.prototype.endsWith) {
                 config.preloaded = preloading.promise;
                 // preload bundles sequentially
                 var preloaded = Promise.resolve();
-                BUNDLE.forEach(function (bundleLocations) {
+                global.BUNDLE.forEach(function (bundleLocations) {
                     preloaded = preloaded.then(function () {
                         return Promise.all(bundleLocations.map(function (bundleLocation) {
                             browser.load(bundleLocation);
@@ -194,8 +194,8 @@ if (!String.prototype.endsWith) {
                 });
                 // then release the module loader to run normally
                 preloading.resolve(preloaded.then(function () {
-                    delete BUNDLE;
-                    delete bundleLoaded;
+                    delete global.BUNDLE; 
+                    delete global.bundleLoaded;
                 }));
             }
 
@@ -312,8 +312,7 @@ if (!String.prototype.endsWith) {
                 });
             }
 
-            applicationRequirePromise
-            .then(function (applicationRequire) {
+            applicationRequirePromise.then(function (applicationRequire) {
                 return applicationRequire.loadPackage({
                     location: montageLocation,
                     hash: params.montageHash
@@ -367,12 +366,10 @@ if (!String.prototype.endsWith) {
                     };
 
                     // Fixe me: transition to .mr only
-                    self.require = self.mr = applicationRequire;
+                    global.require = global.mr = applicationRequire;
                     return platform.initMontage(montageRequire, applicationRequire, params);
                 });
-                return applicationRequire;
             });
-
         });
 
     };
@@ -416,8 +413,9 @@ if (!String.prototype.endsWith) {
     exports.SerializationCompiler = function (config, compile) {
         return function (module) {
             compile(module);
-            if (!module.factory)
+            if (!module.factory) {
                 return;
+            }
             var defaultFactory = module.factory;
             module.factory = function (require, exports, module) {
                         //call it to validate:
@@ -429,9 +427,10 @@ if (!String.prototype.endsWith) {
                     }
                 }
 
-                var keys = Object.keys(exports),
-                    i, object;
-                for (var i=0, name;(name=keys[i]); i++) {
+                var i, object,
+                    keys = Object.keys(exports);
+
+                for (i = 0, name; name = keys[i]; i++) {
                     // avoid attempting to initialize a non-object
                     if (((object = exports[name]) instanceof Object)) {
                         // avoid attempting to reinitialize an aliased property
@@ -451,7 +450,7 @@ if (!String.prototype.endsWith) {
     };
 
     var reelExpression = /([^\/]+)\.reel$/,
-        dotREEL = ".reel"
+        dotREEL = ".reel",
         SLASH = "/";
     /**
      * Allows reel directories to load the contained eponymous JavaScript
@@ -505,8 +504,9 @@ if (!String.prototype.endsWith) {
         return function (module) {
             var location = module.location;
 
-            if (!location)
+            if (!location) {
                 return;
+            }
 
             if (location.endsWith(dotHTML) || location.endsWith(dotHTML_LOAD_JS)) {
                 var match = location.match(directoryExpression);
@@ -548,7 +548,7 @@ if (!String.prototype.endsWith) {
         makeResolve: function () {
 
           if(this._hasURLSupport()) {
-            return URLMakeResolve
+                return URLMakeResolve;
           }
           else {
             var head = document.querySelector("head"),
@@ -579,12 +579,15 @@ if (!String.prototype.endsWith) {
                 if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
                     throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
                 }
-                if(needsRestore) restore = currentBaseElement.href;
+                if(needsRestore) {
+                    restore = currentBaseElement.href;
+                }
                 currentBaseElement.href = base;
                 relativeElement.href = relative;
                 var resolved = relativeElement.href;
-                if(needsRestore) currentBaseElement.href = restore;
-                else {
+                if (needsRestore) {
+                    currentBaseElement.href = restore;
+                } else {
                     head.removeChild(currentBaseElement);
                 }
                 return resolved;
@@ -616,7 +619,9 @@ if (!String.prototype.endsWith) {
             var script = document.createElement("script");
             script.src = location;
             script.onload = function () {
-                if(loadCallback) loadCallback(script);
+                if(loadCallback) {
+                    loadCallback(script);
+                }
                 // remove clutter
                 script.parentNode.removeChild(script);
             };
@@ -652,7 +657,7 @@ if (!String.prototype.endsWith) {
                                 this._params[name] = script.dataset[name];
                             }
                         } else if (script.attributes) {
-                            var dataRe = /^data-(.*)$/,
+                            var dataRe = /^data-(.*)$/, // TODO cache RegEx
                                 letterAfterDash = /-([a-z])/g,
                                 upperCaseChar = function (_, c) {
                                     return c.toUpperCase();
@@ -660,7 +665,7 @@ if (!String.prototype.endsWith) {
 
                             for (j = 0; j < script.attributes.length; j++) {
                                 attr = script.attributes[j];
-                                match = attr.name.match(/^data-(.*)$/);
+                                match = attr.name.match(dataRe);
                                 if (match) {
                                     this._params[match[1].replace(letterAfterDash, upperCaseChar)] = attr.value;
                                 }
@@ -718,7 +723,8 @@ if (!String.prototype.endsWith) {
             // determine which scripts to load
             var pending = {
                 "require": "node_modules/mr/require.js",
-                "require/browser": "node_modules/mr/browser.js"
+                "require/browser": "node_modules/mr/browser.js",
+                "promise": "node_modules/bluebird/js/browser/bluebird.min.js"
                 // "shim-string": "core/shim/string.js" // needed for the `endsWith` function.
             };
 
@@ -728,7 +734,7 @@ if (!String.prototype.endsWith) {
             global.bootstrap = function (id, factory) {
                 definitions[id] = factory;
                 delete pending[id];
-                for (var id in pending) {
+                for (var module in pending) {
                     // this causes the function to exit if there are any remaining
                     // scripts loading, on the first iteration.  consider it
                     // equivalent to an array length check
@@ -740,12 +746,12 @@ if (!String.prototype.endsWith) {
 
             // load in parallel, but only if we're not using a preloaded cache.
             // otherwise, these scripts will be inlined after already
-            if (typeof BUNDLE === "undefined") {
+            if (typeof global.BUNDLE === "undefined") {
                 var montageLocation = resolve(window.location, params.montageLocation);
 
-
                 //Special Case bluebird for now:
-                browser.load(resolve(montageLocation, "node_modules/bluebird/js/browser/bluebird.min.js"),function() {
+                browser.load(resolve(montageLocation, pending.promise), function() {
+                    delete pending.promise;
 
                     //global.bootstrap cleans itself from window once all known are loaded. "bluebird" is not known, so needs to do it first
                     global.bootstrap("bluebird", function (require, exports) {
@@ -763,7 +769,6 @@ if (!String.prototype.endsWith) {
 
             }
             else {
-                pending.promise = "node_modules/bluebird/js/browser/bluebird.min.js";
 
                 window.nativePromise = window.Promise;
                 Object.defineProperty(window,"Promise", {
