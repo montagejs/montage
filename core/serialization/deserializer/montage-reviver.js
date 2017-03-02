@@ -261,7 +261,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                         "' from '" + value.prototype + "'");
                 });
             } else {
-                return this.instantiateMontageObject(value, module, objectName, context, label);
+                if ("object" in value && value.object.endsWith(".mjson")) {
+                    return self.instantiateMjsonObject(module, locationDesc.moduleId);
+                } else {
+                    return this.instantiateMontageObject(value, module, objectName, context, label);
+                }
             }
         }
     },
