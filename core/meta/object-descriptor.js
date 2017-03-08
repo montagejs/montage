@@ -1,12 +1,5 @@
-
-/**
- * @module montage/core/meta/blueprint
- * @requires montage/core/core
- * @requires core/exception
- * @requires core/promise
- */
 var Montage = require("../core").Montage,
-    DerivedPropertyBlueprint = require("./derived-property-blueprint").DerivedPropertyBlueprint,
+    DerivedDescriptor = require("./derived-descriptor").DerivedDescriptor,
     EventDescriptor = require("./event-descriptor").EventDescriptor,
     ModelModule = require("./model"),
     ObjectDescriptorReference = require("./object-descriptor-reference").ObjectDescriptorReference,
@@ -1098,17 +1091,32 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Return a new derived property blueprint.
-     * **Note:** This is the canonical way of creating new derived property
-     * blueprint in order to enable subclassing.
-     * @param {string} name name of the derived property blueprint to create
-     * @param {number} cardinality name of the derived property blueprint to create
-     * @returns {DerivedPropertyBlueprint}
+     * Return a new derived descriptor.
+     * **Note:** This is the canonical way of creating new derived descriptors.
+     * in order to enable subclassing.
+     * @deprecated
+     * @param {string} name of the derived descriptor to create
+     * @param {number} the cardinality to use for the descriptor.
+     * @returns {DerivedDescriptor}
      */
     newDerivedPropertyBlueprint: {
+        value: deprecate.deprecateMethod(void 0, function (name, cardinality) {
+            return this.newDerivedDescriptor(name, cardinality);
+        }, "newDerivedPropertyBlueprint", "newDerivedDescriptor")
+    },
+
+    /**
+     * Return a new derived descriptor.
+     * **Note:** This is the canonical way of creating new derived descriptors.
+     * in order to enable subclassing.
+     * @deprecated
+     * @param {string} name of the derived descriptor to create
+     * @param {number} the cardinality to use for the descriptor.
+     * @returns {DerivedDescriptor}
+     */
+    newDerivedDescriptor: {
         value: function (name, cardinality) {
-            // TODO: Implement
-            return new DerivedPropertyBlueprint().initWithNameBlueprintAndCardinality(name, this, cardinality);
+            return new DerivedDescriptor().initWithNameObjectDescriptorAndCardinality(name, this, cardinality);
         }
     },
 
@@ -1122,10 +1130,6 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.newEventDescriptor(name);
         }, "newEventBlueprint", "newEventDescriptor")
-        // value: function (name) {
-        //     // return new EventBlueprint().initWithNameAndBlueprint(name, this);
-        //     return this.newEventDescriptor(name);
-        // }
     },
 
     /**
