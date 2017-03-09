@@ -25,7 +25,6 @@ describe("meta/blueprint-spec", function () {
         describe("Creation", function () {
         });
         describe("Adding blueprints", function () {
-            // debugger;
             var binder = new Binder().initWithNameAndRequire("CompanyBinder", self.mr);
             var personBlueprint = new Blueprint().initWithName("Person");
             binder.addBlueprint(personBlueprint);
