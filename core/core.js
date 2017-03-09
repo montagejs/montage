@@ -139,7 +139,7 @@ valuePropertyDescriptor.value = function specialize(prototypeProperties, constru
             } else {
                 constructor = function() {
                     return this;
-                }
+                };
                 constructor.name = this.name+"Specialized";
             }
         }
@@ -211,20 +211,20 @@ valuePropertyDescriptor.value = function specialize(prototypeProperties, constru
             }
         }
 
-        if ("blueprint" in prototypeProperties) {
-            Montage.defineProperty(constructor, "blueprint", prototypeProperties.blueprint);
-        }
-
-        if ("blueprintModuleId" in prototypeProperties) {
-            Montage.defineProperty(constructor, "blueprintModuleId", prototypeProperties.blueprintModuleId);
-        }
-
         if ("objectDescriptor" in prototypeProperties) {
             Montage.defineProperty(constructor, "objectDescriptor", prototypeProperties.objectDescriptor);
         }
 
+        if ("blueprint" in prototypeProperties) {
+            Montage.defineProperty(constructor, "blueprint", prototypeProperties.blueprint);
+        }
+
         if ("objectDescriptorModuleId" in prototypeProperties) {
             Montage.defineProperty(constructor, "objectDescriptorModuleId", prototypeProperties.objectDescriptorModuleId);
+        }
+
+        if ("blueprintModuleId" in prototypeProperties) {
+            Montage.defineProperty(constructor, "blueprintModuleId", prototypeProperties.blueprintModuleId);
         }
 
         Montage.defineProperties(prototype, prototypeProperties, true);

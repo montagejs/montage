@@ -36,7 +36,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
 
     /**
      * @function
-     * @param {string} name The name of the blueprint
+     * @param {string} name The name of the object descriptor
      * @returns itself
      */
     initWithName: {
@@ -177,7 +177,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Create a new instance of the target prototype for the blueprint.
+     * Create a new instance of the target prototype for the object descriptor.
      * @function
      * @returns new instance
      */
@@ -189,7 +189,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Returns the target prototype for this blueprint.
+     * Returns the target prototype for this object descriptor.
      *
      * **Note:** This method uses the `customPrototype` property to determine
      * if it needs to require a custom prototype or create a default prototype.
@@ -232,7 +232,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Return the blueprint object property for this blueprint.
+     * Return the object descriptor object property for this object descriptor.
      *
      * This will return the default if none is declared.
      *
@@ -251,7 +251,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
 
     /**
      * This is used for references only so that we can reload referenced
-     * blueprints.
+     * object descriptors.
      */
     objectDescriptorInstanceModule: {
         serializable: false,
@@ -260,7 +260,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
 
     /**
      * The identifier is the same as the name and is used to make the
-     * serialization of a blueprint humane.
+     * serialization of a object descriptor humane.
      * @returns {string}
      * @default `this.name`
      */
@@ -325,10 +325,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Defines whether the blueprint should use custom prototype for new
+     * Defines whether the object descriptor should use custom prototype for new
      * instances.
      *
-     * Is `true` if the blueprint needs to require a custom prototype for
+     * Is `true` if the object descriptor needs to require a custom prototype for
      * creating new instances, `false` if new instance are generic prototypes.
      *
      * @property {boolean} value
@@ -367,7 +367,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
      * be removed first.
      *
      * @function
-     * @param {PropertyDescriptor} property blueprint to be added.
+     * @param {PropertyDescriptor} property descriptor to be added.
      * @returns the property descriptor
      */
     addPropertyDescriptor: {
@@ -410,12 +410,12 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Return a new property blueprint.
+     * Return a new property descriptor.
      *
-     * **Note:** This is the canonical way of creating new property blueprint
+     * **Note:** This is the canonical way of creating new property descriptor
      * in order to enable subclassing.
-     * @param {string} name name of the property blueprint to create
-     * @param {number} cardinality name of the property blueprint to create
+     * @param {string} name name of the property descriptor to create
+     * @param {number} cardinality name of the property descriptor to create
      * @returns {PropertyDescriptor}
      */
     newPropertyDescriptor: {
@@ -425,9 +425,9 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Convenience to add one property blueprint.
+     * Convenience to add one property descriptor.
      * @function
-     * @param {string} name Add to one property blueprint
+     * @param {string} name Add to one property descriptor
      * @returns {PropertyDescriptor}
      */
     addToOnePropertyDescriptorNamed: {
@@ -437,9 +437,9 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Convenience to add many property blueprints.
+     * Convenience to add many property descriptor.
      * @function
-     * @param {string} name Add to many property blueprints
+     * @param {string} name Add to many property descriptor
      * @returns {PropertyDescriptor}
      */
     addToManyPropertyDescriptorNamed: {
@@ -449,36 +449,38 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Convenience to add an property blueprint to one relationship.
+     * Convenience to add an property descriptor to one relationship.
+     * @deprecated
      * @function
      * @param {string} name
      * @param {string} inverse
-     * @returns {AssociationBlueprint}
+     * @returns {PropertyDescriptor}
      */
     addToOneAssociationBlueprintNamed: {
         value: function (name, inverse) {
-            var relationship = this.addPropertyBlueprint(this.newAssociationBlueprint(name, 1));
+            var relationship = this.addPropertyDescriptor(this.addToOnePropertyDescriptorNamed(name));
             if (inverse) {
-                relationship.targetBlueprint = inverse.owner;
-                inverse.targetBlueprint = this;
+                relationship.valueDescriptor = inverse.owner;
+                inverse.valueDescriptor = this;
             }
             return relationship;
         }
     },
 
     /**
-     * Convenience to add an property blueprint to many relationships.
+     * Convenience to add an property descriptor to many relationships.
+     * @deprecated
      * @function
      * @param {string} name TODO
      * @param {string} inverse TODO
-     * @returns {AssociationBlueprint}
+     * @returns {PropertyDescriptor}
      */
     addToManyAssociationBlueprintNamed: {
         value: function (name, inverse) {
-            var relationship = this.addPropertyBlueprint(this.newAssociationBlueprint(name, Infinity));
+            var relationship = this.addPropertyDescriptor(this.addToManyPropertyDescriptorNamed(name));
             if (inverse) {
-                relationship.targetBlueprint = inverse.owner;
-                inverse.targetBlueprint = this;
+                relationship.valueDescriptor = inverse.owner;
+                inverse.valueDescriptor = this;
             }
             return relationship;
         }
@@ -519,7 +521,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * List of properties blueprint groups names
+     * List of properties descriptor groups names
      * @returns {Array.<PropertyBlueprint>}
      */
     propertyDescriptorGroups: {
@@ -572,7 +574,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
      * Remove the property descriptor group.
      * @function
      * @param {string} name of the group to remove
-     * @returns {Array.<PropertyDescriptor>} removed property blueprint group
+     * @returns {Array.<PropertyDescriptor>} removed property descriptor group
      */
     removePropertyDescriptorGroupNamed: {
         value: function (groupName) {
@@ -590,7 +592,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
      * @function
      * @param {string} property to add
      * @param {string} name of the group
-     * @returns {Array.<PropertyBlueprint>} property blueprint group
+     * @returns {Array.<PropertyBlueprint>} property descriptor group
      */
     addPropertyDescriptorToGroupNamed: {
         value: function (propertyDescriptor, groupName) {
@@ -608,7 +610,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Removes a property blueprint from the group name.
+     * Removes a property descriptor from the group name.
      * @function
      * @param {string} name of the property
      * @param {string} name of the group
@@ -671,11 +673,11 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Removes an property blueprint from the property blueprint list of this
-     * blueprint.
+     * Removes an property descriptor from the property descriptor list of this
+     * object descriptor.
      * @function
-     * @param {Object} property blueprint The property blueprint to be removed.
-     * @returns {PropertyBlueprint}
+     * @param {Object} property descriptor The property descriptor to be removed.
+     * @returns {PropertyDescriptor}
      */
     removeEventDescriptor: {
         value: function (eventDescriptor) {
@@ -705,7 +707,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
 
 
     /**
-     * Convenience to add an event blueprint.
+     * Convenience to add an event descriptor.
      * @function
      * @param {string} name
      * @returns {EventDescriptor}
@@ -845,175 +847,88 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
      */
 
     /**
-     * Add a new property blueprint to this blueprint.
+     * Add a new event descriptor to this object descriptor.
      *
-     * If that property blueprint was associated with another blueprint it will
+     * If that event descriptor was associated with another object descriptor it will
      * be removed first.
      *
      * @function
-     * @param {string} property blueprint The property blueprint to be added.
-     * @returns {PropertyBlueprint}
+     * @param {string} property descriptor The property descriptor to be added.
+     * @returns {EventDescriptor}
      */
     addEventBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (eventBlueprint) {
             return this.addEventDescriptor(eventBlueprint);
         }, "addEventBlueprint", "addEventDescriptor")
-        // value: function (eventBlueprint) {
-        //     // if (eventBlueprint !== null && eventBlueprint.name !== null) {
-        //     //     var index = this._eventBlueprints.indexOf(eventBlueprint);
-        //     //     if (index < 0) {
-        //     //         if (eventBlueprint.owner && eventBlueprint.owner !== this) {
-        //     //             eventBlueprint.owner.removeEventBlueprint(eventBlueprint);
-        //     //         }
-        //     //         this._eventBlueprints.push(eventBlueprint);
-        //     //         this._eventBlueprintsTable[eventBlueprint.name] = eventBlueprint;
-        //     //         eventBlueprint._owner = this;
-        //     //     }
-        //     // }
-        //     // return eventBlueprint;
-        //     this.addEventDescriptor(eventBlueprint);
-        // }
     },
 
     /**
-     * Convenience to add an event blueprint.
+     * Convenience to add an event descriptor.
      * @function
      * @param {string} name
-     * @returns {EventBlueprint}
+     * @returns {EventDescriptor}
      */
     addEventBlueprintNamed: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.addEventDescriptorNamed(name);
         }, "addEventBlueprintNamed", "addEventDescriptorNamed")
-        // value: function (name, inverse) {
-        //     // return this.addEventBlueprint(this.newEventBlueprint(name));
-        //     return this.addEventDescriptorNamed(name);
-        // }
     },
 
     /**
-     * Add a new property blueprint to this blueprint.
+     * Add a new property descriptor to this object descriptor.
      *
-     * If that property blueprint was associated with another blueprint it will
+     * If that property descriptor was associated with another object descriptor it will
      * be removed first.
-     *
+     * @deprecated
      * @function
-     * @param {PropertyBlueprint} property blueprint The property blueprint to
+     * @param {PropertyDescriptor} property descriptor The property descriptor to
      * be added.
-     * @returns the property blueprint
+     * @returns the property descriptor
      */
     addPropertyBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (propertyBlueprint) {
             this.addPropertyDescriptor(propertyBlueprint);
         }, "addPropertyBlueprint", "addPropertyDescriptor")
-        // value: function (propertyBlueprint) {
-        //     // if (propertyBlueprint !== null && propertyBlueprint.name !== null) {
-        //     //     var index = this._propertyBlueprints.indexOf(propertyBlueprint);
-        //     //     if (index < 0) {
-        //     //         if ((propertyBlueprint.owner !== null) && (propertyBlueprint.owner !== this)) {
-        //     //             propertyBlueprint.owner.removePropertyBlueprint(propertyBlueprint);
-        //     //         }
-        //     //         this._propertyBlueprints.push(propertyBlueprint);
-        //     //         this._propertyBlueprintsTable[propertyBlueprint.name] = propertyBlueprint;
-        //     //         propertyBlueprint._owner = this;
-        //     //     }
-        //     // }
-        //     // return propertyBlueprint;
-        //     this.addPropertyDescriptor(propertyBlueprint);
-        // }
     },
 
     /**
-     * Add a new property blueprint group.
+     * Add a new property descriptor group.
      * @function
      * @param {string} name of the group
-     * @returns {Array.<PropertyBlueprint>} new property blueprint group
+     * @returns {Array.<PropertyBlueprint>} new property descriptor group
      */
     addPropertyBlueprintGroupNamed: {
         value: deprecate.deprecateMethod(void 0, function (groupName) {
             this.addPropertyDescriptorGroupNamed(groupName);
         }, "addPropertyBlueprintGroupNamed", "addPropertyDescriptorGroupNamed")
-        // value: function (groupName) {
-        //     // var group = this._propertyBlueprintGroups[groupName];
-        //     // if (group == null) {
-        //     //     group = [];
-        //     //     this._propertyBlueprintGroups[groupName] = group;
-        //     // }
-        //     // return group;
-        //     this.addPropertyDescriptorGroupNamed(groupName);
-        // }
     },
 
     /**
-     * Adds a property blueprint to the group name.
+     * Adds a property descriptor to the group name.
      * if the group does not exist creates it.
      * @function
      * @param {string} property to add
      * @param {string} name of the group
-     * @returns {Array.<PropertyBlueprint>} property blueprint group
+     * @returns {Array.<PropertyBlueprint>} property descriptor group
      */
     addPropertyBlueprintToGroupNamed: {
         value: deprecate.deprecateMethod(void 0, function (propertyBlueprint, groupName) {
             this.addPropertyDescriptorToGroupNamed(propertyBlueprint, groupName);
         }, "addPropertyBlueprintToGroupNamed", "addPropertyDescriptorToGroupNamed")
-        // value: function (propertyBlueprint, groupName) {
-        //     // var group = this._propertyBlueprintGroups[groupName];
-        //     // if (group == null) {
-        //     //     group = this.addPropertyBlueprintGroupNamed(groupName);
-        //     // }
-        //     // var index = group.indexOf(propertyBlueprint);
-        //     // if (index < 0) {
-        //     //     group.push(propertyBlueprint);
-        //     // }
-        //     // return group;
-        //     this.addPropertyDescriptorGroupNamed(propertyBlueprint, groupName);
-        // }
     },
 
     /**
-     * Convenience to add an property blueprint to many relationships.
-     * @function
-     * @param {string} name TODO
-     * @param {string} inverse TODO
-     * @returns {AssociationBlueprint}
+     * @deprecated
      */
-    addToManyAssociationBlueprintNamed: {
-        value: function (name, inverse) {
-            // TODO: Implement
-            // var relationship = this.addPropertyBlueprint(this.newAssociationBlueprint(name, Infinity));
-            // if (inverse) {
-            //     relationship.targetBlueprint = inverse.owner;
-            //     inverse.targetBlueprint = this;
-            // }
-            // return relationship;
-        }
-    },
-
-    /**
-     * Convenience to add an property blueprint to one relationship.
-     * @function
-     * @param {string} name
-     * @param {string} inverse
-     * @returns {AssociationBlueprint}
-     */
-    addToOneAssociationBlueprintNamed: {
-        value: function (name, inverse) {
-            // TODO: Implement
-            // var relationship = this.addPropertyBlueprint(this.newAssociationBlueprint(name, 1));
-            // if (inverse) {
-            //     relationship.targetBlueprint = inverse.owner;
-            //     inverse.targetBlueprint = this;
-            // }
-            // return relationship;
-        }
-    },
-
     addToOnePropertyBlueprintNamed: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.addToOnePropertyDescriptorNamed(name);
         }, "addToOnePropertyBlueprintNamed", "addToOnePropertyDescriptorNamed")
     },
 
+    /**
+     * @deprecated
+     */
     addToManyPropertyBlueprintNamed: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.addToManyPropertyDescriptorNamed(name);
@@ -1021,8 +936,9 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
+     * @deprecated
      * This is used for references only so that we can reload referenced
-     * blueprints.
+     * object descriptors.
      */
     blueprintInstanceModule: {
         serializable: false,
@@ -1035,7 +951,8 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * @returns {Property}
+     * @deprecated
+     * @returns {Model}
      * @default null
      */
     binder: {
@@ -1049,9 +966,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
+     * @deprecated
      * @function
      * @param {string} name
-     * @returns {EventBlueprint}
+     * @returns {EventDescriptor}
      */
     eventBlueprintForName: {
         value: deprecate.deprecateMethod(void 0, function (name) {
@@ -1060,7 +978,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * @property {Array.<EventBlueprint>} value
+     * @property {Array.<EventDescriptor>} value
      */
     eventBlueprints: {
         // value: null
@@ -1073,12 +991,13 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Return a new association blueprint.
-     * **Note:** This is the canonical way of creating new association
-     * blueprint in order to enable subclassing.
-     * @param {string} name name of the association blueprint to create
-     * @param {number} cardinality name of the association blueprint to create
-     * @returns {AssociationBlueprint}
+     * Return a new property descriptor.
+     * **Note:** This method is deprecated use addToOnePropertyDescriptor
+     * and addToManyPropertyDescriptor to model relationships.
+     * @deprecated
+     * @param {string} name of the property descriptor to create
+     * @param {number} cardinality name of the property descriptor to create
+     * @returns {PropertyDescriptor}
      */
     // TODO: Deprecate -- discuss with Benoit.
     newAssociationBlueprint: {
@@ -1086,7 +1005,6 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             // TODO: Implement.
             return cardinality === 1 ?  this.addToOnePropertyDescriptorNamed(name) :
                                         this.addToManyPropertyDescriptorNamed(name);
-            // return new AssociationBlueprint().initWithNameBlueprintAndCardinality(name, this, cardinality);
         }
     },
 
@@ -1121,10 +1039,11 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Return a new event blueprint.
-     * **Note:** This is the canonical way of creating new event blueprint in
+     * Return a new event descriptor.
+     * **Note:** This is the canonical way of creating new event descriptor in
      * order to enable subclassing.
-     * @param {string} name name of the event blueprint to create
+     * @deprecated
+     * @param {string} name name of the event descriptor to create
      */
     newEventBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (name) {
@@ -1133,205 +1052,121 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Return a new property blueprint.
+     * Return a new property descriptor.
      *
-     * **Note:** This is the canonical way of creating new property blueprint
+     * **Note:** This is the canonical way of creating new property descriptors
      * in order to enable subclassing.
-     * @param {string} name name of the property blueprint to create
-     * @param {number} cardinality name of the property blueprint to create
-     * @returns {PropertyBlueprint}
+     * @deprecated
+     * @param {string} name name of the property descriptor to create
+     * @param {number} cardinality name of the property descriptor to create
+     * @returns {PropertyDescriptor}
      */
     newPropertyBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (name, cardinality) {
             return this.newPropertyDescriptor(name, cardinality);
         }, "newPropertyBlueprint", "newPropertyDescriptor")
-        // value: function (name, cardinality) {
-            //
-            // // return new PropertyBlueprint().initWithNameBlueprintAndCardinality(name, this, cardinality);
-            // return this.newPropertyDescriptor(name, cardinality);
-        // }
     },
 
     /**
+     * @deprecated
      * @function
      * @param {string} name
-     * @returns {PropertyBlueprint}
+     * @returns {PropertyDescriptor}
      */
     propertyBlueprintForName: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.propertyDescriptorForName(name);
         }, "propertyBlueprintForName", "propertyDescriptorForName")
-            // var propertyBlueprint = this._propertyBlueprintsTable[name];
-            // if (typeof propertyBlueprint === "undefined") {
-            //     propertyBlueprint = UnknownPropertyBlueprint;
-            //     var anPropertyBlueprint, index;
-            //     for (index = 0; typeof (anPropertyBlueprint = this._propertyBlueprints[index]) !== "undefined"; index++) {
-            //         if (anPropertyBlueprint.name === name) {
-            //             propertyBlueprint = anPropertyBlueprint;
-            //             break;
-            //         }
-            //     }
-            //     this._propertyBlueprintsTable[name] = propertyBlueprint;
-            // }
-            // if (propertyBlueprint === UnknownPropertyBlueprint) {
-            //     propertyBlueprint = null;
-            // }
-            // if ((! propertyBlueprint) && (this.parent)) {
-            //     propertyBlueprint = this.parent.propertyBlueprintForName(name);
-            // }
-            // return propertyBlueprint;
-            // return this.propertyDescriptorForName(name);
     },
 
     /**
-     * List of properties blueprint groups names
-     * @returns {Array.<PropertyBlueprint>}
+     * List of properties descriptor groups names
+     * @deprecated
+     * @returns {Array.<PropertyDescriptor>}
      */
     propertyBlueprintGroups: {
         get: deprecate.deprecateMethod(void 0, function () {
             return this.propertyDescriptorGroups;
         }, "propertyBlueprintGroups", "propertyDescriptorGroups")
-        // get: function () {
-        //     // var groups = [];
-        //     // for (var name in this._propertyBlueprintGroups) {
-        //     //     groups.push(name);
-        //     // }
-        //     // if (this.parent) {
-        //     //     groups = groups.concat(this.parent.propertyBlueprintGroups);
-        //     // }
-        //     // return groups;
-        //     return this.propertyDescriptorGroups;
-        // }
     },
 
     /**
      * Returns the group associated with that name
+     * @deprecated
      * @param {string} name of the group
-     * @returns {Array.<PropertyBlueprint>} property blueprint group
+     * @returns {Array.<PropertyDescriptor>} property descriptor group
      */
     propertyBlueprintGroupForName: {
         value: deprecate.deprecateMethod(void 0, function (groupName) {
             return this.propertyDescriptorGroupForName(groupName);
         }, "propertyBlueprintGroupForName", "propertyDescriptorForName")
-        // value: function (groupName) {
-        //     // var group = this._propertyBlueprintGroups[groupName];
-        //     // if ((! group) && (this.parent)) {
-        //     //     group = this.parent.propertyBlueprintGroupForName(groupName);
-        //     // }
-        //     // return group;
-        //     this.propertyDescriptorForName(groupName);
-        // }
     },
 
+    /**
+     * Returns the group associated with that name
+     * @deprecated
+     */
     propertyBlueprints: {
         get: deprecate.deprecateMethod(void 0, function () {
             return this.propertyDescriptors;
         }, "propertyBlueprints", "propertyDescriptors")
-        // get: function () {
-        //     // var propertyBlueprints = [];
-        //     // propertyBlueprints = propertyBlueprints.concat(this._propertyBlueprints);
-        //     // if (this.parent) {
-        //     //     propertyBlueprints = propertyBlueprints.concat(this.parent.propertyBlueprints);
-        //     // }
-        //     // return propertyBlueprints;
-        //     return this.propertyDescriptors;
-        // }
     },
 
     /**
-     * Removes an property blueprint from the property blueprint list of this
-     * blueprint.
+     * Removes a property descriptor from the property descriptor list of this
+     * object descriptor.
+     * @deprecated
      * @function
-     * @param {Object} property blueprint The property blueprint to be removed.
-     * @returns {PropertyBlueprint}
+     * @param {Object} event descriptor The event descriptor to be removed.
+     * @returns {PropertyDescriptor}
      */
     removeEventBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (eventBlueprint) {
             this.removeEventDescriptor(eventBlueprint);
         }, "removeEventBlueprint", "removeEventDescriptor")
-        // value: function (eventBlueprint) {
-        //     // if (eventBlueprint !== null && eventBlueprint.name !== null) {
-        //     //     var index = this._eventBlueprints.indexOf(eventBlueprint);
-        //     //     if (index >= 0) {
-        //     //         this._eventBlueprints.splice(index, 1);
-        //     //         delete this._eventBlueprintsTable[eventBlueprint.name];
-        //     //         eventBlueprint._owner = null;
-        //     //     }
-        //     // }
-        //     // return eventBlueprint;
-        //     this.removeEventDescriptor(eventBlueprint);
-        // }
     },
 
     /**
-     * Removes a property blueprint from the property blueprint list of this
-     * blueprint.
+     * Removes a property descriptor from the property descriptor list of this
+     * object descriptor.
      *
+     * @deprecated
      * @function
-     * @param {PropertyBlueprint} property blueprint The property blueprint to
+     * @param {PropertyDescriptor} property descriptor The property descriptor to
      * be removed.
-     * @returns the same property blueprint
+     * @returns the same property descriptor
      */
     removePropertyBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (propertyBlueprint) {
             this.removePropertyDescriptor(propertyBlueprint);
         }, "removePropertyBlueprint", "removePropertyDescriptor")
-        // value: function (propertyBlueprint) {
-        //     // if (propertyBlueprint !== null && propertyBlueprint.name !== null) {
-        //     //     var index = this._propertyBlueprints.indexOf(propertyBlueprint);
-        //     //     if (index >= 0) {
-        //     //         this._propertyBlueprints.splice(index, 1);
-        //     //         delete this._propertyBlueprintsTable[propertyBlueprint.name];
-        //     //         propertyBlueprint._owner = null;
-        //     //     }
-        //     // }
-        //     // return propertyBlueprint;
-        //     this.removePropertyDescriptor(propertyBlueprint);
-        // }
     },
 
     /**
-     * Removes a property blueprint from the group name.
+     * Removes a property descriptor from the group name.
+     * @deprecated
      * @function
      * @param {string} name of the property
      * @param {string} name of the group
-     * @returns {Array.<PropertyBlueprint>} property blueprint group
+     * @returns {Array.<PropertyDescriptor>} property descriptor group
      */
     removePropertyBlueprintFromGroupNamed: {
         value: deprecate.deprecateMethod(void 0, function (propertyBlueprint, groupName) {
             this.removePropertyDescriptorFromGroupNamed(propertyBlueprint, groupName);
         }, "removePropertyBlueprintFromGroupNamed", "removePropertyDescriptorGroupNamed")
-        // value: function (propertyBlueprint, groupName) {
-        //     // var group = this._propertyBlueprintGroups[groupName];
-        //     // if ((group != null) && (propertyBlueprint != null)) {
-        //     //     var index = group.indexOf(propertyBlueprint);
-        //     //     if (index >= 0) {
-        //     //         group.splice(index, 1);
-        //     //     }
-        //     // }
-        //     // return (group != null ? group : []);
-        //     this.removePropertyDescriptorGroupNamed(propertyBlueprint, groupName);
-        // }
     },
 
     /**
-     * Remove the property blueprint group.
+     * Remove the property descriptor group.
+     * @deprecated
      * @function
      * @param {string} name of the group to remove
-     * @returns {Array.<PropertyBlueprint>} removed property blueprint group
+     * @returns {Array.<PropertyDescriptor>} removed property descriptor group
      */
     removePropertyBlueprintGroupNamed: {
         value: deprecate.deprecateMethod(void 0, function (groupName) {
             this.removePropertyDescriptorGroupNamed(groupName);
         }, "removePropertyBlueprintGroupNamed", "removePropertyDescriptorGroupNamed")
-        // value: function (groupName) {
-        //     // var group = this._propertyBlueprintGroups[groupName];
-        //     // if (group != null) {
-        //     //     delete this._propertyBlueprintGroups[groupName];
-        //     // }
-        //     // return group;
-        //     this.removePropertyDescriptorGroupNamed(groupName);
-        // }
     },
 
     blueprintModuleId:require("../core")._objectDescriptorModuleIdDescriptor,
@@ -1341,7 +1176,8 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
 }, {
 
     /**
-     * Creates a default blueprint with all enumerable properties.
+     * @deprecated
+     * Creates a default object descriptor with all enumerable properties.
      *
      * **Note:** Value type are set to the string default.
      */
@@ -1349,13 +1185,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         value: deprecate.deprecateMethod(void 0, function (object) {
             return ObjectDescriptor.createDefaultObjectDescriptorForObject(object);
         }, "Blueprint.createDefaultBlueprintForObject", "ObjectDescriptor.createDefaultObjectDescriptorForObject")
-        // value: function (object) {
-        //     return ObjectDescriptor.createDefaultObjectDescriptorForObject(object);
-        // }
     },
 
     /**
-     * Creates a default blueprint with all enumerable properties.
+     * Creates a default object descriptor with all enumerable properties.
      *
      * **Note:** Value type are set to the string default.
      */

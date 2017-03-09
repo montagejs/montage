@@ -1,16 +1,9 @@
-/**
- * @module montage/core/meta/validation-semantics
- * @requires montage/core/core
- * @requires core/exception
- * @requires core/promise
- * @requires core/logger
- */
 var Montage = require("../core").Montage;
 // TODO kriskowal: massage selectors and FRB together
 var Semantics = Montage;
 // var Semantics = (require)("core/selector/semantics").Semantics;
 var deprecate = require("../deprecate"),
-    logger = require("../logger").logger("blueprint");
+    logger = require("../logger").logger("objectDescriptor");
 
 
 /**
@@ -84,9 +77,9 @@ var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantic
 
     /**
      * @deprecated
-     * Create a new semantic evaluator with the blueprint.
+     * Create a new semantic evaluator with the object descriptor.
      * @function
-     * @param {Blueprint} blueprint
+     * @param {ObjectDescriptor} objectDescriptor
      * @returns itself
      */
     initWithBlueprint: {

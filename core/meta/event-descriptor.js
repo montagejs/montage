@@ -1,12 +1,5 @@
-/**
- * @module montage/core/meta/property-blueprint
- * @requires montage/core/core
- * @requires core/exception
- * @requires core/promise
- * @requires core/logger
- */
 var Montage = require("../core").Montage,
-    logger = require("../logger").logger("blueprint"),
+    logger = require("../logger").logger("objectDescriptor"),
     deprecate = require("../deprecate"),
     Defaults = {
         name: "default",
@@ -42,11 +35,11 @@ exports.EventDescriptor = Montage.specialize( /** @lends EventDescriptor# */ {
     },
 
     /**
-     * Initialize a newly allocated property blueprint.
+     * Initialize a newly allocated event descriptor.
      * @deprecated
      * @function
-     * @param {string} name name of the property blueprint to create
-     * @param {Blueprint} blueprint
+     * @param {string} name name of the event descriptor to create
+     * @param {ObjectDescriptor} objectDescriptor
      * @returns itself
      */
     initWithNameAndBlueprint: {
@@ -122,8 +115,8 @@ exports.EventDescriptor = Montage.specialize( /** @lends EventDescriptor# */ {
     },
 
     /**
-     * The identifier is the name of the blueprint, dot, the name of the event
-     * blueprint, and is used to make the serialization of property blueprints
+     * The identifier is the name of the event descriptor, dot, the name of the event
+     * descriptor, and is used to make the serialization of property descriptors
      * more readable.
      * @type {string}
      * @default `this.name`

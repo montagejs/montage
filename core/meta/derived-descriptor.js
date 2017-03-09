@@ -1,7 +1,3 @@
-/**
- * @module montage/core/blueprint
- * @requires core/logger
- */
 var PropertyDescriptor = require("./property-descriptor").PropertyBlueprint,
     logger = require("../logger").logger("objectDescriptor"),
     Defaults = {
@@ -61,7 +57,7 @@ exports.DerivedDescriptor = PropertyDescriptor.specialize( /** @lends DerivedDes
     },
 
     /**
-     * List of property blueprints this derived property blueprint depends on.
+     * List of property descriptors this derived property descriptor depends on.
      * @private
      * @type {Array.<PropertyDescriptor>}
      * @default []
@@ -71,7 +67,7 @@ exports.DerivedDescriptor = PropertyDescriptor.specialize( /** @lends DerivedDes
     },
 
     /**
-     * List of property blueprints this derived property blueprint depends on.
+     * List of property descriptors this derived property descriptor depends on.
      * @type {Array.<PropertyDescriptor>}
      * @default []
      */

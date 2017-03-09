@@ -1,9 +1,3 @@
-/**
- * @module montage/core/remote-reference
- * @requires montage/core/core
- * @requires core/promise
- * @requires core/logger
- */
 var Montage = require("../core").Montage,
     Promise = require("../promise").Promise,
     logger = require("../logger").logger("objectDescriptor");

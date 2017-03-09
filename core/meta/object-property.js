@@ -71,15 +71,6 @@ exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
         value: deprecate.deprecateMethod(void 0, function (prototype, objectDescriptor) {
             return this.applyWithObjectDescriptor(prototype, objectDescriptor);
         }, "applyWithBlueprint", "applyWithObjectDescriptor")
-        // value: function (prototype, blueprint) {
-        //     // if (blueprint != null) {
-        //     //     this.addProperties(prototype, blueprint);
-        //     //     if (blueprint.parent !== null) {
-        //     //         this.apply(Object.getPrototypeOf(prototype), blueprint);
-        //     //     }
-        //     // }
-        //     this.applyWithObjectDescriptor(prototype, blueprint);
-        // }
     },
 
     applyWithObjectDescriptor: {

@@ -150,11 +150,11 @@ exports.ModelGroup = Montage.specialize( /** @lends ModelGroup.prototype # */ {
     },
 
     /**
-     * Return the default blueprint object property.
+     * Return the default model.
      * This is the last resort property declaration object.
      *
      * @readonly
-     * @returns {ObjectProperty} default blueprint object property
+     * @returns {Model} default object descriptor model
      */
     defaultModel: {
         get: function () {
@@ -184,10 +184,10 @@ exports.ModelGroup = Montage.specialize( /** @lends ModelGroup.prototype # */ {
     },
 
     /**
-     * Add a new blueprint binder
+     * Add a new model
      * @deprecated
      * @function
-     * @param {Binder} binder
+     * @param {Model} model
      */
     addBinder: {
         value: deprecate.deprecateMethod(void 0, function (binder) {
@@ -208,7 +208,7 @@ exports.ModelGroup = Montage.specialize( /** @lends ModelGroup.prototype # */ {
 
     /**
      * @deprecated
-     * Gets the blueprint binder associated with the name.
+     * Gets the model associated with the name.
      * @param {string} name
      */
     binderForName: {
@@ -219,12 +219,12 @@ exports.ModelGroup = Montage.specialize( /** @lends ModelGroup.prototype # */ {
     },
 
     /**
-     * Search through the binders for a blueprint that extends that prototype.
+     * Search through the binders for an object descriptor that extends that prototype.
      * @deprecated
      * @function
      * @param {string} prototypeName
      * @param {string} moduleId
-     * @returns The requested blueprint or null if this prototype is not
+     * @returns The requested object descriptor or null if this prototype is not
      * managed.
      */
     blueprintForPrototype: {
@@ -234,11 +234,11 @@ exports.ModelGroup = Montage.specialize( /** @lends ModelGroup.prototype # */ {
     },
 
     /**
-     * Return the default blueprint object property.
+     * Return the default object property.
      * This is the last resort property declaration object.
      * @deprecated
      * @readonly
-     * @returns {ObjectProperty} default blueprint object property
+     * @returns {ObjectProperty} default object property
      */
     defaultBlueprintObjectProperty: {
         get: deprecate.deprecateMethod(void 0, function () {
@@ -247,11 +247,10 @@ exports.ModelGroup = Montage.specialize( /** @lends ModelGroup.prototype # */ {
     },
 
     /**
-     * Return the default blueprint object property.
-     * This is the last resort property declaration object.
+     * Return the default model.
      *
      * @readonly
-     * @returns {ObjectProperty} default blueprint object property
+     * @returns {Model} default model
      */
     defaultBinder: {
         get: deprecate.deprecateMethod(void 0, function () {

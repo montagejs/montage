@@ -5,12 +5,12 @@ var Montage = require("../core").Montage,
     ModuleReference = require("../module-reference").ModuleReference,
     deprecate = require("../deprecate");
 
-// Cache all loaded blueprints
-var BLUEPRINT_CACHE = Object.create(null);
+// Cache all loaded object descriptors
+var OBJECT_DESCRIPTOR_CACHE = Object.create(null);
 
 /**
  * @class ModuleObjectDescriptor
- * @extends Blueprint
+ * @extends ObjectDescriptor
  */
 var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.specialize(/** @lends ModuleObjectDescriptor# */ {
 
@@ -51,10 +51,10 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
             this.exportName = deserializer.getProperty("exportName");
 
             if (!this.module) {
-                throw new Error("Cannot deserialize blueprint without a module reference");
+                throw new Error("Cannot deserialize object descriptor without a module reference");
             }
             if (!this.exportName) {
-                throw new Error("Cannot deserialize blueprint without an exportName");
+                throw new Error("Cannot deserialize object descriptor without an exportName");
             }
         }
     },
@@ -100,18 +100,18 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
             var targetRequire;
 
             var key = _require.location + "#" + moduleId;
-            if (key in BLUEPRINT_CACHE) {
-                return BLUEPRINT_CACHE[key];
+            if (key in OBJECT_DESCRIPTOR_CACHE) {
+                return OBJECT_DESCRIPTOR_CACHE[key];
             }
 
-            return BLUEPRINT_CACHE[key] = _require.async(moduleId)
+            return OBJECT_DESCRIPTOR_CACHE[key] = _require.async(moduleId)
                 .then(function (object) {
                     // Need to get the require from the module, because thats
                     // what all the moduleId references are relative to.
                     targetRequire = getModuleRequire(_require, moduleId);
                     return new Deserializer().init(JSON.stringify(object), targetRequire).deserializeObject();
                 }).then(function (objectDescriptor) {
-                    // TODO: May want to relax this to being just a Blueprint
+                    // TODO: May want to relax this to being just an Object Descriptor
                     if (!ModuleObjectDescriptor.prototype.isPrototypeOf(objectDescriptor)) {
                         throw new Error("Object in " + moduleId + " is not a module-object-descriptor");
                     }
@@ -120,7 +120,7 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
 
                     if (objectDescriptor._parentReference) {
                         // Load parent "synchronously" so that all the properties
-                        // through the blueprint chain are available
+                        // through the object descriptor chain are available
                         return objectDescriptor._parentReference.promise(targetRequire) // MARK
                             .then(function (parentObjectDescriptor) {
                                 objectDescriptor._parent = parentObjectDescriptor;
@@ -155,9 +155,10 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
      */
 
     /**
-     * Gets a blueprint from a serialized file at the given module id.
+     * Gets an object descriptor from a serialized file at the given module id.
+     * @deprecated
      * @function
-     * @param {string} blueprint module id
+     * @param {string} object descriptor module id
      * @param {function} require function
      */
     getBlueprintWithModuleId: {
@@ -166,6 +167,9 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
         }, "ModuleBlueprint.getBlueprintWithModuleId", "ModuleObjectDescriptor.getBlueprintWithModuleId")
     },
 
+    /**
+     * @deprecated
+     */
     createDefaultBlueprintForObject: {
         value: deprecate.deprecateMethod(void 0, function (object) {
             return ModuleObjectDescriptor.createDefaultObjectDescriptorForObject(object);

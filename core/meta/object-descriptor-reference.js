@@ -1,17 +1,10 @@
-
-/**
- * @module montage/core/meta/blueprint-reference
- * @requires core/exception
- * @requires core/promise
- * @requires core/logger
- */
 var Promise = require("../promise").Promise,
     ObjectDescriptorModule = require("./object-descriptor"),
     ModelModule = require("./model"),
     RemoteReference = require("./remote-reference").RemoteReference,
     ModelReference = require("./model-reference").ModelReference;
 
-var logger = require("../logger").logger("blueprint");
+var logger = require("../logger").logger("objectDescriptor");
 
 exports.ObjectDescriptorReference = RemoteReference.specialize( {
 
@@ -22,8 +15,8 @@ exports.ObjectDescriptorReference = RemoteReference.specialize( {
     },
 
     /**
-     * The identifier is the name of the binder and is used to make the
-     * serialization of binders more readable.
+     * The identifier is the name of the model and is used to make the
+     * serialization of models more readable.
      * @type {string}
      * @default this.name
      */
@@ -34,7 +27,7 @@ exports.ObjectDescriptorReference = RemoteReference.specialize( {
             }
             return [
                 "objectDescriptor",
-                (this._reference.blueprintName || "unnamed").toLowerCase(),
+                (this._reference.objectDescriptorName || this._reference.blueprintName || "unnamed").toLowerCase(),
                 "reference"
             ].join("_");
         }

@@ -1,8 +1,3 @@
-/**
- * @module montage/core/meta/user-interface-descriptor
- * @requires montage/core/core
- */
-
 var Montage = require("../core").Montage;
 
 /*

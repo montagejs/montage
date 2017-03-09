@@ -21,7 +21,7 @@ exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidati
      * Initialize a newly allocated object descriptor validation rule.
      * @function
      * @param {string} rule name
-     * @param {Blueprint} blueprint
+     * @param {ObjectDescriptor} objectDescriptor
      * @returns itself
      */
     initWithNameAndObjectDescriptor: {
@@ -64,7 +64,7 @@ exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidati
 
     /**
      * Component description attached to this validation rule.
-     * @type {Blueprint}
+     * @type {ObjectDescriptor}
      */
     owner: {
         get: function () {
@@ -73,13 +73,13 @@ exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidati
     },
 
     /**
-     * The identifier is the same as the name and is used to make the serialization of a blueprint humane.
+     * The identifier is the same as the name and is used to make the serialization of a ObjectDescriptor humane.
      * @type {string}
      */
     identifier: {
         get: function () {
             return [
-                this.blueprint.identifier,
+                this.objectDescriptor.identifier,
                 "rule",
                 this.name
             ].join("_");
@@ -146,14 +146,14 @@ exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidati
     },
 
     /**
-     * Evaluates the rules based on the blueprint and the properties.
+     * Evaluates the rules based on the ObjectDescriptor and the properties.
      * @param {Object} object instance to evaluate the rule for
      * @returns {boolean} true if the rules fires, false otherwise.
      */
     evaluateRule: {
         value: function (objectInstance) {
             if (this._propertyValidationEvaluator === null) {
-                var propertyValidationSemantics = new PropertyValidationSemantics().initWithBlueprint(this.blueprint);
+                var propertyValidationSemantics = new PropertyValidationSemantics().initWithBlueprint(this.objectDescriptor);
                 this._propertyValidationEvaluator = propertyValidationSemantics.compile(this.selector.syntax);
             }
             return this._propertyValidationEvaluator(objectInstance);
@@ -169,10 +169,11 @@ exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidati
 
     /**
      * @deprecated
-     * Initialize a newly allocated blueprint validation rule.
+     * Initialize a newly allocated validation rule.
+     * @deprecated
      * @function
      * @param {string} rule name
-     * @param {Blueprint} blueprint
+     * @param {ObjectDescriptor} objectDescriptor
      * @returns itself
      */
     initWithNameAndBlueprint: {

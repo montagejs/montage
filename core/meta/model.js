@@ -1,10 +1,3 @@
-/**
- * @module montage/core/meta/binder
- * @requires montage/core/core
- * @requires core/meta/binder-manager
- * @requires core/meta/blueprint
- * @requires core/logger
- */
 var Montage = require("../core").Montage,
     ModelGroup = require("./model-group").ModelGroup,
     ObjectDescriptorModule = require("./object-descriptor"),
@@ -155,7 +148,7 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
     /**
      * The list of objectDescriptors in this binder.
      * @readonly
-     * @returns {Array.<Blueprint>}
+     * @returns {Array.<ObjectDescriptor>}
      */
     objectDescriptors: {
         get: function () {
@@ -165,8 +158,8 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
 
     /**
      * @function
-     * @param {?Blueprint} blueprint
-     * @returns blueprint
+     * @param {?ObjectDescriptor} objectDescriptor
+     * @returns objectDescriptor
      */
     addObjectDescriptor: {
         value: function (objectDescriptor) {
@@ -186,8 +179,8 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
 
     /**
      * @function
-     * @param {Blueprint} blueprint
-     * @returns blueprint
+     * @param {ObjectDescriptor} objectDescriptor
+     * @returns objectDescriptor
      */
     removeObjectDescriptor: {
         value: function (objectDescriptor) {
@@ -206,7 +199,7 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
      * @function
      * @param {string} name
      * @param {string} moduleID
-     * @returns {Blueprint} The new blueprint
+     * @returns {ObjectDescriptor} The new objectDescriptor
      */
     addObjectDescriptorNamed: {
         value: function (name) {
@@ -215,11 +208,11 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
     },
 
     /**
-     * Return the blueprint associated with this prototype.
+     * Return the object descriptor associated with this prototype.
      * @function
      * @param {string} prototypeName
      * @param {string} moduleId
-     * @returns {?Blueprint} blueprint
+     * @returns {?ObjectDescriptor} objectDescriptor
      */
     objectDescriptorForPrototype: {
         value: deprecate.deprecateMethod(void 0, function (prototypeName) {
@@ -255,7 +248,7 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
     },
 
     /**
-     * Return the blueprint object property for this binder.
+     * Return the object descriptor object property for this model.
      * This will return the default if none is declared.
      * @type {ObjectProperty}
      */
@@ -277,9 +270,10 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
 
 
     /**
-     * The list of blueprints in this binder.
+     * The list of object descriptors in this model.
+     * @deprecated
      * @readonly
-     * @returns {Array.<Blueprint>}
+     * @returns {Array.<ObjectDescriptor>}
      */
     blueprints: {
         get: deprecate.deprecateMethod(void 0, function () {
@@ -290,8 +284,8 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
     /**
      * @deprecated
      * @function
-     * @param {?Blueprint} blueprint
-     * @returns blueprint
+     * @param {?ObjectDescriptor} objectDescriptor
+     * @returns objectDescriptor
      */
     addBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (blueprint) {
@@ -302,8 +296,8 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
     /**
      * @deprecated
      * @function
-     * @param {Blueprint} blueprint
-     * @returns blueprint
+     * @param {ObjectDescriptor} objectDescriptor
+     * @returns objectDescriptor
      */
     removeBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (blueprint) {
@@ -316,7 +310,7 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
      * @function
      * @param {string} name
      * @param {string} moduleID
-     * @returns {Blueprint} The new blueprint
+     * @returns {ObjectDescriptor} The new objectDescriptor
      */
     addBlueprintNamed: {
         value: deprecate.deprecateMethod(void 0, function (name) {
@@ -326,11 +320,11 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
 
     /**
      * @deprecated
-     * Return the blueprint associated with this prototype.
+     * Return the objectDescriptor associated with this prototype.
      * @function
      * @param {string} prototypeName
      * @param {string} moduleId
-     * @returns {?Blueprint} blueprint
+     * @returns {?ObjectDescriptor} objectDescriptor
      */
     blueprintForPrototype: {
         value: deprecate.deprecateMethod(void 0, function (prototypeName) {
@@ -341,7 +335,7 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
     /**
      * @deprecated
      * @param {string} name
-     * @returns {?Blueprint}
+     * @returns {?ObjectDescriptor}
      */
     blueprintForName: {
         value: deprecate.deprecateMethod(void 0, function (name) {
@@ -373,8 +367,8 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
 
     /**
      * @deprecated
-     * Returns the blueprint binder manager.
-     * @returns {BinderManager}
+     * Returns the model group.
+     * @returns {ModelGroup}
      */
     manager: {
         get: deprecate.deprecateMethod(void 0, function () {

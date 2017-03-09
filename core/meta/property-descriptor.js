@@ -1,15 +1,10 @@
-/**
- * @module montage/core/meta/property-blueprint
- * @requires montage/core/core
- * @requires core/logger
- */
 var Montage = require("../core").Montage,
     ObjectDescriptorReference = require("./object-descriptor-reference").ObjectDescriptorReference,
     deprecate = require("../deprecate"),
-    logger = require("../logger").logger("blueprint");
+    logger = require("../logger").logger("objectDescriptor");
 
 // TODO change Defaults[*] to Defaults.* throughout. Needless performance
-// degredation.
+// degradations.
 var Defaults = {
     name: "default",
     cardinality: 1,
@@ -56,7 +51,7 @@ var Defaults = {
 
 
 /**
- * @class PropertyBlueprint
+ * @class PropertyDescriptor
  */
 exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# */ {
 
@@ -77,6 +72,15 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
         }
     },
 
+    /**
+     * Initialize a newly allocated property descriptor.
+     * @deprecated
+     * @function
+     * @param {string} name name of the property descriptor to create
+     * @param {ObjectDescriptor} objectDescriptor
+     * @param {number} cardinality name of the property descriptor to create
+     * @returns itself
+     */
     initWithNameBlueprintAndCardinality: {
         value: deprecate.deprecateMethod(void 0, function (name, blueprint, cardinality) {
             return this.initWithNameObjectDescriptorAndCardinality(name, blueprint, cardinality);
@@ -159,7 +163,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     },
 
     /**
-     * Component description attached to this property blueprint.
+     * Component description attached to this property descriptor.
      */
     owner: {
         get:function () {
@@ -185,9 +189,9 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     },
 
     /**
-     * The identifier is the name of the blueprint, dot, the name of the
-     * property blueprint, and is used to make the serialization of property
-     * blueprints more readable.
+     * The identifier is the name of the descriptor, dot, the name of the
+     * property descriptor, and is used to make the serialization of property
+     * descriptors more readable.
      * @readonly
      * @type {string}
      */
@@ -201,9 +205,9 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     },
 
     /**
-     * Cardinality of the property blueprint.
+     * Cardinality of the property descriptor.
      *
-     * The Cardinality of an property blueprint is the number of values that
+     * The Cardinality of an property descriptor is the number of values that
      * can be stored. A cardinality of one means that only one object can be
      * stored. Only positive values are legal. A value of infinity means that
      * any number of values can be stored.
@@ -293,9 +297,9 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     },
 
     /**
-     * Promise for the blueprint targeted by this association.
+     * Promise for the descriptor targeted by this association.
      *
-     * **Note**: The setter expects an actual blueprint but the getter will
+     * **Note**: The setter expects an actual descriptor but the getter will
      * return a promise.
      * @type {string}
      */
@@ -304,8 +308,8 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
         get: function () {
             return this._valueDescriptorReference && this._valueDescriptorReference.promise(this.require);
         },
-        set: function (blueprint) {
-            this._valueDescriptorReference = new ObjectDescriptorReference().initWithValue(blueprint);
+        set: function (descriptor) {
+            this._valueDescriptorReference = new ObjectDescriptorReference().initWithValue(descriptor);
         }
     },
 
