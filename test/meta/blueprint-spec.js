@@ -213,9 +213,6 @@ describe("meta/blueprint-spec", function () {
                 return new Deserializer().init(serializedBinder, require).deserializeObject().then(function (deserializedBinder) {
                     var metadata = Montage.getInfoForObject(deserializedBinder);
                     expect(serializedBinder).not.toBeNull();
-                    // [JM] TODO: Verify these changes are acceptable
-                    // expect(metadata.objectName).toBe("Binder");
-                    // expect(metadata.moduleId).toBe("core/meta/binder");
                     expect(metadata.objectName).toBe("Model");
                     expect(metadata.moduleId).toBe("core/meta/model");
                     var personBlueprint = deserializedBinder.blueprintForName("Person");
