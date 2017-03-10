@@ -28,9 +28,9 @@ exports.BinderHelper = Montage.specialize( {
             projectBlueprint.addToOnePropertyBlueprintNamed("startDate");
             projectBlueprint.addToOnePropertyBlueprintNamed("endDate");
 
-            companyBlueprint.addToManyAssociationBlueprintNamed("projects", personBlueprint.addToOneAssociationBlueprintNamed("company"));
-
-            personBlueprint.addToManyAssociationBlueprintNamed("projects", projectBlueprint.addToManyAssociationBlueprintNamed("contributors"));
+            // companyBlueprint.addToManyAssociationBlueprintNamed("projects", personBlueprint.addToOneAssociationBlueprintNamed("company"));
+            //
+            // personBlueprint.addToManyAssociationBlueprintNamed("projects", projectBlueprint.addToManyAssociationBlueprintNamed("contributors"));
 
             Binder.manager.addBinder(companyBinder);
 

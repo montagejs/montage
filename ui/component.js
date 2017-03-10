@@ -1915,9 +1915,20 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         serializable: false,
         enumerable: false,
         get: function () {
+            return this.objectDescriptorModuleId;
+        }
+    },
+
+    blueprint: require("../core/core")._objectDescriptorDescriptor,
+    objectDescriptor: require("../core/core")._objectDescriptorDescriptor,
+
+    objectDescriptorModuleId: {
+        serializable: false,
+        enumerable: false,
+        get: function () {
             var info = Montage.getInfoForObject(this);
             var self = (info && !info.isInstance) ? this : Object.getPrototypeOf(this);
-            if ((!Object.getOwnPropertyDescriptor(self, "_blueprintModuleId")) || (!self._blueprintModuleId)) {
+            if (!Object.getOwnPropertyDescriptor(self, "_objectDescriptorModuleId") || !self._objectDescriptorModuleId) {
                 info = Montage.getInfoForObject(self);
                 var moduleId = info.moduleId,
                     slashIndex = moduleId.lastIndexOf("/"),
@@ -1926,24 +1937,22 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 dotIndex = ( dotIndex === -1 ? moduleId.length : dotIndex );
                 dotIndex = ( dotIndex < slashIndex ? moduleId.length : dotIndex );
 
-                var blueprintModuleId;
+                var objectDescriptorModuleId;
                 if ((dotIndex < moduleId.length) && ( moduleId.slice(dotIndex, moduleId.length) === ".reel")) {
                     // We are in a reel
-                    blueprintModuleId = moduleId + "/" + moduleId.slice(slashIndex, dotIndex) + ".meta";
+                    objectDescriptorModuleId = moduleId + "/" + moduleId.slice(slashIndex, dotIndex) + ".meta";
                 } else {
                     // We look for the default
-                    blueprintModuleId = moduleId.slice(0, dotIndex) + ".meta";
+                    objectDescriptorModuleId = moduleId.slice(0, dotIndex) + ".meta";
                 }
 
-                Montage.defineProperty(self, "_blueprintModuleId", {
-                    value: blueprintModuleId
+                Montage.defineProperty(self, "_objectDescriptorModuleId", {
+                    value: objectDescriptorModuleId
                 });
             }
-            return self._blueprintModuleId;
+            return self._objectDescriptorModuleId;
         }
     },
-
-    blueprint: require("../core/core")._blueprintDescriptor,
 
     /**
      * Callback for the ```canDrawGate```.

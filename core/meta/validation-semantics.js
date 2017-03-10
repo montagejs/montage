@@ -1,16 +1,10 @@
-/**
- * @module montage/core/meta/validation-semantics
- * @requires montage/core/core
- * @requires core/exception
- * @requires core/promise
- * @requires core/logger
- */
 var Montage = require("../core").Montage;
 // TODO kriskowal: massage selectors and FRB together
 var Semantics = Montage;
 // var Semantics = (require)("core/selector/semantics").Semantics;
+var deprecate = require("../deprecate"),
+    logger = require("../logger").logger("objectDescriptor");
 
-var logger = require("../logger").logger("blueprint");
 
 /**
  * @class PropertyValidationSemantics
@@ -19,28 +13,28 @@ var logger = require("../logger").logger("blueprint");
 var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantics.specialize( /** @lends PropertyValidationSemantics# */ {
 
     /**
-     * Create a new semantic evaluator with the blueprint.
+     * Create a new semantic evaluator with the object descriptor.
      * @function
-     * @param {Blueprint} blueprint
+     * @param {ObjectDescriptor} objectDescriptor
      * @returns itself
      */
-    initWithBlueprint: {
-        value: function (blueprint) {
-            this._blueprint = blueprint;
+    initWithObjectDescriptor: {
+        value: function (objectDescriptor) {
+            this._objectDescriptor = objectDescriptor;
             return this;
         }
     },
 
-    _blueprint: {
-        value: null
+    _objectDescriptor: {
+        value: undefined
     },
 
     /**
      * Component description attached to this validation rule.
      */
-    blueprint: {
+    objectDescriptor: {
         get: function () {
-            return this._blueprint;
+            return this._objectDescriptor;
         }
     },
 
@@ -75,6 +69,33 @@ var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantic
                 };
             }
         }
+    },
+
+    /*****************************************************************
+     * Deprecated Methods
+     */
+
+    /**
+     * @deprecated
+     * Create a new semantic evaluator with the object descriptor.
+     * @function
+     * @param {ObjectDescriptor} objectDescriptor
+     * @returns itself
+     */
+    initWithBlueprint: {
+        value: deprecate.deprecateMethod(void 0, function (blueprint) {
+            return this.initWithObjectDescriptor(blueprint);
+        }, "initWithBlueprint", "initWithObjectDescriptor")
+    },
+
+    /**
+     * @deprecated
+     * Component description attached to this validation rule.
+     */
+    blueprint: {
+        get: deprecate.deprecateMethod(void 0, function () {
+            return this._blueprint;
+        }, "blueprint", "objectDescriptor")
     }
 
 });

@@ -4,7 +4,7 @@ var Bindings = require("frb"),
     Scope = require("frb/scope"),
     Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
     Deserializer = require("../serialization/deserializer/montage-deserializer").MontageDeserializer,
-    BOUND_OBJECT  = "boundObject" ,
+    BOUND_OBJECT  = "boundObject",
     ONE_WAY = "<-",
     TWO_WAY = "<->";
 
