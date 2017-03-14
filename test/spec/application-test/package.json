@@ -1,0 +1,8 @@
+{
+    "name": "test",
+    "mappings": {
+        "montage": "../../../",
+        "montage-testing": "../../../node_modules/montage-testing"
+    },
+    "applicationPrototype":"application-test[MyApp]"
+}
