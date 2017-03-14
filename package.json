@@ -2,8 +2,8 @@
   "name": "montage",
   "version": "17.0.0",
   "description": "Build your next application with a browser based platform that really gets the web.",
- "license" : "BSD-3-Clause",
- "repository": {
+  "license": "BSD-3-Clause",
+  "repository": {
     "type": "git",
     "url": "https://github.com/montagejs/montage.git"
   },
@@ -15,10 +15,10 @@
         "montage": "core/core"
       },
       "mappings": {
-      "mr": {
-        "name": "mr",
-        "location": "node_modules/mr"
-      },
+        "mr": {
+          "name": "mr",
+          "location": "node_modules/mr"
+        },
         "bluebird": {
           "name": "bluebird",
           "location": "node_modules/bluebird"
@@ -31,10 +31,10 @@
         "montage": "core/core"
       },
       "mappings": {
-      "mr": {
-        "name": "mr",
-        "location": "node_modules/mr"
-      },
+        "mr": {
+          "name": "mr",
+          "location": "node_modules/mr"
+        },
         "bluebird": {
           "name": "bluebird",
           "location": "node_modules/bluebird"
@@ -48,12 +48,20 @@
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
     "mr": "~16.0.3",
-    "bluebird":"~3.4.7",
+    "bluebird": "~3.4.7",
     "q-io": "~1.11.0"
   },
   "devDependencies": {
-    "jshint": "~2.4.4",
-    "montage-testing": "montagejs/montage-testing"
+    "jasmine-console-reporter": "^1.2.7",
+    "jasmine-core": "^2.5.2",
+    "jshint": "^2.9.4",
+    "karma": "^1.5.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-coverage": "^1.1.1",
+    "karma-firefox-launcher": "^1.0.1",
+    "karma-jasmine": "^1.1.0",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "montage-testing": "^0.4.3"
   },
   "scripts": {
     "test": "node test/node/node-spec.js",
