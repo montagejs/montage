@@ -18,7 +18,7 @@ exports.bootstrap = function () {
     var program = args.shift();
     return FS.canonical(program).then(function (program) {
         return findPackage(program)
-        .fail(function (error) {
+        .catch(function (error) {
             if (error.message === "Can't find package") {
                 loadFreeModule(program, command, args);
             } else {
@@ -37,8 +37,7 @@ var findPackage = function (path) {
         throw new Error("Can't find package");
     }
     var packageJson = FS.join(directory, "package.json");
-    return FS.stat(path)
-    .then(function (stat) {
+    return FS.stat(path).then(function (stat) {
         if (stat.isFile()) {
             return directory;
         } else {
