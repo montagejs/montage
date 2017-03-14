@@ -167,7 +167,7 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     defaultBinder: {
         get: function () {
             if (!this._defaultBinder) {
-                this._defaultBinder = new BinderModule.Binder().initWithNameAndRequire("default", self.mr);
+                this._defaultBinder = new BinderModule.Binder().initWithNameAndRequire("default", require);
                 this._defaultBinder.isDefault = true;
                 this.addBinder(this._defaultBinder);
             }
