@@ -1,7 +1,8 @@
 console.log('montage-testing', 'Start');
 require("montage-testing").run(require, [
+    // App
     {name: "spec/application-spec", node: false},
-    // 
+    // Internal
     "spec/bitfield-spec",
     "spec/converter-spec",
     "spec/enum-spec",
@@ -25,16 +26,16 @@ require("montage-testing").run(require, [
     "spec/core/criteria-spec",
     "spec/core/super-spec",
     "spec/core/super-for-spec",
-    "spec/core/undo-manager-spec",
+    {name: "spec/core/undo-manager-spec", node: false},
     "spec/core/tree-controller-spec",
     "spec/core/extras/function",
     "spec/core/extras/string",
     "spec/core/set-spec",
+    //{name: "spec/core/localizer-spec", node: false},
     {name: "spec/core/dom-spec", node: false},
     {name: "spec/core/extras/url", node: false},
-    {name: "spec/core/localizer-spec", node: false},
-    {name: "spec/core/media-controller-spec", node: false},
     {name: "spec/core/range-controller-spec", node: false},
+    {name: "spec/core/media-controller-spec", node: false},
     {name: "spec/core/radio-button-controller-spec", node: false},
     // Base
     {name: "spec/base/abstract-control-spec", node: false},
@@ -52,7 +53,7 @@ require("montage-testing").run(require, [
     {name: "spec/base/abstract-text-field-spec", node: false},
     {name: "spec/base/abstract-toggle-button-spec", node: false},
     {name: "spec/base/abstract-video-spec", node: false},
-    //
+    // Composer
     {name: "spec/composer/composer-spec", node: false},
     {name: "spec/composer/press-composer-spec", node: false},
     {name: "spec/composer/translate-composer/translate-composer-spec", node: false},
@@ -90,23 +91,24 @@ require("montage-testing").run(require, [
     // Trigger
     {name: "spec/trigger/trigger-spec", node: false},
     // UI
+    {name: "spec/ui/condition-spec", node: false},
+    {name: "spec/ui/button-spec", node: false},
     {name: "spec/ui/component-spec", node: false},
     {name: "spec/ui/control-spec", node: false},
-    {name: "spec/ui/button-spec", node: false},
-    {name: "spec/ui/condition-spec", node: false},
     {name: "spec/ui/firstdraw-spec", node: false},
     {name: "spec/ui/loader-spec", node: false},
     {name: "spec/ui/modal-overlay-spec", node: false},
     {name: "spec/ui/overlay-spec", node: false},
-    {name: "spec/ui/repetition-spec", node: false},
-    {name: "spec/ui/repetition-selection-spec", node: false},
-    {name: "spec/ui/repetition-binding-spec", node: false},
     {name: "spec/ui/slot-spec", node: false},
     {name: "spec/ui/substitution-spec", node: false},
     {name: "spec/ui/text/text-spec", node: false},
     {name: "spec/ui/text-input-spec", node: false},
     {name: "spec/ui/slider-spec", node: false},
-    {name: "spec/ui/segmented-bar/segmented-bar-spec", node: false}
+    {name: "spec/ui/segmented-bar/segmented-bar-spec", node: false},
+    // UI - repetition
+    {name: "spec/ui/repetition-spec", node: false},
+    {name: "spec/ui/repetition-selection-spec", node: false},
+    {name: "spec/ui/repetition-binding-spec", node: false}
 ]).then(function () {
 	console.log('montage-testing', 'End');
 }, function (err) {

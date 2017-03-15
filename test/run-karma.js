@@ -85,7 +85,7 @@ function injectBase(href) {
 }
 
 injectBase('/base/test/');
-injectScript('../node_modules/mr/bootstrap.js', 'run', function (err) {
+injectScript('../node_modules/mr/bootstrap.js', 'all', function (err) {
     if (err) {
         throw err;
     }
