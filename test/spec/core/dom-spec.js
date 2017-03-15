@@ -105,7 +105,7 @@ TestPageLoader.queueTest("dom/dom", function (testPage) {
                     });
                 });
 
-                describe(", which is translated, ", function () {
+                xdescribe(", which is translated, ", function () {
                     // setTimeout for when browser hasn't animated CSS transform by the time tests run
                     // requestAnimationFrame instead of setTimeout works in this suite,
                     // but doesn't work for the entire test suite, as tests may bleed into next test suite.

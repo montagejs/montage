@@ -65,7 +65,7 @@ describe("meta/event-blueprint-spec", function () {
                     .toEqual(expectedSerialization);
             });
 
-            it("should deserialize correctly", function (done) {
+            xit("should deserialize correctly", function (done) {
                 var deserializer = new Deserializer().init(JSON.stringify(blueprintSerialization), require);
                 deserializer.deserializeObject({blueprint_testblueprint: blueprint}).then(function (deserialized) {
                     expect(deserialized).toEqual(eventBlueprint);

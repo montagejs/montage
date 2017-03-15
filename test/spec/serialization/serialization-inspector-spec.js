@@ -244,7 +244,7 @@ describe("reel/serialization/serialization-inspector-spec", function () {
             expect(args[0].type).toBe("object");
             expect(args[0].data).toEqual(object.text.properties);
 
-            args = visitorSpy.calls.all()[1].args;
+            args = visitorSpy.calls.all()[2].args;
             expect(args[0].type).toBe("string");
             expect(args[0].data).toEqual(object.text.properties.identifier);
         });
