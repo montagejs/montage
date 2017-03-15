@@ -1,7 +1,7 @@
 {
     "montage_manifest_version": 1,
     "mappings": {
-        "montage": "../../",
+        "montage": "../../../../",
     },
     "files": {
         "locale": {

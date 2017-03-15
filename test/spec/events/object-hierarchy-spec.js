@@ -48,7 +48,6 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
         describe("handling events throughout the object hierarchy", function () {
 
-
             var orphan, childFoo, childBar, grandchildFoo, bubbleEvent,
                 orphanListener, childFooListener, childBarListener, grandchildFooListener,
                 parentListener;

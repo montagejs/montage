@@ -248,11 +248,13 @@ describe("test/base/abstract-alert-spec", function () {
         });
     });
 
-    describe("blueprint", function () {
+    describe("blueprint", function (done) {
         it("can be created", function () {
             var blueprintPromise = AbstractAlert.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }).finally(function () {
+                done();
             });
         });
     });

@@ -913,10 +913,8 @@ describe("spec/reel/template-spec", function () {
                     owner: new DelegateMethods(),
                     one: new DelegateMethods()
                 }
-                return template.instantiateWithInstances(instances, document)
-                .then(function (documentPart) {
+                return template.instantiateWithInstances(instances, document).then(function (documentPart) {
                     var objects = documentPart.objects;
-
                     expect(objects.one.deserializedFromTemplateCount).toBe(0);
                 });
             }, function() {
@@ -1798,8 +1796,8 @@ describe("spec/reel/template-spec", function () {
 
     describe("cache", function () {
         it("should treat same module id in different package as different templates", function (done) {
-            return require.loadPackage("package-a").then(function (pkg1) {
-                return require.loadPackage("package-b").then(function (pkg2) {
+            return require.loadPackage("spec/package-a").then(function (pkg1) {
+                return require.loadPackage("spec/package-b").then(function (pkg2) {
                     return Template.getTemplateWithModuleId("ui/main.reel/main.html", pkg1)
                     .then(function (template1) {
                         return Template.getTemplateWithModuleId("ui/main.reel/main.html", pkg2)

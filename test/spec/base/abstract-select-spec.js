@@ -52,7 +52,6 @@ describe("test/base/abstract-select-spec", function () {
 
             it("should add the corresponding class name to classList when enabled is false", function () {
                 aSelect.enabled = false;
-
                 expect(aSelect.classList.contains("montage--disabled")).toBe(true);
             });
         });
@@ -388,10 +387,12 @@ describe("test/base/abstract-select-spec", function () {
     });
 
     describe("blueprint", function () {
-        it("can be created", function () {
+        it("can be created", function (done) {
             var blueprintPromise = AbstractSelect.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }).finally(function () {
+                done();
             });
         });
     });

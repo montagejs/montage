@@ -313,8 +313,8 @@ describe("core/range-controller-spec", function () {
                 this.x = 10;
             };
             var content = rangeController.addContent();
-            expect(content).toEqual({x: 10});
-            expect(rangeController.content).toContain({x: 10});
+            expect(content).toEqual(jasmine.objectContaining({x: 10}));
+            expect(rangeController.content).toContain(jasmine.objectContaining({x: 10}));
         });
 
         it("should defer to the content type of the backing collection", function () {
@@ -324,8 +324,8 @@ describe("core/range-controller-spec", function () {
             };
             rangeController.content = content;
             var content = rangeController.addContent();
-            expect(content).toEqual({x: 10});
-            expect(rangeController.content).toContain({x: 10});
+            expect(content).toEqual(jasmine.objectContaining({x: 10}));
+            expect(rangeController.content).toContain(jasmine.objectContaining({x: 10}));
         });
 
         it("should use a default content constructor otherwise", function () {

@@ -309,10 +309,9 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                     });
                 });
 
-                it("should draw children in an additional cycle that are added during parent's draw", function () {
+                xit("should draw children in an additional cycle that are added during parent's draw", function () {
                     // TODO: we can't make this working at the moment because
                     // enter/exitDocument is implemented by forcing a draw
-                    return;
                     // setup spies
                     spyOn(testPage.test.componentB, 'draw').and.callFake(function () {
                         testPage.test.componentB1.needsDraw = true;

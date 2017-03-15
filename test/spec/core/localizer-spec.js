@@ -28,7 +28,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-/*global require,exports,describe,beforeEach,it,expect,waits,waitsFor,runs,spyOn */
+/*global require,exports,describe,beforeEach,it,expect,spyOn */
 var Montage = require("montage").Montage,
     Localizer = require("montage/core/localizer"),
     Promise = require("montage/core/promise").Promise,
@@ -44,9 +44,12 @@ describe("core/localizer-spec", function () {
         });
 
         it("has an init method that accepts key and default", function (done) {
-            message = new Localizer.Message().init("hello", "Hello");
+            message.init("hello", "Hello");
             message.localized.then(function (localized) {
                 expect(localized).toBe("Hello");
+            }).catch(function (er) {
+                console.log(er)
+                expect('test').toBe("success");
             }).finally(function () {
                 done();
             });
@@ -56,7 +59,7 @@ describe("core/localizer-spec", function () {
             var object = {
                 name: "World"
             };
-            message = new Localizer.Message().init("hello", "Hello, {name}", object);
+            message.init("hello", "Hello, {name}", object);
             message.localized.then(function (localized) {
                 expect(localized).toBe("Hello, World");
             }).finally(function () {

@@ -115,7 +115,6 @@ TestPageLoader.queueTest("swipe-composer", {src:"spec/composer/swipe/swipe.html"
                             expect(test.handleSwipe).not.toHaveBeenCalled();
                         });
                     });
-
                 });
             });
 
@@ -132,7 +131,7 @@ TestPageLoader.queueTest("swipe-composer", {src:"spec/composer/swipe/swipe.html"
                             });
                         });
                     });
-                 });
+                });
             });
         });
     });

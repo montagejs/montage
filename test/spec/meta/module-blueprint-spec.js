@@ -21,7 +21,7 @@ describe("meta/module-blueprint-spec", function () {
                 "propertyBlueprints": [
                     {"@": "blueprint_one_a"}
                 ],
-                "module": {"%": "meta/module-blueprint-spec"},
+                "module": {"%": "spec/meta/module-blueprint-spec"},
                 "exportName": "One"
             }
         }
@@ -31,9 +31,8 @@ describe("meta/module-blueprint-spec", function () {
 
         var blueprintOne;
         beforeEach(function () {
-            var ref = new ModuleReference().initWithIdAndRequire("meta/module-blueprint-spec", require);
+            var ref = new ModuleReference().initWithIdAndRequire("spec/meta/module-blueprint-spec", require);
             blueprintOne = new ModuleBlueprint().initWithModuleAndExportName(ref, "One");
-
             blueprintOne.addPropertyBlueprint(blueprintOne.newPropertyBlueprint("a", 1));
         });
 
@@ -72,9 +71,8 @@ describe("meta/module-blueprint-spec", function () {
         });
 
         describe("getBlueprintWithModuleId", function () {
-            it("caches the blueprints", function () {
-                return require.loadPackage({location: "meta/blueprint/package"})
-                .then(function (require) {
+            it("caches the blueprints", function (done) {
+                require.loadPackage({location: "spec/meta/blueprint/package"}).then(function (require) {
                     return ModuleBlueprint.getBlueprintWithModuleId("thing.meta", require)
                     .then(function (blueprint1) {
                         return ModuleBlueprint.getBlueprintWithModuleId("thing.meta", require)
@@ -82,21 +80,21 @@ describe("meta/module-blueprint-spec", function () {
                             expect(blueprint1).toBe(blueprint2);
                         });
                     });
+                }).finally(function () {
+                    done();
                 });
             });
 
-            it("correctly loads blueprints with the same internal module ID cross package", function () {
-                return require.loadPackage({location: "meta/blueprint/package"})
-                .then(function (require) {
+            it("correctly loads blueprints with the same internal module ID cross package", function (done) {
+                require.loadPackage({location: "spec/meta/blueprint/package"}).then(function (require) {
                     return ModuleBlueprint.getBlueprintWithModuleId("thing.meta", require)
                     .then(function (blueprint) {
                         expect(blueprint.parent).not.toBe(blueprint);
                     });
+                }).finally(function () {
+                    done();
                 });
             });
         });
-
-
     });
-
 });

@@ -22,7 +22,7 @@ var logger = require("montage/core/logger").logger("meta/blueprint-spec.js");
 describe("meta/controller-blueprint-spec", function () {
 
     describe("Controller Blueprint", function () {
-        it("Adding blueprints to controller", function () {
+        it("Adding blueprints to controller", function (done) {
             var serializer = new Serializer().initWithRequire(require);
 
             var testController = new TestController().init();
@@ -36,15 +36,16 @@ describe("meta/controller-blueprint-spec", function () {
 
 
             var blueprintPromise = testController.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
                 var serializedDescription = serializer.serializeObject(blueprint);
                 expect(serializedDescription).toBeTruthy();
-                //console.log(serializedDescription);
+            }).finally(function () {
+                done();
             });
         });
 
-        it("Loading controller blueprint", function () {
+        it("Loading controller blueprint", function (done) {
             var parentController = new ParentController().init();
 
             var blueprintPromise = parentController.blueprint;
@@ -52,10 +53,12 @@ describe("meta/controller-blueprint-spec", function () {
                 expect(blueprint).toBeTruthy();
                 expect(blueprint.propertyBlueprintForName("customerList")).toBeTruthy();
                 expect(blueprint.propertyBlueprintForName("customerSelectionList")).toBeTruthy();
+            }).finally(function () {
+                done();
             });
         });
 
-        it("Adding blueprints to controller parent", function () {
+        it("Adding blueprints to controller parent", function (done) {
             var serializer = new Serializer().initWithRequire(require);
 
             var parentController = new ParentController().init();
@@ -73,43 +76,47 @@ describe("meta/controller-blueprint-spec", function () {
             newBlueprint.parent = parentBlueprint;
 
             var blueprintPromise = testController.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
                 var serializedDescription = serializer.serializeObject(blueprint);
                 expect(serializedDescription).toBeTruthy();
                 //console.log(serializedDescription);
+            }).finally(function () {
+                done();
             });
         });
 
-        it("Loading child controller blueprint", function () {
+        it("Loading child controller blueprint", function (done) {
             var childController = new ChildController().init();
 
             var blueprintPromise = childController.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
                 expect(blueprint.propertyBlueprintForName("customerList")).toBeTruthy();
                 expect(blueprint.propertyBlueprintForName("customerSelectionList")).toBeTruthy();
                 expect(blueprint.propertyBlueprintForName("purchaseList")).toBeTruthy();
+            }).finally(function () {
+                done();
             });
         });
 
-        it("Create a default controller blueprint", function () {
+        it("Create a default controller blueprint", function (done) {
             var serializer = new Serializer().initWithRequire(require);
 
             var testController = new TestController().init();
             testController.blueprint = null;
 
             var blueprintPromise = testController.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
                 expect(blueprint.propertyBlueprintForName("customerList")).toBeTruthy();
                 expect(blueprint.propertyBlueprintForName("customerSelectionList")).toBeTruthy();
                 var serializedDescription = serializer.serializeObject(blueprint);
                 expect(serializedDescription).toBeTruthy();
                 //console.log(serializedDescription);
+            }).finally(function () {
+                done();
             });
         });
-
     });
-
 });

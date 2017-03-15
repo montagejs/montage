@@ -1235,7 +1235,6 @@ describe("test/core/super-for-spec", function () {
                         constructor: {
                             value: function Vehicle() {
                                 vehicleConstructorSpy();
-                                console.log("VEHICLE()");
                                 this.superForValue("constructor")();
                             }
                         }
@@ -1244,7 +1243,6 @@ describe("test/core/super-for-spec", function () {
                         constructor: {
                             value: function Car() {
                                 carConstructorSpy();
-                                console.log("CAR()");
                                 this.superForValue("constructor")();
                             }
                         }

@@ -65,11 +65,12 @@ describe("meta/event-blueprint-spec", function () {
                     .toEqual(expectedSerialization);
             });
 
-            it("should deserialize correctly", function () {
+            it("should deserialize correctly", function (done) {
                 var deserializer = new Deserializer().init(JSON.stringify(blueprintSerialization), require);
-                return deserializer.deserializeObject({blueprint_testblueprint: blueprint})
-                .then(function (deserialized) {
+                deserializer.deserializeObject({blueprint_testblueprint: blueprint}).then(function (deserialized) {
                     expect(deserialized).toEqual(eventBlueprint);
+                }).finally(function () {
+                    done();
                 });
             });
         });

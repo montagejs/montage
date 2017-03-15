@@ -941,7 +941,8 @@ describe("serialization/montage-deserializer-spec", function () {
         });
 
         it("should use the require of the package the deserializer is using", function (done) {
-            require.loadPackage("package-a").then(function (pkg1) {
+            
+            require.loadPackage("spec/package-a").then(function (pkg1) {
                 var serialization = {
                         "root": {
                             "value": {"%": "pass"}
@@ -952,13 +953,12 @@ describe("serialization/montage-deserializer-spec", function () {
                 deserializer.init(
                     serializationString, pkg1);
 
-                return deserializer.deserializeObject()
-                .then(function (root) {
+                deserializer.deserializeObject().then(function (root) {
                     expect(root.id).toBe("pass");
                     expect(root.require.location).toBe(pkg1.location);
+                }).finally(function () {
+                    done();
                 });
-            }).finally(function () {
-                done();
             });
         });
     });
@@ -1215,8 +1215,8 @@ describe("serialization/montage-deserializer-spec", function () {
             },
             serializationString = JSON.stringify(serialization);
 
-        require.loadPackage("package-a").then(function (pkg1) {
-            return require.loadPackage("package-b").then(function (pkg2) {
+        require.loadPackage("spec/package-a").then(function (pkg1) {
+            return require.loadPackage("spec/package-b").then(function (pkg2) {
                 return deserializer1.init(serializationString, pkg1)
                 .deserialize().then(function (object1) {
                     return deserializer2.init(serializationString, pkg2)
@@ -1225,23 +1225,21 @@ describe("serialization/montage-deserializer-spec", function () {
                         expect(object2.root.name).toBe("B");
                     });
                 });
+            }).finally(function () {
+                done();
             });
-        }).finally(function () {
-            done();
         });
     });
 
     it("should deserialize null", function (done) {
         var serialization = {
-                "a": {
-                    "value": null
-                }
-            },
-            serializationString = JSON.stringify(serialization);
+            "a": {
+                "value": null
+            }
+        },
+        serializationString = JSON.stringify(serialization);
 
-        deserializer.init(
-            serializationString, require);
-
+        deserializer.init(serializationString, require);
         deserializer.deserialize(serializationString).then(function (objects) {
             expect(objects.a).toBe(null);
         }).catch(function(reason) {

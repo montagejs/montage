@@ -46,173 +46,211 @@ describe("meta/converter-blueprint-spec", function () {
     });
 
     describe("test converter blueprint", function () {
-        it("should exist", function () {
+        it("should exist", function (done) {
             var blueprintPromise = converter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
+            }).finally(function () {
+                done();
             });
         });
 
-        it("should have allowPartialConversion property blueprint", function () {
+        it("should have allowPartialConversion property blueprint", function (done) {
             var blueprintPromise = converter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 var propertyBlueprint = blueprint.propertyBlueprintForName("allowPartialConversion");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("boolean");
                 expect(propertyBlueprint.readOnly).toBe(true);
+            }).finally(function () {
+                done();
             });
         });
     });
 
     describe("test upper case converter blueprint", function () {
-        it("should exist", function () {
+        it("should exist", function (done) {
             var blueprintPromise = ucaseConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
+            }).finally(function () {
+                done();
             });
         });
     });
 
     describe("test lower case converter blueprint", function () {
-        it("should exist", function () {
+        it("should exist", function (done) {
             var blueprintPromise = lcaseConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
+            }).finally(function () {
+                done();
             });
         });
     });
 
     describe("test invert converter blueprint", function () {
-        it("should exist", function () {
+        it("should exist", function (done) {
             var blueprintPromise = invertConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
+            }).finally(function () {
+                done();
             });
         });
     });
 
     describe("test trim converter blueprint", function () {
-        it("should exist", function () {
+        it("should exist", function (done) {
             var blueprintPromise = trimConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
+            }).finally(function () {
+                done();
             });
         });
     });
 
     describe("test number converter blueprint", function () {
-        it("should exist", function () {
+        it("should exist", function (done) {
             var blueprintPromise = converter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
+            }).finally(function () {
+                done();
             });
         });
 
-        it("should have shorten property blueprint", function () {
+        it("should have shorten property blueprint", function (done) {
             var blueprintPromise = numberConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 var propertyBlueprint = blueprint.propertyBlueprintForName("shorten");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("boolean");
+            }).finally(function () {
+                done();
             });
         });
 
-        it("should have decimals property blueprint", function () {
+        it("should have decimals property blueprint", function (done) {
             var blueprintPromise = numberConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 var propertyBlueprint = blueprint.propertyBlueprintForName("decimals");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("number");
+            }).finally(function () {
+                done();
             });
         });
 
-        it("should have round property blueprint", function () {
+        it("should have round property blueprint", function (done) {
             var blueprintPromise = numberConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 var propertyBlueprint = blueprint.propertyBlueprintForName("round");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("boolean");
+            }).finally(function () {
+                done();
             });
         });
 
-        it("should have allowFloat property blueprint", function () {
+        it("should have allowFloat property blueprint", function (done) {
             var blueprintPromise = numberConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 var propertyBlueprint = blueprint.propertyBlueprintForName("allowFloat");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("boolean");
+            }).finally(function () {
+                done();
             });
         });
 
-        it("should have allowNegative promerty blueprint", function () {
+        it("should have allowNegative promerty blueprint", function (done) {
             var blueprintPromise = numberConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 var propertyBlueprint = blueprint.propertyBlueprintForName("allowNegative");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("boolean");
+            }).finally(function () {
+                done();
             });
         });
     });
 
     describe("test bytes converter blueprint", function () {
-        it("should exist", function () {
+        it("should exist", function (done) {
             var blueprintPromise = bytesConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
+            }).finally(function () {
+                done();
             });
         });
 
-        it("should have decimals property blueprint", function () {
+        it("should have decimals property blueprint", function (done) {
             var blueprintPromise = bytesConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 var propertyBlueprint = blueprint.propertyBlueprintForName("decimals");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("number");
+            }).finally(function () {
+                done();
             });
         });
     });
 
     describe("test date converter blueprint", function () {
-        it("should exist", function () {
+        it("should exist", function (done) {
             var blueprintPromise = dateConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
+            }).finally(function () {
+                done();
             });
         });
 
-        it("should have validator property blueprint", function () {
+        it("should have validator property blueprint", function (done) {
             var blueprintPromise = dateConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 var propertyBlueprint = blueprint.propertyBlueprintForName("validator");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("object");
+            }).finally(function () {
+                done();
             });
         });
 
-        it("should have pattern property blueprint", function () {
+        it("should have pattern property blueprint", function (done) {
             var blueprintPromise = dateConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 var propertyBlueprint = blueprint.propertyBlueprintForName("pattern");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("string");
+            }).finally(function () {
+                done();
             });
         });
     });
 
     describe("test currency converter blueprint", function () {
-        it("should exist", function () {
+        it("should exist", function (done) {
             var blueprintPromise = currencyConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
+            }).finally(function () {
+                done();
             });
         });
 
-        it("should have currency property blueprint", function () {
+        it("should have currency property blueprint", function (done) {
             var blueprintPromise = currencyConverter.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 var propertyBlueprint = blueprint.propertyBlueprintForName("currency");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("string");
+            }).finally(function () {
+                done();
             });
         });
     });
