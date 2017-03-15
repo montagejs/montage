@@ -12,7 +12,7 @@ var Environment = exports.Environment = Montage.specialize({
 
     constructor: {
         value: function Environment (userAgent) {
-            this.userAgent = userAgent ||  global.navigator ? global.navigator.userAgent : '';
+            this.userAgent = userAgent ?  userAgent : global.navigator ? global.navigator.userAgent : '';
         }
     },
 
