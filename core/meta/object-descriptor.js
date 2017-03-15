@@ -76,6 +76,9 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             if (this._propertyValidationRules.length > 0) {
                 serializer.setProperty("propertyValidationRules", this._propertyValidationRules);
             }
+            if (typeof this.maxAge === "number") {
+                serializer.setProperty("maxAge", this.maxAge);
+            }
         }
     },
 
@@ -107,6 +110,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             value = deserializer.getProperty("propertyValidationRules");
             if (value) {
                 this._propertyValidationRules = value;
+            }
+            value = deserializer.getProperty("maxAge");
+            if (value) {
+                this.maxAge = value;
             }
         }
     },
@@ -1167,6 +1174,18 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         value: deprecate.deprecateMethod(void 0, function (groupName) {
             this.removePropertyDescriptorGroupNamed(groupName);
         }, "removePropertyBlueprintGroupNamed", "removePropertyDescriptorGroupNamed")
+    },
+
+     /**
+     *  Specifies the maximum amount of time that the values of on object
+     * described by an ObjectDescriptor will be considered fresh.
+     *
+     * Value is in seconds, default to 4 minutes
+     *
+     * @returns {number} this.maxAge
+     */
+    maxAge: {
+        value: 240
     },
 
     blueprintModuleId:require("../core")._objectDescriptorModuleIdDescriptor,

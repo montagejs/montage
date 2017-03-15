@@ -51,6 +51,22 @@
             "helpKey": ""
         }
     },
+    "maxAge": {
+        "prototype": "core/meta/property-descriptor",
+        "properties": {
+            "name": "name",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "number",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
     "objectDescriptorInstanceModuleId": {
         "prototype": "core/meta/property-descriptor",
         "properties": {
@@ -155,6 +171,9 @@
                     "@": "name"
                 },
                 {
+                    "@": "maxAge"
+                },
+                {
                     "@": "objectDescriptorInstanceModuleId"
                 },
                 {
@@ -174,6 +193,9 @@
                 "objectDescriptor": [
                     {
                         "@": "name"
+                    },
+                    {
+                        "@": "maxAge"
                     },
                     {
                         "@": "objectDescriptorInstanceModuleId"

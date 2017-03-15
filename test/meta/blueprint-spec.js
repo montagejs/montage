@@ -201,11 +201,14 @@ describe("meta/blueprint-spec", function () {
         });
 
         describe("serializing", function () {
-            var companyBinder = BinderHelper.companyBinder();
+            var companyBinder = BinderHelper.companyBinder(),
+                personBlueprint = companyBinder.blueprintForName("Person");
+
+            personBlueprint.maxAge = 60;
+
 
             it("can serialize", function () {
                 var serializedBinder = new Serializer().initWithRequire(require).serializeObject(companyBinder);
-                //console.log(serializedBinder);
                 expect(serializedBinder).not.toBeNull();
             });
             it("can deserialize", function () {
@@ -218,6 +221,7 @@ describe("meta/blueprint-spec", function () {
                     var personBlueprint = deserializedBinder.blueprintForName("Person");
                     expect(personBlueprint).toBeTruthy();
                     expect(personBlueprint.propertyBlueprintForName("phoneNumbers")).not.toBeNull();
+                    expect(personBlueprint.maxAge).toBe(60);
                 });
             });
         });
