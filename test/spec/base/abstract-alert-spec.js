@@ -131,7 +131,7 @@ describe("test/base/abstract-alert-spec", function () {
                 expect(Promise.is(promise)).toBeTruthy();
             });
 
-            it("should configure the alert with the message upon entering the document", function () {
+            it("should configure the alert with the message upon entering the document", function (done) {
                 AlertSubtype.show("message");
 
                 AlertSubtype._instance._overlay = MockComponent.component();
@@ -141,16 +141,13 @@ describe("test/base/abstract-alert-spec", function () {
                 AlertSubtype._instance.enterDocument(true);
 
                 spyOn(AlertSubtype._instance, "show").and.callThrough();
-
-                waitsFor(function () {
-                    return AlertSubtype._instance.show.calls.length === 1;
-                });
-                runs(function () {
+                setTimeout(function () {
                     expect(AlertSubtype._instance.message).toBe("message");
+                    done();
                 });
             });
 
-            it("should configure the alert with the title upon entering the document", function () {
+            it("should configure the alert with the title upon entering the document", function (done) {
                 AlertSubtype.show("message", "a title");
 
                 AlertSubtype._instance._overlay = MockComponent.component();
@@ -161,15 +158,13 @@ describe("test/base/abstract-alert-spec", function () {
 
                 spyOn(AlertSubtype._instance, "show").and.callThrough();
 
-                waitsFor(function () {
-                    return AlertSubtype._instance.show.calls.length === 1;
-                });
-                runs(function () {
+                setTimeout(function () {
                     expect(AlertSubtype._instance.title).toBe("a title");
+                    done();
                 });
             });
 
-            it("should configure the alert with the next title when the current alert is closed", function () {
+            it("should configure the alert with the next title when the current alert is closed", function (done) {
                 AlertSubtype.show("message", "a title");
                 AlertSubtype.show("another message", "another title");
 
@@ -181,23 +176,17 @@ describe("test/base/abstract-alert-spec", function () {
 
                 spyOn(AlertSubtype._instance, "show").and.callThrough();
 
-                waitsFor(function () {
-                    return AlertSubtype._instance.show.calls.length === 1;
-                });
-                runs(function () {
+                setTimeout(function () {
                     AlertSubtype._instance.handleAction({target: AlertSubtype._instance._okButton});
 
-                    waitsFor(function () {
-                        return AlertSubtype._instance.show.calls.length === 2;
-                    });
-
-                    runs(function () {
+                    setTimeout(function () {
                         expect(AlertSubtype._instance.title).toBe("another title");
+                        done();
                     });
                 });
             });
 
-            it("should configure the alert with the default message when the current alert is closed", function () {
+            it("should configure the alert with the default message when the current alert is closed", function (done) {
                 AlertSubtype.show("message", "a title");
                 AlertSubtype.show("another message");
 
@@ -209,23 +198,17 @@ describe("test/base/abstract-alert-spec", function () {
 
                 spyOn(AlertSubtype._instance, "show").and.callThrough();
 
-                waitsFor(function () {
-                    return AlertSubtype._instance.show.calls.length === 1;
-                });
-                runs(function () {
+                setTimeout(function () {
                     AlertSubtype._instance.handleAction({target: AlertSubtype._instance._okButton});
 
-                    waitsFor(function () {
-                        return AlertSubtype._instance.show.calls.length === 2;
-                    });
-
-                    runs(function () {
+                    setTimeout(function () {
                         expect(AlertSubtype._instance.title).toBe(AlertSubtype.prototype.title);
+                        done();
                     });
                 });
             });
 
-            it("should fulfill the show promise when the alert is closed", function () {
+            it("should fulfill the show promise when the alert is closed", function (done) {
                 var promise = AlertSubtype.show("message");
 
                 AlertSubtype._instance._overlay = MockComponent.component();
@@ -236,20 +219,18 @@ describe("test/base/abstract-alert-spec", function () {
 
                 spyOn(AlertSubtype._instance, "show").and.callThrough();
 
-                waitsFor(function () {
-                    return AlertSubtype._instance.show.calls.length === 1;
-                });
-                runs(function () {
+                setTimeout(function () {
                     AlertSubtype._instance.handleAction({target: AlertSubtype._instance._okButton});
 
                     expect(promise.isFulfilled()).toBeTruthy();
+                    done();
                 });
             });
         });
     });
 
-    describe("blueprint", function (done) {
-        it("can be created", function () {
+    describe("blueprint", function () {
+        it("can be created", function (done) {
             var blueprintPromise = AbstractAlert.blueprint;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();

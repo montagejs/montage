@@ -329,12 +329,13 @@ describe("test/base/abstract-image-spec", function () {
         var Image = AbstractImage.specialize({}),
             cachedImage = new Image();
 
-        it("should preload the image", function () {
+        it("should preload the image", function (done) {
             cachedImage.src = imageURL;
 
-            waitsFor(function () {
-                return !cachedImage._isLoadingImage;
-            }, 4000);
+            setTimeout(function () {
+                expect(cachedImage._isLoadingImage).toBe(false);
+                done();
+            }, 1000);
         });
 
         it("should display the cached image", function () {
@@ -345,10 +346,12 @@ describe("test/base/abstract-image-spec", function () {
     });
 
     describe("blueprint", function () {
-        it("can be created", function () {
+        it("can be created", function (done) {
             var blueprintPromise = AbstractImage.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }).finally(function () {
+                done();
             });
         });
     });

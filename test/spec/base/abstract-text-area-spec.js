@@ -179,10 +179,12 @@ describe("test/base/abstract-text-area-spec", function () {
         });
     });
     describe("blueprint", function () {
-        it("can be created", function () {
+        it("can be created", function (done) {
             var blueprintPromise = AbstractTextArea.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }).finally(function () {
+                done();
             });
         });
     });

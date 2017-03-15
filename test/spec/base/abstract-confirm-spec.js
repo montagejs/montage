@@ -136,7 +136,7 @@ describe("test/base/abstract-confirm-spec", function () {
             expect(ConfirmSubtype._instance).toBeDefined();
         });
 
-        it("should configure the confirm okLabel with the ok label upon entering the document", function () {
+        it("should configure the confirm okLabel with the ok label upon entering the document", function (done) {
             ConfirmSubtype.show("Question", "Title", "Okay");
 
             ConfirmSubtype._instance._overlay = MockComponent.component();
@@ -148,15 +148,13 @@ describe("test/base/abstract-confirm-spec", function () {
 
             spyOn(ConfirmSubtype._instance, "show").and.callThrough();
 
-            waitsFor(function () {
-                return ConfirmSubtype._instance.show.calls.length === 1;
-            });
-            runs(function () {
+            setTimeout(function() {
                 expect(ConfirmSubtype._instance.okLabel).toBe("Okay");
+                done();
             });
         });
 
-        it("should configure the confirm cancelLabel with the cancel label upon entering the document", function () {
+        it("should configure the confirm cancelLabel with the cancel label upon entering the document", function (done) {
             ConfirmSubtype.show("Question", "Title", "Okay", "Nay");
 
             ConfirmSubtype._instance._overlay = MockComponent.component();
@@ -168,15 +166,13 @@ describe("test/base/abstract-confirm-spec", function () {
 
             spyOn(ConfirmSubtype._instance, "show").and.callThrough();
 
-            waitsFor(function () {
-                return ConfirmSubtype._instance.show.calls.length === 1;
-            });
-            runs(function () {
+           setTimeout(function() {
                 expect(ConfirmSubtype._instance.cancelLabel).toBe("Nay");
+                done();
             });
         });
 
-        it("should configure the confirm okButton with the next ok button label when the current alert is closed", function () {
+        it("should configure the confirm okButton with the next ok button label when the current alert is closed", function (done) {
             ConfirmSubtype.show("message", "a title", "Okay");
             ConfirmSubtype.show("another message", "another title", "Yap");
 
@@ -189,23 +185,17 @@ describe("test/base/abstract-confirm-spec", function () {
 
             spyOn(ConfirmSubtype._instance, "show").and.callThrough();
 
-            waitsFor(function () {
-                return ConfirmSubtype._instance.show.calls.length === 1;
-            });
-            runs(function () {
+            setTimeout(function() {
                 ConfirmSubtype._instance.handleAction({target: ConfirmSubtype._instance._okButton});
 
-                waitsFor(function () {
-                    return ConfirmSubtype._instance.show.calls.length === 2;
-                });
-
-                runs(function () {
+                setTimeout(function() {
                     expect(ConfirmSubtype._instance.okLabel).toBe("Yap");
+                    done();
                 });
             });
         });
 
-        it("should configure the confirm cancelButton with the next cancel button label when the current alert is closed", function () {
+        it("should configure the confirm cancelButton with the next cancel button label when the current alert is closed", function (done) {
             ConfirmSubtype.show("message", "a title", "Okay", "Nay");
             ConfirmSubtype.show("another message", "another title", "Yap", "Nope");
 
@@ -218,23 +208,16 @@ describe("test/base/abstract-confirm-spec", function () {
 
             spyOn(ConfirmSubtype._instance, "show").and.callThrough();
 
-            waitsFor(function () {
-                return ConfirmSubtype._instance.show.calls.length === 1;
-            });
-            runs(function () {
+            setTimeout(function() {
                 ConfirmSubtype._instance.handleAction({target: ConfirmSubtype._instance._okButton});
-
-                waitsFor(function () {
-                    return ConfirmSubtype._instance.show.calls.length === 2;
-                });
-
-                runs(function () {
+                setTimeout(function() {
                     expect(ConfirmSubtype._instance.cancelLabel).toBe("Nope");
+                    done();
                 });
             });
         });
 
-        it("should configure the confirm okButton with the default label when the current alert is closed", function () {
+        it("should configure the confirm okButton with the default label when the current alert is closed", function (done) {
             ConfirmSubtype.show("message", "a title", "Okay", "Nay");
             ConfirmSubtype.show("another message", "another title");
 
@@ -247,23 +230,16 @@ describe("test/base/abstract-confirm-spec", function () {
 
             spyOn(ConfirmSubtype._instance, "show").and.callThrough();
 
-            waitsFor(function () {
-                return ConfirmSubtype._instance.show.calls.length === 1;
-            });
-            runs(function () {
+            setTimeout(function() {
                 ConfirmSubtype._instance.handleAction({target: ConfirmSubtype._instance._okButton});
-
-                waitsFor(function () {
-                    return ConfirmSubtype._instance.show.calls.length === 2;
-                });
-
-                runs(function () {
+                setTimeout(function() {
                     expect(ConfirmSubtype._instance.okButton).toBe(ConfirmSubtype.prototype.okButton);
+                    done();
                 });
             });
         });
 
-        it("should configure the confirm cancelButton with the default label when the current alert is closed", function () {
+        it("should configure the confirm cancelButton with the default label when the current alert is closed", function (done) {
             ConfirmSubtype.show("message", "a title", "Okay", "Nay");
             ConfirmSubtype.show("another message", "another title");
 
@@ -276,29 +252,24 @@ describe("test/base/abstract-confirm-spec", function () {
 
             spyOn(ConfirmSubtype._instance, "show").and.callThrough();
 
-            waitsFor(function () {
-                return ConfirmSubtype._instance.show.calls.length === 1;
-            });
-            runs(function () {
+            setTimeout(function() {
                 ConfirmSubtype._instance.handleAction({target: ConfirmSubtype._instance._okButton});
-
-                waitsFor(function () {
-                    return ConfirmSubtype._instance.show.calls.length === 2;
-                });
-
-                runs(function () {
+                setTimeout(function() {
                     expect(ConfirmSubtype._instance.cancelLabel).toBe(ConfirmSubtype.prototype.cancelLabel);
+                    done();
                 });
             });
         });
     });
 
     describe("blueprint", function () {
-        it("can be created", function () {
+        it("can be created", function (done) {
             var blueprintPromise = AbstractConfirm.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
-            });
+            }).finally(function () {
+                done();
+            })
         });
     });
 });

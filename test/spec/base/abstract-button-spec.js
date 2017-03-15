@@ -234,10 +234,12 @@ describe("test/base/abstract-button-spec", function () {
         });
     });
     describe("blueprint", function () {
-        it("can be created", function () {
+        it("can be created", function (done) {
             var blueprintPromise = AbstractButton.blueprint;
-            return blueprintPromise.then(function (blueprint) {
+            blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }).finally(function () {
+                done();
             });
         });
     });

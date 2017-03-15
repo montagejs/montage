@@ -272,7 +272,5 @@ describe("test/base/abstract-video-spec", function () {
             aVideoPlayer.videoController.status = aVideoPlayer.videoController.PLAYING;
             expect(aVideoPlayer.needsDraw).toBeTruthy();
         });
-
     });
-
 });
