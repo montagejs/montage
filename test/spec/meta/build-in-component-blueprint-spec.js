@@ -116,7 +116,7 @@ describe("meta/build-in-component-blueprint-spec", function () {
         it("should have switchValue property blueprint", function (done) {
             var blueprintPromise = substitution.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("switchValue");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("switchValue");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("string");
             }).finally(function () {
@@ -127,7 +127,7 @@ describe("meta/build-in-component-blueprint-spec", function () {
         it("should have shouldLoadComponentTree property blueprint", function (done) {
             var blueprintPromise = substitution.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("shouldLoadComponentTree");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("shouldLoadComponentTree");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("boolean");
             }).finally(function () {
@@ -138,7 +138,7 @@ describe("meta/build-in-component-blueprint-spec", function () {
         it("should have transition property blueprint", function (done) {
             var blueprintPromise = substitution.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("transition");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("transition");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("object");
             }).finally(function () {
@@ -160,7 +160,7 @@ describe("meta/build-in-component-blueprint-spec", function () {
         it("should have value property blueprint", function (done) {
             var blueprintPromise = text.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("value");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("value");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("string");
             }).finally(function () {
@@ -171,7 +171,7 @@ describe("meta/build-in-component-blueprint-spec", function () {
         it("should have converter association blueprint", function (done) {
             var blueprintPromise = text.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("converter");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("converter");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.isAssociationBlueprint).toBe(true);
                 expect(propertyBlueprint.targetBlueprint).toBeTruthy();

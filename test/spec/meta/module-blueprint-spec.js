@@ -54,7 +54,7 @@ describe("meta/module-blueprint-spec", function () {
         beforeEach(function () {
             var ref = new ModuleReference().initWithIdAndRequire("spec/meta/module-blueprint-spec", require);
             blueprintOne = new ModuleBlueprint().initWithModuleAndExportName(ref, "One");
-            blueprintOne.addPropertyBlueprint(blueprintOne.newPropertyBlueprint("a", 1));
+            blueprintOne.addPropertyDescriptor(blueprintOne.newPropertyBlueprint("a", 1));
         });
 
         describe("serialization", function () {

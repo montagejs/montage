@@ -35,11 +35,11 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
 
         it("can create new property blueprint", function (done) {
             var newBlueprint = new Blueprint().initWithName(component1.identifier);
-            newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty");
+            newBlueprint.addToOnePropertyDescriptorNamed("bindableProperty");
             component1.blueprint = newBlueprint;
             var blueprintPromise = component1.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("bindableProperty");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("bindableProperty");
                 expect(propertyBlueprint).toBeDefined();
             }).finally(function () {
                 done();
@@ -51,17 +51,17 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
 
             var newBlueprint = new Blueprint().initWithName(component1.identifier);
             //
-            newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty1");
-            newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty2");
-            newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty3");
-            newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty4");
-            newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty5");
+            newBlueprint.addToOnePropertyDescriptorNamed("bindableProperty1");
+            newBlueprint.addToOnePropertyDescriptorNamed("bindableProperty2");
+            newBlueprint.addToOnePropertyDescriptorNamed("bindableProperty3");
+            newBlueprint.addToOnePropertyDescriptorNamed("bindableProperty4");
+            newBlueprint.addToOnePropertyDescriptorNamed("bindableProperty5");
             //
-            newBlueprint.addEventBlueprintNamed("action");
+            newBlueprint.addEventDescriptorNamed("action");
             //
-            newBlueprint.addPropertyBlueprintToGroupNamed(newBlueprint.addToOnePropertyBlueprintNamed("requiredBindableProperty1"), "required");
-            newBlueprint.addPropertyBlueprintToGroupNamed(newBlueprint.addToOnePropertyBlueprintNamed("requiredBindableProperty2"), "required");
-            newBlueprint.addPropertyBlueprintToGroupNamed(newBlueprint.addToOnePropertyBlueprintNamed("requiredBindableProperty3"), "required");
+            newBlueprint.addPropertyDescriptorToGroupNamed(newBlueprint.addToOnePropertyDescriptorNamed("requiredBindableProperty1"), "required");
+            newBlueprint.addPropertyDescriptorToGroupNamed(newBlueprint.addToOnePropertyDescriptorNamed("requiredBindableProperty2"), "required");
+            newBlueprint.addPropertyDescriptorToGroupNamed(newBlueprint.addToOnePropertyDescriptorNamed("requiredBindableProperty3"), "required");
             component1.blueprint = newBlueprint;
 
             var blueprintPromise = component1.blueprint;
@@ -77,7 +77,7 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
             var blueprintPromise = component2.blueprint;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
-                expect(blueprint.propertyBlueprintForName("bindableProperty1")).toBeTruthy();
+                expect(blueprint.propertyDescriptorForName("bindableProperty1")).toBeTruthy();
                 expect(blueprint.propertyBlueprintGroupForName("required")).toBeTruthy();
             }).finally(function () {
                 done();
@@ -91,15 +91,15 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
             var newBlueprint = new Blueprint().initWithName(component3.identifier);
             expect(newBlueprint).toBeTruthy();
             //
-            newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty1");
-            newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty2");
-            newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty3");
-            newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty4");
-            newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty5");
+            newBlueprint.addToOnePropertyDescriptorNamed("bindableProperty1");
+            newBlueprint.addToOnePropertyDescriptorNamed("bindableProperty2");
+            newBlueprint.addToOnePropertyDescriptorNamed("bindableProperty3");
+            newBlueprint.addToOnePropertyDescriptorNamed("bindableProperty4");
+            newBlueprint.addToOnePropertyDescriptorNamed("bindableProperty5");
             //
-            newBlueprint.addPropertyBlueprintToGroupNamed(newBlueprint.addToOnePropertyBlueprintNamed("requiredBindableProperty1"), "required");
-            newBlueprint.addPropertyBlueprintToGroupNamed(newBlueprint.addToOnePropertyBlueprintNamed("requiredBindableProperty2"), "required");
-            newBlueprint.addPropertyBlueprintToGroupNamed(newBlueprint.addToOnePropertyBlueprintNamed("requiredBindableProperty3"), "required");
+            newBlueprint.addPropertyDescriptorToGroupNamed(newBlueprint.addToOnePropertyDescriptorNamed("requiredBindableProperty1"), "required");
+            newBlueprint.addPropertyDescriptorToGroupNamed(newBlueprint.addToOnePropertyDescriptorNamed("requiredBindableProperty2"), "required");
+            newBlueprint.addPropertyDescriptorToGroupNamed(newBlueprint.addToOnePropertyDescriptorNamed("requiredBindableProperty3"), "required");
 
             newBlueprint.addPropertyValidationRule("rule1").validationSelector = null;
             //            newBlueprint.addPropertyValidationRule("rule1").validationSelector = Selector.property("requiredBindableProperty1").isBound;
@@ -133,7 +133,7 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
             it("should have element property blueprint", function (done) {
                 var blueprintPromise = component.blueprint;
                 blueprintPromise.then(function (blueprint) {
-                    var propertyBlueprint = blueprint.propertyBlueprintForName("element");
+                    var propertyBlueprint = blueprint.propertyDescriptorForName("element");
                     expect(propertyBlueprint).toBeTruthy();
                     expect(propertyBlueprint.valueType).toBe("string");
                     expect(propertyBlueprint.readOnly).toBe(true);
@@ -145,7 +145,7 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
             it("should have identifier property blueprint", function (done) {
                 var blueprintPromise = component.blueprint;
                 blueprintPromise.then(function (blueprint) {
-                    var propertyBlueprint = blueprint.propertyBlueprintForName("identifier");
+                    var propertyBlueprint = blueprint.propertyDescriptorForName("identifier");
                     expect(propertyBlueprint).toBeTruthy();
                     expect(propertyBlueprint.valueType).toBe("string");
                 }).finally(function () {

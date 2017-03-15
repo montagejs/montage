@@ -58,7 +58,7 @@ describe("meta/converter-blueprint-spec", function () {
         it("should have allowPartialConversion property blueprint", function (done) {
             var blueprintPromise = converter.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("allowPartialConversion");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("allowPartialConversion");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("boolean");
                 expect(propertyBlueprint.readOnly).toBe(true);
@@ -125,7 +125,7 @@ describe("meta/converter-blueprint-spec", function () {
         it("should have shorten property blueprint", function (done) {
             var blueprintPromise = numberConverter.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("shorten");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("shorten");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("boolean");
             }).finally(function () {
@@ -136,7 +136,7 @@ describe("meta/converter-blueprint-spec", function () {
         it("should have decimals property blueprint", function (done) {
             var blueprintPromise = numberConverter.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("decimals");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("decimals");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("number");
             }).finally(function () {
@@ -147,7 +147,7 @@ describe("meta/converter-blueprint-spec", function () {
         it("should have round property blueprint", function (done) {
             var blueprintPromise = numberConverter.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("round");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("round");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("boolean");
             }).finally(function () {
@@ -158,7 +158,7 @@ describe("meta/converter-blueprint-spec", function () {
         it("should have allowFloat property blueprint", function (done) {
             var blueprintPromise = numberConverter.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("allowFloat");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("allowFloat");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("boolean");
             }).finally(function () {
@@ -169,7 +169,7 @@ describe("meta/converter-blueprint-spec", function () {
         it("should have allowNegative promerty blueprint", function (done) {
             var blueprintPromise = numberConverter.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("allowNegative");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("allowNegative");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("boolean");
             }).finally(function () {
@@ -191,7 +191,7 @@ describe("meta/converter-blueprint-spec", function () {
         it("should have decimals property blueprint", function (done) {
             var blueprintPromise = bytesConverter.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("decimals");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("decimals");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("number");
             }).finally(function () {
@@ -213,7 +213,7 @@ describe("meta/converter-blueprint-spec", function () {
         it("should have validator property blueprint", function (done) {
             var blueprintPromise = dateConverter.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("validator");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("validator");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("object");
             }).finally(function () {
@@ -224,7 +224,7 @@ describe("meta/converter-blueprint-spec", function () {
         it("should have pattern property blueprint", function (done) {
             var blueprintPromise = dateConverter.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("pattern");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("pattern");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("string");
             }).finally(function () {
@@ -246,7 +246,7 @@ describe("meta/converter-blueprint-spec", function () {
         it("should have currency property blueprint", function (done) {
             var blueprintPromise = currencyConverter.blueprint;
             blueprintPromise.then(function (blueprint) {
-                var propertyBlueprint = blueprint.propertyBlueprintForName("currency");
+                var propertyBlueprint = blueprint.propertyDescriptorForName("currency");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.valueType).toBe("string");
             }).finally(function () {

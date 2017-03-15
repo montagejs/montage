@@ -27,10 +27,10 @@ describe("meta/blueprint-spec", function () {
         describe("Adding blueprints", function () {
             var binder = new Binder().initWithNameAndRequire("CompanyBinder", require);
             var personBlueprint = new Blueprint().initWithName("Person");
-            binder.addBlueprint(personBlueprint);
+            binder.addObjectDescriptor(personBlueprint);
 
             var companyBlueprint = new Blueprint().initWithName("Company");
-            binder.addBlueprint(companyBlueprint);
+            binder.addObjectDescriptor(companyBlueprint);
 
             it("should have a binder", function () {
                 expect(personBlueprint.binder).toBe(binder);
@@ -43,17 +43,17 @@ describe("meta/blueprint-spec", function () {
     describe("Blueprint", function () {
         describe("propertyBlueprints", function () {
             var blueprint = new Blueprint().initWithName("Person");
-            var propertyBlueprint = blueprint.newPropertyBlueprint("foo", 1);
+            var propertyBlueprint = blueprint.newPropertyDescriptor("foo", 1);
             it("should be able to add", function () {
-                blueprint.addPropertyBlueprint(propertyBlueprint);
+                blueprint.addPropertyDescriptor(propertyBlueprint);
                 expect(propertyBlueprint.owner).toBe(blueprint);
-                expect(blueprint.propertyBlueprintForName("foo")).toBe(propertyBlueprint);
+                expect(blueprint.propertyDescriptorForName("foo")).toBe(propertyBlueprint);
             });
 
             it("should be able to remove", function () {
                 blueprint.removePropertyBlueprint(propertyBlueprint);
                 expect(propertyBlueprint.owner).toBe(null);
-                expect(blueprint.propertyBlueprintForName("foo")).toBeNull();
+                expect(blueprint.propertyDescriptorForName("foo")).toBeNull();
             });
         });
         describe("associations", function () {
@@ -66,15 +66,15 @@ describe("meta/blueprint-spec", function () {
             var employeesAssociation = companyBlueprint.newAssociationBlueprint("employees", Infinity);
             employeesAssociation.targetBlueprint = personBlueprint;
 
-            personBlueprint.addPropertyBlueprint(employerAssociation);
-            companyBlueprint.addPropertyBlueprint(employeesAssociation);
+            personBlueprint.addPropertyDescriptor(employerAssociation);
+            companyBlueprint.addPropertyDescriptor(employeesAssociation);
 
             it("basic properties should be correct", function () {
-                expect(personBlueprint.propertyBlueprintForName("employer")).toBe(employerAssociation);
-                expect(companyBlueprint.propertyBlueprintForName("employees")).toBe(employeesAssociation);
+                expect(personBlueprint.propertyDescriptorForName("employer")).toBe(employerAssociation);
+                expect(companyBlueprint.propertyDescriptorForName("employees")).toBe(employeesAssociation);
             });
             it("target blueprint promise to be resolved", function (done) {
-                personBlueprint.propertyBlueprintForName("employer").targetBlueprint.then(function (blueprint) {
+                personBlueprint.propertyDescriptorForName("employer").targetBlueprint.then(function (blueprint) {
                     expect(blueprint).toBeTruthy();
                     expect(blueprint).toBe(companyBlueprint);
                 }).finally(function () {
@@ -82,7 +82,7 @@ describe("meta/blueprint-spec", function () {
                 });
             });
             it("target blueprint promise to be resolved", function (done) {
-                companyBlueprint.propertyBlueprintForName("employees").targetBlueprint.then(function (blueprint) {
+                companyBlueprint.propertyDescriptorForName("employees").targetBlueprint.then(function (blueprint) {
                     expect(blueprint).toBeTruthy();
                     expect(blueprint).toBe(personBlueprint);
                 }).finally(function () {
@@ -95,13 +95,13 @@ describe("meta/blueprint-spec", function () {
             beforeEach(function () {
                 binder = new Binder().initWithNameAndRequire("Binder", require);
                 personBlueprint = new Blueprint().initWithName("Person");
-                binder.addBlueprint(personBlueprint);
+                binder.addObjectDescriptor(personBlueprint);
                 companyBlueprint = new Blueprint().initWithName("Company");
-                binder.addBlueprint(companyBlueprint);
+                binder.addObjectDescriptor(companyBlueprint);
             });
             it("should be found with the blueprint name", function () {
-                expect(binder.blueprintForName("Person")).toBe(personBlueprint);
-                expect(binder.blueprintForName("Company")).toBe(companyBlueprint);
+                expect(binder.objectDescriptorForName("Person")).toBe(personBlueprint);
+                expect(binder.objectDescriptorForName("Company")).toBe(companyBlueprint);
             });
         });
         describe("applying a basic blueprint to a prototype", function () {
@@ -109,11 +109,11 @@ describe("meta/blueprint-spec", function () {
             beforeEach(function () {
                 var binder = new Binder().initWithNameAndRequire("Binder", require);
                 personBlueprint = new Blueprint().initWithName("Person");
-                personBlueprint.addPropertyBlueprint(personBlueprint.newPropertyBlueprint("name", 1));
-                personBlueprint.addPropertyBlueprint(personBlueprint.newPropertyBlueprint("keywords", Infinity));
+                personBlueprint.addPropertyDescriptor(personBlueprint.newPropertyDescriptor("name", 1));
+                personBlueprint.addPropertyDescriptor(personBlueprint.newPropertyDescriptor("keywords", Infinity));
 
-                binder.addBlueprint(personBlueprint);
-                Binder.manager.addBinder(binder);
+                binder.addObjectDescriptor(personBlueprint);
+                Binder.manager.addModel(binder);
 
                 louis = personBlueprint.newInstance().init();
             });
@@ -132,19 +132,19 @@ describe("meta/blueprint-spec", function () {
             beforeEach(function () {
                 var binder = new Binder().initWithNameAndRequire("Binder", require);
                 shapeBlueprint = new Blueprint().initWithName("Shape");
-                binder.addBlueprint(shapeBlueprint);
-                var propertyBlueprint = shapeBlueprint.newPropertyBlueprint("size", 1);
-                shapeBlueprint.addPropertyBlueprint(propertyBlueprint);
-                propertyBlueprint = shapeBlueprint.newPropertyBlueprint("readOnlyPropertyBlueprint", 1);
+                binder.addObjectDescriptor(shapeBlueprint);
+                var propertyBlueprint = shapeBlueprint.newPropertyDescriptor("size", 1);
+                shapeBlueprint.addPropertyDescriptor(propertyBlueprint);
+                propertyBlueprint = shapeBlueprint.newPropertyDescriptor("readOnlyPropertyBlueprint", 1);
                 propertyBlueprint.readOnly = true;
-                shapeBlueprint.addPropertyBlueprint(propertyBlueprint);
-                propertyBlueprint = shapeBlueprint.newPropertyBlueprint("mandatoryPropertyBlueprint", 1);
+                shapeBlueprint.addPropertyDescriptor(propertyBlueprint);
+                propertyBlueprint = shapeBlueprint.newPropertyDescriptor("mandatoryPropertyBlueprint", 1);
                 propertyBlueprint.mandatory = true;
-                shapeBlueprint.addPropertyBlueprint(propertyBlueprint);
-                propertyBlueprint = shapeBlueprint.newPropertyBlueprint("denyDelete", 1);
+                shapeBlueprint.addPropertyDescriptor(propertyBlueprint);
+                propertyBlueprint = shapeBlueprint.newPropertyDescriptor("denyDelete", 1);
                 propertyBlueprint.denyDelete = true;
-                shapeBlueprint.addPropertyBlueprint(propertyBlueprint);
-                Binder.manager.addBinder(binder);
+                shapeBlueprint.addPropertyDescriptor(propertyBlueprint);
+                Binder.manager.addModel(binder);
 
                 circle = shapeBlueprint.newInstance().init();
             });
@@ -218,9 +218,9 @@ describe("meta/blueprint-spec", function () {
                     expect(serializedBinder).not.toBeNull();
                     expect(metadata.objectName).toBe("Model");
                     expect(metadata.moduleId).toBe("core/meta/model");
-                    var personBlueprint = deserializedBinder.blueprintForName("Person");
+                    var personBlueprint = deserializedBinder.objectDescriptorForName("Person");
                     expect(personBlueprint).toBeTruthy();
-                    expect(personBlueprint.propertyBlueprintForName("phoneNumbers")).not.toBeNull();
+                    expect(personBlueprint.propertyDescriptorForName("phoneNumbers")).not.toBeNull();
                 }).finally(function () {
                     done();
                 });
@@ -241,9 +241,9 @@ describe("meta/blueprint-spec", function () {
             });
         });
 
-        describe("createDefaultBlueprintForObject", function () {
+        describe("createDefaultObjectDescriptorForObject", function () {
             it("should always return a promise", function (done) {
-                var blueprint = Blueprint.createDefaultBlueprintForObject({});
+                var blueprint = Blueprint.createDefaultObjectDescriptorForObject({});
                 expect(typeof blueprint.then).toBe("function");
                 blueprint.then(function (blueprint) {
                     expect(Blueprint.prototype.isPrototypeOf(blueprint)).toBe(true);
@@ -253,10 +253,10 @@ describe("meta/blueprint-spec", function () {
             });
 
             it("has the correct module id for the parent", function (done) {
-                var ComponentBlueprintTest1 = require("meta/component-blueprint-test/component-blueprint-test-1.reel").ComponentBlueprintTest1;
-                Blueprint.createDefaultBlueprintForObject(ComponentBlueprintTest1)
+                var ComponentBlueprintTest1 = require("spec/meta/component-blueprint-test/component-blueprint-test-1.reel").ComponentBlueprintTest1;
+                Blueprint.createDefaultObjectDescriptorForObject(ComponentBlueprintTest1)
                 .then(function (blueprint) {
-                    var id = blueprint.parent.blueprintInstanceModule.resolve(require);
+                    var id = blueprint.parent.objectDescriptorInstanceModule.resolve(require);
                     expect(id === "montage/ui/component.meta" || id === "montage/ui/component.mjson").toBeTruthy();
                 }).finally(function () {
                     done();
@@ -302,8 +302,8 @@ describe("meta/blueprint-spec", function () {
 
             it("creates a blueprint when the parent has no blueprint", function (done) {
                 Blueprint.blueprint.then(function (blueprint){
-                    expect( blueprint.blueprintInstanceModule.id === "core/meta/blueprint.meta" ||
-                            blueprint.blueprintInstanceModule.id === "core/meta/object-descriptor.mjson").toBeTruthy();
+                    expect( blueprint.objectDescriptorInstanceModule.id === "core/meta/blueprint.meta" ||
+                            blueprint.objectDescriptorInstanceModule.id === "core/meta/object-descriptor.mjson").toBeTruthy();
                 }).finally(function () {
                     done();
                 });
@@ -320,7 +320,7 @@ describe("meta/blueprint-spec", function () {
 
             describe("eventBlueprints", function () {
                 it("returns the same array", function () {
-                    blueprint.addEventBlueprintNamed("event");
+                    blueprint.addEventDescriptorNamed("event");
                     var eventBlueprints = blueprint.eventBlueprints;
                     expect(blueprint.eventBlueprints).toBe(eventBlueprints);
                 });
@@ -334,45 +334,45 @@ describe("meta/blueprint-spec", function () {
                 });
 
                 it("adds an existing blueprint", function () {
-                    eventBlueprint = new EventBlueprint().initWithNameAndBlueprint("event");
-                    blueprint.addEventBlueprint(eventBlueprint);
+                    eventBlueprint = new EventBlueprint().initWithNameAndObjectDescriptor("event");
+                    blueprint.addEventDescriptor(eventBlueprint);
 
                     expect(eventBlueprint.owner).toBe(blueprint);
-                    expect(blueprint.eventBlueprintForName("event")).toBe(eventBlueprint);
+                    expect(blueprint.eventDescriptorForName("event")).toBe(eventBlueprint);
                 });
 
                 it("only adds the blueprint once", function () {
                     eventBlueprint = new EventBlueprint().initWithNameAndBlueprint("event");
 
-                    blueprint.addEventBlueprint(eventBlueprint);
-                    blueprint.addEventBlueprint(eventBlueprint);
+                    blueprint.addEventDescriptor(eventBlueprint);
+                    blueprint.addEventDescriptor(eventBlueprint);
 
                     expect(eventBlueprint.owner).toBe(blueprint);
-                    expect(blueprint.eventBlueprintForName("event")).toBe(eventBlueprint);
+                    expect(blueprint.eventDescriptorForName("event")).toBe(eventBlueprint);
                 });
 
                 it("creates a new blueprint with the given name", function () {
-                    eventBlueprint = blueprint.addEventBlueprintNamed("event");
+                    eventBlueprint = blueprint.addEventDescriptorNamed("event");
 
                     expect(eventBlueprint.owner).toBe(blueprint);
                     expect(eventBlueprint.name).toEqual("event");
-                    expect(blueprint.eventBlueprintForName("event")).toBe(eventBlueprint);
+                    expect(blueprint.eventDescriptorForName("event")).toBe(eventBlueprint);
                 });
             });
 
             it("creates a new event blueprint", function () {
-                var eventBlueprint = blueprint.newEventBlueprint("event");
+                var eventBlueprint = blueprint.newEventDescriptor("event");
 
                 expect(eventBlueprint.name).toEqual("event");
                 expect(eventBlueprint.owner).toBe(blueprint);
             });
 
             it("removes an existing blueprint", function () {
-                var eventBlueprint = blueprint.addEventBlueprintNamed("event");
+                var eventBlueprint = blueprint.addEventDescriptorNamed("event");
                 blueprint.removeEventBlueprint(eventBlueprint);
 
                 expect(eventBlueprint.owner).toBe(null);
-                expect(blueprint.eventBlueprintForName("event")).toBe(null);
+                expect(blueprint.eventDescriptorForName("event")).toBe(null);
             });
 
 
@@ -380,20 +380,20 @@ describe("meta/blueprint-spec", function () {
                 var oldBlueprint = new Blueprint().initWithName("old");
 
                 var eventBlueprint = new EventBlueprint().initWithNameAndBlueprint("event", oldBlueprint);
-                blueprint.addEventBlueprint(eventBlueprint);
+                blueprint.addEventDescriptor(eventBlueprint);
 
                 expect(eventBlueprint.owner).toBe(blueprint);
-                expect(blueprint.eventBlueprintForName("event")).toBe(eventBlueprint);
+                expect(blueprint.eventDescriptorForName("event")).toBe(eventBlueprint);
 
-                expect(oldBlueprint.eventBlueprintForName("event")).toBe(null);
+                expect(oldBlueprint.eventDescriptorForName("event")).toBe(null);
             });
 
             it("lists event blueprints of the parent", function () {
                 var parentBlueprint = new Blueprint().initWithName("parent");
                 blueprint.parent = parentBlueprint;
 
-                var parentEvent = parentBlueprint.addEventBlueprintNamed("parentEvent");
-                var event = blueprint.addEventBlueprintNamed("event");
+                var parentEvent = parentBlueprint.addEventDescriptorNamed("parentEvent");
+                var event = blueprint.addEventDescriptorNamed("event");
 
                 expect(blueprint.eventBlueprints.length).toEqual(2);
                 expect(blueprint.eventBlueprints).toEqual([event, parentEvent]);

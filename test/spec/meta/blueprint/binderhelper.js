@@ -14,25 +14,25 @@ exports.BinderHelper = Montage.specialize( {
         value: function () {
             var companyBinder = new Binder().initWithNameAndRequire("CompanyBinder", require);
 
-            var personBlueprint = companyBinder.addBlueprintNamed("Person", "spec/meta/blueprint/person");
-            personBlueprint.addToOnePropertyBlueprintNamed("name");
-            personBlueprint.addToManyPropertyBlueprintNamed("phoneNumbers");
+            var personBlueprint = companyBinder.addObjectDescriptorNamed("Person", "spec/meta/blueprint/person");
+            personBlueprint.addToOnePropertyDescriptorNamed("name");
+            personBlueprint.addToManyPropertyDescriptorNamed("phoneNumbers");
 
-            var companyBlueprint = companyBinder.addBlueprintNamed("Company", "spec/meta/blueprint/company");
-            companyBlueprint.addToOnePropertyBlueprintNamed("name");
+            var companyBlueprint = companyBinder.addObjectDescriptorNamed("Company", "spec/meta/blueprint/company");
+            companyBlueprint.addToOnePropertyDescriptorNamed("name");
 
             companyBlueprint.addToManyAssociationBlueprintNamed("directReports", personBlueprint.addToOneAssociationBlueprintNamed("supervisor"));
 
-            var projectBlueprint = companyBinder.addBlueprintNamed("Project", "spec/meta/blueprint/project");
-            projectBlueprint.addToOnePropertyBlueprintNamed("name");
-            projectBlueprint.addToOnePropertyBlueprintNamed("startDate");
-            projectBlueprint.addToOnePropertyBlueprintNamed("endDate");
+            var projectBlueprint = companyBinder.addObjectDescriptorNamed("Project", "spec/meta/blueprint/project");
+            projectBlueprint.addToOnePropertyDescriptorNamed("name");
+            projectBlueprint.addToOnePropertyDescriptorNamed("startDate");
+            projectBlueprint.addToOnePropertyDescriptorNamed("endDate");
 
             // companyBlueprint.addToManyAssociationBlueprintNamed("projects", personBlueprint.addToOneAssociationBlueprintNamed("company"));
             //
             // personBlueprint.addToManyAssociationBlueprintNamed("projects", projectBlueprint.addToManyAssociationBlueprintNamed("contributors"));
 
-            Binder.manager.addBinder(companyBinder);
+            Binder.manager.addModel(companyBinder);
 
             return companyBinder;
         }

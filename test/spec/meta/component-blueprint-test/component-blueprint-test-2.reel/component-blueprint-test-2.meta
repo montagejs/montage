@@ -167,7 +167,7 @@
             "blueprintModule": {},
             "exportName": "ComponentBlueprintTest2",
             "module": {
-                "%": "test/meta/component-blueprint-test/component-blueprint-test-2.reel"
+                "%": "spec/test/meta/component-blueprint-test/component-blueprint-test-2.reel"
             }
         }
     }

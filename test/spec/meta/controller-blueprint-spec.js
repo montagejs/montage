@@ -31,8 +31,8 @@ describe("meta/controller-blueprint-spec", function () {
             testController.blueprint = newBlueprint;
 
             // This is for test only it. in a real app we need a customer blueprint and those would be association
-            newBlueprint.addToManyPropertyBlueprintNamed("customerList");
-            newBlueprint.addToManyPropertyBlueprintNamed("customerSelectionList");
+            newBlueprint.addToManyPropertyDescriptorNamed("customerList");
+            newBlueprint.addToManyPropertyDescriptorNamed("customerSelectionList");
 
 
             var blueprintPromise = testController.blueprint;
@@ -51,8 +51,8 @@ describe("meta/controller-blueprint-spec", function () {
             var blueprintPromise = parentController.blueprint;
             return blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
-                expect(blueprint.propertyBlueprintForName("customerList")).toBeTruthy();
-                expect(blueprint.propertyBlueprintForName("customerSelectionList")).toBeTruthy();
+                expect(blueprint.propertyDescriptorForName("customerList")).toBeTruthy();
+                expect(blueprint.propertyDescriptorForName("customerSelectionList")).toBeTruthy();
             }).finally(function () {
                 done();
             });
@@ -68,8 +68,8 @@ describe("meta/controller-blueprint-spec", function () {
             parentController.blueprint = parentBlueprint;
 
             // This is for test only it. in a real app we need a customer blueprint and those would be association
-            parentBlueprint.addToManyPropertyBlueprintNamed("customerList");
-            parentBlueprint.addToManyPropertyBlueprintNamed("customerSelectionList");
+            parentBlueprint.addToManyPropertyDescriptorNamed("customerList");
+            parentBlueprint.addToManyPropertyDescriptorNamed("customerSelectionList");
 
             var newBlueprint = new Blueprint().initWithName("TestController");
             testController.blueprint = newBlueprint;
@@ -92,9 +92,9 @@ describe("meta/controller-blueprint-spec", function () {
             var blueprintPromise = childController.blueprint;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
-                expect(blueprint.propertyBlueprintForName("customerList")).toBeTruthy();
-                expect(blueprint.propertyBlueprintForName("customerSelectionList")).toBeTruthy();
-                expect(blueprint.propertyBlueprintForName("purchaseList")).toBeTruthy();
+                expect(blueprint.propertyDescriptorForName("customerList")).toBeTruthy();
+                expect(blueprint.propertyDescriptorForName("customerSelectionList")).toBeTruthy();
+                expect(blueprint.propertyDescriptorForName("purchaseList")).toBeTruthy();
             }).finally(function () {
                 done();
             });
@@ -109,8 +109,8 @@ describe("meta/controller-blueprint-spec", function () {
             var blueprintPromise = testController.blueprint;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
-                expect(blueprint.propertyBlueprintForName("customerList")).toBeTruthy();
-                expect(blueprint.propertyBlueprintForName("customerSelectionList")).toBeTruthy();
+                expect(blueprint.propertyDescriptorForName("customerList")).toBeTruthy();
+                expect(blueprint.propertyDescriptorForName("customerSelectionList")).toBeTruthy();
                 var serializedDescription = serializer.serializeObject(blueprint);
                 expect(serializedDescription).toBeTruthy();
                 //console.log(serializedDescription);
