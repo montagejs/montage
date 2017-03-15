@@ -309,6 +309,7 @@ describe("test/ui/text-input-spec", function () {
             });
         });
    });
+
     describe("blueprint", function () {
         it("can be created", function (done) {
             var blueprintPromise = TextInput.blueprint;

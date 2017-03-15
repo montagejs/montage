@@ -41,6 +41,5 @@ var CONTENTS = {
 var RepetitionBindingTest = exports.RepetitionBindingTest = Montage.specialize( {
     content: {
         value: CONTENTS.FIRST
-    },
-
+    }
 });

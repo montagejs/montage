@@ -34,8 +34,11 @@ var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 
 var RepetitionTest = exports.RepetitionTest = Montage.specialize( {
-    listener: {value: function () {
-
-    }},
-    simpleArrayController: {value: null}
+    listener: {
+    	value: function () {
+    	}
+    },
+    simpleArrayController: {
+    	value: null
+    }
 });

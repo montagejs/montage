@@ -53,114 +53,100 @@ TestPageLoader.queueTest("slot-test/slot-test", function (testPage) {
             // that means that once this componentWithNoElement is put into a slot and given an element
             // it will have an element for all subsequent specs.
             // This means the order of the specs matter; I find this a little troubling.
-            it("should give the incoming component an element if it has none", function () {
+            it("should give the incoming component an element if it has none", function (done) {
                 var content = testPage.test.componentWithNoElement;
 
                 slot.content = content;
-                testPage.waitForDraw();
-
-                runs(function () {
+                testPage.waitForDraw().then(function () {
                     expect(content.element).toBeTruthy();
+                    done();
                 });
             });
 
-            it("must not replace the incoming component's element if it is already set", function () {
+            it("must not replace the incoming component's element if it is already set", function (done) {
                 var content = testPage.test.componentInPageWithElement,
                     originalElement = content.element;
 
                 slot.content = content;
-                testPage.waitForDraw();
-
-                runs(function () {
+                testPage.waitForDraw().then(function () {
                     //console.log(content.element, originalElement)
                     expect(content.element).toBe(originalElement);
+                    done();
                 });
             });
 
-            it("should draw a component that has an element but the element is not part of the DOM when the slot content is set", function () {
+            it("should draw a component that has an element but the element is not part of the DOM when the slot content is set", function (done) {
                 var content = testPage.test.componentInPageWithElement;
                 slot.content = null;
-                testpage.waitForDraw();
-
-                runs(function () {
+                testpage.waitForDraw().then(function () {
                     slot.content = content;
                     content.value = "This is new text";
-                    testPage.waitForDraw();
-
-                    runs(function () {
+                    testPage.waitForDraw().then(function () {
                         expect(slot.element.childNodes.length).toEqual(1);
                         expect(slot.element.childNodes[0].textContent).toBe("This is new text");
+                        done();
                     });
                 });
             });
 
-            it("should append the incoming component's element if there was no content", function () {
+            it("should append the incoming component's element if there was no content", function (done) {
                 var content = testPage.test.componentWithNoElement;
 
                 slot.content = content;
-                testPage.waitForDraw();
-
-                runs(function () {
+                testPage.waitForDraw().then(function () {
                     expect(slot.element.firstElementChild).toBe(content.element);
+                    done();
                 });
             });
 
-            it("should set the incoming component's parentComponent to be the slot", function () {
-                testPage.waitForDraw();
-                runs(function () {
+            it("should set the incoming component's parentComponent to be the slot", function (done) {
+                testPage.waitForDraw().then(function () {
 
                     var content = testPage.test.componentWithNoElement;
 
                     slot.content = content;
-                    testPage.waitForDraw();
-
-                    runs(function () {
+                    testPage.waitForDraw().then(function () {
                         expect(content.parentComponent).toBe(slot);
+                        done();
                     });
                 });
             });
 
-            it("should set the component as a childComponent of the slot", function () {
-                testPage.waitForDraw();
-                runs(function () {
+            it("should set the component as a childComponent of the slot", function (done) {
+                testPage.waitForDraw().then(function () {
                     var content = testPage.test.componentWithNoElement;
 
                     slot.content = content;
 
-                    testPage.waitForDraw();
-
-                    runs(function () {
+                    testPage.waitForDraw().then(function () {
                         expect(slot.childComponents).toContain(content);
+                        done();
                     });
                 });
             });
 
-            it("accessing the content property should return an element if an element was initially set", function () {
-                testPage.waitForDraw();
-                runs(function () {
+            it("accessing the content property should return an element if an element was initially set", function (done) {
+                testPage.waitForDraw().then(function () {
                     var content = testPage.test.bazContent;
 
                     slot.content = content;
 
-                    testPage.waitForDraw();
-
-                    runs(function () {
+                    testPage.waitForDraw().then(function () {
                         expect(slot.content).toEqual(content);
+                        done();
                     });
                 });
             });
 
-            it("accessing the content property should return a component if a component was initially set", function () {
-                testPage.waitForDraw();
-                runs(function () {
+            it("accessing the content property should return a component if a component was initially set", function (done) {
+                testPage.waitForDraw().then(function () {
                     var content = testPage.test.componentInPageWithElement;
 
                     slot.content = content;
 
-                    testPage.waitForDraw();
-
-                    runs(function () {
+                    testPage.waitForDraw().then(function () {
                         expect(slot.content).toEqual(content);
+                        done();
                     });
                 });
             });
@@ -176,13 +162,12 @@ TestPageLoader.queueTest("slot-test/slot-test", function (testPage) {
                 slot.content = originalContent;
             });
 
-            it("should properly remove the current content inside the slot", function () {
+            it("should properly remove the current content inside the slot", function (done) {
                 slot.content = null;
-                testPage.waitForDraw();
-
-                runs(function () {
+                testPage.waitForDraw().then(function () {
                     expect(slot.element.childElementCount).toBe(0);
                     expect(originalContent.parentComponent).toBe(null);
+                    done();
                 });
             });
         });

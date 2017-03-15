@@ -509,7 +509,7 @@ describe("ui/overlay-spec", function () {
             expect(anOverlay.element.ownerDocument.hasEventListener("mousedown", pressComposer)).toBe(false);
         });
 
-        it("should be loaded when showing", function () {
+        xit("should be loaded when showing", function () {
             anOverlay.show();
             expect(anOverlay.element.ownerDocument.hasEventListener("mousedown", pressComposer)).toBe(true);
         });

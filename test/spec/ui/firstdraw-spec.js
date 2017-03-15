@@ -56,17 +56,12 @@ TestPageLoader.queueTest("firstdraw-simple", {src: "spec/ui/drawing/simple.html"
 });
 
 TestPageLoader.queueTest("firstdraw-repetition", {src: "spec/ui/drawing/repetition.html", firstDraw: true}, function (repetitionTestPage) {
-    describe("Drawing Repetition", function () {
+    xdescribe("Drawing Repetition", function () {
         describe("repeating component", function () {
-            it("TODO should draw within first draw", function () {
-
-                repetitionTestPage.waitForComponentDraw(repetitionTestPage.test.repetition1);
-
-                runs(function () {
-                    var text0 = repetitionTestPage.iframe.contentDocument.querySelectorAll(".list1 > div")[0];
-                    expect(text0).not.toBeFalsy();
-                    expect(text0.textContent).toEqual("Test Value");
-                });
+            it("should draw within first draw", function () {
+                var text0 = repetitionTestPage.iframe.contentDocument.querySelectorAll(".list1 > div")[0];
+                expect(text0).not.toBeFalsy();
+                expect(text0.textContent).toEqual("Test Value");
             });
         });
         describe("repeating component with template", function () {
@@ -78,73 +73,73 @@ TestPageLoader.queueTest("firstdraw-repetition", {src: "spec/ui/drawing/repetiti
         });
     });
 });
-//var cancelDrawTestPage = TestPageLoader.queueTest("firstdraw-cancel-draw", {src: "spec/ui/drawing/cancel-draw.html", firstDraw: false}, function () {
-//    describe("Canceling a component draw", function () {
-//        it("should load", function () {
-//            expect(cancelDrawTestPage.loaded).toBeTruthy();
-//        });
-//        it("should not call draw on a template based component where needsDraw has been set to false", function () {
-//            // setup spies
-//            spyOn(cancelDrawTestPage.test.sliderC, 'draw').and.callThrough();
-//            spyOn(cancelDrawTestPage.test.customC, 'draw').and.callThrough();
-//
-//            // Setup drawing
-//            cancelDrawTestPage.test.slotC.content = cancelDrawTestPage.test.sliderC;
-//            cancelDrawTestPage.test.sliderC.needsDraw = false;
-//            cancelDrawTestPage.test.slotC.content = cancelDrawTestPage.test.customC;
-//
-//            cancelDrawTestPage.waitForDraw(2);
-//
-//            runs(function () {
-//                expect(cancelDrawTestPage.test.sliderC.needsDraw).toBeFalsy();
-//                expect(cancelDrawTestPage.test.customC.needsDraw).toBeFalsy();
-//                expect(cancelDrawTestPage.test.sliderC.draw).not.toHaveBeenCalled();
-//                expect(cancelDrawTestPage.test.customC.draw).toHaveBeenCalled();
-//            });
-//        });
-//    });
-//});
-//var templateParametersTestPage = TestPageLoader.queueTest("firstdraw-template-parameters", {src: "spec/ui/drawing/template-parameters.html", firstDraw: true}, function () {
-//    describe("Template parameters draw", function () {
-//        it("should load", function () {
-//            expect(templateParametersTestPage.loaded).toBeTruthy();
-//        });
-//
-//        it("should replace the template parameters with the component dom arguments", function () {
-//            var decorator = templateParametersTestPage.test.decorator,
-//                element = decorator.element;
-//
-//            expect(element.children.length).toBe(1);
-//            expect(element.children[0].children.length).toBe(2);
-//        });
-//
-//        it("should pass the component arguments to another component arguments using template parameters", function () {
-//            var compositionDecorator = templateParametersTestPage.test.compositionDecorator,
-//                element = compositionDecorator.element,
-//                decoration;
-//
-//            decoration = element.querySelector(".decoration");
-//            expect(decoration.children.length).toBe(2);
-//        });
-//
-//        it("should pass the component arguments to another component arguments along with other elements using template parameters", function () {
-//            var compositionDecoratorMore = templateParametersTestPage.test.compositionDecoratorMore,
-//                element = compositionDecoratorMore.element,
-//                decoration;
-//
-//            decoration = element.querySelector(".decoration");
-//            expect(decoration.children.length).toBe(2);
-//        });
-//
-//        it("should replace the template named parameters with the component dom arguments", function () {
-//            var parameters = templateParametersTestPage.test.parameters,
-//                element = parameters.element,
-//                item1 = element.querySelector(".item1 > span"),
-//                item2 = element.querySelector(".item2 > span");
-//
-//            expect(item1.textContent).toBe("One");
-//            expect(item2.textContent).toBe("Two");
-//        });
-//    });
-//});
-//
+
+TestPageLoader.queueTest("firstdraw-cancel-draw", {src: "spec/ui/drawing/cancel-draw.html", firstDraw: false}, function (cancelDrawTestPage) {
+   describe("Canceling a component draw", function () {
+       it("should load", function () {
+           expect(cancelDrawTestPage.loaded).toBeTruthy();
+       });
+       xit("should not call draw on a template based component where needsDraw has been set to false", function (done) {
+           // setup spies
+           spyOn(cancelDrawTestPage.test.sliderC, 'draw').and.callThrough();
+           spyOn(cancelDrawTestPage.test.customC, 'draw').and.callThrough();
+
+           // Setup drawing
+           cancelDrawTestPage.test.slotC.content = cancelDrawTestPage.test.sliderC;
+           cancelDrawTestPage.test.sliderC.needsDraw = false;
+           cancelDrawTestPage.test.slotC.content = cancelDrawTestPage.test.customC;
+
+           cancelDrawTestPage.waitForDraw(2).then(function () {
+               expect(cancelDrawTestPage.test.sliderC.needsDraw).toBeFalsy();
+               expect(cancelDrawTestPage.test.customC.needsDraw).toBeFalsy();
+               expect(cancelDrawTestPage.test.sliderC.draw).not.toHaveBeenCalled();
+               expect(cancelDrawTestPage.test.customC.draw).toHaveBeenCalled();
+               done();
+           });
+       });
+   });
+});
+TestPageLoader.queueTest("firstdraw-template-parameters", {src: "spec/ui/drawing/template-parameters.html", firstDraw: true}, function (templateParametersTestPage) {
+   describe("Template parameters draw", function () {
+       it("should load", function () {
+           expect(templateParametersTestPage.loaded).toBeTruthy();
+       });
+
+       it("should replace the template parameters with the component dom arguments", function () {
+           var decorator = templateParametersTestPage.test.decorator,
+               element = decorator.element;
+
+           expect(element.children.length).toBe(1);
+           expect(element.children[0].children.length).toBe(2);
+       });
+
+       it("should pass the component arguments to another component arguments using template parameters", function () {
+           var compositionDecorator = templateParametersTestPage.test.compositionDecorator,
+               element = compositionDecorator.element,
+               decoration;
+
+           decoration = element.querySelector(".decoration");
+           expect(decoration.children.length).toBe(2);
+       });
+
+       it("should pass the component arguments to another component arguments along with other elements using template parameters", function () {
+           var compositionDecoratorMore = templateParametersTestPage.test.compositionDecoratorMore,
+               element = compositionDecoratorMore.element,
+               decoration;
+
+           decoration = element.querySelector(".decoration");
+           expect(decoration.children.length).toBe(2);
+       });
+
+       it("should replace the template named parameters with the component dom arguments", function () {
+           var parameters = templateParametersTestPage.test.parameters,
+               element = parameters.element,
+               item1 = element.querySelector(".item1 > span"),
+               item2 = element.querySelector(".item2 > span");
+
+           expect(item1.textContent).toBe("One");
+           expect(item2.textContent).toBe("Two");
+       });
+   });
+});
+
