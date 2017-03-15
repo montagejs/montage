@@ -215,25 +215,22 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
 
                         testPage.mouseEvent({target: test.example.element}, "mousedown");
 
-                        waits(test.press_composer.longPressThreshold);
-                        runs(function () {
+                        setTimeout(function () {
                             expect(listener).toHaveBeenCalled();
+                            testPage.mouseEvent({target: test.example.element}, "mouseup");                            
 
-                            testPage.mouseEvent({target: test.example.element}, "mouseup");
+                            if (window.Touch) {
+                                listener = testPage.addListener(test.press_composer, null, "longPress");
+
+                                testPage.touchEvent({target: test.example.element}, "touchstart");
+
+                                setTimeout(function () {
+                                    expect(listener).toHaveBeenCalled();
+
+                                    testPage.touchEvent({target: test.example.element}, "touchend");
+                                });
+                            }
                         });
-
-                        if (window.Touch) {
-                            listener = testPage.addListener(test.press_composer, null, "longPress");
-
-                            testPage.touchEvent({target: test.example.element}, "touchstart");
-
-                            waits(test.press_composer.longPressThreshold);
-                            runs(function () {
-                                expect(listener).toHaveBeenCalled();
-
-                                testPage.touchEvent({target: test.example.element}, "touchend");
-                            });
-                        }
                     });
 
                     it("isn't fired if the press is released before the timeout", function () {
