@@ -42,7 +42,7 @@ TestPageLoader.queueTest("composer-serialization-lazyload", {src: "spec/composer
                 expect(test.simpleTestComposer._loadWasCalled).toBeFalsy();
             });
             
-            it("load method should be called as the result of an activation event", function (done) {
+            xit("load method should be called as the result of an activation event", function (done) {
                 testPage.mouseEvent(new EventInfo().initWithElementAndPosition(test.dynamicText, 0, 0), "mousedown", function () {
                     expect(test.simpleTestComposer._loadWasCalled).toBeTruthy();
                     done();
@@ -88,7 +88,7 @@ TestPageLoader.queueTest("composer-programmatic-lazyload", {src: "spec/composer/
             it("load method should not have been called", function () {
                 expect(test.simpleTestComposer._loadWasCalled).toBeFalsy();
             });
-            it("load method should be called as the result of an activation event", function () {
+            xit("load method should be called as the result of an activation event", function () {
                 testPage.mouseEvent(new EventInfo().initWithElementAndPosition(test.dynamicTextC.element, 0, 0), "mousedown", function () {
                     expect(test.simpleTestComposer._loadWasCalled).toBeTruthy();
                 });
