@@ -64,19 +64,19 @@ require("montage-testing").run(require, [
     //
     {name: "spec/geometry/cubicbezier-spec", node: false},
     {name: "spec/geometry/point-spec", node: false},
+    // Reel
+    {name: "spec/reel/template-spec", node: false},
     // Blueprint
     "spec/meta/blueprint-spec",
+    "spec/meta/converter-blueprint-spec",
+    "spec/meta/module-blueprint-spec",
     {name: "spec/meta/build-in-component-blueprint-spec", node: false},
     {name: "spec/meta/component-blueprint-spec", node: false},
     {name: "spec/meta/controller-blueprint-spec", node: false},
-    "spec/meta/converter-blueprint-spec",
     {name: "spec/meta/event-blueprint-spec", node: false},
-    "spec/meta/module-blueprint-spec",
-    {name: "spec/reel/template-spec", node: false},
+    // Serialization
     "spec/serialization/alias-spec",
     "spec/serialization/serialization-spec",
-    {name: "spec/serialization/montage-serializer-spec", node: false},
-    {name: "spec/serialization/montage-deserializer-spec", node: false},
     "spec/serialization/labeler-spec",
     "spec/serialization/reviver-spec",
     "spec/serialization/interpreter-spec",
@@ -85,6 +85,8 @@ require("montage-testing").run(require, [
     "spec/serialization/bindings-spec",
     "spec/serialization/serialization-inspector-spec",
     "spec/serialization/serialization-merger-spec",
+    {name: "spec/serialization/montage-serializer-spec", node: false},
+    {name: "spec/serialization/montage-deserializer-spec", node: false},
     // Trigger
     {name: "spec/trigger/trigger-spec", node: false},
     // UI
@@ -96,9 +98,9 @@ require("montage-testing").run(require, [
     {name: "spec/ui/loader-spec", node: false},
     {name: "spec/ui/modal-overlay-spec", node: false},
     {name: "spec/ui/overlay-spec", node: false},
-    //{name: "spec/ui/repetition-spec", node: false},
-    //{name: "spec/ui/repetition-selection-spec", node: false},
-    //{name: "spec/ui/repetition-binding-spec", node: false},
+    {name: "spec/ui/repetition-spec", node: false},
+    {name: "spec/ui/repetition-selection-spec", node: false},
+    {name: "spec/ui/repetition-binding-spec", node: false},
     {name: "spec/ui/slot-spec", node: false},
     {name: "spec/ui/substitution-spec", node: false},
     {name: "spec/ui/text/text-spec", node: false},
