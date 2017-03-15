@@ -6,18 +6,17 @@
  * @requires montage/core/exception
  * @requires montage/core/logger
  */
-var Montage = require("../core").Montage;
-var Exception = require("../exception").Exception;
-var Blueprint = require("./blueprint").Blueprint;
-var Binder = require("./blueprint").Binder;
-
-var logger = require("../logger").logger("object-property");
+var Montage = require("../core").Montage,
+    Exception = require("../exception").Exception,
+    Model = require("./model").Model,
+    deprecate = require("../deprecate"),
+    logger = require("../logger").logger("object-property");
 
 /**
  * @class ObjectProperty
  * @extends Montage
  */
-var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
+exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
 
     /**
      * @function
@@ -32,9 +31,9 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     * Add all the properties defined in the blueprint to the target prototype.
+     * Add all the properties defined in the object descriptor to the target prototype.
      *
-     * If the blueprint is null, this method will make a best attempt to locate
+     * If the object descriptor is null, this method will make a best attempt to locate
      * it.
      *
      * @function
@@ -42,18 +41,18 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Blueprint} blueprint
      */
     apply: {
-        value: function (prototype, blueprint) {
-            if (!prototype.hasOwnProperty("blueprint")) {
-                var info;
+        value: function (prototype, objectDescriptor) {
+            var info;
+            if (!prototype.hasOwnProperty("objectDescriptor")) {
                 info = Montage.getInfoForObject(prototype);
                 if (info != null && info.isInstance === false) {
-                    if (typeof blueprint === "undefined") {
-                        blueprint = Binder.manager.blueprintForPrototype(info.objectName, info.moduleId);
-                    } else if ((blueprint.prototypeName !== info.objectName) || (blueprint.moduleId !== info.moduleId)) {
-                        // Something is wrong, the hierarchies are out of wack
-                        blueprint = null;
+                    if (objectDescriptor === undefined) {
+                        objectDescriptor = Model.group.objectDescriptorForPrototype(info.objectName, info.moduleId);
+                    } else if (objectDescriptor.prototypeName !== info.objectName || objectDescriptor.moduleId !== info.moduleId) {
+                        // Something is wrong, the hierarchies are out of whack
+                        objectDescriptor = null;
                     }
-                    this.applyWithBlueprint(prototype, blueprint);
+                    this.applyWithObjectDescriptor(prototype, objectDescriptor);
                 }
             }
         }
@@ -69,11 +68,17 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Blueprint} blueprint
      */
     applyWithBlueprint: {
-        value: function (prototype, blueprint) {
-            if (blueprint != null) {
-                this.addProperties(prototype, blueprint);
-                if (blueprint.parent !== null) {
-                    this.apply(Object.getPrototypeOf(prototype), blueprint);
+        value: deprecate.deprecateMethod(void 0, function (prototype, objectDescriptor) {
+            return this.applyWithObjectDescriptor(prototype, objectDescriptor);
+        }, "applyWithBlueprint", "applyWithObjectDescriptor")
+    },
+
+    applyWithObjectDescriptor: {
+        value: function (prototype, objectDescriptor) {
+            if (objectDescriptor != null) {
+                this.addProperties(prototype, objectDescriptor);
+                if (objectDescriptor.parent !== null) {
+                    this.apply(Object.getPrototypeOf(prototype), objectDescriptor);
                 }
             }
         }
@@ -87,27 +92,37 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Blueprint} blueprint
      */
     addProperties: {
-        value: function (prototype, blueprint) {
+        value: function (prototype, objectDescriptor) {
             //for loop over attributes
             var i = 0, attribute;
-            while ((attribute = blueprint.propertyBlueprints[i++])) {
+            while ((attribute = objectDescriptor.propertyDescriptors[i++])) {
                 if (attribute.isDerived) {
                     this.addDerivedProperty(prototype, attribute);
                 } else if (attribute.isAssociation) {
+                    // TODO: How to handle this?
                     this.addAssociation(prototype, attribute);
                 } else {
                     this.addProperty(prototype, attribute);
                 }
             }
 
-            Montage.defineProperty(prototype, "_blueprint", { serializable: false, enumerable: false, value: blueprint });
+            // For backwards compatibility.
             Montage.defineProperty(prototype, "blueprint", { enumerable: false, serializable: false, get: function () {
-                return this._blueprint;
+                return this._objectDescriptor;
             }});
+            Montage.defineProperty(prototype, "_objectDescriptor", { serializable: false, enumerable: false, value: objectDescriptor });
+            Montage.defineProperty(prototype, "objectDescriptor", { enumerable: false, serializable: false, get: function () {
+                return this._objectDescriptor;
+            }});
+            // TODO: Determine if it is safe to remove blueprintGet && blueprintSet?
             // Enable access to the 'inherited' get method for easy override.
-            Montage.defineProperty(prototype, "blueprintGet", { serializable: false, enumerable: false, value: this.blueprintGet});
+            Montage.defineProperty(prototype, "blueprintGet", { serializable: false, enumerable: false, value: this.objectDescriptorGet});
             // Enable access to the 'inherited' set method for easy override.
-            Montage.defineProperty(prototype, "blueprintSet", { serializable: false, enumerable: false, value: this.blueprintSet});
+            Montage.defineProperty(prototype, "blueprintSet", { serializable: false, enumerable: false, value: this.objectDescriptorSet});
+            // Enable access to the 'inherited' get method for easy override.
+            Montage.defineProperty(prototype, "objectDescriptorGet", { serializable: false, enumerable: false, value: this.objectDescriptorGet});
+            // Enable access to the 'inherited' set method for easy override.
+            Montage.defineProperty(prototype, "objectDescriptorSet", { serializable: false, enumerable: false, value: this.objectDescriptorSet});
         }
     },
 
@@ -178,14 +193,14 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
             if (!prototype.hasOwnProperty(propertyKey)) {
                 propertyDefinition = {
                     get: function () {
-                        return this.blueprintGet(propertyKey);
+                        return this.objectDescriptorGet(propertyKey);
                     },
                     enumerable: true,
                     serializable: false
                 };
                 if (!attribute.readOnly) {
                     propertyDefinition.set = function (value) {
-                        return this.blueprintSet(propertyKey, value);
+                        return this.objectDescriptorSet(propertyKey, value);
                     };
                 }
                 Montage.defineProperty(prototype, propertyKey, propertyDefinition);
@@ -203,12 +218,28 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      *
      * @function
      * @param {string} propertyName
-     * @returns {PropertyBlueprint}
+     * @returns {PropertyDescriptor}
      */
     blueprintGet: {
+        value: deprecate.deprecateMethod(void 0, function (propertyName) {
+            return this.objectDescriptorGet(propertyName);
+        }, "blueprintGet", "objectDescriptorGet"),
+        enumerable: false,
+        serializable: false
+    },
+
+    /**
+     * This is the get function called on the target object to access
+     * properties.
+     *
+     * @function
+     * @param {string} propertyName
+     * @returns {PropertyDescriptor}
+     */
+    objectDescriptorGet: {
         value: function (propertyName) {
-            var propertyBlueprint = this.blueprint.propertyBlueprintForName(propertyName);
-            var storageKey = "_" + propertyBlueprint.name;
+            var propertyDescriptor = this.objectDescriptor.propertyDescriptorForName(propertyName),
+                storageKey = "_" + propertyDescriptor.name;
             return this[storageKey];
         },
         enumerable: false,
@@ -224,11 +255,27 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {PropertyBlueprint} value
      */
     blueprintSet: {
+        value: deprecate.deprecateMethod(void 0, function (propertyName, value) {
+            return this.objectDescriptorSet(propertyName, value);
+        }, "blueprintSet", "objectDescriptorSet"),
+        enumerable: false,
+        serializable: false
+    },
+
+    /**
+     * This is the get function called on the target object to set
+     * properties.
+     *
+     * @function
+     * @param {string} propertyName
+     * @param {PropertyDescriptor} value
+     */
+    objectDescriptorSet: {
         value: function (propertyName, value) {
-            var propertyBlueprint = this.blueprint.propertyBlueprintForName(propertyName);
-            var storageKey = "_" + propertyBlueprint.name;
-            if (value == null && propertyBlueprint.denyDelete) {
-                throw new Exception().initWithMessageTargetAndMethod("Deny Delete", this, propertyBlueprint.name);
+            var propertyDescriptor = this.objectDescriptor.propertyDescriptorForName(propertyName),
+                storageKey = "_" + propertyDescriptor.name;
+            if (value == null && propertyDescriptor.denyDelete) {
+                throw new Exception().initWithMessageTargetAndMethod("Deny Delete", this, propertyDescriptor.name);
             } else {
                 this[storageKey] = value;
             }
@@ -245,7 +292,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     addPropertyStoredValue: {
         value: function (prototype, attribute) {
             var storedValueKey = attribute.name + "$Storage",
-                privateStoredValueKey = "_"+storedValueKey,
+                privateStoredValueKey = "_" + storedValueKey,
                 storedValueDefinition = null;
             if (!prototype.hasOwnProperty(storedValueKey)) {
                 if (attribute.isToMany) {
@@ -259,7 +306,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
                             return this[privateStoredValueKey] || (this[privateStoredValueKey] = []);
                         },
                         enumerable: false,
-                        serializable: false,
+                        serializable: false
                     };
                 } else {
                     storedValueDefinition = {
@@ -283,6 +330,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Object} prototype
      * @param {Attribute} attribute relationship to add
      */
+    // TODO: Part of deprecating associations in preference to property descriptor with a value descriptor.
     addAssociation: {
         value: function (prototype, attribute) {
             this.addPropertyStorage(prototype, attribute);
@@ -297,6 +345,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Object} prototype
      * @param {Attribute} attribute
      */
+    // TODO: Part of deprecating associations in preference to property descriptor with a value descriptor.
     addAssociationDefinition: {
         value: function (prototype, attribute) {
             if (attribute.isToMany) {
@@ -312,6 +361,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Object} prototype
      * @param {Attribute} attribute
      */
+    // TODO: Part of deprecating associations in preference to property descriptor with a value descriptor.
     addToOneAssociationDefinition: {
         value: function (prototype, attribute) {
             var relationshipKey = attribute.name.toCapitalized();
@@ -353,6 +403,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Object} prototype
      * @param {Association} attribute
      */
+    // TODO: Part of deprecating associations in preference to property descriptor with a value descriptor.
     addToManyAssociationDefinition: {
         value: function (prototype, attribute) {
             var relationshipKey = attribute.name.toCapitalized();

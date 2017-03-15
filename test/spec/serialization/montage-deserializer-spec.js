@@ -632,15 +632,13 @@ describe("serialization/montage-deserializer-spec", function () {
                 },
                 serializationString = JSON.stringify(serialization);
 
-            deserializer.init(
-                serializationString, require);
-
+            deserializer.init(serializationString, require);
             deserializer.deserializeObject().then(function (object) {
-                var info = Montage.getInfoForObject(object);
-                expect(info.moduleId).toBe("core/meta/blueprint");
-                expect(info.isInstance).toBe(true);
-                expect(object.type).toBeUndefined();
-                expect(object.name).toBe("RootBlueprint");
+                    var info = Montage.getInfoForObject(object);
+                    expect(info.moduleId).toBe("core/meta/object-descriptor");
+                    expect(info.isInstance).toBe(true);
+                    expect(object.type).toBeUndefined();
+                    expect(object.name).toBe("RootBlueprint");
             }).finally(function () {
                 done();
             });

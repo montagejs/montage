@@ -10,7 +10,7 @@ var Montage = require("./core").Montage;
  * @classdesc Generic object controller.
  * @extends Montage
  */
-var ObjectController = exports.ObjectController = Montage.specialize( /** @lends ObjectController# */ {
+exports.ObjectController = Montage.specialize( /** @lends ObjectController# */ {
 
     /**
      * @type {Property}

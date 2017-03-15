@@ -36,7 +36,7 @@ describe("meta/event-blueprint-spec", function () {
         });
 
         describe("serialization", function () {
-            var serializer, blueprintSerialization;
+            var serializer, blueprintSerialization, objectDescriptorSerialization;
 
             beforeEach(function () {
                 blueprintSerialization = {
@@ -49,7 +49,16 @@ describe("meta/event-blueprint-spec", function () {
                     },
                     "blueprint_testblueprint": {}
                 };
-
+                objectDescriptorSerialization = {
+                    "root": {
+                        "prototype": "montage/core/meta/event-descriptor",
+                        "properties": {
+                            "name": "event",
+                            "objectDescriptor": {"@": "objectDescriptor_testblueprint"}
+                        }
+                    },
+                    "objectDescriptor_testblueprint": {}
+                };
                 serializer = new Serializer().initWithRequire(require);
                 serializer.setSerializationIndentation(4);
             });
@@ -58,7 +67,7 @@ describe("meta/event-blueprint-spec", function () {
                 var expectedSerialization,
                     serialization;
 
-                expectedSerialization = blueprintSerialization;
+                expectedSerialization = objectDescriptorSerialization;
 
                 serialization = serializer.serializeObject(eventBlueprint);
                 expect(JSON.parse(serialization))

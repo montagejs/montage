@@ -194,7 +194,7 @@ if (!String.prototype.endsWith) {
                 });
                 // then release the module loader to run normally
                 preloading.resolve(preloaded.then(function () {
-                    delete global.BUNDLE; 
+                    delete global.BUNDLE;
                     delete global.bundleLoaded;
                 }));
             }

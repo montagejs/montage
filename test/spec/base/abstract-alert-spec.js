@@ -231,7 +231,7 @@ describe("test/base/abstract-alert-spec", function () {
 
     describe("blueprint", function () {
         it("can be created", function (done) {
-            var blueprintPromise = AbstractAlert.blueprint;
+            var blueprintPromise = AbstractAlert.blueprint || AbstractAlert.objectDescriptor;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
             }).finally(function () {

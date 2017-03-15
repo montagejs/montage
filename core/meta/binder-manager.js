@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 /**
  * @module montage/core/meta/binder-manager
@@ -176,3 +177,6 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     }
 
 });
+=======
+exports.BinderManager = require("./model-group").ModelGroup;
+>>>>>>> master

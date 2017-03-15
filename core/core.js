@@ -139,7 +139,7 @@ valuePropertyDescriptor.value = function specialize(prototypeProperties, constru
             } else {
                 constructor = function() {
                     return this;
-                }
+                };
                 constructor.name = this.name+"Specialized";
             }
         }
@@ -211,8 +211,16 @@ valuePropertyDescriptor.value = function specialize(prototypeProperties, constru
             }
         }
 
+        if ("objectDescriptor" in prototypeProperties) {
+            Montage.defineProperty(constructor, "objectDescriptor", prototypeProperties.objectDescriptor);
+        }
+
         if ("blueprint" in prototypeProperties) {
             Montage.defineProperty(constructor, "blueprint", prototypeProperties.blueprint);
+        }
+
+        if ("objectDescriptorModuleId" in prototypeProperties) {
+            Montage.defineProperty(constructor, "objectDescriptorModuleId", prototypeProperties.objectDescriptorModuleId);
         }
 
         if ("blueprintModuleId" in prototypeProperties) {
@@ -1603,16 +1611,16 @@ Montage.defineProperties(Montage.prototype, pathPropertyDescriptors);
 require("./serialization/bindings");
 
 /*
- * Defines the module Id for blueprints. This is externalized so that it can be subclassed.
+ * Defines the module Id for object descriptors. This is externalized so that it can be subclassed.
  * <b>Note</b> This is a class method beware...
  */
-exports._blueprintModuleIdDescriptor = {
+exports._objectDescriptorModuleIdDescriptor = {
     serializable:false,
     enumerable: false,
     get:function () {
         var info = Montage.getInfoForObject(this);
         var self = (info && !info.isInstance) ? this : this.constructor;
-        if ((!Object.getOwnPropertyDescriptor(self, "_blueprintModuleId")) || (!self._blueprintModuleId)) {
+        if ((!Object.getOwnPropertyDescriptor(self, "_objectDescriptorModuleId")) || (!self._objectDescriptorModuleId)) {
             info = Montage.getInfoForObject(self);
             var moduleId = info.moduleId,
                 slashIndex = moduleId.lastIndexOf("/"),
@@ -1620,68 +1628,98 @@ exports._blueprintModuleIdDescriptor = {
             slashIndex = ( slashIndex === -1 ? 0 : slashIndex + 1 );
             dotIndex = ( dotIndex === -1 ? moduleId.length : dotIndex );
             dotIndex = ( dotIndex < slashIndex ? moduleId.length : dotIndex );
-            Montage.defineProperty(self, "_blueprintModuleId", {
+            Montage.defineProperty(self, "_objectDescriptorModuleId", {
                 enumerable: false,
-                value: moduleId.slice(0, dotIndex) + ".meta"
+                value: moduleId.slice(0, dotIndex) + ".mjson"
             });
         }
-        return self._blueprintModuleId;
+        return self._objectDescriptorModuleId;
     }
 };
 
-exports._blueprintDescriptor = {
+/***
+ * @deprecated use exports._objectDescriptorModuleIdDescriptor
+ */
+exports._blueprintModuleIdDescriptor = {
     serializable:false,
     enumerable: false,
     get:function () {
         var info = Montage.getInfoForObject(this);
         var self = (info && !info.isInstance) ? this : this.constructor;
-        if ((!Object.getOwnPropertyDescriptor(self, "_blueprint")) || (!self._blueprint)) {
-            var blueprintModuleId = self.blueprintModuleId;
-            if (blueprintModuleId === "") {
-                throw new TypeError("Blueprint moduleId undefined for the module '" + JSON.stringify(self) + "'");
-            }
-
-            if (!exports._blueprintDescriptor.BlueprintModulePromise) {
-                exports._blueprintDescriptor.BlueprintModulePromise = require.async("core/meta/module-blueprint").get("ModuleBlueprint");
-            }
-            Montage.defineProperty(self, "_blueprint", {
+        if ((!Object.getOwnPropertyDescriptor(self, "_objectDescriptorModuleId")) || (!self._objectDescriptorModuleId)) {
+            info = Montage.getInfoForObject(self);
+            var moduleId = info.moduleId,
+                slashIndex = moduleId.lastIndexOf("/"),
+                dotIndex = moduleId.lastIndexOf(".");
+            slashIndex = ( slashIndex === -1 ? 0 : slashIndex + 1 );
+            dotIndex = ( dotIndex === -1 ? moduleId.length : dotIndex );
+            dotIndex = ( dotIndex < slashIndex ? moduleId.length : dotIndex );
+            Montage.defineProperty(self, "_objectDescriptorModuleId", {
                 enumerable: false,
-                value: exports._blueprintDescriptor.BlueprintModulePromise.then(function (Blueprint) {
+                value: moduleId.slice(0, dotIndex) + ".meta"
+            });
+        }
+        return self._objectDescriptorModuleId;
+    }
+};
+
+exports._objectDescriptorDescriptor = {
+    serializable:false,
+    enumerable: false,
+    get:function () {
+        var info = Montage.getInfoForObject(this);
+        var self = info && !info.isInstance ? this : this.constructor;
+        if (!Object.getOwnPropertyDescriptor(self, "_objectDescriptor") || !self._objectDescriptor) {
+            var objectDescriptorModuleId = self.objectDescriptorModuleId || self.blueprintModuleId;
+            if (!objectDescriptorModuleId) {
+                throw new TypeError("ObjectDescriptor moduleId undefined for the module '" + JSON.stringify(self) + "'");
+            }
+            if (!exports._objectDescriptorDescriptor.ObjectDescriptorModulePromise) {
+                exports._objectDescriptorDescriptor.ObjectDescriptorModulePromise = require.async("core/meta/module-object-descriptor").get("ModuleObjectDescriptor");
+            }
+            Montage.defineProperty(self, "_objectDescriptor", {
+                enumerable: false,
+                value: exports._objectDescriptorDescriptor.ObjectDescriptorModulePromise.then(function (ObjectDescriptor) {
                     var info = Montage.getInfoForObject(self);
 
-                    return Blueprint.getBlueprintWithModuleId(blueprintModuleId, info.require)
-                    .catch(function (error) {
-                        // FIXME only generate blueprint if the moduleId
-                        // requested does not exist. If any parents do not
-                        // exist then the error should still be thrown.
-                        if (error.message.indexOf("Can't XHR") !== -1) {
-                            return Blueprint.createDefaultBlueprintForObject(self).then(function (blueprint) {
-                                return blueprint;
-                            });
-                        } else {
-                            throw error;
-                        }
-                    });
+                    return ObjectDescriptor.getObjectDescriptorWithModuleId(objectDescriptorModuleId, info.require)
+                        .catch(function (error) {
+                            // FIXME only generate object descriptor if the moduleId
+                            // requested does not exist. If any parents do not
+                            // exist then the error should still be thrown.
+                            if (error.message.indexOf("Can't XHR") !== -1) {
+                                return ObjectDescriptor.createDefaultObjectDescriptorForObject(self).then(function (objectDescriptor) {
+                                    return objectDescriptor;
+                                });
+                            } else {
+                                throw error;
+                            }
+                        });
                 })
             });
         }
-        return self._blueprint;
+        return self._objectDescriptor;
     },
     set:function (value) {
         var info = Montage.getInfoForObject(this);
-        var _blueprintValue;
+        var _objectDescriptorValue;
         var self = (info && !info.isInstance) ? this : this.constructor;
         if (value === null) {
-            _blueprintValue = null;
+            _objectDescriptorValue = null;
         } else if (typeof value.then === FUNCTION) {
-            throw new TypeError("Object blueprint should not be a promise");
+            throw new TypeError("Object descriptor should not be a promise");
         } else {
-            value.blueprintInstanceModule = self.blueprintModule;
-            _blueprintValue = require("./promise").Promise.resolve(value);
+            value.objectDescriptorInstanceModule = self.objectDescriptorModule;
+            _objectDescriptorValue = require("./promise").Promise.resolve(value);
         }
-        Montage.defineProperty(self, "_blueprint", {
+        Montage.defineProperty(self, "_objectDescriptor", {
             enumerable: false,
-            value: _blueprintValue
+            value: _objectDescriptorValue
         });
     }
 };
+
+/**
+ * @deprecated use exports._objectDescriptorDescriptor
+ */
+exports._blueprintDescriptor = exports._objectDescriptorDescriptor;
