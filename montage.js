@@ -427,7 +427,7 @@ if (!String.prototype.endsWith) {
                     }
                 }
 
-                var i, object,
+                var i, object, name,
                     keys = Object.keys(exports);
 
                 for (i = 0, name; name = keys[i]; i++) {
