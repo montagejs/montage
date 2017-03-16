@@ -70,7 +70,7 @@ exports.ObjectDescriptorReference = RemoteReference.specialize( {
             var references = {};
             references.objectDescriptorName = value.name;
             references.objectDescriptorModule = value.objectDescriptorInstanceModule;
-            if (value.binder && !value.model.isDefault) {
+            if (value.model && !value.model.isDefault) {
                 references.modelReference = ModelReference.prototype.referenceFromValue(value.model);
             }
             return references;

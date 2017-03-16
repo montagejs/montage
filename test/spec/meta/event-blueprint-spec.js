@@ -1,5 +1,5 @@
 var Blueprint = require("montage/core/meta/blueprint").Blueprint;
-var EventBlueprint = require("montage/core/meta/event-blueprint").EventBlueprint;
+var EventDescriptor = require("montage/core/meta/event-descriptor").EventDescriptor;
 
 var Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer;
 var Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer;
@@ -11,7 +11,7 @@ describe("meta/event-blueprint-spec", function () {
         var blueprint, eventBlueprint;
         beforeEach(function () {
             blueprint = new Blueprint().initWithName("testBlueprint");
-            eventBlueprint = new EventBlueprint().initWithNameAndBlueprint("event", blueprint);
+            eventBlueprint = new EventDescriptor().initWithNameAndObjectDescriptor("event", blueprint);
         });
 
         it("has the correct name", function () {
