@@ -797,7 +797,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         value: function (name) {
             var propertyValidationRule = this._propertyValidationRules[name];
             if (propertyValidationRule == null) {
-                propertyValidationRule = new PropertyValidationRule().initWithNameAndBlueprint(name, this);
+                propertyValidationRule = new PropertyValidationRule().initWithNameAndObjectDescriptor(name, this);
                 this._propertyValidationRules[name] = propertyValidationRule;
             }
             return propertyValidationRule;
