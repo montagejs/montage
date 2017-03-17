@@ -164,7 +164,7 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
     getBlueprintWithModuleId: {
         value: deprecate.deprecateMethod(void 0, function (moduleId, _require) {
             return ModuleObjectDescriptor.getObjectDescriptorWithModuleId(moduleId, _require);
-        }, "ModuleBlueprint.getBlueprintWithModuleId", "ModuleObjectDescriptor.getBlueprintWithModuleId")
+        }, "ModuleBlueprint.getBlueprintWithModuleId", "ModuleObjectDescriptor.getObjectDescriptorWithModuleId")
     },
 
     /**

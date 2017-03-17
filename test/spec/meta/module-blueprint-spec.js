@@ -1,4 +1,4 @@
-var ModuleBlueprint = require("montage/core/meta/module-blueprint").ModuleBlueprint;
+var ModuleObjectDescriptor = require("montage/core/meta/module-object-descriptor").ModuleObjectDescriptor;
 var ModuleReference = require("montage/core/module-reference").ModuleReference;
 
 var Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer;
@@ -42,19 +42,19 @@ describe("meta/module-blueprint-spec", function () {
                 "propertyDescriptors": [
                     {"@": "objectDescriptor_one_a"}
                 ],
-                "module": {"%": "meta/module-blueprint-spec"},
+                "module": {"%": "spec/meta/module-blueprint-spec"},
                 "exportName": "One"
             }
         }
     };
 
-    describe("ModuleBlueprint", function () {
+    describe("ModuleObjectDescriptor", function () {
 
         var blueprintOne;
         beforeEach(function () {
             var ref = new ModuleReference().initWithIdAndRequire("spec/meta/module-blueprint-spec", require);
-            blueprintOne = new ModuleBlueprint().initWithModuleAndExportName(ref, "One");
-            blueprintOne.addPropertyDescriptor(blueprintOne.newPropertyBlueprint("a", 1));
+            blueprintOne = new ModuleObjectDescriptor().initWithModuleAndExportName(ref, "One");
+            blueprintOne.addPropertyDescriptor(blueprintOne.newPropertyDescriptor("a", 1));
         });
 
         describe("serialization", function () {
@@ -91,12 +91,12 @@ describe("meta/module-blueprint-spec", function () {
             });
         });
 
-        describe("getBlueprintWithModuleId", function () {
+        describe("getObjectDescriptorWithModuleId", function () {
             it("caches the blueprints", function (done) {
                 require.loadPackage({location: "spec/meta/blueprint/package"}).then(function (require) {
-                    return ModuleBlueprint.getBlueprintWithModuleId("thing.meta", require)
+                    return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.meta", require)
                     .then(function (blueprint1) {
-                        return ModuleBlueprint.getBlueprintWithModuleId("thing.meta", require)
+                        return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.meta", require)
                         .then(function (blueprint2) {
                             expect(blueprint1).toBe(blueprint2);
                         });
@@ -108,7 +108,7 @@ describe("meta/module-blueprint-spec", function () {
 
             it("correctly loads blueprints with the same internal module ID cross package", function (done) {
                 require.loadPackage({location: "spec/meta/blueprint/package"}).then(function (require) {
-                    return ModuleBlueprint.getBlueprintWithModuleId("thing.meta", require)
+                    return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.meta", require)
                     .then(function (blueprint) {
                         expect(blueprint.parent).not.toBe(blueprint);
                     });
