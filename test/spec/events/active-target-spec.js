@@ -22,7 +22,7 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function (test
                     eventManager.activeTarget = null;
                 });
 
-                it("should focus on a target when a target's own element receives focus", function () {
+                xit("should focus on a target when a target's own element receives focus", function () {
                     proximalElement.focus();
                     expect(eventManager.activeTarget).toBe(proximalComponent);
                     expect(proximalComponent.isActiveTarget).toBeTruthy();

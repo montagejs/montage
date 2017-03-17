@@ -5,6 +5,8 @@ require("montage-testing").run(require, [
     // Internal
     "spec/bitfield-spec",
     "spec/converter-spec",
+    "spec/paths-spec",
+    //{name: "spec/node/node-spec", browser: false},
     "spec/enum-spec",
     "spec/gate-spec",
     "spec/logger-spec",
@@ -103,6 +105,7 @@ require("montage-testing").run(require, [
     {name: "spec/ui/substitution-spec", node: false},
     {name: "spec/ui/text/text-spec", node: false},
     {name: "spec/ui/text-input-spec", node: false},
+    {name: "spec/ui/flow-spec", node: false},
     {name: "spec/ui/slider-spec", node: false},
     {name: "spec/ui/segmented-bar/segmented-bar-spec", node: false},
     // UI - repetition

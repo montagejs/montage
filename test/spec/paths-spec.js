@@ -1,4 +1,3 @@
-
 var Montage = require("montage").Montage;
 var Map = require("montage/collections/map");
 

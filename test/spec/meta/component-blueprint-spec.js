@@ -78,7 +78,7 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).toBeTruthy();
                 expect(blueprint.propertyDescriptorForName("bindableProperty1")).toBeTruthy();
-                expect(blueprint.propertyBlueprintGroupForName("required")).toBeTruthy();
+                expect(blueprint.propertyDescriptorForName("required")).toBeTruthy();
             }).finally(function () {
                 done();
             });
