@@ -103,10 +103,12 @@ require("montage-testing").run(require, [
     {name: "spec/ui/overlay-spec", node: false},
     {name: "spec/ui/slot-spec", node: false},
     {name: "spec/ui/substitution-spec", node: false},
-    {name: "spec/ui/text/text-spec", node: false},
     {name: "spec/ui/text-input-spec", node: false},
     {name: "spec/ui/flow-spec", node: false},
     {name: "spec/ui/slider-spec", node: false},
+
+    {name: "spec/ui/text/text-spec", node: false},
+    {name: "spec/ui/label/label-spec", node: false},
     {name: "spec/ui/segmented-bar/segmented-bar-spec", node: false},
     // UI - repetition
     {name: "spec/ui/repetition-spec", node: false},

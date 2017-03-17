@@ -11,11 +11,11 @@ TestPageLoader.queueTest("label-test", function (testPage) {
     describe("ui/label/label-spec", function () {
 
         describe("Label with text", function () {
-            it("value can be set", function () {
+            it("value can be set", function (done) {
                 test.label.value = "foo";
-                testPage.waitForDraw();
-                runs(function () {
+                testPage.waitForDraw().then(function () {
                     expect(test.label.element.textContent).toEqual("foo");
+                    done();
                 })
             });
         });
