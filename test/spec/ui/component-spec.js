@@ -94,7 +94,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                     });
                 });
 
-                it("should change the content of the component for another component part1", function () {
+                it("should change the content of the component for another component part1", function (done) {
                     var componentC = testPage.test.componentC,
                         componentC1 = testPage.test.componentC1,
                         content = componentC.domContent,
@@ -103,12 +103,10 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                     testPage.test.componentC.domContent = newContent;
                     // should only draw at draw cycle.
                     expect(componentC.domContent).toEqual(content);
-                });
 
-                it("should change the content of the component for another component part2", function (done) {
                     var componentC = testPage.test.componentC,
                         componentC1 = testPage.test.componentC1;
-                    testPage.waitForComponentDraw(componentC, 1, true).then(function () {
+                    testPage.waitForComponentDraw(componentC).then(function () {
                         expect(componentC.domContent.length).toBe(1);
                         expect(componentC.domContent[0].outerHTML).toBe('<div data-montage-id="componentC1">C1</div>');
                         expect(componentC.domContent[0].component).toBe(componentC1);
