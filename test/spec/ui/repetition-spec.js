@@ -33,10 +33,6 @@ var Montage = require("montage").Montage,
     Template = require("montage/core/template").Template,
     Application = require("montage/core/application").application;
 
-var stripPP = function stripPrettyPrintting(str) {
-    return str.replace(/\n\s*/g, "");
-};
-
 TestPageLoader.queueTest("repetition/repetition", function (testPage) {
     describe("ui/repetition-spec", function () {
         var eventManager,
@@ -51,12 +47,12 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
         };
 
         beforeEach(function () {
-            application = Application;
+            application = testPage.global.mr("montage/core/application").application;
             eventManager = application.eventManager;
             delegate = application.delegate;
         });
 
-        xit("should expect unloaded new iterations to be present during the draw", function (done) {
+        it("should expect unloaded new iterations to be present during the draw", function (done) {
 
             var list14 = querySelector(".list14").component,
                 willDraw = list14.willDraw,
@@ -123,67 +119,60 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
 
         xit("should not serialize bindings in the iteration template", function () {
             var serialization = delegate.repetition1._iterationTemplate._ownerSerialization;
-            expect(stripPP(serialization)).toBe('{"owner":{"prototype":"montage/ui/repetition.reel","properties":{"element":{"#":"list1"},"_isComponentExpanded":true,"ownerComponent":{"@":"__root__"}}},"__root__":{}}');
+            expect(serialization).toBe('{"owner":{"prototype":"montage/ui/repetition.reel","properties":{"element":{"#":"list1"},"_isComponentExpanded":true,"ownerComponent":{"@":"__root__"}}},"__root__":{}}');
         });
 
-        xdescribe("The static repetition", function () {
-            it("should add one iteration on the static repetition", function () {
+        describe("The static repetition", function () {
+            it("should add one iteration on the static repetition", function (done) {
                 delegate.list1Objects.push(1);
-                testPage.waitForComponentDraw(delegate.repetition1);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                     var lis = querySelectorAll(".list1 > li");
                     expect(lis.length).toBe(1);
                     expect(lis[0].textContent).toBe("Hello Friend!");
+                    done();
                 });
             });
 
-            it("should remove one iteration on the static repetition", function () {
+            it("should remove one iteration on the static repetition", function (done) {
                 delegate.list1Objects.pop();
-                testPage.waitForComponentDraw(delegate.repetition1);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                     var lis = querySelectorAll(".list1 > li");
                     expect(lis.length).toBe(0);
+                    done();
                 });
             });
 
-            it("should add five iterations on the static repetition", function () {
+            it("should add five iterations on the static repetition", function (done) {
                 delegate.list1Objects.push(1, 2, 3, 4, 5);
-                testPage.waitForComponentDraw(delegate.repetition1);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                     var lis = querySelectorAll(".list1 > li");
                     expect(lis.length).toBe(5);
                     expect(lis[0].textContent).toBe("Hello Friend!");
+                    done();
                 });
             });
 
-            it("should remove five iteration on the static repetition", function () {
+            it("should remove five iteration on the static repetition", function (done) {
                 delegate.list1Objects.splice(0, 5);
-                testPage.waitForComponentDraw(delegate.repetition1);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                     var lis = querySelectorAll(".list1 > li");
                     expect(lis.length).toBe(0);
+                    done();
                 });
             });
 
-            it("should change the repetition to three iterations on the static repetition", function () {
+            it("should change the repetition to three iterations on the static repetition", function (done) {
                 delegate.list1Objects = [1, 2, 3];
-                testPage.waitForComponentDraw(delegate.repetition1);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                     var lis = querySelectorAll(".list1 > li");
                     expect(lis.length).toBe(3);
+                    done();
                 });
             });
 
-            it("should change the repetition after a batch of operations", function () {
+            it("should change the repetition after a batch of operations", function (done) {
                 delegate.list1Objects = [];
-                testPage.waitForComponentDraw(delegate.repetition1);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                     // sanity test
                     var lis = querySelectorAll(".list1 > li");
                     expect(lis.length).toBe(0);
@@ -195,19 +184,17 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     delegate.list1Objects.push(3);
                     delegate.list1Objects.push(4);
 
-                    testPage.waitForComponentDraw(delegate.repetition1);
-                    runs(function () {
+                    testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                         lis = querySelectorAll(".list1 > li");
                         expect(lis.length).toBe(4);
+                        done();
                     });
                 });
             });
 
-            it("should change the repetition on shift and consecutive pop", function () {
+            it("should change the repetition on shift and consecutive pop", function (done) {
                 delegate.list1Objects = [1, 2, 3];
-                testPage.waitForComponentDraw(delegate.repetition1);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                     // sanity test
                     var lis = querySelectorAll(".list1 > li");
                     expect(lis.length).toBe(3);
@@ -215,19 +202,17 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     delegate.list1Objects.unshift(0);
                     delegate.list1Objects.pop();
 
-                    testPage.waitForComponentDraw(delegate.repetition1);
-                    runs(function () {
+                    testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                         lis = querySelectorAll(".list1 > li");
                         expect(lis.length).toBe(3);
+                        done();
                     });
                 });
             });
 
-            it("should replace an item of the repetition", function () {
+            it("should replace an item of the repetition", function (done) {
                 delegate.list1Objects = [1];
-                testPage.waitForComponentDraw(delegate.repetition1);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                     // sanity test
                     var lis = querySelectorAll(".list1 > li");
                     expect(lis.length).toBe(1);
@@ -235,81 +220,73 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     delegate.list1Objects.pop();
                     delegate.list1Objects.push(2);
 
-                    testPage.waitForComponentDraw(delegate.repetition1);
-                    runs(function () {
+                    testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                         lis = querySelectorAll(".list1 > li");
                         expect(lis.length).toBe(1);
+                        done();
                     });
                 });
             });
 
-            xit("[TODO] should create a repetition programmatically", function () {
-                var Repetition = testPage.window.mr("montage/ui/repetition.reel").Repetition,
+            xit("[TODO] should create a repetition programmatically", function (done) {
+                var Repetition = testPage.global.mr("montage/ui/repetition.reel").Repetition,
                     repetition = new Repetition();
 
                 repetition.element = querySelector(".list12");
                 repetition.content = [1, 2, 3];
                 repetition.needsDraw = true;
 
-                testPage.waitForComponentDraw(repetition);
-
-                runs(function () {
+                testPage.waitForComponentDraw(repetition).then(function () {
                     // sanity test
                     var lis = repetition.element.querySelectorAll("li");
                     expect(lis.length).toBe(3);
+                    done();
                 });
             });
         });
 
-        xdescribe("The component repetition", function () {
-            it("should add one iteration on the component repetition", function () {
+        describe("The component repetition", function () {
+            it("should add one iteration on the component repetition", function (done) {
                 delegate.list2Objects.push({text: "is"});
-                testPage.waitForComponentDraw(delegate.repetition2);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition2).then(function () {
                     expect(querySelectorAll(".list2 > li").length).toBe(2);
                     var input = querySelectorAll(".list2 > li > input.textfield1");
                     expect(input.length).toBe(2);
                     expect(input[1].value).toBe("is");
+                    done();
                 });
             });
 
-            it("should remove one iteration on the component repetition", function () {
+            it("should remove one iteration on the component repetition", function (done) {
                 delegate.list2Objects.pop();
-                testPage.waitForComponentDraw(delegate.repetition2);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition2).then(function () {
                     expect(querySelectorAll(".list2 > li").length).toBe(1);
                     var input = querySelectorAll(".list2 > li > input.textfield1");
                     expect(input.length).toBe(1);
                     expect(input[0].value).toBe("This");
+                    done();
                 });
             });
 
-            it("should replace one iteration on the component repetition", function () {
+            it("should replace one iteration on the component repetition", function (done) {
                 delegate.list2Objects = [{text: "This"}, {text: "is"}, {text: "Sparta"}];
-                testPage.waitForComponentDraw(delegate.repetition2);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition2).then(function () {
                     // sonity check
                     expect(querySelectorAll(".list2 > li").length).toBe(3);
                     delegate.list2Objects.set(2, {text: "Motorola"});
-                    testPage.waitForDraw();
-
-                    runs(function () {
+                    testPage.waitForDraw().then(function () {
                         expect(querySelectorAll(".list2 > li").length).toBe(3);
                         var input = querySelectorAll(".list2 > li > input.textfield1");
                         expect(input.length).toBe(3);
                         expect(input[2].value).toBe("Motorola");
+                        done();
                     });
                 });
             });
 
-            it("should change the component repetition after a batch of operations", function () {
+            it("should change the component repetition after a batch of operations", function (done) {
                 delegate.list2Objects = [];
-                testPage.waitForComponentDraw(delegate.repetition2);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition2).then(function () {
                     // sanity test
                     var lis = querySelectorAll(".list2 > li");
                     expect(lis.length).toBe(0);
@@ -321,22 +298,20 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     delegate.list2Objects.push({text: "item 3"});
                     delegate.list2Objects.push({text: "item 4"});
 
-                    testPage.waitForComponentDraw(delegate.repetition2);
-                    runs(function () {
+                    testPage.waitForComponentDraw(delegate.repetition2).then(function () {
                         var inputs = querySelectorAll(".list2 > li > input.textfield1");
                         for (var i = 0, input; i < 4; i++) {
 
                             expect(inputs[i].value).toBe("item " + (i+1));
                         }
+                        done();
                     });
                 });
             });
 
-            it("should replace an item of the repetition", function () {
+            it("should replace an item of the repetition", function (done) {
                 delegate.list2Objects = [{text: "item 1"}];
-                testPage.waitForComponentDraw(delegate.repetition2);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition2).then(function () {
                     // sanity test
                     var lis = querySelectorAll(".list2 > li");
                     expect(lis.length).toBe(1);
@@ -344,24 +319,22 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     delegate.list2Objects.pop();
                     delegate.list2Objects.push({text: "item 2"});
 
-                    testPage.waitForComponentDraw(delegate.repetition2);
-                    runs(function () {
+                    testPage.waitForComponentDraw(delegate.repetition2).then(function () {
                         var lis = querySelectorAll(".list2 > li");
                         expect(lis.length).toBe(1);
 
                         var input = querySelector(".list2 > li > input.textfield1");
                         expect(input.value).toBe("item 2");
+                        done();
                     });
                 });
             });
         });
 
-        xdescribe("The nested repetition w/ component", function () {
-            it("should draw one>one iteration on the nested repetition w/ component", function () {
+        describe("The nested repetition w/ component", function () {
+            it("should draw one>one iteration on the nested repetition w/ component", function (done) {
                 delegate.list3Objects = [[{text: "iteration 1"}]];
-                testPage.waitForComponentDraw(delegate.repetition4);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition4).then(function () {
                     var innerRepetition;
 
                     expect(querySelectorAll(".list3 > li").length).toBe(1);
@@ -371,6 +344,7 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                         var inputs = innerRepetition.element.querySelectorAll("li > input.textfield2");
                         expect(inputs.length).toBe(1);
                         expect(inputs[0].value).toBe("iteration 1");
+                        done();
                     };
 
                     // Depending on timing the inner repetitions might have not
@@ -380,32 +354,30 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     innerRepetition = innerRepetition = querySelector(".list3 > li > .list3a").component;
 
                     if (innerRepetition.needsDraw) {
-                        testPage.waitForComponentDraw(innerRepetition);
-                        runs(expectationFunction);
+                        testPage.waitForComponentDraw(innerRepetition).then(expectationFunction);
                     } else {
                         expectationFunction();
                     }
                 });
             });
 
-            it("should draw one>three iteration on the nested repetition w/ component", function () {
+            it("should draw one>three iteration on the nested repetition w/ component", function (done) {
                 delegate.list3Objects = [[{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}]];
-                testPage.waitForComponentDraw(querySelector(".list3 > li > ul.list3a").component);
-
-                runs(function () {
+                testPage.waitForComponentDraw(querySelector(".list3 > li > ul.list3a").component).then(function () {
                     expect(querySelectorAll(".list3 > li").length).toBe(1);
                     expect(querySelectorAll(".list3 > li > ul.list3a > li").length).toBe(3);
                     var inputs = querySelectorAll(".list3 > li > ul.list3a > li > input.textfield2");
                     expect(inputs.length).toBe(3);
                     expect(inputs[0].value).toBe("iteration 1");
+                    done();
                 });
             });
 
-            it("should draw one>five iterations on the nested repetition w/ component", function () {
+            it("should draw one>five iterations on the nested repetition w/ component", function (done) {
                 console.log("***** should draw one>five iterations START");
                 delegate.list3Objects = [[{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}], [{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}, {text: "iteration 4"}, {text: "iteration 5"}]];
                 console.log("testPage.waitForComponentDraw(delegate.repetition4)");
-                testPage.waitForComponentDraw(delegate.repetition4);
+                
                 var expectationFunction = function () {
                     console.log("should draw one>five iterations –expectationFunction START");
                     expect(querySelectorAll(".list3 > li").length).toBe(2);
@@ -424,9 +396,10 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                         expect(inputs[i].value).toBe("iteration " + (i+1));
                     }
                     console.log("***** should draw one>five iterations END");
+                    done();
                 };
 
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition4).then(function () {
                     // Depending on timing the inner repetitions might have not
                     // drawn yet so we need to wait till one of the inner
                     // repetitions draws because atm we're not able to draw two
@@ -435,9 +408,8 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
 
                     if (innerRepetition.needsDraw) {
                         console.log("testPage.waitForComponentDraw(innerRepetition)");
-                        testPage.waitForComponentDraw(innerRepetition);
                         console.log("should draw one>five iterations –runs(expectationFunction)");
-                        runs(expectationFunction);
+                        testPage.waitForComponentDraw(innerRepetition).then(expectationFunction);
                     } else {
                         console.log("should draw one>five iterations –expectationFunction()");
                         expectationFunction();
@@ -445,23 +417,21 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                 });
             });
 
-            it("should remove one iteration on the nested repetition w/ component", function () {
+            it("should remove one iteration on the nested repetition w/ component", function (done) {
                 delegate.list3Objects.shift();
-                testPage.waitForComponentDraw(delegate.repetition4);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition4).then(function () {
                     expect(querySelectorAll(".list3 > li").length).toBe(1);
                     // should have not affected the other iteration
                     expect(querySelectorAll(".list3 > li > ul.list3a > li").length).toBe(5);
+                    done();
                 });
             });
 
-            it("should remove one inner iteration on the nested repetition w/ component", function () {
+            it("should remove one inner iteration on the nested repetition w/ component", function (done) {
                 var innerArray = delegate.list3Objects[delegate.list3Objects.length-1];
 
                 innerArray.pop();
-                testPage.waitForDraw();
-                runs(function () {
+                testPage.waitForDraw().then(function () {
                     expect(querySelectorAll(".list3 > li").length).toBe(1);
 
                     expect(querySelectorAll(".list3 > li:first-child > ul > li").length).toBe(4);
@@ -469,36 +439,32 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     for (var i = 1; i < 4; i++) {
                         expect(querySelectorAll(".list3 > li:first-child > ul > li:nth-child(" + i + ")").length).toBe(1);
                     }
+                    done();
                 });
             });
         });
 
-        xdescribe("The nested repetition w/ Static Component Composition (SCC)", function () {
-            it("should draw one>one iteration on the nested repetition w/ SCC", function () {
+        describe("The nested repetition w/ Static Component Composition (SCC)", function () {
+            it("should draw one>one iteration on the nested repetition w/ SCC", function (done) {
                 delegate.list4Objects.push([1]);
-                testPage.waitForComponentDraw(delegate.repetition5);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition5).then(function () {
                     // we need to wait till one of the inner repetitions draws
                     // because atm we're not able to draw two nested repetitions
                     // in a single draw.
                     var innerRepetition = delegate.repetition5.element.querySelector(".list4a").component;
-                    testPage.waitForComponentDraw(innerRepetition);
-
-                    runs(function () {
+                    testPage.waitForComponentDraw(innerRepetition).then(function () {
                         expect(querySelectorAll(".list4 > li").length).toBe(1);
                         expect(querySelectorAll(".list4 > li > ul.list4a > li").length).toBe(1);
                         expect(querySelectorAll(".list4 > li > ul.list4a > li > div.content3").length).toBe(1);
                         expect(querySelectorAll(".list4 > li > ul.list4a > li input").length).toBe(1);
+                        done();
                     });
                 });
             });
 
-            it("should draw one>five iterations on the nested repetition w/ SCC", function () {
+            it("should draw one>five iterations on the nested repetition w/ SCC", function (done) {
                 delegate.list4Objects.push([1, 2, 3, 4, 5]);
-                testPage.waitForComponentDraw(delegate.repetition5);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition5).then(function () {
                     // Depending on timing the inner repetitions might have not
                     // drawn yet so we need to wait till one of the inner
                     // repetitions draws because atm we're not able to draw two
@@ -516,36 +482,33 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                         for (var i = 0; i < 5; i++) {
                             expect(inputs[i].value).toBe("a component Y textfield");
                         }
+                        done();
                     };
 
                     if (innerRepetition.needsDraw) {
-                        testPage.waitForComponentDraw(innerRepetition);
-                        runs(expectationFunction);
+                        testPage.waitForComponentDraw(innerRepetition).then(expectationFunction);
                     } else {
                         expectationFunction();
                     }
                 });
             });
 
-            it("should remove one iteration on the nested repetition w/ SCC", function () {
+            it("should remove one iteration on the nested repetition w/ SCC", function (done) {
                 delegate.list4Objects.shift();
-                testPage.waitForComponentDraw(delegate.repetition5);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition5).then(function () {
                     expect(querySelectorAll(".list4 > li").length).toBe(1);
                     // should have not affected the other iteration
                     expect(querySelectorAll(".list4 > li > ul.list4a > li").length).toBe(5);
+                    done();
                 });
             });
 
         });
 
-        xdescribe("The nested repetition w/ Dynamic Component Composition (DCC)", function () {
-            it("should draw one>one iteration on the nested repetition w/ DCC", function () {
+        describe("The nested repetition w/ Dynamic Component Composition (DCC)", function () {
+            it("should draw one>one iteration on the nested repetition w/ DCC", function (done) {
                 delegate.list5Objects.push([1]);
-                testPage.waitForComponentDraw(delegate.repetition7);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition7).then(function () {
                     // Depending on timing the inner repetitions might have not
                     // drawn yet so we need to wait till one of the inner
                     // repetitions draws because atm we're not able to draw two
@@ -557,22 +520,20 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                         expect(querySelectorAll(".list5 > li > ul.list5a > li").length).toBe(1);
                         expect(querySelectorAll(".list5 > li > ul.list5a > li > div.content4").length).toBe(1);
                         expect(querySelectorAll(".list5 > li > ul.list5a input.textfield4").length).toBe(1);
+                        done();
                     };
 
                     if (innerRepetition.needsDraw) {
-                        testPage.waitForComponentDraw(innerRepetition);
-                        runs(expectationFunction);
+                        testPage.waitForComponentDraw(innerRepetition).then(expectationFunction);
                     } else {
                         expectationFunction();
                     }
                 });
             });
 
-            it("should draw one>five iterations on the nested repetition w/ DCC", function () {
+            it("should draw one>five iterations on the nested repetition w/ DCC", function (done) {
                 delegate.list5Objects.push([1, 2, 3, 4, 5]);
-                testPage.waitForComponentDraw(delegate.repetition7);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition7).then(function () {
                     // Depending on timing the inner repetitions might have not
                     // drawn yet so we need to wait till one of the inner
                     // repetitions draws because atm we're not able to draw two
@@ -590,53 +551,50 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                         for (var i = 0; i < 5; i++) {
                             expect(inputs[i].value).toBe("X here");
                         }
+                        done();
                     };
 
                     if (innerRepetition.needsDraw) {
-                        testPage.waitForComponentDraw(innerRepetition);
-                        runs(expectationFunction);
+                        testPage.waitForComponentDraw(innerRepetition).then(expectationFunction);
                     } else {
                         expectationFunction();
                     }
                 });
             });
 
-            it("should remove one iteration on the nested repetition w/ DCC", function () {
+            it("should remove one iteration on the nested repetition w/ DCC", function (done) {
                 delegate.list5Objects.shift();
-                testPage.waitForComponentDraw(delegate.repetition7);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition7).then(function () {
                     expect(querySelectorAll(".list5 > li").length).toBe(1);
                     // should have not affected the other iteration
                     expect(querySelectorAll(".list5 > li > ul.list5a > li").length).toBe(5);
+                    done();
                 });
             });
 
-            it("should remove one inner iteration on the nested repetition w/ DCC",
-            function () {
+            it("should remove one inner iteration on the nested repetition w/ DCC", function (done) {
                 var innerArray = delegate.list5Objects[delegate.list5Objects.length-1];
                 innerArray.pop();
-                testPage.waitForDraw();
-
-                runs(function () {
+                testPage.waitForDraw().then(function () {
                     expect(querySelectorAll(".list5 > li").length).toBe(1);
                     expect(querySelectorAll(".list5 > li > ul.list5a > li").length).toBe(4);
+                    done();
                 });
             });
         });
 
         describe("Repetition of a component with a binding", function () {
-            it("should draw the repetition with the correct duplicated bindings", function () {
+            it("should draw the repetition with the correct duplicated bindings", function (done) {
                 var inputs = querySelectorAll(".list7 .textfield5");
-
                 expect(inputs.length).toBe(2);
                 expect(inputs[0].value).toBe("Hello");
                 expect(inputs[0].value).toBe("Hello");
+                done();
             });
         });
 
-        xdescribe("Repetition of a component with an action event listener", function () {
-            it("should draw the repetition with the correct duplicated action event listeners", function () {
+        describe("Repetition of a component with an action event listener", function () {
+            it("should draw the repetition with the correct duplicated action event listeners", function (done) {
                 var component = querySelectorAll(".textfield6")[0].component;
                 spyOn(application.delegate, "listener");
 
@@ -645,35 +603,34 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
 
                 component.dispatchEvent.call(component, anEvent);
                 expect(application.delegate.listener).toHaveBeenCalled();
+                done();
             });
         });
 
-        xdescribe("Repetition of a direct component", function () {
-            it("should be able to remove the iteration correctly", function () {
+        describe("Repetition of a direct component", function () {
+            it("should be able to remove the iteration correctly", function (done) {
                 delegate.list9Objects = [1];
 
-                testPage.waitForComponentDraw(delegate.repetition12);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition12).then(function () {
                     expect(querySelectorAll(".list9 input").length).toBe(1);
 
                     delegate.list9Objects.pop();
-                    testPage.waitForComponentDraw(delegate.repetition12);
-
-                    runs(function () {
+                    testPage.waitForComponentDraw(delegate.repetition12).then(function () {
                         expect(querySelectorAll(".list9 > input").length).toBe(0);
+                        done();
                     });
                 });
             });
         });
 
         describe("Repetitions with different external objects", function () {
-            it("should not reuse the same template if it has external objects associated", function () {
+            it("should not reuse the same template if it has external objects associated", function (done) {
                 var textfield1 = querySelector(".componentz1 input");
                 var textfield2 = querySelector(".componentz2 input");
 
                 expect(textfield1.value).toBe("o1");
                 expect(textfield2.value).toBe("o2");
+                done();
             });
         });
 
@@ -681,20 +638,19 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
             it("it should have as many iterations as the arraycontroller's initial organizedObjects", function () {
                 expect(querySelectorAll(".repetitionController > li").length).toBe(3);
             });
-            xit("it should increment the number of iterations", function () {
+            xit("it should increment the number of iterations", function (done) {
                 delegate.simpleArrayControllerContent.push("four");
 
-                testPage.waitForComponentDraw(delegate.repetitionController);
-
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetitionController).then(function () {
                     expect(delegate.simpleArrayController.iterations.length).toBe(4);
                     expect(querySelectorAll(".repetitionController > li").length).toBe(4);
+                    done();
                 });
             });
         });
 
-        xdescribe("Repetition in a external component", function () {
-            it("should draw the repetition", function () {
+        describe("Repetition in a external component", function () {
+            it("should draw the repetition", function (done) {
                 var eventManager = application.eventManager;
 
                 var componentit1 = eventManager.eventHandlerForElement(querySelector(".componentrep1"));
@@ -703,9 +659,7 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                 componentit1.listObjects = [{text: "rep1-0"}, {text: "rep1-1"}];
                 componentit2.listObjects = [{text: "rep2-0"}, {text: "rep2-1"}];
 
-                testPage.waitForComponentDraw(querySelector(".componentrep2 > ul").component);
-
-                runs(function () {
+                testPage.waitForComponentDraw(querySelector(".componentrep2 > ul").component).then(function () {
                     var inputs;
 
                     inputs = querySelectorAll(".componentrep1 input");
@@ -717,10 +671,11 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     expect(inputs.length).toBe(2);
                     expect(inputs[0].value).toBe("rep2-0");
                     expect(inputs[1].value).toBe("rep2-1");
+                    done();
                 });
             });
 
-            it("should draw the repetition of the 'component repetition'", function () {
+            it("should draw the repetition of the 'component repetition'", function (done) {
                 delegate.list6Objects = [
                     {
                         elements1: [
@@ -743,10 +698,7 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                         ]
                     }
                 ];
-                testPage.waitForComponentDraw(delegate.repetition9);
-                // Note: the inner repetition does in fact draw in the same
-                // draw cycle
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition9).then(function () {
                     var inputs;
                     inputs = querySelectorAll(".list6comp1 input");
                     expect(inputs.length).toBe(4);
@@ -761,90 +713,88 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     expect(inputs[1].value).toBe("rep0-comp2-1");
                     expect(inputs[2].value).toBe("rep1-comp2-0");
                     expect(inputs[3].value).toBe("rep1-comp2-1");
+                    done();
                 });
             });
 
             // This test needs to be run last since slow to load components do block the draw
-            it("should draw a repetition with slow components", function () {
+            xit("should draw a repetition with slow components", function () {
                 // it should draw even if the 2nd component loads before the 1st one.
                 delegate.list10Objects.push(1);
                 delegate.list10Objects.push(2);
 
-                testPage.waitForDraw();
-
-                runs(function () {
+                testPage.waitForDraw().then(function () {
                     // It just needs to draw
                 });
             });
         });
 
-        xdescribe("Repetition innerTemplate change", function () {
-            it("should rebuild the repetition", function () {
-                var repetition = querySelector(".list11").component;
+        describe("Repetition innerTemplate change", function () {
+            it("should rebuild the repetition", function (done) {
 
-                runs(function () {
-                    var content = repetition.element.children;
-                    expect(content.length).toBe(3);
-                    for (var i = 0; i < content.length; i++) {
-                        expect(content[i].textContent).toBe("X");
-                    }
+                var repetition = querySelector(".list11").component
 
-                    var newTemplate = repetition.innerTemplate.clone();
+                var content = repetition.element.children;
+                expect(content.length).toBe(3);
+                for (var i = 0; i < content.length; i++) {
+                    expect(content[i].textContent).toBe("X");
+                }
 
-                    newTemplate.document.querySelector("li").textContent = "Y";
+                var newTemplate = repetition.innerTemplate.clone();
 
-                    repetition.innerTemplate = newTemplate;
-                });
-                testPage.waitForComponentDraw(repetition);
-                runs(function () {
+                newTemplate.document.querySelector("li").textContent = "Y";
+
+                repetition.innerTemplate = newTemplate;
+
+                testPage.waitForComponentDraw(repetition).then(function () {
                     var content = repetition.element.children;
                     expect(content.length).toBe(3);
                     for (var i = 0; i < content.length; i++) {
                         expect(content[i].textContent).toBe("Y");
                     }
+                    done();
                 });
             });
 
-            it("should rebuild the repetition with components", function () {
+            it("should rebuild the repetition with components", function (done) {
                 var repetition = querySelector(".list11b").component;
-                var templateRepetition = querySelector(".list11btemplate").component;
+                var templateRepetition = querySelector(".list11btemplate").component
 
-                runs(function () {
-                    var content = repetition.element.children;
-                    expect(content.length).toBe(3);
-                    for (var i = 0; i < content.length; i++) {
-                        expect(content[i].textContent).toBe("X");
-                    }
+                var content = repetition.element.children;
+                expect(content.length).toBe(3);
+                for (var i = 0; i < content.length; i++) {
+                    expect(content[i].textContent).toBe("X");
+                }
 
-                    var newTemplate = templateRepetition.innerTemplate;
+                var newTemplate = templateRepetition.innerTemplate;
 
-                    repetition.innerTemplate = newTemplate;
-                });
-                testPage.waitForComponentDraw(repetition);
-                runs(function () {
+                repetition.innerTemplate = newTemplate;
+               
+                testPage.waitForComponentDraw(repetition).then(function () {
                     var content = repetition.element.children;
                     expect(content.length).toBe(3);
                     for (var i = 0; i < content.length; i++) {
                         expect(content[i].textContent).toBe("Y");
                         expect(content[i].component.value).toBe("Y");
                     }
+                    done();
                 });
             });
 
         });
 
-        xdescribe("manual objects changes", function () {
+        describe("manual objects changes", function () {
             var list13, object;
             beforeEach(function () {
                 list13 = querySelector(".list13").component;
                 object = {array: [1, 2, 3]};
             });
 
-            it("should add an iteration when an object is pushed", function () {
+            it("should add an iteration when an object is pushed", function (done) {
                 list13.content.push(4);
-                testPage.waitForComponentDraw(delegate.repetition15);
-                runs(function () {
+                testPage.waitForComponentDraw(delegate.repetition15).then(function () {
                     expect(querySelectorAll(".list13 > li").length).toBe(4);
+                    done();
                 });
             });
 
@@ -1017,18 +967,19 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
         });
 
         xdescribe("iteration selection", function () {
-            it("should select an iteration that does not have components when clicked", function () {
+            it("should select an iteration that does not have components when clicked", function (done) {
                 var repetition = delegate.domRepetition;
                 var li = repetition.element.querySelectorAll("li")[1];
                 testPage.mouseEvent({target: li}, "mousedown", function () {
                     testPage.mouseEvent({target: li}, "mouseup", function () {
                         expect(repetition.iterations[1].selected).toBe(true);
+                        done();
                     });
                 });
             });
         });
 
-        xdescribe("repetitions on tables", function() {
+        describe("repetitions on tables", function() {
             it("should preserve the original structure of the table", function() {
                 var repetition = delegate.tableRepetition;
                 expect(repetition.element.querySelectorAll("tr").length).toBe(2);

@@ -41,7 +41,7 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function (t
             });
         });
 
-        xdescribe("making a selection through the repetition using the mouse", function () {
+        describe("making a selection through the repetition using the mouse", function () {
 
             it("should set the selection in the contentController as expected", function (done) {
                 var listElementToSelect = querySelectorAll("ul>li")[0];
@@ -86,7 +86,7 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function (t
                     });
                 });
             });
-            it("should deselect the element if another is selected", function (done) {
+            xit("should deselect the element if another is selected", function (done) {
                 var listElementToSelect = querySelectorAll("ul>li")[2];
                 nameController.selection = [nameController.organizedContent[2]];
                 testPage.mouseEvent({target: listElementToSelect}, "mousedown", function () {
