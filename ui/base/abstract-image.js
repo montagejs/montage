@@ -239,7 +239,7 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
             if (currentCount === 0) {
                 this._imagesToClear.set(image,Date.now());
                 if(!this._clearImageInterval) {
-                    this._clearImageInterval = window.setInterval(this._clearImage, this.clearCacheInterval, this);
+                    this._clearImageInterval = setInterval(this._clearImage, this.clearCacheInterval, this);
                 }
             }
             else {

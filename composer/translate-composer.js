@@ -1230,7 +1230,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 this._observedPointer = this._WHEEL_POINTER;
 
                 if (this._translateEndTimeout) {
-                    window.clearTimeout(this._translateEndTimeout);
+                    clearTimeout(this._translateEndTimeout);
                 } else {
                     this._dispatchTranslateStart();
                 }
@@ -1261,7 +1261,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                     this._handleWheelTimeout = _handleWheelTimeout.bind(this);
                 }
 
-                this._translateEndTimeout = window.setTimeout(this._handleWheelTimeout, 400);
+                this._translateEndTimeout = setTimeout(this._handleWheelTimeout, 400);
 
                 // If we're not at one of the extremes (i.e. the scroll actually changed the translate)
                 // then we want to preventDefault to stop the page scrolling.

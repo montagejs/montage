@@ -159,7 +159,7 @@ var CssBasedAnimation = Montage.specialize({
 
     _cancelOnAnimationsCompletedEvent: {
         value: function () {
-            window.clearTimeout(this._onAnimationsCompletedTimeout);
+            clearTimeout(this._onAnimationsCompletedTimeout);
         }
     },
 
@@ -174,7 +174,7 @@ var CssBasedAnimation = Montage.specialize({
             }
             self = this;
             this._cancelOnAnimationsCompletedEvent();
-            this._onAnimationsCompletedTimeout = window.setTimeout(function () {
+            this._onAnimationsCompletedTimeout = setTimeout(function () {
                 callback.call(self);
             }, maxTime * 1000);
          }
@@ -3639,7 +3639,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             this._cannotDrawList = (this._cannotDrawList ? this._cannotDrawList : new Set());
             this._cannotDrawList.add(component);
             if (this._clearNeedsDrawTimeOut) {
-                window.clearTimeout(this._clearNeedsDrawTimeOut);
+                clearTimeout(this._clearNeedsDrawTimeOut);
                 this._clearNeedsDrawTimeOut = null;
             }
         }
@@ -3670,14 +3670,14 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                     if (!this._clearNeedsDrawTimeOut) {
                         var self = this;
                         // Wait to clear the needsDraw list as components could be loaded synchronously
-                        this._clearNeedsDrawTimeOut = window.setTimeout(function () {
+                        this._clearNeedsDrawTimeOut = setTimeout(function () {
                             self._clearNeedsDrawList();
                         }, 0);
                     }
                 }
             } else {
                 if (this._clearNeedsDrawTimeOut) {
-                    window.clearTimeout(this._clearNeedsDrawTimeOut);
+                    clearTimeout(this._clearNeedsDrawTimeOut);
                     this._clearNeedsDrawTimeOut = null;
                 }
             }
@@ -3717,7 +3717,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             if (this._cannotDrawList.size === 0 && this._needsDrawList.length > 0) {
                 if (!this._clearNeedsDrawTimeOut) {
                     var self = this;
-                    this._clearNeedsDrawTimeOut = window.setTimeout(function () {
+                    this._clearNeedsDrawTimeOut = setTimeout(function () {
                         self._clearNeedsDrawList();
                     }, 0);
                 }
@@ -3735,9 +3735,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                         logger.debug(this, "clearing draw");
                     }
                     if (cancelAnimationFrame) {
-                        cancelAnimationFrame.call(window, requestedAnimationFrame);
+                        cancelAnimationFrame(requestedAnimationFrame);
                     } else {
-                        window.clearTimeout(requestedAnimationFrame);
+                        clearTimeout(requestedAnimationFrame);
                     }
                     this.requestedAnimationFrame = null;
                 }
