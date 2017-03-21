@@ -33,8 +33,6 @@ require("montage-testing").run(require, [
     "spec/core/extras/function",
     "spec/core/extras/string",
     "spec/core/set-spec",
-    {name: "spec/core/localizer-spec", node: false},
-    {name: "spec/core/localizer/serialization-spec", node: false},
     {name: "spec/core/dom-spec", node: false},
     {name: "spec/core/extras/url", node: false},
     {name: "spec/core/range-controller-spec", node: false},
@@ -114,7 +112,9 @@ require("montage-testing").run(require, [
     // UI - repetition
     {name: "spec/ui/repetition-spec", node: false},
     {name: "spec/ui/repetition-selection-spec", node: false},
-    {name: "spec/ui/repetition-binding-spec", node: false}
+    {name: "spec/ui/repetition-binding-spec", node: false},
+    {name: "spec/core/localizer-spec", node: false},
+    {name: "spec/core/localizer/serialization-spec", node: false},
 ]).then(function () {
 	console.log('montage-testing', 'End');
 }, function (err) {
