@@ -54,7 +54,13 @@
   "devDependencies": {
     "jasmine-console-reporter": "^1.2.7",
     "jasmine-core": "^2.5.2",
-    "montage-testing": "hthetiot/montage-testing#upgrade"
+    "montage-testing": "hthetiot/montage-testing#upgrade",
+    "karma": "^1.5.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-coverage": "^1.1.1",
+    "karma-firefox-launcher": "^1.0.1",
+    "karma-jasmine": "^1.1.0",
+    "karma-phantomjs-launcher": "^1.0.2"
   },
   "scripts": {
     "test": "node test/run-node.js",
