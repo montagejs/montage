@@ -57,6 +57,7 @@ require("montage-testing").run(require, [
     // Composer
     {name: "spec/composer/composer-spec", node: false},
     {name: "spec/composer/press-composer-spec", node: false},
+    {name: "spec/composer/key-composer-spec", node: false},
     {name: "spec/composer/translate-composer/translate-composer-spec", node: false},
     // Events
     {name: "spec/events/active-target-spec", node: false},

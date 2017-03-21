@@ -210,7 +210,7 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                 });
 
                 describe("longPress", function () {
-                    it("is fired after longPressThreshold", function () {
+                    it("is fired after longPressThreshold", function (done) {
                         var listener = testPage.addListener(test.press_composer, null, "longPress");
 
                         testPage.mouseEvent({target: test.example.element}, "mousedown");
@@ -226,20 +226,21 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
 
                                 setTimeout(function () {
                                     expect(listener).toHaveBeenCalled();
-
                                     testPage.touchEvent({target: test.example.element}, "touchend");
+                                    done();
                                 });
+                            } else {
+                                done();
                             }
                         });
                     });
 
-                    it("isn't fired if the press is released before the timeout", function () {
+                    it("isn't fired if the press is released before the timeout", function (done) {
                         var longListener = testPage.addListener(test.press_composer, null, "longPress");
 
                         testPage.mouseEvent({target: test.example.element}, "mousedown");
 
-                        waits(test.press_composer.longPressThreshold - 100);
-                        runs(function () {
+                        setTimeout(function () {
                             expect(longListener).not.toHaveBeenCalled();
 
                             testPage.mouseEvent({target: test.example.element}, "mouseup");
@@ -249,17 +250,18 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
 
                                 testPage.touchEvent({target: test.example.element}, "touchstart");
 
-                                waits(test.press_composer.longPressThreshold - 100);
-                                runs(function () {
+                                setTimeout(function () {
                                     expect(longListener).not.toHaveBeenCalled();
-
                                     testPage.touchEvent({target: test.example.element}, "touchend");
-                                });
+                                    done();
+                                }, test.press_composer.longPressThreshold - 100);
+                            } else {
+                                done();
                             }
-                        });
+                        }, test.press_composer.longPressThreshold - 100);
                     });
 
-                    describe("longPressThreshold", function () {
+                    describe("longPressThreshold", function (done) {
                         it("can be changed", function () {
                             var listener = testPage.addListener(test.press_composer, null, "longPress");
                             var timeout = test.press_composer.longPressThreshold - 500;
@@ -267,11 +269,10 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
 
                             testPage.mouseEvent({target: test.example.element}, "mousedown");
 
-                            waits(timeout);
-                            runs(function () {
+                            setTimeout(function () {
                                 expect(listener).toHaveBeenCalled();
                                 testPage.mouseEvent({target: test.example.element}, "mouseup");
-                            });
+                            }, timeout);
 
                             if (window.Touch) {
                                 listener = testPage.addListener(test.press_composer, null, "longPress");
@@ -280,11 +281,13 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
 
                                 testPage.touchEvent({target: test.example.element}, "touchstart");
 
-                                waits(timeout);
-                                runs(function () {
+                                setTimeout(function () {
                                     expect(listener).toHaveBeenCalled();
                                     testPage.touchEvent({target: test.example.element}, "touchend");
-                                });
+                                    done();
+                                }, timeout);
+                            } else {
+                                done();
                             }
                         });
                     });
