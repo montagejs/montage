@@ -120,7 +120,7 @@ var Criteria = exports.Criteria = Montage.specialize({
     serializeSelf: {
         value: function (serializer) {
             serializer.setProperty("expression", this._expression || (this._expression = stringify(this.syntax)));
-            serializer.setProperty("parameters", this.parameters || (this.parameters = stringify(this.parameters)));
+            serializer.setProperty("parameters", this.parameters);
         }
     },
 
