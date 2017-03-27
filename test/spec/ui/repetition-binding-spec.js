@@ -36,8 +36,7 @@ var Montage = require("montage").Montage,
 var stripPP = function stripPrettyPrintting(str) {
     return str.replace(/\n\s*/g, "");
 };
-TestPage
-Loader.queueTest("repetition/repetition-binding", function(testPage) {
+TestPageLoader.queueTest("repetition/repetition-binding", function(testPage) {
 
     describe("ui/repetition-binding-spec", function() {
         var eventManager,

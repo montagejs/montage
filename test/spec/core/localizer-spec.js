@@ -47,9 +47,8 @@ describe("core/localizer-spec", function () {
             message.init("hello", "Hello");
             message.localized.then(function (localized) {
                 expect(localized).toBe("Hello");
-            }).catch(function (er) {
-                console.log(er)
-                expect('test').toBe("success");
+            }).catch(function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });
@@ -126,6 +125,8 @@ describe("core/localizer-spec", function () {
             }).then(function (localized) {
                 expect(localized).toBe("Hello, later");
                 expect(object.name).toBe("later");
+            }).catch(function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });
@@ -157,6 +158,8 @@ describe("core/localizer-spec", function () {
                 return message.localized;
             }).then(function (localized) {
                 expect(localized).toBe("Hello, after");
+            }).catch(function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });
@@ -176,6 +179,8 @@ describe("core/localizer-spec", function () {
                 return message.localized;
             }).then(function (localized) {
                 expect(localized).toBe("Hello, after");
+            }).catch(function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });
@@ -207,6 +212,8 @@ describe("core/localizer-spec", function () {
 
             message.localized.then(function (localized) {
                 expect(localized).toBe("pass");
+            }).catch(function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });
@@ -318,7 +325,7 @@ describe("core/localizer-spec", function () {
                 }).then(function (messages) {
                     return Promise.reject("expected messages not to load but got " + JSON.stringify(messages));
                 }).catch(function (err) {
-                    expect(err).toBeDefined();
+                    fail(err);
                 }).finally(function () {
                     done();
                 });
@@ -330,7 +337,7 @@ describe("core/localizer-spec", function () {
                 }).then(function (messages) {
                     return Promise.reject("expected messages not to load but got " + JSON.stringify(messages));
                  }).catch(function (err) {
-                    expect(err).toBeDefined();
+                    fail(err);
                 }).finally(function () {
                     done();
                 });
@@ -342,7 +349,7 @@ describe("core/localizer-spec", function () {
                 }).then(function (messages) {
                     return Promise.reject("expected messages not to load but got " + JSON.stringify(messages));
                 }).catch(function (err) {
-                    expect(err).toBeDefined();
+                    fail(err);
                 }).finally(function () {
                     done();
                 });
@@ -354,6 +361,8 @@ describe("core/localizer-spec", function () {
                     return l.loadMessages();
                 }).then(function (messages) {
                     expect(messages.hello).toBe("Hello, World!");
+                }).catch(function (err) {
+                    fail(err);
                 }).finally(function () {
                     done();
                 });
@@ -368,6 +377,8 @@ describe("core/localizer-spec", function () {
                             resolve();
                         });
                     });
+                }).catch(function (err) {
+                    fail(err);
                 }).finally(function () {
                     done();
                 });
@@ -403,7 +414,7 @@ describe("core/localizer-spec", function () {
                 }).then(function () {
                     return Promise.reject("expected a timeout");
                 }).catch(function (err) {
-                    expect(err).toBeDefined();
+                    fail(err);
                 }).finally(function () {
                     done();
                 });
