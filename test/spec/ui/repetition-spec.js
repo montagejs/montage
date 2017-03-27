@@ -81,6 +81,9 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
 
             testPage.waitForComponentDraw(list14).then(function () {
                 expect(didThrow).toBe(false);
+            }, function (err) {
+                fail(err)
+            }).finally(function () {
                 done();
             });
         });
@@ -101,6 +104,9 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     testPage.waitForComponentDraw(list15).then(function () {
                         expect(list15.childComponents.length).toBe(1);
                         expect(list15.childComponents[0].text).toBe(1);
+                    }, function (err) {
+                        fail(err)
+                    }).finally(function () {
                         done();
                     });
                 });
@@ -129,6 +135,9 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     var lis = querySelectorAll(".list1 > li");
                     expect(lis.length).toBe(1);
                     expect(lis[0].textContent).toBe("Hello Friend!");
+                }, function (err) {
+                    fail(err)
+                }).finally(function () {
                     done();
                 });
             });
@@ -138,6 +147,9 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                 testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                     var lis = querySelectorAll(".list1 > li");
                     expect(lis.length).toBe(0);
+                }, function (err) {
+                    fail(err)
+                }).finally(function () {
                     done();
                 });
             });
@@ -148,6 +160,9 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     var lis = querySelectorAll(".list1 > li");
                     expect(lis.length).toBe(5);
                     expect(lis[0].textContent).toBe("Hello Friend!");
+                }, function (err) {
+                    fail(err)
+                }).finally(function () {
                     done();
                 });
             });
@@ -157,6 +172,9 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                 testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                     var lis = querySelectorAll(".list1 > li");
                     expect(lis.length).toBe(0);
+                }, function (err) {
+                    fail(err)
+                }).finally(function () {
                     done();
                 });
             });
@@ -166,6 +184,9 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                 testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                     var lis = querySelectorAll(".list1 > li");
                     expect(lis.length).toBe(3);
+                }, function (err) {
+                    fail(err)
+                }).finally(function () {
                     done();
                 });
             });
@@ -187,6 +208,9 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                         lis = querySelectorAll(".list1 > li");
                         expect(lis.length).toBe(4);
+                    }, function (err) {
+                        fail(err)
+                    }).finally(function () {
                         done();
                     });
                 });
@@ -205,6 +229,9 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                         lis = querySelectorAll(".list1 > li");
                         expect(lis.length).toBe(3);
+                    }, function (err) {
+                        fail(err)
+                    }).finally(function () {
                         done();
                     });
                 });
@@ -223,6 +250,9 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     testPage.waitForComponentDraw(delegate.repetition1).then(function () {
                         lis = querySelectorAll(".list1 > li");
                         expect(lis.length).toBe(1);
+                       }, function (err) {
+                        fail(err)
+                    }).finally(function () {
                         done();
                     });
                 });
@@ -240,6 +270,9 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     // sanity test
                     var lis = repetition.element.querySelectorAll("li");
                     expect(lis.length).toBe(3);
+                }, function (err) {
+                    fail(err)
+                }).finally(function () {
                     done();
                 });
             });
@@ -253,6 +286,9 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     var input = querySelectorAll(".list2 > li > input.textfield1");
                     expect(input.length).toBe(2);
                     expect(input[1].value).toBe("is");
+                }, function (err) {
+                    fail(err)
+                }).finally(function () {
                     done();
                 });
             });
@@ -264,6 +300,9 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     var input = querySelectorAll(".list2 > li > input.textfield1");
                     expect(input.length).toBe(1);
                     expect(input[0].value).toBe("This");
+                }, function (err) {
+                    fail(err)
+                }).finally(function () {
                     done();
                 });
             });
@@ -279,6 +318,9 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                         var input = querySelectorAll(".list2 > li > input.textfield1");
                         expect(input.length).toBe(3);
                         expect(input[2].value).toBe("Motorola");
+                    }, function (err) {
+                        fail(err)
+                    }).finally(function () {
                         done();
                     });
                 });

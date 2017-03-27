@@ -325,7 +325,7 @@ describe("core/localizer-spec", function () {
                 }).then(function (messages) {
                     return Promise.reject("expected messages not to load but got " + JSON.stringify(messages));
                 }).catch(function (err) {
-                    fail(err);
+                    expect(err).toBeDefined();
                 }).finally(function () {
                     done();
                 });
@@ -337,7 +337,7 @@ describe("core/localizer-spec", function () {
                 }).then(function (messages) {
                     return Promise.reject("expected messages not to load but got " + JSON.stringify(messages));
                  }).catch(function (err) {
-                    fail(err);
+                    expect(err).toBeDefined();
                 }).finally(function () {
                     done();
                 });
@@ -349,7 +349,7 @@ describe("core/localizer-spec", function () {
                 }).then(function (messages) {
                     return Promise.reject("expected messages not to load but got " + JSON.stringify(messages));
                 }).catch(function (err) {
-                    fail(err);
+                    expect(err).toBeDefined();
                 }).finally(function () {
                     done();
                 });
@@ -414,7 +414,7 @@ describe("core/localizer-spec", function () {
                 }).then(function () {
                     return Promise.reject("expected a timeout");
                 }).catch(function (err) {
-                    fail(err);
+                    expect(err).toBeDefined();
                 }).finally(function () {
                     done();
                 });
