@@ -7,7 +7,7 @@
 var Montage = require("montage").Montage;
 var Blueprint = require("montage/core/meta/blueprint").Blueprint;
 var Model = require("montage/core/meta/model").Model;
-var PropertyBlueprint = require("montage/core/meta/property-blueprint").PropertyBlueprint;
+var PropertyDescriptor = require("montage/core/meta/property-descriptor").PropertyDescriptor;
 var AssociationBlueprint = require("montage/core/meta/association-blueprint").AssociationBlueprint;
 
 var Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer;
@@ -127,7 +127,7 @@ describe("meta/blueprint-spec", function () {
             });
         });
 
-        describe("adding a PropertyBlueprint", function () {
+        describe("adding a PropertyDescriptor", function () {
             var circle, shapeBlueprint;
             beforeEach(function () {
                 var binder = new Model().initWithNameAndRequire("Binder", require);
@@ -135,10 +135,10 @@ describe("meta/blueprint-spec", function () {
                 binder.addObjectDescriptor(shapeBlueprint);
                 var propertyBlueprint = shapeBlueprint.newPropertyDescriptor("size", 1);
                 shapeBlueprint.addPropertyDescriptor(propertyBlueprint);
-                propertyBlueprint = shapeBlueprint.newPropertyDescriptor("readOnlyPropertyBlueprint", 1);
+                propertyBlueprint = shapeBlueprint.newPropertyDescriptor("readOnlyPropertyDescriptor", 1);
                 propertyBlueprint.readOnly = true;
                 shapeBlueprint.addPropertyDescriptor(propertyBlueprint);
-                propertyBlueprint = shapeBlueprint.newPropertyDescriptor("mandatoryPropertyBlueprint", 1);
+                propertyBlueprint = shapeBlueprint.newPropertyDescriptor("mandatoryPropertyDescriptor", 1);
                 propertyBlueprint.mandatory = true;
                 shapeBlueprint.addPropertyDescriptor(propertyBlueprint);
                 propertyBlueprint = shapeBlueprint.newPropertyDescriptor("denyDelete", 1);
@@ -170,11 +170,11 @@ describe("meta/blueprint-spec", function () {
             describe("read only propertyBlueprint's property", function () {
                 it("should not be settable", function () {
                     expect(function () {
-                        circle.readOnlyPropertyBlueprint = "big";
+                        circle.readOnlyPropertyDescriptor = "big";
                     }).toThrow();
                 });
                 it("should have a get and no set", function () {
-                    var descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(circle), "readOnlyPropertyBlueprint");
+                    var descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(circle), "readOnlyPropertyDescriptor");
                     expect(typeof descriptor.get).toEqual("function");
                     expect(typeof descriptor.set).toEqual("undefined");
                 });
@@ -183,11 +183,11 @@ describe("meta/blueprint-spec", function () {
                 it("should not be settable", function () {
                     expect(
                         function () {
-                            circle.readOnlyPropertyBlueprint = "big";
+                            circle.readOnlyPropertyDescriptor = "big";
                         }).toThrow();
                 });
                 it("should have a get and no set", function () {
-                    var descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(circle), "readOnlyPropertyBlueprint");
+                    var descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(circle), "readOnlyPropertyDescriptor");
                     expect(typeof descriptor.get).toEqual("function");
                     expect(typeof descriptor.set).toEqual("undefined");
                 });
@@ -212,8 +212,8 @@ describe("meta/blueprint-spec", function () {
                 expect(serializedBinder).not.toBeNull();
             });
             it("can deserialize", function (done) {
-                var serializedBinder = new Serializer().initWithRequire(require).serializeObject(companyBinder);
-                var deserializer = new Deserializer().init(serializedBinder, require).deserializeObject().then(function (deserializedBinder) {
+                var serializedBinder = new Serializer().initWithRequire(global.require).serializeObject(companyBinder);
+                var deserializer = new Deserializer().init(serializedBinder, global.require).deserializeObject().then(function (deserializedBinder) {
                     var metadata = Montage.getInfoForObject(deserializedBinder);
                     expect(serializedBinder).not.toBeNull();
                     expect(metadata.objectName).toBe("Model");
