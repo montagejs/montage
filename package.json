@@ -52,19 +52,24 @@
     "q-io": "~1.11.0"
   },
   "devDependencies": {
+    "concurrently": "^3.4.0",
     "jasmine-console-reporter": "^1.2.7",
     "jasmine-core": "^2.5.2",
-    "montage-testing": "hthetiot/montage-testing#upgrade",
     "karma": "^1.5.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",
     "karma-firefox-launcher": "^1.0.1",
     "karma-jasmine": "^1.1.0",
-    "karma-phantomjs-launcher": "^1.0.2"
+    "karma-phantomjs-launcher": "^1.0.2",
+    "montage-testing": "hthetiot/montage-testing#upgrade",
+    "open": "0.0.5"
   },
   "scripts": {
     "test": "node test/run-node.js",
-    "jsdoc": "node ../montagejs.org/build/jsdoc/jsdoc.js -out $PWD/builds/jsdoc/ montage@npm-link"
+    "jsdoc": "node ../montagejs.org/build/jsdoc/jsdoc.js -out $PWD/builds/jsdoc/ montage@npm-link",
+    "test:karma": "karma start --no-auto-watch --single-run",
+    "test:karma-dev": "karma start --auto-watch --no-single-run",
+    "test:jasmine": "concurrently \"http-server -a localhost -p 8085\" \"open http://localhost:8085/test/run.html\""
   },
   "exclude": [
     "test",
