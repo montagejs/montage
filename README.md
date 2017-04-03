@@ -1,4 +1,6 @@
-# MontageJS Readme
+[![Build Status](https://travis-ci.org/montagejs/montage.svg?branch=master)](http://travis-ci.org/montagejs/montage)
+
+# MontageJS
 
 MontageJS is a new type of application framework powered by standard web technologies. Designed with an eye toward maintainability and performance, MontageJS simplifies the development of rich HTML5 applications by providing modular components, real-time two-way data binding, object serialization with DOM mapping, event handling, a managed component draw cycle, CommonJS dependency management, and many more conveniences to help build robust single-page web applications.
  
