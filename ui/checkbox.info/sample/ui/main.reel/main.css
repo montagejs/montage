@@ -60,7 +60,7 @@ header {
     fill: transparent;
 }
 
-.checkbox.custom.montage-Checkbox--checked .CheckboxCustom-icon {
+.checkbox.custom.montage--checked .CheckboxCustom-icon {
     fill: inherit;
 }
 
@@ -83,7 +83,7 @@ header {
 }
 
 .checkbox.custom.montage--active,
-.checkbox.custom.montage-Checkbox--checked {
+.checkbox.custom.montage--checked {
     border-color: hsla(0,0%,70%,1);
     background-image: -webkit-linear-gradient(top, hsl(0,0%,90%), hsl(0,0%,86%) );
     background-image: -moz-linear-gradient(top, hsl(0,0%,90%), hsl(0,0%,86%) );
