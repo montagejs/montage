@@ -40,6 +40,22 @@
           "location": "node_modules/bluebird"
         }
       }
+    },
+    "node": {
+      "main": "core/core",
+      "redirects": {
+        "montage": "core/core"
+      },
+      "mappings": {
+      "mr": {
+        "name": "mr",
+        "location": "node_modules/mr"
+      },
+        "bluebird": {
+          "name": "bluebird",
+          "location": "node_modules/bluebird"
+        }
+      }
     }
   },
   "production": true,

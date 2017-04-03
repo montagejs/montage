@@ -2,9 +2,9 @@
  * @module ui/tree-list.reel
  * @requires montage/ui/component
  */
-var Component = require("montage/ui/component").Component,
-    TreeNode = require("montage/core/tree-controller").TreeNode,
-    WeakMap = require("montage/collections/weak-map");
+var Component = require("ui/component").Component,
+    TreeNode = require("core/tree-controller").TreeNode,
+    WeakMap = require("collections/weak-map");
 
 /**
  * @class TreeList

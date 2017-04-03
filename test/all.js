@@ -1,5 +1,5 @@
 console.log('montage-testing', 'Start');
-require("montage-testing").run(require, [
+module.exports = require("montage-testing").run(require, [
     // App
     {name: "spec/application-spec", node: false},
     // Internal
@@ -93,6 +93,7 @@ require("montage-testing").run(require, [
     // Trigger
     {name: "spec/trigger/trigger-spec", node: false},
     // UI
+    {name: "spec/ui/checkbox-spec", node: false},
     {name: "spec/ui/condition-spec", node: false},
     {name: "spec/ui/button-spec", node: false},
     {name: "spec/ui/component-spec", node: false},

@@ -13,7 +13,8 @@ var Anchor = exports.Anchor = Control.specialize({
     // HTMLAnchorElement methods
 
     blur: { value: function() { this._element.blur(); } },
-    focus: { value: function() { this._element.focus(); } }
+    focus: { value: function() { this._element.focus(); } },
+    hasTemplate: {value: false }
 
 });
 
