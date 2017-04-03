@@ -77,7 +77,7 @@
     "karma-firefox-launcher": "^1.0.1",
     "karma-jasmine": "^1.1.0",
     "karma-phantomjs-launcher": "^1.0.2",
-    "montage-testing": "git@github.com:montagejs/montage-testing.git#v0.5.0",
+    "montage-testing": "https://github.com/montagejs/montage-testing.git#v0.5.0",
     "open": "0.0.5"
   },
   "scripts": {
