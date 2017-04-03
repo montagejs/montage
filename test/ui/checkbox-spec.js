@@ -72,7 +72,7 @@ describe("test/base/abstract-checkbox-spec", function () {
             it("should add the corresponding class name to classList when checked", function () {
                 aCheckbox.checked = true;
 
-                expect(aCheckbox.classList.contains("montage-Checkbox--checked")).toBe(true);
+                expect(aCheckbox.classList.contains("montage--checked")).toBe(true);
             });
         });
 

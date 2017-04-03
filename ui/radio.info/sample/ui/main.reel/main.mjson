@@ -1,0 +1,40 @@
+{
+    "owner": {
+        "properties": {
+            "element": {"#": "main"}
+        }
+    },
+
+    "custom1": {
+        "prototype": "montage/ui/radio.reel",
+        "properties": {
+            "element": {"#": "radio-custom1"}
+        }
+    },
+    "custom2": {
+        "prototype": "montage/ui/radio.reel",
+        "properties": {
+            "element": {"#": "radio-custom2"}
+        }
+    },
+
+    "native1": {
+        "prototype": "montage/ui/radio.reel",
+        "properties": {
+            "element": {"#": "radio-native1"},
+            "radioButtonController": {"@":"radioButtonControllerNative"}
+        }
+    },
+    "native2": {
+        "prototype": "montage/ui/radio.reel",
+        "properties": {
+            "element": {"#": "radio-native2"},
+            "radioButtonController": {"@":"radioButtonControllerNative"}
+        }
+    },
+    "radioButtonControllerNative": {
+        "prototype": "montage/core/radio-button-controller", "properties": {
+            "value": 1
+        }
+    }
+}

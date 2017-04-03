@@ -72,6 +72,11 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     hasTemplate: {
         value: false
     },
+
+    drawsFocusOnPointerActivation : {
+        value: true
+    },
+
     /**
         converter
         A Montage converter object used to convert or format the label displayed by the Button instance. When a new value is assigned to <code>label</code>, the converter object's <code>convert()</code> method is invoked, passing it the newly assigned label value.

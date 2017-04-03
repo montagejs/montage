@@ -16,13 +16,23 @@ exports.CheckControl =  Control.specialize({
         value: function CheckControl() {
 
             this.defineBindings({
-                "classList.has('montage-Checkbox--checked')": {
-                    "<-": "checked"
+                "classList.has('montage--checked')": {
+                     "<-": "checked"
                 }
             });
+
+            var leftExpression = "classList.has('",
+                bindings = {};
+            leftExpression += this.checkedClassName;
+            leftExpression += "')";
+            bindings[leftExpression] = {
+                    "<-": "checked"
+            };
+
+            this.defineBindings(bindings);
         }
     },
-    
+
     // HTMLInputElement methods
 
     // click() deliberately omitted, use checked = instead
@@ -53,7 +63,7 @@ exports.CheckControl =  Control.specialize({
 
     toggleChecked: {
         value: function () {
-            if (!this.enabled) {
+            if (this.disabled) {
                 return;
             }
             this.checked = !this.checked;
@@ -104,7 +114,8 @@ exports.CheckControl =  Control.specialize({
         value: function(event) {
             if (this.hasStandardElement){
                 this._shouldFakeCheck = event.defaultPrevented;
-            }else {
+            }
+            else {
                 this.active = true;
 
                 if (event.touch) {
@@ -113,7 +124,7 @@ exports.CheckControl =  Control.specialize({
                     document.addEventListener("touchmove", this, false);
                 }
             }
-            
+
         }
     },
 
@@ -164,14 +175,14 @@ exports.CheckControl.addAttributes( /** @lends module:"montage/ui/native/check-c
     @default false
 */
     checked: {value: false, dataType: 'boolean'},
-    
+
 /**
     The value associated with the element.
     @type {string}
     @default "on"
 */
     value: {value: 'on'}
-    
+
 
 });
 
