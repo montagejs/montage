@@ -1,3 +1,14 @@
+### v17.0.0
+
+- Other minor fixes
+- Replaces montage-Checkbox--checked by montage
+- Adds missing focus on mousedown
+- defers JSON.parse() of serialization from init to deserialize to avoid double parsing
+- updates spec accordingly
+- updates code using frb’s getBindings to expect a Map instead of an object
+- updates version for next release
+- updates frb dependency to 4.0.x
+
 ### v16.0.3
 - overall speed improvements
 - Fixes missing classList on named param DOM element and cleaning up.
