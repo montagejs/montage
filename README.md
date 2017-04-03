@@ -74,7 +74,7 @@ To start using MontageJS, follow these steps:
 
     You should see the contents of the Welcome component—a simple single-page application, which is explicitly loaded to accompany our two-part [quick start tutorial](http://montagejs.org/docs/montagejs-setup.html) tutorial.
 
-##Where to Go from Here
+## Where to Go from Here
 For a quick introduction on how to assemble MontageJS components into a user interface, refer to [“Hello MontageJS”](http://montagejs.org/docs/hello-montagejs.html) in our Quick Start tutorial.
 For more information on MontageJS components, bindings, event handling, serialization etc. refer to the [documentation](http://montagejs.org/docs/) (be patient: we are currently in the process of updating the docs).
 
