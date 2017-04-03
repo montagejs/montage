@@ -53,7 +53,7 @@
   },
   "devDependencies": {
     "jshint": "~2.4.4",
-    "montage-testing": "git@github.com:montagejs/montage-testing.git#v0.4.4"
+    "montage-testing": "https://github.com/montagejs/montage-testing.git#v0.4.4"
   },
   "scripts": {
     "test": "node test/node/node-spec.js",
