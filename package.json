@@ -2,8 +2,8 @@
   "name": "montage",
   "version": "17.0.0",
   "description": "Build your next application with a browser based platform that really gets the web.",
- "license" : "BSD-3-Clause",
- "repository": {
+  "license": "BSD-3-Clause",
+  "repository": {
     "type": "git",
     "url": "https://github.com/montagejs/montage.git"
   },
@@ -15,10 +15,10 @@
         "montage": "core/core"
       },
       "mappings": {
-      "mr": {
-        "name": "mr",
-        "location": "node_modules/mr"
-      },
+        "mr": {
+          "name": "mr",
+          "location": "node_modules/mr"
+        },
         "bluebird": {
           "name": "bluebird",
           "location": "node_modules/bluebird"
@@ -31,10 +31,10 @@
         "montage": "core/core"
       },
       "mappings": {
-      "mr": {
-        "name": "mr",
-        "location": "node_modules/mr"
-      },
+        "mr": {
+          "name": "mr",
+          "location": "node_modules/mr"
+        },
         "bluebird": {
           "name": "bluebird",
           "location": "node_modules/bluebird"
@@ -48,18 +48,20 @@
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
     "mr": "~16.0.3",
-    "bluebird":"~3.4.7",
+    "bluebird": "~3.4.7",
     "q-io": "~1.11.0"
   },
   "devDependencies": {
+    "jsdoc": "^3.4.3",
     "jshint": "~2.4.4",
     "montage-testing": "https://github.com/montagejs/montage-testing.git#v0.4.4"
   },
   "scripts": {
     "test": "node test/node/node-spec.js",
-    "jsdoc": "node ../montagejs.org/build/jsdoc/jsdoc.js -out $PWD/builds/jsdoc/ montage@npm-link"
+    "jsdoc": "jsdoc -c jsdoc.json"
   },
   "exclude": [
+    "doc",
     "test",
     "tools"
   ]
