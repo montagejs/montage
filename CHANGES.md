@@ -7,7 +7,7 @@
     - Revamp NodeJS tests runner (npm test)
     - Migrate Phantom.js tests runner to Karma (npm run test:karma)
   - jshint and other minors fix.
-  - Add missing LICENSE.md  BSD 3-Clause License Montage Studio, inc based on package.json current author and license
+  - implement initial support for NodeJS
   
 ### v17.0.0
 
