@@ -26,7 +26,8 @@ var Select = exports.Select =  Control.specialize(/** @lends module:"montage/ui/
     _fromInput: {value: null},
     _synching: {value: null},
     //_internalSet: {value: null},
-
+    hasTemplate: {value: false },
+    
     _selectedIndexes: {
         value: null
     },
@@ -60,6 +61,8 @@ var Select = exports.Select =  Control.specialize(/** @lends module:"montage/ui/
             this._selectedIndexes.addRangeChangeListener(this, "selectedIndexes");
         }
     },
+
+
 
     handleSelectedIndexesRangeChange: {
         value: function() {

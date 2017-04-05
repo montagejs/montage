@@ -12,7 +12,7 @@ var TextInput = require("ui/text-input").TextInput;
    @extends module:montage/ui/text-input.TextInput
  */
 var NumberField = exports.NumberField = TextInput.specialize({
-
+	hasTemplate: {value: false }
 });
 
 NumberField.addAttributes(/** @lends module:"montage/ui/native/input-number.reel".InputNumber */{
