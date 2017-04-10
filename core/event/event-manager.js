@@ -1187,8 +1187,7 @@ if (typeof window !== "undefined") { // client-side
                     }
                     this._observedTarget_byEventType_[eventType].set(listenerTarget,this);
 
-                    listenerTarget.nativeAddEventListener(eventType, (function(event) {
-                        this.handleEvent(event,true);}).bind(this), true);
+                    listenerTarget.nativeAddEventListener(eventType, this, true);
                 }
                 // console.log("started listening: ", eventType, listenerTarget)
             }
@@ -2392,8 +2391,8 @@ if (typeof window !== "undefined") { // client-side
          */
         handleEvent: {
             enumerable: false,
-            value: function (event,isNative) {
-                if (isNative && !this._shouldDispatchEvent(event)) {
+            value: function (event) {
+                if (event instanceof UIEvent && !this._shouldDispatchEvent(event)) {
                     return void 0;
                 }
 
