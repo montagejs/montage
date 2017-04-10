@@ -205,7 +205,7 @@ describe("meta/blueprint-spec", function () {
 
         describe("serializing", function () {
             var companyBinder = BinderHelper.companyBinder(),
-                personBlueprint = companyBinder.blueprintForName("Person");
+                personBlueprint = companyBinder.objectDescriptorForName("Person");
 
             personBlueprint.maxAge = 60;
 
