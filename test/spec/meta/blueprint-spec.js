@@ -9,16 +9,20 @@ var Blueprint = require("montage/core/meta/blueprint").Blueprint;
 var Model = require("montage/core/meta/model").Model;
 var PropertyDescriptor = require("montage/core/meta/property-descriptor").PropertyDescriptor;
 var AssociationBlueprint = require("montage/core/meta/association-blueprint").AssociationBlueprint;
-
 var Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer;
 var Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer;
-
 var BinderHelper = require("./blueprint/binderhelper").BinderHelper;
 var Person = require("./blueprint/person").Person;
 var Company = require("./blueprint/company").Company;
-
-
 var logger = require("montage/core/logger").logger("./blueprint-spec.js");
+
+// Require to deserialize
+// TODO add proper deps to montage modules
+require('montage/core/meta/object-descriptor');
+require('montage/core/meta/object-descriptor-reference');
+require('montage/core/meta/blueprint-reference');
+require('montage/core/meta/property-blueprint');
+require('montage/core/meta/module-blueprint');
 
 describe("meta/blueprint-spec", function () {
     describe("Binder", function () {
@@ -215,15 +219,15 @@ describe("meta/blueprint-spec", function () {
                 expect(serializedBinder).not.toBeNull();
             });
             it("can deserialize", function (done) {
-                var serializedBinder = new Serializer().initWithRequire(global.require).serializeObject(companyBinder);
-                var deserializer = new Deserializer().init(serializedBinder, global.require).deserializeObject().then(function (deserializedBinder) {
+                var serializedBinder = new Serializer().initWithRequire(require).serializeObject(companyBinder);
+                var deserializer = new Deserializer().init(serializedBinder, require).deserializeObject().then(function (deserializedBinder) {
                     var metadata = Montage.getInfoForObject(deserializedBinder);
                     expect(serializedBinder).not.toBeNull();
                     expect(metadata.objectName).toBe("Model");
                     expect(metadata.moduleId).toBe("core/meta/model");
                     var personBlueprint = deserializedBinder.objectDescriptorForName("Person");
                     expect(personBlueprint).toBeTruthy();
-                    expect(personBlueprint.propertyBlueprintForName("phoneNumbers")).not.toBeNull();
+                    expect(personBlueprint.propertyDescriptorForName("phoneNumbers")).not.toBeNull();
                     expect(personBlueprint.maxAge).toBe(60);
                 }).finally(function () {
                     done();
