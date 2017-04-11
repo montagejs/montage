@@ -31,6 +31,8 @@ describe("trigger-test", function () {
                         expect(event.data.type).toEqual("montageReady");
                         expect(TestPageLoader.testPage.loaded).toBeFalsy();
                     });
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });
@@ -90,6 +92,8 @@ describe("trigger-test", function () {
                 return TestPageLoader.testPage.loadTest(promiseForFrameLoad, options).then(function (testPage) {
                     expect(testPage.loaded).toBeTruthy();
                 });
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });
@@ -101,6 +105,8 @@ describe("trigger-test", function () {
 
             injectModule.then(function (inject) {
                 expect(inject.injected).toBeTruthy();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });
@@ -112,6 +118,8 @@ describe("trigger-test", function () {
 
             injectModule.then(function (inject) {
                 expect(inject.injected).toBeTruthy();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });
@@ -123,6 +131,8 @@ describe("trigger-test", function () {
 
             injectModule.then(function (inject) {
                 expect(inject.injected).toBeTruthy();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });
@@ -134,6 +144,8 @@ describe("trigger-test", function () {
 
             injectModule.then(function (inject) {
                 expect(inject.injected).toBeTruthy();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });
@@ -145,6 +157,8 @@ describe("trigger-test", function () {
 
             injectModule.then(function (inject) {
                 expect(inject.injected).toBeTruthy();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });
