@@ -63,7 +63,7 @@
     "collections": "~5.0.x",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
-    "mr": "hthetiot/mr#npmv3",
+    "mr": "git://github.com/montagejs/mr.git#master",
     "bluebird": "~3.4.7",
     "q-io": "~1.11.0"
   },
