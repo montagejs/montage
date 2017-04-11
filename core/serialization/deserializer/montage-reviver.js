@@ -258,7 +258,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     }
                     throw new Error('Error deserializing "' + label +
                         '" when loading module "' + locationDesc.moduleId +
-                        "' from '" + value.prototype + "'");
+                        "' from '" + value.prototype + "' cause: " + error.message);
                 });
             } else {
                 if ("object" in value && value.object.endsWith(".mjson")) {
