@@ -372,6 +372,8 @@ describe("test/base/abstract-text-field-spec", function () {
             var blueprintPromise = AbstractTextField.blueprint;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });

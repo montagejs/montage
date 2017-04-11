@@ -273,6 +273,8 @@ describe("test/base/abstract-radio-button-spec", function () {
             var blueprintPromise = AbstractRadioButton.blueprint;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });

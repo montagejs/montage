@@ -448,6 +448,8 @@ describe("test/base/abstract-number-field-spec", function () {
             var blueprintPromise = AbstractNumberField.blueprint;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });

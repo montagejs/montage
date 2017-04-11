@@ -37,7 +37,5 @@ TestPageLoader.queueTest("text-test", function (testPage) {
                 });
             });
         });
-
     });
-
 });

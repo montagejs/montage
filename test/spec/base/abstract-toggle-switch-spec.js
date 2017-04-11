@@ -70,6 +70,8 @@ describe("test/base/abstract-toggle-switch-spec", function () {
             var blueprintPromise = AbstractToggleSwitch.blueprint;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });

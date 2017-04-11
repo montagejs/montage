@@ -277,6 +277,8 @@ describe("test/base/abstract-checkbox-spec", function () {
             var blueprintPromise = AbstractCheckbox.blueprint;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             })

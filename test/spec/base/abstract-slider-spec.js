@@ -388,6 +388,8 @@ describe("test/base/abstract-slider-spec", function () {
             var blueprintPromise = AbstractSlider.blueprint;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });

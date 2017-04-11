@@ -238,6 +238,8 @@ describe("test/base/abstract-button-spec", function () {
             var blueprintPromise = AbstractButton.blueprint;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });

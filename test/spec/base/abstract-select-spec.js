@@ -391,6 +391,8 @@ describe("test/base/abstract-select-spec", function () {
             var blueprintPromise = AbstractSelect.blueprint;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });

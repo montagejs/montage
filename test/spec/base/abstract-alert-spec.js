@@ -234,6 +234,8 @@ describe("test/base/abstract-alert-spec", function () {
             var blueprintPromise = AbstractAlert.blueprint || AbstractAlert.objectDescriptor;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });

@@ -228,6 +228,8 @@ describe("test/base/abstract-link-spec", function () {
             var blueprintPromise = AbstractLink.blueprint;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });

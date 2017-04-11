@@ -222,6 +222,8 @@ describe("test/ui/button-spec", function () {
             var blueprintPromise = Button.blueprint;
             blueprintPromise.then(function (blueprint) {
                 expect(blueprint).not.toBeNull();
+            }, function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });
