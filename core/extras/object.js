@@ -79,7 +79,7 @@ Object.defineProperty(Object.prototype, "clear", {
     configurable: true
 });
 
-if (Object.hasOwnProperty('defineProperty') === false) {
+if (Object.hasOwnProperty('defineBinding') === false) {
 
     Object.defineProperty(Object, "defineBinding", {
         value: function (target, targetPath, descriptor) {
