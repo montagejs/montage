@@ -2,6 +2,7 @@
  * @module montage/core/logger
  * @requires montage/core/core
  */
+var console = require('./extras/console').console;
 var Montage = require("./core").Montage,
     Logger,
     loggers,

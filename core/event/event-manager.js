@@ -2878,12 +2878,16 @@ if (typeof window !== "undefined") { // client-side
                     return;
                 }
 
-                value.willBecomeActiveTarget(this.activeTarget);
-                this._activeTarget = value;
-                value.didBecomeActiveTarget();
+                if (value) {
+                    value.willBecomeActiveTarget(this.activeTarget);
+                    this._activeTarget = value;
+                    value.didBecomeActiveTarget();
+                }
             }
         }
 
     });
+
+    defaultEventManager = new EventManager().initWithWindow(window);
 
 } // client-side
