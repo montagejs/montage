@@ -255,7 +255,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
             var response = !(this.isModal && this.isShown),
                 delegateResponse;
 
-            if (!response && candidateActiveTarget.element) {
+            if (!response && candidateActiveTarget && candidateActiveTarget.element) {
                 response = this.element.contains(candidateActiveTarget.element);
             }
 
