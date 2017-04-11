@@ -94,16 +94,17 @@ describe("meta/module-blueprint-spec", function () {
 
         describe("getObjectDescriptorWithModuleId", function () {
             it("caches the blueprints", function (done) {
-                require.loadPackage({location: "spec/meta/blueprint/package"}).then(function (require) {
-                    return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.meta", require)
-                    .then(function (blueprint1) {
+                require.loadPackage({location: "spec/meta/blueprint/package"}).then(function (require) {                
+                    return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.meta", require).then(function (blueprint1) {
                         return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.meta", require)
                         .then(function (blueprint2) {
                             expect(blueprint1).toBe(blueprint2);
                         });
+                    }, function (err) {
+                        fail(err);
+                    }).finally(function () {
+                        done();
                     });
-                }).finally(function () {
-                    done();
                 });
             });
 
@@ -112,9 +113,11 @@ describe("meta/module-blueprint-spec", function () {
                     return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.meta", require)
                     .then(function (blueprint) {
                         expect(blueprint.parent).not.toBe(blueprint);
+                    }, function (err) {
+                        fail(err);
+                    }).finally(function () {
+                        done();
                     });
-                }).finally(function () {
-                    done();
                 });
             });
         });

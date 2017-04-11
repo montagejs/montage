@@ -229,6 +229,8 @@ describe("meta/blueprint-spec", function () {
                     expect(personBlueprint).toBeTruthy();
                     expect(personBlueprint.propertyDescriptorForName("phoneNumbers")).not.toBeNull();
                     expect(personBlueprint.maxAge).toBe(60);
+                }, function (err) {
+                    fail(err);
                 }).finally(function () {
                     done();
                 });
@@ -255,6 +257,8 @@ describe("meta/blueprint-spec", function () {
                 expect(typeof blueprint.then).toBe("function");
                 blueprint.then(function (blueprint) {
                     expect(Blueprint.prototype.isPrototypeOf(blueprint)).toBe(true);
+                }, function (err) {
+                    fail(err);
                 }).finally(function () {
                     done();
                 });
@@ -262,10 +266,11 @@ describe("meta/blueprint-spec", function () {
 
             it("has the correct module id for the parent", function (done) {
                 var ComponentBlueprintTest1 = require("spec/meta/component-blueprint-test/component-blueprint-test-1.reel").ComponentBlueprintTest1;
-                Blueprint.createDefaultObjectDescriptorForObject(ComponentBlueprintTest1)
-                .then(function (blueprint) {
+                Blueprint.createDefaultObjectDescriptorForObject(ComponentBlueprintTest1).then(function (blueprint) {
                     var id = blueprint.parent.objectDescriptorInstanceModule.resolve(require);
                     expect(id === "montage/ui/component.meta" || id === "montage/ui/component.mjson").toBeTruthy();
+                }, function (err) {
+                    fail(err);
                 }).finally(function () {
                     done();
                 });
@@ -312,6 +317,8 @@ describe("meta/blueprint-spec", function () {
                 Blueprint.blueprint.then(function (blueprint){
                     expect( blueprint.objectDescriptorInstanceModule.id === "core/meta/blueprint.meta" ||
                             blueprint.objectDescriptorInstanceModule.id === "core/meta/object-descriptor.mjson").toBeTruthy();
+                }, function (err) {
+                    fail(err);
                 }).finally(function () {
                     done();
                 });
