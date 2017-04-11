@@ -37,4 +37,4 @@ if (typeof window !== "undefined") {
     };
 }
 
-exports.console = global.console;
+module.exports.console = global.console;

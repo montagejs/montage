@@ -37,7 +37,7 @@ var findPackage = function (path) {
         throw new Error("Can't find package");
     }
     var packageJson = FS.join(directory, "package.json");
-    return FS.stat(path).then(function (stat) {
+    return FS.stat(packageJson).then(function (stat) {
         if (stat.isFile()) {
             return directory;
         } else {
@@ -46,11 +46,11 @@ var findPackage = function (path) {
     });
 };
 
-var loadFreeModule = function (program, command, args) {
+var loadFreeModule = function (/*program, command, args*/) {
     throw new Error("Can't load module that is not in a package");
 };
 
-var loadPackagedModule = function (directory, program, command, args) {
+var loadPackagedModule = function (directory, program/*, command, args*/) {
     return MontageBoot.loadPackage(directory)
     .then(function (require) {
         var id = program.slice(directory.length + 1);
@@ -118,8 +118,6 @@ MontageBoot.TemplateLoader = function (config, load) {
                     if (stat.isFile()) {
                         module.extraDependencies = [id + ".html"];
                     }
-                }, function (error) {
-                    // not a problem
                 });
             });
         } else {
@@ -135,12 +133,10 @@ Require.makeLoader = (function (makeLoader) {
     };
 })(Require.makeLoader);
 
-var parseHtmlDependencies = function (text, location) {
+var parseHtmlDependencies = function (text/*, location*/) {
     var dependencies = [];
-
     var dom = parseHtml(text);
     collectHtmlDependencies(dom, dependencies);
-
     return dependencies;
 };
 

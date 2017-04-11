@@ -1,10 +1,4 @@
-/**
- * Defines standardized shims for the intrinsic String object.
- * @see {external:String}
- * @module montage/core/shim/string
- */
-
-/*global module: false, define, callbackApplication */
+/*global define */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
@@ -124,7 +118,8 @@
                 window.postMessage({
                     type: "montageReady"
                 }, "*");
-                var trigger = new Promise(function(resolve, reject){
+
+                var trigger = new Promise(function(resolve) {
                     var messageCallback = function (event) {
                         if (
                             params.remoteTrigger === event.origin &&
@@ -144,6 +139,7 @@
                             }
                         }
                     };
+
                     window.addEventListener("message", messageCallback);
                 });
 
@@ -426,7 +422,7 @@
         },
 
         bootstrap: function (callback) {
-            var base, Require, DOM, Promise, URL;
+            var Require, DOM, Promise, URL;
 
             var params = this.getParams();
             var resolve = this.makeResolve();
@@ -450,8 +446,7 @@
                     root.className = root.className + " montage-app-bootstrapping";
                 }
 
-
-                document._montageTiming = document._montageTiming || {}
+                document._montageTiming = document._montageTiming || {};
                 document._montageTiming.bootstrappingStartTime = Date.now();
 
                 callbackIfReady();
@@ -595,11 +590,8 @@
                   montageRequire(iDependency);
                 }
 
-                var Montage = montageRequire("core/core").Montage;
-                var EventManager = montageRequire("core/event/event-manager").EventManager;
                 var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
                 var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
-                var logger = montageRequire("core/logger").logger;
 
                 var application;
 

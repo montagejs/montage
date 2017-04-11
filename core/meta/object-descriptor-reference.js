@@ -4,8 +4,6 @@ var Promise = require("../promise").Promise,
     RemoteReference = require("./remote-reference").RemoteReference,
     ModelReference = require("./model-reference").ModelReference;
 
-var logger = require("../logger").logger("objectDescriptor");
-
 exports.ObjectDescriptorReference = RemoteReference.specialize( {
 
     constructor: {
