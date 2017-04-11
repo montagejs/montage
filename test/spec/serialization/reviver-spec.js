@@ -41,12 +41,10 @@ describe("reviver", function() {
                             return;
                         },
                         setObjectLabel: function() {}
-                    },
-                    object = reviver.reviveRootObject({}, context, "external");
+                    };
 
-                expect(Promise.is(object)).toBe(true);
-                expect(object.isRejected()).toBeTruthy();
-                object.catch(function () {
+                reviver.reviveRootObject({}, context, "external").catch(function (err) {
+                    expect(err).toBeDefined();
                     done();
                 });
             });

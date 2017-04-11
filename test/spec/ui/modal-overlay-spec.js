@@ -93,8 +93,8 @@ describe("ui/modal-overlay-spec", function () {
             var promise = aModalOverlay.show();
             aModalOverlay.hide();
 
-            promise.catch(function () {
-                expect(promise.isRejected()).toBe(true);
+            promise.catch(function (err) {
+                expect(err).toBeDefined();
             }).finally(function () {
                 done();
             });
