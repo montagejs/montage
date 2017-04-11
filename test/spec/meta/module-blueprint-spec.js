@@ -42,6 +42,7 @@ describe("meta/module-blueprint-spec", function () {
                 "propertyDescriptors": [
                     {"@": "objectDescriptor_one_a"}
                 ],
+                "maxAge": 240,
                 "module": {"%": "spec/meta/module-blueprint-spec"},
                 "exportName": "One"
             }

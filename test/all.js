@@ -116,7 +116,7 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/ui/repetition-selection-spec", node: false},
     {name: "spec/ui/repetition-binding-spec", node: false},
     {name: "spec/core/localizer-spec", node: false},
-    {name: "spec/core/localizer/serialization-spec", node: false},
+    {name: "spec/core/localizer/serialization-spec", node: false}
 ]).then(function () {
 	console.log('montage-testing', 'End');
 }, function (err) {

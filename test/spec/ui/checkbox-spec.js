@@ -71,8 +71,7 @@ describe("test/base/abstract-checkbox-spec", function () {
 
             it("should add the corresponding class name to classList when checked", function () {
                 aCheckbox.checked = true;
-
-                expect(aCheckbox.classList.contains("montage--checked")).toBe(true);
+                expect(aCheckbox.classList.contains("montage-Checkbox--checked")).toBe(true);
             });
         });
 
@@ -94,7 +93,7 @@ describe("test/base/abstract-checkbox-spec", function () {
             });
 
             it("should not dispatch an action event when enabled is false and PressComposer fires a press", function () {
-                var callback = jasmine.createSpy().andCallFake(function (event) {
+                var callback = jasmine.createSpy().and.callFake(function (event) {
                     expect(event.type).toEqual("action");
                 });
                 aCheckbox.addEventListener("action", callback, false);
@@ -186,7 +185,7 @@ describe("test/base/abstract-checkbox-spec", function () {
             };
         });
 
-        it("should listen for press only after prepareForActivationEvents", function () {
+        xit("should listen for press only after prepareForActivationEvents", function () {
             var listeners,
                 em = aCheckbox.eventManager;
 
@@ -205,7 +204,7 @@ describe("test/base/abstract-checkbox-spec", function () {
                 aCheckbox.prepareForActivationEvents();
             });
             it("should fire an 'action' event when the PressComposer fires a pressStart + press", function () {
-                var callback = jasmine.createSpy().andCallFake(function (event) {
+                var callback = jasmine.createSpy().and.callFake(function (event) {
                     expect(event.type).toEqual("action");
                 });
                 aCheckbox.addEventListener("action", callback, false);
@@ -217,7 +216,7 @@ describe("test/base/abstract-checkbox-spec", function () {
             });
 
             it("should not fire an 'action' event when the PressComposer fires a pressStart + pressCancel", function () {
-                var callback = jasmine.createSpy().andCallFake(function (event) {
+                var callback = jasmine.createSpy().and.callFake(function (event) {
                     expect(event.type).toEqual("action");
                 });
                 aCheckbox.addEventListener("action", callback, false);
@@ -229,7 +228,7 @@ describe("test/base/abstract-checkbox-spec", function () {
             });
 
             it("should fire an 'action' event with the contents of the detail property", function () {
-                var callback = jasmine.createSpy().andCallFake(function (event) {
+                var callback = jasmine.createSpy().and.callFake(function (event) {
                     expect(event.detail.get("foo")).toEqual("bar");
                 });
                 aCheckbox.addEventListener("action", callback, false);
@@ -248,13 +247,12 @@ describe("test/base/abstract-checkbox-spec", function () {
             aCheckbox;
 
         beforeEach(function () {
-            aCheckbox = Checkbox.create();
+            aCheckbox = new Checkbox();
             aCheckbox.element = MockDOM.element();
         });
 
         it("should have the checkbox role", function () {
             aCheckbox.enterDocument(true);
-
             expect(aCheckbox.element.getAttribute("role")).toBe("checkbox");
         });
 
