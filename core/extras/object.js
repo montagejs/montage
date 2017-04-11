@@ -79,50 +79,59 @@ Object.defineProperty(Object.prototype, "clear", {
     configurable: true
 });
 
-Object.defineProperty(Object, "defineBinding", {
-    value: function (target, targetPath, descriptor) {
-        var depth = Error.stackTraceLimit;
-        Error.stackTraceLimit = 2;
-        console.warn(
-            "Object.defineBinding deprecated.  " +
-            "See the comment below this warning for migration instructions.",
-            new Error("deprecated").stack
-        );
-        Error.stackTraceLimit = depth;
+if (Object.hasOwnProperty('defineBinding') === false) {
 
-        //
-        // Migration instructions:
-        //
-        // Replace Object.defineBinding with
-        // import Bindings from "montage/core/bindings"
-        // Bindings.defineBinding(target, targetPath, descriptor);
-        // - Use "<-", "<->", and "source" in place of
-        //   "boundObjectPropertyPath", "oneway", and "boundObject".
-        // - Use "convert" or "converter.convert" in place of
-        //   "boundValueMutator".
-        //
+    Object.defineProperty(Object, "defineBinding", {
+        value: function (target, targetPath, descriptor) {
+            var depth = Error.stackTraceLimit;
+            Error.stackTraceLimit = 2;
+            console.warn(
+                "Object.defineBinding deprecated.  " +
+                "See the comment below this warning for migration instructions.",
+                new Error("deprecated").stack
+            );
+            Error.stackTraceLimit = depth;
 
-        var Bindings = require("frb");
+            //
+            // Migration instructions:
+            //
+            // Replace Object.defineBinding with
+            // import Bindings from "montage/core/bindings"
+            // Bindings.defineBinding(target, targetPath, descriptor);
+            // - Use "<-", "<->", and "source" in place of
+            //   "boundObjectPropertyPath", "oneway", and "boundObject".
+            // - Use "convert" or "converter.convert" in place of
+            //   "boundValueMutator".
+            //
 
-        descriptor.source = descriptor.boundObject;
-        if (descriptor.oneway) {
-            descriptor["<-"] = descriptor.boundObjectPropertyPath;
-        } else {
-            descriptor["<->"] = descriptor.boundObjectPropertyPath;
-        }
+            var Bindings = require("frb");
 
-        if (descriptor.boundValueMutator) {
-            descriptor.convert = descriptor.boundValueMutator;
-        }
+            descriptor.source = descriptor.boundObject;
+            if (descriptor.oneway) {
+                descriptor["<-"] = descriptor.boundObjectPropertyPath;
+            } else {
+                descriptor["<->"] = descriptor.boundObjectPropertyPath;
+            }
 
-        Bindings.defineBinding(target, targetPath, descriptor);
-    }
-});
+            if (descriptor.boundValueMutator) {
+                descriptor.convert = descriptor.boundValueMutator;
+            }
 
-Object.defineProperty(Object, "deleteBinding", {
-    value: function (target, targetPath) {
-        var Bindings = require("frb");
-        Bindings.cancelBinding(target, targetPath);
-    }
-});
+            Bindings.defineBinding(target, targetPath, descriptor);
+        },
+        writable: true,
+        configurable: true
+    });
+}
+
+if (Object.hasOwnProperty('deleteBinding') === false) {
+    Object.defineProperty(Object, "deleteBinding", {
+        value: function (target, targetPath) {
+            var Bindings = require("frb");
+            Bindings.cancelBinding(target, targetPath);
+        },
+        writable: true,
+        configurable: true
+    });
+}
 
