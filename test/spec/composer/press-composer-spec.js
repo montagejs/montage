@@ -261,8 +261,8 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                         }, test.press_composer.longPressThreshold - 100);
                     });
 
-                    describe("longPressThreshold", function (done) {
-                        it("can be changed", function () {
+                    describe("longPressThreshold", function () {
+                        it("can be changed", function (done) {
                             var listener = testPage.addListener(test.press_composer, null, "longPress");
                             var timeout = test.press_composer.longPressThreshold - 500;
                             test.press_composer.longPressThreshold = timeout;
