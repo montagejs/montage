@@ -29,7 +29,7 @@ To get started with MontageJS, you will need the following:
 * A recent stable release of Chrome, Safari or Firefox. MontageJS is intended to leverage the evolving web platform of modern browsers.
 * To contribute: A Git client and public SSH key. For details on installing Git and creating your key, see the setup guides on github.com.
 
-#Quick Setup
+# Quick Setup
 To start using MontageJS, follow these steps:
 
 1. [Download](http://nodejs.org/download/) and run the prebuilt Node.js installer for your platform from the Node.js website.
