@@ -1,0 +1,10 @@
+{
+	"name": "repetition.info",
+	"private": true,
+	"dependencies": {
+        "montage": "*"
+    },
+    "mappings": {
+        "montage": "../../../"
+    }
+}

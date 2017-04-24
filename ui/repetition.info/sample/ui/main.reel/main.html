@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Main</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "properties": {
+                    "element": {"#": "main"}
+                }
+            },
+            "items": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": { "#": "items" }
+                },
+                "bindings": {
+                    "content": { "<-": "@owner.myListProperty" }
+                }
+            },
+            "itemsSelected": {
+                "prototype": "ui/items-selected.reel",
+                "properties": {
+                    "element": { "#": "itemsSelected" }
+                }
+            },
+            "item": {
+                "prototype": "ui/item.reel",
+                "properties": {
+                    "element": { "#": "item" }
+                },
+                "bindings": {
+                    "value": { "<-": "@items:iteration.object.quote" },
+                    "classList.has('highlight')": { "<-": "@items:iteration.object.important" }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" data-montage-skin="light" class="Main">
+        <ul data-montage-id="items">
+            <li data-montage-id="item"></li>
+        </ul>
+
+
+        <ul data-montage-id="itemsSelected">
+            <li data-montage-id="item"></li>
+        </ul>
+    </div>
+</body>
+
+</html>

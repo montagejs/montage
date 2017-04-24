@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"}
+            }
+        },
+        "itemValue": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "itemValue"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.value"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <li data-montage-id="owner" class="Item">
+        <span data-montage-id="itemValue"></span>
+    </li>
+</body>
+</html>
