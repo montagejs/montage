@@ -159,7 +159,8 @@ exports.ModelGroup = Montage.specialize( /** @lends ModelGroup.prototype # */ {
     defaultModel: {
         get: function () {
             if (!this._defaultModel) {
-                this._defaultModel = new ModelModule.Model().initWithNameAndRequire("default", require);
+                var _require = global.mr || require; // Handle legacy
+                this._defaultModel = new ModelModule.Model().initWithNameAndRequire("default", _require);
                 this._defaultModel.isDefault = true;
                 this.addModel(this._defaultModel);
             }
