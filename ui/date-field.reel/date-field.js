@@ -12,6 +12,7 @@ var TextInput = require("ui/text-input").TextInput;
     @extends module:montage/ui/text-input.TextInput
  */
 var DateField = exports.DateField = TextInput.specialize({
+    hasTemplate: {value: false }
 });
 
 DateField.addAttributes( /** @lends module:"montage/ui/native/input-date.reel".InputDate# */{
