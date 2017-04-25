@@ -113,7 +113,7 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
                 }).then(function (objectDescriptor) {
                     // TODO: May want to relax this to being just an Object Descriptor
                     if (!ModuleObjectDescriptor.prototype.isPrototypeOf(objectDescriptor)) {
-                        throw new Error("Object in " + moduleId + " is not a module-object-descriptor");
+                   //     throw new Error("Object in " + moduleId + " is not a module-object-descriptor");
                     }
 
                     objectDescriptor.objectDescriptorInstanceModule = new ModuleReference().initWithIdAndRequire(moduleId, _require);
