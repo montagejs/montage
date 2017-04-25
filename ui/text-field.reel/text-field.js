@@ -22,6 +22,10 @@ exports.TextField = TextInput.specialize({
         }
     },
 
+    hasTemplate: {
+        value: false 
+    },
+
     handleKeyPress: {
         value: function (evt) {
             if (this.disabled || evt.keyComposer !== this._keyComposer) {
