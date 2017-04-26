@@ -1,4 +1,8 @@
 console.log('montage-testing', 'Start');
+
+// Inject current montage to avoid montage require via montage-testing
+require('montage');
+
 module.exports = require("montage-testing").run(require, [
     // App
     {name: "spec/application-spec", node: false},

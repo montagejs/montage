@@ -2,11 +2,11 @@
 // used for bootstrapping, this file will never actually be required, but will
 // be injected instead.
 
-Promise = global.Promise || require("bluebird");
+Promise = require("bluebird");
 
 // Patch "Promise.is" to support native promise
-Promise.is = function (promise) {
-	return promise && typeof promise.then === 'function';
+Promise.is = function (obj) {
+	return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
 }
 
 // Polyfill "Promise.prototypefinally" to support finally
