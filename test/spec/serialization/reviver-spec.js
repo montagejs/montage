@@ -214,6 +214,27 @@ describe("reviver", function() {
             });
         });
 
+
+        it("Should fail if 'prototype' property is missing explicitly", function(done) {
+
+            var serialization = {
+                "object1": {
+                    "properties": {
+                        "name": "a custom1 object"
+                    }
+                }
+            };
+
+            try {
+                interpreter.instantiate(serialization);
+                fail('Should throw error');
+            } catch (err) {
+                expect(err.message).toBe('Error deserializing {"properties":{"name":"a custom1 object"}}, might need "prototype" or "object" on label "object1"');
+            } finally {
+                done();
+            }
+        });
+
         it("should deserialize a type of custom object that has an asynchronous revival only once", function(done) {
             Reviver.addCustomObjectReviver({
                 getTypeOf: function(object) {
