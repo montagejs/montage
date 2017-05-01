@@ -6,6 +6,9 @@ var globalEval = eval,
     global = globalEval('this');
 /*jshint evil:false */
 
+
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
+
 // Bootsrap Karma
 if (global.__karma__) {
     
@@ -96,7 +99,7 @@ function injectBase(href) {
 }
 
 injectBase('/base/test/');
-injectScript('../node_modules/mr/bootstrap.js', 'all', function (err) {
+injectScript('../montage.js', 'all', function (err) {
     if (err) {
         throw err;
     }
