@@ -174,7 +174,7 @@ describe("meta/build-in-component-blueprint-spec", function () {
                 var propertyBlueprint = blueprint.propertyDescriptorForName("converter");
                 expect(propertyBlueprint).toBeTruthy();
                 expect(propertyBlueprint.isAssociationBlueprint).toBe(true);
-                expect(propertyBlueprint.targetBlueprint).toBeTruthy();
+                expect(propertyBlueprint.valueDescriptor).toBeTruthy();
             }).finally(function () {
                 done();
             });

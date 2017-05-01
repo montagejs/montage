@@ -174,7 +174,7 @@ describe("test/base/abstract-text-field-spec", function () {
         });
 
         it("should draw a placeholder when set", function () {
-            aTextField.placeholderValue = "a placeholder text";
+            aTextField.placeholder = "a placeholder text";
 
             aTextField.draw();
 

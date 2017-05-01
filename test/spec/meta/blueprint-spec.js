@@ -45,7 +45,7 @@ describe("meta/blueprint-spec", function () {
     });
 
     describe("Blueprint", function () {
-        describe("propertyBlueprints", function () {
+        describe("propertyDescriptors", function () {
             var blueprint = new Blueprint().initWithName("Person");
             var propertyBlueprint = blueprint.newPropertyDescriptor("foo", 1);
             it("should be able to add", function () {
