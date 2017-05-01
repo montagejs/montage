@@ -17,7 +17,7 @@ var AbstractControl = require("./abstract-control").AbstractControl,
  */
 var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @lends AbstractSlider# */ {
 
-    // Lifecycle
+    // Life Cycle
 
     /**
      * @private
@@ -154,7 +154,7 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
         }
     },
 
-    // Event Handlers
+    // Event Handling
 
     acceptsActiveTarget: {
         value: true

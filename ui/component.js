@@ -1246,8 +1246,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     },
 
     /**
-     * Lifecycle method called when this component is removed from the
-     * document's DOM tree.
+     * Called when this component is removed from the document's DOM tree.
      * @function
      */
     exitDocument: {
