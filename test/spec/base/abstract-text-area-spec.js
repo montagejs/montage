@@ -141,7 +141,7 @@ describe("test/base/abstract-text-area-spec", function () {
         });
 
         it("should draw the placeholder value as an attribute of the element", function () {
-            aTextArea.placeholderValue = "placeholder value";
+            aTextArea.placeholder = "placeholder value";
             aTextArea.draw();
             expect(aTextArea.element.getAttribute("placeholder")).toBe(aTextArea.placeholderValue);
         });

@@ -48,17 +48,27 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(/
         value: true
     },
 
-    _placeholderValue: {
+    _placeholder: {
         value: null
     },
 
     placeholderValue: {
         set: function (value) {
-            this._placeholderValue = value;
+            deprecate.deprecationWarning("placeholderValue", "placeholder")
+            this.placeholder = value;
+        },
+        get: function () {
+            return this.placeholder;
+        }
+    },
+
+    placeholder: {
+        set: function (value) {
+            this._placeholder = value;
             this.needsDraw = true;
         },
         get: function () {
-            return this._placeholderValue;
+            return this._placeholder;
         }
     },
 

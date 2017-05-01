@@ -162,7 +162,7 @@ describe("test/ui/text-input-spec", function () {
         });
 
         it("should draw a placeholder when set", function () {
-            aTextField.placeholderValue = "a placeholder text";
+            aTextField.placeholder = "a placeholder text";
 
             aTextField._draw();
             aTextField.draw();
