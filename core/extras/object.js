@@ -85,7 +85,7 @@ if (Object.hasOwnProperty('defineBinding') === false) {
         value: function (target, targetPath, descriptor) {
             var depth = Error.stackTraceLimit,
                 warningMsg = (['Object.defineBinding deprecated, replace Object.defineBinding with: ',
-                'Import Bindings from "montage/core/bindings"',
+                'Import Bindings from "montage/core/core"',
                 'Bindings.defineBinding(target, targetPath, descriptor);',
                 '- Use "<-", "<->", and "source" in place of "boundObjectPropertyPath", "oneway", and "boundObject".',
                 '- Use "convert" or "converter.convert" in place of "boundValueMutator".']).join("\r\n");
