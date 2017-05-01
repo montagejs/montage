@@ -45,7 +45,7 @@
             "parent": {
                 "@": "blueprint_control_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_textfield_updateOnInput"
                 },
@@ -53,7 +53,7 @@
                     "@": "maxlength_property"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "text-field": [
                     {
                         "@": "blueprint_textfield_updateOnInput"

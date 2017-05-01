@@ -58,7 +58,7 @@
             "parent": {
                 "@": "blueprint_component_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_loader_position"
                 },
@@ -69,7 +69,7 @@
                     "@": "blueprint_loader_dismissOnExternalInteraction"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Overlay": [
                     {
                         "@": "blueprint_loader_position"

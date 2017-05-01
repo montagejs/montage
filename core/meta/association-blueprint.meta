@@ -33,12 +33,12 @@
             "parent": {
                 "@": "property_blueprint_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "association_target_blueprint"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "association-blueprint": [
                     {
                         "@": "association_target_blueprint"

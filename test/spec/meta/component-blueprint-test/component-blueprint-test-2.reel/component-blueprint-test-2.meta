@@ -124,7 +124,7 @@
         "properties": {
             "name": "component2",
             "customPrototype": false,
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "component2_bindableProperty1"
                 },
@@ -150,7 +150,7 @@
                     "@": "component2_requiredBindableProperty3"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "required": [
                     {
                         "@": "component2_requiredBindableProperty1"

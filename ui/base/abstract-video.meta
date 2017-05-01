@@ -81,7 +81,7 @@
             "blueprintModuleId": "ui/base/abstract-video.meta",
             "prototypeName": "AbstractVideo",
             "parent": {"@": "blueprint_parent"},
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {"@": "mediaElement_property"},
                 {"@": "videoController_property"},
                 {"@": "src_property"},
@@ -91,7 +91,7 @@
                 {"@": "supportsFullScreen_property"},
                 {"@": "isFullScreen_property"}
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Main": [
                     {"@": "mediaElement_property"},
                     {"@": "videoController_property"},

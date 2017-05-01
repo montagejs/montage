@@ -161,7 +161,7 @@
             "parent": {
                 "@": "blueprint_control_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_button_enabled"
                 },
@@ -187,7 +187,7 @@
                     "@": "blueprint_button_type"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "button": [
                     {
                         "@": "blueprint_button_label"

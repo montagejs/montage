@@ -24,7 +24,7 @@
         "properties": {
             "name": "ActionEventListener",
             "customPrototype": false,
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "actionEventListener_handler"
                 },

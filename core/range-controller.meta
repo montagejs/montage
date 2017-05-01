@@ -116,7 +116,7 @@
         "properties": {
             "name": "RangeController",
             "customPrototype": false,
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "rangeController_content"
                 },
@@ -148,7 +148,7 @@
                     "@": "rangeController_multiSelect"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "rangeController": [
                     {
                         "@": "rangeController_content"

@@ -88,7 +88,7 @@
             "parent": {
                 "@": "blueprint_parent"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "enabled_property"
                 },
@@ -111,7 +111,7 @@
                     "@": "multiSelect_property"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Main": [
                     {
                         "@": "enabled_property"

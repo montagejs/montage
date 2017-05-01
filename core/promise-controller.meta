@@ -70,7 +70,7 @@
         "properties": {
             "name": "PromiseController",
             "customPrototype": false,
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "promiseController_promise"
                 },
@@ -90,7 +90,7 @@
                     "@": "promiseController_rejected"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "promiseController": [
                     {
                         "@": "promiseController_promise"

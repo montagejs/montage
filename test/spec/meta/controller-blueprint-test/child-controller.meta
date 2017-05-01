@@ -35,12 +35,12 @@
             "parent": {
                 "@": "blueprint_parentcontroller_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_childcontroller_purchaseList"
                 }
             ],
-            "propertyBlueprintGroups": {},
+            "propertyDescriptorGroups": {},
             "propertyValidationRules": {},
             "blueprintModule": {
                 "%": "spec/meta/controller-blueprint-test/child-controller.meta"

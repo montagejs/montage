@@ -54,7 +54,7 @@
             "parent": {
                 "@": "text_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "target_property"
                 },

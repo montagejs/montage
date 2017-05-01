@@ -28,7 +28,7 @@
             "parent": {
                 "@": "blueprint_parent"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "checked_property"
                 },
@@ -36,7 +36,7 @@
                     "@": "active_property"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Main": [
                     {
                         "@": "checked_property"

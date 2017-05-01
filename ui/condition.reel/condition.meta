@@ -43,7 +43,7 @@
             "parent": {
                 "@": "blueprint_component_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_condition_condition"
                 },
@@ -51,7 +51,7 @@
                     "@": "blueprint_condition_removalStrategy"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Condition": [
                     {
                         "@": "blueprint_condition_condition"

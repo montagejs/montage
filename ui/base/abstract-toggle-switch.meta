@@ -28,12 +28,12 @@
             "parent": {
                 "@": "blueprint_parent"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "checked_property"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Main": [
                     {
                         "@": "checked_property"

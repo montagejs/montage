@@ -32,11 +32,11 @@
         "properties": {
             "name": "Abstract Confirm",
             "parent": {"@": "blueprint_parent"},
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {"@": "okLabel_property"},
                 {"@": "cancelLabel_property"}
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Options": [
                     {"@": "okLabel_property"},
                     {"@": "cancelLabel_property"}

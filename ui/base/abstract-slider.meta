@@ -83,7 +83,7 @@
             "parent": {
                 "@": "blueprint_parent"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "enabled_property"
                 },
@@ -103,7 +103,7 @@
                     "@": "axis_property"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Main": [
                     {
                         "@": "enabled_property"

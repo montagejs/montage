@@ -68,7 +68,7 @@
             "parent": {
                 "@": "blueprint_parent"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "enabled_property"
                 },
@@ -85,7 +85,7 @@
                     "@": "step_property"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Main": [
                     {
                         "@": "enabled_property"

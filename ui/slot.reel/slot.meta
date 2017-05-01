@@ -38,7 +38,7 @@
             "parent": {
                 "@": "blueprint_component_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_slot_delegate"
                 },
@@ -46,7 +46,7 @@
                     "@": "blueprint_slot_content"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Slot": [
                     {
                         "@": "blueprint_slot_delegate"

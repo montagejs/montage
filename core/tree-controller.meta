@@ -73,7 +73,7 @@
         "properties": {
             "name": "TreeController",
             "customPrototype": false,
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "treeController_content"
                 },
@@ -93,7 +93,7 @@
                     "@": "treeController_root"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "treeController": [
                     {
                         "@": "treeController_content"
@@ -226,7 +226,7 @@
             "blueprintModuleId": "core/tree-controller.meta",
             "prototypeName": "TreeControllerNode",
             "customPrototype": false,
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "treeControllerNode_content"
                 },
@@ -252,7 +252,7 @@
                     "@": "treeControllerNode_junctions"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "treeControllerNode": [
                     {
                         "@": "treeControllerNode_content"

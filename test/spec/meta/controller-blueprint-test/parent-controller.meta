@@ -36,7 +36,7 @@
         "properties": {
             "name": "ParentController",
             "customPrototype": false,
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_parentcontroller_customerList"
                 },
@@ -44,7 +44,7 @@
                     "@": "blueprint_parentcontroller_customerSelectionList"
                 }
             ],
-            "propertyBlueprintGroups": {},
+            "propertyDescriptorGroups": {},
             "propertyValidationRules": {},
             "blueprintModule": {
                 "%": "spec/meta/controller-blueprint-parent/parent-controller.meta"

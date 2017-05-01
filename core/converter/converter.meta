@@ -16,12 +16,12 @@
         "properties": {
             "name": "Converter",
             "customPrototype": false,
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "converter_allowPartialConversion"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "converter": [
                     {
                         "@": "converter_allowPartialConversion"
