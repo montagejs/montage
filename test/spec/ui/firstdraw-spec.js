@@ -35,20 +35,20 @@ TestPageLoader.queueTest("firstdraw-simple", {src: "spec/ui/drawing/simple.html"
     describe("ui/firstdraw-spec", function () {
         describe("component", function () {
             it("should draw within first draw", function () {
-                var text = simpleTestPage.iframe.contentDocument.getElementsByClassName("dynamictext")[0];
+                var text = simpleTestPage.test.templateObjects.dynamictext1.element;
                 expect(text).not.toBeNull();
                 expect(text.textContent).toEqual("Test Value");
             });
         });
         describe("component with template", function () {
             it("should draw within first draw", function () {
-                var text = simpleTestPage.iframe.contentDocument.getElementsByClassName("dynamictext")[1];
+                var text = simpleTestPage.test.templateObjects.custom1.element;
                 expect(text).not.toBeNull();
-                expect(text.textContent).toEqual("Custom Test Value");
+                expect(text.textContent.trim()).toEqual("Custom Test Value");
             });
         });
         it("should insert styles from component template with no templateElement", function () {
-            var onlyStyle = simpleTestPage.iframe.contentDocument.getElementsByClassName("onlyStyle")[0];
+            var onlyStyle = simpleTestPage.test.templateObjects.onlyStyle.element;
 
             expect(getComputedStyle(onlyStyle).paddingTop).toBe("42px");
         });
@@ -59,14 +59,14 @@ TestPageLoader.queueTest("firstdraw-repetition", {src: "spec/ui/drawing/repetiti
     xdescribe("Drawing Repetition", function () {
         describe("repeating component", function () {
             it("should draw within first draw", function () {
-                var text0 = repetitionTestPage.iframe.contentDocument.querySelectorAll(".list1 > div")[0];
+                var text0 = repetitionTestPage.test.templateObjects.repetition1.childComponents[0].element;
                 expect(text0).not.toBeFalsy();
                 expect(text0.textContent).toEqual("Test Value");
             });
         });
         describe("repeating component with template", function () {
             it("should draw within first draw", function () {
-                var text0 = repetitionTestPage.iframe.contentDocument.querySelectorAll(".list2 .dynamictext")[0];
+                var text0 = repetitionTestPage.test.templateObjects.repetition2.childComponents[0].dynamictext1.element;
                 expect(text0).not.toBeFalsy();
                 expect(text0.textContent).toEqual("Custom Test Value");
             });
