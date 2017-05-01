@@ -332,66 +332,32 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
             return this._value;
         },
         set: function (value, fromInput) {
-
-            if(value !== this._value) {
+            if (value !== this._value) {
                 var shouldAcceptValue
                 if (!this.delegate ||  (shouldAcceptValue = this.callDelegateMethod("shouldAcceptValue", this, value) ) === undefined ? true : shouldAcceptValue ){
-                    // console.log("_setValue past first step value is ",value);
-
-                    if (value !== "" && value !== void 0 && value !== null && this.converter) {
+                    if (this.converter) {
                         var convertedValue;
                         try {
                             //Where is the matching convert?
                             convertedValue = this.converter.revert(value);
                             this.error = null;
                             this._value = convertedValue;
-                        } catch(e) {
+                        } catch (e) {
                             // unable to convert - maybe error
                             this._value = value;
-                            this.error = e;
+                            //FIXME: we don't handle required field.
+                            this.error = value !== "" && value !== void 0 && value !== null ? e : null;
                         }
                     } else {
                         this._value = value;
+                        this.error = null;
                     }
 
                     this.callDelegateMethod("didChange", this);
-
                     this._elementAttributeValues["value"] = value;
-                    // if(!this.hasStandardElement || this.elementValue !== value) {
-                        this.needsDraw = true;
-                    //}
+                    this.needsDraw = true;
                 }
             }
-
-            // if(value !== this._value) {
-            //     if (fromInput || !this.hasFocus || this.callDelegateMethod("shouldAcceptValue", this, value) === false) {
-            //         console.log("past first step value is ",value);
-            //     //if (this.callDelegateMethod("shouldAcceptValue", this, value)) {
-            //         if(this.converter) {
-            //             var convertedValue;
-            //             try {
-            //                 convertedValue = this.converter.revert(value);
-            //                 this.error = null;
-            //                 this._value = convertedValue;
-            //             } catch(e) {
-            //                 // unable to convert - maybe error
-            //                 this._value = value;
-            //                 this.error = e;
-            //             }
-            //         } else {
-            //             this._value = value;
-            //         }
-            //
-            //
-            //         if (fromInput) {
-            //             this._valueSyncedWithElement = true;
-            //         } else {
-            //             this._valueSyncedWithElement = false;
-            //             this._elementAttributeValues[name] = value;
-            //             this.needsDraw = true;
-            //         }
-            //     }
-            // }
         }
     },
 
