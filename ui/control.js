@@ -140,11 +140,9 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
 
     enabled: {
         get: function () {
-            deprecate.deprecationWarning("enabled", "disabled");
-            return !this._disabled;
+            return !this.disabled;
         },
         set: function (value) {
-            deprecate.deprecationWarning("enabled", "disabled");
             if (typeof value === "boolean") {
                 this.disabled = !value;
             }
