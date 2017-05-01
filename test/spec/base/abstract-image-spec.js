@@ -153,6 +153,23 @@ describe("test/base/abstract-image-spec", function () {
             expect(anImage.element.src).toBe(imageURL);
         });
 
+        it("should draw the rebased relative url if the emptyImageSrc is set after _ownerDocumentPart", function () {
+            var src = "logo.png";
+
+             anImage._ownerDocumentPart = {
+                template: {
+                    getBaseUrl: function () {
+                        return "http://montagestudio.com/assets/images/montagejs/";
+                    }
+                }
+            };
+            anImage.emptyImageSrc = src;
+            anImage._isLoadingImage = false;
+            anImage.draw();
+
+            expect(anImage.element.src).toBe(imageURL);
+        });
+
     });
 
     describe("rebased src", function () {

@@ -4,7 +4,7 @@
  * @module montage/ui/base/abstract-image.reel
  */
 var Component = require("../component").Component,
-    URL = require("../../core/mini-url"),
+    Url = require("../../core/mini-url"),
     Map = require("collections/map");
 
     if (typeof window !== "undefined") { // client-side
@@ -17,7 +17,7 @@ var Component = require("../component").Component,
  * @class AbstractImage
  * @extends Component
  */
-var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends AbstractImage# */ {
+exports.AbstractImage = Component.specialize( /** @lends AbstractImage# */ {
 
     constructor: {
         value: function AbstractImage() {
@@ -69,8 +69,10 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
     _loadImage: {
         value: function (src) {
                 if(!this._image || src !== this._image.src ) {
-                    if(this._image) this.constructor.checkinImage(this._image);
-                    this._image = this.constructor.checkoutImageWithURL(src,this);
+                    if(this._image) {
+                        this.constructor.checkinImage(this._image);
+                    }
+                    this._image = this.constructor.checkoutImageWithUrl(src,this);
                     this._isLoadingImage = !this._image.complete;
                 }
         }
@@ -143,8 +145,19 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
     // "data:") then no operation is performed and the "src" ir returned as is.
     _getRebasedSrc: {
         value: function () {
-            var url = this._src,
-                baseUrl,
+            return this._getRebasedUrl(this._src);
+        }
+    },
+
+    _getRebasedEmptySrc: {
+        value: function () {
+            return this._getRebasedUrl(this.emptyImageSrc);
+        }
+    },
+
+    _getRebasedUrl: {
+        value: function (url) {
+            var baseUrl,
                 // Check for "<protocol>:", "/" and "//"
                 absoluteUrlRegExp = /^[\w\-]+:|^\//;
 
@@ -154,7 +167,7 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
                 } else if (this._ownerDocumentPart) {
                     baseUrl = this._ownerDocumentPart.template.getBaseUrl();
                     if (baseUrl) {
-                        return URL.resolve(baseUrl, url);
+                        return Url.resolve(baseUrl, url);
                     }
                 }
             }
@@ -176,7 +189,7 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
             var src;
 
             if (this._isLoadingImage || this._isInvalidSrc) {
-                src = this.emptyImageSrc;
+                src = this._getRebasedEmptySrc();
             } else {
                 src = this._getRebasedSrc();
             }
@@ -184,7 +197,7 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
             // data: procotol is considered local and fires a CORS exception
             // when loaded in a non-localhost configuration because it doesn't
             // have the necessary properties for a cross-request.
-            // From the spec it seems there is a special case for data: URLs
+            // From the spec it seems there is a special case for data: Urls
             // but at least Chrome seems to behave differently.
             // http://www.whatwg.org/specs/web-apps/current-work/multipage/fetching-resources.html#cors-settings-attribute
             if (this._crossOrigin == null || src.slice(0, 5) === "data:") {
@@ -209,7 +222,7 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
 
 //Construtor methods
 {
-    "checkoutImageWithURL": {
+    "checkoutImageWithUrl": {
         value: function(url,imageComponent) {
             var cachedImage = this._imageCache.get(url);
 
@@ -249,9 +262,8 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
     },
     "_clearImage": {
         value: function(self) {
-            self._imagesToClear.forEach(function(lastUsed, image, imagesToClear) {
+            self._imagesToClear.forEach(function(lastUsed, image) {
                 if((Date.now() - lastUsed) > this.maxTimeUnused) {
-                    console.log("clearImage ",image.src);
                     self._imagePool.push(image);
                     self._imageReferenceCount.delete(image);
                     self._imageCache.delete(image.src);
