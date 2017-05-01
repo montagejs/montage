@@ -11,15 +11,17 @@ module.exports = function(config) {
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['jasmine'],
 
+    browserNoActivityTimeout: 30000,
+
     // list of files / patterns to load in the browser
     files: [
-
+        'test/run-karma.js',
         {
             pattern: 'package.json',
             included: false
         },
         {
-            pattern: '*.js',
+            pattern: 'montage.js',
             included: false
         },
         {
@@ -32,6 +34,18 @@ module.exports = function(config) {
         },
         {
             pattern: 'ui/**/*.js',
+            included: false
+        },
+        {
+            pattern: 'ui/**/*.meta',
+            included: false
+        },
+        {
+            pattern: 'ui/**/*.html',
+            included: false
+        },
+        {
+            pattern: 'ui/**/*.css',
             included: false
         },
         {
@@ -51,6 +65,14 @@ module.exports = function(config) {
             included: false
         },
         {
+            pattern: 'test/**/*.meta',
+            included: false
+        },
+        {
+            pattern: 'test/**/*.css',
+            included: false
+        },
+        {
             pattern: 'node_modules/**/*.json',
             included: false
         },
@@ -59,15 +81,13 @@ module.exports = function(config) {
             included: false
         },
         {
-            pattern: 'node_modules/**/*.js',
+            pattern: 'node_modules/**(jshint|bluebird|mr|montage-testing)/**/*',
             included: false
-        },
-        'test/run-karma.js'
+        }
     ],
 
     // list of files to exclude
-    exclude: [
-    ],
+    exclude: [],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
@@ -101,7 +121,22 @@ module.exports = function(config) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     //browsers: ['PhantomJS', 'Chrome'],
-    browsers: ['PhantomJS'],
+    browsers: ['PhantomJS_debug'],
+
+    // you can define custom flags
+    customLaunchers: {
+      'PhantomJS_debug': {
+        base: 'PhantomJS',
+        options: {
+          windowName: 'my-window',
+          settings: {
+            webSecurityEnabled: false
+          },
+        },
+        flags: ['--load-images=true'],
+        debug: true
+      }
+    },
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
