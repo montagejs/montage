@@ -277,81 +277,70 @@
         }
     };
 
-    function URLMakeResolve (base, relative) {
-        return new URL(relative, base).href;
-    }
+    
 
     var browser = {
 
         // mini-url library
         makeResolve: function () {
+            
+            try {
+                throw Error();
 
-          if(this._hasURLSupport()) {
-                return URLMakeResolve;
-          }
-          else {
-            var head = document.querySelector("head"),
-                currentBaseElement = head.querySelector("base"),
-                baseElement = document.createElement("base"),
-                relativeElement = document.createElement("a"),
-                needsRestore = false;
+                var resolved = new URL("test.html", "http://example.org").href;
 
-                if(currentBaseElement) {
-                    needsRestore = true;
-                }
-                else {
-                    currentBaseElement = document.createElement("base");
+                if (!resolved || resolved !== 'http://example.org/test.html') {
+                    throw new Error('NotSupported');
                 }
 
-                //Optimization, we won't check ogain if there's a base tag.
+                return function (base, relative) {
+                    return new URL(relative, base).href;
+                };
 
-            baseElement.href = "";
+            } catch (err) {
 
-            return function (base, relative) {
-                var restore;
+                var head = document.querySelector("head"),
+                    currentBaseElement = head.querySelector("base"),
+                    baseElement = document.createElement("base"),
+                    relativeElement = document.createElement("a"),
+                    needsRestore = false;
 
-                if (!needsRestore) {
-                    head.appendChild(currentBaseElement);
-                }
+                    if(currentBaseElement) {
+                        needsRestore = true;
+                    }
+                    else {
+                        currentBaseElement = document.createElement("base");
+                    }
 
-                base = String(base);
-                if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
-                    throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
-                }
-                if(needsRestore) {
-                    restore = currentBaseElement.href;
-                }
-                currentBaseElement.href = base;
-                relativeElement.href = relative;
-                var resolved = relativeElement.href;
-                if (needsRestore) {
-                    currentBaseElement.href = restore;
-                } else {
-                    head.removeChild(currentBaseElement);
-                }
-                return resolved;
-            };
-          }
+                    //Optimization, we won't check ogain if there's a base tag.
 
-        },
+                baseElement.href = "";
 
-        __hasURLSupport: null,
+                return function (base, relative) {
+                    var restore;
 
-        _testHasURLSupport: function () {
-            // Testing for window.URL will not help here as it does exist in IE10 and IE11.
-            // but IE supports just the File API specification.
-            try { // window IE 10+ support
-                return !!(new URL("http://montagestudio.com")); // 1 parameter required at least.
-            } catch (e) {
-                return false;
+                    if (!needsRestore) {
+                        head.appendChild(currentBaseElement);
+                    }
+
+                    base = String(base);
+                    if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
+                        throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
+                    }
+                    if(needsRestore) {
+                        restore = currentBaseElement.href;
+                    }
+                    currentBaseElement.href = base;
+                    relativeElement.href = relative;
+                    var resolved = relativeElement.href;
+                    if (needsRestore) {
+                        currentBaseElement.href = restore;
+                    } else {
+                        head.removeChild(currentBaseElement);
+                    }
+                    return resolved;
+                };
             }
-        },
-
-        _hasURLSupport: function () {
-            if (this.__hasURLSupport === null) {
-                this.__hasURLSupport = this._testHasURLSupport();
-            }
-            return this.__hasURLSupport;
         },
 
         load: function (location,loadCallback) {
