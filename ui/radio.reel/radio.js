@@ -81,7 +81,7 @@ var Radio = exports.Radio = CheckControl.specialize({
                 this._radioButtonController.unregisterRadioButton(this);
             }
             this._radioButtonController = value;
-            value.registerRadioButton(this);
+            if(value) value.registerRadioButton(this);
         },
         get: function () {
             return this._radioButtonController;
