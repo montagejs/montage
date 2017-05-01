@@ -40,31 +40,16 @@
           "location": "node_modules/bluebird"
         }
       }
-    },
-    "node": {
-      "main": "core/core",
-      "redirects": {
-        "montage": "core/core"
-      },
-      "mappings": {
-      "mr": {
-        "name": "mr",
-        "location": "node_modules/mr"
-      },
-        "bluebird": {
-          "name": "bluebird",
-          "location": "node_modules/bluebird"
-        }
-      }
     }
   },
   "production": true,
   "dependencies": {
+    "bluebird": "~3.4.7",
     "collections": "~5.0.x",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
+    "jshint": "^2.9.4",
     "mr": "git://github.com/montagejs/mr.git#master",
-    "bluebird": "~3.4.7",
     "q-io": "~1.11.0"
   },
   "devDependencies": {

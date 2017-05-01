@@ -86,7 +86,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                 gutterSize,
                 line;
 
-            return require.async("core/jshint").then(function (module) {
+            return require.async("jshint").then(function (module) {
                 if (!module.JSHINT(source)) {
                     error = module.JSHINT.errors[0];
                     lines = source.split("\n");
