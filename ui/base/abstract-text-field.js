@@ -190,8 +190,6 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(/
                 this.element.setSelectionRange(start, end);
             }   
 
-            console.log(this._placeholder);
-
             if (this._placeholder) {
                 this.element.setAttribute("placeholder", this._placeholder);
             }
