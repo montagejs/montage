@@ -120,7 +120,8 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/core/localizer-spec", node: false, karma: false},
     {name: "spec/core/localizer/serialization-spec", node: false, karma: false},
 ]).then(function () {
-	console.log('montage-testing', 'End');
+    console.log('montage-testing', 'End');
 }, function (err) {
-	console.log('montage-testing', 'Fail', err, err.stack);
+    console.log('montage-testing', 'Fail', err, err.stack);
+    throw err;
 });
