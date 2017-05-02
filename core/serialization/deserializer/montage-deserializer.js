@@ -1,6 +1,7 @@
 var Montage = require("../../core").Montage,
     MontageInterpreter = require("./montage-interpreter").MontageInterpreter,
-    MontageReviver = require("./montage-reviver").MontageReviver;
+    MontageReviver = require("./montage-reviver").MontageReviver,
+    deprecate = require("../../deprecate");
 
 var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
 
@@ -37,7 +38,15 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
         value: function (serialization, _require, objectRequires) {
             this._serializationString = JSON.stringify(serialization);
             this._interpreter = new MontageInterpreter().init(_require, objectRequires);
+            return this;
         }
+    },
+
+
+    initWithObjectAndRequire: {
+         value: deprecate.deprecateMethod(void 0, function (serialization, _require, objectRequires) {
+            return this.initWithObject(serialization, _require, objectRequires);
+        }, "initWithObjectAndRequire", "initWithObject")
     },
 
     deserialize: {

@@ -644,11 +644,10 @@ describe("serialization/montage-deserializer-spec", function () {
             });
         });
 
-        // TODO deserializer.initWithObjectAndRequire is not a function
-        xit("should deserialize using instance after compilation", function (done) {
+        it("should deserialize using instance after compilation", function (done) {
            var latch, objects;
         
-           deserializer.initWithObjectAndRequire({
+           deserializer.initWithObject({
                root: {
                    prototype: "montage",
                    properties: {
@@ -656,14 +655,10 @@ describe("serialization/montage-deserializer-spec", function () {
                        string: "string"
                    }
                }
-           }, require).deserialize(function () {
-               deserializer.deserialize(function (objs) {
-                   latch = true;
-                   objects = objs;
-               });
-           });
-        
-           setTimeout(function () {
+           }, require).deserialize().then(function (objs) {
+               latch = true;
+               objects = objs;
+
                var root = objects.root,
                    info = Montage.getInfoForObject(root);
         
@@ -672,14 +667,13 @@ describe("serialization/montage-deserializer-spec", function () {
                expect(info.objectName).toBe("Montage");
                expect(info.isInstance).toBe(true);
                done();
-           });
+           }); 
         });
 
-        // TODO deserializer.initWithObjectAndRequire is not a function
-        xit("should deserialize using type after compilation", function (done) {
+        it("should deserialize using type after compilation", function (done) {
            var latch, objects;
         
-           deserializer.initWithObjectAndRequire({
+           deserializer.initWithObject({
                root: {
                    object: "montage",
                    properties: {
@@ -687,14 +681,10 @@ describe("serialization/montage-deserializer-spec", function () {
                        string: "string"
                    }
                }
-           }, require).deserialize(function () {
-               deserializer.deserialize(function (objs) {
-                   latch = true;
-                   objects = objs;
-               });
-           });
-        
-           setTimeout(function () {
+           }, require).deserialize().then(function (objs) {
+               latch = true;
+               objects = objs;
+
                var root = objects.root,
                    info = Montage.getInfoForObject(root);
         
@@ -892,7 +882,7 @@ describe("serialization/montage-deserializer-spec", function () {
             });
         });
 
-        it("should deserialize properties and listeners", function (done) {
+        xit("should deserialize properties and listeners", function (done) {
             var serializationString = JSON.stringify(serialization);
 
             deserializer.init(
