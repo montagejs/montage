@@ -83,7 +83,6 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/meta/event-blueprint-spec", node: false, karma: false},
     // Serialization
     "spec/serialization/alias-spec",
-    {name: "spec/core/localizer/serialization-spec", node: true, karma: false},
     "spec/serialization/labeler-spec",
     "spec/serialization/reviver-spec",
     "spec/serialization/interpreter-spec",
@@ -118,7 +117,8 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/ui/repetition-spec", node: false},
     {name: "spec/ui/repetition-selection-spec", node: false, karma: false},
     {name: "spec/ui/repetition-binding-spec", node: false},
-    {name: "spec/core/localizer-spec", node: false, karma: false}
+    {name: "spec/core/localizer-spec", node: false, karma: false},
+    {name: "spec/core/localizer/serialization-spec", node: false, karma: false},
 ]).then(function () {
 	console.log('montage-testing', 'End');
 }, function (err) {
