@@ -277,19 +277,17 @@
         }
     };
 
-    
-
     var browser = {
 
-        // mini-url library
         makeResolve: function () {
             
             try {
-                throw Error();
 
-                var resolved = new URL("test.html", "http://example.org").href;
+                var testHost = "http://example.org",
+                    testPath = "/test.html",
+                    resolved = new URL(testPath, testHost).href;
 
-                if (!resolved || resolved !== 'http://example.org/test.html') {
+                if (!resolved || resolved !== testHost + testPath) {
                     throw new Error('NotSupported');
                 }
 
@@ -299,7 +297,8 @@
 
             } catch (err) {
 
-                var head = document.querySelector("head"),
+                var IS_ABSOLUTE_REG = /^[\w\-]+:/,
+                    head = document.querySelector("head"),
                     currentBaseElement = head.querySelector("base"),
                     baseElement = document.createElement("base"),
                     relativeElement = document.createElement("a"),
@@ -312,8 +311,7 @@
                         currentBaseElement = document.createElement("base");
                     }
 
-                    //Optimization, we won't check ogain if there's a base tag.
-
+                // Optimization, we won't check ogain if there's a base tag.
                 baseElement.href = "";
 
                 return function (base, relative) {
@@ -324,7 +322,7 @@
                     }
 
                     base = String(base);
-                    if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
+                    if (IS_ABSOLUTE_REG.test(base) === false) {
                         throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
                     }
                     if(needsRestore) {

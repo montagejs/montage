@@ -111,7 +111,6 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/ui/text-input-spec", node: false},
     {name: "spec/ui/flow-spec", node: false},
     {name: "spec/ui/slider-spec", node: false},
-
     {name: "spec/ui/text/text-spec", node: false},
     {name: "spec/ui/label/label-spec", node: false},
     {name: "spec/ui/segmented-bar/segmented-bar-spec", node: false, karma: false},
@@ -119,7 +118,7 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/ui/repetition-spec", node: false},
     {name: "spec/ui/repetition-selection-spec", node: false, karma: false},
     {name: "spec/ui/repetition-binding-spec", node: false},
-    {name: "spec/core/localizer-spec", node: false, karma: false},
+    {name: "spec/core/localizer-spec", node: false, karma: false}
 ]).then(function () {
 	console.log('montage-testing', 'End');
 }, function (err) {
