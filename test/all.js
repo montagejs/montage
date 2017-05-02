@@ -91,8 +91,10 @@ module.exports = require("montage-testing").run(require, [
     "spec/serialization/bindings-spec",
     "spec/serialization/serialization-inspector-spec",
     "spec/serialization/serialization-merger-spec",
-    {name: "spec/serialization/montage-serializer-spec", node: false, karma: false},
-    {name: "spec/serialization/montage-deserializer-spec", node: false, karma: false},
+    {name: "spec/serialization/montage-serializer-spec", node: true, karma: false},
+    {name: "spec/serialization/montage-serializer-element-spec", node: true, karma: true},
+    {name: "spec/serialization/montage-deserializer-spec", node: true, karma: false},
+    {name: "spec/serialization/montage-deserializer-element-spec", node: true, karma: true},
     // Trigger
     {name: "spec/trigger/trigger-spec", node: false},
     // UI

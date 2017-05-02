@@ -1120,7 +1120,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
         });
 
         describe("serialization", function () {
-            xit("should call \"listeners\" deserialization unit", function (done) {
+            it("should call \"listeners\" deserialization unit", function (done) {
                 var sourceObject = new Target(),
                     handlerObject = new Montage(),
                     serializer = new Serializer().initWithRequire(require),

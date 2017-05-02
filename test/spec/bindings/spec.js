@@ -1116,7 +1116,7 @@ describe("bindings/spec", function () {
     });
 
     describe("serialization", function () {
-        xit("should call \"bindings\" deserialization unit", function (done) {
+        it("should call \"bindings\" deserialization unit", function (done) {
             
             var Alpha = Montage.specialize( {foo: {value: null}}),
                 Omega = Montage.specialize( {bar: {value: null}}),
@@ -1145,7 +1145,7 @@ describe("bindings/spec", function () {
             });
         });
 
-        xit("should serialize a binding to a shorthand format", function () {
+        it("should serialize a binding to a shorthand format", function () {
             var Alpha = Montage.specialize( {foo: {value: null}}),
                 Omega = Montage.specialize( {bar: {value: null}}),
                 target = new Alpha(),

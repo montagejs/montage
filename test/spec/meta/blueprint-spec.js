@@ -183,7 +183,7 @@ describe("meta/blueprint-spec", function () {
                     expect(typeof descriptor.set).toEqual("undefined");
                 });
             });
-            xdescribe("mandatory propertyBlueprint's property", function () {
+            describe("mandatory propertyBlueprint's property", function () {
                 it("should not be settable", function () {
                     expect(
                         function () {

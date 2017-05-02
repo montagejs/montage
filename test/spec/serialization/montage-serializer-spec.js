@@ -15,28 +15,7 @@ var Montage = require("montage/core/core").Montage,
             }
         });
     }
-
-    function createFakeElement(id) {
-        var isElement = Element.isElement,
-            element = {
-                getAttribute: function (attributeName) {
-                    if (attributeName === "data-montage-id") {
-                        return id;
-                    }
-                }
-            };
-
-        spyOn(Element, "isElement").and.callFake(function (obj) {
-            if (obj === element) {
-                return true;
-            } else {
-                return isElement.apply(Element, arguments);
-            }
-        });
-
-        return element;
-    }
-
+    
     function createFakeModuleReference(id, _require) {
         return new ModuleReference().initWithIdAndRequire(id, _require || require);
     }
@@ -293,93 +272,6 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 };
 
                 serialization = serializer.serializeObject(object);
-                expect(JSON.parse(serialization))
-                .toEqual(expectedSerialization);
-            });
-        });
-
-        describe("elements", function () {
-            it("should serialize an element", function () {
-                var object = createFakeElement("id"),
-                    serialization,
-                    expectedSerialization;
-
-                expectedSerialization = {
-                    root: {
-                        value: {"#": "id"}
-                    }
-                };
-
-                serialization = serializer.serializeObject(object);
-                expect(JSON.parse(serialization))
-                .toEqual(expectedSerialization);
-            });
-
-            it("should serialize an element as an object property", function () {
-                var object = new objects.OneProp(),
-                    element = createFakeElement("id"),
-                    serialization,
-                    expectedSerialization;
-
-                expectedSerialization = {
-                    root: {
-                        prototype: "spec/serialization/testobjects-v2[OneProp]",
-                        properties: {
-                            identifier: null,
-                            prop: {"#": "id"}
-                        }
-                    }
-                };
-
-                object.prop = element;
-
-                serialization = serializer.serializeObject(object);
-
-                expect(JSON.parse(serialization))
-                .toEqual(expectedSerialization);
-            });
-
-            it("should serialize an element multiple times", function () {
-                var object = new objects.TwoProps(),
-                    element = createFakeElement("id"),
-                    serialization,
-                    expectedSerialization;
-
-                expectedSerialization = {
-                    root: {
-                        prototype: "spec/serialization/testobjects-v2[TwoProps]",
-                        properties: {
-                            identifier: null,
-                            prop1: {"#": "id"},
-                            prop2: {"#": "id"}
-                        }
-                    }
-                };
-
-                object.prop1 = element;
-                object.prop2 = element;
-
-                serialization = serializer.serializeObject(object);
-                expect(JSON.parse(serialization))
-                .toEqual(expectedSerialization);
-            });
-
-            it("should serialize an element from a different document", function () {
-                var context = createJavaScriptContext(),
-                    object = context.document.createElement("div"),
-                    serialization,
-                    expectedSerialization;
-
-                expectedSerialization = {
-                    root: {
-                        value: {"#": "id"}
-                    }
-                };
-
-                object.setAttribute("data-montage-id", "id");
-
-                serialization = serializer.serializeObject(object);
-
                 expect(JSON.parse(serialization))
                 .toEqual(expectedSerialization);
             });
