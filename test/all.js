@@ -39,7 +39,7 @@ module.exports = require("montage-testing").run(require, [
     "spec/core/set-spec",
     {name: "spec/core/dom-spec", node: false, karma: false},
     {name: "spec/core/extras/url", node: false},
-    {name: "spec/core/range-controller-spec", node: false},
+    {name: "spec/core/range-controller-spec", node: false, karma: false},
     {name: "spec/core/media-controller-spec", node: false},
     {name: "spec/core/radio-button-controller-spec", node: false},
     // Base
