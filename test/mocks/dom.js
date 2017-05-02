@@ -200,7 +200,8 @@ exports.document = function () {
     // configure html element
     result.querySelectorAll = result.rootElement.querySelectorAll;
     result.querySelector = result.rootElement.querySelector;
-    result.body.parentNode = result.rootElement;
+    result.body.parentNode = exports.element(result);
+    result.body.parentNode.parentNode = result;
     result.rootComponent = Component.rootComponent(result);
 
     return result;
