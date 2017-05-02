@@ -277,7 +277,7 @@ describe("serialization/montage-deserializer-spec", function () {
             });
         });
 
-        // TODO deserializer.initWithObject is not a function
+        // TODO Deprecated ?
         xit("should call deserializedFromSerialization function on the instantiated objects even if they were given as null instances", function (done) {
            var latch;
            var instances = {root: null};
@@ -295,15 +295,13 @@ describe("serialization/montage-deserializer-spec", function () {
                    module: "serialization/testobjects-v2",
                    name: "OneProp"
                }
-           }).deserializeWithInstances(instances, function (objs) {
+           }, require).deserializeObject(instances, function (objs) {
                latch = true;
                exports = objs;
-           });
-        
-           setTimeout(function () {
+
                expect(exports.root.deserializedFromSerializationCount).toBe(1);
                done();
-           })
+           });
         });
 
         it("should have isDeserializing set to true during units deserialization", function (done) {
