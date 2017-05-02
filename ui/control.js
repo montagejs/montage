@@ -355,8 +355,8 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
                     }
 
                     this.callDelegateMethod("didChange", this);
+                    this._setElementAttributeValue(this.element, "value", value);
 
-                    this._elementAttributeValues["value"] = value;
                     // if(!this.hasStandardElement || this.elementValue !== value) {
                         this.needsDraw = true;
                     //}
@@ -387,7 +387,6 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
             //             this._valueSyncedWithElement = true;
             //         } else {
             //             this._valueSyncedWithElement = false;
-            //             this._elementAttributeValues[name] = value;
             //             this.needsDraw = true;
             //         }
             //     }
