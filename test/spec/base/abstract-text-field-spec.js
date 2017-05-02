@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage,
     AbstractTextField = require("montage/ui/base/abstract-text-field").AbstractTextField,
-    MockDOM = require("spec/mocks/dom");
+    MockDOM = require("mocks/dom");
 
 describe("test/base/abstract-text-field-spec", function () {
 

@@ -33,6 +33,13 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
         }
     },
 
+    initWithObject: {
+        value: function (serialization, _require, objectRequires) {
+            this._serializationString = JSON.stringify(serialization);
+            this._interpreter = new MontageInterpreter().init(_require, objectRequires);
+        }
+    },
+
     deserialize: {
         value: function (instances, element) {
             try {

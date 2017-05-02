@@ -21,30 +21,6 @@ TestPageLoader.queueTest("flow/flow", function (testPage) {
                 expect(flow).toBeDefined();
             });
 
-            describe("currentIteration property", function () {
-                xit("should cause a deprecation warning", function () {
-                    expectConsoleCallsFrom(function () {
-                        flow.observeProperty("currentIteration", Function.noop, Function.noop );
-                    }, testPage.window, "warn").toHaveBeenCalledWith("currentIteration is deprecated, use :iteration.object instead.", "");
-                });
-            });
-
-            describe("objectAtCurrentIteration property", function () {
-                xit("should cause a deprecation warning", function () {
-                    expectConsoleCallsFrom(function () {
-                        flow.observeProperty("objectAtCurrentIteration", Function.noop, Function.noop );
-                    }, testPage.window, "warn").toHaveBeenCalledWith("objectAtCurrentIteration is deprecated, use :iteration.object instead.", "");
-                });
-            });
-
-            describe("contentAtCurrentIteration property", function () {
-                xit("should cause a deprecation warning", function () {
-                    expectConsoleCallsFrom(function () {
-                        flow.observeProperty("contentAtCurrentIteration", Function.noop, Function.noop );
-                    }, testPage.window, "warn").toHaveBeenCalledWith("contentAtCurrentIteration is deprecated, use :iteration.object instead.", "");
-                });
-            });
-
             describe("setting up camera, paths and content", function () {
                 it("should create the expected iterations", function (done) {
                     var content = [],

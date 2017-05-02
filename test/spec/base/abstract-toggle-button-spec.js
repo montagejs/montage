@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage;
 var AbstractToggleButton = require("montage/ui/base/abstract-toggle-button").AbstractToggleButton;
-var MockDOM = require("spec/mocks/dom");
+var MockDOM = require("mocks/dom");
 
 AbstractToggleButton.prototype.hasTemplate = false;
 

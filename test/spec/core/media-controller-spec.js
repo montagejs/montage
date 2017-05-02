@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     MediaController = require("montage/core/media-controller").MediaController,
-    MockDOM = require("spec/mocks/dom"),
-    MockEvent = require("spec/mocks/event");
+    MockDOM = require("mocks/dom"),
+    MockEvent = require("mocks/event");
 
 describe("core/media-controller-spec", function () {
 

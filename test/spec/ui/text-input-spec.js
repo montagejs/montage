@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage,
     TextInput = require("montage/ui/text-input").TextInput,
-    MockDOM = require("spec/mocks/dom");
+    MockDOM = require("mocks/dom");
 
 describe("test/ui/text-input-spec", function () {
 

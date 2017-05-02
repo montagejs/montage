@@ -41,7 +41,7 @@ var Montage = require("montage/core/core").Montage,
         return new ModuleReference().initWithIdAndRequire(id, _require || require);
     }
 
-describe("spec/serialization/montage-serializer-spec", function () {
+describe("spec/serialization/montage-serializer-element-spec", function () {
 
     var serializer;
     var originalUnits;

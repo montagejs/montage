@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage;
 var AbstractSelect = require("montage/ui/base/abstract-select").AbstractSelect;
 var RangeController = require("montage/core/range-controller").RangeController;
-var MockDOM = require("spec/mocks/dom");
+var MockDOM = require("mocks/dom");
 
 AbstractSelect.prototype.hasTemplate = false;
 

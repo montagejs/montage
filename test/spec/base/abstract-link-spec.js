@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage,
     AbstractLink = require("montage/ui/base/abstract-link").AbstractLink,
-    MockDOM = require("spec/mocks/dom");
+    MockDOM = require("mocks/dom");
 
 describe("test/base/abstract-link-spec", function () {
 

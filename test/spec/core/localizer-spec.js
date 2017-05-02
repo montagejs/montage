@@ -318,7 +318,7 @@ describe("core/localizer-spec", function () {
         });
 
         describe("loadMessages", function () {
-            it("fails when package.json has no manifest", function (done) {
+            it("fails when package.json has no localizer/no-package-manifest/manifest", function (done) {
                 require.loadPackage(module.directory + "localizer/no-package-manifest/", {}).then(function (r){
                     l.require = r;
                     return l.loadMessages();
@@ -330,7 +330,7 @@ describe("core/localizer-spec", function () {
                     done();
                 });
             });
-            it("fails when package has no manifest.json", function (done) {
+            it("fails when package has no localizer/no-manifest/manifest.json", function (done) {
                 require.loadPackage(module.directory + "localizer/no-manifest/", {}).then(function (r){
                     l.require = r;
                     return l.loadMessages();
@@ -342,7 +342,7 @@ describe("core/localizer-spec", function () {
                     done();
                 });
             });
-            it("fails when package has no manifest.json", function (done) {
+            it("fails when package has no localizer/no-manifest-files/manifest.json", function (done) {
                 require.loadPackage(module.directory + "localizer/no-manifest-files/", {}).then(function (r){
                     l.require = r;
                     return l.loadMessages();

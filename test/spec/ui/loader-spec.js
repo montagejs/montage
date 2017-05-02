@@ -17,27 +17,21 @@ TestPageLoader.queueTest("loader/loader-test", function (testPage) {
         // we don't have enough mocks to drive the loader yet.
         // These tests should be consider sanity tests.
 
-        it("should be in the BOOTSTRAPPING stage or after", function () {
+        it("should be in the BOOTSTRAPPING stage or after", function (done) {
             var loader = test.templateObjects.owner;
-
-            if (loader.currentStage === BOOTSTRAPPING) {
-                waitsFor(function () {
-                    return loader.currentStage > BOOTSTRAPPING;
-                }, "BOOTSTRAPPING is over", 2000);
-            }
-
-            expect(loader.currentStage).not.toBe(BOOTSTRAPPING);
+            setTimeout(function () {
+                expect(loader.currentStage).not.toBe(BOOTSTRAPPING);
+                done();
+            }, "BOOTSTRAPPING is over", 2000);
         });
 
-        it("should be in the LOADING stage or after", function () {
+        it("should be in the LOADING stage or after", function (done) {
             var loader = test.templateObjects.owner;
 
-            if (loader.currentStage === LOADING) {
-                waitsFor(function () {
-                    return loader.currentStage > LOADING;
-                }, "LOADING is over", 2000);
-            }
-            expect(loader.currentStage).not.toBe(LOADING);
+            setTimeout(function () {
+                expect(loader.currentStage).not.toBe(LOADING);
+                done();
+            }, "LOADING is over", 2000);
         });
 
         it("should be in the LOADED stage", function () {

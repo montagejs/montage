@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage,
     AbstractVideo = require("montage/ui/base/abstract-video").AbstractVideo,
-    MockDOM = require("spec/mocks/dom");
+    MockDOM = require("mocks/dom");
 
 AbstractVideo.prototype.hasTemplate = false;
 

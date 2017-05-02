@@ -1,9 +1,9 @@
 /*global describe, it, expect, beforeEach, afterEach */
 var Montage = require("montage").Montage,
     AbstractNumberField = require("montage/ui/base/abstract-number-field").AbstractNumberField,
-    MockDOM = require("spec/mocks/dom"),
-    MockComponent = require("spec/mocks/component"),
-    MockEvent = require("spec/mocks/event");
+    MockDOM = require("mocks/dom"),
+    MockComponent = require("mocks/component"),
+    MockEvent = require("mocks/event");
 
 AbstractNumberField.prototype.hasTemplate = false;
 

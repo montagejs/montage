@@ -2,8 +2,8 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Overlay = require("montage/ui/overlay.reel").Overlay,
-    MockDOM = require("spec/mocks/dom"),
-    Event = require("spec/mocks/event"),
+    MockDOM = require("mocks/dom"),
+    Event = require("mocks/event"),
     defaultEventManager = require("montage/core/event/event-manager").defaultEventManager;
     defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager;
 

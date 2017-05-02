@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage;
 var AbstractToggleSwitch = require("montage/ui/base/abstract-toggle-switch").AbstractToggleSwitch;
-var MockDOM = require("spec/mocks/dom");
+var MockDOM = require("mocks/dom");
 
 AbstractToggleSwitch.prototype.hasTemplate = false;
 

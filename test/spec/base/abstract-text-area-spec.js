@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage,
     AbstractTextArea = require("montage/ui/base/abstract-text-area").AbstractTextArea,
-    MockDOM = require("spec/mocks/dom");
+    MockDOM = require("mocks/dom");
 
 describe("test/base/abstract-text-area-spec", function () {
 

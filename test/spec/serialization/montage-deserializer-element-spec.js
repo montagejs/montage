@@ -11,7 +11,7 @@ var Montage = require("montage").Montage,
 
 logger.isError = true;
 
-describe("serialization/montage-deserializer-spec", function () {
+describe("serialization/montage-deserializer-element-spec", function () {
     var deserializer;
 
     beforeEach(function () {
@@ -19,29 +19,29 @@ describe("serialization/montage-deserializer-spec", function () {
     });
 
     describe("Element Reference Deserialization", function () {
-        var element = document.createElement("div");
+        var rootEl = document.createElement("div");
 
         it("should deserialize an element reference", function (done) {
             var serialization = {
-                    "root": {
+                    "rootEl": {
                         "value": {"#": "id"}
                     }
                 },
                 serializationString = JSON.stringify(serialization);
 
-            element.innerHTML = '<div data-montage-id="id">content</div>';
+            rootEl.innerHTML = '<div data-montage-id="id">content</div>';
             deserializer.init(
                 serializationString, require);
 
-            deserializer.deserialize(null, element).then(function (objects) {
-                expect(objects.root instanceof Element).toBe(true);
-                expect(objects.root.textContent).toBe("content");
+            deserializer.deserialize(null, rootEl).then(function (objects) {
+                expect(objects.rootEl instanceof Element).toBe(true);
+                expect(objects.rootEl.textContent).toBe("content");
             }).finally(function () {
                 done();
             });
 
             //for (var i = 0; i < 3; i++) {
-            //    deserializer.deserializeObjectWithElement(root, function (object) {
+            //    deserializer.deserializeObjectWithElement(rootEl, function (object) {
             //        expect(object.element instanceof Element).toBe(true);
             //        expect(object.element.textContent).toBe("content");
             //    });
@@ -50,183 +50,188 @@ describe("serialization/montage-deserializer-spec", function () {
 
         it("should deserialize an element reference and add event listeners", function (done) {
             var serialization = {
-                    "root": {
+                    "rootEl": {
                         "value": {"#": "id"},
                         "listeners": [
                             {
                                 "type": "click",
-                                "listener": {"@": "root"}
+                                "listener": {"@": "rootEl"}
                             }
                         ]
                     }
                 },
                 serializationString = JSON.stringify(serialization);
 
-            element.innerHTML = '<div data-montage-id="id">content</div>';
+            rootEl.innerHTML = '<div data-montage-id="id">content</div>';
             deserializer.init(serializationString, require);
 
-            deserializer.deserialize(null, element).then(function (objects) {
+            deserializer.deserialize(null, rootEl).then(function (objects) {
                 var registeredEventListeners = defaultEventManager._registeredBubbleEventListeners.get("click");
-                expect(registeredEventListeners.get(element.firstElementChild) === objects.root).toBe(true);
+                expect(registeredEventListeners.get(rootEl.firstElementChild) === objects.rootEl).toBe(true);
             }).finally(function () {
                 done();
             });
         });
+    });
 
-        //it("should deserialize an element reference through data-montage-id over id", function () {
-        //    root.innerHTML = '<div id="id">content1</div>' +
-        //                     '<div data-montage-id="id">content2</div>';
-        //    deserializer.initWithObject({
-        //        root: {
-        //            value: {
-        //                "element": {"#": "id"}
-        //            }
-        //        }
-        //    });
-        //
-        //    for (var i = 0; i < 3; i++) {
-        //        deserializer.deserializeObjectWithElement(root, function (object) {
-        //            expect(object.element instanceof Element).toBe(true);
-        //            expect(object.element.textContent).toBe("content2");
-        //        });
-        //    }
-        //});
+    xdescribe("Object Element Deserialization", function () {
+        var rootEl = document.createElement("div");
 
-        //it("should deserialize an element with id and data-montage-id", function () {
-        //    root.innerHTML = '<div id="realId" data-montage-id="id">content</div>';
-        //    deserializer.initWithObject({
-        //        root: {
-        //            value: {
-        //                "element": {"#": "id"}
-        //            }
-        //        }
-        //    });
-        //
-        //    for (var i = 0; i < 3; i++) {
-        //        deserializer.deserializeObjectWithElement(root, function (object) {
-        //            expect(object.element instanceof Element).toBe(true);
-        //            expect(object.element.textContent).toBe("content");
-        //        });
-        //    }
-        //});
+        it("should deserialize an element reference through data-montage-id over id", function () {
+           rootEl.innerHTML = '<div id="id">content1</div>' +
+                            '<div data-montage-id="id">content2</div>';
 
-        //it("should deserialize an element with the same id and data-montage-id", function () {
-        //    root.innerHTML = '<div id="id" data-montage-id="id">content</div>';
-        //    deserializer.initWithObject({
-        //        root: {
-        //            value: {
-        //                "element": {"#": "id"}
-        //            }
-        //        }
-        //    });
-        //
-        //    for (var i = 0; i < 3; i++) {
-        //        deserializer.deserializeObjectWithElement(root, function (object) {
-        //            expect(object.element instanceof Element).toBe(true);
-        //            expect(object.element.textContent).toBe("content");
-        //        });
-        //    }
-        //});
+           deserializer.initWithObject({
+               rootEl: {
+                   value: {
+                       "element": {"#": "id"}
+                   }
+               }
+           });
+        
+           for (var i = 0; i < 3; i++) {
+               deserializer.deserializeObjectWithElement(rootEl, function (object) {
+                   expect(object.element instanceof Element).toBe(true);
+                   expect(object.element.textContent).toBe("content2");
+               });
+           }
+        });
 
-        //it("should deserialize an element reference through id w/ optimization", function () {
-        //    root.innerHTML = '<div id="id">content</div>';
-        //    deserializer.initWithObject({
-        //        root: {
-        //            value: {
-        //                "element": {"#": "id"}
-        //            }
-        //        }
-        //    });
-        //    deserializer.optimizeForDocument(root);
-        //
-        //    for (var i = 0; i < 3; i++) {
-        //        deserializer.deserializeObjectWithElement(root, function (object) {
-        //            expect(object.element instanceof Element).toBe(true);
-        //            expect(object.element.textContent).toBe("content");
-        //            expect(object.element.getAttribute("id")).toBe("id");
-        //        });
-        //    }
-        //});
+        it("should deserialize an element with id and data-montage-id", function () {
+           rootEl.innerHTML = '<div id="realId" data-montage-id="id">content</div>';
+           deserializer.initWithObject({
+               rootEl: {
+                   value: {
+                       "element": {"#": "id"}
+                   }
+               }
+           });
+        
+           for (var i = 0; i < 3; i++) {
+               deserializer.deserializeObjectWithElement(rootEl, function (object) {
+                   expect(object.element instanceof Element).toBe(true);
+                   expect(object.element.textContent).toBe("content");
+               });
+           }
+        });
 
-        //it("should deserialize an element reference through data-montage-id w/ optimization", function () {
-        //    root.innerHTML = '<div data-montage-id="id">content</div>';
-        //    deserializer.initWithObject({
-        //        root: {
-        //            value: {
-        //                "element": {"#": "id"}
-        //            }
-        //        }
-        //    });
-        //    deserializer.optimizeForDocument(root);
-        //
-        //    for (var i = 0; i < 3; i++) {
-        //        deserializer.deserializeObjectWithElement(root, function (object) {
-        //            expect(object.element instanceof Element).toBe(true);
-        //            expect(object.element.textContent).toBe("content");
-        //            expect(object.element.getAttribute("id")).toBeNull();
-        //        });
-        //    }
-        //});
+        it("should deserialize an element with the same id and data-montage-id", function () {
+           rootEl.innerHTML = '<div id="id" data-montage-id="id">content</div>';
+           deserializer.initWithObject({
+               rootEl: {
+                   value: {
+                       "element": {"#": "id"}
+                   }
+               }
+           });
+        
+           for (var i = 0; i < 3; i++) {
+               deserializer.deserializeObjectWithElement(rootEl, function (object) {
+                   expect(object.element instanceof Element).toBe(true);
+                   expect(object.element.textContent).toBe("content");
+               });
+           }
+        });
 
-        //it("should deserialize an element reference through data-montage-id over id w/ optimization", function () {
-        //    root.innerHTML = '<div id="id">content1</div>' +
-        //                     '<div data-montage-id="id">content2</div>';
-        //    deserializer.initWithObject({
-        //        root: {
-        //            value: {
-        //                "element": {"#": "id"}
-        //            }
-        //        }
-        //    });
-        //    deserializer.optimizeForDocument(root);
-        //
-        //    for (var i = 0; i < 3; i++) {
-        //        deserializer.deserializeObjectWithElement(root, function (object) {
-        //            expect(object.element instanceof Element).toBe(true);
-        //            expect(object.element.textContent).toBe("content2");
-        //            expect(object.element.getAttribute("id")).toBeNull();
-        //        });
-        //    }
-        //});
+        it("should deserialize an element reference through id w/ optimization", function () {
+           rootEl.innerHTML = '<div id="id">content</div>';
+           deserializer.initWithObject({
+               rootEl: {
+                   value: {
+                       "element": {"#": "id"}
+                   }
+               }
+           });
+           deserializer.optimizeForDocument(rootEl);
+        
+           for (var i = 0; i < 3; i++) {
+               deserializer.deserializeObjectWithElement(rootEl, function (object) {
+                   expect(object.element instanceof Element).toBe(true);
+                   expect(object.element.textContent).toBe("content");
+                   expect(object.element.getAttribute("id")).toBe("id");
+               });
+           }
+        });
 
-        //it("should deserialize an element with id and data-montage-id w/ optimization", function () {
-        //    root.innerHTML = '<div id="realId" data-montage-id="id">content</div>';
-        //    deserializer.initWithObject({
-        //        root: {
-        //            value: {
-        //                "element": {"#": "id"}
-        //            }
-        //        }
-        //    });
-        //    deserializer.optimizeForDocument(root);
-        //
-        //    for (var i = 0; i < 3; i++) {
-        //        deserializer.deserializeObjectWithElement(root, function (object) {
-        //            expect(object.element instanceof Element).toBe(true);
-        //            expect(object.element.textContent).toBe("content");
-        //            expect(object.element.getAttribute("id")).toBe("realId");
-        //        });
-        //    }
-        //});
+        it("should deserialize an element reference through data-montage-id w/ optimization", function () {
+           rootEl.innerHTML = '<div data-montage-id="id">content</div>';
+           deserializer.initWithObject({
+               rootEl: {
+                   value: {
+                       "element": {"#": "id"}
+                   }
+               }
+           });
+           deserializer.optimizeForDocument(rootEl);
+        
+           for (var i = 0; i < 3; i++) {
+               deserializer.deserializeObjectWithElement(rootEl, function (object) {
+                   expect(object.element instanceof Element).toBe(true);
+                   expect(object.element.textContent).toBe("content");
+                   expect(object.element.getAttribute("id")).toBeNull();
+               });
+           }
+        });
 
-        //it("should deserialize an element with the same id and data-montage-id w/ optimization", function () {
-        //    root.innerHTML = '<div id="id" data-montage-id="id">content</div>';
-        //    deserializer.initWithObject({
-        //        root: {
-        //            value: {
-        //                "element": {"#": "id"}
-        //            }
-        //        }
-        //    });
-        //    deserializer.optimizeForDocument(root);
-        //
-        //    for (var i = 0; i < 3; i++) {
-        //        deserializer.deserializeObjectWithElement(root, function (object) {
-        //            expect(object.element instanceof Element).toBe(true);
-        //            expect(object.element.textContent).toBe("content");
-        //            expect(object.element.getAttribute("id")).toBe("id");
-        //        });
-        //    }
-        //});
+        it("should deserialize an element reference through data-montage-id over id w/ optimization", function () {
+           rootEl.innerHTML = '<div id="id">content1</div>' +
+                            '<div data-montage-id="id">content2</div>';
+           deserializer.initWithObject({
+               rootEl: {
+                   value: {
+                       "element": {"#": "id"}
+                   }
+               }
+           });
+           deserializer.optimizeForDocument(rootEl);
+        
+           for (var i = 0; i < 3; i++) {
+               deserializer.deserializeObjectWithElement(rootEl, function (object) {
+                   expect(object.element instanceof Element).toBe(true);
+                   expect(object.element.textContent).toBe("content2");
+                   expect(object.element.getAttribute("id")).toBeNull();
+               });
+           }
+        });
+
+        it("should deserialize an element with id and data-montage-id w/ optimization", function () {
+           rootEl.innerHTML = '<div id="realId" data-montage-id="id">content</div>';
+           deserializer.initWithObject({
+               rootEl: {
+                   value: {
+                       "element": {"#": "id"}
+                   }
+               }
+           });
+           deserializer.optimizeForDocument(rootEl);
+        
+           for (var i = 0; i < 3; i++) {
+               deserializer.deserializeObjectWithElement(rootEl, function (object) {
+                   expect(object.element instanceof Element).toBe(true);
+                   expect(object.element.textContent).toBe("content");
+                   expect(object.element.getAttribute("id")).toBe("realId");
+               });
+           }
+        });
+
+        it("should deserialize an element with the same id and data-montage-id w/ optimization", function () {
+           rootEl.innerHTML = '<div id="id" data-montage-id="id">content</div>';
+           deserializer.initWithObject({
+               rootEl: {
+                   value: {
+                       "element": {"#": "id"}
+                   }
+               }
+           });
+           deserializer.optimizeForDocument(rootEl);
+        
+           for (var i = 0; i < 3; i++) {
+               deserializer.deserializeObjectWithElement(rootEl, function (object) {
+                   expect(object.element instanceof Element).toBe(true);
+                   expect(object.element.textContent).toBe("content");
+                   expect(object.element.getAttribute("id")).toBe("id");
+               });
+           }
+        });
     });
 });

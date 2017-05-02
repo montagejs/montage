@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage;
 var Button = require("montage/ui/button.reel").Button;
-var MockDOM = require("spec/mocks/dom");
+var MockDOM = require("mocks/dom");
 
 describe("test/ui/button-spec", function () {
     describe("properties", function () {

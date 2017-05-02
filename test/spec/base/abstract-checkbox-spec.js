@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage,
     AbstractCheckbox = require("montage/ui/base/abstract-checkbox").AbstractCheckbox,
-    MockDOM = require("spec/mocks/dom");
+    MockDOM = require("mocks/dom");
 
 AbstractCheckbox.hasTemplate = false;
 

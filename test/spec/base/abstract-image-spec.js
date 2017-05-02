@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage;
 var AbstractImage = require("montage/ui/base/abstract-image").AbstractImage;
-var MockDOM = require("spec/mocks/dom");
+var MockDOM = require("mocks/dom");
 
 AbstractImage.prototype.hasTemplate = false;
 

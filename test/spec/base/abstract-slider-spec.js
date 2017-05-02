@@ -1,8 +1,8 @@
 /*global describe, it, expect */
 var Montage = require("montage").Montage;
 var AbstractSlider = require("montage/ui/base/abstract-slider").AbstractSlider;
-var MockDOM = require("spec/mocks/dom");
-var MockEvent = require("spec/mocks/event");
+var MockDOM = require("mocks/dom");
+var MockEvent = require("mocks/event");
 
 AbstractSlider.prototype.hasTemplate = false;
 
