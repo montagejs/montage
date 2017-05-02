@@ -92,7 +92,11 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-        'logic/**/*.js': 'coverage'
+        'montage.js': 'coverage',
+        'core/**/*.js': 'coverage',
+        'ui/**/*.js': 'coverage',
+        'composer/**/*.js': 'coverage',
+        'window-loader/**/*.js': 'coverage'
     },
 
     // test results reporter to use
