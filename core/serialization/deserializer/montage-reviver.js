@@ -310,7 +310,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             object = this.getMontageObject(value, module, objectName, context, label);
             context.setObjectLabel(object, label);
             
-            if (object !== null) {
+            if (object !== null && object !== void 0) {
                 object.isDeserializing = true;
             }
 
@@ -470,7 +470,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             for (var label in objects) {
                 object = objects[label];
 
-                if (object !== null) {
+                if (object !== null && object !== void 0) {
                     delete object.isDeserializing;
                 }
 
