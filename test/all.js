@@ -37,7 +37,7 @@ module.exports = require("montage-testing").run(require, [
     "spec/core/extras/function",
     "spec/core/extras/string",
     "spec/core/set-spec",
-    {name: "spec/core/dom-spec", node: false},
+    {name: "spec/core/dom-spec", node: false, karma: false},
     {name: "spec/core/extras/url", node: false},
     {name: "spec/core/range-controller-spec", node: false},
     {name: "spec/core/media-controller-spec", node: false},
@@ -48,7 +48,7 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/base/abstract-button-spec", node: false},
     {name: "spec/base/abstract-checkbox-spec", node: false},
     {name: "spec/base/abstract-confirm-spec", node: false},
-    {name: "spec/base/abstract-image-spec", node: false},
+    {name: "spec/base/abstract-image-spec", node: false, karma: false},
     {name: "spec/base/abstract-link-spec", node: false},
     {name: "spec/base/abstract-number-field-spec", node: false},
     {name: "spec/base/abstract-radio-button-spec", node: false},
@@ -59,10 +59,10 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/base/abstract-toggle-button-spec", node: false},
     {name: "spec/base/abstract-video-spec", node: false},
     // Composer
-    {name: "spec/composer/composer-spec", node: false},
-    {name: "spec/composer/press-composer-spec", node: false},
-    {name: "spec/composer/key-composer-spec", node: false},
-    {name: "spec/composer/translate-composer/translate-composer-spec", node: false},
+    {name: "spec/composer/composer-spec", node: false, karma: false},
+    {name: "spec/composer/press-composer-spec", node: false, karma: false},
+    {name: "spec/composer/key-composer-spec", node: false, karma: false},
+    {name: "spec/composer/translate-composer/translate-composer-spec", node: false, karma: false},
     // Events
     {name: "spec/events/active-target-spec", node: false},
     {name: "spec/events/eventmanager-spec", node: false},
@@ -72,18 +72,18 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/geometry/cubicbezier-spec", node: false},
     {name: "spec/geometry/point-spec", node: false},
     // Reel
-    {name: "spec/reel/template-spec", node: false},
-    // Blueprint
-    "spec/meta/blueprint-spec",
-    "spec/meta/converter-blueprint-spec",
-    "spec/meta/module-blueprint-spec",
-    {name: "spec/meta/build-in-component-blueprint-spec", node: false},
-    {name: "spec/meta/component-blueprint-spec", node: false},
-    {name: "spec/meta/controller-blueprint-spec", node: false},
-    {name: "spec/meta/event-blueprint-spec", node: false},
+    {name: "spec/reel/template-spec", node: false, karma: false},
+    // Bluerint
+    {name: "spec/meta/blueprint-spec", karma: false},
+    {name: "spec/meta/converter-blueprint-spec", karma: false},
+    {name: "spec/meta/module-blueprint-spec", karma: false},
+    {name: "spec/meta/build-in-component-blueprint-spec", node: false, karma: false},
+    {name: "spec/meta/component-blueprint-spec", node: false, karma: false},
+    {name: "spec/meta/controller-blueprint-spec", node: false, karma: false},
+    {name: "spec/meta/event-blueprint-spec", node: false, karma: false},
     // Serialization
     "spec/serialization/alias-spec",
-    "spec/serialization/serialization-spec",
+    {name: "spec/core/localizer/serialization-spec", node: true, karma: false},
     "spec/serialization/labeler-spec",
     "spec/serialization/reviver-spec",
     "spec/serialization/interpreter-spec",
@@ -92,8 +92,8 @@ module.exports = require("montage-testing").run(require, [
     "spec/serialization/bindings-spec",
     "spec/serialization/serialization-inspector-spec",
     "spec/serialization/serialization-merger-spec",
-    {name: "spec/serialization/montage-serializer-spec", node: false},
-    {name: "spec/serialization/montage-deserializer-spec", node: false},
+    {name: "spec/serialization/montage-serializer-spec", node: false, karma: false},
+    {name: "spec/serialization/montage-deserializer-spec", node: false, karma: false},
     // Trigger
     {name: "spec/trigger/trigger-spec", node: false},
     // UI
@@ -114,13 +114,12 @@ module.exports = require("montage-testing").run(require, [
 
     {name: "spec/ui/text/text-spec", node: false},
     {name: "spec/ui/label/label-spec", node: false},
-    {name: "spec/ui/segmented-bar/segmented-bar-spec", node: false},
+    {name: "spec/ui/segmented-bar/segmented-bar-spec", node: false, karma: false},
     // UI - repetition
     {name: "spec/ui/repetition-spec", node: false},
-    {name: "spec/ui/repetition-selection-spec", node: false},
+    {name: "spec/ui/repetition-selection-spec", node: false, karma: false},
     {name: "spec/ui/repetition-binding-spec", node: false},
-    {name: "spec/core/localizer-spec", node: false},
-    {name: "spec/core/localizer/serialization-spec", node: false}
+    {name: "spec/core/localizer-spec", node: false, karma: false},
 ]).then(function () {
 	console.log('montage-testing', 'End');
 }, function (err) {
