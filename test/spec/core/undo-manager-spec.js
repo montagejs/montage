@@ -428,14 +428,16 @@ describe('core/undo-manager-spec', function () {
             var deferredAdditionUndo = roster.testableAddMember("Alice"),
                 spyObject = {
                     removeMember: function (member) {
-                        throw error;
+                        return Promise.reject(error)
                     }
                 };
 
             spyOn(spyObject, "removeMember").and.callThrough();
             deferredAdditionUndo.resolve(["Test Label", spyObject.removeMember, spyObject, "Alice"]);
 
-            return undoManager.undo().caught(function (failure) {
+            undoManager.undo().then(function () {
+                fail('Should not be called');
+            }).catch(function (failure) {
                 expect(spyObject.removeMember).toHaveBeenCalled();
                 expect(failure).toBe(error);
             }).timeout(WAITS_FOR_TIMEOUT).finally(function () {
