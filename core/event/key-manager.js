@@ -5,7 +5,8 @@
 
 var Montage = require("../core").Montage,
     defaultEventManager = require("./event-manager").defaultEventManager,
-    MutableEvent = require("./mutable-event").MutableEvent;
+    MutableEvent = require("./mutable-event").MutableEvent,
+    Application = require("../application").Application;
 
 var KEYNAMES_TO_KEYCODES = {
     // W3C Key Code
@@ -750,10 +751,14 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                     }
                 }
 
-                // Most components can't receive key events directly: the events target the window,
-                // but we should also fire them on composers of the activeTarget component
-                if (!onTarget && defaultEventManager.activeTarget != keyComposer.component) {
-                    continue;
+                // If the event's target is body and the event manager's target is the application,
+                // we can simply fire an event to all listeners
+                if (event.target !== document.body || !(defaultEventManager.activeTarget instanceof Application)) {
+                    // Most components can't receive key events directly: the events target the window,
+                    // but we should also fire them on composers of the activeTarget component
+                    if (!onTarget && defaultEventManager.activeTarget != keyComposer.component) {
+                        continue;
+                    }
                 }
 
                 if (keyUp) {
