@@ -43,6 +43,20 @@ var Montage = require("montage/core/core").Montage,
 
 describe("spec/serialization/montage-serializer-spec", function () {
 
+    var serializer;
+    var originalUnits;
+
+    beforeEach(function () {
+        originalUnits = MontageSerializer._units;
+        MontageSerializer._units = {};
+        serializer = new MontageSerializer().initWithRequire(require);
+        serializer.setSerializationIndentation(4);
+    });
+
+    afterEach(function () {
+        MontageSerializer._units = originalUnits;
+    });
+
     describe("elements", function () {
         it("should serialize an element", function () {
             var object = createFakeElement("id"),
