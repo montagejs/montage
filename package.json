@@ -71,6 +71,9 @@
     "integration": "mop-integration",
     "jsdoc": "node ../montagejs.org/build/jsdoc/jsdoc.js -out $PWD/builds/jsdoc/ montage@npm-link",
     "test:karma": "karma start --no-auto-watch --single-run",
+    "test:karma-debug": "karma start --no-auto-watch --single-run --browsers=PhantomJS_debug",
+    "test:karma-firefox": "karma start --no-auto-watch --single-run --browsers=firefox",
+    "test:karma-chrome": "karma start --no-auto-watch --single-run --browsers=chrome",
     "test:karma-dev": "karma start --auto-watch --no-single-run",
     "test:jasmine": "concurrently \"http-server -a localhost -p 8085\" \"open http://localhost:8085/test/run.html\""
   },
