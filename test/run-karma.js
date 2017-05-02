@@ -7,7 +7,7 @@ var globalEval = eval,
 /*jshint evil:false */
 
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
 
 // Bootsrap Karma
 if (global.__karma__) {
