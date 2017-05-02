@@ -188,10 +188,12 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(/
                 // restore the previous cursor position.
                 // TODO: contenteditable?
                 this.element.setSelectionRange(start, end);
-            }
+            }   
 
-            if (this.placeholderValue != null) {
-                this.element.setAttribute("placeholder", this.placeholderValue);
+            console.log(this._placeholder);
+
+            if (this._placeholder) {
+                this.element.setAttribute("placeholder", this._placeholder);
             }
 
             this.element.disabled = !this.enabled;
