@@ -140,6 +140,12 @@ exports.element = function (_document) {
             }
             return elements;
         },
+        querySelectorAll: function () {
+            return [];
+        },
+        querySelector: function () {
+            return []
+        },
         focus: function () {},
         blur: function () {},
         ownerDocument: _document || exports.document(),
@@ -169,23 +175,32 @@ exports.window = function () {
 
 exports.document = function () {
     var result = {
+        location: {
+            href: 'http://example.com'
+        },
         defaultView: exports.window(),
         body: null,
+        rootElement: null,
         _eventListeners: {},
         createElement: function (tagName) {
             return exports.element(this);
         },
         createDocumentFragment: function () {
             return exports.element(this);
+        },
+        importNode: function (el) {
+            return exports.element(el);
         }
     };
     Object.addEach(result, EventTarget);
 
+    result.rootElement = exports.element(result);
     result.body = exports.element(result);
+    
     // configure html element
-    result.body.parentNode = exports.element(result);
-    result.body.parentNode.parentNode = result;
-
+    result.querySelectorAll = result.rootElement.querySelectorAll;
+    result.querySelector = result.rootElement.querySelector;
+    result.body.parentNode = result.rootElement;
     result.rootComponent = Component.rootComponent(result);
 
     return result;
