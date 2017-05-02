@@ -4,7 +4,6 @@ console.log('montage-testing', 'Start');
 require('montage');
 
 module.exports = require("montage-testing").run(require, [
-    /*
     // App
     {name: "spec/application-spec", node: false},
     // Internal
@@ -109,21 +108,19 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/ui/modal-overlay-spec", node: false},
     {name: "spec/ui/overlay-spec", node: false},
     {name: "spec/ui/slot-spec", node: false},
-    {name: "spec/ui/substitution-spec", node: false},*/    
+    {name: "spec/ui/substitution-spec", node: false},  
     {name: "spec/ui/text-input-spec", node: false},
     {name: "spec/ui/flow-spec", node: false},
     {name: "spec/ui/slider-spec", node: false},
-    /*{name: "spec/ui/text/text-spec", node: false},
+    {name: "spec/ui/text/text-spec", node: false},
     {name: "spec/ui/label/label-spec", node: false},
     {name: "spec/ui/segmented-bar/segmented-bar-spec", node: false, karma: false},
-    /*
     // UI - repetition
     {name: "spec/ui/repetition-spec", node: false},
     {name: "spec/ui/repetition-selection-spec", node: false, karma: false},
     {name: "spec/ui/repetition-binding-spec", node: false},
     {name: "spec/core/localizer-spec", node: false, karma: false},
-    {name: "spec/core/localizer/serialization-spec", node: false, karma: false},
-    */
+    {name: "spec/core/localizer/serialization-spec", node: false, karma: false}
 ]).then(function () {
     console.log('montage-testing', 'End');
 }, function (err) {
