@@ -48,7 +48,7 @@
     "collections": "~5.0.x",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
-    "jshint": "^2.9.4",
+    "jslint": "^0.10.3",
     "mr": "git://github.com/montagejs/mr.git#master",
     "q-io": "~1.11.0"
   },
@@ -60,8 +60,10 @@
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",
     "karma-firefox-launcher": "^1.0.1",
+    "karma-ie-launcher": "^1.0.0",
     "karma-jasmine": "^1.1.0",
     "karma-phantomjs-launcher": "^1.0.2",
+    "karma-safari-launcher": "^1.0.0",
     "montage-testing": "git://github.com/montagejs/montage-testing.git#master",
     "mop-integration": "git://github.com/montagejs/mop-integration.git#master",
     "open": "0.0.5"
@@ -74,7 +76,7 @@
     "test:karma-debug": "karma start --no-auto-watch --single-run --browsers=PhantomJS_debug",
     "test:karma-firefox": "karma start --no-auto-watch --single-run --browsers=firefox",
     "test:karma-chrome": "karma start --no-auto-watch --single-run --browsers=chrome",
-    "test:karma-dev": "karma start --auto-watch --no-single-run",
+    "test:karma-dev": "karma start --auto-watch --no-single-run --capture",
     "test:jasmine": "concurrently \"http-server -a localhost -p 8085\" \"open http://localhost:8085/test/run.html\""
   },
   "exclude": [

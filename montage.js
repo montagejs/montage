@@ -238,7 +238,7 @@
                     
                     // install the linter, which loads on the first error
                     config.lint = function (module) {
-                        montageRequire.async("jshint")
+                        montageRequire.async("jslint/lib/jslint")
                         .then(function (JSHINT) {
                             if (!JSHINT.JSHINT(module.text)) {
                                 console.warn("JSHint Error: "+module.location);
