@@ -1,0 +1,10 @@
+{
+	"name": "flow.info",
+	"private": true,
+	"dependencies": {
+        "montage": "*"
+    },
+    "mappings": {
+        "montage": "../../../"
+    }
+}

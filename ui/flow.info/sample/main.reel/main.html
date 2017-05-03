@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Main</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
     <script type="text/montage-serialization">
         {
             "owner": {
@@ -9,21 +13,335 @@
                     "element": {"#": "main"}
                 }
             },
-
-            "flow": {
+            "flow1": {
                 "prototype": "montage/ui/flow.reel",
                 "properties": {
-                    "element": {"#": "flow"}
+                    "element": {"#": "flow1"},
+                    "isCameraEnabled": false,
+                    "elasticScrollingSpeed": 0.6,
+                    "stride": 1,
+                    "sceneScaleX": {
+                        "numerator": "1",
+                        "denominator": "300"
+                    },
+                    "sceneScaleY": {
+                        "numerator": "1",
+                        "denominator": "1"
+                    },
+                    "sceneOffsetTop": 0,
+                    "sceneOffsetLeft": 0,
+                    "linearScrollingVector": [-300,0],
+                    "content": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                    "paths": [
+                        {
+                            "knots": [
+                                {
+                                    "knotPosition": [-300, 0, -200],
+                                    "nextHandlerPosition": [-200, 0, 0],
+                                    "previousDensity": 1,
+                                    "nextDensity": 1,
+                                    "opacity": -0.2,
+                                    "rotateY": 0
+                                },
+                                {
+                                    "previousHandlerPosition": [-100, 0, 0],
+                                    "knotPosition": [0, 0, 0],
+                                    "nextHandlerPosition": [100, 0, 0],
+                                    "previousDensity": 1,
+                                    "nextDensity": 1,
+                                    "opacity": 2.5,
+                                    "rotateY": 0
+                                },
+                                {
+                                    "previousHandlerPosition": [200, 0, 0],
+                                    "knotPosition": [300, 0, -200],
+                                    "previousDensity": 1,
+                                    "nextDensity": 1,
+                                    "opacity": -0.2,
+                                    "rotateY": 0
+                                }
+                            ],
+                            "headOffset": 1,
+                            "tailOffset": 1,
+                            "units": {
+                                "opacity": "",
+                                "rotateY": "rad"
+                            }
+                        }
+                    ]
+                },
+                "bindings": {
+                    "sceneScaleX.numerator": {"<-": "viewportWidth"}
+                }
+            },
+            "flow2": {
+                "prototype": "montage/ui/flow.reel",
+                "properties": {
+                    "element": {"#": "flow2"},
+                    "isCameraEnabled": false,
+                    "stride": 1,
+                    "hasElasticScrolling": true,
+                    "sceneScaleX": {
+                        "numerator": "1",
+                        "denominator": "1"
+                    },
+                    "sceneScaleY": {
+                        "numerator": "1",
+                        "denominator": "30"
+                    },
+                    "sceneOffsetTop": 0,
+                    "sceneOffsetLeft": 0,
+                    "linearScrollingVector": [0, -30],
+                    "content": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38 ,39, 40, 41, 42 ,43 ,44,45,46,47,48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100],
+                    "paths": [
+                        {
+                            "knots": [
+                                {
+                                    "knotPosition": [0, -3000, 0],
+                                    "nextHandlerPosition": [0, -1000, 0],
+                                    "previousDensity": 200,
+                                    "nextDensity": 200
+                                },
+                                {
+                                    "knotPosition": [0, 3000, 0],
+                                    "previousHandlerPosition": [0, 1000, 0],
+                                    "previousDensity": 200,
+                                    "nextDensity": 200
+                                }
+                            ],
+                            "headOffset": 100,
+                            "tailOffset": 100,
+                            "units": {}
+                        }
+                    ]
+                },
+                "bindings": {
+                    "sceneScaleY.numerator": {"<-": "firstIterationHeight"}
+                }
+            },
+            "flow3": {
+                "prototype": "montage/ui/flow.reel",
+                "properties": {
+                    "element": {"#": "flow3"},
+                    "content": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38 ,39, 40, 41, 42 ,43 ,44,45,46,47,48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100],
+                    "isSelectionEnabled": false,
+                    "cameraFov": 45,
+                    "cameraTargetPoint": [0, 0, 0],
+                    "stride": 1,
+                    "hasSelectedIndexScrolling": true,
+                    "scrollingTransitionDuration": "600",
+                    "linearScrollingVector": [-230, 0],
+                    "cameraPosition": [0, 0, 400],
+                    "paths": [
+                        {
+                            "knots": [
+                                {
+                                    "knotPosition": [-480, 0, 0],
+                                    "nextHandlerPosition": [-480, 0, -62.87],
+                                    "previousHandlerPosition": [-480, 0, 62.87],
+                                    "previousDensity": 1,
+                                    "nextDensity":1,
+                                    "rotateY": 1.571
+                                },
+                                {
+                                    "knotPosition": [-443.46, 0, -183.69],
+                                    "nextHandlerPosition": [-419.4, 0, -241.77],
+                                    "previousHandlerPosition": [-467.52, 0, -125.6],
+                                    "previousDensity": 1,
+                                    "nextDensity": 1,
+                                    "rotateY": 1.178
+                                },
+                                {
+                                    "knotPosition": [-339.41, 0, -339.41],
+                                    "nextHandlerPosition": [-294.96, 0, -383.87],
+                                    "previousHandlerPosition": [-383.87, 0, -294.96],
+                                    "previousDensity": 1,
+                                    "nextDensity": 1,
+                                    "rotateY": 0.785
+                                },
+                                {
+                                    "knotPosition": [-183.69, 0, -443.46],
+                                    "nextHandlerPosition": [-125.6, 0, -467.52],
+                                    "previousHandlerPosition": [-241.77, 0, -419.4],
+                                    "previousDensity": 1,
+                                    "nextDensity": 1,
+                                    "rotateY": 0.393
+                                },
+                                {
+                                    "knotPosition": [0, 0, -200],
+                                    "nextHandlerPosition": [62.87, 0, -200],
+                                    "previousHandlerPosition": [-62.87, 0, -200],
+                                    "previousDensity": 1,
+                                    "nextDensity": 1,
+                                    "rotateY": 0
+                                },
+                                {
+                                    "knotPosition": [183.67, 0, -443.46],
+                                    "nextHandlerPosition": [241.77, 0, -419.4],
+                                    "previousHandlerPosition": [125.6, 0, -467.52],
+                                    "previousDensity": 1,
+                                    "nextDensity": 1,
+                                    "rotateY": -0.393
+                                },
+                                {
+                                    "knotPosition": [339.41, 0, -339.41],
+                                    "nextHandlerPosition": [383.87, 0, -294.96],
+                                    "previousHandlerPosition": [294.96, 0, -383.87],
+                                    "previousDensity": 1,
+                                    "nextDensity": 1,
+                                    "rotateY": -0.785
+                                },
+                                {
+                                    "knotPosition": [443.46, 0, -183.67],
+                                    "nextHandlerPosition": [467.52, 0, -125.6],
+                                    "previousHandlerPosition": [419.4, 0, -241.77],
+                                    "previousDensity": 1,
+                                    "nextDensity": 1,
+                                    "rotateY": -1.178
+                                },
+                                {
+                                    "knotPosition": [480, 0, 0],
+                                    "nextHandlerPosition": [480, 0, 62.87],
+                                    "previousHandlerPosition":[480, 0, -62.87],
+                                    "previousDensity": 1,
+                                    "nextDensity": 1,
+                                    "rotateY": -1.571
+                                }
+                            ],
+                            "units": {
+                                "rotateY": "rad"
+                            },
+                            "headOffset": 4,
+                            "tailOffset": 4
+                        }
+                    ]
+                }
+            },
+            "flow4": {
+                "prototype": "montage/ui/flow.reel",
+                "properties": {
+                    "element": {"#": "flow4"},
+                    "hasElasticScrolling": true,
+                    "elasticScrollingSpeed": 0.6,
+                    "linearScrollingVector": [-235, 0],
+                    "cameraFov": 56,
+                    "content": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100],
+                    "paths": [
+                        {
+                            "knots": [
+                                {
+                                    "knotPosition": [-1200, -200, 0],
+                                    "nextHandlerPosition": [-400, -200, 0],
+                                    "previousDensity": 6,
+                                    "nextDensity": 6
+                                },
+                                {
+                                    "knotPosition": [1200, -200, 0],
+                                    "previousHandlerPosition": [400, -200, 0],
+                                    "previousDensity": 6,
+                                    "nextDensity": 6
+                                }
+                            ],
+                            "headOffset": 3,
+                            "tailOffset": 3,
+                            "units": {}
+                        },
+                        {
+                            "knots": [
+                                {
+                                    "knotPosition": [-1000, 200, 0],
+                                    "nextHandlerPosition": [-200, 200, 0],
+                                    "previousDensity": 6,
+                                    "nextDensity": 6
+                                },
+                                {
+                                    "knotPosition": [1400, 200, 0],
+                                    "previousHandlerPosition": [600, 200, 0],
+                                    "previousDensity": 6,
+                                    "nextDensity": 6
+                                }
+                            ],
+                            "headOffset": 3,
+                            "tailOffset": 3,
+                            "units": {}
+                        }
+                    ]
+                }
+            },
+            "text1": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {
+                        "#": "text1"
+                    }
+                },
+                "bindings": {
+                    "value": {"<-" : "@flow1:iteration.object"}
+                }
+            },
+            "text2": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {
+                        "#": "text2"
+                    }
+                },
+                "bindings": {
+                    "value": {"<-" : "@flow2:iteration.object"}
+                }
+            },
+            "text3": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {
+                        "#": "text3"
+                    }
+                },
+                "bindings": {
+                    "value": {"<-" : "@flow3:iteration.object"}
+                }
+            },
+            "text4": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {
+                        "#": "text4"
+                    }
+                },
+                "bindings": {
+                    "value": {"<-" : "@flow4:iteration.object"}
                 }
             }
         }
     </script>
-
 </head>
 <body>
-    <div data-montage-id="main">
-        <h1>Flow Test</h1>
-        <div data-montage-id="flow"></div>
+    <div data-montage-id="main" class="Main">
+        <div class="flow1 window">
+            <p class="title">Horizontal Panels (liquid)</p>
+            <div data-montage-id="flow1" class="flow">
+                <div data-montage-id="text1" class="slide"></div>
+            </div>
+        </div>
+        <div class="flow2 window">
+            <p class="title">List (liquid)</p>
+            <div data-montage-id="flow2" class="flow">
+                <div data-montage-id="text2" class="slide"></div>
+            </div>
+        </div>
+        <div class="flow3 window">
+            <p class="title">Popcorn (camera)</p>
+            <div data-montage-id="flow3" class="flow">
+                <div data-montage-id="text3" class="slide"></div>
+            </div>
+        </div>
+        <div class="flow4 window">
+            <p class="title">Elastic Interleaved Rows (camera)</p>
+            <div data-montage-id="flow4" class="flow">
+                <div data-montage-id="text4" class="slide"></div>
+            </div>
+        </div>
+
     </div>
 </body>
 </html>
