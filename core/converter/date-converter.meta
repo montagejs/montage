@@ -41,7 +41,7 @@
             "parent": {
                 "@": "converter_blueprint_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "dateConverter_validator"
                 },
@@ -49,7 +49,7 @@
                     "@": "dateConverter_pattern"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "dateConverter": [
                     {
                         "@": "dateConverter_validator"

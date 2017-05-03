@@ -83,26 +83,16 @@ if (Object.hasOwnProperty('defineBinding') === false) {
 
     Object.defineProperty(Object, "defineBinding", {
         value: function (target, targetPath, descriptor) {
-            var depth = Error.stackTraceLimit;
-            Error.stackTraceLimit = 2;
-            console.warn(
-                "Object.defineBinding deprecated.  " +
-                "See the comment below this warning for migration instructions.",
-                new Error("deprecated").stack
-            );
-            Error.stackTraceLimit = depth;
+            var depth = Error.stackTraceLimit,
+                warningMsg = (['Object.defineBinding deprecated, replace Object.defineBinding with: ',
+                'Import Bindings from "montage/core/core"',
+                'Bindings.defineBinding(target, targetPath, descriptor);',
+                '- Use "<-", "<->", and "source" in place of "boundObjectPropertyPath", "oneway", and "boundObject".',
+                '- Use "convert" or "converter.convert" in place of "boundValueMutator".']).join("\r\n");
 
-            //
-            // Migration instructions:
-            //
-            // Replace Object.defineBinding with
-            // import Bindings from "montage/core/bindings"
-            // Bindings.defineBinding(target, targetPath, descriptor);
-            // - Use "<-", "<->", and "source" in place of
-            //   "boundObjectPropertyPath", "oneway", and "boundObject".
-            // - Use "convert" or "converter.convert" in place of
-            //   "boundValueMutator".
-            //
+            Error.stackTraceLimit = 2;
+            console.warn(warningMsg + new Error("deprecated").stack);
+            Error.stackTraceLimit = depth;
 
             var Bindings = require("frb");
 

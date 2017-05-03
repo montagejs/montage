@@ -328,7 +328,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     delta;
 
                 if (this.translateStrideX) {
-                    window.clearTimeout(this._mousewheelStrideTimeout);
+                    clearTimeout(this._mousewheelStrideTimeout);
                     if (Math.abs(this._linearScrollingVector[0]) > Math.abs(this._linearScrollingVector[1])) {
                         if (Math.abs(deltaX) > Math.abs(deltaY)) {
                             delta = this._linearScrollingVector[0] * -deltaX / Math.abs(this._linearScrollingVector[0]);
@@ -351,7 +351,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                             }
                         }
                     }
-                    this._mousewheelStrideTimeout = window.setTimeout(function () {
+                    this._mousewheelStrideTimeout = setTimeout(function () {
                         self._mousewheelStrideTimeout = null;
                         self._previousDelta = 0;
                     }, 70);
@@ -367,8 +367,8 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     this._pageY = this._pageY + ((deltaY * 20) / 100);
                     this._updateScroll();
                     this._dispatchTranslate();
-                    window.clearTimeout(this._translateEndTimeout);
-                    this._translateEndTimeout = window.setTimeout(function () {
+                    clearTimeout(this._translateEndTimeout);
+                    this._translateEndTimeout = setTimeout(function () {
                         self._dispatchTranslateEnd();
                         self._translateEndTimeout = null;
                     }, 400);

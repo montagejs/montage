@@ -47,7 +47,7 @@
             "parent": {
                 "@": "blueprint_component_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_substitution_switchValue"
                 },
@@ -58,7 +58,7 @@
                     "@": "blueprint_substitution_transition"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Substitution": [
                     {
                         "@": "blueprint_substitution_switchValue"

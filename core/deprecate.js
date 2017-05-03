@@ -65,7 +65,7 @@ exports.deprecateMethod = function deprecate(scope, deprecatedFunction, name, al
  * @param alternative
  * @returns {*}
  */
-exports.callDeprecatedFunction = function callDeprecatedFunction(scope, callback, name, alternative/*, ...args */) {
+exports.callDeprecatedFunction = function (scope, callback, name, alternative/*, ...args */) {
     var depth = Error.stackTraceLimit,
         scopeName,
         args;
@@ -74,10 +74,10 @@ exports.callDeprecatedFunction = function callDeprecatedFunction(scope, callback
     if (typeof console !== "undefined" && typeof console.warn === "function") {
         scopeName = Montage.getInfoForObject(scope).objectName;
 
-        if(alternative) {
+        if (alternative) {
             console.warn(name + " is deprecated, use " + alternative + " instead.", scopeName);
         } else {
-            //name is a complete message
+            // name is a complete message
             console.warn(name, scopeName);
         }
 

@@ -117,21 +117,17 @@ var Criteria = exports.Criteria = Montage.specialize({
         }
     },
 
-    stringify: {
-        value: function () {
-            return this._expression || (this._expression = stringify(this.syntax));
-        }
-    },
-
     serializeSelf: {
         value: function (serializer) {
-            serializer.setProperty("expression", this.stringify());
+            serializer.setProperty("expression", this._expression || (this._expression = stringify(this.syntax)));
+            serializer.setProperty("parameters", this.parameters);
         }
     },
 
     deserializeSelf: {
         value: function (deserializer) {
             this._expression = deserializer.getProperty("expression") || deserializer.getProperty("path");
+            this.parameters = deserializer.getProperty("parameters");
         }
     },
     __scope: {

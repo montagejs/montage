@@ -1,113 +1,24 @@
-/*global module: false */
-if (typeof window !== "undefined") {
-    document._montageTiming = {};
-    document._montageTiming.loadStartTime = Date.now();
-
-    console._groupTime = Object.create(null);
-    console.groupTime = function(name) {
-        var groupTimeEntry = this._groupTime[name];
-        if(!groupTimeEntry) {
-            groupTimeEntry = {
-                count: 0,
-                start: 0,
-                sum:0
-            };
-            this._groupTime[name] = groupTimeEntry;
-        }
-        groupTimeEntry.start = performance.now();
-    };
-    console.groupTimeEnd = function(name) {
-        var end = performance.now();
-        var groupTimeEntry = this._groupTime[name];
-        var time = end - groupTimeEntry.start;
-
-        groupTimeEntry.count = groupTimeEntry.count+1;
-        groupTimeEntry.sum = groupTimeEntry.sum+time;
-    };
-    console.groupTimeAverage = function(name) {
-        var groupTimeEntry = this._groupTime[name];
-        return groupTimeEntry.sum/groupTimeEntry.count;
-    };
-    console.groupTimeTotal = function(name) {
-        var groupTimeEntry = this._groupTime[name];
-        return groupTimeEntry.sum;
-    };
-    console.groupTimeCount = function(name) {
-        var groupTimeEntry = this._groupTime[name];
-        return groupTimeEntry.count;
-    };
-
-}
-
-/**
- * Defines standardized shims for the intrinsic String object.
- * @see {external:String}
- * @module montage/core/shim/string
- */
-
-/**
- * @external String
- */
-
-/**
- * Returns whether this string begins with a given substring.
- *
- * @function external:String#startsWith
- * @param {string} substring a potential substring of this string
- * @returns {boolean} whether this string starts with the given substring
- */
-if (!String.prototype.startsWith) {
-    Object.defineProperty(String.prototype, 'startsWith', {
-        value: function (searchString, position) {
-            return this.lastIndexOf(searchString, position || 0) === 0;
-            // return this.length >= start.length &&
-            //     this.slice(0, start.length) === start;
-        },
-        writable: true,
-        configurable: true
-    });
-}
-
-/**
- * Returns whether this string ends with a given substring.
- *
- * @function external:String#endsWith
- * @param {string} substring a potential substring of this string
- * @returns {boolean} whether this string ends with the given substring
- */
-if (!String.prototype.endsWith) {
-    Object.defineProperty(String.prototype, 'endsWith', {
-        value: function (searchString, position) {
-            if (typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > this.length) {
-                position = this.length;
-            }
-            position -= searchString.length;
-            var lastIndex = this.lastIndexOf(searchString, position);
-            return lastIndex !== -1 && lastIndex === position;
-        },
-        writable: true,
-        configurable: true
-    });
-}
-
-
-(function (definition) {
-    if (typeof require !== "undefined") {
-        // CommonJS / NodeJS
-        definition.call(
-            typeof global !== "undefined" ? global : this,
-            require,
-            exports,
-            module
-        );
+/*global define */
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define('montage', [], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like environments that support module.exports,
+        // like Node.
+        module.exports = factory(require, exports, module);
     } else {
-        // <script>
-        definition({}, {}, {});
+        // Browser globals (root is window)
+        root.Montage = factory({}, {}, {});
     }
-})(function (require, exports, module) {
+}(this, function (require, exports, module) {
 
-    // The global context object
-    global = this;
+    // reassigning causes eval to not use lexical scope.
+    var globalEval = eval,
+        /*jshint evil:true */
+        global = globalEval('this');
+        /*jshint evil:false */
 
     /**
      * Initializes Montage and creates the application singleton if
@@ -127,30 +38,6 @@ if (!String.prototype.endsWith) {
             exports.Require = Require;
 
             var montageLocation = URL.resolve(config.location, params.montageLocation);
-
-            config.moduleTypes = ["html", "meta", "mjson"];
-
-            // setup the reel loader
-            config.makeLoader = function (config) {
-                return exports.ReelLoader(
-                    config,
-                    Require.makeLoader(config)
-                );
-            };
-
-            // setup serialization compiler
-            config.makeCompiler = function (config) {
-                return exports.MetaCompiler(
-                    config,
-                    exports.SerializationCompiler(
-                        config,
-                        exports.TemplateCompiler(
-                            config,
-                            Require.makeCompiler(config)
-                        )
-                    )
-                );
-            };
 
             var location = URL.resolve(config.location, params.package || ".");
             var applicationHash = params.applicationHash;
@@ -231,7 +118,8 @@ if (!String.prototype.endsWith) {
                 window.postMessage({
                     type: "montageReady"
                 }, "*");
-                var trigger = new Promise(function(resolve, reject){
+
+                var trigger = new Promise(function(resolve) {
                     var messageCallback = function (event) {
                         if (
                             params.remoteTrigger === event.origin &&
@@ -251,6 +139,7 @@ if (!String.prototype.endsWith) {
                             }
                         }
                     };
+
                     window.addEventListener("message", messageCallback);
                 });
 
@@ -343,13 +232,13 @@ if (!String.prototype.endsWith) {
                     montageRequire.inject("core/mini-url", URL);
                     montageRequire.inject("core/promise", {Promise: Promise});
                     promiseRequire.inject("bluebird", Promise);
-                    //This prevents bluebird to be loaded twice by mousse's code
+                    
+                    // This prevents bluebird to be loaded twice by mousse's code
                     promiseRequire.inject("js/browser/bluebird", Promise);
-                    // montageRequire.inject("core/shim/string", String);
-
+                    
                     // install the linter, which loads on the first error
                     config.lint = function (module) {
-                        montageRequire.async("core/jshint")
+                        montageRequire.async("jslint/lib/jslint")
                         .then(function (JSHINT) {
                             if (!JSHINT.JSHINT(module.text)) {
                                 console.warn("JSHint Error: "+module.location);
@@ -365,8 +254,9 @@ if (!String.prototype.endsWith) {
                         });
                     };
 
-                    // Fixe me: transition to .mr only
+                    // Expose global require and mr
                     global.require = global.mr = applicationRequire;
+
                     return platform.initMontage(montageRequire, applicationRequire, params);
                 });
             });
@@ -374,157 +264,6 @@ if (!String.prototype.endsWith) {
 
     };
 
-    /**
-     Adds "_montage_metadata" property to all objects and function attached to
-     the exports object.
-     @see Compiler middleware in require/require.js
-     @param config
-     @param compiler
-     */
-    var MontageMetaData = function(require,id,name) {
-        this.require = require;
-        this.module = id;
-        //moduleId: id, // deprecated
-        this.property = name;
-        //objectName: name, // deprecated
-        //this.aliases = [name];
-        //this.isInstance = false;
-        return this;
-    };
-
-    MontageMetaData.prototype = {
-          get moduleId () {
-              return this.module;
-          },
-           get objectName () {
-              return this.property;
-          },
-           get aliases () {
-              return this._aliases || (this._aliases = [this.property]);
-          },
-          _aliases: null,
-          isInstance: false
-   };
-
-
-    var reverseReelExpression = /((.*)\.reel)\/\2$/,
-        reverseReelFunction = function ($0, $1) { return $1; },
-        _MONTAGE_METADATA = "_montage_metadata";
-    exports.SerializationCompiler = function (config, compile) {
-        return function (module) {
-            compile(module);
-            if (!module.factory) {
-                return;
-            }
-            var defaultFactory = module.factory;
-            module.factory = function (require, exports, module) {
-                        //call it to validate:
-                try{
-                        defaultFactory.call(this, require, exports, module);
-                }catch(e){
-                    if(e instanceof SyntaxError) {
-                        config.lint(module);
-                    }
-                }
-
-                var i, object,
-                    keys = Object.keys(exports);
-
-                for (i = 0, name; name = keys[i]; i++) {
-                    // avoid attempting to initialize a non-object
-                    if (((object = exports[name]) instanceof Object)) {
-                        // avoid attempting to reinitialize an aliased property
-                        //jshint -W106
-                        if (object.hasOwnProperty(_MONTAGE_METADATA) && !object._montage_metadata.isInstance) {
-                            object._montage_metadata.aliases.push(name);
-                            object._montage_metadata.objectName = name;
-                            //jshint +W106
-                        } else if (!Object.isSealed(object)) {
-                            object._montage_metadata = new MontageMetaData(require,/*id*/ module.id.replace(reverseReelExpression, reverseReelFunction),name);
-                        }
-                    }
-                }
-            };
-            return module;
-        };
-    };
-
-    var reelExpression = /([^\/]+)\.reel$/,
-        dotREEL = ".reel",
-        SLASH = "/";
-    /**
-     * Allows reel directories to load the contained eponymous JavaScript
-     * module.
-     * @see Loader middleware in require/require.js
-     * @param config
-     * @param loader the next loader in the chain
-     */
-    exports.ReelLoader = function (config, load) {
-        return function reelLoader(id, module) {
-            if (id.endsWith(dotREEL)) {
-                module.redirect = id;
-                module.redirect += SLASH;
-                module.redirect += reelExpression.exec(id)[1];
-                return module;
-            } else {
-                return load(id, module);
-            }
-        };
-    };
-
-    /**
-     * Allows the .meta and .mjson files to be loaded as json
-     * @see Compiler middleware in require/require.js
-     * @param config
-     * @param compile
-     */
-    exports.MetaCompiler = function (config, compile) {
-        return function (module) {
-            if (module.location && (module.location.endsWith(".meta") || module.location.endsWith(".mjson"))) {
-                module.exports = JSON.parse(module.text);
-                return module;
-            } else {
-                return compile(module);
-            }
-        };
-    };
-
-    /**
-     * Allows the reel's html file to be loaded via require.
-     *
-     * @see Compiler middleware in require/require.js
-     * @param config
-     * @param compile
-     */
-    var directoryExpression = /(.*\/)?(?=[^\/]+)/,
-        dotHTML = ".html",
-        dotHTML_LOAD_JS = ".html.load.js";
-
-    exports.TemplateCompiler = function (config, compile) {
-        return function (module) {
-            var location = module.location;
-
-            if (!location) {
-                return;
-            }
-
-            if (location.endsWith(dotHTML) || location.endsWith(dotHTML_LOAD_JS)) {
-                var match = location.match(directoryExpression);
-
-                if (match) {
-                    module.dependencies = module.dependencies || [];
-                    module.exports = {
-                        directory: match[1],
-                        content: module.text
-                    };
-
-                    return module;
-                }
-            }
-
-            compile(module);
-        };
-    };
 
     // Bootstrapping for multiple-platforms
 
@@ -670,7 +409,7 @@ if (!String.prototype.endsWith) {
         },
 
         bootstrap: function (callback) {
-            var base, Require, DOM, Promise, URL;
+            var Require, DOM, Promise, URL;
 
             var params = this.getParams();
             var resolve = this.makeResolve();
@@ -694,6 +433,7 @@ if (!String.prototype.endsWith) {
                     root.className = root.className + " montage-app-bootstrapping";
                 }
 
+                document._montageTiming = document._montageTiming || {};
                 document._montageTiming.bootstrappingStartTime = Date.now();
 
                 callbackIfReady();
@@ -800,6 +540,8 @@ if (!String.prototype.endsWith) {
                 // of the bootstrap function and proceed.
                 delete global.bootstrap;
 
+                global.Promise = Promise;
+
                 callbackIfReady();
             }
 
@@ -835,15 +577,10 @@ if (!String.prototype.endsWith) {
                   montageRequire(iDependency);
                 }
 
-                var Montage = montageRequire("core/core").Montage;
-                var EventManager = montageRequire("core/event/event-manager").EventManager;
+                var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
                 var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
-                var logger = montageRequire("core/logger").logger;
 
-                var defaultEventManager, application;
-
-                // Load the event-manager
-                defaultEventManager = new EventManager().initWithWindow(window);
+                var application;
 
                 // montageWillLoad is mostly for testing purposes
                 if (typeof global.montageWillLoad === "function") {
@@ -894,5 +631,4 @@ if (!String.prototype.endsWith) {
         // may cause additional exports to be injected:
         exports.getPlatform();
     }
-
-});
+}));

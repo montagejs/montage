@@ -233,8 +233,8 @@ valuePropertyDescriptor.value = function specialize(prototypeProperties, constru
         Montage.defineProperties(constructor, constructorProperties, true);
 
         Montage.defineProperty(constructor,"__isConstructor__", {
-                value: true,
-                enumerable: false
+            value: true,
+            enumerable: false
         });
 
 

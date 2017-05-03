@@ -253,7 +253,7 @@
         "properties": {
             "name": "Component",
             "customPrototype": false,
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_component_identifier"
                 },

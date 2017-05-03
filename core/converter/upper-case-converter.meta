@@ -19,8 +19,8 @@
             "parent": {
                 "@": "converter_blueprint_reference"
             },
-            "propertyBlueprints": [],
-            "propertyBlueprintGroups": {},
+            "propertyDescriptors": [],
+            "propertyDescriptorGroups": {},
             "propertyValidationRules": {},
             "blueprintModule": {
                 "%": "core/converter/upper-case-converter.meta"

@@ -368,7 +368,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
 
     constructor: {
         value: function () {
-            var userAgent = navigator.userAgent,
+            var userAgent = global.navigator ? global.navigator.userAgent : "",
                 code;
 
             if (_defaultKeyManager) {

@@ -32,11 +32,11 @@
         "properties": {
             "name": "Abstract Alert",
             "parent": {"@": "blueprint_parent"},
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {"@": "title_property"},
                 {"@": "message_property"}
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Main": [
                     {"@": "message_property"}
                 ],

@@ -255,7 +255,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
             var response = !(this.isModal && this.isShown),
                 delegateResponse;
 
-            if (!response && candidateActiveTarget.element) {
+            if (!response && candidateActiveTarget && candidateActiveTarget.element) {
                 response = this.element.contains(candidateActiveTarget.element);
             }
 
@@ -398,9 +398,9 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
 
     _calculateCenteredPosition: {
         value: function () {
-            var _window = this.element.ownerDocument.defaultView,
-                viewportHeight = _window.innerHeight,
-                viewportWidth = _window.innerWidth,
+            var defaultView = this.element.ownerDocument.defaultView,
+                viewportHeight = defaultView.innerHeight,
+                viewportWidth = defaultView.innerWidth,
                 height = this.element.offsetHeight,
                 width = this.element.offsetWidth;
 

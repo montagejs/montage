@@ -19,7 +19,7 @@
             "parent": {
                 "@": "converter_blueprint_reference"
             },
-            "propertyBlueprints": [],
+            "propertyDescriptors": [],
             "propertyBlueprintGroups": {},
             "propertyValidationRules": {},
             "blueprintModule": {

@@ -80,7 +80,7 @@
             "parent": {
                 "@": "blueprint_component_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_repetition_content"
                 },
@@ -100,7 +100,7 @@
                     "@": "blueprint_repetition_clonesChildComponents"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Repetition": [
                     {
                         "@": "blueprint_repetition_content"

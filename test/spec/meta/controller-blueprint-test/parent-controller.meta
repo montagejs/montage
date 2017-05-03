@@ -1,0 +1,58 @@
+{
+    "blueprint_parentcontroller_customerList": {
+        "prototype": "montage/core/meta/property-blueprint",
+        "properties": {
+            "name": "customerList",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": -1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_parentcontroller_customerSelectionList": {
+        "prototype": "montage/core/meta/property-blueprint",
+        "properties": {
+            "name": "customerSelectionList",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": -1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "root": {
+        "prototype": "montage/core/meta/module-blueprint",
+        "properties": {
+            "name": "ParentController",
+            "customPrototype": false,
+            "propertyDescriptors": [
+                {
+                    "@": "blueprint_parentcontroller_customerList"
+                },
+                {
+                    "@": "blueprint_parentcontroller_customerSelectionList"
+                }
+            ],
+            "propertyDescriptorGroups": {},
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "spec/meta/controller-blueprint-parent/parent-controller.meta"
+            },
+            "exportName": "ParentController",
+            "module": {
+                "%": "spec/meta/controller-blueprint-test/parent-controller"
+            }
+        }
+    }
+}

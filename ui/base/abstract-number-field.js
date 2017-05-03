@@ -12,7 +12,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
 /** @lends AbstractNumberField# */
 {
 
-    // Lifecycle
+    // Life Cycle
 
     constructor: {
         value: function AbstractNumberField() {

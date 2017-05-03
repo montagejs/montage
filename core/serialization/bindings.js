@@ -22,12 +22,15 @@ Serializer.defineSerializationUnit("bindings", function (serializer, object) {
 
         var output = {};
 
-        if (("serializable" in input) && !input.serializable)
+        if (("serializable" in input) && !input.serializable) {
             continue;
+        } else if (!input.sourceSyntax) {
+            continue;
+        }
 
         var sourcePath = input.sourcePath;
         var syntax = input.sourceSyntax;
-        if (input.source !== object) {
+        if (input.source && input.source !== object) {
             var label = serializer.getObjectLabel(input.source);
             var scope = new Scope({
                 type: "component",

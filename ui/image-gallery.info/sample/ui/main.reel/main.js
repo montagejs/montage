@@ -22,7 +22,7 @@ exports.Main = Component.specialize(/** @lends Main# */ {
             if (this.__gallery) {
                 // Simulates lazy loading of images.
                 this.__gallery.images = images;
-                window.setTimeout(function () {
+                setTimeout(function () {
                     images.splice(
                         0, images.length,
                         "ui/main.reel/asset/cezanne.jpg",

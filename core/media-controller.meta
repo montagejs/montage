@@ -168,7 +168,7 @@
             },
             "prototypeName": "MediaController",
             "customPrototype": false,
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "mediaController_status"
                 },
@@ -209,7 +209,7 @@
                     "@": "mediaController_mute"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "rangeController": [
                     {
                         "@": "mediaController_status"

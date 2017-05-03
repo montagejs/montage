@@ -8,7 +8,6 @@
 var Montage = require("../core").Montage,
     PropertyValidationSemantics = require("./validation-semantics").PropertyValidationSemantics,
     Selector = require("../selector").Selector,
-    logger = require("../logger").logger("objectDescriptor"),
     deprecate = require("../deprecate");
 
 /**

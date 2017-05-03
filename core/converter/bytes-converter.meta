@@ -30,12 +30,12 @@
             "parent": {
                 "@": "converter_blueprint_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "bytesConverter_decimals"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "bytesConverter": [
                     {
                         "@": "bytesConverter_decimals"

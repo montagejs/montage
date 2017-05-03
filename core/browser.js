@@ -35,7 +35,7 @@ Montage.defineProperties(exports, {
     browser: {
         get: function () {
             if(_browser === null) {
-                _browser = new Browser(navigator.userAgent);
+                _browser = new Browser(global.navigator ? global.navigator.userAgent : '');
             }
             return _browser;
         }

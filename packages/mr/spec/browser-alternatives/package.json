@@ -1,6 +1,0 @@
-{
-    "name": "browser-alternatives-spec",
-    "dependencies": {
-        "shimmy": "*"
-    }
-}
