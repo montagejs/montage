@@ -144,7 +144,7 @@ exports.element = function (_document) {
             return [];
         },
         querySelector: function () {
-            return []
+            return [];
         },
         focus: function () {},
         blur: function () {},
@@ -249,14 +249,17 @@ exports.keyPressEvent = function (keys, target) {
     }
 
     // Clone the event so we can set a target and modifiers on it.
-    var customEvent = {};
-    for (var key in event) {
-        customEvent[key] = event[key];
+    var key,
+        customEvent = {};
+    for (key in event) {
+        if (event.hasOwnProperty(key)) {
+            customEvent[key] = event[key];            
+        }
     }
     customEvent.charCode = modifiersAndKeyCode.keyCode;
     customEvent.target = target;
 
-    for (var key in MODIFIERS) {
+    for (key in MODIFIERS) {
         if (modifiersAndKeyCode.modifiers & MODIFIERS[key]) {
             customEvent[key] = true;
         }

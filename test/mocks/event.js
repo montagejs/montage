@@ -12,7 +12,7 @@ exports.event = function (type, canBubble, cancelable, detail) {
     event.initCustomEvent(type, canBubble, cancelable, detail);
 
     return fromEvent(event);
-}
+};
 
 var fromEvent = exports.fromEvent = function (event) {
 
@@ -35,4 +35,4 @@ var fromEvent = exports.fromEvent = function (event) {
         mockEvent.defaultPrevented = true;
     };
     return mockEvent;
-}
+};
