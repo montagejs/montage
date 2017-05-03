@@ -33,46 +33,57 @@ POSSIBILITY OF SUCH DAMAGE.
 <head>
     <title>Repetition Spec</title>
     <script type="text/javascript" src="../../../../montage.js" data-package="../../../"></script>
-    <script type="text/montage-serialization">{
-            "owner": {
-                "value": {}
-            },
+    <script type="text/montage-serialization">
+        {
+    "owner": {
+        "value": {}
+    },
+    "application": {
+        "prototype": "montage/core/application",
+        "properties": {
+            "delegate": {
+                "@": "repetitiontest1"
+            }
+        }
+    },
+    "repetitiontest1": {
+        "prototype": "spec/ui/repetition/repetition-binding-test",
+        "properties": {
+            "repetition20": {
+                "@": "repetition20"
+            }
+        }
+    },
 
-            "application": {
-                "prototype": "montage/core/application",
-                "properties": {
-                    "delegate": {"@": "repetitiontest1"}
-    
-            },
-            "repetitiontest1": {
-                "prototype": "spec/ui/repetition/repetition-binding-test",
-                "properties": {
-                    "repetition20": {"@": "repetition20"}
-                }
-            },
+    "repetition20": {
+        "prototype": "montage/ui/repetition.reel",
+        "properties": {
+            "element": {
+                "#": "repetition20"
+            }
+        },
+        "bindings": {
+            "content": {
+                "<-": "@repetitiontest1.content"
+            }
+        }
+    },
 
-	        "repetition20": {
-	            "prototype": "montage/ui/repetition.reel",
-	            "properties": {
-	                "element": {"#": "repetition20"}
-	            },
-	            "bindings": {
-	                "content": {"<-": "@repetitiontest1.content"}
-	            }
-	        },
-
-	        "text130": {
-	            "prototype": "montage/ui/text.reel",
-	            "properties": {
-	                "element": {"#": "text130"}
-	            },
-	            "bindings": {
-	                "value": {"<-": "@repetition20:iteration.object"}
-	            }
-	        }
-			
-
-    }</script>
+    "text130": {
+        "prototype": "montage/ui/text.reel",
+        "properties": {
+            "element": {
+                "#": "text130"
+            }
+        },
+        "bindings": {
+            "value": {
+                "<-": "@repetition20:iteration.object"
+            }
+        }
+    }
+}
+    </script>
 </head>
 <body>
 
