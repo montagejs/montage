@@ -73,14 +73,6 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/geometry/point-spec", node: false},
     // Reel
     {name: "spec/reel/template-spec", node: false, karma: false},
-    // Bluerint
-    {name: "spec/meta/blueprint-spec", karma: false},
-    {name: "spec/meta/converter-blueprint-spec", karma: false},
-    {name: "spec/meta/module-blueprint-spec", karma: false},
-    {name: "spec/meta/build-in-component-blueprint-spec", node: false, karma: false},
-    {name: "spec/meta/component-blueprint-spec", node: false, karma: false},
-    {name: "spec/meta/controller-blueprint-spec", node: false, karma: false},
-    {name: "spec/meta/event-blueprint-spec", node: false, karma: false},
     // Serialization
     "spec/serialization/alias-spec",
     "spec/serialization/labeler-spec",
@@ -91,17 +83,16 @@ module.exports = require("montage-testing").run(require, [
     "spec/serialization/bindings-spec",
     "spec/serialization/serialization-inspector-spec",
     "spec/serialization/serialization-merger-spec",
-    {name: "spec/serialization/montage-serializer-spec", node: true, karma: false},
-    {name: "spec/serialization/montage-serializer-element-spec", node: false, karma: true},
-    {name: "spec/serialization/montage-deserializer-spec", node: true, karma: false},
-    {name: "spec/serialization/montage-deserializer-element-spec", node: false, karma: true},
+    {name: "spec/serialization/montage-serializer-spec"},
+    {name: "spec/serialization/montage-serializer-element-spec", node: false},
+    {name: "spec/serialization/montage-deserializer-spec"},
+    {name: "spec/serialization/montage-deserializer-element-spec", node: false},
     // Trigger
     {name: "spec/trigger/trigger-spec", node: false},
     // UI
     {name: "spec/ui/checkbox-spec", node: false},
     {name: "spec/ui/condition-spec", node: false},
     {name: "spec/ui/button-spec", node: false},
-    {name: "spec/ui/component-spec", node: false},
     {name: "spec/ui/control-spec", node: false},
     {name: "spec/ui/firstdraw-spec", node: false},
     {name: "spec/ui/loader-spec", node: false},
@@ -110,17 +101,26 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/ui/slot-spec", node: false},
     {name: "spec/ui/substitution-spec", node: false},  
     {name: "spec/ui/text-input-spec", node: false},
-    {name: "spec/ui/flow-spec", node: false},
     {name: "spec/ui/slider-spec", node: false},
     {name: "spec/ui/text/text-spec", node: false},
     {name: "spec/ui/label/label-spec", node: false},
     {name: "spec/ui/segmented-bar/segmented-bar-spec", node: false, karma: false},
+    {name: "spec/ui/flow-spec", node: false},
+    {name: "spec/ui/component-spec", node: false},
     // UI - repetition
     {name: "spec/ui/repetition-spec", node: false},
     {name: "spec/ui/repetition-selection-spec", node: false, karma: false},
     {name: "spec/ui/repetition-binding-spec", node: false},
     {name: "spec/core/localizer-spec", node: false, karma: false},
-    {name: "spec/core/localizer/serialization-spec", node: false, karma: false}
+    {name: "spec/core/localizer/serialization-spec", node: false, karma: false},
+    // Bluerint
+    {name: "spec/meta/converter-blueprint-spec", karma: false},
+    {name: "spec/meta/module-blueprint-spec", karma: false},
+    {name: "spec/meta/build-in-component-blueprint-spec", node: false, karma: false},
+    {name: "spec/meta/component-blueprint-spec", node: false, karma: false},
+    {name: "spec/meta/controller-blueprint-spec", node: false, karma: false},
+    {name: "spec/meta/event-blueprint-spec", node: false, karma: false},
+    {name: "spec/meta/blueprint-spec", karma: false}
 ]).then(function () {
     console.log('montage-testing', 'End');
 }, function (err) {
