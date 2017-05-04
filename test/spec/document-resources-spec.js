@@ -60,7 +60,7 @@ describe("document-resources-spec", function () {
             });
 
         }).catch(function(reason) {
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });
@@ -84,7 +84,7 @@ describe("document-resources-spec", function () {
             });
 
         }).catch(function(reason) {
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });
@@ -110,7 +110,7 @@ describe("document-resources-spec", function () {
             });
 
         }).catch(function(reason) {
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });
@@ -134,7 +134,7 @@ describe("document-resources-spec", function () {
             });
 
         }).catch(function(reason) {
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });
@@ -164,8 +164,7 @@ describe("document-resources-spec", function () {
             });
 
         }).catch(function(reason) {
-            console.log(reason.stack);
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });
@@ -193,7 +192,7 @@ describe("document-resources-spec", function () {
                 deletePage(page);
             });
         }).catch(function(reason) {
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });
@@ -225,7 +224,7 @@ describe("document-resources-spec", function () {
             });
 
         }).catch(function(reason) {
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });
@@ -249,8 +248,7 @@ describe("document-resources-spec", function () {
             });
 
         }).catch(function(reason) {
-            console.log(reason.stack);
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });
@@ -274,8 +272,7 @@ describe("document-resources-spec", function () {
             });
 
         }).catch(function(reason) {
-            console.log(reason.stack);
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });
@@ -304,8 +301,7 @@ describe("document-resources-spec", function () {
                 deletePage(page);
             });
         }).catch(function(reason) {
-            console.log(reason.stack);
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });
@@ -382,8 +378,7 @@ describe("document-resources-spec", function () {
             expect(page.document.styleSheets.length).toBe(1);
             deletePage(page);
         }).catch(function(reason) {
-            console.log(reason.stack);
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });
@@ -405,8 +400,7 @@ describe("document-resources-spec", function () {
             expect(resources.areStylesLoaded).toBe(true);
             deletePage(page);
         }).catch(function(reason) {
-            console.log(reason.stack);
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });
@@ -443,8 +437,7 @@ describe("document-resources-spec", function () {
 
             return deferred;
         }).catch(function(reason) {
-            console.log(reason.stack);
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });
@@ -471,8 +464,7 @@ describe("document-resources-spec", function () {
 
             expect(links.length).toBe(1);
         }).catch(function(reason) {
-            console.log(reason.stack);
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });
@@ -487,8 +479,7 @@ describe("document-resources-spec", function () {
 
             expect(resources.areStylesLoaded).toBeFalsy();
         }).catch(function(reason) {
-            console.log(reason.stack);
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });
@@ -503,7 +494,7 @@ describe("document-resources-spec", function () {
                 var src = page.document.querySelector("script").src;
                 expect(resources.hasResource(src)).toBe(true);
             }).catch(function(reason) {
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -517,7 +508,7 @@ describe("document-resources-spec", function () {
                 var src = page.document.querySelector("link").href;
                 expect(resources.hasResource(src)).toBe(true);
             }).catch(function(reason) {
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -539,8 +530,7 @@ describe("document-resources-spec", function () {
 
                 expect(normalizedUrl).toBe(expectedUrl);
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -558,8 +548,7 @@ describe("document-resources-spec", function () {
 
                 expect(normalizedUrl).toBe(expectedUrl);
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -578,8 +567,7 @@ describe("document-resources-spec", function () {
 
                 expect(normalizedUrl).toBe(expectedUrl);
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });

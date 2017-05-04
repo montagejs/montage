@@ -68,8 +68,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(root.number).toBe(42);
                 expect(root.string).toBe("a string");
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -125,8 +124,7 @@ describe("serialization/montage-deserializer-spec", function () {
             deserializer.deserializeObject(instances).then(function (root) {
                 expect(root.simple).toBe(simple);
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -157,8 +155,7 @@ describe("serialization/montage-deserializer-spec", function () {
             deserializer.deserializeObject(instances).then(function (root) {
                 expect(root.simple).toBe(simple);
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -181,8 +178,7 @@ describe("serialization/montage-deserializer-spec", function () {
             deserializer.deserializeObject().then(function (root) {
                 expect(root).toBe(objects.Singleton.prototype.instance);
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -210,8 +206,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(root).toBe(instances.root);
                 expect(instances.root.number).toBe(42);
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -238,8 +233,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(objects.owner).toBe(instances.owner);
                 expect(instances.owner.number).toBe(42);
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -270,8 +264,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(root.deserializedFromSerializationCount).toBe(0);
                 expect(oneprop.deserializedFromSerializationCount).toBe(1);
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -328,8 +321,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(isDeserializing).toBeTruthy();
                 expect(objects.root.isDeserializing).toBeUndefined();
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -483,8 +475,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(Object.getPrototypeOf(root)).toBe(objects.TestobjectsV2.prototype);
                 expect(root.instance).toBeUndefined();
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -513,8 +504,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(info.isInstance).toBe(true);
                 expect(root.instance).toBeUndefined();
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -786,8 +776,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(root.prop1).toBeNull();
                 expect(root._bindingDescriptors).toBeFalsy();
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -810,8 +799,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(type).toBe("prototype");
                 expect(typeValue).toBe("spec/serialization/testobjects-v2[CustomDeserialization]");
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -839,8 +827,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(type).toBe("object");
                 expect(typeValue).toBe("spec/serialization/testobjects-v2[CustomDeserialization]");
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -860,8 +847,7 @@ describe("serialization/montage-deserializer-spec", function () {
             deserializer.deserializeObject().then(function (root) {
                 expect(prop1).toBe(3.14);
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -881,8 +867,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(root.prop1).toBe(3.14);
                 expect(root._bindingDescriptors).toBeFalsy();
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -903,8 +888,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(root.prop1).toBe(3.14);
                 expect(root._bindingDescriptors).toBeFalsy();
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -925,8 +909,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(root.prop1).toBe(3.14);
                 expect(Bindings.getBindings(root).size).toBeGreaterThan(0);
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -947,8 +930,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(root.prop1).toBe(3.14);
                 expect(Bindings.getBindings(root).size).toBeGreaterThan(0);
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -967,8 +949,7 @@ describe("serialization/montage-deserializer-spec", function () {
             deserializer.deserializeObject().then(function (root) {
                 expect(root).toBe(newRoot);
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -1013,8 +994,7 @@ describe("serialization/montage-deserializer-spec", function () {
         deserializer.deserialize(serializationString).then(function (objects) {
             expect(objects.a).toBe(null);
         }).catch(function(reason) {
-            console.log(reason.stack);
-            expect("test").toBe("executed");
+            fail(reason);
         }).finally(function () {
             done();
         });

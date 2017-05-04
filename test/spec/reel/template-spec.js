@@ -80,8 +80,8 @@ describe("spec/reel/template-spec", function () {
                 expect(children.length).toBe(1);
                 // there must be a better way to compare DOM tree's...
                 expect(children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
-            },function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -110,8 +110,8 @@ describe("spec/reel/template-spec", function () {
                 expect(children.length).toBe(1);
                 // there must be a better way to compare DOM tree's...
                 expect(children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
-            },function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -165,8 +165,8 @@ describe("spec/reel/template-spec", function () {
                 expect(children.length).toBe(1);
                 // there must be a better way to compare DOM tree's...
                 expect(children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
-            },function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -199,8 +199,8 @@ describe("spec/reel/template-spec", function () {
 
                 expect(domSrc).toBe(expectedResult.src);
                 expect(svgSrc).toBe(expectedResult.src);
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -252,8 +252,8 @@ describe("spec/reel/template-spec", function () {
                     expect(text.value).toBe("Hello, World!");
                     expect(text.element).toBe(div);
                 });
-            },function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -323,8 +323,8 @@ describe("spec/reel/template-spec", function () {
                 expect(element.children.length).toBe(1);
                 expect(element.children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
                 expect(element.children[0]).not.toBe(children[0]);
-            },function() {
-                expect("test").toBe("executed");
+           }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -507,10 +507,8 @@ describe("spec/reel/template-spec", function () {
 
                 expect(domSrc).toBe(expectedResult.src);
                 expect(svgSrc).toBe(expectedResult.src);
-            }, function() {
-                expect("test").toBe("executed");
-            }, function (err) {
-                fail(err);
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -535,8 +533,8 @@ describe("spec/reel/template-spec", function () {
                     var domImage = template.document.getElementById("no_src");
 
                     expect(domImage.hasAttribute("src")).toBeFalsy();
-                }, function() {
-                    expect("test").toBe("executed");
+                }, function(reason) {
+                    fail(reason);
                 }).finally(function () {
                     done();
                 });
@@ -561,8 +559,8 @@ describe("spec/reel/template-spec", function () {
                     domSrc = domImage ? domImage.getAttribute('src') : "";
 
                 expect(domSrc).toBe("");
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -594,8 +592,8 @@ describe("spec/reel/template-spec", function () {
 
                 expect(domSrc).toBe(expectedResult.src);
                 expect(svgSrc).toBe(expectedResult.src);
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -626,8 +624,8 @@ describe("spec/reel/template-spec", function () {
 
                 expect(domSrc).toBe(expectedResult.src);
                 expect(svgSrc).toBe(expectedResult.src);
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -656,8 +654,8 @@ describe("spec/reel/template-spec", function () {
 
                 expect(domSrc).toBe(expectedResult.src);
                 expect(svgSrc).toBe(expectedResult.src);
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -681,8 +679,7 @@ describe("spec/reel/template-spec", function () {
                     expect(element.children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
                 })
             }, function(reason) {
-                //console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -695,8 +692,8 @@ describe("spec/reel/template-spec", function () {
                 return template.instantiate(document).then(function (documentPart) {
                     expect(documentPart.template).toBe(template);
                 })
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -710,8 +707,8 @@ describe("spec/reel/template-spec", function () {
                     expect(Object.keys(documentPart.objects).length).toBe(1);
                     expect(documentPart.objects.text).toBeDefined();
                 })
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -724,8 +721,8 @@ describe("spec/reel/template-spec", function () {
                 return template.instantiate(document).then(function (documentPart) {
                     expect(documentPart.objects).toEqual(jasmine.objectContaining({}));
                 })
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -742,8 +739,8 @@ describe("spec/reel/template-spec", function () {
                     expect(documentPart.childComponents)
                         .toEqual([objects.title, objects.rows]);
                 });
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -761,8 +758,8 @@ describe("spec/reel/template-spec", function () {
                 .then(function (documentPart) {
                     expect(documentPart.objects.text).toBe(text);
                 })
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -780,8 +777,8 @@ describe("spec/reel/template-spec", function () {
                 return template.instantiate(document).then(function (documentPart) {
                     expect(documentPart.objects.text).toBe(text);
                 })
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -799,8 +796,8 @@ describe("spec/reel/template-spec", function () {
                 return template.instantiateWithInstances(instances, document).then(function (documentPart) {
                     expect(documentPart.objects.text).toBe(text);
                 })
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -824,8 +821,8 @@ describe("spec/reel/template-spec", function () {
                     expect(objects.one.deserializedFromTemplateCount).toBe(1);
                     expect(objects.two.deserializedFromTemplateCount).toBe(0);
                 });
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -840,8 +837,7 @@ describe("spec/reel/template-spec", function () {
                     expect(true).toBe(true);
                 });
             }, function(reason) {
-                //console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -859,8 +855,8 @@ describe("spec/reel/template-spec", function () {
                     expect(objects.one.templateDidLoadCount).toBe(0);
                     expect(objects.two.templateDidLoadCount).toBe(0);
                 });
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -881,7 +877,7 @@ describe("spec/reel/template-spec", function () {
                     expect(instances.owner.templateDidLoadCount).toBe(1);
                 });
             }, function(reason) {
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -901,8 +897,8 @@ describe("spec/reel/template-spec", function () {
 
                     expect(objects.owner.templateDidLoadCount).toBe(0);
                 });
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -920,8 +916,8 @@ describe("spec/reel/template-spec", function () {
                     var objects = documentPart.objects;
                     expect(objects.one.deserializedFromTemplateCount).toBe(0);
                 });
-            }, function() {
-                expect("test").toBe("executed");
+            }, function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -999,8 +995,7 @@ describe("spec/reel/template-spec", function () {
                     expect(objects.one.application).toBeDefined();
                 });
             }, function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -1020,8 +1015,7 @@ describe("spec/reel/template-spec", function () {
                     expect(objects.one.template).toBe(template);
                 });
             }, function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -1046,7 +1040,7 @@ describe("spec/reel/template-spec", function () {
                     });
                 });
             }, function(reason) {
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -1081,8 +1075,7 @@ describe("spec/reel/template-spec", function () {
                     });
                 });
             }, function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -1116,8 +1109,7 @@ describe("spec/reel/template-spec", function () {
                     });
                 });
             }, function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -1140,7 +1132,7 @@ describe("spec/reel/template-spec", function () {
                     });
                 });
             }, function(reason) {
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -1162,8 +1154,7 @@ describe("spec/reel/template-spec", function () {
                     });
                 });
             }, function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -1183,8 +1174,7 @@ describe("spec/reel/template-spec", function () {
                     elementIds = template._getChildrenElementIds(node);
                     expect(elementIds.length).toBe(0);
                 }, function(reason) {
-                    console.log(reason.stack);
-                    expect("test").toBe("executed");
+                    fail(reason);
                 }).finally(function () {
                     done();
                 });
@@ -1203,8 +1193,7 @@ describe("spec/reel/template-spec", function () {
                     expect(elementIds.length).toBe(1);
                     expect(elementIds).toContain("item")
                 }, function(reason) {
-                    console.log(reason.stack);
-                    expect("test").toBe("executed");
+                    fail(reason);
                 }).finally(function () {
                     done();
                 });
@@ -1225,8 +1214,7 @@ describe("spec/reel/template-spec", function () {
                     expect(elementIds).toContain("columns");
                     expect(elementIds).toContain("column");
                 }, function(reason) {
-                    console.log(reason.stack);
-                    expect("test").toBe("executed");
+                    fail(reason);
                 }).finally(function () {
                     done();
                 });
@@ -1253,8 +1241,7 @@ describe("spec/reel/template-spec", function () {
                 objects = JSON.parse(subTemplate.objectsString);
                 expect(objects).toEqual(expectedObjects);
             }, function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -1286,8 +1273,7 @@ describe("spec/reel/template-spec", function () {
                 objects = JSON.parse(subTemplate.objectsString);
                 expect(objects).toEqual(expectedObjects);
             }, function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -1328,8 +1314,7 @@ describe("spec/reel/template-spec", function () {
 
                 expect(objects).toEqual(expectedObjects);
             }, function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -1349,8 +1334,7 @@ describe("spec/reel/template-spec", function () {
                     //expect(part.childComponents.length).toBe(1);
                 });
             }, function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -1369,8 +1353,7 @@ describe("spec/reel/template-spec", function () {
                         expect(part.objects.text).toBe(instances.text);
                     });
             }, function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
