@@ -38,16 +38,11 @@ jasmineEnv.addReporter({
 });
 
 // Execute
-var mrRequire = require('mr/bootstrap-node');
+var Montage = require('../node');
 var PATH = require("path");
-mrRequire.loadPackage(PATH.join(__dirname, "."))
+Montage.loadPackage(PATH.join(__dirname, "."))
 .then(function (mr) {
-    // TODO for debug only
-    // Inject current montage to avoid montage require via montage-testing
-    //return mr.async('montage').then(function (montage) {
-    //    mr.inject('montage', montage)
-        return mr.async("all");
-    //});
+    return mr.async("all");
 }).then(function () {
     console.log('Done');
     process.exit(exitCode);
