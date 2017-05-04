@@ -264,9 +264,7 @@
 
     };
 
-
     // Bootstrapping for multiple-platforms
-
     exports.getPlatform = function () {
         if (typeof window !== "undefined" && window && window.document) {
             return browser;
@@ -625,10 +623,10 @@
             console.warn("Montage already loaded!");
         } else {
             global.__MONTAGE_LOADED__ = true;
-            exports.initMontage();
+            return exports.initMontage();
         }
     } else {
         // may cause additional exports to be injected:
-        exports.getPlatform();
+        return exports.getPlatform();
     }
 }));

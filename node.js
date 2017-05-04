@@ -1,16 +1,38 @@
 /*jshint node:true, browser:false */
 var FS = require("q-io/fs");
-
 var MontageBoot = require("./montage");
-
 var Require = require("mr/require");
-require("mr/node");
-var URL = require("url");
 
+var URL = require("url");
 var htmlparser = require("htmlparser2");
 var DomUtils = htmlparser.DomUtils;
 
-Require.overlays = ["node", "server", "montage"];
+function findPackage(path) {
+    var directory = FS.directory(path);
+    if (directory === path) {
+        throw new Error("Can't find package");
+    }
+    var packageJson = FS.join(directory, "package.json");
+    return FS.stat(packageJson).then(function (stat) {
+        if (stat.isFile()) {
+            return directory;
+        } else {
+            return findPackage(directory);
+        }
+    });
+};
+
+function loadFreeModule(/*program, command, args*/) {
+    throw new Error("Can't load module that is not in a package");
+};
+
+function loadPackagedModule(directory, program/*, command, args*/) {
+    return MontageBoot.loadPackage(directory)
+    .then(function (require) {
+        var id = program.slice(directory.length + 1);
+        return require.async(id);
+    });
+};
 
 exports.bootstrap = function () {
     var command = process.argv.slice(0, 3);
@@ -31,33 +53,6 @@ exports.bootstrap = function () {
     });
 };
 
-var findPackage = function (path) {
-    var directory = FS.directory(path);
-    if (directory === path) {
-        throw new Error("Can't find package");
-    }
-    var packageJson = FS.join(directory, "package.json");
-    return FS.stat(packageJson).then(function (stat) {
-        if (stat.isFile()) {
-            return directory;
-        } else {
-            return findPackage(directory);
-        }
-    });
-};
-
-var loadFreeModule = function (/*program, command, args*/) {
-    throw new Error("Can't load module that is not in a package");
-};
-
-var loadPackagedModule = function (directory, program/*, command, args*/) {
-    return MontageBoot.loadPackage(directory)
-    .then(function (require) {
-        var id = program.slice(directory.length + 1);
-        return require.async(id);
-    });
-};
-
 MontageBoot.loadPackage = function (location, config) {
 
     if (location.slice(location.length - 1, location.length) !== "/") {
@@ -65,31 +60,20 @@ MontageBoot.loadPackage = function (location, config) {
     }
 
     config = config || {};
-
+    config.overlays = ["node", "server", "montage"];
     config.location = URL.resolve(Require.getLocation(), location);
-
-    config.moduleTypes = ["html", "meta"];
-
-    // setup the reel loader
-    config.makeLoader = function (config) {
-        return MontageBoot.ReelLoader(
-            config,
-            Require.makeLoader(config)
-        );
-    };
 
     // setup serialization compiler
     config.makeCompiler = function (config) {
-        return MontageBoot.TemplateCompiler(
-            config,
-            MontageBoot.SerializationCompiler(
-                config,
-                Require.makeCompiler(config)
-            )
-        );
+       return Require.makeCompiler(config)
     };
 
-    return Require.loadPackage(config.location, config);
+    return Require.loadPackage(config.location, config).then(function (moduleRequire) {
+        // Inject current montage to avoid montage require
+        return moduleRequire.async('montage').then(function (montage) {
+            return moduleRequire;
+        });
+    });
 };
 
 MontageBoot.TemplateLoader = function (config, load) {
