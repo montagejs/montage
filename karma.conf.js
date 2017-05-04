@@ -29,6 +29,10 @@ module.exports = function(config) {
             included: false
         },
         {
+            pattern: 'core/**/*.mjson',
+            included: false
+        },
+        {
             pattern: 'composer/**/*.js',
             included: false
         },
@@ -58,6 +62,10 @@ module.exports = function(config) {
         },
         {
             pattern: 'test/**/*.json',
+            included: false
+        },
+        {
+            pattern: 'test/**/*.mjson',
             included: false
         },
         {
