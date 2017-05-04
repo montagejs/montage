@@ -535,13 +535,11 @@ describe("serialization/montage-deserializer-spec", function () {
             deserializer.init(serializationString, require);
             deserializer.deserializeObject().then(function (root) {
                 var info = Montage.getInfoForObject(root);
-
                 expect(info.moduleId).toBe("spec/serialization/module-name.reel");
                 expect(info.objectName).toBe("ModuleName");
                 expect(info.isInstance).toBe(true);
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -569,8 +567,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(info.isInstance).toBe(false);
                 expect(root.type).toBeUndefined();
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -598,8 +595,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(info.isInstance).toBe(false);
                 expect(root.type).toBeUndefined();
             }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -617,6 +613,8 @@ describe("serialization/montage-deserializer-spec", function () {
             deserializer.deserializeObject().then(function (json) {
                 expect("root" in json).toBe(true);
                 expect(json.root.foo).toBe("bar");
+            }).catch(function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -637,6 +635,8 @@ describe("serialization/montage-deserializer-spec", function () {
                     expect(info.isInstance).toBe(true);
                     expect(object.type).toBeUndefined();
                     expect(object.name).toBe("RootBlueprint");
+            }).catch(function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
@@ -645,7 +645,7 @@ describe("serialization/montage-deserializer-spec", function () {
         it("should deserialize using instance after compilation", function (done) {
            var latch, objects;
         
-           deserializer.initWithObject({
+            deserializer.initWithObject({
                root: {
                    prototype: "montage",
                    properties: {
@@ -653,7 +653,7 @@ describe("serialization/montage-deserializer-spec", function () {
                        string: "string"
                    }
                }
-           }, require).deserialize().then(function (objs) {
+            }, require).deserialize().then(function (objs) {
                latch = true;
                objects = objs;
 
@@ -664,8 +664,11 @@ describe("serialization/montage-deserializer-spec", function () {
                expect(info.moduleId).toBe("core/core");
                expect(info.objectName).toBe("Montage");
                expect(info.isInstance).toBe(true);
-               done();
-           }); 
+            }).catch(function(reason) {
+                fail(reason);
+            }).finally(function () {
+                done();
+            });
         });
 
         it("should deserialize using type after compilation", function (done) {
@@ -690,8 +693,11 @@ describe("serialization/montage-deserializer-spec", function () {
                expect(info.moduleId).toBe("core/core");
                expect(info.objectName).toBe("Montage");
                expect(info.isInstance).toBe(false);
-               done();
-           })
+            }).catch(function(reason) {
+                fail(reason);
+            }).finally(function () {
+                done();
+            });
         });
     });
 
@@ -711,6 +717,8 @@ describe("serialization/montage-deserializer-spec", function () {
                 // module is now absolute from the root of the test package
                 expect(root.id).toBe("spec/serialization/testobjects-v2");
                 expect(root.require.location).toBe(require.location);
+            }).catch(function(reason) {
+                fail(reason);
             }).finally(function () {
                 done();
             });
