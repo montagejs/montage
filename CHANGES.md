@@ -1,3 +1,6 @@
+### v17.0.5
+- Fix undefined 'deprecate' in AbstractTextField and AbstractTextArea
+
 ### v17.0.4
 - Minor NodeJS fix
 
