@@ -7,7 +7,7 @@ env:
   - COMMAND=test:karma
   #- COMMAND=integration MONTAGE_VERSION=. MOP_VERSION=0.13
   #- COMMAND=integration MONTAGE_VERSION=. MOP_VERSION=latest
-  - COMMAND=integration DEBUG=true MONTAGE_VERSION=. MOP_VERSION="#master"
+  - COMMAND=integration MONTAGE_VERSION=. MOP_VERSION="#master"
 notifications:
   irc:
     channels:
