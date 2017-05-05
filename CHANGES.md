@@ -1,5 +1,11 @@
+### v17.0.4
+- Minor NodeJS fix
+
+### v17.0.3
+- Fix Mop support 
+
 ### v17.0.2
- - Fix Mop integration support
+ - Fix Mop-integration support
  
 ### v17.0.1
 
