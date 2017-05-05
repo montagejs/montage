@@ -1,7 +1,7 @@
 /*jshint node:true, browser:false */
 var FS = require("q-io/fs");
 var MontageBoot = require("./montage");
-var Require = require("mr/require");
+var Require = require("mr");
 
 var URL = require("url");
 var htmlparser = require("htmlparser2");
