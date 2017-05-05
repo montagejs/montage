@@ -627,6 +627,8 @@
         }
     } else {
         // may cause additional exports to be injected:
-        return exports.getPlatform();
+        exports.getPlatform();
     }
+
+    return exports;
 }));
