@@ -70,7 +70,7 @@
   },
   "scripts": {
     "test": "node test/run-node.js",
-    "integration": "mop-integration",
+    "integration": "npm install --only=production && MONTAGE_VERSION=${MONTAGE_VERSION:=./} MOP_VERSION=${MOP_VERSION:=#master} mop-integration",
     "jsdoc": "node ../montagejs.org/build/jsdoc/jsdoc.js -out $PWD/builds/jsdoc/ montage@npm-link",
     "test:karma": "karma start --no-auto-watch --single-run",
     "test:karma-debug": "karma start --no-auto-watch --single-run --browsers=PhantomJS_debug",
