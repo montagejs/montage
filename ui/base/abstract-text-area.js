@@ -1,5 +1,6 @@
 /*global require, exports, document, Error*/
-var Component = require("../component").Component;
+var Component = require("../component").Component,
+    deprecate = require('../../core/deprecate');
 
 var CLASS_PREFIX = "montage-TextArea";
 

@@ -1,6 +1,7 @@
 /*global require, exports, document, Error*/
 var AbstractControl = require("./abstract-control").AbstractControl,
-    KeyComposer = require("../../composer/key-composer").KeyComposer;
+    KeyComposer = require("../../composer/key-composer").KeyComposer,
+    deprecate = require('../../core/deprecate');
 
 
 /**
