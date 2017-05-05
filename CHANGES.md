@@ -1,3 +1,6 @@
+### v17.0.2
+ - Fix Mop integration support
+ 
 ### v17.0.1
 
   - Upgrade tests stack
