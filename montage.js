@@ -623,7 +623,7 @@
             console.warn("Montage already loaded!");
         } else {
             global.__MONTAGE_LOADED__ = true;
-            return exports.initMontage();
+            exports.initMontage();
         }
     } else {
         // may cause additional exports to be injected:
