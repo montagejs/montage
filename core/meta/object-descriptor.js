@@ -98,6 +98,12 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             value = deserializer.getProperty("propertyDescriptors") || deserializer.getProperty("propertyBlueprints");
             if (value) {
                 this._propertyDescriptors = value;
+                if (Array.isArray(value)) {
+                    var self = this;
+                    value.forEach(function (descriptor) {
+                        descriptor._owner = descriptor._owner || self;
+                    });
+                }
             }
             value = deserializer.getProperty("propertyDescriptorGroups") || deserializer.getProperty("propertyBlueprintGroups");
             if (value) {
