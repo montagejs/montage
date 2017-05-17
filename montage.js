@@ -1,4 +1,4 @@
-/*global define */
+/*global define, global */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
@@ -15,10 +15,10 @@
 }(this, function (require, exports, module) {
 
     // reassigning causes eval to not use lexical scope.
-    var globalEval = eval,
-        /*jshint evil:true */
-        global = globalEval('this');
-        /*jshint evil:false */
+    var globalEval = eval;
+    /*jshint evil:true */
+    global = globalEval('this');
+    /*jshint evil:false */
 
     /**
      * Initializes Montage and creates the application singleton if
