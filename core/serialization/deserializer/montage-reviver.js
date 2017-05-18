@@ -5,6 +5,7 @@ var UnitDeserializer = require("./unit-deserializer").UnitDeserializer;
 var ModuleReference = require("../../module-reference").ModuleReference;
 var Alias = require("../alias").Alias;
 
+var String = require('../../shim/string');
 var Promise = require("../../promise").Promise;
 
 var ModuleLoader = Montage.specialize( {
