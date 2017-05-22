@@ -14,11 +14,17 @@
     }
 }(this, function (require, exports, module) {
 
+
+    "use strict";
+
     // reassigning causes eval to not use lexical scope.
     var globalEval = eval,
-        /*jshint evil:true */
-        global = globalEval('this');
-        /*jshint evil:false */
+    /*jshint evil:true */
+    global = globalEval('this'); 
+    /*jshint evil:false */
+
+    // Here we expose global for legacy mop support.
+    global.global = global;
 
     /**
      * Initializes Montage and creates the application singleton if
