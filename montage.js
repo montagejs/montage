@@ -478,7 +478,7 @@
             // load in parallel, but only if we're not using a preloaded cache.
             // otherwise, these scripts will be inlined after already
             if (typeof global.BUNDLE === "undefined") {
-                var montageLocation = resolve(window.location, params.montageLocation);
+                var montageLocation = resolve(global.location, params.montageLocation);
 
                 //Special Case bluebird for now:
                 browser.load(resolve(montageLocation, pending.promise), function() {
@@ -486,32 +486,32 @@
 
                     //global.bootstrap cleans itself from window once all known are loaded. "bluebird" is not known, so needs to do it first
                     global.bootstrap("bluebird", function (require, exports) {
-                        return window.Promise;
+                        return global.Promise;
                     });
                     global.bootstrap("promise", function (require, exports) {
-                        return window.Promise;
+                        return global.Promise;
                     });
 
                     for (var id in pending) {
                         browser.load(resolve(montageLocation, pending[id]));
                     }
-
                 });
+            } else {
 
-            }
-            else {
-
-                window.nativePromise = window.Promise;
-                Object.defineProperty(window,"Promise", {
+                global.nativePromise = global.Promise;
+                Object.defineProperty(global, "Promise", {
                     configurable: true,
                     set: function(PromiseValue) {
-                        Object.defineProperty(window,"Promise",{value:PromiseValue});
+                        
+                        Object.defineProperty(global, "Promise", {
+                            value: PromiseValue
+                        });
 
                         global.bootstrap("bluebird", function (require, exports) {
-                            return window.Promise;
+                            return global.Promise;
                         });
                         global.bootstrap("promise", function (require, exports) {
-                            return window.Promise;
+                            return global.Promise;
                         });
                     }
                 });
@@ -543,8 +543,6 @@
                 // if we get past the for loop, bootstrapping is complete.  get rid
                 // of the bootstrap function and proceed.
                 delete global.bootstrap;
-
-                global.Promise = Promise;
 
                 callbackIfReady();
             }
