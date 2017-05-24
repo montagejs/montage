@@ -79,3 +79,12 @@ For a quick introduction on how to assemble MontageJS components into a user int
 For more information on MontageJS components, bindings, event handling, serialization etc. refer to the [documentation](http://montagejs.org/docs/) (be patient: we are currently in the process of updating the docs).
 
 [![Analytics](https://ga-beacon.appspot.com/UA-35717912-2/montagejs/montage)](https://github.com/montagejs/montage)
+
+## Maintenance
+
+Tests are in the `test` directory. Use `npm test` to run the tests in
+NodeJS or open `test/run.html` in a browser. 
+
+To run the tests in your browser, simply use `npm run test:jasmine`.
+
+To run the tests using Karma use `npm run test:karma` and for continious tests run with file changes detection `npm run test:karma-dev`.
