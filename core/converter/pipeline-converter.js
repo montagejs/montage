@@ -4,8 +4,56 @@ var Converter = require("./converter").Converter,
 
 exports.PipelineConverter = Converter.specialize({
 
-    converters: {
-        value: undefined
+    _convertWithNextConverter: {
+        value: function (input, converters) {
+            var self = this,
+                converter = converters.shift(),
+                output = converter.convert(input),
+                isFinalOutput = converters.length === 0,
+                isPromise = this._isThenable(output),
+                result;
+
+            if (isFinalOutput) {
+                result = isPromise ? output : Promise.resolve(output);
+            } else if (isPromise) {
+                result = output.then(function (value) {
+                    return self._convertWithNextConverter(value, converters);
+                });
+            } else {
+                result = this._convertWithNextConverter(output, converters);
+            }
+
+            return result;
+        }
+    },
+
+    _isThenable: {
+        value: function (value) {
+            return !!(value && value.then && typeof value.then === "function");
+        }
+    },
+
+    _revertWithNextConverter: {
+        value: function (input, converters) {
+            var self = this,
+                converter = converters.pop(),
+                output = converter.revert(input),
+                isFinalOutput = converters.length === 0,
+                isPromise = this._isThenable(output),
+                result;
+
+            if (isFinalOutput) {
+                result = isPromise ? output : Promise.resolve(output);
+            } else if (isPromise) {
+                result = output.then(function (value) {
+                    return self._revertWithNextConverter(value, converters);
+                });
+            } else {
+                result = this._revertWithNextConverter(output, converters);
+            }
+
+            return result;
+        }
     },
 
     convert: {
@@ -14,29 +62,20 @@ exports.PipelineConverter = Converter.specialize({
         }
     },
 
-    _convertWithNextConverter: {
-        value: function (input, converters) {
-            var self = this,
-                converter = converters.shift(),
-                output = converter.convert(input),
-                result;
+    converters: {
+        value: undefined
+    },
 
-            if (converters.length) {
-                output = output instanceof Promise ? output : Promise.resolve(output);
-                result = output.then(function (value) {
-                            return self._convertWithNextConverter(value, converters);
-                         });
-            } else {
-                result = output instanceof Promise ? output : Promise.resolve(output);
-            }
-
-            return result;
+    deserializeSelf: {
+        value: function (deserializer) {
+            this.converters = deserializer.getProperty("converters");
         }
     },
 
+
     revert: {
-        value: function (v) {
-            return v;
+        value: function (value) {
+            return this._revertWithNextConverter(value, this.converters.slice());
         }
     }
 
