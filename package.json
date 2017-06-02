@@ -1,6 +1,6 @@
 {
   "name": "montage",
-  "version": "16.0.4",
+  "version": "16.0.5",
   "description": "Build your next application with a browser based platform that really gets the web.",
   "license": "BSD-3-Clause",
   "repository": {
@@ -44,6 +44,7 @@
     "jsdoc": "node ../montagejs.org/build/jsdoc/jsdoc.js -out $PWD/builds/jsdoc/ montage@npm-link"
   },
   "exclude": [
+    "report",
     "test",
     "tools"
   ]
