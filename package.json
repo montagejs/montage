@@ -1,6 +1,6 @@
 {
   "name": "montage",
-  "version": "17.0.8",
+  "version": "17.0.9",
   "description": "Build your next application with a browser based platform that really gets the web.",
   "license": "BSD-3-Clause",
   "repository": {
@@ -84,6 +84,7 @@
     "test:jasmine": "concurrently \"http-server -a localhost -p 8085\" \"open http://localhost:8085/test/run.html\""
   },
   "exclude": [
+    "report",
     "test",
     "tools"
   ]
