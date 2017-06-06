@@ -14,7 +14,6 @@
     }
 }(this, function (require, exports, module) {
 
-
     "use strict";
 
     // reassigning causes eval to not use lexical scope.
@@ -24,6 +23,8 @@
     /*jshint evil:false */
 
     // Here we expose global for legacy mop support.
+    // TODO move to mr cause it's loader role to expose
+    // TODO make sure mop closure has it also cause it's mop role to expose
     global.global = global;
 
     /**
@@ -484,7 +485,7 @@
                 browser.load(resolve(montageLocation, pending.promise), function() {
                     delete pending.promise;
 
-                    //global.bootstrap cleans itself from window once all known are loaded. "bluebird" is not known, so needs to do it first
+                    //global.bootstrap cleans itself from global once all known are loaded. "bluebird" is not known, so needs to do it first
                     global.bootstrap("bluebird", function (require, exports) {
                         return global.Promise;
                     });
@@ -495,14 +496,15 @@
                     for (var id in pending) {
                         browser.load(resolve(montageLocation, pending[id]));
                     }
+
                 });
+
             } else {
 
                 global.nativePromise = global.Promise;
                 Object.defineProperty(global, "Promise", {
                     configurable: true,
                     set: function(PromiseValue) {
-                        
                         Object.defineProperty(global, "Promise", {
                             value: PromiseValue
                         });
@@ -579,10 +581,15 @@
                   montageRequire(iDependency);
                 }
 
-                var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
+                var Montage = montageRequire("core/core").Montage;
+                var EventManager = montageRequire("core/event/event-manager").EventManager;
                 var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
+                var logger = montageRequire("core/logger").logger;
 
-                var application;
+                var defaultEventManager, application;
+
+                // Load the event-manager
+                defaultEventManager = new EventManager().initWithWindow(window);
 
                 // montageWillLoad is mostly for testing purposes
                 if (typeof global.montageWillLoad === "function") {
