@@ -10,6 +10,8 @@ env:
   #- COMMAND=integration MONTAGE_VERSION=. MOP_VERSION=0.13
   #- COMMAND=integration MONTAGE_VERSION=. MOP_VERSION=latest
   - COMMAND=integration MONTAGE_VERSION=. MOP_VERSION="#master"
+before_install:
+  "npm set legacy-bundling=true"
 notifications:
   irc:
     channels:
