@@ -63,17 +63,7 @@ MontageBoot.loadPackage = function (location, config) {
     config.overlays = ["node", "server", "montage"];
     config.location = URL.resolve(Require.getLocation(), location);
 
-    // setup serialization compiler
-    config.makeCompiler = function (config) {
-       return Require.makeCompiler(config)
-    };
-
-    return Require.loadPackage(config.location, config).then(function (moduleRequire) {
-        // Inject current montage to avoid montage require
-        return moduleRequire.async('montage').then(function (montage) {
-            return moduleRequire;
-        });
-    });
+    return Require.loadPackage(config.location, config);
 };
 
 MontageBoot.TemplateLoader = function (config, load) {
@@ -102,6 +92,10 @@ MontageBoot.TemplateLoader = function (config, load) {
                     if (stat.isFile()) {
                         module.extraDependencies = [id + ".html"];
                     }
+                }, function (error) {
+                    // not a problem
+                    // montage/ui/loader.reel/loader.html": Error: ENOENT: no such file or directory
+                    console.log(error.message);
                 });
             });
         } else {

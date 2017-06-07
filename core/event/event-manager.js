@@ -2888,6 +2888,4 @@ if (typeof window !== "undefined") { // client-side
 
     });
 
-    defaultEventManager = new EventManager().initWithWindow(window);
-
 } // client-side

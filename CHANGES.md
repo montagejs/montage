@@ -1,3 +1,6 @@
+### 17.0.10
+- Fix Mop support again
+
 ### v17.0.5
 - Fix undefined 'deprecate' in AbstractTextField and AbstractTextArea
 

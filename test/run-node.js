@@ -39,10 +39,17 @@ jasmineEnv.addReporter({
     }
 });
 
-// Execute
+// Load package
 Montage.loadPackage(PATH.join(__dirname, "."), {
     mainPackageLocation: PATH.join(__dirname, "../")
 })
+// Preload montage to avoid montage-testing/montage to be loaded
+.then(function (mr) {
+    return mr.async('montage').then(function (montage) {
+         return mr;
+    });
+})
+// Execute
 .then(function (mr) {
     return mr.async("all");
 }).then(function () {
