@@ -110,7 +110,6 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._setPropertyWithDefaults(serializer, "defaultValue", this.defaultValue);
             this._setPropertyWithDefaults(serializer, "helpKey", this.helpKey);
             this._setPropertyWithDefaults(serializer, "definition", this.definition);
-            this._setPropertyWithDefaults(serializer, "isDerived", this.isDerived);
 
         }
     },
@@ -135,7 +134,6 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this.defaultValue = this._getPropertyWithDefaults(deserializer, "defaultValue");
             this.helpKey = this._getPropertyWithDefaults(deserializer, "helpKey");
             this.definition = this._getPropertyWithDefaults(deserializer, "definition");
-            this.isDerived = this._getPropertyWithDefaults(deserializer, "isDerived");
 
         }
     },
@@ -261,7 +259,9 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @default false
      */
     isDerived: {
-        value: false
+        get: function () {
+            return false;
+        }
     },
 
     /**
@@ -274,7 +274,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * would then be "toDirector.toTalent"
      */
     definition: {
-        value:null
+        value: null
     },
 
     /**
