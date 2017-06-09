@@ -4,6 +4,39 @@ var Converter = require("./converter").Converter,
 
 exports.PipelineConverter = Converter.specialize({
 
+
+    /********************************************
+     * Serialization
+     */
+
+    deserializeSelf: {
+        value: function (deserializer) {
+            this.converters = deserializer.getProperty("converters");
+        }
+    },
+
+    serializeSelf: {
+        value: function (serializer) {
+            if (this.converters.length > 0) {
+                serializer.setProperty("converters", this.converters);
+            }
+        }
+    },
+
+    /********************************************
+     * Convert/Revert
+     */
+
+    converters: {
+        value: undefined
+    },
+
+    convert: {
+        value: function (value) {
+            return this._convertWithNextConverter(value, this.converters.slice());
+        }
+    },
+
     _convertWithNextConverter: {
         value: function (input, converters) {
             var self = this,
@@ -33,6 +66,13 @@ exports.PipelineConverter = Converter.specialize({
         }
     },
 
+
+    revert: {
+        value: function (value) {
+            return this._revertWithNextConverter(value, this.converters.slice());
+        }
+    },
+
     _revertWithNextConverter: {
         value: function (input, converters) {
             var self = this,
@@ -53,29 +93,6 @@ exports.PipelineConverter = Converter.specialize({
             }
 
             return result;
-        }
-    },
-
-    convert: {
-        value: function (value) {
-            return this._convertWithNextConverter(value, this.converters.slice());
-        }
-    },
-
-    converters: {
-        value: undefined
-    },
-
-    deserializeSelf: {
-        value: function (deserializer) {
-            this.converters = deserializer.getProperty("converters");
-        }
-    },
-
-
-    revert: {
-        value: function (value) {
-            return this._revertWithNextConverter(value, this.converters.slice());
         }
     }
 
