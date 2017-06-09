@@ -110,6 +110,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._setPropertyWithDefaults(serializer, "defaultValue", this.defaultValue);
             this._setPropertyWithDefaults(serializer, "helpKey", this.helpKey);
             this._setPropertyWithDefaults(serializer, "definition", this.definition);
+
         }
     },
 
@@ -133,11 +134,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this.defaultValue = this._getPropertyWithDefaults(deserializer, "defaultValue");
             this.helpKey = this._getPropertyWithDefaults(deserializer, "helpKey");
             this.definition = this._getPropertyWithDefaults(deserializer, "definition");
-            // DO NOT USE FOR DEVELOPMENT ONLY
-            var value = deserializer.getProperty("synonym");
-            if (value) {
-                this.synonym = value;
-            }
+
         }
     },
 
@@ -262,7 +259,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @default false
      */
     isDerived: {
-        get:function () {
+        get: function () {
             return false;
         }
     },
@@ -277,7 +274,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * would then be "toDirector.toTalent"
      */
     definition: {
-        value:null
+        value: null
     },
 
     /**
@@ -324,6 +321,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             return this._valueDescriptorReference && this._valueDescriptorReference.promise(this.require);
         },
         set: function (descriptor) {
+
             this._valueDescriptorReference = new ObjectDescriptorReference().initWithValue(descriptor);
         }
     },

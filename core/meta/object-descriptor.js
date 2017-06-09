@@ -27,6 +27,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         value: function ObjectDescriptor() {
             this._eventDescriptors = [];
             this._propertyDescriptors = [];
+            this.addRangeAtPathChangeListener("_propertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
             this._propertyDescriptorGroups = {};
             Object.defineProperty(this,"_propertyDescriptorsTable",{ value:{}, writable: false});
             Object.defineProperty(this,"_eventPropertyDescriptorsTable",{ value:{}, writable: false});
@@ -99,6 +100,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             if (value) {
                 this._propertyDescriptors = value;
             }
+
             value = deserializer.getProperty("propertyDescriptorGroups") || deserializer.getProperty("propertyBlueprintGroups");
             if (value) {
                 this._propertyDescriptorGroups = value;
@@ -345,8 +347,23 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         value: false
     },
 
+
     _propertyDescriptors: {
         value: null
+    },
+
+    _handlePropertyDescriptorsRangeChange: {
+        value: function (plus, minus, index) {
+            var i, n;
+            for (i = 0, n = minus.length; i < n; ++i) {
+                minus[i]._owner = null;
+            }
+
+            for (i = 0, n = plus.length; i < n; ++i) {
+                plus[i]._owner = plus[i]._owner || this;
+            }
+
+        }
     },
 
     /**
