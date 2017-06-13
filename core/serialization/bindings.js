@@ -4,7 +4,6 @@ var Bindings = require("frb"),
     Scope = require("frb/scope"),
     Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
     Deserializer = require("../serialization/deserializer/montage-deserializer").MontageDeserializer,
-    BOUND_OBJECT  = "boundObject",
     ONE_WAY = "<-",
     TWO_WAY = "<->";
 
@@ -83,33 +82,7 @@ Deserializer.defineDeserializationUnit("bindings", function (deserializer, objec
             // TODO isolate the source document and produce a more useful error
         }
 
-        if (BOUND_OBJECT in descriptor) {
-            descriptor.source = deserializer.getObjectByLabel(descriptor.boundObject);
-            if (descriptor.oneway) {
-                descriptor[ONE_WAY] = descriptor.boundPropertyPath;
-            } else {
-                descriptor[TWO_WAY] = descriptor.boundPropertyPath;
-            }
-            delete descriptor.boundObject;
-            delete descriptor.boundObjectPropertyPath;
-            delete descriptor.oneway;
-        }
-        // else {
-        //     if (descriptor["<<->"]) {
-        //         console.warn("WARNING: <<-> in bindings is deprectated, use <-> only, please update now.");
-        //         descriptor[TWO_WAY] = descriptor["<<->"];
-        //         delete descriptor["<<->"];
-        //     }
-        // }
-
         Bindings.defineBinding(object, targetPath, descriptor, commonDescriptor);
-
     }
-
-    // Bindings.defineBindings(object, bindings, {
-    //     components: deserializer
-    // });
-
-
 });
 
