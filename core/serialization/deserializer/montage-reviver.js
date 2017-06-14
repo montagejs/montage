@@ -4,8 +4,9 @@ var SelfDeserializer = require("./self-deserializer").SelfDeserializer;
 var UnitDeserializer = require("./unit-deserializer").UnitDeserializer;
 var ModuleReference = require("../../module-reference").ModuleReference;
 var Alias = require("../alias").Alias;
-
+var Bindings = require("../bindings");
 var Promise = require("../../promise").Promise;
+var deprecate = require("../../deprecate");
 
 var ModuleLoader = Montage.specialize( {
     _require: {value: null},
@@ -314,6 +315,14 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 object.isDeserializing = true;
             }
 
+            if (value.bindings) {
+                deprecate.deprecationWarning(
+                    "Object '" + label +
+                    "' uses a deprecated block 'bindings', use 'values' instead"
+                );
+            }
+
+            context.setBindingsToDeserialize(object, value);
             montageObjectDesc = this.reviveObjectLiteral(value, context);
 
             if (Promise.is(montageObjectDesc)) {
@@ -447,18 +456,14 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     didReviveObjects: {
         value: function (objects, context) {
-            var self = this,
-                value;
+            var self = this;
 
-            value = this._deserializeUnits(context);
-
-            if (Promise.is(value)) {
-                return value.then(function() {
-                    self._invokeDeserializedFromSerialization(objects, context);
-                });
-            } else {
-                this._invokeDeserializedFromSerialization(objects, context);
-            }
+            return Promise.all([
+                this._deserializeBindings(context),
+                this._deserializeUnits(context)
+            ]).then(function () {
+                self._invokeDeserializedFromSerialization(objects, context);
+            });
         }
     },
 
@@ -481,6 +486,24 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                         object.deserializedFromSerialization(label);
                     }
                 }
+            }
+        }
+    },
+
+    _deserializeBindings: {
+        value: function (context) {
+            var bindingsToDeserialize = context.getBindingsToDeserialize(),
+                bindingsToDeserializeDesc;
+            
+            if (bindingsToDeserialize) {
+                for (var i = 0, length = bindingsToDeserialize.length; i < length; i++) {
+                    bindingsToDeserializeDesc = bindingsToDeserialize[i];
+                    Bindings.deserializeBindings(
+                        new UnitDeserializer().initWithContext(context),
+                        bindingsToDeserializeDesc.object,
+                        bindingsToDeserializeDesc.bindings
+                    );
+                } 
             }
         }
     },

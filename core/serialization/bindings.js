@@ -67,13 +67,13 @@ Serializer.defineSerializationUnit("bindings", function (serializer, object) {
     return hasBindings ? outputs : undefined;
 });
 
-Deserializer.defineDeserializationUnit("bindings", function (deserializer, object, bindings) {
+var deserializeBindings = exports.deserializeBindings = function (deserializer, object, bindings) {
     var commonDescriptor = {
-            components: deserializer
-        },
+        components: deserializer
+    },
         targetPath,
         descriptor;
-    // normalize old and busted bindings
+
     for (targetPath in bindings) {
         descriptor = bindings[targetPath];
 
@@ -84,5 +84,7 @@ Deserializer.defineDeserializationUnit("bindings", function (deserializer, objec
 
         Bindings.defineBinding(object, targetPath, descriptor, commonDescriptor);
     }
-});
+};
 
+//deprecated
+Deserializer.defineDeserializationUnit("bindings", deserializeBindings);

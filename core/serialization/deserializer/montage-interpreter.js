@@ -70,7 +70,8 @@ var MontageContext = Montage.specialize({
     _objects: {value: null},
     _userObjects: {value: null},
     _serialization: {value: null},
-    _reviver: {value: null},
+    _reviver: { value: null },
+    _bindingsToDeserialize: { value: null },
 
     constructor: {
         value: function () {
@@ -221,6 +222,56 @@ var MontageContext = Montage.specialize({
             var selector = '*[' + this._ELEMENT_ID_ATTRIBUTE + '="' + id + '"]';
 
             return this._element.querySelector(selector);
+        }
+    },
+
+    _extractBindingsToDeserialize: {
+        value: function (values, bindings) {
+            var value;
+
+            for (var key in values) {
+                value = values[key];
+
+                if (typeof value === "object" && value &&
+                    Object.keys(value).length === 1 &&
+                    ("<-" in value || "<->" in value)) {
+                    bindings[key] = value;
+                    delete values[key];
+                }
+            }
+
+            return bindings;
+        }
+    },
+
+    getBindingsToDeserialize: {
+        value: function () {
+            return this._bindingsToDeserialize;
+        }
+    },
+
+    setBindingsToDeserialize: {
+        value: function (object, objectDesc) {
+            var bindings = Object.create(null);
+
+            if (objectDesc.properties) { // deprecated
+                this._extractBindingsToDeserialize(objectDesc.properties, bindings);
+            }
+
+            if (objectDesc.values) {
+                this._extractBindingsToDeserialize(objectDesc.values, bindings);
+            }
+
+            if (Object.keys(bindings).length > 0) {
+                if (!this._bindingsToDeserialize) {
+                    this._bindingsToDeserialize = [];
+                }
+
+                this._bindingsToDeserialize.push({
+                    object: object,
+                    bindings: bindings
+                });
+            }
         }
     },
 
