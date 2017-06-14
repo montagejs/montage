@@ -7,19 +7,19 @@
     {
         "test": {
             "prototype": "spec/composer/test",
-            "properties": {
+            "values": {
                 "simpleTestComposer": {"@": "simpleTestComposer"}
             }
         },
         "simpleTestComposer": {
             "prototype": "spec/composer/simple-test-composer",
-            "properties": {
+            "values": {
                 "component": {"@": "dynamictext1"}
             }
         },
         "dynamictext1": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "dynamictext"},
                 "value": "Test Value"
             }

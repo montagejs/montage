@@ -52,7 +52,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "number": 42,
                             "string": "a string"
                         }
@@ -78,14 +78,14 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "oneprop": {"@": "oneprop"}
                         }
                     },
 
                     "oneprop": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "prop": 42
                         }
                     }
@@ -105,7 +105,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "simple": {"@": "simple"}
                         }
                     },
@@ -134,7 +134,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "simple": {"@": "simple"}
                         }
                     },
@@ -165,7 +165,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "spec/serialization/testobjects-v2[Singleton]",
-                        "properties": {
+                        "values": {
                             "number": 42
                         }
                     }
@@ -188,7 +188,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "number": 42
                         }
                     }
@@ -215,7 +215,7 @@ describe("serialization/montage-deserializer-spec", function () {
         it("should deserialize an object's properties when an instance is given for that object even when the serialization doesn't have a prototype or object property", function (done) {
             var serialization = {
                     "owner": {
-                        "properties": {
+                        "values": {
                             "number": 42
                         }
                     }
@@ -243,7 +243,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "spec/serialization/testobjects-v2[OneProp]",
-                        "properties": {
+                        "values": {
                             "prop": {"@": "oneprop"}
                         }
                     },
@@ -280,7 +280,7 @@ describe("serialization/montage-deserializer-spec", function () {
                root: {
                    module: "serialization/testobjects-v2",
                    name: "OneProp",
-                   properties: {
+                   values: {
                        prop: {"@": "oneprop"}
                    }
                },
@@ -301,7 +301,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "spec/serialization/testobjects-v2[OneProp]",
-                        "properties": {
+                        "values": {
                             "prop": 42
                         },
                         "spec": {}
@@ -461,7 +461,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "spec/serialization/testobjects-v2[TestobjectsV2]",
-                        "properties": {
+                        "values": {
                             "number": 42,
                             "string": "a string"
                         }
@@ -485,7 +485,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "spec/serialization/testobjects-v2",
-                        "properties": {
+                        "values": {
                             "number": 42,
                             "string": "a string"
                         }
@@ -514,7 +514,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "spec/serialization/module-name.reel",
-                        "properties": {
+                        "values": {
                             "number": 42,
                             "string": "a string"
                         }
@@ -539,7 +539,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "object": "spec/serialization/testobjects-v2[TestobjectsV2]",
-                        "properties": {
+                        "values": {
                             "number": 42,
                             "string": "a string"
                         }
@@ -567,7 +567,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "object": "spec/serialization/testobjects-v2",
-                        "properties": {
+                        "values": {
                             "number": 42,
                             "string": "a string"
                         }
@@ -638,7 +638,7 @@ describe("serialization/montage-deserializer-spec", function () {
             deserializer.initWithObject({
                root: {
                    prototype: "montage",
-                   properties: {
+                   values: {
                        number: 15,
                        string: "string"
                    }
@@ -667,7 +667,7 @@ describe("serialization/montage-deserializer-spec", function () {
            deserializer.initWithObject({
                root: {
                    object: "montage",
-                   properties: {
+                   values: {
                        number: 15,
                        string: "string"
                    }
@@ -742,7 +742,7 @@ describe("serialization/montage-deserializer-spec", function () {
             serialization = {
                 "root": {
                     "prototype": "spec/serialization/testobjects-v2[CustomDeserialization]",
-                    "properties": {
+                    "values": {
                         "prop1": 3.14
                     },
                     "bindings": {
@@ -756,7 +756,7 @@ describe("serialization/montage-deserializer-spec", function () {
 
                 "oneprop": {
                     "prototype": "spec/serialization/testobjects-v2[OneProp]",
-                    "properties": {
+                    "values": {
                         "prop": 42
                     }
                 }
@@ -1005,7 +1005,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "number": 42,
                             "string": "a string"
                         }

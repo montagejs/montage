@@ -42,7 +42,7 @@ describe("serialization/bindings-spec", function () {
         var serialization = {
                 "root": {
                     "prototype": "spec/serialization/bindings-spec[Type]",
-                    "properties": {
+                    "values": {
                         "foo": 10
                     },
                     "bindings": {
@@ -66,7 +66,7 @@ describe("serialization/bindings-spec", function () {
         var serialization = {
                 "root": {
                     "prototype": "spec/serialization/bindings-spec[Type]",
-                    "properties": {
+                    "values": {
                         "foo": 10
                     },
                     "bindings": {
@@ -91,7 +91,7 @@ describe("serialization/bindings-spec", function () {
         var serialization = {
                 "root": {
                     "prototype": "spec/serialization/bindings-spec[Type]",
-                    "properties": {
+                    "values": {
                         "foo": 10
                     },
                     "bindings": {

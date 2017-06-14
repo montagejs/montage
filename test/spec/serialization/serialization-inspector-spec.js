@@ -223,7 +223,7 @@ describe("reel/serialization/serialization-inspector-spec", function () {
             var object = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "properties": {
+                        "values": {
                             "identifier": "text"
                         }
                     }
@@ -242,11 +242,11 @@ describe("reel/serialization/serialization-inspector-spec", function () {
 
             args = visitorSpy.calls.all()[1].args;
             expect(args[0].type).toBe("object");
-            expect(args[0].data).toEqual(object.text.properties);
+            expect(args[0].data).toEqual(object.text.values);
 
             args = visitorSpy.calls.all()[2].args;
             expect(args[0].type).toBe("string");
-            expect(args[0].data).toEqual(object.text.properties.identifier);
+            expect(args[0].data).toEqual(object.text.values.identifier);
         });
 
         it("should visit bindings", function () {

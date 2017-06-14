@@ -7,7 +7,7 @@
         {
             "test": {
                 "prototype": "spec/events/active-target-test/active-target-test",
-                "properties": {
+                "values": {
                     "identifier": "ApplicationDelegate",
                     "targetChainRangeController": {"@": "targetChainRangeController"}
                 },
@@ -21,14 +21,14 @@
 
             "application": {
                 "prototype": "montage/core/application",
-                "properties": {
+                "values": {
                     "delegate": {"@": "test"}
                 }
             },
 
             "shortcutComposer": {
                 "prototype": "montage/composer/key-composer",
-                "properties": {
+                "values": {
                     "identifier:": "shortcut",
                     "keys": "f",
                     "component": {"@": "application"}
@@ -43,14 +43,14 @@
 
             "menu": {
                 "prototype": "spec/events/active-target-test/menu",
-                "properties": {
+                "values": {
                     "element": {"@": "menu"}
                 }
             },
 
             "fooMenu": {
                 "prototype": "spec/events/active-target-test/menu-item",
-                "properties": {
+                "values": {
                     "element": {"#": "fooMenu"},
                     "menu": {"@": "menu"}
                 },
@@ -64,7 +64,7 @@
 
             "barMenu": {
                 "prototype": "spec/events/active-target-test/menu-item",
-                "properties": {
+                "values": {
                     "element": {"#": "barMenu"},
                     "menu": {"@": "menu"}
                 },
@@ -78,14 +78,14 @@
 
             "C0": {
                 "prototype": "spec/events/active-target-test/action-counter",
-                "properties": {
+                "values": {
                     "element": {"#": "C0"}
                 }
             },
 
             "C0Count": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "C0Count"}
                 },
                 "bindings": {
@@ -95,7 +95,7 @@
 
             "C0C0": {
                 "prototype": "spec/events/active-target-test/action-counter",
-                "properties": {
+                "values": {
                     "element": {"#": "C0C0"},
                     "acceptsActiveTarget": true
                 }
@@ -103,7 +103,7 @@
 
             "C0C0Count": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "C0C0Count"}
                 },
                 "bindings": {
@@ -113,7 +113,7 @@
 
             "C0C0B0": {
                 "prototype": "montage/ui/component",
-                "properties": {
+                "values": {
                     "element": {"#": "C0C0B0"},
                     "hasTemplate": false,
                     "acceptsActiveTarget": true,
@@ -123,7 +123,7 @@
 
             "C0C0B1": {
                 "prototype": "montage/ui/component",
-                "properties": {
+                "values": {
                     "element": {"#": "C0C0B1"},
                     "hasTemplate": false,
                     "acceptsActiveTarget": true,
@@ -134,14 +134,14 @@
 
             "C0C1": {
                 "prototype": "spec/events/active-target-test/action-counter",
-                "properties": {
+                "values": {
                     "element": {"#": "C0C1"}
                 }
             },
 
             "C0C1Count": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "C0C1Count"}
                 },
                 "bindings": {
@@ -151,7 +151,7 @@
 
             "C0C1B0": {
                 "prototype": "montage/ui/component",
-                "properties": {
+                "values": {
                     "element": {"#": "C0C1B0"},
                     "hasTemplate": false,
                     "acceptsActiveTarget": true,
@@ -161,7 +161,7 @@
 
             "C0C1B1": {
                 "prototype": "montage/ui/component",
-                "properties": {
+                "values": {
                     "element": {"#": "C0C1B1"},
                     "hasTemplate": false,
                     "acceptsActiveTarget": true,
@@ -171,7 +171,7 @@
 
             "C0C1B2": {
                 "prototype": "montage/ui/component",
-                "properties": {
+                "values": {
                     "element": {"#": "C0C1B2"},
                     "hasTemplate": false,
                     "acceptsActiveTarget": true,
@@ -182,7 +182,7 @@
 
             "C0C2": {
                 "prototype": "spec/events/active-target-test/action-counter",
-                "properties": {
+                "values": {
                     "element": {"#": "C0C2"},
                     "hasTemplate": false,
                     "acceptsActiveTarget": true,
@@ -192,21 +192,21 @@
 
             "C0C2Controller": {
                 "prototype": "montage/core/target",
-                "properties": {
+                "values": {
                     "nextTarget": {"@": "C1"}
                 }
             },
 
             "C1": {
                 "prototype": "spec/events/active-target-test/action-counter",
-                "properties": {
+                "values": {
                     "element": {"#": "C1"}
                 }
             },
 
             "C1Count": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "C1Count"}
                 },
                 "bindings": {
@@ -220,7 +220,7 @@
 
             "activeTargetObjectName": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "activeTargetObjectName"}
                 },
                 "bindings": {
@@ -233,7 +233,7 @@
 
             "activeTargetIdentifier": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "activeTargetIdentifier"}
                 },
                 "bindings": {
@@ -259,7 +259,7 @@
 
             "targetRepetition": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "targetRepetition"}
                 },
                 "bindings": {
@@ -269,7 +269,7 @@
 
             "targetObjectName": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "targetObjectName"}
                 },
                 "bindings": {
@@ -282,7 +282,7 @@
 
             "targetIdentifier": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "targetIdentifier"}
                 },
                 "bindings": {

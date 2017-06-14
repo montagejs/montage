@@ -7,7 +7,7 @@
     <script type="text/montage-serialization">{
         "test": {
             "prototype": "spec/ui/drawing/test",
-            "properties": {
+            "values": {
                 "decorator": {"@": "decorator"},
                 "compositionDecorator": {"@": "compositionDecorator"},
                 "compositionDecoratorMore": {"@": "compositionDecoratorMore"},
@@ -15,35 +15,35 @@
             }
         },
         "application": {
-            "properties": {
+            "values": {
                 "delegate": {"@": "test"}
             }
         },
 
         "decorator": {
             "prototype": "spec/ui/drawing/component/decorator.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "decorator"}
             }
         },
 
         "compositionDecorator": {
             "prototype": "spec/ui/drawing/component/composition-decorator.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "compositionDecorator"}
             }
         },
 
         "compositionDecoratorMore": {
             "prototype": "spec/ui/drawing/component/composition-decorator-more.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "compositionDecoratorMore"}
             }
         },
 
         "parameters": {
             "prototype": "spec/ui/drawing/component/parameters.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "parameters"}
             }
         }

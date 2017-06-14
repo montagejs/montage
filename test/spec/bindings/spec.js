@@ -1182,7 +1182,7 @@ describe("bindings/spec", function () {
                 serialization = {
                     "root": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "identifier": null,
                             "value": null
                         },
@@ -1193,7 +1193,7 @@ describe("bindings/spec", function () {
 
                     "source": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "identifier": null,
                             "value": null
                         }
@@ -1220,7 +1220,7 @@ describe("bindings/spec", function () {
                 serialization = {
                     "root": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "identifier": null,
                             "value": null
                         },
@@ -1231,7 +1231,7 @@ describe("bindings/spec", function () {
 
                     "source": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "identifier": null,
                             "value": null
                         }

@@ -37,19 +37,19 @@ POSSIBILITY OF SUCH DAMAGE.
 
             "externalserialization": {
                 "prototype": "reel/template/externalserialization.reel[ExternalSerialization]",
-                "properties": {
+                "values": {
                     "element": {"#": "externalserialization"}
                 }
             },
             "componentslowstyle1": {
                 "prototype": "reel/template/componentslowstyle.reel[ComponentSlowStyle]",
-                "properties": {
+                "values": {
 
                 }
             },
             "reeltest1": {
                 "prototype": "reel/template/template-test",
-                "properties": {
+                "values": {
                     "text": "This is some text",
                     "array": [
                         "This",
@@ -68,14 +68,14 @@ POSSIBILITY OF SUCH DAMAGE.
             },
             "actioneventlistener1": {
                 "prototype": "montage/core/event/action-event-listener",
-                "properties": {
+                "values": {
                     "handler": {"@": "reeltest1"},
                     "action": "listener"
                 }
             },
             "textfield1": {
                 "prototype": "reel/template/textfield.reel[TextField]",
-                "properties": {
+                "values": {
                     "element": {"#": "textfield0"}
                 },
                 "bindings": {
@@ -91,63 +91,63 @@ POSSIBILITY OF SUCH DAMAGE.
             },
             "componenty1": {
                 "prototype": "reel/template/componenty.reel[ComponentY]",
-                "properties": {
+                "values": {
                     "element": {"#": "content1"}
                 }
             },
             "textfield2": {
                 "prototype": "reel/template/textfield.reel[TextField]",
-                "properties": {
+                "values": {
                     "element": {"#": "textfield3"},
                     "text": "X here"
                 }
             },
             "componentx1": {
                 "prototype": "reel/template/componentx.reel[ComponentX]",
-                "properties": {
+                "values": {
                     "element": {"#": "content2"},
                     "textfield": {"@": "textfield2"}
                 }
             },
             "componentstyle1": {
                 "prototype": "reel/template/componentstyle.reel[ComponentStyle]",
-                "properties": {
+                "values": {
                     "element": {"#": "componentstyle"}
                 }
             },
             "componentscript1": {
                 "prototype": "reel/template/componentscript.reel[ComponentScript]",
-                "properties": {
+                "values": {
                     "element": {"#": "componentscript1"}
                 }
             },
             "componentscript2": {
                 "prototype": "reel/template/componentscript.reel[ComponentScript]",
-                "properties": {
+                "values": {
                     "element": {"#": "componentscript2"}
                 }
             },
             "componenttemplate": {
                 "prototype": "reel/template/componenttemplate.reel[ComponentTemplate]",
-                "properties": {
+                "values": {
                     "element": {"#": "componenttemplate"}
                 }
             },
             "componentson": {
                 "prototype": "reel/template/componentson.reel[ComponentSon]",
-                "properties": {
+                "values": {
                     "element": {"#": "componentson"}
                 }
             },
             "componentdaughter": {
                 "prototype": "reel/template/componentdaughter.reel[ComponentDaughter]",
-                "properties": {
+                "values": {
                     "element": {"#": "componentdaughter"}
                 }
             },
             "componentgranddaughter": {
                 "prototype": "reel/template/componentgranddaughter.reel[ComponentGranddaughter]",
-                "properties": {
+                "values": {
                     "element": {"#": "componentgranddaughter"}
                 }
             },
@@ -156,14 +156,14 @@ POSSIBILITY OF SUCH DAMAGE.
             },
             "application": {
                 "prototype": "montage/core/application",
-                "properties": {
+                "values": {
                     "delegate": {"@": "reeltest1"}
                 }
             },
 
             "mainA": {
                 "prototype": "spec/package-a/ui/main.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "mainA"}
                 }
             }

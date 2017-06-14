@@ -154,7 +154,7 @@ describe("reviver", function() {
             var serialization = {
                     "main": {
                         "prototype": "montage/core/core[Montage]",
-                        "properties": {
+                        "values": {
                             "name": "a custom1 object"
                         }
                     }
@@ -193,14 +193,14 @@ describe("reviver", function() {
             var serialization = {
                     "object1": {
                         "prototype": "montage/core/core[Montage]",
-                        "properties": {
+                        "values": {
                             "name": "a custom1 object"
                         }
                     },
 
                     "object2": {
                         "prototype": "montage/core/core[Montage]",
-                        "properties": {
+                        "values": {
                             "name": "a custom2 object"
                         }
                     }
@@ -219,7 +219,7 @@ describe("reviver", function() {
 
             var serialization = {
                 "object1": {
-                    "properties": {
+                    "values": {
                         "name": "a custom1 object"
                     }
                 }
@@ -229,7 +229,7 @@ describe("reviver", function() {
                 interpreter.instantiate(serialization);
                 fail('Should throw error');
             } catch (err) {
-                expect(err.message).toBe('Error deserializing {"properties":{"name":"a custom1 object"}}, might need "prototype" or "object" on label "object1"');
+                expect(err.message).toBe('Error deserializing {"values":{"name":"a custom1 object"}}, might need "prototype" or "object" on label "object1"');
             } finally {
                 done();
             }
@@ -264,14 +264,14 @@ describe("reviver", function() {
             var serialization = {
                     "main": {
                         "prototype": "montage/core/core[Montage]",
-                        "properties": {
+                        "values": {
                             "name": "a custom1 object"
                         }
                     },
 
                     "one": {
                         "prototype": "montage/core/core[Montage]",
-                        "properties": {
+                        "values": {
                             "main": {"@": "main"}
                         }
                     }

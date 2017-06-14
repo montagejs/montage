@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 {
     "component1": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "hasTemplate": false,
             "element": {"#": "drawTrigger"}
         }
@@ -46,7 +46,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
     "component2": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "hasTemplate": false,
             "element": {"#": "child"}
         }
@@ -54,13 +54,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
     "test": {
         "prototype": "spec/events/object-hierarchy-test/object-hierarchy-test",
-        "properties": {
+        "values": {
             "component1": {"@": "component1"}
         }
     },
     "application": {
         "prototype": "montage/core/application",
-        "properties": {
+        "values": {
             "delegate": {"@": "test"}
         }
     }

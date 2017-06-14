@@ -38,13 +38,13 @@ POSSIBILITY OF SUCH DAMAGE.
 {
     "press_composer": {
         "prototype": "montage/composer/press-composer",
-        "properties": {
+        "values": {
             "component": {"@": "example"}
         }
     },
     "example": {
         "prototype": "montage/ui/text.reel",
-        "properties": {
+        "values": {
             "element": {"#": "example"},
             "value": "hi"
         }
@@ -52,48 +52,48 @@ POSSIBILITY OF SUCH DAMAGE.
 
     "outerComponent": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "hasTemplate": false,
             "element": {"#": "outerComponent"}
         }
     },
     "outer_press_composer": {
         "prototype": "montage/composer/press-composer",
-        "properties": {
+        "values": {
             "component": {"@": "outerComponent"}
         }
     },
 
     "innerComponent": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "hasTemplate": false,
             "element": {"#": "innerComponent"}
         }
     },
     "inner_press_composer": {
         "prototype": "montage/composer/press-composer",
-        "properties": {
+        "values": {
             "component": {"@": "innerComponent"}
         }
     },
     "inner2Component": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "hasTemplate": false,
             "element": {"#": "inner2Component"}
         }
     },
     "inner2_press_composer": {
         "prototype": "montage/composer/press-composer",
-        "properties": {
+        "values": {
             "component": {"@": "inner2Component"}
         }
     },
 
     "test": {
         "prototype": "spec/composer/press-composer-test/press-composer-test",
-        "properties": {
+        "values": {
             "press_composer": {"@": "press_composer"},
             "example": {"@": "example"},
             "outerComponent": {"@": "outerComponent"},
@@ -106,7 +106,7 @@ POSSIBILITY OF SUCH DAMAGE.
     },
     "application": {
         "prototype": "montage/core/application",
-        "properties": {
+        "values": {
             "delegate": {"@": "test"}
         }
     }

@@ -91,7 +91,7 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
                 testSerializer({
                     target: {
                         prototype: "montage/core/localizer[Message]",
-                        properties: {
+                        values: {
                             key: "hello"
                         }
                     }
@@ -105,13 +105,13 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
                 var serialization = {
                         localizer: {
                             prototype: "montage/core/localizer",
-                            properties: {
+                            values: {
                                 locale: "en-x-test"
                             }
                         },
                         target: {
                             prototype: "montage/core/localizer[Message]",
-                            properties: {
+                            values: {
                                 key: "hello",
                                 localizer: {"@": "localizer"}
                             }
@@ -128,7 +128,7 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
 
                         "localizer": {
                             "prototype": "montage/core/localizer",
-                            "properties": {
+                            "values": {
                                 "messages": null,
                                 "locale": "en-x-test",
                                 "identifier": null
@@ -278,7 +278,7 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
                         expectedSerialization = {
                             "root": {
                                 "prototype": "montage/core/core[Montage]",
-                                "properties": {
+                                "values": {
                                     "identifier": null
                                 },
                                 "localizations": {
@@ -321,7 +321,7 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
                         expectedSerialization = {
                             "root": {
                                 "prototype": "montage/core/core[Montage]",
-                                "properties": {
+                                "values": {
                                     "identifier": null
                                 },
                                 "localizations": {
@@ -370,7 +370,7 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
                         expectedSerialization = {
                             "root": {
                                 "prototype": "montage/core/core[Montage]",
-                                "properties": {
+                                "values": {
                                     "identifier": null
                                 },
                                 "localizations": {

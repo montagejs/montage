@@ -65,7 +65,7 @@ describe("spec/reel/template-spec", function () {
                 expectedObjects = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "properties": {
+                        "values": {
                             "element": {"#": "text"},
                             "value": "Hello, World!"
                         }
@@ -93,7 +93,7 @@ describe("spec/reel/template-spec", function () {
                 expectedObjects = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "properties": {
+                        "values": {
                             "element": {"#": "text"},
                             "value": "Hello, World!"
                         }
@@ -124,7 +124,7 @@ describe("spec/reel/template-spec", function () {
                 expectedObjects = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "properties": {
+                        "values": {
                             "element": {"#": "text"},
                             "value": "Hello, World!"
                         }
@@ -150,7 +150,7 @@ describe("spec/reel/template-spec", function () {
                 expectedObjects = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "properties": {
+                        "values": {
                             "element": {"#": "text"},
                             "value": "Hello, World!"
                         }
@@ -223,7 +223,7 @@ describe("spec/reel/template-spec", function () {
 
                 "repetition": {
                     "prototype": "montage/ui/repetition.reel",
-                    "properties": {
+                    "values": {
                         "element": {"#": "repetition"}
                     }
                 }
@@ -264,7 +264,7 @@ describe("spec/reel/template-spec", function () {
                 expectedSerialization = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "properties": {
+                        "values": {
                             "element": {"#": "text"},
                             "value": "Hello, World!"
                         }
@@ -288,7 +288,7 @@ describe("spec/reel/template-spec", function () {
                 htmlDocument = document.implementation.createHTMLDocument(""),
                 expectedObjects = {
                     "owner": {
-                        "properties": {
+                        "values": {
                             "element": {"#": "owner"}
                         }
                     }
@@ -1226,7 +1226,7 @@ describe("spec/reel/template-spec", function () {
                 expectedObjects = {
                     "item": {
                         "prototype": "montage/ui/text.reel",
-                        "properties": {
+                        "values": {
                             "element": {"#": "item"}
                         }
                     },
@@ -1252,13 +1252,13 @@ describe("spec/reel/template-spec", function () {
                 expectedObjects = {
                     "list": {
                         "prototype": "montage/ui/repetition.reel",
-                        "properties": {
+                        "values": {
                             "element": {"#": "list"}
                         }
                     },
                     "item": {
                         "prototype": "montage/ui/text.reel",
-                        "properties": {
+                        "values": {
                             "element": {"#": "item"}
                         }
                     },
@@ -1284,21 +1284,21 @@ describe("spec/reel/template-spec", function () {
                 expectedObjects = {
                     "row": {
                         "prototype": "montage/ui/text.reel",
-                        "properties": {
+                        "values": {
                             "element": {"#": "row"}
                         }
                     },
 
                     "columns": {
                         "prototype": "montage/ui/repetition.reel",
-                        "properties": {
+                        "values": {
                             "element": {"#": "columns"}
                         }
                     },
 
                     "column": {
                         "prototype": "montage/ui/text.reel",
-                        "properties": {
+                        "values": {
                             "element": {"#": "column"}
                         }
                     },
