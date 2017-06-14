@@ -1,5 +1,7 @@
 var Bindings = require("frb"),
     stringify = require("frb/stringify"),
+    assign = require("frb/assign"),
+    evaluate = require("frb/evaluate"),
     expand = require("frb/expand"),
     Scope = require("frb/scope"),
     Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
@@ -82,7 +84,18 @@ var deserializeBindings = exports.deserializeBindings = function (deserializer, 
             // TODO isolate the source document and produce a more useful error
         }
 
-        Bindings.defineBinding(object, targetPath, descriptor, commonDescriptor);
+        if ("=" in descriptor) {
+            assign(
+                object,
+                targetPath,
+                evaluate(descriptor["="], null, null, null, deserializer),
+                null,
+                null,
+                deserializer
+            );
+        } else {
+            Bindings.defineBinding(object, targetPath, descriptor, commonDescriptor);
+        }
     }
 };
 

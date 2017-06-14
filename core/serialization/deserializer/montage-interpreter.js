@@ -234,7 +234,7 @@ var MontageContext = Montage.specialize({
 
                 if (typeof value === "object" && value &&
                     Object.keys(value).length === 1 &&
-                    ("<-" in value || "<->" in value)) {
+                    ("<-" in value || "<->" in value || "=" in value)) {
                     bindings[key] = value;
                     delete values[key];
                 }
