@@ -314,7 +314,10 @@ describe("core/range-controller-spec", function () {
             };
             var content = rangeController.addContent();
             expect(content).toEqual(jasmine.objectContaining({x: 10}));
-            expect(rangeController.content).toContain(jasmine.objectContaining({x: 10}));
+            var insertedObject = rangeController.content.filter(function (elem) {
+                return elem.x === 10;
+            })[0];
+            expect(insertedObject).toBeTruthy();
         });
 
         it("should defer to the content type of the backing collection", function () {
