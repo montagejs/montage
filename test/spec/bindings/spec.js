@@ -1155,7 +1155,7 @@ describe("bindings/spec", function () {
                 expectedSerialization = {
                     "root": {
                         "prototype": "montage/core/core[Montage]",
-                        "properties": {
+                        "values": {
                             "foo": null,
                             "identifier": null
                         },

@@ -9,14 +9,14 @@ describe("meta/module-blueprint-spec", function () {
     var blueprintSerialization = {
         "blueprint_one_a": {
             "prototype": "montage/core/meta/property-blueprint",
-            "properties": {
+            "values": {
                 "name": "a",
                 "blueprint": {"@": "root"}
             }
         },
         "root": {
             "prototype": "montage/core/meta/module-blueprint",
-            "properties": {
+            "values": {
                 "name": "One",
                 "propertyDescriptors": [
                     {"@": "blueprint_one_a"}
@@ -30,14 +30,14 @@ describe("meta/module-blueprint-spec", function () {
     var objectDescriptorSerialization = {
         "objectDescriptor_one_a": {
             "prototype": "montage/core/meta/property-descriptor",
-            "properties": {
+            "values": {
                 "name": "a",
                 "objectDescriptor": {"@": "root"}
             }
         },
         "root": {
             "prototype": "montage/core/meta/module-object-descriptor",
-            "properties": {
+            "values": {
                 "name": "One",
                 "propertyDescriptors": [
                     {"@": "objectDescriptor_one_a"}

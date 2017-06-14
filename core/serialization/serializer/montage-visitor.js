@@ -200,10 +200,10 @@ var MontageVisitor = Montage.specialize({
         value: function (malker, object, builderObject) {
             var selfSerializer,
                 substituteObject,
-                propertiesBuilderObject = this.builder.createObjectLiteral();
+                valuesBuilderObject = this.builder.createObjectLiteral();
 
             this.setObjectType(object, builderObject);
-            builderObject.setProperty("properties", propertiesBuilderObject);
+            builderObject.setProperty("values", valuesBuilderObject);
 
             this.builder.push(builderObject);
 
@@ -219,12 +219,12 @@ var MontageVisitor = Montage.specialize({
 
             this.builder.pop();
 
-            // Remove the properties unit in case none was serialized,
+            // Remove the values unit in case none was serialized,
             // we need to add it before any other units to make sure that
             // it's the first unit to show up in the serialization, since we
             // don't have a way to order the property names in a serialization.
-            if (propertiesBuilderObject.getPropertyNames().length === 0) {
-                builderObject.clearProperty("properties");
+            if (valuesBuilderObject.getPropertyNames().length === 0) {
+                builderObject.clearProperty("values");
             }
 
             return substituteObject;
@@ -276,16 +276,15 @@ var MontageVisitor = Montage.specialize({
      */
     setObjectProperties: {
         value: function (malker, object) {
-            var propertiesSerializer,
-                propertiesObject;
-
-            propertiesObject = this.builder.top.getProperty("properties");
-            this.builder.push(propertiesObject);
+            var valuesSerializer,
+                valuesObject = this.builder.top.getProperty("values");
+            
+            this.builder.push(valuesObject);
 
             if (typeof object.serializeProperties === "function") {
-                propertiesSerializer = new PropertiesSerializer()
+                valuesSerializer = new PropertiesSerializer()
                     .initWithMalkerAndVisitorAndObject(malker, this, object);
-                object.serializeProperties(propertiesSerializer);
+                object.serializeProperties(valuesSerializer);
             } else {
                 this.setSerializableObjectProperties(malker, object);
             }

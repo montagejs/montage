@@ -25,7 +25,7 @@ describe("serialization/bindings-spec", function () {
         expect(notation).toEqual({
             "root": {
                 "prototype": "spec/serialization/bindings-spec[Type]",
-                "properties": {
+                "values": {
                     "foo": 10,
                     "identifier": null
                 },
