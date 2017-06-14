@@ -322,6 +322,13 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 );
             }
 
+            if (value.properties) {
+                deprecate.deprecationWarning(
+                    "Object '" + label +
+                    "' uses a deprecated block 'properties', use 'values' instead"
+                );
+            }
+
             context.setBindingsToDeserialize(object, value);
             montageObjectDesc = this.reviveObjectLiteral(value, context);
 
@@ -345,7 +352,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 // Units are deserialized after all objects have been revived.
                 // This happens at didReviveObjects.
                 context.setUnitsToDeserialize(object, montageObjectDesc, MontageReviver._unitNames);
-                properties = this.deserializeMontageObjectProperties(object, montageObjectDesc.properties, context);
+                properties = this.deserializeMontageObjectProperties(
+                    object,
+                    montageObjectDesc.values || montageObjectDesc.properties, //deprecated
+                    context
+                );
 
                 if (Promise.is(properties)) {
                     return properties.then(function() {

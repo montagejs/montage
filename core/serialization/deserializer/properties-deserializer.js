@@ -17,7 +17,11 @@ var PropertiesDeserializer = Montage.specialize( {
 
     get: {
         value: function (name) {
-            if (this._objectDescriptor.properties) {
+            if (this._objectDescriptor.values) {
+                return this._objectDescriptor.values[name];
+            }
+
+            if (this._objectDescriptor.properties) { // deprecated
                 return this._objectDescriptor.properties[name];
             }
         }
@@ -26,7 +30,7 @@ var PropertiesDeserializer = Montage.specialize( {
     deserializeProperties: {
         value: function (propertyNames) {
             var object = this._object,
-                properties = this._objectDescriptor.properties,
+                properties = this._objectDescriptor.values || this._objectDescriptor.properties,
                 propertyName;
 
             if (properties) {
