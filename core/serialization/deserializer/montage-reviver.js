@@ -115,6 +115,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     return "Element";
                 } else if ("%" in value) {
                     return "Module";
+                } else if ("<-" in value || "<->" in value) {
+                    return "binding";
                 } // else return typeOf -> object
             }
 
@@ -507,14 +509,18 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 bindingsToDeserializeDesc;
             
             if (bindingsToDeserialize) {
-                for (var i = 0, length = bindingsToDeserialize.length; i < length; i++) {
-                    bindingsToDeserializeDesc = bindingsToDeserialize[i];
-                    Bindings.deserializeBindings(
-                        new UnitDeserializer().initWithContext(context),
-                        bindingsToDeserializeDesc.object,
-                        bindingsToDeserializeDesc.bindings
-                    );
-                } 
+                try {
+                    for (var i = 0, length = bindingsToDeserialize.length; i < length; i++) {
+                        bindingsToDeserializeDesc = bindingsToDeserialize[i];
+                        Bindings.deserializeBindings(
+                            new UnitDeserializer().initWithContext(context),
+                            bindingsToDeserializeDesc.object,
+                            bindingsToDeserializeDesc.bindings
+                        );
+                    }
+                } catch (ex) {
+                    return Promise.reject(ex);
+                }
             }
         }
     },
@@ -573,6 +579,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 return this.reviveObjectLiteral(value, context, label);
             } else if (type === "Element") {
                 return this.reviveElement(value, context, label);
+            } else if (type === "binding") {
+                return value;
             } else {
                 return this._callReviveMethod("revive" + type, value, context, label);
             }

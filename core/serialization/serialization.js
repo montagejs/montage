@@ -612,6 +612,9 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
                     this._walkObject(visitor, object, ""+i, null, value);
                 }
 
+            } else if (type === "binding") {
+                this._walkBinding(visitor, parentObject, key, value);
+
             } else if (type === "object") {
                 value.data = object;
                 visitor(value);
@@ -651,11 +654,11 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
             } else if (object.properties) { // deprecated
                 this._walkObject(visitor, object, "properties", null, value);
             }
+            if (object.bindings) { // deprecated
+                this._walkBindings(visitor, object, null, value);
+            }
             if (object.listeners) {
                 this._walkObject(visitor, object, "listeners", null, value);
-            }
-            if (object.bindings) {
-                this._walkBindings(visitor, object, null, value);
             }
             if (object.localizations) {
                 this._walkLocalizations(visitor, object, null, value);
