@@ -20,7 +20,7 @@ var MontageSerializer = Montage.specialize({
 
     constructor: {
         value: function (legacyMode) {
-            this.legacyMode = !!legacyMode || true;
+            this.legacyMode = !!legacyMode;
         }
     },
 
@@ -154,6 +154,6 @@ var MontageSerializer = Montage.specialize({
 
 exports.MontageSerializer = MontageSerializer;
 exports.serialize = function (object, _require, legacyMode) {
-    return new MontageSerializer(legacyMode || true).initWithRequire(_require)
+    return new MontageSerializer(legacyMode).initWithRequire(_require)
         .serializeObject(object);
 };

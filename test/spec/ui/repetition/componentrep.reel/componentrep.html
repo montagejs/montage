@@ -36,18 +36,14 @@ POSSIBILITY OF SUCH DAMAGE.
             "textfield1": {
                 "prototype": "spec/ui/repetition/textfield.reel[TextField]",
                 "values": {
-                    "element": {"#": "textfield"}
-                },
-                "bindings": {
+                    "element": {"#": "textfield"},
                     "text": {"<-": "@repetition1:iteration.object.text"}
                 }
             },
             "repetition1": {
                 "prototype": "montage/ui/repetition.reel",
                 "values": {
-                    "element": {"#": "list1"}
-                },
-                "bindings": {
+                    "element": {"#": "list1"},
                     "content": {"<-": "@owner.listObjects"}
                 }
             },

@@ -16,7 +16,7 @@
 
             "nameController": {
                 "prototype": "montage/core/range-controller",
-                "bindings": {
+                "values": {
                     "content": {"<-": "@test.content"}
                 }
             },
@@ -25,9 +25,7 @@
                 "prototype": "montage/ui/repetition.reel",
                 "values": {
                     "element": {"#": "repetition"},
-                    "isSelectionEnabled": true
-                },
-                "bindings": {
+                    "isSelectionEnabled": true,
                     "contentController": {"<-": "@test.nameController"}
                 }
             },
@@ -35,9 +33,7 @@
             "name": {
                 "prototype": "montage/ui/text.reel",
                 "values": {
-                    "element": {"#": "name"}
-                },
-                "bindings": {
+                    "element": {"#": "name"},
                     "value": {"<-": "@repetition:iteration.object"}
                 }
             },
@@ -45,9 +41,7 @@
             "selectedName": {
                 "prototype": "montage/ui/text.reel",
                 "values": {
-                    "element": {"#": "selectedName"}
-                },
-                "bindings": {
+                    "element": {"#": "selectedName"},
                     "value": {"<->": "@repetition.contentController.selection.0"}
                 }
             },

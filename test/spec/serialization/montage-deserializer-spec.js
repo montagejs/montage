@@ -743,9 +743,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 "root": {
                     "prototype": "spec/serialization/testobjects-v2[CustomDeserialization]",
                     "values": {
-                        "prop1": 3.14
-                    },
-                    "bindings": {
+                        "prop1": 3.14,
                         "prop2": {"<-": "@oneprop.prop"}
                     },
                     "listeners": [{

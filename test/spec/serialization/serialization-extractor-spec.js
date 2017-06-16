@@ -239,8 +239,6 @@ describe("reel/serialization/serialization-extractor-spec", function () {
                     "one": {
                         "values": {
                             "element": {"#": "oneId"},
-                        },
-                        "bindings": {
                             "name": {"<-": "@two.name"}
                         }
                     },
@@ -273,8 +271,6 @@ describe("reel/serialization/serialization-extractor-spec", function () {
                     "one": {
                         "values": {
                             "element": {"#": "oneId"},
-                        },
-                        "bindings": {
                             "name": {"<->": "@two.name"}
                         }
                     },
@@ -319,7 +315,7 @@ describe("reel/serialization/serialization-extractor-spec", function () {
                     },
 
                     "sum": {
-                        "bindings": {
+                        "values": {
                             "value": {"<-": "@one.value + @two.value"}
                         }
                     }

@@ -86,9 +86,7 @@
             "C0Count": {
                 "prototype": "montage/ui/text.reel",
                 "values": {
-                    "element": {"#": "C0Count"}
-                },
-                "bindings": {
+                    "element": {"#": "C0Count"},
                     "value": {"<-": "@C0.handledMenuActionCount"}
                 }
             },
@@ -104,9 +102,7 @@
             "C0C0Count": {
                 "prototype": "montage/ui/text.reel",
                 "values": {
-                    "element": {"#": "C0C0Count"}
-                },
-                "bindings": {
+                    "element": {"#": "C0C0Count"},
                     "value": {"<-": "@C0C0.handledMenuActionCount"}
                 }
             },
@@ -142,9 +138,7 @@
             "C0C1Count": {
                 "prototype": "montage/ui/text.reel",
                 "values": {
-                    "element": {"#": "C0C1Count"}
-                },
-                "bindings": {
+                    "element": {"#": "C0C1Count"},
                     "value": {"<-": "@C0C1.handledMenuActionCount"}
                 }
             },
@@ -207,9 +201,7 @@
             "C1Count": {
                 "prototype": "montage/ui/text.reel",
                 "values": {
-                    "element": {"#": "C1Count"}
-                },
-                "bindings": {
+                    "element": {"#": "C1Count"},
                     "value": {"<-": "@C1.handledMenuActionCount"}
                 }
             },
@@ -221,9 +213,7 @@
             "activeTargetObjectName": {
                 "prototype": "montage/ui/text.reel",
                 "values": {
-                    "element": {"#": "activeTargetObjectName"}
-                },
-                "bindings": {
+                    "element": {"#": "activeTargetObjectName"},
                     "value": {
                         "<-": "eventManager.activeTarget",
                         "converter": {"@": "targetInfoConverter"}
@@ -234,9 +224,7 @@
             "activeTargetIdentifier": {
                 "prototype": "montage/ui/text.reel",
                 "values": {
-                    "element": {"#": "activeTargetIdentifier"}
-                },
-                "bindings": {
+                    "element": {"#": "activeTargetIdentifier"},
                     "value": {
                         "<-": "eventManager.activeTarget.identifier"
                     }
@@ -245,14 +233,14 @@
 
             "targetChainController": {
                 "prototype": "spec/events/active-target-test/target-chain-controller",
-                "bindings": {
+                "values": {
                     "content": {"<-": "@activeTargetObjectName.eventManager.activeTarget"}
                 }
             },
 
             "targetChainRangeController": {
                 "prototype": "montage/core/range-controller",
-                "bindings": {
+                "values": {
                     "content": {"<-": "@targetChainController.organizedContent"}
                 }
             },
@@ -260,9 +248,7 @@
             "targetRepetition": {
                 "prototype": "montage/ui/repetition.reel",
                 "values": {
-                    "element": {"#": "targetRepetition"}
-                },
-                "bindings": {
+                    "element": {"#": "targetRepetition"},
                     "contentController": {"<-": "@test.targetChainRangeController"}
                 }
             },
@@ -270,9 +256,7 @@
             "targetObjectName": {
                 "prototype": "montage/ui/text.reel",
                 "values": {
-                    "element": {"#": "targetObjectName"}
-                },
-                "bindings": {
+                    "element": {"#": "targetObjectName"},
                     "value": {
                         "<-": "@targetRepetition:iteration.object",
                         "converter": {"@": "targetInfoConverter"}
@@ -283,9 +267,7 @@
             "targetIdentifier": {
                 "prototype": "montage/ui/text.reel",
                 "values": {
-                    "element": {"#": "targetIdentifier"}
-                },
-                "bindings": {
+                    "element": {"#": "targetIdentifier"},
                     "value": {
                         "<-": "@targetRepetition:iteration.object.identifier"
                     }

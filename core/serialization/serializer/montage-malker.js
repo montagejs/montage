@@ -8,7 +8,7 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
     constructor: {
         value: function Malker(visitHandler, legacyMode) {
             this._visitHandler = visitHandler;
-            this.legacyMode = !!legacyMode || true;
+            this.legacyMode = !!legacyMode;
             this._enteredObjects = {};
         }
     },
@@ -219,6 +219,6 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
 });
 
 exports.visit = function(object, visitHandler, legacyMode) {
-    var malker = new MontageWalker(visitHandler, legacyMode || true);
+    var malker = new MontageWalker(visitHandler, legacyMode);
     malker.visit(object);
 };

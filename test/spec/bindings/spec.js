@@ -1116,13 +1116,12 @@ describe("bindings/spec", function () {
     });
 
     describe("serialization", function () {
-        it("should call \"bindings\" deserialization unit", function (done) {
-            
+        it("should call \"bindings\" deserialization unit when using legacy mode", function (done) {
             var Alpha = Montage.specialize( {foo: {value: null}}),
                 Omega = Montage.specialize( {bar: {value: null}}),
                 target = new Alpha(),
                 source = new Omega(),
-                serializer = new Serializer().initWithRequire(require),
+                serializer = new Serializer(true).initWithRequire(require),
                 deserializer = new Deserializer();
             
             Bindings.defineBinding(target, "foo", {
@@ -1156,13 +1155,8 @@ describe("bindings/spec", function () {
                     "root": {
                         "prototype": "montage/core/core[Montage]",
                         "values": {
-                            "foo": null,
+                            "foo": { "<-": "@montage.bar" },
                             "identifier": null
-                        },
-                        "bindings": {
-                            "foo": {
-                                "<-": "@montage.bar"
-                            }
                         }
                     },
                     "montage": {}
@@ -1184,10 +1178,7 @@ describe("bindings/spec", function () {
                         "prototype": "montage",
                         "values": {
                             "identifier": null,
-                            "value": null
-                        },
-                        "bindings": {
-                            "value": {"<-": "@source.value"}
+                            "value": { "<-": "@source.value" }
                         }
                     },
 
@@ -1222,10 +1213,7 @@ describe("bindings/spec", function () {
                         "prototype": "montage",
                         "values": {
                             "identifier": null,
-                            "value": null
-                        },
-                        "bindings": {
-                            "value": {"<->": "@source.value"}
+                            "value": { "<->": "@source.value" }
                         }
                     },
 

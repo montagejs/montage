@@ -27,9 +27,7 @@ describe("serialization/bindings-spec", function () {
                 "prototype": "spec/serialization/bindings-spec[Type]",
                 "values": {
                     "foo": 10,
-                    "identifier": null
-                },
-                "bindings": {
+                    "identifier": null,
                     "bar": {
                         "<-": "foo"
                     }
@@ -43,9 +41,7 @@ describe("serialization/bindings-spec", function () {
                 "root": {
                     "prototype": "spec/serialization/bindings-spec[Type]",
                     "values": {
-                        "foo": 10
-                    },
-                    "bindings": {
+                        "foo": 10,
                         "bar": {
                             "<-": "foo"
                         }
@@ -67,9 +63,7 @@ describe("serialization/bindings-spec", function () {
                 "root": {
                     "prototype": "spec/serialization/bindings-spec[Type]",
                     "values": {
-                        "foo": 10
-                    },
-                    "bindings": {
+                        "foo": 10,
                         "bar": {
                             "<-": "@root.foo"
                         }
@@ -92,9 +86,7 @@ describe("serialization/bindings-spec", function () {
                 "root": {
                     "prototype": "spec/serialization/bindings-spec[Type]",
                     "values": {
-                        "foo": 10
-                    },
-                    "bindings": {
+                        "foo": 10,
                         "bar": {"<-": "@unknown.foo"}
                     }
                 }
@@ -121,7 +113,7 @@ describe("serialization/bindings-spec", function () {
             var serialization = {
                     "component": {
                         "prototype": "montage/ui/component",
-                        "bindings": {
+                        "values": {
                             "value": {"<-": "@unknown:templateProperty"}
                         }
                     }
@@ -145,7 +137,7 @@ describe("serialization/bindings-spec", function () {
 
                     "component": {
                         "prototype": "montage/ui/component",
-                        "bindings": {
+                        "values": {
                             "value": {"<-": "@known:templateProperty"}
                         }
                     }
@@ -173,7 +165,7 @@ describe("serialization/bindings-spec", function () {
 
                     "component": {
                         "prototype": "montage/ui/component",
-                        "bindings": {
+                        "values": {
                             "value": {"<-": "@owner:templateProperty"}
                         }
                     }

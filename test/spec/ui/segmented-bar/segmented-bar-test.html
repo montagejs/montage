@@ -10,25 +10,21 @@
         },
         "rangeController": {
             "prototype": "montage/core/range-controller",
-            "bindings": {
+            "values": {
                 "content": {"<-": "@test.data"}
             }
         },
         "treeController": {
             "prototype": "montage/core/tree-controller",
             "values": {
-                "childrenPath": "regions"
-            },
-            "bindings": {
+                "childrenPath": "regions",
                 "content": {"<-": "@test.tree"}
             }
         },
         "segmentedBar1": {
             "prototype": "montage/ui/segmented-bar.reel",
             "values": {
-                "element": {"#": "segmentedBar1"}
-            },
-            "bindings": {
+                "element": {"#": "segmentedBar1"},
                 "data": {"<-": "@test.data"}
             },
             "listeners": [
@@ -41,9 +37,7 @@
         "segment1": {
             "prototype": "montage/ui/segment.reel",
             "values": {
-                "element": {"#": "segment1"}
-            },
-            "bindings": {
+                "element": {"#": "segment1"},
                 "label": {"<-": "@segmentedBar1:segment.object.region"},
                 "length": {"<-": "@segmentedBar1:segment.object.size"}
             }
@@ -65,9 +59,7 @@
         "segment2": {
             "prototype": "montage/ui/segment.reel",
             "values": {
-                "element": {"#": "segment2"}
-            },
-            "bindings": {
+                "element": {"#": "segment2"},
                 "label": {"<-": "@segmentedBar2:segment.object.region"},
                 "length": {"<-": "@segmentedBar2:segment.object.size"}
             }
@@ -88,9 +80,7 @@
         "segment3": {
             "prototype": "montage/ui/segment.reel",
             "values": {
-                "element": {"#": "segment3"}
-            },
-            "bindings": {
+                "element": {"#": "segment3"},
                 "label": {"<-": "@segmentedBar3:segment.object.content.region"},
                 "length": {"<-": "@segmentedBar3:segment.object.content.size"}
             }
@@ -112,9 +102,7 @@
         "segment4": {
             "prototype": "montage/ui/segment.reel",
             "values": {
-                "element": {"#": "segment4"}
-            },
-            "bindings": {
+                "element": {"#": "segment4"},
                 "label": {"<-": "@segmentedBar4:segment.object.region"},
                 "length": {"<-": "@segmentedBar4:segment.object.size"}
             }
