@@ -9,8 +9,7 @@ var Bindings = require("frb"),
     ONE_WAY = "<-",
     TWO_WAY = "<->";
 
-
-Serializer.defineSerializationUnit("bindings", function (serializer, object) {
+var serializeObjectBindings = exports.serializeObjectBindings = function (serializer, object) {
     var inputs = Bindings.getBindings(object),
         outputs = {},
         hasBindings,
@@ -18,7 +17,7 @@ Serializer.defineSerializationUnit("bindings", function (serializer, object) {
         targetPath;
 
     while (targetPath = mapIter.next().value) {
-    //for (var targetPath in inputs) {
+        //for (var targetPath in inputs) {
         var input = inputs.get(targetPath);
 
         var output = {};
@@ -66,8 +65,11 @@ Serializer.defineSerializationUnit("bindings", function (serializer, object) {
         hasBindings = true;
     }
 
-    return hasBindings ? outputs : undefined;
-});
+    return hasBindings ? outputs : void 0;
+};
+
+//deprecated
+Serializer.defineSerializationUnit("bindings", serializeObjectBindings);
 
 var deserializeBindings = exports.deserializeBindings = function (deserializer, object, bindings) {
     var commonDescriptor = {

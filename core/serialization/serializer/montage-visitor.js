@@ -4,6 +4,7 @@ var PropertiesSerializer = require("./properties-serializer").PropertiesSerializ
 var SelfSerializer = require("./self-serializer").SelfSerializer;
 var UnitSerializer = require("./unit-serializer").UnitSerializer;
 var Alias = require("../alias").Alias;
+var Bindings = require("../bindings");
 
 var MontageVisitor = Montage.specialize({
     _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
@@ -214,6 +215,7 @@ var MontageVisitor = Montage.specialize({
                 substituteObject = object.serializeSelf(selfSerializer);
             } else {
                 this.setObjectProperties(malker, object);
+                this.setObjectBindings(malker, object);
                 this.setObjectCustomUnits(malker, object);
             }
 
@@ -267,6 +269,26 @@ var MontageVisitor = Montage.specialize({
                 return moduleId;
             } else {
                 return moduleId + "[" + objectName + "]";
+            }
+        }
+    },
+
+    setObjectBindings: {
+        value: function (malker, object) {
+            if (!malker.legacyMode) {
+                var unitSerializer = new UnitSerializer()
+                    .initWithMalkerAndVisitorAndObject(malker, this, object),
+                    bindings = Bindings.serializeObjectBindings(unitSerializer, object);
+
+                if (bindings) {
+                    var valuesObject = this.builder.top.getProperty("values");
+                    this.builder.push(valuesObject);
+
+                    for (var key in bindings) {
+                        this.builder.top.setProperty(key, bindings[key]);
+                    }
+                    this.builder.pop();
+                }
             }
         }
     },
@@ -346,6 +368,10 @@ var MontageVisitor = Montage.specialize({
     setObjectCustomUnits: {
         value: function (malker, object) {
             for (var unitName in this._units) {
+                if (unitName === "bindings" && !malker.legacyMode) {
+                    continue;
+                }
+
                 this.setObjectCustomUnit(malker, object, unitName);
             }
         }
