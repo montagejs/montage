@@ -133,7 +133,12 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
 
             // TODO: much faster than using the visitor, need to make the visitor
             // faster.
-            var element = Montage.getPath.call(object, label + ".properties.element");
+            var element = Montage.getPath.call(object, label + ".values.element");
+
+            if (!element) {
+                element = Montage.getPath.call(object, label + ".properties.element");
+            }
+
             if (element) {
                 return element["#"];
             }
@@ -149,9 +154,9 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
             inspector.visitSerialization(function (node) {
                 // Check if this is one of the elements we're looking for
                 if (node.type === "Element" && elementIds.indexOf(node.data) >= 0) {
-                    // Check if it's inside a "properties" block
+                    // Check if it's inside a "values" block
                     node = node.parent;
-                    if (node && node.name === "properties") {
+                    if (node && (node.name === "values" || node.name === "properties")) {
                         // Check if it's in a montage object
                         node = node.parent;
                         if (node && node.type === "montageObject") {
@@ -641,7 +646,9 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
                 this.changeLabel(label, value.label);
             }
 
-            if (object.properties) {
+            if (object.values) {
+                this._walkObject(visitor, object, "values", null, value);
+            } else if (object.properties) { // deprecated
                 this._walkObject(visitor, object, "properties", null, value);
             }
             if (object.listeners) {

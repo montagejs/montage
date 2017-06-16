@@ -254,12 +254,10 @@ var MontageContext = Montage.specialize({
         value: function (object, objectDesc) {
             var bindings = Object.create(null);
 
-            if (objectDesc.properties) { // deprecated
-                this._extractBindingsToDeserialize(objectDesc.properties, bindings);
-            }
-
             if (objectDesc.values) {
                 this._extractBindingsToDeserialize(objectDesc.values, bindings);
+            } else if (objectDesc.properties) { // deprecated
+                this._extractBindingsToDeserialize(objectDesc.properties, bindings);
             }
 
             if (Object.keys(bindings).length > 0) {

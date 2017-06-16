@@ -28,9 +28,7 @@ var SelfDeserializer = Montage.specialize( {
         value: function (name) {
             if (this._objectDescriptor.values) {
                 return this._objectDescriptor.values[name];
-            }
-
-            if (this._objectDescriptor.properties) { // deprecated
+            } else if (this._objectDescriptor.properties) { // deprecated
                 return this._objectDescriptor.properties[name];
             }
         }
