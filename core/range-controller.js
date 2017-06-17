@@ -73,11 +73,7 @@ Object.defineProperty(_RangeSelection.prototype, "clone", {
         return this.slice();
     }
 });
-var oldSwap = self.swap;
-Object.defineProperty(_RangeSelection.prototype, "oldSwap", {
-    configurable: false,
-    value: observableArrayProperties.swap.value
-});
+_RangeSelection.prototype.oldSwap = observableArrayProperties.swap.value;
 Object.defineProperty(_RangeSelection.prototype, "swap", {
     configurable: false,
     value: function(start, howMany, itemsToAdd) {
