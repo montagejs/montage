@@ -1,9 +1,34 @@
-.npmignore
-.tmp
-.idea
+### General ###
 .DS_Store
-atlassian-ide-plugin.xml
-npm-debug.log
+Thumbs.db
 report/
-node_modules/
 out/
+temp/
+tmp/
+.tmp
+*.tmp
+*.tmp.*
+log.txt
+*.log
+ 
+### SublimeText ###
+*.sublime-project
+*.sublime-workspace
+ 
+### Intellij IDE ###
+.idea/
+atlassian-ide-plugin.xml
+ 
+### VisualStudioCode ###
+.vscode/*
+.vscode-upload.json
+ 
+### TextMate ###
+*.tmproj
+*.tmproject
+tmtags
+ 
+### Node ###
+npm-debug.log*
+.npmignore
+node_modules/
