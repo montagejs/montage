@@ -36,13 +36,14 @@ TrimConverter = require("montage/core/converter/trim-converter").TrimConverter,
 NumberConverter = require("montage/core/converter/number-converter").NumberConverter,
 BytesConverter = require("montage/core/converter/bytes-converter").BytesConverter,
 DateConverter = require("montage/core/converter/date-converter").DateConverter,
+ExpressionConverter = require("montage/core/converter/expression-converter").ExpressionConverter,
 CurrencyConverter = require("montage/core/converter/currency-converter").CurrencyConverter;
 
 describe("converter-spec", function () {
 
-    var numberConverter, stringConverter, dateConverter, currencyConverter, bytesConverter;
-    var dateConverter;
-    var date = new Date('25 Aug 2011 12:00:00 PM');
+    var numberConverter, stringConverter, dateConverter, currencyConverter, bytesConverter, dateConverter,
+        expressionConverter,
+        date = new Date('25 Aug 2011 12:00:00 PM');
 
     beforeEach(function () {
         //stringConverter = new StringConverter();
@@ -58,6 +59,9 @@ describe("converter-spec", function () {
         currencyConverter.shorten = true;
 
         dateConverter = new DateConverter();
+        expressionConverter = new ExpressionConverter();
+        expressionConverter.convertExpression = "map{foo}";
+        expressionConverter.revertExpression = "map{{foo:this}}";
         //dateConverter.pattern = 'YYYY-MM-DD';
     });
 
@@ -319,6 +323,18 @@ describe("converter-spec", function () {
             var value = "08/30/2011";
             var result = dateConverter.revert(value);
             expect(date.getFullYear()).toBe(2011);
+        });
+    });
+
+
+    describe("test expression converter", function () {
+        it("should create an array of numbers from an array of objects", function () {
+            var value = [{foo:1},{foo:2},{foo:3},{foo:4}];
+            var result = expressionConverter.convert(value);
+            expect(result).toEqual([1,2,3,4]);
+            result = expressionConverter.revert(result);
+            expect(result).toEqual([{foo:1},{foo:2},{foo:3},{foo:4}]);
+
         });
     });
 
