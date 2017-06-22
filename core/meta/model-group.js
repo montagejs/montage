@@ -22,6 +22,25 @@ exports.ModelGroup = Montage.specialize( /** @lends ModelGroup.prototype # */ {
         }
     },
 
+    _name: {
+        value: null
+    },
+
+    /**
+     * Name of the ModelGroup.
+     * The name is used to define the property on the object.
+     * @function
+     * @type {string}
+     */
+    name: {
+        get: function () {
+            return this._name;
+        },
+        set: function (value) {
+            if(value !== this._name) this._name = value;
+        }
+    },
+
     /**
      * @private
      * @property {Array} value

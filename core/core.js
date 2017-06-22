@@ -949,6 +949,22 @@ Montage.defineProperty(Montage.prototype, "identifier", {
     serializable: true
 });
 
+
+
+/**
+ * The version of an object (integer). This is intended to represent the current version of an Object.
+ * As an object evolves, properties are added, removed, re-factored, an object's moduleId doesn't change
+ * and deserialisation needs to be able to deserialize older versions, with the abilty to look at the version
+ * serialized vs the current one at deserialization.
+ *
+ * @type {Number} .
+ */
+Montage.defineProperty(Montage.prototype, "version", {
+    value: 1,
+    serializable: false //This should be on my default, but will have to require testing and some adaptation around the code base. Specialized objects off Montage will have to override it if they want the default serialization of the version property, or to deal with it in serialize/deserializeSelf
+});
+
+
 /**
  * Returns true if two objects are equal, otherwise returns false.
  * @function Montage#equals

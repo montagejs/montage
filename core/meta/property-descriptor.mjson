@@ -220,6 +220,24 @@
             "helpKey": ""
         }
     },
+    "property_serializable": {
+        "prototype": "core/meta/property-descriptor",
+        "properties": {
+            "name": "serializable",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "boolean",
+            "enumValues": [],
+            "helpKey": "",
+            "serializable": true
+        }
+    },
+
     "root": {
         "prototype": "core/meta/module-object-descriptor",
         "properties": {

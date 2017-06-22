@@ -380,6 +380,23 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         }
     },
 
+    /**
+     * Returns all property descriptors that have their serializable property true
+     *
+     * @method
+     * @returns {Array.<PropertyDescriptor>} Arrat of relevant propertyDescriptors
+     */
+
+    serializablePropertyDescriptors: {
+        get: function () {
+            //ToDo: Add some caching and invalidation when this._propertyDescriptors or this.parent.propertyDescriptors
+            //changes, using bindings might be best.
+            return this.propertyDescriptors.filter(function(aPropertyDescriptor) {
+                return aPropertyDescriptor.serializable !== false;
+            })
+        }
+    },
+
     _propertyDescriptorsTable: {
         value: null
     },
