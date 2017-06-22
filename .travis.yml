@@ -1,8 +1,9 @@
 language: node_js
 node_js:
   - "4"
-  - "6"
-  - "7"
+  # Disabled until Montage support flat node_modules aka npm 3+
+  #- "6"
+  #- "7"
 script: npm run $COMMAND
 env:
   - COMMAND=test
