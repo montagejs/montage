@@ -58,6 +58,7 @@
   },
   "devDependencies": {
     "concurrently": "^3.4.0",
+    "http-server": "^0.10.0",
     "jasmine-console-reporter": "^1.2.7",
     "jasmine-core": "^2.5.2",
     "karma": "^1.5.0",
