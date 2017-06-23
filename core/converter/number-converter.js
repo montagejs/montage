@@ -40,7 +40,7 @@ var Converter = require("./converter").Converter;
 var Validator = require("./converter").Validator;
 var isNumber = require("./converter").isNumber;
 var isDef = require("./converter").isDef;
-var String = require('../shim/string')
+var String = require('../shim/string');
 
 /**
  * Regular expression for detecting scaling units, such as K, M, G, etc. for
@@ -109,14 +109,14 @@ var NUMERIC_SCALES_BINARY_ = exports.NUMERIC_SCALES_BINARY_ = {
  * @memberof module:montage/converter#
  * @param {number} val Value to be converted.
  * @param {Object} conversion Dictionary of scaling factors.
- * @param {number} opt_decimals The number of decimals to use.  Default is 2.
- * @param {string} opt_suffix Optional suffix to append.
+ * @param {number} optDecimals The number of decimals to use.  Default is 2.
+ * @param {string} optSuffix Optional suffix to append.
  * @returns {string} The human readable form of the byte size.
  * @private
  */
-var _numericValueToString = exports._numericValueToString = function (val, conversion, opt_decimals, opt_suffix, prefixes) {
+var _numericValueToString = exports._numericValueToString = function (val, conversion, optDecimals, optSuffix, prefixes) {
     prefixes = prefixes || NUMERIC_SCALE_PREFIXES_;
-    var orig_val = val;
+    var origVal = val;
     var symbol = '';
     var scale = 1;
     if (val < 0) {
@@ -134,11 +134,11 @@ var _numericValueToString = exports._numericValueToString = function (val, conve
     }
     if (!symbol) {
         scale = 1;
-    } else if (opt_suffix) {
-        symbol += opt_suffix;
+    } else if (optSuffix) {
+        symbol += optSuffix;
     }
-    var ex = Math.pow(10, isDef(opt_decimals) ? opt_decimals : 2);
-    return Math.round(orig_val / scale * ex) / ex + symbol;
+    var ex = Math.pow(10, isDef(optDecimals) ? optDecimals : 2);
+    return Math.round(origVal / scale * ex) / ex + symbol;
 };
 
 /**
@@ -199,11 +199,11 @@ var stringToNumericValue = exports.stringToNumericValue = function (stringValue)
  * @memberof module:montage/core/converter#
  * @function
  * @param {number} val Value to be converted.
- * @param {number} opt_decimals The number of decimals to use. Defaults to 2.
+ * @param {number} optDecimals The number of decimals to use. Defaults to 2.
  * @returns {string} String representation of number.
  */
-var numericValueToString = exports.numericValueToString = function (val, opt_decimals) {
-    return _numericValueToString(val, NUMERIC_SCALES_SI_, opt_decimals);
+var numericValueToString = exports.numericValueToString = function (val, optDecimals) {
+    return _numericValueToString(val, NUMERIC_SCALES_SI_, optDecimals);
 };
 
 

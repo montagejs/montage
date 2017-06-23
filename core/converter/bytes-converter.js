@@ -38,12 +38,12 @@ var stringToNumBytes = function (stringValue) {
  * @returns {string} String representation of number of bytes.
  * @private
  */
-var numBytesToString = function (val, opt_decimals, opt_suffix) {
+var numBytesToString = function (val, optDecimals, optSuffix) {
     var suffix = '';
-    if (!isDef(opt_suffix) || opt_suffix) {
+    if (!isDef(optSuffix) || optSuffix) {
         suffix = 'B';
     }
-    return _numericValueToString(val, NUMERIC_SCALES_BINARY_, opt_decimals, suffix, NUMERIC_SCALE_PREFIXES_BYTES);
+    return _numericValueToString(val, NUMERIC_SCALES_BINARY_, optDecimals, suffix, NUMERIC_SCALE_PREFIXES_BYTES);
 };
 
 /**
@@ -55,8 +55,8 @@ var numBytesToString = function (val, opt_decimals, opt_suffix) {
  * @returns {string} The human readable form of the byte size.
  * @private
  */
-var fileSize = function (bytes, opt_decimals) {
-    return numBytesToString(bytes, opt_decimals, false);
+var fileSize = function (bytes, optDecimals) {
+    return numBytesToString(bytes, optDecimals, false);
 };
 
 /**
