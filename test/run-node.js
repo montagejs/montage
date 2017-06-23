@@ -35,7 +35,7 @@ jasmineEnv.addReporter(consoleReporter);
 var exitCode = 0;
 jasmineEnv.addReporter({
     specDone: function(result) {
-        exitCode = exitCode || result.status === 'failed';
+        exitCode = exitCode || result.status === 'failed' ? 1 : 0;
     }
 });
 
@@ -54,6 +54,10 @@ Montage.loadPackage(PATH.join(__dirname, "."), {
     return mr.async("all");
 }).then(function () {
     console.log('Done');
+}, function (err) {
+    console.error('Fail', err);
+    exitCode = 1;
+}).then(function () {
     process.exit(exitCode);
 }).thenReturn();
 
