@@ -376,7 +376,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             repetition._boundaries.splice(index, 1);
             var fragment = this._fragment;
             var child = topBoundary.nextSibling;
-            while (child != bottomBoundary) {
+            while (child !== bottomBoundary) {
                 var next = child.nextSibling;
                 element.removeChild(child);
                 fragment.appendChild(child);
@@ -421,8 +421,9 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      */
     handlePropertyChange: {
         value: function () {
-            if (!this.repetition)
+            if (!this.repetition) {
                 return;
+            }
             this.repetition._addDirtyClassListIteration(this);
             this.repetition.needsDraw = true;
         }
@@ -439,8 +440,10 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             var repetition = this.repetition;
             var index = this._drawnIndex;
             // Short-circuit if the iteration is not on the document.
-            if (index == null)
-                return;
+            if (index === null || index === undefined) {
+                return;                
+            }
+
             for (
                 var child = repetition._boundaries[index];
                 child !== repetition._boundaries[index + 1];
@@ -469,8 +472,12 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
         get: function () {
             var repetition = this.repetition;
             var index = this._drawnIndex;
-            if (index == null)
-                return;
+            
+            // Short-circuit if the iteration is not on the document.
+            if (index === null || index === undefined) {
+                return;                
+            }
+
             for (
                 var child = repetition._boundaries[index];
                 child !== repetition._boundaries[index + 1];
@@ -1548,6 +1555,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             var start = index,
                 freedIterations,
                 freedIteration,
+                newIterations, // isDebugOnly
                 iterations = this.iterations,
                 reusableIterationsCount = Math.min(plusLength, minusLength),
                 removeIterationsCount = minusLength - reusableIterationsCount,
@@ -1592,15 +1600,16 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 }
             }
 
+            if (logger.isDebug) {
+                newIterations = [];
+            }
+
             if (addIterationsCount > 0) {
                 // Create more iterations if we will need them
-                if (logger.isDebug) {
-                    var newIterations = [];
-                }
                 while (this._freeIterations.length < addIterationsCount) {
                     this._freeIterations.push(this._createIteration());
                     if (logger.isDebug) {
-                        newIterations.push(this._freeIterations[this._freeIterations.length-1])
+                        newIterations.push(this._freeIterations[this._freeIterations.length-1]);
                     }
                 }
                 // Add iterations
@@ -1750,6 +1759,8 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     draw: {
         value: function () {
 
+            var index;
+
             if (!this._initialContentDrawn) {
                 this._drawInitialContent();
                 this._initialContentDrawn = true;
@@ -1758,18 +1769,14 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // Synchronize iterations and _drawnIterations
 
             // Retract iterations that should no longer be visible
-            for (var index = this._drawnIterations.length - 1; index >= 0; index--) {
+            for (index = this._drawnIterations.length - 1; index >= 0; index--) {
                 if (this._drawnIterations[index].index === null) {
                     this._drawnIterations[index].retractFromDocument();
                 }
             }
 
             // Inject iterations if they are not already in the right location
-            for (
-                var index = 0;
-                index < this.iterations.length;
-                index++
-            ) {
+            for (index = 0; index < this.iterations.length; index++) {
                 var iteration = this.iterations[index];
                 if (iteration._drawnIndex !== iteration.index && iteration.isComponentTreeLoaded()) {
                     iteration.injectIntoDocument(index);

@@ -2,14 +2,14 @@
     @module "montage/ui/input-radio.reel"
 */
 var CheckControl = require("ui/check-control").CheckControl,
-    PressComposer = require("../../composer/press-composer").PressComposer
+    PressComposer = require("../../composer/press-composer").PressComposer,
     KeyComposer = require("../../composer/key-composer").KeyComposer;
 /**
  * Wraps the a &lt;input type="radio"> element with binding support for the element's standard attributes.
    @class module:"montage/ui/native/input-radio.reel".InputRadio
    @extends module:montage/ui/check-input.CheckInput
  */
-var Radio = exports.Radio = CheckControl.specialize({
+exports.Radio = CheckControl.specialize({
 
     // constructor: {
     //     value: function InputRadio() {
@@ -18,12 +18,20 @@ var Radio = exports.Radio = CheckControl.specialize({
     //     }
     // },
 
-    drawsFocusOnPointerActivation : {
+    drawsFocusOnPointerActivation: {
         value: true
     },
 
     hasTemplate: {
         value: false
+    },
+
+    _keyComposer: {
+        value: null
+    },
+
+    _radioButtonController: {
+        value: null
     },
 
     enterDocument: {
@@ -62,14 +70,6 @@ var Radio = exports.Radio = CheckControl.specialize({
         }
     },
 
-    _keyComposer: {
-        value: null
-    },
-
-    _radioButtonController: {
-        value: null
-    },
-
     /**
      * The radio button controller that ensures that only one radio button in
      * its `content` is `checked` at any time.
@@ -80,8 +80,12 @@ var Radio = exports.Radio = CheckControl.specialize({
             if (this._radioButtonController) {
                 this._radioButtonController.unregisterRadioButton(this);
             }
+            
             this._radioButtonController = value;
-            if(value) value.registerRadioButton(this);
+
+            if (value) {
+                value.registerRadioButton(this);
+            }
         },
         get: function () {
             return this._radioButtonController;

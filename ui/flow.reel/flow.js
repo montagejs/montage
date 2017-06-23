@@ -623,7 +623,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 (typeof value.denominator !== "undefined") &&
                 (!isNaN(value.numerator)) &&
                 (!isNaN(value.denominator)) &&
-                (value.denominator != 0)) {
+                (value.denominator !== 0)) {
                 this._sceneScaleX = value;
                 this._updateSceneScale();
                 this.needsDraw = true;
@@ -642,7 +642,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 (typeof value.denominator !== "undefined") &&
                 (!isNaN(value.numerator)) &&
                 (!isNaN(value.denominator)) &&
-                (value.denominator != 0)) {
+                (value.denominator !== 0)) {
                 this._sceneScaleY = value;
                 this._updateSceneScale();
                 this.needsDraw = true;
@@ -661,7 +661,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 (typeof value.denominator !== "undefined") &&
                 (!isNaN(value.numerator)) &&
                 (!isNaN(value.denominator)) &&
-                (value.denominator != 0)) {
+                (value.denominator !== 0)) {
                 this._sceneScaleZ = value;
                 this._updateSceneScale();
                 this.needsDraw = true;
@@ -771,11 +771,11 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
      */
     _timingFunctions: {
         value: {
-            "ease": [.25, .1, .25, 1],
+            "ease": [0.25, 0.1, 0.25, 1],
             "linear": [0, 0, 1, 1],
-            "ease-in": [.42, 0, 1, 1],
-            "ease-out": [0, 0, .58, 1],
-            "ease-in-out": [.42, 0, .58, 1]
+            "ease-in": [0.42, 0, 1, 1],
+            "ease-out": [0, 0, 0.58, 1],
+            "ease-in-out": [0.42, 0, 0.58, 1]
         }
     },
 
@@ -789,7 +789,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
      * of the `Bezier` qualifier.
      */
     _scrollingTransitionTimingFunctionBezier: {
-        value: [.25, .1, .25, 1]
+        value: [0.25, 0.1, 0.25, 1]
     },
 
     /**
@@ -856,8 +856,8 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
      */
     _computeCssCubicBezierValue: {
         value: function (x, bezier) {
-            var t = .5,
-                step = .25,
+            var t = 0.5,
+                step = 0.25,
                 t2,
                 k,
                 i;
@@ -870,7 +870,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 } else {
                     t += step;
                 }
-                step *= .5;
+                step *= 0.5;
             }
             t2 = t * t;
             k = 1 - t;
@@ -962,7 +962,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
         },
         set: function (value) {
             this._boundingBoxSize = value;
-            this.elementsBoundingSphereRadius = Math.sqrt(value[0] * value[0] + value[1] * value[1] + value[2] * value[2]) * .5;
+            this.elementsBoundingSphereRadius = Math.sqrt(value[0] * value[0] + value[1] * value[1] + value[2] * value[2]) * 0.5;
             this._needsComputeVisibleRange = true;
         }
     },
@@ -991,7 +991,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
     },
 
     _halfPI: {
-        value: Math.PI * .5
+        value: Math.PI * 0.5
     },
 
     _doublePI: {
@@ -1003,7 +1003,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
      */
     _computeFrustumNormals: {
         value: function () {
-            var angle = ((this._viewpointFov * .5) * this._doublePI) / 360,
+            var angle = ((this._viewpointFov * 0.5) * this._doublePI) / 360,
                 y = Math.sin(angle),
                 z = Math.cos(angle),
                 x = (y * this._width) / this._height,
@@ -1172,8 +1172,8 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 dS = r3[i][0] ? spline._densitySummation[r3[i][0]-1] : 0;
                 p1 = r3[i][1];
                 p2 = r3[i][2];
-                t1 = (d2 - d1) * p1 * p1 * .5 + p1 * d1 + dS;
-                t2 = (d2 - d1) * p2 * p2 * .5 + p2 * d1 + dS;
+                t1 = (d2 - d1) * p1 * p1 * 0.5 + p1 * d1 + dS;
+                t2 = (d2 - d1) * p2 * p2 * 0.5 + p2 * d1 + dS;
                 out.push([t1, t2]);
             }
             return out;
@@ -1488,7 +1488,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 // precise it is, but slower to compute. Setting it to 6 provides
                 // a good balance between precision and performance.
                 iterations = 6,
-                interval1 = this.lastDrawTime ? (time - this.lastDrawTime) * .018 * this._elasticScrollingSpeed : 0,
+                interval1 = this.lastDrawTime ? (time - this.lastDrawTime) * 0.018 * this._elasticScrollingSpeed : 0,
                 interval = 1 - (interval1 / iterations),
                 offset1, offset2, resultOffset,
                 min = this._minSlideOffsetIndex,
@@ -1573,7 +1573,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
     },
 
     draw: {
-        value: function Flow_draw(timestamp) {
+        value: function (timestamp) {
             var i,
                 length = this._repetition._drawnIterations.length,
                 iteration,
@@ -1596,7 +1596,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
             }
             if (this._isCameraUpdated) {
                 if (this._isCameraEnabled) {
-                    var perspective = Math.tan(((90 - this._viewpointFov * .5) * this._doublePI) / 360) * this._height * .5,
+                    var perspective = Math.tan(((90 - this._viewpointFov * 0.5) * this._doublePI) / 360) * this._height * 0.5,
                         vX = viewpointTargetPoint[0] - viewpointPosition[0],
                         vY = viewpointTargetPoint[1] - viewpointPosition[1],
                         vZ = viewpointTargetPoint[2] - viewpointPosition[2],
@@ -1627,9 +1627,9 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 } else {
                     this._element.style[this._transformPerspective]= this._perspective + "px";
                     cssText = "translate3d(" ;
-                    cssText += (.5 * this._width - viewpointPosition[0]);
+                    cssText += (0.5 * this._width - viewpointPosition[0]);
                     cssText += "px, ";
-                    cssText += (.5 * this._height - viewpointPosition[1]);
+                    cssText += (0.5 * this._height - viewpointPosition[1]);
                     cssText += "px,0)";
                     this._cameraElement.style[this._transform] = cssText;
                     this._element.classList.add("camera-disabled");
@@ -1660,15 +1660,15 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                         rotation = iSplinePath.getRotationAtIndexTime(indexTime);
                         cssText = this._transformCss;
                         cssText += ":translate3d(";
-                        cssText += (((pos[0] * 100000) >> 0) * .00001);
+                        cssText += (((pos[0] * 100000) >> 0) * 0.00001);
                         cssText += "px,";
-                        cssText += (((pos[1] * 100000) >> 0) * .00001);
+                        cssText += (((pos[1] * 100000) >> 0) * 0.00001);
                         cssText += "px,";
-                        cssText += (((pos[2] * 100000) >> 0) * .00001) ;
+                        cssText += (((pos[2] * 100000) >> 0) * 0.00001) ;
                         cssText += "px)";
-                        cssText += (rotation[2] ? "rotateZ(" + (((rotation[2] * 100000) >> 0) * .00001) + "rad)" : "");
-                        cssText += (rotation[1] ? "rotateY(" + (((rotation[1] * 100000) >> 0) * .00001) + "rad)" : "");
-                        cssText += (rotation[0] ? "rotateX(" + (((rotation[0] * 100000) >> 0) * .00001) + "rad)" : "");
+                        cssText += (rotation[2] ? "rotateZ(" + (((rotation[2] * 100000) >> 0) * 0.00001) + "rad)" : "");
+                        cssText += (rotation[1] ? "rotateY(" + (((rotation[1] * 100000) >> 0) * 0.00001) + "rad)" : "");
+                        cssText += (rotation[0] ? "rotateX(" + (((rotation[0] * 100000) >> 0) * 0.00001) + "rad)" : "");
                         cssText += ";";
                         cssText += iSplinePath.getStyleAtIndexTime(indexTime);
 

@@ -28,8 +28,8 @@ var Slider = exports.Slider = Control.specialize({
             this._values = [50];
 
             this._isThumbElementTranslating = new WeakMap();
-            this._percentageValues = new Array();
-            this._previousPercentageValues = new Array();
+            this._percentageValues = [];
+            this._previousPercentageValues = [];
 
             this.addOwnPropertyChangeListener("_sliderMagnitude", this);
             this.addOwnPropertyChangeListener("_min", this);
@@ -83,7 +83,9 @@ var Slider = exports.Slider = Control.specialize({
     },
 
     thumbElement: {
-        value: void 0,
+        get: function() {
+            return this.thumbElements[0];
+        }
     },
     _spacer: {
         value: void 0,
@@ -189,7 +191,7 @@ var Slider = exports.Slider = Control.specialize({
 
                         iDimension = isHorizontal ? iThumbElementWithClass.offsetWidth : iThumbElementWithClass.offsetHeight;
                         //If the thumb has no size, or if it's horizontak and occupy the whole width, we're stepping in
-                        if(iDimension == 0 || (isHorizontal && iDimension === spacer.offsetWidth)) {
+                        if(iDimension === 0 || (isHorizontal && iDimension === spacer.offsetWidth)) {
                             iThumbElementWithClass.classList.add("montage-Slider-thumb--default");
                         }
 
@@ -218,7 +220,7 @@ var Slider = exports.Slider = Control.specialize({
 
                         iDimension = isHorizontal ? iThumbElement.offsetWidth : iThumbElement.offsetHeight;
                         // //If the thumb has no size, or if it's horizontak and occupy the whole width, we're stepping in
-                        // if(iDimension == 0 || (isHorizontal && iDimension === spacer.offsetWidth)) {
+                        // if(iDimension === 0 || (isHorizontal && iDimension === spacer.offsetWidth)) {
                         //     iThumbElement.classList.add("montage-Slider-thumb--default");
                         // }
 
@@ -273,9 +275,13 @@ var Slider = exports.Slider = Control.specialize({
                 var thumbWrappers = this.thumbWrappers;
                 if(thumbWrappers && thumbWrappers.length > 0) {
 
-                    if(!this._startTranslateValues) this._startTranslateValues = new Array(thumbWrappers.length);
-                    if(!this._startValues) this._startValues = new Array(thumbWrappers.length);
+                    if(!this._startTranslateValues) {
+                        this._startTranslateValues = new Array(thumbWrappers.length);
+                    }
 
+                    if(!this._startValues) {
+                        this._startValues = new Array(thumbWrappers.length);
+                    }
 
                     this._translateComposers = new Map();
 
@@ -316,17 +322,16 @@ var Slider = exports.Slider = Control.specialize({
     _dimensionLength : {
         get: function() {
             var computedStyle = window.getComputedStyle(this._element);
-            return (this.orientation === this._VERTICAL)
-            ? (
+
+            if (this.orientation === this._VERTICAL) {
                 this._spacer.offsetHeight -
-                parseFloat(computedStyle.getPropertyValue("padding-top")) -
-                parseFloat(computedStyle.getPropertyValue("padding-bottom"))
-            )
-            : (
-            this._spacer.offsetWidth -
-            parseFloat(computedStyle.getPropertyValue("padding-left")) -
-            parseFloat(computedStyle.getPropertyValue("padding-right"))
-            );
+                    parseFloat(computedStyle.getPropertyValue("padding-top")) -
+                        parseFloat(computedStyle.getPropertyValue("padding-bottom"));
+            } else { 
+                this._spacer.offsetWidth - 
+                    parseFloat(computedStyle.getPropertyValue("padding-left")) - 
+                        parseFloat(computedStyle.getPropertyValue("padding-right"));
+            }
         }
     },
     _VERTICAL: {
@@ -447,8 +452,8 @@ var Slider = exports.Slider = Control.specialize({
                 this.element.setAttribute("aria-orientation", this.orientation);
             }
             else {
-                if (value != this.element.value) {
-                    this.element.value = (value == null ? '' : value);
+                if (value !== this.element.value) {
+                    this.element.value = (value === null || value === undefined ? '' : value);
                 }
                 this.element.setAttribute("max", this.max);
                 this.element.setAttribute("min", this.min);
@@ -512,13 +517,16 @@ var Slider = exports.Slider = Control.specialize({
                 max = (typeof max === "number" ? max : this._max);
                 min = this.values[index-1];
                 min = (typeof min === "number" ? min : this._min);
-                if(value <= min) value = min;
-                else if(value > max) value = max;
+                if(value <= min) {
+                    value = min;
+                } else if(value > max) {
+                    value = max;
+                }
                 this.value = value;
                 // console.log("this._startValues[index] is ",this._startValues[index], "event.translateX is ",event.translateX," this._startTranslateValues[index] is ",this._startTranslateValues[index],", sliderMagnitude is ",sliderMagnitude);
                 // console.log("this.value = ",this.value, "min is ",min," max is ",max);
 
-            this._isThumbElementTranslating.set(event.target.element,true)
+            this._isThumbElementTranslating.set(event.target.element, true);
         }
     },
 
@@ -526,14 +534,13 @@ var Slider = exports.Slider = Control.specialize({
         value: function (e) {
             //TODO: active should only be false when none of the thumbs are being interacted with.
             this.active = false;
-            this._isThumbElementTranslating.set(e.target.element,false)
-
+            this._isThumbElementTranslating.set(e.target.element, false);
         }
     },
 
     _increase: {
         value: function () {
-            var stepBase = (typeof this.min == "number") ? this.min : 0;
+            var stepBase = (typeof this.min === "number") ? this.min : 0;
             var value = this.value - stepBase;
             var step =  this.step | (this.max-this.min)/100;
             if (value % step) {
@@ -551,7 +558,7 @@ var Slider = exports.Slider = Control.specialize({
 
     _decrease: {
         value: function () {
-            var stepBase = (typeof this.min == "number") ? this.min : 0;
+            var stepBase = (typeof this.min === "number") ? this.min : 0;
             var value = this.value - stepBase;
             var step =  this.step | (this.max-this.min)/100;
             if (value % step) {
@@ -648,7 +655,7 @@ var Slider = exports.Slider = Control.specialize({
             return this.values[this._currentThumbIndex];
         },
         set: function (value) {
-            this.values.set(this._currentThumbIndex, value)
+            this.values.set(this._currentThumbIndex, value);
         }
     },
 /*
@@ -690,12 +697,6 @@ Should introduce a validate method
     _currentThumbIndex:  {
         value: 0
     },
-    thumbElement: {
-        get: function() {
-            return this.thumbElements[0];
-        }
-    },
-
     _translateComposer: {
         value: null
     },
