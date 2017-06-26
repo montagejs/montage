@@ -41,7 +41,7 @@ var AbstractTextArea = exports.AbstractTextArea = Component.specialize(
 
     placeholderValue: {
         set: function (value) {
-            deprecate.deprecationWarning("placeholderValue", "placeholder")
+            deprecate.deprecationWarning("placeholderValue", "placeholder");
             this.placeholder = value;
         },
         get: function () {

@@ -200,7 +200,7 @@ exports.AbstractImage = Component.specialize( /** @lends AbstractImage# */ {
             // From the spec it seems there is a special case for data: Urls
             // but at least Chrome seems to behave differently.
             // http://www.whatwg.org/specs/web-apps/current-work/multipage/fetching-resources.html#cors-settings-attribute
-            if (this._crossOrigin == null || src.slice(0, 5) === "data:") {
+            if (this._crossOrigin === null || this._crossOrigin === undefined || src.slice(0, 5) === "data:") {
                 this.element.removeAttribute("crossorigin");
             } else {
                 this.element.setAttribute("crossorigin", this._crossOrigin);
