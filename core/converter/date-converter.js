@@ -349,7 +349,7 @@ var Montage = require("../core").Montage,
      * new Date().add( { years: -1 } )
      */
     $P.add = function (config) {
-        if (typeof config == "number") {
+        if (typeof config === "number") {
             this._orient = config;
             return this;
         }
@@ -457,9 +457,9 @@ var Montage = require("../core").Montage,
     };
 
     var validate = function (n, min, max, name) {
-        if (typeof n == "undefined") {
+        if (typeof n === "undefined") {
             return false;
-        } else if (typeof n != "number") {
+        } else if (typeof n !== "number") {
             throw new TypeError(n + " is not a Number.");
         } else if (n < min || n > max) {
             throw new RangeError(n + " is not a valid value for " + name + ".");
@@ -1924,9 +1924,9 @@ var Montage = require("../core").Montage,
             }
 
             if (this.meridian && this.hour) {
-                if (this.meridian == "p" && this.hour < 12) {
+                if (this.meridian === "p" && this.hour < 12) {
                     this.hour = this.hour + 12;
-                } else if (this.meridian == "a" && this.hour == 12) {
+                } else if (this.meridian === "a" && this.hour == 12) {
                     this.hour = 0;
                 }
             }
@@ -1953,7 +1953,7 @@ var Montage = require("../core").Montage,
             }
 
             for (var i = 0; i < x.length; i++) {
-                if (typeof x[i] == "function") {
+                if (typeof x[i] === "function") {
                     x[i].call(this);
                 }
             }
@@ -1969,7 +1969,7 @@ var Montage = require("../core").Montage,
             var expression = !!(this.days && this.days !== null || this.orient || this.operator);
 
             var gap, mod, orient;
-            orient = ((this.orient == "past" || this.operator == "subtract") ? -1 : 1);
+            orient = ((this.orient === "past" || this.operator === "subtract") ? -1 : 1);
 
             if (!this.now && "hour minute second".indexOf(this.unit) != -1) {
                 today.setTimeToNow();
@@ -1992,14 +1992,14 @@ var Montage = require("../core").Montage,
                 this.year = temp.getFullYear();
             }
 
-            if (expression && this.weekday && this.unit != "month") {
+            if (expression && this.weekday && this.unit !== "month") {
                 this.unit = "day";
                 gap = ($D.getDayNumberFromName(this.weekday) - today.getDay());
                 mod = 7;
                 this.days = gap ? ((gap + (orient * mod)) % mod) : (orient * mod);
             }
 
-            if (this.month && this.unit == "day" && this.operator) {
+            if (this.month && this.unit === "day" && this.operator) {
                 this.value = (this.month + 1);
                 this.month = null;
             }
@@ -2015,12 +2015,12 @@ var Montage = require("../core").Montage,
                 }
             }
 
-            if (!this.month && this.value && this.unit == "month" && !this.now) {
+            if (!this.month && this.value && this.unit === "month" && !this.now) {
                 this.month = this.value;
                 expression = true;
             }
 
-            if (expression && (this.month || this.month === 0) && this.unit != "year") {
+            if (expression && (this.month || this.month === 0) && this.unit !== "year") {
                 this.unit = "month";
                 gap = (this.month - today.getMonth());
                 mod = 12;
@@ -2033,7 +2033,7 @@ var Montage = require("../core").Montage,
             }
 
             if (!this.value && this.operator && this.operator !== null && this[this.unit + "s"] && this[this.unit + "s"] !== null) {
-                this[this.unit + "s"] = this[this.unit + "s"] + ((this.operator == "add") ? 1 : -1) + (this.value || 0) * orient;
+                this[this.unit + "s"] = this[this.unit + "s"] + ((this.operator === "add") ? 1 : -1) + (this.value || 0) * orient;
             } else if (this[this.unit + "s"] == null || this.operator != null) {
                 if (!this.value) {
                     this.value = 1;
@@ -2042,9 +2042,9 @@ var Montage = require("../core").Montage,
             }
 
             if (this.meridian && this.hour) {
-                if (this.meridian == "p" && this.hour < 12) {
+                if (this.meridian === "p" && this.hour < 12) {
                     this.hour = this.hour + 12;
-                } else if (this.meridian == "a" && this.hour == 12) {
+                } else if (this.meridian === "a" && this.hour == 12) {
                     this.hour = 0;
                 }
             }
@@ -2061,7 +2061,7 @@ var Montage = require("../core").Montage,
                 this.day = 1;
             }
 
-            if (!this.orient && !this.operator && this.unit == "week" && this.value && !this.day && !this.month) {
+            if (!this.orient && !this.operator && this.unit === "week" && this.value && !this.day && !this.month) {
                 return Date.today().setWeek(this.value);
             }
 
