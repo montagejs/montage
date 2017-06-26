@@ -52,12 +52,11 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
     deserialize: {
         value: function (instances, element) {
             try {
-              var serialization = JSON.parse(this._serializationString);
+                var serialization = JSON.parse(this._serializationString);
+                return this._interpreter.instantiate(serialization, instances, element);
             } catch (ex) {
                 return this._formatSerializationSyntaxError(this._serializationString);
             }
-
-            return this._interpreter.instantiate(serialization, instances, element);
         }
     },
 

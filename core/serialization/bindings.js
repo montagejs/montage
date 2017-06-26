@@ -28,11 +28,12 @@ Serializer.defineSerializationUnit("bindings", function (serializer, object) {
             continue;
         }
 
+        var scope;
         var sourcePath = input.sourcePath;
         var syntax = input.sourceSyntax;
         if (input.source && input.source !== object) {
             var label = serializer.getObjectLabel(input.source);
-            var scope = new Scope({
+            scope = new Scope({
                 type: "component",
                 label: label
             });
@@ -40,7 +41,7 @@ Serializer.defineSerializationUnit("bindings", function (serializer, object) {
             syntax = expand(syntax, scope);
         }
 
-        var scope = new Scope();
+        scope = new Scope();
         scope.components = serializer;
         sourcePath = stringify(syntax, scope);
 
@@ -76,34 +77,36 @@ Deserializer.defineDeserializationUnit("bindings", function (deserializer, objec
         descriptor;
     // normalize old and busted bindings
     for (targetPath in bindings) {
-        descriptor = bindings[targetPath];
+        if (bindings.hasOwnProperty(targetPath)) {
 
-        if (typeof descriptor !== "object") {
-            throw new Error("Binding descriptor must be an object, not " + typeof descriptor);
-            // TODO isolate the source document and produce a more useful error
-        }
+            descriptor = bindings[targetPath];
 
-        if (BOUND_OBJECT in descriptor) {
-            descriptor.source = deserializer.getObjectByLabel(descriptor.boundObject);
-            if (descriptor.oneway) {
-                descriptor[ONE_WAY] = descriptor.boundPropertyPath;
-            } else {
-                descriptor[TWO_WAY] = descriptor.boundPropertyPath;
+            if (typeof descriptor !== "object") {
+                throw new Error("Binding descriptor must be an object, not " + typeof descriptor);
+                // TODO isolate the source document and produce a more useful error
             }
-            delete descriptor.boundObject;
-            delete descriptor.boundObjectPropertyPath;
-            delete descriptor.oneway;
+
+            if (BOUND_OBJECT in descriptor) {
+                descriptor.source = deserializer.getObjectByLabel(descriptor.boundObject);
+                if (descriptor.oneway) {
+                    descriptor[ONE_WAY] = descriptor.boundPropertyPath;
+                } else {
+                    descriptor[TWO_WAY] = descriptor.boundPropertyPath;
+                }
+                delete descriptor.boundObject;
+                delete descriptor.boundObjectPropertyPath;
+                delete descriptor.oneway;
+            }
+            // else {
+            //     if (descriptor["<<->"]) {
+            //         console.warn("WARNING: <<-> in bindings is deprectated, use <-> only, please update now.");
+            //         descriptor[TWO_WAY] = descriptor["<<->"];
+            //         delete descriptor["<<->"];
+            //     }
+            // }
+
+            Bindings.defineBinding(object, targetPath, descriptor, commonDescriptor);
         }
-        // else {
-        //     if (descriptor["<<->"]) {
-        //         console.warn("WARNING: <<-> in bindings is deprectated, use <-> only, please update now.");
-        //         descriptor[TWO_WAY] = descriptor["<<->"];
-        //         delete descriptor["<<->"];
-        //     }
-        // }
-
-        Bindings.defineBinding(object, targetPath, descriptor, commonDescriptor);
-
     }
 
     // Bindings.defineBindings(object, bindings, {

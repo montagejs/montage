@@ -1,10 +1,11 @@
+/* global console */
+
 var Montage = require("../../core").Montage;
 var PropertiesDeserializer = require("./properties-deserializer").PropertiesDeserializer;
 var SelfDeserializer = require("./self-deserializer").SelfDeserializer;
 var UnitDeserializer = require("./unit-deserializer").UnitDeserializer;
 var ModuleReference = require("../../module-reference").ModuleReference;
 var Alias = require("../alias").Alias;
-
 var Promise = require("../../promise").Promise;
 
 var ModuleLoader = Montage.specialize( {
@@ -151,7 +152,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             // level of debugging in the serialization.
             if (value.debugger) {
                 console.log("enable debugger statement here");
-                //debugger;
+                debugger;
             }
 
             if ("value" in value) {
@@ -514,7 +515,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function(object, propertyName) {
             return function(value) {
                 object[propertyName] = value;
-            }
+            };
         }
     },
 
@@ -590,8 +591,9 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     reviveRegExp: {
         value: function(value, context, label) {
-            var value = value["/"],
-                regexp = new RegExp(value.source, value.flags);
+
+            var valuePath = value["/"],
+                regexp = new RegExp(valuePath.source, valuePath.flags);
 
             if (label) {
                 context.setObjectLabel(regexp, label);
@@ -603,8 +605,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     reviveObjectReference: {
         value: function(value, context, label) {
-            var value = value["@"],
-                object = context.getObject(value);
+            var valuePath = value["@"],
+                object = context.getObject(valuePath);
 
             return object;
         }
@@ -744,8 +746,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     continue;
                 }
 
-                if (typeof reviver[methodName] === "function"
-                    && /^revive/.test(methodName)) {
+                if (
+                    typeof reviver[methodName] === "function" &&
+                        methodName.substr(0, 5) === "revive"
+                ) {
                     if (typeof customObjectRevivers[methodName] === "undefined") {
                         customObjectRevivers[methodName] = reviver[methodName].bind(reviver);
                     } else {
@@ -771,7 +775,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
             return function(value) {
                 return getCustomObjectTypeOf(value) || previousGetCustomObjectTypeOf(value);
-            }
+            };
         }
     }
 

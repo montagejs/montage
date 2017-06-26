@@ -13,19 +13,21 @@ var SerializationExtractor = Montage.specialize( {
 
     extractObjects: {
         value: function (labels, externalLabels) {
-            var serialization = this._serialization,
+
+            var i, label,
+                serialization = this._serialization,
                 objects = {};
 
             externalLabels = externalLabels || [];
 
-            for (var i = 0, label; (label = labels[i]); i++) {
+            for (i = 0, label; (label = labels[i]); i++) {
                 if (label in serialization) {
                     objects[label] = serialization[label];
                     this._findLabels(label, externalLabels);
                 }
             }
 
-            for (var i = 0, label; (label = externalLabels[i]); i++) {
+            for (i = 0, label; (label = externalLabels[i]); i++) {
                 if (!(label in objects) && (label in serialization)) {
                     objects[label] = {};
                 }

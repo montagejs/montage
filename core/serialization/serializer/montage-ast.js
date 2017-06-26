@@ -12,7 +12,7 @@ var Root = exports.Root = Montage.specialize({
 
     setProperty: {
         value: function(name, value) {
-            if (name != null) {
+            if (name !== null && name !== undefined) {
                 this.object[name] = value;
             }
         }
@@ -185,7 +185,7 @@ var CustomObject = exports.CustomObject = Value.specialize( /** @lends CustomObj
 
     setProperty: {
         value: function(name, value) {
-            if (name != null) {
+            if (name !== null && name !== undefined) {
                 this.value[name] = value;
             }
         }
@@ -254,7 +254,7 @@ var ObjectLiteral = exports.ObjectLiteral = ReferenceableValue.specialize( /** @
 
     setProperty: {
         value: function(name, value) {
-            if (name != null) {
+            if (name !== null && name !== undefined) {
                 this.value[name] = value;
             }
         }

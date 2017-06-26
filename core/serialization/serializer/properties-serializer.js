@@ -1,6 +1,11 @@
 var Montage = require("../../core").Montage;
 
-var PropertiesSerializer = Montage.specialize.call(Object, {
+exports.ObjectReference = {
+    thisIsAReferenceCreatedByMontageSerializer: true,
+    reference: null
+};
+
+exports.PropertiesSerializer = Montage.specialize.call(Object, {
     _malker: {value: null},
     _visitor: {value: null},
     _object: {value: null},
@@ -31,7 +36,7 @@ var PropertiesSerializer = Montage.specialize.call(Object, {
                 labeler = this._visitor.labeler,
                 label = labeler.getObjectLabel(object);
 
-            var reference = Object.create(ObjectReference);
+            var reference = Object.create(exports.ObjectReference);
             reference.reference = builder.createReference(label);
 
             return reference;
@@ -51,10 +56,3 @@ var PropertiesSerializer = Montage.specialize.call(Object, {
         }
     }
 });
-
-var ObjectReference = {
-    thisIsAReferenceCreatedByMontageSerializer: true,
-    reference: null
-};
-
-exports.PropertiesSerializer = PropertiesSerializer;

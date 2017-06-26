@@ -320,10 +320,9 @@ var MontageVisitor = Montage.specialize({
             // a reference to an object but that would be an external reference
             // the problem here is that the serializable defaults to "reference"
             // for most cases when in reality we probably just want "value".
-            return typeof value === "object" &&
-                   value != null &&
-                   !(typeof Element !== "undefined" &&
-                     Element.isElement(value));
+            return typeof value === "object" && 
+                (value !== null && value !== undefined) && 
+                    !(typeof Element !== "undefined" && Element.isElement(value));
         }
     },
 
@@ -366,7 +365,7 @@ var MontageVisitor = Montage.specialize({
                 .initWithMalkerAndVisitorAndObject(malker, this, object);
 
             value = unit(unitSerializer, object);
-            if (value != null) {
+            if (value !== null && value !== undefined) {
                 malker.visit(value, unitName);
             }
         }
@@ -378,6 +377,7 @@ var MontageVisitor = Montage.specialize({
                 labels = this.builder.getExternalReferences(),
                 label;
 
+            // TODO WTF
             for (var i = 0; label = labels[i]; i++) {
                 externalObjects[label] = this.labeler.getObjectByLabel(label);
             }
@@ -540,11 +540,10 @@ var MontageVisitor = Montage.specialize({
     makeGetCustomObjectTypeOf: {
         value: function makeGetCustomObjectTypeOf(getCustomObjectTypeOf) {
             var previousGetCustomObjectTypeOf = this.prototype.getCustomObjectTypeOf;
-
             return function(value) {
                 return getCustomObjectTypeOf(value) ||
                     previousGetCustomObjectTypeOf(value);
-            }
+            };
         }
     },
 
@@ -557,8 +556,10 @@ var MontageVisitor = Montage.specialize({
                     continue;
                 }
 
-                if (typeof visitor[methodName] === "function"
-                    && /^visit/.test(methodName)) {
+                if (
+                    typeof visitor[methodName] === "function" && 
+                        methodName.substr(0, 5) === "visit"
+                ) {
                     if (typeof customObjectVisitors[methodName] === "undefined") {
                         customObjectVisitors[methodName] = visitor[methodName].bind(visitor);
                     } else {
