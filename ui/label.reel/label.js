@@ -45,7 +45,7 @@ var Label = exports.Label = Text.specialize({
     handlePress: {
         value: function (event) {
             this.super(event);
-            if(this.target && typeof this.target[this.action] == "function") {
+            if(this.target && typeof this.target[this.action] === "function") {
                 this.target[this.action]({ from: this });
             }
         }

@@ -88,7 +88,7 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
             if (value === null ||  typeof value === "undefined") {
                 drawValue = "";
             } else {
-                drawValue = String((value == null ? '' : value));
+                drawValue = String((value === null || value === undefined ? '' : value));
             }
 
             if (drawValue !== this.element.value) {
@@ -125,7 +125,7 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
     didDraw: {
         enumerable: false,
         value: function() {
-            if (this._hasFocus && this._value != null) {
+            if (this._hasFocus && this._value !== null && this._value !== undefined) {
                 var length = this._value.toString().length;
                 this.element.setSelectionRange(length, length);
             }

@@ -76,7 +76,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
      */
     detail: {
         get: function () {
-            if (this._detail == null) {
+            if (this._detail === null || this._detail === undefined) {
                 this._detail = new Map();
             }
             return this._detail;
@@ -332,7 +332,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         set: function (value, fromInput) {
 
             if (value !== this._value) {
-                var shouldAcceptValue
+                var shouldAcceptValue;
                 if (!this.delegate ||  (shouldAcceptValue = this.callDelegateMethod("shouldAcceptValue", this, value) ) === undefined ? true : shouldAcceptValue ){
                     // console.log("_setValue past first step value is ",value);
 

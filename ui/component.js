@@ -1,4 +1,4 @@
-/*global Element */
+/*global Element, console */
 /**
  * @module montage/ui/component
  * @requires montage
@@ -29,6 +29,16 @@ var Montage = require("../core/core").Montage,
     WeakMap = require("collections/weak-map"),
     Map = require("collections/map"),
     Set = require("collections/set");
+
+
+function loggerToString (object) {
+    if (!object) {
+        return "NIL";
+    }
+    //jshint -W106
+    return object._montage_metadata.objectName + ":" + Object.hash(object) + " id: " + object.identifier;
+    //jshint +W106
+}
 
 /**
  * @const
@@ -115,7 +125,7 @@ var CssBasedAnimation = Montage.specialize({
                 i, j;
 
             if (this.component && this.component.element) {
-                computedStyle = global.getComputedStyle(this.component.element)
+                computedStyle = global.getComputedStyle(this.component.element);
                 for (i = 0; i < this._animationAndTransitionProperties.length; i++) {
                     durations = this._parseComputedStyleTimeValue(
                         computedStyle.getPropertyValue(this._animationAndTransitionProperties[i] + "-duration")
@@ -146,7 +156,7 @@ var CssBasedAnimation = Montage.specialize({
                     // very few miliseconds in desktop to a couple of hundreds in mobile
                     // devices, so we are adding 300 miliseconds as a safety value that
                     // should cover the most of the cases.
-                    maxTime += .3;
+                    maxTime += 0.3;
                 }
             }
             return maxTime;
@@ -759,14 +769,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     getTemplateArgumentElement: {
         value: function (argumentName) {
             var template = this._ownerDocumentPart.template,
+                ownerModuleId,
                 element,
                 range,
+                label,
                 argument;
 
-            //jshint -W106
             if (global._montage_le_flag) {
-                var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
-                var label = this._montage_metadata.label;
+                ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
+                label = this._montage_metadata.label;
             }
 
             if (argumentName === "*") {
@@ -786,7 +797,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         argumentName);
                 }
             }
-            //jshint +W106
 
             return argument;
         }
@@ -2055,7 +2065,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 this.originalElement = this.element;
             }
             if (this.needsDraw) {
-                rootComponent.addToDrawCycle(this);
+                this.rootComponent.addToDrawCycle(this);
             }
 
             if (this._needsEnterDocument) {
@@ -2228,9 +2238,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             if (!argumentNames || argumentNames.length === 0) {
                 this._leTagStarArgument(ownerModuleId, label, this.element);
             } else {
-                for (var i = 0, name; name = /*assign*/argumentNames[i]; i++) {
-                    this._leTagNamedArgument(ownerModuleId, label,
-                        this._domArguments[name], name);
+                for (var i = 0, name; name = argumentNames[i]; i++) {
+                    this._leTagNamedArgument(ownerModuleId, label, this._domArguments[name], name);
                 }
             }
         }
@@ -4131,7 +4140,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             if (needsDrawListIndex.has(component)) {
                 // Requesting a draw of a component that has already been drawn in the current cycle
                 if (drawLogger.isDebug) {
-                    if(this !== rootComponent) {
+                    if(this !== this.rootComponent) {
                         drawLogger.debug(loggerToString(this) + " added to the draw cycle twice, this should not happen.");
                     }
                 }
@@ -4302,13 +4311,6 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
 var rootComponent = new RootComponent().init();
 exports.__root__ = rootComponent;
-
-function loggerToString (object) {
-    if (!object) return "NIL";
-    //jshint -W106
-    return object._montage_metadata.objectName + ":" + Object.hash(object) + " id: " + object.identifier;
-    //jshint +W106
-}
 
 //https://github.com/kangax/html-minifier/issues/63
 //http://www.w3.org/TR/html-markup/global-attributes.html
