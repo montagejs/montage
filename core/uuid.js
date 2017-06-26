@@ -15,21 +15,8 @@ var Montage = require("core/core").Montage,
     CHARS = '0123456789ABCDEF'.split(''),
     PROTO = "__proto__",
     VALUE = "value",
-    hasOwnProperty = Object.prototype.hasOwnProperty,
-    FORMAT = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.split(''),
-    Uuid = exports.Uuid = Object.create(Object.prototype, /** @lends Uuid# */ {
-        /**
-         * Returns a univerally unique ID (UUID).
-         * @function Uuid.generate
-         * @returns {string} The UUID.
-         */
-        generate: {
-            enumerable: false,
-            value: generate
-        }
-    });
+    FORMAT = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.split('');
 
-exports.generate = generate;
 function generate() {
     var c = CHARS, id = FORMAT, r;
 
@@ -70,6 +57,20 @@ function generate() {
 
     return id.join('');
 }
+
+exports.generate = generate;
+
+var Uuid = exports.Uuid = Object.create(Object.prototype, /** @lends Uuid# */ {
+    /**
+     * Returns a univerally unique ID (UUID).
+     * @function Uuid.generate
+     * @returns {string} The UUID.
+     */
+    generate: {
+        enumerable: false,
+        value: generate
+    }
+});
 
 // TODO figure out why this code only works in this module.  Attempts to move
 // it to core/extras/object resulted in _uuid becoming enumerable and tests
@@ -141,9 +142,7 @@ var uuidGetGenerator = function () {
 
 var defaultUuidGet = function defaultUuidGet() {
     //return this._uuid || (this._uuid = uuidGetGenerator.call(this));
-    return ((hasOwnProperty.call(this, "_uuid") &&  this._uuid )
-            ? this._uuid
-            : uuidGetGenerator.call(this));
+    return ((Object.prototype.call(this, "_uuid") &&  this._uuid) ? this._uuid : uuidGetGenerator.call(this));
 };
 
 
@@ -168,4 +167,5 @@ Montage.defineUuidProperty = function(object) {
         set: Function.noop,
         enumerable: false
     });
-}
+};
+
