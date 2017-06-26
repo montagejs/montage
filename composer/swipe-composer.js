@@ -154,7 +154,7 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
                 }
             }
 
-            if (dX != 0 || dY != 0) {
+            if (dX !== 0 || dY !== 0) {
                 swipeEvent = document.createEvent("CustomEvent");
                 swipeEvent.initCustomEvent("swipemove", true, false, null);
                 swipeEvent.direction = direction;

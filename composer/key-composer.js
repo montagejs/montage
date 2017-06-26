@@ -107,9 +107,9 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
 
             Composer.prototype.addEventListener.call(this, type, listener, useCapture);
 
-            if (type == KEYPRESS_EVENT_TYPE || type == LONGKEYPRESS_EVENT_TYPE || type == KEYRELEASE_EVENT_TYPE) {
+            if (type === KEYPRESS_EVENT_TYPE || type === LONGKEYPRESS_EVENT_TYPE || type === KEYRELEASE_EVENT_TYPE) {
                 this._shouldDispatchEvent = true;
-                if (type == LONGKEYPRESS_EVENT_TYPE) {
+                if (type === LONGKEYPRESS_EVENT_TYPE) {
                     this._shouldDispatchLongPress = true;
                 }
 
@@ -147,7 +147,7 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
             }
 
             if (component) {
-                if (typeof component.addComposer == "function") {
+                if (typeof component.addComposer === "function") {
                     component.addComposer(this);
                 } else if (!this._isLoaded) {
                     // this keyComposer is not associated with an element,
