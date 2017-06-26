@@ -320,16 +320,14 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             }
 
             if (value.bindings) {
-                deprecate.deprecationWarning(
-                    "Object '" + label +
-                    "' uses a deprecated block 'bindings', use 'values' instead"
+                deprecate.deprecationWarningOnce(
+                    "'bindings' block is deprecated, use 'values' instead"
                 );
             }
 
             if (value.properties) {
-                deprecate.deprecationWarning(
-                    "Object '" + label +
-                    "' uses a deprecated block 'properties', use 'values' instead"
+                deprecate.deprecationWarningOnce(
+                    "'properties' block is deprecated, use 'values' instead"
                 );
             }
 
