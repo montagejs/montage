@@ -6,6 +6,7 @@ var Bindings = require("frb"),
     Scope = require("frb/scope"),
     Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
     Deserializer = require("../serialization/deserializer/montage-deserializer").MontageDeserializer,
+    ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
     TWO_WAY = "<->";
 
@@ -71,7 +72,7 @@ var serializeObjectBindings = exports.serializeObjectBindings = function (serial
 //deprecated
 Serializer.defineSerializationUnit("bindings", serializeObjectBindings);
 
-var deserializeBindings = exports.deserializeBindings = function (deserializer, object, bindings) {
+var deserializeObjectBindings = exports.deserializeObjectBindings = function (deserializer, object, bindings) {
     var commonDescriptor = {
         components: deserializer
     },
@@ -86,11 +87,11 @@ var deserializeBindings = exports.deserializeBindings = function (deserializer, 
             // TODO isolate the source document and produce a more useful error
         }
 
-        if ("=" in descriptor) {
+        if (ONE_ASSIGNMENT in descriptor) {
             assign(
                 object,
                 targetPath,
-                evaluate(descriptor["="], object, null, null, deserializer),
+                evaluate(descriptor[ONE_ASSIGNMENT], object, null, null, deserializer),
                 null,
                 null,
                 deserializer
@@ -102,4 +103,4 @@ var deserializeBindings = exports.deserializeBindings = function (deserializer, 
 };
 
 //deprecated
-Deserializer.defineDeserializationUnit("bindings", deserializeBindings);
+Deserializer.defineDeserializationUnit("bindings", deserializeObjectBindings);

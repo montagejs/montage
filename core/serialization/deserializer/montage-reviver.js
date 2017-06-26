@@ -1,12 +1,14 @@
-var Montage = require("../../core").Montage;
-var PropertiesDeserializer = require("./properties-deserializer").PropertiesDeserializer;
-var SelfDeserializer = require("./self-deserializer").SelfDeserializer;
-var UnitDeserializer = require("./unit-deserializer").UnitDeserializer;
-var ModuleReference = require("../../module-reference").ModuleReference;
-var Alias = require("../alias").Alias;
-var Bindings = require("../bindings");
-var Promise = require("../../promise").Promise;
-var deprecate = require("../../deprecate");
+var Montage = require("../../core").Montage,
+    PropertiesDeserializer = require("./properties-deserializer").PropertiesDeserializer,
+    SelfDeserializer = require("./self-deserializer").SelfDeserializer,
+    UnitDeserializer = require("./unit-deserializer").UnitDeserializer,
+    ModuleReference = require("../../module-reference").ModuleReference,
+    Alias = require("../alias").Alias, Bindings = require("../bindings"),
+    Promise = require("../../promise").Promise,
+    deprecate = require("../../deprecate")
+    ONE_ASSIGNMENT = "=",
+    ONE_WAY = "<-",
+    TWO_WAY = "<->";
 
 var ModuleLoader = Montage.specialize( {
     _require: {value: null},
@@ -115,7 +117,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     return "Element";
                 } else if ("%" in value) {
                     return "Module";
-                } else if ("<-" in value || "<->" in value) {
+                } else if (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value) {
                     return "binding";
                 } // else return typeOf -> object
             }
@@ -506,14 +508,15 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     _deserializeBindings: {
         value: function (context) {
             var bindingsToDeserialize = context.getBindingsToDeserialize(),
+                unitDeserializer = new UnitDeserializer(),
                 bindingsToDeserializeDesc;
             
             if (bindingsToDeserialize) {
                 try {
                     for (var i = 0, length = bindingsToDeserialize.length; i < length; i++) {
                         bindingsToDeserializeDesc = bindingsToDeserialize[i];
-                        Bindings.deserializeBindings(
-                            new UnitDeserializer().initWithContext(context),
+                        Bindings.deserializeObjectBindings(
+                            unitDeserializer.initWithContext(context),
                             bindingsToDeserializeDesc.object,
                             bindingsToDeserializeDesc.bindings
                         );
@@ -529,8 +532,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (context) {
             var unitsToDeserialize = context.getUnitsToDeserialize(),
                 units = MontageReviver._unitRevivers,
-                unitNames,
-                unitDeserializer;
+                unitDeserializer = new UnitDeserializer(),
+                unitNames;
 
             try {
                 for (var i = 0, unitsDesc; unitsDesc = unitsToDeserialize[i]; i++) {
@@ -538,8 +541,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
                     for (var j = 0, unitName; unitName = unitNames[j]; j++) {
                         if (unitName in unitsDesc.objectDesc) {
-                            unitDeserializer = new UnitDeserializer()
-                                .initWithContext(context);
+                            unitDeserializer.initWithContext(context);
                             units[unitName](unitDeserializer, unitsDesc.object, unitsDesc.objectDesc[unitName]);
                         }
                     }

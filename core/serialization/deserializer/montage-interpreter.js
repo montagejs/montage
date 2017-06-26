@@ -1,6 +1,9 @@
 var Montage = require("../../core").Montage,
     MontageReviver = require("./montage-reviver").MontageReviver,
-    Promise = require("../../promise").Promise;
+    Promise = require("../../promise").Promise,
+    ONE_ASSIGNMENT = "=",
+    ONE_WAY = "<-",
+    TWO_WAY = "<->";
 
 var MontageInterpreter = Montage.specialize({
     _require: {value: null},
@@ -234,7 +237,7 @@ var MontageContext = Montage.specialize({
 
                 if (typeof value === "object" && value &&
                     Object.keys(value).length === 1 &&
-                    ("<-" in value || "<->" in value || "=" in value)) {
+                    (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) {
                     bindings[key] = value;
                     delete values[key];
                 }
