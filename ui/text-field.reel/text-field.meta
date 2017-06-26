@@ -1,7 +1,7 @@
 {
     "blueprint_textfield_updateOnInput": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "updateOnInput",
             "blueprint": {
                 "@": "root"
@@ -17,7 +17,7 @@
     },
     "maxlength_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "maxlength",
             "valueType": "number",
             "blueprint": {
@@ -27,7 +27,7 @@
     },
     "blueprint_control_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Control",
                 "prototypeName": "Control",
@@ -39,7 +39,7 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "text-field",
             "customPrototype": false,
             "parent": {

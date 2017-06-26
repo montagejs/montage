@@ -1,7 +1,7 @@
 {
     "derived_descriptor_getterDefinition": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "getterDefinition",
             "objectDescriptor": {
                 "@": "root"
@@ -17,7 +17,7 @@
     },
     "derived_descriptor_setterDefinition": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "setterDefinition",
             "objectDescriptor": {
                 "@": "root"
@@ -33,7 +33,7 @@
     },
     "derived_descriptor_dependencies": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "valueType",
             "objectDescriptor": {
                 "@": "root"
@@ -49,7 +49,7 @@
     },
     "property_descriptor_reference": {
         "prototype": "core/meta/object-descriptor-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "objectDescriptorName": "PropertyDescriptor",
                 "prototypeName": "PropertyDescriptor",
@@ -61,7 +61,7 @@
     },
     "root": {
         "prototype": "core/meta/module-object-descriptor",
-        "properties": {
+        "values": {
             "name": "DerivedDescriptor",
             "customPrototype": false,
             "parent": {

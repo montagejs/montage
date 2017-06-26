@@ -1,7 +1,7 @@
 {
     "component2_bindableProperty1": {
         "prototype": "montage/core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "blueprint": {
                 "@": "root"
             },
@@ -16,7 +16,7 @@
     },
     "component2_bindableProperty2": {
         "prototype": "montage/core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "blueprint": {
                 "@": "root"
             },
@@ -31,7 +31,7 @@
     },
     "component2_bindableProperty3": {
         "prototype": "montage/core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "blueprint": {
                 "@": "root"
             },
@@ -46,7 +46,7 @@
     },
     "component2_bindableProperty4": {
         "prototype": "montage/core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "blueprint": {
                 "@": "root"
             },
@@ -61,7 +61,7 @@
     },
     "component2_bindableProperty5": {
         "prototype": "montage/core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "blueprint": {
                 "@": "root"
             },
@@ -76,7 +76,7 @@
     },
     "component2_requiredBindableProperty1": {
         "prototype": "montage/core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "blueprint": {
                 "@": "root"
             },
@@ -91,7 +91,7 @@
     },
     "component2_requiredBindableProperty2": {
         "prototype": "montage/core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "blueprint": {
                 "@": "root"
             },
@@ -106,7 +106,7 @@
     },
     "component2_requiredBindableProperty3": {
         "prototype": "montage/core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "blueprint": {
                 "@": "root"
             },
@@ -121,7 +121,7 @@
     },
     "root": {
         "prototype": "montage/core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "component2",
             "customPrototype": false,
             "propertyDescriptors": [

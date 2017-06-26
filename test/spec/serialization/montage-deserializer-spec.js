@@ -251,7 +251,6 @@ describe("serialization/montage-deserializer-spec", function () {
             },
                 serializationString = JSON.stringify(serialization);
             deserialize(serializationString, require).then(function (object) {
-                console.log(object)
                 expect(object.foo).toBe(10);
                 expect(object.bar).toBe(10);
                 object.foo = 20;
@@ -301,7 +300,6 @@ describe("serialization/montage-deserializer-spec", function () {
             },
                 serializationString = JSON.stringify(serialization);
             deserialize(serializationString, require).then(function (object) {
-                console.log(object)
                 expect(object.foo.qux).toBe(10);
                 expect(object.bar).toBe(10);
                 expect(object.qux).toBe(20);

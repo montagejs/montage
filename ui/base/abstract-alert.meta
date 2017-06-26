@@ -1,7 +1,7 @@
 {
     "title_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "title",
             "valueType": "string",
             "blueprint": {"@": "root"}
@@ -9,7 +9,7 @@
     },
     "message_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "message",
             "valueType": "string",
             "blueprint": {"@": "root"}
@@ -17,7 +17,7 @@
     },
     "blueprint_parent": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Component",
                 "prototypeName": "Component",
@@ -29,7 +29,7 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "Abstract Alert",
             "parent": {"@": "blueprint_parent"},
             "propertyDescriptors": [

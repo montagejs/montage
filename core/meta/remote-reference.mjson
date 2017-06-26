@@ -2,7 +2,7 @@
 
     "root": {
         "prototype": "core/meta/object-descriptor",
-        "properties": {
+        "values": {
             "name": "RemoteReference",
             "objectDescriptorModuleId": "core/meta/remote-reference.mjson",
             "prototypeName": "RemoteReference",

@@ -1,7 +1,7 @@
 {
     "dateConverter_validator": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "validator",
             "blueprint": {
                 "@": "root"
@@ -12,7 +12,7 @@
     },
     "dateConverter_pattern": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "pattern",
             "blueprint": {
                 "@": "root"
@@ -23,7 +23,7 @@
     },
     "converter_blueprint_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Converter",
                 "prototypeName": "Converter",
@@ -35,7 +35,7 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "DateConverter",
             "customPrototype": false,
             "parent": {

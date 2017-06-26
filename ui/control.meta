@@ -1,7 +1,7 @@
 {
     "blueprint_control_autofocus": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "autofocus",
             "blueprint": {
                 "@": "root"
@@ -17,7 +17,7 @@
     },
     "blueprint_control_disabled": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "disabled",
             "blueprint": {
                 "@": "root"
@@ -33,7 +33,7 @@
     },
     "blueprint_control_form": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "form",
             "blueprint": {
                 "@": "root"
@@ -49,7 +49,7 @@
     },
     "blueprint_control_name": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "name",
             "blueprint": {
                 "@": "root"
@@ -65,7 +65,7 @@
     },
     "blueprint_control_readonly": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "readonly",
             "blueprint": {
                 "@": "root"
@@ -81,7 +81,7 @@
     },
     "blueprint_control_value": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "value",
             "blueprint": {
                 "@": "root"
@@ -97,7 +97,7 @@
     },
     "blueprint_control_active": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "active",
             "valueType": "boolean",
             "blueprint": {
@@ -107,7 +107,7 @@
     },
     "blueprint_component_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Component",
                 "prototypeName": "Component",
@@ -119,7 +119,7 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "Control",
             "customPrototype": false,
             "parent": {

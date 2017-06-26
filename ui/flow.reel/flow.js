@@ -1240,13 +1240,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
         value: function (firstTime) {
             if (firstTime) {
                 var self = this;
-
                 this._determineCssPrefixedProperties();
-
-                /*"bindings": {
-                "value": {"<-": "@rangeController.content.indexOf(@rangeController.selection.0)"}
-            }*/
-
                 this._repetition.addRangeAtPathChangeListener("selectedIterations", this, "_handleSelectedIndexesChange");
                 // TODO remove event listener
             }

@@ -1,7 +1,7 @@
 {
     "okLabel_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "okLabel",
             "valueType": "string",
             "blueprint": {"@": "root"}
@@ -9,7 +9,7 @@
     },
     "cancelLabel_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "cancelLabel",
             "valueType": "string",
             "blueprint": {"@": "root"}
@@ -17,7 +17,7 @@
     },
     "blueprint_parent": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "AbstractAlert",
                 "prototypeName": "AbstractAlert",
@@ -29,7 +29,7 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "Abstract Confirm",
             "parent": {"@": "blueprint_parent"},
             "propertyDescriptors": [
