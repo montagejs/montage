@@ -1,3 +1,4 @@
+/* global console */
 var Montage = require("./core").Montage;
 
 /**
@@ -15,8 +16,9 @@ var Montage = require("./core").Montage;
  */
 var deprecationWarning = exports.deprecationWarning = function deprecationWarning(name, alternative, stackTraceLimit) {
     stackTraceLimit = stackTraceLimit === true ? 2 : stackTraceLimit;
+    var stackTraceLimitOrigin;
     if (stackTraceLimit) {
-        var depth = Error.stackTraceLimit;
+        stackTraceLimitOrigin = Error.stackTraceLimit;
         Error.stackTraceLimit = stackTraceLimit;
     }
     if (typeof console !== "undefined" && typeof console.warn === "function") {
@@ -29,7 +31,7 @@ var deprecationWarning = exports.deprecationWarning = function deprecationWarnin
         }
     }
     if (stackTraceLimit) {
-        Error.stackTraceLimit = depth;
+        Error.stackTraceLimit = stackTraceLimitOrigin;
     }
 };
 

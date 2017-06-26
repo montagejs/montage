@@ -164,6 +164,7 @@ var DocumentResources = Montage.specialize({
                 self._addResource(url);
 
                 promise = new Promise(function(resolve, reject){
+                    var loadingTimeout;
                     // We wait until all scripts are loaded, this is important
                     // because templateDidLoad might need to access objects that
                     // are defined in these scripts, the downsize is that it takes
@@ -184,7 +185,7 @@ var DocumentResources = Montage.specialize({
                     // is considered loaded. The template doesn't fail loading just
                     // because a single script didn't load.
                     //Benoit: It is odd that we act as if everything was fine here...
-                    var loadingTimeout = setTimeout(function () {
+                    loadingTimeout = setTimeout(function () {
                         self.setResourcePreloaded(url);
                         resolve();
                     }, self._SCRIPT_TIMEOUT);
@@ -334,6 +335,7 @@ var DocumentResources = Montage.specialize({
             if (this._isPollingDocumentStyleSheets) {
                 if (this._expectedStyles.length > 0) {
                     styleSheets = this._document.styleSheets;
+                    // TODO WTF
                     for (var i = 0, styleSheet; styleSheet = styleSheets[i]; i++) {
                         ix = this._expectedStyles.indexOf(styleSheet.href);
                         if (ix >= 0) {
