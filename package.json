@@ -77,6 +77,7 @@
     "test": "node test/run-node.js",
     "integration": "MONTAGE_VERSION=${MONTAGE_VERSION:=./} MOP_VERSION=${MOP_VERSION:=#master} node node_modules/mop-integration/integration",
     "jsdoc": "node ../montagejs.org/build/jsdoc/jsdoc.js -out $PWD/builds/jsdoc/ montage@npm-link",
+    "lint": "jshint core ui composer window-loader",
     "test:karma": "karma start --no-auto-watch --single-run",
     "test:karma-debug": "karma start --no-auto-watch --single-run --browsers=PhantomJS_debug",
     "test:karma-firefox": "karma start --no-auto-watch --single-run --browsers=Firefox",
