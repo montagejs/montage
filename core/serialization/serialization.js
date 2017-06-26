@@ -136,6 +136,7 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
             var element = Montage.getPath.call(object, label + ".values.element");
 
             if (!element) {
+                // .properties deprecated
                 element = Montage.getPath.call(object, label + ".properties.element");
             }
 
@@ -156,6 +157,7 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
                 if (node.type === "Element" && elementIds.indexOf(node.data) >= 0) {
                     // Check if it's inside a "values" block
                     node = node.parent;
+                    // .properties deprecated
                     if (node && (node.name === "values" || node.name === "properties")) {
                         // Check if it's in a montage object
                         node = node.parent;
@@ -402,9 +404,9 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
      * that already exist in the labels1 array.
      *
      * This function knows how to deal with labels that refer to template
-     * properties. A label for a template property has the following syntax:
+     * values. A label for a template property has the following syntax:
      * <component label>:<label>.
-     * The collision table guarantees that template properties' labels will
+     * The collision table guarantees that template values' labels will
      * always be in sync with their corresponding component label.
      *
      * When a collision exist with a label for a template property the
@@ -856,18 +858,18 @@ var SerializationExtractor = Montage.specialize( /** @lends SerializationExtract
 
                     if (node.type === "reference") {
                         label = node.data;
-                        // We don't process template properties here, meaning
+                        // We don't process template values here, meaning
                         // that if we have "table" and a reference like
                         // "@table:cell" the latter will be considered an
                         // external reference even though the component is in
                         // scope.
                         // We do this on purpose because it allow us to process
-                        // all template properties of the serialization without
+                        // all template values of the serialization without
                         // having to walk the entire serialization tree looking
                         // for them.
                         // If for some reason we need to "correct" this behavior
                         // then we also need to change the way we resolve
-                        // template properties' alias in
+                        // template values' alias in
                         // Template.expandParameters.
                         // Instead of relying on willMergeObjectWithLabel we
                         // need to walk the serialization looking for these.

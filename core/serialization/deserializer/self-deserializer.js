@@ -59,17 +59,18 @@ var SelfDeserializer = Montage.specialize( {
     deserializeProperties: {
         value: function (propertyNames) {
             var object = this._object,
-                properties = this._objectDescriptor.values || this._objectDescriptor.properties,
+                // .properties deprecated
+                values = this._objectDescriptor.values || this._objectDescriptor.properties,
                 propertyName;
 
-            if (properties) {
+            if (values) {
                 if (!propertyNames) {
                     propertyNames = Montage.getSerializablePropertyNames(object);
                 }
 
                 for (var i = 0, ii = propertyNames.length; i < ii; i++) {
                     propertyName = propertyNames[i];
-                    object[propertyName] = properties[propertyName];
+                    object[propertyName] = values[propertyName];
                 }
             }
         }

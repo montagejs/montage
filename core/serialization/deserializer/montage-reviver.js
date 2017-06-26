@@ -129,9 +129,9 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     _checkLabel: {
         value: function (label, isTemplateProperty) {
             if (isTemplateProperty && label[0] !== ":") {
-                return new Error("Aliases can only be defined in template properties (start with a colon (:)), \"" + label + "\".");
+                return new Error("Aliases can only be defined in template values (start with a colon (:)), \"" + label + "\".");
             } else if (!isTemplateProperty && label[0] === ":") {
-                return new Error("Only aliases are allowed as template properties (start with a colon (:), \"" + label + "\".");
+                return new Error("Only aliases are allowed as template values (start with a colon (:), \"" + label + "\".");
             }
         }
     },
@@ -141,7 +141,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             var error,
                 isAlias = "alias" in value;
 
-            // Only aliases are allowed as template properties, everything else
+            // Only aliases are allowed as template values, everything else
             // should be rejected as an error.
             error = this._checkLabel(label, isAlias);
 
@@ -348,7 +348,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     deserializeMontageObject: {
         value: function (montageObjectDesc, object, context, label) {
-            var properties;
+            var values;
 
             if (typeof object.deserializeSelf === "function") {
                 return this.deserializeCustomMontageObject(object, montageObjectDesc, context, label);
@@ -356,14 +356,14 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 // Units are deserialized after all objects have been revived.
                 // This happens at didReviveObjects.
                 context.setUnitsToDeserialize(object, montageObjectDesc, MontageReviver._unitNames);
-                properties = this.deserializeMontageObjectProperties(
+                values = this.deserializeMontageObjectProperties(
                     object,
                     montageObjectDesc.values || montageObjectDesc.properties, //deprecated
                     context
                 );
 
-                if (Promise.is(properties)) {
-                    return properties.then(function() {
+                if (Promise.is(values)) {
+                    return values.then(function() {
                         return object;
                     });
                 } else {
