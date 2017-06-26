@@ -142,7 +142,7 @@ var uuidGetGenerator = function () {
 
 var defaultUuidGet = function defaultUuidGet() {
     //return this._uuid || (this._uuid = uuidGetGenerator.call(this));
-    return ((Object.prototype.call(this, "_uuid") &&  this._uuid) ? this._uuid : uuidGetGenerator.call(this));
+    return ((Object.prototype.hasOwnProperty.call(this, "_uuid") &&  this._uuid) ? this._uuid : uuidGetGenerator.call(this));
 };
 
 
