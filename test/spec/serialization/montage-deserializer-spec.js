@@ -239,6 +239,104 @@ describe("serialization/montage-deserializer-spec", function () {
             });
         });
 
+        it("should deserialize a simple one-time assignment in normal form", function (done) {
+            var serialization = {
+                "root": {
+                    "prototype": "montage",
+                    "values": {
+                        "foo": 10,
+                        "bar": { "=": "foo" }
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+            deserialize(serializationString, require).then(function (object) {
+                console.log(object)
+                expect(object.foo).toBe(10);
+                expect(object.bar).toBe(10);
+                object.foo = 20;
+                expect(object.bar).toBe(10);
+            }).finally(function () {
+                done();
+            });
+        });
+
+        it("should deserialize a simple one-time assignment with a component reference", function (done) {
+            var serialization = {
+                "root": {
+                    "prototype": "montage",
+                    "values": {
+                        "foo": 10,
+                        "bar": { "=": "@root.foo" }
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+
+            deserialize(serializationString, require).then(function (object) {
+                expect(object.foo).toBe(10);
+                expect(object.bar).toBe(10);
+                object.foo = 20;
+                expect(object.bar).toBe(10);
+            }).finally(function () {
+                done();
+            });
+        });
+
+        it("should deserialize a complex one-time assignment", function (done) {
+            var serialization = {
+                "root": {
+                    "prototype": "montage",
+                    "values": {
+                        "foo": {
+                            "qux": 10
+                        },
+                        "corge": [ 1, 2, 3, 4, 5 ],
+                        "bar": { "=": "foo.qux" },
+                        "qux": { "=": "foo.qux + 10" },
+                        "quuz": { "=": "foo.qux + bar + @root.bar" },
+                        "quux": { "=": "corge.sum()" }
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+            deserialize(serializationString, require).then(function (object) {
+                console.log(object)
+                expect(object.foo.qux).toBe(10);
+                expect(object.bar).toBe(10);
+                expect(object.qux).toBe(20);
+                expect(object.quuz).toBe(30);
+                expect(object.quux).toBe(15);
+                object.foo.qux = 20;
+                expect(object.bar).toBe(10);
+                expect(object.qux).toBe(20);
+            }).finally(function () {
+                done();
+            });
+        });
+
+        it("should fail deserializing an one-time assignment to a non existing object", function (done) {
+            var serialization = {
+                "root": {
+                    "prototype": "montage",
+                    "values": {
+                        "foo": 10,
+                        "bar": { "=": "@unknown.foo" }
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+
+            deserialize(serializationString, require).then(function (object) {
+                expect("deserialization").toBe("fail");
+            }).catch(function (err) {
+                expect(err).toBeDefined();
+            }).finally(function () {
+                done();
+            });
+        });
+        
+
         it("should call deserializedFromSerialization function on the instantiated objects", function (done) {
             var serialization = {
                     "root": {

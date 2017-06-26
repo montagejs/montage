@@ -90,7 +90,7 @@ var deserializeBindings = exports.deserializeBindings = function (deserializer, 
             assign(
                 object,
                 targetPath,
-                evaluate(descriptor["="], null, null, null, deserializer),
+                evaluate(descriptor["="], object, null, null, deserializer),
                 null,
                 null,
                 deserializer
