@@ -954,7 +954,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 serializationString, require);
 
             customDeserialization.prototype.deserializeSelf = function (deserializer) {
-                deserializer.deserializeProperties();
+                deserializer.deserializeValues();
             };
 
             deserializer.deserializeObject().then(function (root) {
@@ -974,7 +974,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 serializationString, require);
 
             customDeserialization.prototype.deserializeSelf = function (deserializer) {
-                deserializer.deserializeProperties();
+                deserializer.deserializeValues();
                 deserializer.deserializeUnit("listeners");
             };
 
@@ -995,7 +995,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 serializationString, require);
 
             customDeserialization.prototype.deserializeSelf = function (deserializer) {
-                deserializer.deserializeProperties();
+                deserializer.deserializeValues();
                 deserializer.deserializeUnit("bindings");
             };
 
@@ -1016,7 +1016,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 serializationString, require);
 
             customDeserialization.prototype.deserializeSelf = function (deserializer) {
-                deserializer.deserializeProperties();
+                deserializer.deserializeValues();
                 deserializer.deserializeUnits();
             };
 

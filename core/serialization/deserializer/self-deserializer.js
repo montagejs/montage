@@ -1,4 +1,5 @@
-var Montage = require("../../core").Montage;
+var Montage = require("../../core").Montage,
+    deprecate = require("../../deprecate");
 
 var SelfDeserializer = Montage.specialize( {
     _object: {value: null},
@@ -57,6 +58,12 @@ var SelfDeserializer = Montage.specialize( {
     },
 
     deserializeProperties: {
+        value: deprecate.deprecateMethod(void 0, function (propertyNames) {
+            return this.deserializeValues(propertyNames);
+        }, "deserializeProperties", "deserializeValues")
+    },
+
+    deserializeValues: {
         value: function (propertyNames) {
             var object = this._object,
                 // .properties deprecated

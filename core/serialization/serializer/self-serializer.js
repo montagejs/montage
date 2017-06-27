@@ -1,4 +1,5 @@
-var Montage = require("../../core").Montage;
+var Montage = require("../../core").Montage,
+    deprecate = require("../../deprecate");
 
 var SelfSerializer = Montage.specialize.call(Object, {
     _malker: {value: null},
@@ -56,12 +57,18 @@ var SelfSerializer = Montage.specialize.call(Object, {
     },
 
     setAllProperties: {
+        value: deprecate.deprecateMethod(void 0, function () {
+            return this.setAllValues();
+        }, "setAllProperties", "setAllValues")
+    },
+
+    setAllValues: {
         value: function () {
             var builder = this._visitor.builder,
                 valuesObject = builder.top.getProperty("values");
             
             builder.push(valuesObject);
-            this._visitor.setSerializableObjectProperties(this._malker, this._object);
+            this._visitor.setSerializableObjectValues(this._malker, this._object);
             builder.pop();
         }
     },

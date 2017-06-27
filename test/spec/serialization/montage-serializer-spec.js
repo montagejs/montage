@@ -986,7 +986,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 };
 
                 object.serializeSelf = function (serializer) {
-                    serializer.setAllProperties();
+                    serializer.setAllValues();
                 };
 
                 serialization = serializer.serializeObject(object);

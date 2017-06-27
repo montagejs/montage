@@ -2157,7 +2157,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
 
     serializeSelf: {
         value: function (serializer) {
-            serializer.setAllProperties();
+            serializer.setAllValues();
 
             // TODO: we need a way to add nodes to the serialization... we only
             // have methods to serialize components.

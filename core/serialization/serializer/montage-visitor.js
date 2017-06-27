@@ -1,10 +1,11 @@
-var Montage = require("../../core").Montage;
-var MontageSerializerModule = require("./montage-serializer");
-var PropertiesSerializer = require("./properties-serializer").PropertiesSerializer;
-var SelfSerializer = require("./self-serializer").SelfSerializer;
-var UnitSerializer = require("./unit-serializer").UnitSerializer;
-var Alias = require("../alias").Alias;
-var Bindings = require("../bindings");
+var Montage = require("../../core").Montage,
+    MontageSerializerModule = require("./montage-serializer"),
+    ValuesSerializer = require("./values-serializer").ValuesSerializer,
+    SelfSerializer = require("./self-serializer").SelfSerializer,
+    UnitSerializer = require("./unit-serializer").UnitSerializer,
+    Alias = require("../alias").Alias,
+    Bindings = require("../bindings"),
+    deprecate = require("../../deprecate");
 
 var MontageVisitor = Montage.specialize({
     _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
@@ -214,7 +215,7 @@ var MontageVisitor = Montage.specialize({
                         malker, this, object, builderObject);
                 substituteObject = object.serializeSelf(selfSerializer);
             } else {
-                this.setObjectProperties(malker, object);
+                this.setObjectValues(malker, object);
                 this.setObjectBindings(malker, object);
                 this.setObjectCustomUnits(malker, object);
             }
@@ -293,32 +294,48 @@ var MontageVisitor = Montage.specialize({
         }
     },
 
+    setObjectProperties: {
+        value: deprecate.deprecateMethod(void 0, function (malker, object) {
+            return this.setObjectValues(malker, object);
+        }, "setObjectProperties", "setObjectValues")
+    },
+
     /*
      * Expected object at the top of the stack: CustomObject
      */
-    setObjectProperties: {
+    setObjectValues: {
         value: function (malker, object) {
             var valuesSerializer,
                 valuesObject = this.builder.top.getProperty("values");
             
             this.builder.push(valuesObject);
 
-            if (typeof object.serializeProperties === "function") {
-                valuesSerializer = new PropertiesSerializer()
+            if (typeof object.serializeProperties === "function" || typeof object.serializeValues === "function") {
+                valuesSerializer = new ValuesSerializer()
                     .initWithMalkerAndVisitorAndObject(malker, this, object);
-                object.serializeProperties(valuesSerializer);
+                if (object.serializeValues) {
+                    object.serializeValues(valuesSerializer);
+                } else { // deprecated
+                    object.serializeProperties(valuesSerializer);
+                }
             } else {
-                this.setSerializableObjectProperties(malker, object);
+                this.setSerializableObjectValues(malker, object);
             }
 
             this.builder.pop();
         }
     },
 
+    setSerializableObjectProperties: {
+        value: deprecate.deprecateMethod(void 0, function (malker, object) {
+            return this.setSerializableObjectValues(malker, object);
+        }, "setSerializableObjectProperties", "setSerializableObjectValues")
+    },
+
     /*
      * Expected object at the top of the stack: ObjectLiteral
      */
-    setSerializableObjectProperties: {
+    setSerializableObjectValues: {
         value: function (malker, object) {
             var type,
                 propertyName,

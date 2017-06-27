@@ -1,5 +1,5 @@
 var Montage = require("../../core").Montage,
-    PropertiesDeserializer = require("./properties-deserializer").PropertiesDeserializer,
+    ValuesDeserializer = require("./values-deserializer").ValuesDeserializer,
     SelfDeserializer = require("./self-deserializer").SelfDeserializer,
     UnitDeserializer = require("./unit-deserializer").UnitDeserializer,
     ModuleReference = require("../../module-reference").ModuleReference,
@@ -8,7 +8,8 @@ var Montage = require("../../core").Montage,
     deprecate = require("../../deprecate")
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
-    TWO_WAY = "<->";
+    TWO_WAY = "<->",
+    deprecate = require("../../deprecate");
 
 var ModuleLoader = Montage.specialize( {
     _require: {value: null},
@@ -354,7 +355,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 // Units are deserialized after all objects have been revived.
                 // This happens at didReviveObjects.
                 context.setUnitsToDeserialize(object, montageObjectDesc, MontageReviver._unitNames);
-                values = this.deserializeMontageObjectProperties(
+                values = this.deserializeMontageObjectValues(
                     object,
                     montageObjectDesc.values || montageObjectDesc.properties, //deprecated
                     context
@@ -372,16 +373,26 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     },
 
     deserializeMontageObjectProperties: {
-        value: function (object, properties, context) {
+        value: deprecate.deprecateMethod(void 0, function (object, values, context) {
+            return this.deserializeMontageObjectValues(object, values, context);
+        }, "deserializeMontageObjectProperties", "deserializeMontageObjectValues")
+    },
+
+    deserializeMontageObjectValues: {
+        value: function (object, values, context) {
             var value;
 
-            if (typeof object.deserializeProperties === "function") {
-                var propertiesDeserializer = new PropertiesDeserializer()
+            if (typeof object.deserializeProperties === "function" || typeof object.deserializeValues === "function") {
+                var valuesDeserializer = new ValuesDeserializer()
                     .initWithReviverAndObjects(this, context);
-                value = object.deserializeProperties(propertiesDeserializer);
+                if (object.deserializeValues) {
+                    value = object.deserializeValues(valuesDeserializer);
+                } else { // deprecated
+                    value = object.deserializeProperties(valuesDeserializer);
+                }
             } else {
-                for (var key in properties) {
-                    object[key] = properties[key];
+                for (var key in values) {
+                    object[key] = values[key];
                 }
             }
 
