@@ -46,9 +46,15 @@ var MontageInterpreter = Montage.specialize({
 
             for (var label in serialization) {
                 object = serialization[label];
-
                 locationId = object.prototype || object.object;
+
                 if (locationId) {
+                    if (typeof locationId !== "string") {
+                        throw new Error(
+                            "Property 'object' of the object with the label '" +
+                            label + "' must be a path"
+                        );
+                    }
                     locationDesc = MontageReviver.parseObjectLocationId(locationId);
                     module = moduleLoader.getModule(
                         locationDesc.moduleId, label);
