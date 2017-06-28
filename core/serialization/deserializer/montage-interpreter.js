@@ -52,7 +52,7 @@ var MontageInterpreter = Montage.specialize({
                     if (typeof locationId !== "string") {
                         throw new Error(
                             "Property 'object' of the object with the label '" +
-                            label + "' must be a path"
+                            label + "' must be a module id"
                         );
                     }
                     locationDesc = MontageReviver.parseObjectLocationId(locationId);
