@@ -270,33 +270,59 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     instantiateObject: {
         value: function (module, locationDesc, value, objectName, context, label) {
-            if ("object" in value && value.object.endsWith(".mjson")) {
-                return this.instantiateMjsonObject(module, locationDesc.moduleId, context, label);
+            var prototypeModuleId = false, moduleId, promise;
+
+            if ((prototypeModuleId = "prototype" in value)) {
+                moduleId = value.prototype;
+            } else if ("object" in value) {
+                moduleId = value.object;
+            }
+
+            if (moduleId && moduleId.endsWith(".mjson")) {
+                if (prototypeModuleId) {
+                    promise = this.instantiateMjsonObject(module, locationDesc.moduleId);
+                } else {
+                    promise = this.getMjsonObject(module, locationDesc.moduleId);
+                }
+
+                return promise.then(function (object) {
+                    context.setObjectLabel(object, label);
+                    return object;
+                });
             } else {
                 return this.instantiateMontageObject(value, module, objectName, context, label);
             }
         }
     },
 
-    instantiateMjsonObject: {
-        value: function (json, moduleId, context, label) {
+    getMjsonObject: {
+        value: function (json, moduleId) {
             var self = this;
-            // Need to require deserializer asynchronously because it depends on montage-interpreter, which
-            // depends on this module, montage-reviver. A synchronous require would create a circular dependency.
-            // TODO: Maybe this could be passed in from above instead of required here.
-            return require.async("core/serialization/deserializer/montage-deserializer")
-                .then(function (deserializerModule) {
-                    var MontageDeserializer = deserializerModule.MontageDeserializer;
+            return MontageReviver.getMontageDeserializer().then(function (MontageDeserializer) {
+                var topId = self._require.resolve(moduleId),
+                    module = self._require.getModuleDescriptor(topId);
+                
+                //FIXME: Can't require ObjectDescriptor! 
+                if (module.exports._rootPromise) {
+                    return module.exports._rootPromise;
+                }
 
-                    // TODO: MontageDeserializer needs an API to pass in an object instead of the stringified version of the object
-                    return new MontageDeserializer().init(
-                            JSON.stringify(json),
-                            MontageDeserializer.getModuleRequire(self._require, moduleId)
-                    ).deserializeObject().then(function (object) {
-                        context.setObjectLabel(object, label);
-                        return object;
-                    });
-                });
+                // TODO: MontageDeserializer needs an API to pass in an object 
+                // instead of the stringified version of the object
+                return (module.exports._rootPromise = new MontageDeserializer().init(
+                    JSON.stringify(json),
+                    MontageDeserializer.getModuleRequire(self._require, moduleId)
+                ).deserializeObject());
+            });
+        }
+    },
+
+    instantiateMjsonObject: {
+        value: function (json, moduleId) {
+            var self = this;
+            return this.getMjsonObject(json, moduleId).then(function (object) {
+                return Object.create(object);
+            });
         }
     },
 
@@ -818,6 +844,23 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             return function(value) {
                 return getCustomObjectTypeOf(value) || previousGetCustomObjectTypeOf(value);
             }
+        }
+    },
+
+    //FIXME
+    getMontageDeserializer: {
+        value: function () {
+            if (!this._montageDeserializerPromise) {
+                // Need to require deserializer asynchronously because it depends on montage-interpreter, which
+                // depends on this module, montage-reviver. A synchronous require would create a circular dependency.
+                // TODO: Maybe this could be passed in from above instead of required here.
+                this._montageDeserializerPromise = require.async("core/serialization/deserializer/montage-deserializer")
+                    .then(function (deserializerModule) {
+                        return deserializerModule.MontageDeserializer;
+                    });
+            }
+
+            return this._montageDeserializerPromise;
         }
     }
 

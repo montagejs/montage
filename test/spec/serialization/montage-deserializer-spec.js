@@ -706,6 +706,56 @@ describe("serialization/montage-deserializer-spec", function () {
             });
         });
 
+        it("should deserialize using prototype: module.mjson", function (done) {
+            var serialization = {
+                    "root": {
+                        "prototype": "spec/serialization/testmjson.mjson"
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(serializationString, require);
+            deserializer.deserializeObject().then(function (root) {
+                var info = Montage.getInfoForObject(root);
+                expect(info.moduleId).toBe("core/meta/object-descriptor");
+                expect(info.isInstance).toBe(true);
+                expect(root.type).toBeUndefined();
+                expect(root.name).toBe("RootBlueprint");
+            }).catch(function (reason) {
+                fail(reason);
+            }).finally(function () {
+                done();
+            });
+        });
+        
+        it("should deserialize instances using prototype: module.mjson", function (done) {
+            var serialization = {
+                    "root": {
+                        "prototype": "montage",
+                        "values": {
+                            "bar": { "@": "bar" },
+                            "foo": { "@": "foo" }
+                        }
+                    },
+                    "bar": {
+                        "prototype": "spec/serialization/testmjson.mjson"
+                    },
+                    "foo": {
+                        "prototype": "spec/serialization/testmjson.mjson"
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(serializationString, require);
+            deserializer.deserializeObject().then(function (root) {
+                expect(root.foo).not.toBe(root.bar);
+            }).catch(function (reason) {
+                fail(reason);
+            }).finally(function () {
+                done();
+            });
+        });
+
         it("should deserialize using object: module.mjson", function (done) {
             var serialization = {
                     "root": {
@@ -715,13 +765,41 @@ describe("serialization/montage-deserializer-spec", function () {
                 serializationString = JSON.stringify(serialization);
 
             deserializer.init(serializationString, require);
-            deserializer.deserializeObject().then(function (object) {
-                    var info = Montage.getInfoForObject(object);
-                    expect(info.moduleId).toBe("core/meta/object-descriptor");
-                    expect(info.isInstance).toBe(true);
-                    expect(object.type).toBeUndefined();
-                    expect(object.name).toBe("RootBlueprint");
-            }).catch(function(reason) {
+            deserializer.deserializeObject().then(function (root) {
+                var info = Montage.getInfoForObject(root);
+                expect(info.moduleId).toBe("core/meta/object-descriptor");
+                expect(info.isInstance).toBe(true);
+                expect(root.type).toBeUndefined();
+                expect(root.name).toBe("RootBlueprint");
+            }).catch(function (reason) {
+                fail(reason);
+            }).finally(function () {
+                done();
+            });
+        });
+
+        it("should deserialize singleton using object: module.mjson", function (done) {
+            var serialization = {
+                    "root": {
+                        "prototype": "montage",
+                        "values": {
+                            "bar": { "@": "bar" },
+                            "foo": { "@": "foo" }
+                        }
+                    },
+                    "bar": {
+                        "object": "spec/serialization/testmjson.mjson"
+                    },
+                    "foo": {
+                        "object": "spec/serialization/testmjson.mjson"
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(serializationString, require);
+            deserializer.deserializeObject().then(function (root) {
+                expect(root.foo).toBe(root.foo);
+            }).catch(function (reason) {
                 fail(reason);
             }).finally(function () {
                 done();
