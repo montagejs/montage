@@ -253,11 +253,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
             if (Promise.is(module)) {
                 return module.then(function(exports) {
-                    if ("object" in value && value.object.endsWith(".mjson")) {
-                        return self.instantiateMjsonObject(exports, locationDesc.moduleId);
-                    } else {
-                        return self.instantiateMontageObject(value, exports, objectName, context, label);
-                    }
+                    return self.instantiateObject(exports, locationDesc, value, objectName, context, label);
                 }, function (error) {
                     if (error.stack) {
                         console.error(error.stack);
@@ -267,17 +263,23 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                         "' from '" + value.prototype + "' cause: " + error.message);
                 });
             } else {
-                if ("object" in value && value.object.endsWith(".mjson")) {
-                    return self.instantiateMjsonObject(module, locationDesc.moduleId);
-                } else {
-                    return this.instantiateMontageObject(value, module, objectName, context, label);
-                }
+                return this.instantiateObject(module, locationDesc, value, objectName, context, label);
+            }
+        }
+    },
+
+    instantiateObject: {
+        value: function (module, locationDesc, value, objectName, context, label) {
+            if ("object" in value && value.object.endsWith(".mjson")) {
+                return this.instantiateMjsonObject(module, locationDesc.moduleId, context, label);
+            } else {
+                return this.instantiateMontageObject(value, module, objectName, context, label);
             }
         }
     },
 
     instantiateMjsonObject: {
-        value: function (json, moduleId) {
+        value: function (json, moduleId, context, label) {
             var self = this,
                 getModelRequire = function (parentRequire, modelId) {
                     // TODO: This utility function is also defined in core/meta/module-blueprint.js.
@@ -302,7 +304,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 .then(function (deserializerModule) {
                     return new deserializerModule.MontageDeserializer()
                         .init(JSON.stringify(json), getModelRequire(self._require, moduleId)) // TODO: MontageDeserializer needs an API to pass in an object instead of the stringified version of the object
-                        .deserializeObject();
+                        .deserializeObject().then(function (object) {
+                            context.setObjectLabel(object, label);
+                            return object;
+                        });
                 });
         }
     },
