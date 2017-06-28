@@ -126,6 +126,26 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
         }
     }
 
+}, {
+    // Adapted from mr/sandbox
+    getModuleRequire: {
+        value: function (parentRequire, moduleId) {
+            var topId = parentRequire.resolve(moduleId);
+            var module = parentRequire.getModuleDescriptor(topId);
+
+            while (module.redirect || module.mappingRedirect) {
+                if (module.redirect) {
+                    topId = module.redirect;
+                } else {
+                    parentRequire = module.mappingRequire;
+                    topId = module.mappingRedirect;
+                }
+                module = parentRequire.getModuleDescriptor(topId);
+            }
+
+            return module.require;
+        }
+    }
 });
 
 

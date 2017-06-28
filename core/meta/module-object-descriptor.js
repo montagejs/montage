@@ -108,7 +108,7 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
                 .then(function (object) {
                     // Need to get the require from the module, because thats
                     // what all the moduleId references are relative to.
-                    targetRequire = getModuleRequire(_require, moduleId);
+                    targetRequire = Deserializer.getModuleRequire(_require, moduleId);
                     return new Deserializer().init(JSON.stringify(object), targetRequire).deserializeObject();
                 }).then(function (objectDescriptor) {
                     
@@ -179,22 +179,3 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
 
 
 });
-
-// Adapted from mr/sandbox
-function getModuleRequire(parentRequire, moduleId) {
-    var topId = parentRequire.resolve(moduleId);
-    var module = parentRequire.getModuleDescriptor(topId);
-
-    while (module.redirect || module.mappingRedirect) {
-        if (module.redirect) {
-            topId = module.redirect;
-        } else {
-            parentRequire = module.mappingRequire;
-            topId = module.mappingRedirect;
-        }
-        module = parentRequire.getModuleDescriptor(topId);
-    }
-
-    return module.require;
-}
-

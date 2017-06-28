@@ -280,34 +280,22 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     instantiateMjsonObject: {
         value: function (json, moduleId, context, label) {
-            var self = this,
-                getModelRequire = function (parentRequire, modelId) {
-                    // TODO: This utility function is also defined in core/meta/module-blueprint.js.
-                    // Maybe it should be a helper module or baked in to deserializers.
-                    var topId = parentRequire.resolve(modelId);
-                    var module = parentRequire.getModuleDescriptor(topId);
-                    while (module.redirect || module.mappingRedirect) {
-                        if (module.redirect) {
-                            topId = module.redirect;
-                        } else {
-                            parentRequire = module.mappingRequire;
-                            topId = module.mappingRedirect;
-                        }
-                        module = parentRequire.getModuleDescriptor(topId);
-                    }
-                    return module.require;
-                };
+            var self = this;
             // Need to require deserializer asynchronously because it depends on montage-interpreter, which
             // depends on this module, montage-reviver. A synchronous require would create a circular dependency.
             // TODO: Maybe this could be passed in from above instead of required here.
             return require.async("core/serialization/deserializer/montage-deserializer")
                 .then(function (deserializerModule) {
-                    return new deserializerModule.MontageDeserializer()
-                        .init(JSON.stringify(json), getModelRequire(self._require, moduleId)) // TODO: MontageDeserializer needs an API to pass in an object instead of the stringified version of the object
-                        .deserializeObject().then(function (object) {
-                            context.setObjectLabel(object, label);
-                            return object;
-                        });
+                    var MontageDeserializer = deserializerModule.MontageDeserializer;
+
+                    // TODO: MontageDeserializer needs an API to pass in an object instead of the stringified version of the object
+                    return new MontageDeserializer().init(
+                            JSON.stringify(json),
+                            MontageDeserializer.getModuleRequire(self._require, moduleId)
+                    ).deserializeObject().then(function (object) {
+                        context.setObjectLabel(object, label);
+                        return object;
+                    });
                 });
         }
     },
