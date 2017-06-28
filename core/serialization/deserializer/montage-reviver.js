@@ -5,11 +5,13 @@ var Montage = require("../../core").Montage,
     ModuleReference = require("../../module-reference").ModuleReference,
     Alias = require("../alias").Alias, Bindings = require("../bindings"),
     Promise = require("../../promise").Promise,
-    deprecate = require("../../deprecate")
+    deprecate = require("../../deprecate"),
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
     TWO_WAY = "<->",
     deprecate = require("../../deprecate");
+
+require("../../shim/string");
 
 var ModuleLoader = Montage.specialize( {
     _require: {value: null},
