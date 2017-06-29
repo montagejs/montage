@@ -2,8 +2,8 @@
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define(['exports', 'bluebird', 'require'], function (exports, bluebird, require) {
-            factory((root.montage = exports), bluebird, require);
+        define(['exports', 'require', 'bluebird'], function (exports, require, bluebird) {
+            factory((root.montage = exports), require, bluebird);
         });
     } else if (typeof exports === 'object') {
         // Node. Does not work with strict CommonJS, but
@@ -14,7 +14,7 @@
         // Browser globals (root is window)
         factory((root.montage = {}));
     }
-}(this, function (exports, Promise, Require) {
+}(this, function (exports, Require, Promise) {
 
     "use strict";
 
@@ -205,7 +205,7 @@
             "require/browser": "node_modules/mr/browser.js"
         };
 
-        var domLoaded, Require, Promise, URL,
+        var domLoaded, Require, URL,
             resolve = makeResolve(),
             params = getParams();
 
@@ -251,7 +251,7 @@
         }
 
         // register module definitions for deferred, serial execution
-        global.bootstrap = function (id, factory) {
+        function bootstrapModule(id, factory) {
             definitions[id] = factory;
             delete pending[id];
             for (id in pending) {
@@ -268,29 +268,39 @@
             allModulesLoaded();
         };
 
+        function bootstrapModulePromise(Promise) {
+            bootstrapModule("bluebird", function (mrRequire, exports) {
+                return Promise;
+            });
+
+            bootstrapModule("promise", function (mrRequire, exports) {
+                return Promise;
+            });
+        }
+
+        // Expose bootstrap
+        global.bootstrap = bootstrapModule;
+
         // one module loaded for free, for use in require.js, browser.js
-        global.bootstrap("mini-url", function (mrRequire, exports) {
+        bootstrapModule("mini-url", function (mrRequire, exports) {
             exports.resolve = resolve;
         });
 
-        // Handle preload
-        // TODO rename to MontagePreload
-        if (!global.preload) {
-            var bootstrapLocation = resolve(window.location, params.bootstrapLocation),
-                promiseLocation = params.promiseLocation || resolve(bootstrapLocation, pending.promise);
-                
-            // Special Case bluebird for now:
-            load(promiseLocation, function() {
-                
-                //global.bootstrap cleans itself from window once all known are loaded. "bluebird" is not known, so needs to do it first
-                global.bootstrap("bluebird", function (mrRequire, exports) {
-                    return window.Promise;
-                });
+        // load in parallel, but only if we're not using a preloaded cache.
+        // otherwise, these scripts will be inlined after already
+        if (!global.preload || !global.BUNDLE) {
+            var bootstrapLocation = resolve(window.location, params.bootstrapLocation);
 
-                global.bootstrap("promise", function (mrRequire, exports) {
-                    return window.Promise;
-                });
-            });
+            if (Promise) {
+                //global.bootstrap cleans itself from window once all known are loaded. "bluebird" is not known, so needs to do it first
+                bootstrapModulePromise(Promise)
+            } else {
+                var promiseLocation = params.promiseLocation || resolve(bootstrapLocation, pending.promise);
+                // Special Case bluebird for now:
+                load(promiseLocation, function() {
+                    bootstrapModulePromise((Promise = window.Promise));
+                });   
+            }
 
             // Load other module and skip promise
             for (var id in pending) {
@@ -323,83 +333,81 @@
         }
     };
 
-    /**
-     * Initializes Montage and creates the application singleton if
-     * necessary.
-     */
-    exports.initMontage = function () {
+    exports.initMontageApp = function (montageRequire, applicationRequire, params) {
 
-        function initMontageApp(montageRequire, applicationRequire, params) {
+        //exports.Require.delegate = this;
 
-            //exports.Require.delegate = this;
+        var dependencies = [
+            "core/core",
+            "core/event/event-manager",
+            "core/serialization/deserializer/montage-reviver",
+            "core/logger"
+        ];
 
-            var dependencies = [
-                "core/core",
-                "core/event/event-manager",
-                "core/serialization/deserializer/montage-reviver",
-                "core/logger"
-            ];
+        var Promise = montageRequire("core/promise").Promise;
+        var deepLoadPromises = [];
 
-            var Promise = montageRequire("core/promise").Promise;
-            var deepLoadPromises = [];
+        for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {
+          deepLoadPromises.push(montageRequire.deepLoad(iDependency));
+        }
+
+        return Promise.all(deepLoadPromises)
+        .then(function () {
 
             for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {
-              deepLoadPromises.push(montageRequire.deepLoad(iDependency));
+              montageRequire(iDependency);
             }
 
-            return Promise.all(deepLoadPromises)
-            .then(function () {
+            var Montage = montageRequire("core/core").Montage;
+            var EventManager = montageRequire("core/event/event-manager").EventManager;
+            var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
+            var logger = montageRequire("core/logger").logger;
 
-                for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {
-                  montageRequire(iDependency);
-                }
+            var defaultEventManager, application;
 
-                var Montage = montageRequire("core/core").Montage;
-                var EventManager = montageRequire("core/event/event-manager").EventManager;
-                var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
-                var logger = montageRequire("core/logger").logger;
+            // Load the event-manager
+            defaultEventManager = new EventManager().initWithWindow(window);
 
-                var defaultEventManager, application;
+            // montageWillLoad is mostly for testing purposes
+            if (typeof global.montageWillLoad === "function") {
+                global.montageWillLoad();
+            }
 
-                // Load the event-manager
-                defaultEventManager = new EventManager().initWithWindow(window);
+            // Load the application
 
-                // montageWillLoad is mostly for testing purposes
-                if (typeof global.montageWillLoad === "function") {
-                    global.montageWillLoad();
-                }
+            var appProto = applicationRequire.packageDescription.applicationPrototype,
+                applicationLocation, appModulePromise;
+            if (appProto) {
+                applicationLocation = MontageReviver.parseObjectLocationId(appProto);
+                appModulePromise = applicationRequire.async(applicationLocation.moduleId);
+            } else {
+                appModulePromise = montageRequire.async("core/application");
+            }
 
-                // Load the application
+            return appModulePromise.then(function (exports) {
+                var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
+                application = new Application();
+                defaultEventManager.application = application;
+                application.eventManager = defaultEventManager;
 
-                var appProto = applicationRequire.packageDescription.applicationPrototype,
-                    applicationLocation, appModulePromise;
-                if (appProto) {
-                    applicationLocation = MontageReviver.parseObjectLocationId(appProto);
-                    appModulePromise = applicationRequire.async(applicationLocation.moduleId);
-                } else {
-                    appModulePromise = montageRequire.async("core/application");
-                }
-
-                return appModulePromise.then(function (exports) {
-                    var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
-                    application = new Application();
-                    defaultEventManager.application = application;
-                    application.eventManager = defaultEventManager;
-
-                    return application._load(applicationRequire, function() {
-                        if (params.module) {
-                            // If a module was specified in the config then we initialize it now
-                            applicationRequire.async(params.module);
-                        }
-                        if (typeof global.montageDidLoad === "function") {
-                            global.montageDidLoad();
-                        }
-                    });
+                return application._load(applicationRequire, function() {
+                    if (params.module) {
+                        // If a module was specified in the config then we initialize it now
+                        applicationRequire.async(params.module);
+                    }
+                    if (typeof global.montageDidLoad === "function") {
+                        global.montageDidLoad();
+                    }
                 });
-
             });
 
-        }
+        });
+    };
+
+    /**
+     * Initializes Montage and creates the application singleton if necessary.
+     */
+    exports.initMontage = function () {
 
         var platform = exports.getPlatform();
 
@@ -604,7 +612,7 @@
                     return result;
                 })
                 .spread(function (montageRequire, promiseRequire) {
-                    
+
                     montageRequire.inject("core/mini-url", URL);
                     montageRequire.inject("core/promise", {Promise: Promise});
                     promiseRequire.inject("bluebird", Promise);
@@ -633,11 +641,10 @@
                     // Expose global require and mr
                     global.require = global.mr = applicationRequire;
 
-                    return initMontageApp(montageRequire, applicationRequire, params);
+                    return exports.initMontageApp(montageRequire, applicationRequire, params);
                 });
             });
         });
-
     };
 
     if (typeof window !== "undefined") {
