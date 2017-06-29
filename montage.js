@@ -204,7 +204,7 @@
             "require/browser": "node_modules/mr/browser.js"
         };
 
-        var domLoaded, Require, URL,
+        var domLoaded, URL,
             resolve = makeResolve(),
             params = getParams();
 
