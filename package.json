@@ -53,7 +53,7 @@
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
     "jslint": "^0.10.3",
-    "mr": "^17.0.4",
+    "mr": "montagejs/mr#amd",
     "q-io": "^1.13.3"
   },
   "devDependencies": {
