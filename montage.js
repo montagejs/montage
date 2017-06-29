@@ -1,9 +1,9 @@
-/*global define */
+/*global define, callbackApplication */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define(['exports', 'require', 'bluebird'], function (exports, require, bluebird) {
-            factory((root.montage = exports), require, bluebird);
+            factory((root.Montage = exports), require, bluebird);
         });
     } else if (typeof exports === 'object') {
         // Node. Does not work with strict CommonJS, but
@@ -12,7 +12,7 @@
         factory(exports);
     } else {
         // Browser globals (root is window)
-        factory((root.montage = {}));
+        factory((root.Montage = {}));
     }
 }(this, function (exports, Require, Promise) {
 
@@ -45,6 +45,7 @@
     }
 
     function getParams() {
+
         var i, j,
             match, script, scripts,
             scriptLocation, attr, name;
@@ -60,7 +61,7 @@
                     scriptLocation = match[1];
                 }
                 if (script.hasAttribute("data-" + dataAttrPreffix + "-location")) {
-                    scriptLocation = resolve(window.location, script.getAttribute("data-" + dataAttrPreffix + "-location"));
+                    scriptLocation = script.getAttribute("data-" + dataAttrPreffix + "-location");
                 }
                 if (scriptLocation) {
                     if (script.dataset) {
@@ -215,14 +216,6 @@
             }
         }
 
-        // execute bootstrap scripts
-        function allModulesLoaded() {
-            Promise = bootRequire("promise");
-            Require = bootRequire("require");
-            URL = bootRequire("mini-url");
-            callbackIfReady();
-        }
-
         // observe dom loading and load scripts in parallel
         function domLoad() {
             // observe dom loaded
@@ -240,6 +233,14 @@
                 bootModules[id] = definitions[id](bootRequire, exports) || exports;
             }
             return bootModules[id];
+        }
+
+        // execute bootstrap scripts
+        function allModulesLoaded() {
+            Promise = bootRequire("promise");
+            Require = bootRequire("require");
+            URL = bootRequire("mini-url");
+            callbackIfReady();
         }
 
         // this permits bootstrap.js to be injected after DOMContentLoaded
@@ -266,14 +267,14 @@
             // of the bootstrap function and proceed.
             delete global.bootstrap;
             allModulesLoaded();
-        };
+        }
 
         function bootstrapModulePromise(Promise) {
-            bootstrapModule("bluebird", function (mrRequire, exports) {
+            bootstrapModule("bluebird", function () {
                 return Promise;
             });
 
-            bootstrapModule("promise", function (mrRequire, exports) {
+            bootstrapModule("promise", function () {
                 return Promise;
             });
         }
@@ -282,7 +283,7 @@
         global.bootstrap = bootstrapModule;
 
         // one module loaded for free, for use in require.js, browser.js
-        bootstrapModule("mini-url", function (mrRequire, exports) {
+        bootstrapModule("mini-url", function (bootRequire, exports) {
             exports.resolve = resolve;
         });
 
@@ -293,7 +294,7 @@
 
             if (Promise) {
                 //global.bootstrap cleans itself from window once all known are loaded. "bluebird" is not known, so needs to do it first
-                bootstrapModulePromise(Promise)
+                bootstrapModulePromise(Promise);
             } else {
                 var promiseLocation = params.promiseLocation || resolve(bootstrapLocation, pending.promise);
                 // Special Case bluebird for now:
@@ -358,10 +359,8 @@
               montageRequire(iDependency);
             }
 
-            var Montage = montageRequire("core/core").Montage;
-            var EventManager = montageRequire("core/event/event-manager").EventManager;
-            var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
-            var logger = montageRequire("core/logger").logger;
+            var EventManager = montageRequire("core/event/event-manager").EventManager,
+                MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
 
             var defaultEventManager, application;
 
