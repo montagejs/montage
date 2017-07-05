@@ -1,7 +1,7 @@
  /*global require, exports*/
 
 /**
-    @module "montage/ui/native/button.reel"
+    @module "montage/ui/button.reel"
 */
 var Control = require("ui/control").Control,
     KeyComposer = require("composer/key-composer").KeyComposer,
@@ -11,7 +11,7 @@ var Control = require("ui/control").Control,
 
 /**
     Wraps a native <code>&lt;button></code> or <code>&lt;input[type="button"]></code> HTML element. The element's standard attributes are exposed as bindable properties.
-    @class module:"montage/ui/native/button.reel".Button
+    @class module:"montage/ui/button.reel".Button
     @extends module:montage/ui/control.Control
     @fires action
     @fires hold
@@ -26,7 +26,7 @@ b1.addEventListener("action", function(event) {
 <caption>Serialized example</caption>
 {
     "aButton": {
-        "prototype": "montage/ui/native/button.reel",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "btnElement"}
         },
@@ -44,14 +44,14 @@ b1.addEventListener("action", function(event) {
 &lt;button data-montage-id="btnElement"></button>
 */
 
-var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/native/button.reel".Button# */ {
+var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/button.reel".Button# */ {
 
     /**
         Dispatched when the button is activated through a mouse click, finger tap,
         or when focused and the spacebar is pressed.
 
         @event action
-        @memberof module:"montage/ui/native/button.reel".Button
+        @memberof module:"montage/ui/button.reel".Button
         @param {Event} event
     */
 
@@ -60,7 +60,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         {@link holdThreshold}.
 
         @event hold
-        @memberof module:"montage/ui/native/button.reel".Button
+        @memberof module:"montage/ui/button.reel".Button
         @param {Event} event
     */
 
@@ -92,6 +92,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     _labelNode: {value:undefined, enumerable: false},
 
     _label: { value: undefined, enumerable: false },
+    
     _emptyLabel: { value: "", enumerable: false },
 
     /**
@@ -129,13 +130,13 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         }
     },
 
-    // setLabelInitialValue: {
-    //     value: function(value) {
-    //         if (this._label === undefined) {
-    //                 this._label = value;
-    //             }
-    //     }
-    // },
+    setLabelInitialValue: {
+        value: function(value) {
+            if (this._label === undefined) {
+                this._label = value;
+            }
+        }
+    },
 
     _promise: {
         value: undefined
@@ -373,13 +374,11 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                         this.element.appendChild(document.createTextNode(""));
                     }
                     this._labelNode = this.element.firstChild;
-                    // this.setLabelInitialValue(this._labelNode.data)
-                    // if (this._label === undefined) {
-                    //     this._label = this._labelNode.data;
-                    // }
+                    
+                    this.setLabelInitialValue(this.value);
                 }
 
-                //this.classList.add("montage-Button");
+                // this.classList.add("montage-Button");
                 this.element.setAttribute("role", "button");
                 this.element.addEventListener("keyup", this, false);
             }
@@ -415,7 +414,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
 
 });
 
-Button.addAttributes( /** @lends module:"montage/ui/native/button.reel".Button# */{
+Button.addAttributes( /** @lends module:"montage/ui/button.reel".Button# */{
 
 /**
     The URL to which the form data will be sumbitted.
