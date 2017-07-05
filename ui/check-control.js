@@ -27,16 +27,6 @@ exports.CheckControl =  Control.specialize({
                     "<-": "checked"
                 }
             });
-
-            var leftExpression = "classList.has('",
-                bindings = {};
-            leftExpression += this.checkedClassName;
-            leftExpression += "')";
-            bindings[leftExpression] = {
-                    "<-": "checked"
-            };
-
-            this.defineBindings(bindings);
         }
     },
 
