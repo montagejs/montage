@@ -5,7 +5,7 @@
 */
 var CheckControl = require("ui/check-control").CheckControl;
 
-var CLASS_PREFIX = "montage-Checkbox";
+// var CLASS_PREFIX = "montage-Checkbox";
 
 /**
 
