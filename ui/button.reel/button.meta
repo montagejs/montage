@@ -1,20 +1,4 @@
 {
-    "blueprint_button_enabled": {
-        "prototype": "core/meta/property-blueprint",
-        "properties": {
-            "name": "enabled",
-            "blueprint": {
-                "@": "root"
-            },
-            "cardinality": 1,
-            "mandatory": false,
-            "denyDelete": false,
-            "readOnly": false,
-            "valueType": "boolean",
-            "enumValues": [],
-            "helpKey": ""
-        }
-    },
     "blueprint_button_formaction": {
         "prototype": "core/meta/property-blueprint",
         "properties": {

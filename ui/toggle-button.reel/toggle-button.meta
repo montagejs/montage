@@ -1,0 +1,109 @@
+{
+    "blueprint_button_pressed": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "pressed",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "boolean",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+
+    "blueprint_button_unpressedLabel": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "unpressedLabel",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+
+    "blueprint_button_pressedClass": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "pressedClass",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+
+    "blueprint_button_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Button",
+                "prototypeName": "Button",
+                "blueprintModule": {
+                    "%": "ui/button.reel/button.meta"
+                }
+            }
+        }
+    },
+   
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "button",
+            "customPrototype": false,
+            "parent": {
+                "@": "blueprint_control_reference"
+            },
+            "propertyDescriptors": [
+                {
+                    "@": "blueprint_button_pressed",
+                },
+                {
+                    "@": "blueprint_button_unpressedLabel"
+                },
+                {
+                    "@": "blueprint_button_pressedClass"
+                }
+               
+            ],
+            "propertyDescriptorGroups": {
+                "toggle-button": [
+                    {
+                        "@": "blueprint_button_pressed"
+                    },
+                    {
+                        "@": "blueprint_button_unpressedLabel"
+                    },
+                    {
+                        "@": "blueprint_button_pressedClass"
+                    }
+                ]
+            },
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "ui/toggle-button.reel/toggle-button.meta"
+            },
+            "exportName": "ToggleButton",
+            "module": {
+                "%": "ui/toggle-button.reel"
+            }
+        }
+    }
+}
