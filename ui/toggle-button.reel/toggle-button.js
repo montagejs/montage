@@ -135,14 +135,6 @@ var ToggleButton = exports.ToggleButton = Button.specialize(/** @lends module:"m
         }
     },
 
-    setLabelInitialValue: {
-        value: function(value) {
-            if (this._label === null) {
-                this._label = value;
-            }
-        }
-    },
-
     enterDocument: {
         value: function(firstTime) {
             this.super(firstTime);
