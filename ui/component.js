@@ -306,6 +306,8 @@ var CssBasedAnimation = Montage.specialize({
 
 });
 
+var rootComponent;
+
 /**
  * @class Component
  * @classdesc Base class for all Montage components.
@@ -678,9 +680,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     getDomArgumentNames: {
         value: function () {
             if (this._domArgumentNames === void 0) {
-                this._domArgumentNames = this._domArguments
-                    ? Object.keys(this._domArguments)
-                    : this._sharedEmptyArray;
+                this._domArgumentNames = this._domArguments ? Object.keys(this._domArguments) : this._sharedEmptyArray;
             }
             return this._domArgumentNames;
         }
@@ -1588,8 +1588,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                             var promises,
                                 childComponents = self._childComponents,
                                 childComponent;
-                            if(childComponents && childComponents.length) {
-                                promises = []
+                            if (childComponents && childComponents.length) {
+                                promises = [];
                                 for (var i = 0; (childComponent = childComponents[i]); i++) {
                                     promises.push(childComponent.loadComponentTree());
                                 }
@@ -1733,15 +1733,17 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 templateObjects = this._templateObjects;
 
             for (var label in objects) {
-                var object = objects[label];
+                if (objects.hasOwnProperty(label)) {
+                    var object = objects[label];
 
-                if (typeof object === "object" && object != null) {
-                    if (!Component.prototype.isPrototypeOf(object) || object === this ||
-                        object.parentComponent === this) {
-                        templateObjects[label] = object;
-                    } else {
-                        descriptor.get = this._makeTemplateObjectGetter(this, label, object);
-                        Object.defineProperty(templateObjects, label, descriptor);
+                    if (typeof object === "object" && object !== null) {
+                        if (!Component.prototype.isPrototypeOf(object) || object === this ||
+                            object.parentComponent === this) {
+                            templateObjects[label] = object;
+                        } else {
+                            descriptor.get = this._makeTemplateObjectGetter(this, label, object);
+                            Object.defineProperty(templateObjects, label, descriptor);
+                        }
                     }
                 }
             }
@@ -1767,7 +1769,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     // the tree and found out.
                     if (components.length === 1) {
                         component = components[0];
-                        while (component = component.parentComponent) {
+                        while ((component = component.parentComponent)) {
                             if (component === owner) {
                                 // we got to the owner without ever hitting a component
                                 // that repeats its child components, we can
@@ -3514,8 +3516,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     // If the set value is different to the current one,
                     // update it here, and set it to be updated on the
                     // element in the next draw cycle.
-                    if((typeof value !== 'undefined') && this[attributeName] !== value) {
-                        setter ? setter.call(this,value) : (this[attributeName] = value);
+                    if(typeof value !== 'undefined' && (this[attributeName] !== value)) {
+
+                        if (setter) {
+                            setter.call(this, value);
+                        } else {
+                            this[attributeName] = value;                            
+                        }
+
                         this._elementAttributeValues[name] = value;
                         if (!fromInput) {
                             this.needsDraw = true;
@@ -3834,8 +3842,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      * @function
      */
     requestAnimationFrame: {
-        value: (global.requestAnimationFrame || global.webkitRequestAnimationFrame
-             || global.mozRequestAnimationFrame ||  global.msRequestAnimationFrame || setTimeout),
+        value: (global.requestAnimationFrame || global.webkitRequestAnimationFrame || global.mozRequestAnimationFrame ||  global.msRequestAnimationFrame || setTimeout),
         enumerable: false
     },
 
@@ -3844,8 +3851,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      * @function
      */
     cancelAnimationFrame: {
-        value: (global.cancelAnimationFrame ||  global.webkitCancelAnimationFrame
-             || global.mozCancelAnimationFrame || global.msCancelAnimationFrame || clearTimeout),
+        value: (global.cancelAnimationFrame ||  global.webkitCancelAnimationFrame || global.mozCancelAnimationFrame || global.msCancelAnimationFrame || clearTimeout),
         enumerable: false
     },
 
@@ -4311,7 +4317,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     }
 });
 
-var rootComponent = new RootComponent().init();
+rootComponent = new RootComponent().init();
 exports.__root__ = rootComponent;
 
 //https://github.com/kangax/html-minifier/issues/63
