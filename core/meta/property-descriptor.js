@@ -139,8 +139,8 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     },
 
     _setPropertyWithDefaults: {
-        value:function (serializer, propertyName, value) {
-            if (value != Defaults[propertyName]) {
+        value: function (serializer, propertyName, value) {
+            if (value !== null && value !== Defaults[propertyName]) {
                 serializer.setProperty(propertyName, value);
             }
         }
