@@ -40,7 +40,9 @@ exports.MontageLabeler = Montage.specialize({
                 label;
 
             if (hash in this._objectsLabels) {
-                label = this._objectsLabels[hash];
+                if (Object.hasOwnProperty.call(this._objectsLabels, hash)) {
+                    label = this._objectsLabels[hash];
+                }
             } else {
                 label = this.generateObjectLabel(object);
                 this.setObjectLabel(object, label);

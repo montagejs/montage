@@ -48,12 +48,15 @@ var Root = exports.Root = Montage.specialize({
                 object;
 
             for (var label in this.object) {
-                object = this.object[label];
+                if (Object.hasOwnProperty.call(this.object, label)) {
 
-                if (object.toJSON) {
-                    result[label] = object.toJSON(label, 1);
-                } else {
-                    result[label] = object;
+                    object = this.object[label];
+
+                    if (object.toJSON) {
+                        result[label] = object.toJSON(label, 1);
+                    } else {
+                        result[label] = object;
+                    }   
                 }
             }
 

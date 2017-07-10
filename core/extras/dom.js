@@ -154,7 +154,7 @@ if (typeof Node !== "undefined") {
 
     DocumentPrototype.addRule = function (selectorText, definition) {
         var styleSheet, cssRule;
-        if ((styleSheet = document.styleSheets[0]) == null) {
+        if (!(styleSheet = document.styleSheets[0])) {
             var style = document.createElement("style");
             style.type = "text/css";
             document.head.appendChild(style);

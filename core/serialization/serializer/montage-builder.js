@@ -125,8 +125,10 @@ var MontageBuilder = Montage.specialize(/** @lends MontageBuilder# */ {
                 root = this._root;
 
             for (var label in references) {
-                if (!root.hasProperty(label)) {
-                    root.setProperty(label, this._placeholderProperty);
+                if (Object.hasOwnProperty.call(references, label)) {
+                    if (!root.hasProperty(label)) {
+                        root.setProperty(label, this._placeholderProperty);
+                    }   
                 }
             }
         }

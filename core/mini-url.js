@@ -682,6 +682,7 @@ Url.prototype.resolveObject = function(relative) {
         mustEndAbs = mustEndAbs && (relPath[0] === '' || srcPath[0] === '');
     }
 
+    var authInHost;
     if (isRelAbs) {
         // it's absolute.
         result.host = (relative.host || relative.host === '') ?
@@ -711,7 +712,7 @@ Url.prototype.resolveObject = function(relative) {
             //occationaly the auth can get stuck only in host
             //this especially happens in cases like
             //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
-            var authInHost = result.host && result.host.indexOf('@') > 0 ?
+            authInHost = result.host && result.host.indexOf('@') > 0 ?
                 result.host.split('@') : false;
             if (authInHost) {
                 result.auth = authInHost.shift();
@@ -793,7 +794,7 @@ Url.prototype.resolveObject = function(relative) {
         //occationaly the auth can get stuck only in host
         //this especially happens in cases like
         //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
-        var authInHost = result.host && result.host.indexOf('@') > 0 ?
+        authInHost = result.host && result.host.indexOf('@') > 0 ?
             result.host.split('@') : false;
         if (authInHost) {
             result.auth = authInHost.shift();
@@ -840,6 +841,6 @@ Url.prototype.parseHost = function() {
     }
 };
 
-module.exports.resolve = function(source, relative) {
+exports.resolve = function(source, relative) {
     return urlParse(source, false, true).resolve(relative);
 };

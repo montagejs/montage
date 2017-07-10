@@ -296,6 +296,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
      */
     closeBatch: {
         value: function () {
+            var self = this;
             if (!this.currentBatch) {
                 throw new Error("No batch operation to close");
             }
@@ -334,7 +335,6 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
 
             this._batchStack.pop();
 
-            var self = this;
             this.register(label, batchPromise.then(function (finalOperation) {
                 operations.push(finalOperation);
                 // We resolve the batch undo with a function we've created to undo all the child operations

@@ -346,7 +346,9 @@ var MontageVisitor = Montage.specialize({
     setObjectCustomUnits: {
         value: function (malker, object) {
             for (var unitName in this._units) {
-                this.setObjectCustomUnit(malker, object, unitName);
+                if (Object.hasOwnProperty.call(this._units, unitName)) {
+                    this.setObjectCustomUnit(malker, object, unitName);
+                }
             }
         }
     },
@@ -400,7 +402,6 @@ var MontageVisitor = Montage.specialize({
     isCustomObject: {
         value: function(object) {
             var type = this.getCustomObjectTypeOf(object);
-
             return typeof type === "string";
         }
     },
@@ -552,19 +553,22 @@ var MontageVisitor = Montage.specialize({
             var customObjectVisitors = this.customObjectVisitors;
 
             for (var methodName in visitor) {
-                if (methodName === "getTypeOf") {
-                    continue;
-                }
+                if (Object.hasOwnProperty.call(visitor, methodName)) {
 
-                if (
-                    typeof visitor[methodName] === "function" && 
-                        methodName.substr(0, 5) === "visit"
-                ) {
-                    if (typeof customObjectVisitors[methodName] === "undefined") {
-                        customObjectVisitors[methodName] = visitor[methodName].bind(visitor);
-                    } else {
-                        return new Error("Visitor '" + methodName + "' is already registered.");
+                    if (methodName === "getTypeOf") {
+                        continue;
                     }
+
+                    if (
+                        typeof visitor[methodName] === "function" && 
+                            methodName.substr(0, 5) === "visit"
+                    ) {
+                        if (typeof customObjectVisitors[methodName] === "undefined") {
+                            customObjectVisitors[methodName] = visitor[methodName].bind(visitor);
+                        } else {
+                            return new Error("Visitor '" + methodName + "' is already registered.");
+                        }
+                    }   
                 }
             }
 

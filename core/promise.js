@@ -2,7 +2,7 @@
 // used for bootstrapping, this file will never actually be required, but will
 // be injected instead.
 
-Promise = require("bluebird");
+var Promise = require("bluebird");
 
 // Patch "Promise.is" to support native promise
 Promise.is = function (obj) {

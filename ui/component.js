@@ -582,7 +582,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             return this._element;
         },
         set: function (value) {
-            if (value == null) {
+            if (value === null || value === undefined) {
                 console.warn("Tried to set element of ", this, " to ", value);
                 return;
             }
@@ -949,7 +949,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 aParentNode,
                 eventManager = this.eventManager;
             if (anElement) {
-                while ((aParentNode = anElement.parentNode) != null && eventManager.eventHandlerForElement(aParentNode) == null) {
+                while ((aParentNode = anElement.parentNode) && !eventManager.eventHandlerForElement(aParentNode)) {
                     anElement = aParentNode;
                 }
                 return aParentNode ? eventManager.eventHandlerForElement(aParentNode) : this._alternateParentComponent;
@@ -2020,7 +2020,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     _getArray: {
         value: function () {
-            if (this._arrayObjectPool.pool == null) {
+            if (this._arrayObjectPool.pool === null) {
                 this._arrayObjectPool.pool = [];
                 for (var i = 0; i < this._arrayObjectPool.size; i++) {
                     this._arrayObjectPool.pool[i] = [];
@@ -2238,7 +2238,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             if (!argumentNames || argumentNames.length === 0) {
                 this._leTagStarArgument(ownerModuleId, label, this.element);
             } else {
-                for (var i = 0, name; name = argumentNames[i]; i++) {
+                for (var i = 0, name; (name = argumentNames[i]); i++) {
                     this._leTagNamedArgument(ownerModuleId, label, this._domArguments[name], name);
                 }
             }
@@ -2255,7 +2255,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     if (element.nodeType === Node.ELEMENT_NODE) {
                         break;
                     }
-                } while (element =/*assign*/ element.nextSibling);
+                } while ((element = element.nextSibling));
             }
 
             return element;
@@ -2272,7 +2272,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     if (element.nodeType === Node.ELEMENT_NODE) {
                         break;
                     }
-                } while (element =/*assign*/ element.previousSibling);
+                } while ((element = element.previousSibling));
             }
 
             return element;
@@ -2317,55 +2317,57 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             }
 
             for (var key in parameters) {
-                parameterElement = parameters[key];
-                argument = templateArguments ? templateArguments[key] : void 0;
+                if (parameters.hasOwnProperty(key)) {
+                    parameterElement = parameters[key];
+                    argument = templateArguments ? templateArguments[key] : void 0;
 
-                if ((key === "*") || (key === "each")) {
-                    if (this._element.childElementCount === 0) {
-                     //We're missing an argument, we're going to check if we have a default
-                         if (parameterElement && parameterElement.childElementCount > 0) {
-                             range = this._element.ownerDocument.createRange();
-                             range.selectNodeContents(parameterElement);
-                             parameterElement.parentNode.replaceChild(range.extractContents(), parameterElement);
+                    if ((key === "*") || (key === "each")) {
+                        if (this._element.childElementCount === 0) {
+                         //We're missing an argument, we're going to check if we have a default
+                             if (parameterElement && parameterElement.childElementCount > 0) {
+                                 range = this._element.ownerDocument.createRange();
+                                 range.selectNodeContents(parameterElement);
+                                 parameterElement.parentNode.replaceChild(range.extractContents(), parameterElement);
 
-                            //Should we re-construct the structure from the default?
-                            //  if(!templateArguments) {
-                            //      templateArguments = this._domArguments = {"*":};
-                            //
-                            //  }
-                         } else {
-                            //  throw new Error('No arguments provided for ' +
-                            //  this.templateModuleId + '. Arguments needed for data-param: ' +
-                            //  key + '.');
-                            //Remove the data-parm="*" element
-                            parameterElement.parentNode.removeChild(parameterElement);
-                         }
-                    } else {
-                        range = this._element.ownerDocument.createRange();
-                        range.selectNodeContents(this._element);
-                        contents = range.extractContents();
-                    }
-                } else {
-                    contents = argument;
-                }
-
-                if (contents) {
-                    var i, length;
-
-                    if (contents instanceof Element) {
-                        var classList = parameterElement.classList,
-                            contentsClassList = contents.component ? contents.component.classList : contents.classList;
-
-                        for (i = 0, length = classList.length; i < length; i++) {
-                            contentsClassList.add(classList[i]);
+                                //Should we re-construct the structure from the default?
+                                //  if(!templateArguments) {
+                                //      templateArguments = this._domArguments = {"*":};
+                                //
+                                //  }
+                             } else {
+                                //  throw new Error('No arguments provided for ' +
+                                //  this.templateModuleId + '. Arguments needed for data-param: ' +
+                                //  key + '.');
+                                //Remove the data-parm="*" element
+                                parameterElement.parentNode.removeChild(parameterElement);
+                             }
+                        } else {
+                            range = this._element.ownerDocument.createRange();
+                            range.selectNodeContents(this._element);
+                            contents = range.extractContents();
                         }
+                    } else {
+                        contents = argument;
                     }
 
-                    components = this._findAndDetachComponents(contents);
-                    parameterElement.parentNode.replaceChild(contents, parameterElement);
+                    if (contents) {
+                        var i, length;
 
-                    for (i = 0; (component = components[i]); i++) {
-                        component.attachToParentComponent();
+                        if (contents instanceof Element) {
+                            var classList = parameterElement.classList,
+                                contentsClassList = contents.component ? contents.component.classList : contents.classList;
+
+                            for (i = 0, length = classList.length; i < length; i++) {
+                                contentsClassList.add(classList[i]);
+                            }
+                        }
+
+                        components = this._findAndDetachComponents(contents);
+                        parameterElement.parentNode.replaceChild(contents, parameterElement);
+
+                        for (i = 0; (component = components[i]); i++) {
+                            component.attachToParentComponent();
+                        }
                     }
                 }
             }
@@ -3251,7 +3253,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                             // only set the value if a value has not already been set by binding
                             if(typeof this._elementAttributeValues[name] === 'undefined') {
                                 this._elementAttributeValues[name] = value;
-                                if( (typeof this[name] === 'undefined') || this[name] == null) {
+                                if( (typeof this[name] === 'undefined') || this[name] === null) {
                                     this[name] = value;
                                 }
                             }
@@ -3268,7 +3270,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
                     if(typeof this._elementAttributeValues.textContent === 'undefined') {
                         this._elementAttributeValues.textContent = textContent;
-                        if( this.textContent == null) {
+                        if (this.textContent === null) {
                             this.textContent = textContent;
                         }
                     }
@@ -3279,10 +3281,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 //Benoit: This shouldn't be needed on each instance if properly set on the prototype TODO #memory #performance improvement
                 if (this._elementAttributeDescriptors) {
                     for (attributeName in this._elementAttributeDescriptors) {
-                        descriptor = this._elementAttributeDescriptors[attributeName];
-                        var _name = "_"+attributeName;
-                        if (this[_name] === null && descriptor !== null && "value" in descriptor) {
-                            this[_name] = descriptor.value;
+                        if (this._elementAttributeDescriptors.hasOwnProperty(attributeName)) {
+                            descriptor = this._elementAttributeDescriptors[attributeName];
+                            var _name = "_"+attributeName;
+                            if (this[_name] === null && descriptor !== null && "value" in descriptor) {
+                                this[_name] = descriptor.value;
+                            }   
                         }
                     }
                 }
@@ -3869,16 +3873,15 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             var ns = {};
             var os = {};
 
-            //jshint -W116
             for (var i = 0; i < n.length; i++ ) {
-                if (ns[ n[i] ] == null ) {
+                if (ns[ n[i] ] === null ) {
                     ns[ n[i] ] = { rows: [], o: null };
                 }
                 ns[ n[i] ].rows.push( i );
             }
 
             for (i = 0; i < o.length; i++ ) {
-                if (os[ o[i] ] == null ) {
+                if (os[ o[i] ] === null ) {
                     os[ o[i] ] = { rows: [], n: null };
                 }
                 os[ o[i] ].rows.push( i );
@@ -3892,9 +3895,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             }
 
             for (i = 0; i < n.length - 1; i++ ) {
-                if (n[i].text != null && n[i+1].text == null &&
-                    n[i].row + 1 < o.length && o[ n[i].row + 1 ].text == null &&
-                    n[i+1] == o[ n[i].row + 1 ]
+                if (n[i].text !== null && n[i+1].text === null &&
+                    n[i].row + 1 < o.length && o[ n[i].row + 1 ].text === null &&
+                    n[i+1] === o[ n[i].row + 1 ]
                 ) {
                     n[i+1] = { text: n[i+1], row: n[i].row + 1 };
                     o[n[i].row+1] = { text: o[n[i].row+1], row: i + 1 };
@@ -3902,15 +3905,14 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             }
 
             for (i = n.length - 1; i > 0; i-- ) {
-                if (n[i].text != null && n[i-1].text == null &&
-                    n[i].row > 0 && o[ n[i].row - 1 ].text == null &&
-                    n[i-1] == o[ n[i].row - 1 ]
+                if (n[i].text !== null && n[i-1].text === null &&
+                    n[i].row > 0 && o[ n[i].row - 1 ].text === null &&
+                    n[i-1] === o[ n[i].row - 1 ]
                 ) {
                     n[i-1] = { text: n[i-1], row: n[i].row - 1 };
                     o[n[i].row-1] = { text: o[n[i].row-1], row: i - 1 };
                 }
             }
-            //jshint +W116
 
             return { o: o, n: n };
         }
@@ -3960,9 +3962,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     addStyleSheetsFromTemplate: {
         value: function(template) {
             if(!this._addedStyleSheetsByTemplate.has(template)) {
-                var resources = template.getResources()
-                    , _document = this.element.ownerDocument
-                    , styles = resources.createStylesForDocument(_document);
+                var resources = template.getResources(), 
+                    ownerDocument = this.element.ownerDocument, 
+                    styles = resources.createStylesForDocument(ownerDocument);
 
                 for (var i = 0, style; (style = styles[i]); i++) {
                     this.addStylesheet(style);
@@ -3984,9 +3986,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      */
     drawStylesheets: {
         value: function () {
-            var documentResources = this._documentResources,
+            var stylesheet,
                 stylesheets = this._stylesheets,
-                stylesheet,
+                documentResources = this._documentResources,
                 documentHead = documentResources._document.head,
                 bufferDocumentFragment = this._bufferDocumentFragment;
 
@@ -4072,11 +4074,11 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                     var out = this._diff(this._oldSource.split("\n"), newSource.split("\n"));
                     for (var i = 0; i < out.n.length; i++) {
                         // == null ok. Is also checking for undefined
-                        if (out.n[i].text == null) {
+                        if (out.n[i].text === null) {
                             warning.push('+ ' + out.n[i]);
                         } else {
                             // == null ok. Is also checking for undefined
-                            for (var n = out.n[i].row + 1; n < out.o.length && out.o[n].text == null; n++) {
+                            for (var n = out.n[i].row + 1; n < out.o.length && out.o[n].text === null; n++) {
                                 warning.push('- ' + out.o[n]);
                             }
                         }

@@ -127,6 +127,7 @@ exports.makeJson = function (next) {
         });
     };
 };
+
 exports.json = exports.makeJson(exports.request);
 
 exports.normalizeRequest = function (request) {
