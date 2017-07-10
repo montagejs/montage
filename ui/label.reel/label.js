@@ -1,7 +1,7 @@
 /**
  * @module "montage/ui/label.reel"
  */
-var Text = require("../text.reel/text").Text,
+var TextComponent = require("../text.reel/text").Text,
     PressComposer = require("../../composer/press-composer").PressComposer;
 
 /* FIXME:
@@ -11,7 +11,7 @@ var Text = require("../text.reel/text").Text,
 - handle keyboard events?
 */
 
-var Label = exports.Label = Text.specialize({
+exports.Label = TextComponent.specialize({
     constructor: {
         value: function () {
             this._pressComposer = new PressComposer();

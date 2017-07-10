@@ -336,8 +336,8 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
                     var childComponent = this._childComponents[i];
                     childComponent.addEventListener("firstDraw", firstDraw, false);
                     childComponent.needsDraw = true;
-                    if(childComponent._completedFirstDraw === true) {
-                        console.error("Repetiton:%s child component %O has already drawn.", Object.hash(this), childComponent);
+                    if (childComponent._completedFirstDraw === true) {
+                        throw Error("Repetiton:%s child component %O has already drawn.", Object.hash(this), childComponent);
                     }
                 }
             } else {
@@ -814,14 +814,14 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                         objectIterations.push(iteration);
                     }
                     for (i = 0; i < remove.length; i++) {
-                        if (objectIterations = iterationsMap.get(remove[i])) {
+                        if ((objectIterations = iterationsMap.get(remove[i]))) {
                             for (j = 0; j < objectIterations.length; j++) {
                                 objectIterations[j].selected = false;
                             }
                         }
                     }
                     for (i = 0; i < add.length; i++) {
-                        if (objectIterations = iterationsMap.get(add[i])) {
+                        if ((objectIterations = iterationsMap.get(add[i]))) {
                             for (j = 0; j < objectIterations.length; j++) {
                                 objectIterations[j].selected = true;
                             }
@@ -1206,7 +1206,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 iterations = this.iterations;
 
             this._purgeFreeIterations();
-            for (var i = 0, iteration; iteration =/*assign*/ iterations[i]; i++) {
+            for (var i = 0, iteration; (iteration = iterations[i]); i++) {
                 iteration.isDirty = true;
             }
 

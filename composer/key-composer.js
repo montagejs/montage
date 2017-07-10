@@ -6,6 +6,104 @@
 var Montage = require("../core/core").Montage,
     Composer = require("./composer").Composer;
 
+
+/**
+ * @class KeyManagerProxy
+ * @classdesc Provide a proxy for lazy load of KeyManager.
+ * @extends Montage
+ * @private
+ */
+var _keyManagerProxy = null;
+
+var KeyManagerProxy = Montage.specialize({
+
+    /**
+     * @private
+     */
+    _defaultKeyManager: {
+        value: null
+    },
+
+    /**
+     * @private
+     */
+    _loadingDefaultKeyManager: {
+        value: false
+    },
+
+    /**
+     * @private
+     */
+    _keysToRegister : {
+        value: []
+    },
+
+    /**
+     * Register a `KeyComposer` with the default `KeyManager`.
+     * @function
+     * @param {Object} keyComposer. A key composer object.
+     */
+    registerKey: {
+        value: function (keyComposer) {
+            var thisRef = this;
+
+            if (!this._defaultKeyManager) {
+                this._keysToRegister.push(keyComposer);
+                if (!this._loadingDefaultKeyManager) {
+                    this._loadingDefaultKeyManager = true;
+
+                    require.async("core/event/key-manager")
+                    .then(function (module) {
+                        var keyManager = thisRef._defaultKeyManager = module.defaultKeyManager;
+                        thisRef._keysToRegister.forEach(function (keyComposer) {
+                            keyManager.registerKey(keyComposer);
+                        });
+                        thisRef._keysToRegister.length = 0;
+                    });
+                }
+            } else {
+                // This will happend only if somebody uses a cached return
+                // value from KeyManagerProxy.defaultKeyManager
+                this._defaultKeyManager.registerKey(keyComposer);
+            }
+        }
+    },
+
+    /**
+     * Unregister a `KeyComposer` with the default `KeyManager`.
+     * @function
+     * @param {Object} keyComposer. A key composer object.
+     */
+    unregisterKey: {
+        value: function (keyComposer) {
+            if (this._defaultKeyManager) {
+                this._defaultKeyManager.unregisterKey(keyComposer);
+            }
+        }
+    }
+
+}, {
+
+    /**
+     * Return either the default `KeyManager` or its `KeyManagerProxy`.
+     * @function
+     * @returns {Object} `KeyManager` or `KeyManagerProxy`.
+     */
+    defaultKeyManager: {
+        get: function () {
+            if (!_keyManagerProxy) {
+                _keyManagerProxy = new KeyManagerProxy();
+            }
+            if (this._defaultKeyManager) {
+                return this._defaultKeyManager;
+            } else {
+                return _keyManagerProxy;
+            }
+        }
+    }
+});
+
+
 // Event types dispatched by KeyComposer
 var KEYPRESS_EVENT_TYPE = "keyPress",
     LONGKEYPRESS_EVENT_TYPE = "longKeyPress",
@@ -236,104 +334,6 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
             component.addComposerForElement(key, window);
 
             return key;
-        }
-    }
-
-});
-
-
-/**
- * @class KeyManagerProxy
- * @classdesc Provide a proxy for lazy load of KeyManager.
- * @extends Montage
- * @private
- */
-var _keyManagerProxy= null;
-
-var KeyManagerProxy = Montage.specialize(  {
-
-    /**
-     * @private
-     */
-    _defaultKeyManager: {
-        value: null
-    },
-
-    /**
-     * @private
-     */
-    _loadingDefaultKeyManager: {
-        value: false
-    },
-
-    /**
-     * @private
-     */
-    _keysToRegister : {
-        value: []
-    },
-
-    /**
-     * Register a `KeyComposer` with the default `KeyManager`.
-     * @function
-     * @param {Object} keyComposer. A key composer object.
-     */
-    registerKey: {
-        value: function (keyComposer) {
-            var thisRef = this;
-
-            if (!this._defaultKeyManager) {
-                this._keysToRegister.push(keyComposer);
-                if (!this._loadingDefaultKeyManager) {
-                    this._loadingDefaultKeyManager = true;
-
-                    require.async("core/event/key-manager")
-                    .then(function (module) {
-                        var keyManager = thisRef._defaultKeyManager = module.defaultKeyManager;
-                        thisRef._keysToRegister.forEach(function (keyComposer) {
-                            keyManager.registerKey(keyComposer);
-                        });
-                        thisRef._keysToRegister.length = 0;
-                    });
-                }
-            } else {
-                // This will happend only if somebody uses a cached return
-                // value from KeyManagerProxy.defaultKeyManager
-                this._defaultKeyManager.registerKey(keyComposer);
-            }
-        }
-    },
-
-    /**
-     * Unregister a `KeyComposer` with the default `KeyManager`.
-     * @function
-     * @param {Object} keyComposer. A key composer object.
-     */
-    unregisterKey: {
-        value: function (keyComposer) {
-            if (this._defaultKeyManager) {
-                this._defaultKeyManager.unregisterKey(keyComposer);
-            }
-        }
-    }
-
-}, {
-
-    /**
-     * Return either the default `KeyManager` or its `KeyManagerProxy`.
-     * @function
-     * @returns {Object} `KeyManager` or `KeyManagerProxy`.
-     */
-    defaultKeyManager: {
-        get: function () {
-            if (!_keyManagerProxy) {
-                _keyManagerProxy = new KeyManagerProxy();
-            }
-            if (this._defaultKeyManager) {
-                return this._defaultKeyManager;
-            } else {
-                return _keyManagerProxy;
-            }
         }
     }
 

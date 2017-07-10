@@ -225,10 +225,9 @@ var Slider = exports.Slider = Control.specialize({
                         // }
 
                         /* marginLeft / marginTop must be the width of all previous thumbs */
-                        if(isHorizontal) {
+                        if (isHorizontal) {
                             iThumbWrapper.style.marginLeft = offset + "px";
-                        }
-                        else {
+                        } else {
                             iThumbWrapper.style.marginTop = offset + "px";
                         }
 
@@ -321,17 +320,20 @@ var Slider = exports.Slider = Control.specialize({
     },
     _dimensionLength : {
         get: function() {
-            var computedStyle = window.getComputedStyle(this._element);
+            var dimensionLength,
+                computedStyle = window.getComputedStyle(this._element);
 
             if (this.orientation === this._VERTICAL) {
-                this._spacer.offsetHeight -
+                dimensionLength = this._spacer.offsetHeight -
                     parseFloat(computedStyle.getPropertyValue("padding-top")) -
                         parseFloat(computedStyle.getPropertyValue("padding-bottom"));
             } else { 
-                this._spacer.offsetWidth - 
+                dimensionLength = this._spacer.offsetWidth - 
                     parseFloat(computedStyle.getPropertyValue("padding-left")) - 
                         parseFloat(computedStyle.getPropertyValue("padding-right"));
             }
+
+            return dimensionLength;
         }
     },
     _VERTICAL: {

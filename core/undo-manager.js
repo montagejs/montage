@@ -205,7 +205,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
 
             this._maxUndoCount = value;
 
-            if (this._maxUndoCount != null) {
+            if (this._maxUndoCount) {
                 this._trimStacks();
             }
         }
