@@ -1,7 +1,8 @@
 /**
  * @module "montage/ui/text.reel"
  */
-var Component = require("../component").Component;
+var Component = require("../component").Component,
+    PressComposer = require("../../composer/press-composer").PressComposer;
 
 /**
  * A Text component shows plain text. Any text can be safely displayed without
@@ -16,6 +17,13 @@ var Component = require("../component").Component;
  * @extends Component
  */
 exports.Text = Component.specialize( /** @lends Text.prototype # */ {
+
+    constructor: {
+        value: function () {
+            this._pressComposer = new PressComposer();
+            this.addComposer(this._pressComposer);
+        }
+    },
 
     hasTemplate: {
         value: false
@@ -90,6 +98,34 @@ exports.Text = Component.specialize( /** @lends Text.prototype # */ {
 
             //push to DOM
             this._valueNode.data = this.converter ? this.converter.convert(displayValue) : displayValue;
+        }
+    },
+
+    prepareForActivationEvents: {
+        value: function () {
+            this.super();
+            this._pressComposer.addEventListener("press", this, false);
+        }
+    },
+
+    _pressComposer: {
+        value: null
+    },
+
+    target: {
+        value: null
+    },
+
+    action: {
+        value: "activate"
+    },
+
+    handlePress: {
+        value: function (event) {
+            this.super(event);
+            if(this.target && typeof this.target[this.action] == "function") {
+                this.target[this.action]({ from: this });
+            }
         }
     }
 

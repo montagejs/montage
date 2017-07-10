@@ -4,7 +4,8 @@
 
 var Component = require("ui/component").Component,
     deprecate = require("core/deprecate"),
-    Map = require("collections/map");
+    Map = require("collections/map"),
+    PressComposer = require("composer/press-composer").PressComposer;
 
 /**
     Base component for all native components, such as RadioButton and Checkbox.
@@ -24,6 +25,23 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
                     "<-": "active"
                 }
             });
+        }
+    },
+
+     __pressComposer: {
+        enumerable: false,
+        value: null
+    },
+
+    _pressComposer: {
+        enumerable: false,
+        get: function () {
+            if (!this.__pressComposer) {
+                this.__pressComposer = new PressComposer();
+                this.addComposer(this.__pressComposer);
+            }
+
+            return this.__pressComposer;
         }
     },
 

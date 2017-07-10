@@ -4,8 +4,8 @@
     @module "montage/ui/button.reel"
 */
 var Control = require("ui/control").Control,
-    KeyComposer = require("composer/key-composer").KeyComposer,
-    PressComposer = require("composer/press-composer").PressComposer;
+    KeyComposer = require("composer/key-composer").KeyComposer;
+    
 
 // TODO migrate away from using undefinedGet and undefinedSet
 
@@ -181,22 +181,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/b
         }
     },
 
-    __pressComposer: {
-        enumerable: false,
-        value: null
-    },
-
-    _pressComposer: {
-        enumerable: false,
-        get: function () {
-            if (!this.__pressComposer) {
-                this.__pressComposer = new PressComposer();
-                this.addComposer(this.__pressComposer);
-            }
-
-            return this.__pressComposer;
-        }
-    },
+   
 
     __spaceKeyComposer: {
         value: null
