@@ -49,5 +49,5 @@ var Label = exports.Label = Text.specialize({
                 this.target[this.action]({ from: this });
             }
         }
-    },
+    }
 });
