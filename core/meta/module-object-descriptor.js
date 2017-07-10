@@ -5,6 +5,25 @@ var Montage = require("../core").Montage,
     ModuleReference = require("../module-reference").ModuleReference,
     deprecate = require("../deprecate");
 
+
+// Adapted from mr/sandbox
+function getModuleRequire(parentRequire, moduleId) {
+    var topId = parentRequire.resolve(moduleId);
+    var module = parentRequire.getModuleDescriptor(topId);
+
+    while (module.redirect || module.mappingRedirect) {
+        if (module.redirect) {
+            topId = module.redirect;
+        } else {
+            parentRequire = module.mappingRequire;
+            topId = module.mappingRedirect;
+        }
+        module = parentRequire.getModuleDescriptor(topId);
+    }
+
+    return module.require;
+}
+    
 // Cache all loaded object descriptors
 var OBJECT_DESCRIPTOR_CACHE = Object.create(null);
 
@@ -103,34 +122,35 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
             if (key in OBJECT_DESCRIPTOR_CACHE) {
                 return OBJECT_DESCRIPTOR_CACHE[key];
             }
+                
+            OBJECT_DESCRIPTOR_CACHE[key] = _require.async(moduleId).then(function (object) {
+                // Need to get the require from the module, because thats
+                // what all the moduleId references are relative to.
+                targetRequire = getModuleRequire(_require, moduleId);
+                return new Deserializer().init(JSON.stringify(object), targetRequire).deserializeObject();
+            }).then(function (objectDescriptor) {
+                
+                // TODO: May want to relax this to being just an Object Descriptor
+                if (!ModuleObjectDescriptor.prototype.isPrototypeOf(objectDescriptor)) {
+                    throw new Error("Object in " + moduleId + " is not a module-object-descriptor");
+                }
 
-            return OBJECT_DESCRIPTOR_CACHE[key] = _require.async(moduleId)
-                .then(function (object) {
-                    // Need to get the require from the module, because thats
-                    // what all the moduleId references are relative to.
-                    targetRequire = getModuleRequire(_require, moduleId);
-                    return new Deserializer().init(JSON.stringify(object), targetRequire).deserializeObject();
-                }).then(function (objectDescriptor) {
-                    
-                    // TODO: May want to relax this to being just an Object Descriptor
-                    if (!ModuleObjectDescriptor.prototype.isPrototypeOf(objectDescriptor)) {
-                        throw new Error("Object in " + moduleId + " is not a module-object-descriptor");
-                    }
+                objectDescriptor.objectDescriptorInstanceModule = new ModuleReference().initWithIdAndRequire(moduleId, _require);
 
-                    objectDescriptor.objectDescriptorInstanceModule = new ModuleReference().initWithIdAndRequire(moduleId, _require);
+                if (objectDescriptor._parentReference) {
+                    // Load parent "synchronously" so that all the properties
+                    // through the object descriptor chain are available
+                    return objectDescriptor._parentReference.promise(targetRequire) // MARK
+                        .then(function (parentObjectDescriptor) {
+                            objectDescriptor._parent = parentObjectDescriptor;
+                            return objectDescriptor;
+                        });
+                }
 
-                    if (objectDescriptor._parentReference) {
-                        // Load parent "synchronously" so that all the properties
-                        // through the object descriptor chain are available
-                        return objectDescriptor._parentReference.promise(targetRequire) // MARK
-                            .then(function (parentObjectDescriptor) {
-                                objectDescriptor._parent = parentObjectDescriptor;
-                                return objectDescriptor;
-                            });
-                    }
+                return objectDescriptor;
+            });
 
-                    return objectDescriptor;
-                });
+            return OBJECT_DESCRIPTOR_CACHE[key];
         }
     },
 
@@ -176,25 +196,4 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
             return ModuleObjectDescriptor.createDefaultObjectDescriptorForObject(object);
         }, "ModuleBlueprint.createDefaultBlueprintForObject", "ModuleObjectDescriptor.createDefaultObjectDescriptorForObject")
     }
-
-
 });
-
-// Adapted from mr/sandbox
-function getModuleRequire(parentRequire, moduleId) {
-    var topId = parentRequire.resolve(moduleId);
-    var module = parentRequire.getModuleDescriptor(topId);
-
-    while (module.redirect || module.mappingRedirect) {
-        if (module.redirect) {
-            topId = module.redirect;
-        } else {
-            parentRequire = module.mappingRequire;
-            topId = module.mappingRedirect;
-        }
-        module = parentRequire.getModuleDescriptor(topId);
-    }
-
-    return module.require;
-}
-

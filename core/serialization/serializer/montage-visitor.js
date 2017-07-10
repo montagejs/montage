@@ -379,8 +379,7 @@ var MontageVisitor = Montage.specialize({
                 labels = this.builder.getExternalReferences(),
                 label;
 
-            // TODO WTF
-            for (var i = 0; label = labels[i]; i++) {
+            for (var i = 0; (label = labels[i]); i++) {
                 externalObjects[label] = this.labeler.getObjectByLabel(label);
             }
 

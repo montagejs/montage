@@ -16,7 +16,7 @@ Serializer.defineSerializationUnit("bindings", function (serializer, object) {
         mapIter = inputs.keys(),
         targetPath;
 
-    while (targetPath = mapIter.next().value) {
+    while ((targetPath = mapIter.next().value)) {
     //for (var targetPath in inputs) {
         var input = inputs.get(targetPath);
 
