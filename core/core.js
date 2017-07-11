@@ -371,7 +371,7 @@ Object.defineProperty(Montage, "defineProperties", {value: function (obj, proper
     if (typeof properties !== "object" || properties === null) {
         throw new TypeError("Properties must be an object, not '" + properties + "'");
     }
-    var propertyKeys = Object.getOwnPropertyNames(properties);
+    var property, propertyKeys = Object.getOwnPropertyNames(properties);
     for (var i = 0; (property = propertyKeys[i]); i++) {
         if ("_bindingDescriptors" !== property) {
             this.defineProperty(obj, property, properties[property], inSpecialize);
