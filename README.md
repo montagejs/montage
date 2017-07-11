@@ -1,6 +1,10 @@
-[![Build Status](https://travis-ci.org/montagejs/montage.svg?branch=master)](http://travis-ci.org/montagejs/montage)
 
 # MontageJS
+
+[![Build Status](https://travis-ci.org/montagejs/montage.svg?branch=master)](http://travis-ci.org/montagejs/montage)
+
+[![Analytics](https://ga-beacon.appspot.com/UA-35717912-2/montagejs/montage)](https://github.com/montagejs/montage)
+
 
 MontageJS is a new type of application framework powered by standard web technologies. Designed with an eye toward maintainability and performance, MontageJS simplifies the development of rich HTML5 applications by providing modular components, real-time two-way data binding, object serialization with DOM mapping, event handling, a managed component draw cycle, CommonJS dependency management, and many more conveniences to help build robust single-page web applications.
  
@@ -78,8 +82,6 @@ To start using MontageJS, follow these steps:
 For a quick introduction on how to assemble MontageJS components into a user interface, refer to [“Hello MontageJS”](http://montagejs.org/docs/hello-montagejs.html) in our Quick Start tutorial.
 For more information on MontageJS components, bindings, event handling, serialization etc. refer to the [documentation](http://montagejs.org/docs/) (be patient: we are currently in the process of updating the docs).
 
-[![Analytics](https://ga-beacon.appspot.com/UA-35717912-2/montagejs/montage)](https://github.com/montagejs/montage)
-
 ## Maintenance
 
 Tests are in the `test` directory. Use `npm test` to run the tests in
@@ -87,4 +89,4 @@ NodeJS or open `test/run.html` in a browser.
 
 To run the tests in your browser, simply use `npm run test:jasmine`.
 
-To run the tests using Karma use `npm run test:karma` and for continious tests run with file changes detection `npm run test:karma-dev`.
+To run the tests using Karma use `npm run test:karma` and for continious tests run with file changes detection `npm run test:karma-dev`. Finally to open a remote debug console on karma use `npm run test:karma-debug`.
