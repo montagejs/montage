@@ -117,23 +117,25 @@
     ],
     "indent"        : 4,         // Specify indentation spacing
     "globals": {
+        // Definition by montage
         "require": false,
         "exports": false,
         "module": false,
         "global": false,
-        "console": false,
-        //
-        "escape": false,
-        //
+        // Redefinition by montage
+        "console": true,
         "WeakMap": true,
         "Map": true,
         "Set": true,
-        //
-        "Promise": false,
+        "URL": true,
+        "Promise": true,
+        // Native
+        "escape": false,
         "CustomEvent": true,
         "WebSocket": false,
         "TouchEvent": false,
         "UIEvent": false,
+        // Feature detect
         "WebKitPoint": false,
         "webkitConvertPointFromNodeToPage": false,
         "webkitConvertPointFromPageToNode": false

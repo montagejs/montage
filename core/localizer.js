@@ -249,11 +249,15 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                 return this._availableLocales;
             }
 
-            return this._availableLocales = this.callDelegateMethod("localizerWillPromiseAvailableLocales", this) ||
+            this._availableLocales = this.callDelegateMethod("localizerWillPromiseAvailableLocales", this);
 
-                this._manifest.get("files").get(LOCALES_DIRECTORY).get("files").then(function (locales) {
+            if (!this._availableLocales) {
+                this._availableLocales = this._manifest.get("files").get(LOCALES_DIRECTORY).get("files").then(function (locales) {
                     return Object.keys(locales);
                 });
+            }
+
+            return this._availableLocales;
         }
     },
 
@@ -299,11 +303,10 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
             var messageRequire = this.require;
 
             if (messageRequire.packageDescription.manifest === true) {
-                if (this.__manifest) {
-                    return this.__manifest;
-                } else {
-                    return this.__manifest = messageRequire.async(MANIFEST_FILENAME);
+                if (!this.__manifest) {
+                    this.__manifest = messageRequire.async(MANIFEST_FILENAME);
                 }
+                return this.__manifest;
             } else {
                 return Promise.reject(new Error(
                     "Package has no manifest. " + messageRequire.location +
@@ -356,13 +359,11 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                 });
             }
 
-            return this.messagesPromise = promise.then(function (localesMessages) {
+            this.messagesPromise = promise.then(function (localesMessages) {
                 return self._collapseMessages(localesMessages);
-
             },function(error) {
                 console.error("Could not load messages for '" + self.locale + "': " + error);
                 throw error;
-
             }).then(function (messages) {
                 if (typeof callback === "function") {
                     callback(messages);
@@ -370,6 +371,8 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
 
                 return messages;
             });
+
+            return this.messagesPromise;
         }
     },
 
@@ -1005,7 +1008,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
 
             // TODO: Remove when possible to bind to promises
             value.then(function (message) {
-                return self.__localizedResolved = message;
+                return (self.__localizedResolved = message);
             });
 
             this._localizedDeferred = value;
@@ -1103,7 +1106,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
 
             // Loop through bindings seperately in case the bound properties
             // haven't been set on the data object yet.
-            while (b = mapIter.next().value) {
+            while ((b = mapIter.next().value)) {
                 // binding is in the form of "get('key')" because it's a map
                 // but we want to serialize into an object literal instead.
                 key = /\.get\('([^']+)'\)/.exec(b)[1];
@@ -1144,10 +1147,12 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                 return;
             }
 
-            var syntax = input.sourceSyntax;
+            var scope,
+                syntax = input.sourceSyntax;
+                
             if (input.source !== object) {
                 var reference = serializer.addObjectReference(input.source);
-                var scope = new Scope({
+                scope = new Scope({
                     type: "component",
                     label: reference["@"]
                 });
@@ -1155,7 +1160,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                 syntax = expand(syntax, scope);
             }
 
-            var scope = new Scope();
+            scope = new Scope();
             scope.components = serializer;
             var sourcePath = stringify(syntax, scope);
 

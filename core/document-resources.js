@@ -4,11 +4,21 @@ var Montage = require("./core").Montage,
 
 var DocumentResources = Montage.specialize({
 
-    _SCRIPT_TIMEOUT: {value: 5000},
-    _document: {value: null},
-    _resources: {value: null},
-    _preloaded: {value: null},
-    _expectedStyles: {value: null},
+    _SCRIPT_TIMEOUT: {
+        value: 5000
+    },
+    _document: {
+        value: null
+    },
+    _resources: {
+        value: null
+    },
+    _preloaded: {
+        value: null
+    },
+    _expectedStyles: {
+        value: null
+    },
 
     constructor: {
         value: function DocumentResources() {
@@ -335,8 +345,7 @@ var DocumentResources = Montage.specialize({
             if (this._isPollingDocumentStyleSheets) {
                 if (this._expectedStyles.length > 0) {
                     styleSheets = this._document.styleSheets;
-                    // TODO WTF
-                    for (var i = 0, styleSheet; styleSheet = styleSheets[i]; i++) {
+                    for (var i = 0, styleSheet; (styleSheet = styleSheets[i]); i++) {
                         ix = this._expectedStyles.indexOf(styleSheet.href);
                         if (ix >= 0) {
                             this._expectedStyles.splice(ix, 1);

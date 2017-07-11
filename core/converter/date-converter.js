@@ -2235,7 +2235,7 @@ var Montage = require("../core").Montage,
         //"M/d/yyyy": function (s) { return [ new Date(Date._parse(s)), ""]; }
     };
     var _get = function (f) {
-        return _F[f] = (_F[f] || g.format(f)[0]);
+        return (_F[f] = (_F[f] || g.format(f)[0]));
     };
 
     g.formats = function (fx) {

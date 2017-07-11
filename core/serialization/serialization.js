@@ -73,7 +73,7 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
             var serializationObject;
 
             if (!this._serializationLabels) {
-                if (serializationObject = this.getSerializationObject()) {
+                if ((serializationObject = this.getSerializationObject())) {
                     this._serializationLabels = Object.keys(serializationObject);
                 }
             }
@@ -617,8 +617,6 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
                 }
             }
 
-            // Update the label if it was changed.
-            console.log(label, value.label)
             if (label != null && label !== value && value.label !== label) {
                 this.changeLabel(label, value.label);
             }

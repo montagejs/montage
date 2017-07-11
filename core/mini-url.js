@@ -162,7 +162,9 @@ function encodeQuerystring(obj, sep, eq, name) {
 
     }
 
-    if (!name) return '';
+    if (name === undefined || name === null) {
+        return '';
+    }
     return encodeURIComponent(stringifyPrimitive(name)) + eq +
         encodeURIComponent(stringifyPrimitive(obj));
 }
@@ -175,22 +177,22 @@ function isNullOrUndefined(value) {
     return value === null || value === undefined;
 }
 
-
 function isString(str) {
     return typeof str === 'string';
 }
-
 
 function isObject(obj) {
     return typeof obj === 'object';
 }
 
-
 function urlParse(url, parseQueryString, slashesDenoteHost) {
-    if (url && isObject(url) && url instanceof Url) return url;
+    if (url && isObject(url) && url instanceof Url) {
+        return url;
+    }
 
     var u = new Url;
     u.parse(url, parseQueryString, slashesDenoteHost);
+    
     return u;
 }
 
@@ -226,7 +228,7 @@ Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
             if (simplePath[2]) {
                 this.search = simplePath[2];
                 if (parseQueryString) {
-                    this.query = decodeDuerystring(this.search.substr(1));
+                    this.query = decodeQuerystring(this.search.substr(1));
                 } else {
                     this.query = this.search.substr(1);
                 }
@@ -251,13 +253,16 @@ Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
     // user@server is *always* interpreted as a hostname, and url
     // resolution will treat //foo/bar as host=foo,path=bar because that's
     // how the browser resolves relative URLs.
+    var slashes;
     if (slashesDenoteHost || proto || rest.match(/^\/\/[^@\/]+@[^@\/]+/)) {
-        var slashes = rest.substr(0, 2) === '//';
+        slashes = rest.substr(0, 2) === '//';
         if (slashes && !(proto && hostlessProtocol[proto])) {
             rest = rest.substr(2);
             this.slashes = true;
         }
     }
+
+    var i, l, p, hec;
 
     if (!hostlessProtocol[proto] &&
         (slashes || (proto && !slashedProtocol[proto]))) {
@@ -279,8 +284,8 @@ Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
 
         // find the first instance of any hostEndingChars
         var hostEnd = -1;
-        for (var i = 0; i < hostEndingChars.length; i++) {
-            var hec = rest.indexOf(hostEndingChars[i]);
+        for (i = 0; i < hostEndingChars.length; i++) {
+            hec = rest.indexOf(hostEndingChars[i]);
             if (hec !== -1 && (hostEnd === -1 || hec < hostEnd)) {
                 hostEnd = hec;
             }
@@ -308,15 +313,16 @@ Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
 
         // the host is the remaining to the left of the first non-host char
         hostEnd = -1;
-        for (var i = 0; i < nonHostChars.length; i++) {
-            var hec = rest.indexOf(nonHostChars[i]);
+        for (i = 0; i < nonHostChars.length; i++) {
+            hec = rest.indexOf(nonHostChars[i]);
             if (hec !== -1 && (hostEnd === -1 || hec < hostEnd)) {
               hostEnd = hec;
             }
         }
         // if we still have not hit it, then the entire thing is a host.
-        if (hostEnd === -1)
+        if (hostEnd === -1) {
             hostEnd = rest.length;
+        }
 
         this.host = rest.slice(0, hostEnd);
         rest = rest.slice(hostEnd);
@@ -336,7 +342,7 @@ Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
         // validate a little.
         if (!ipv6Hostname) {
             var hostparts = this.hostname.split(/\./);
-            for (var i = 0, l = hostparts.length; i < l; i++) {
+            for (i = 0, l = hostparts.length; i < l; i++) {
                 var part = hostparts[i];
                 if (!part) {
                   continue;
@@ -379,7 +385,7 @@ Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
             this.hostname = this.hostname.toLowerCase();
         }
 
-        var p = this.port ? ':' + this.port : '';
+        p = this.port ? ':' + this.port : '';
         var h = this.hostname || '';
         this.host = h + p;
         this.href += this.host;
@@ -401,10 +407,11 @@ Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
         // First, make 100% sure that any "autoEscape" chars get
         // escaped, even if encodeURIComponent doesn't think they
         // need to be.
-        for (var i = 0, l = autoEscape.length; i < l; i++) {
+        for (i = 0, l = autoEscape.length; i < l; i++) {
             var ae = autoEscape[i];
-            if (rest.indexOf(ae) === -1)
+            if (rest.indexOf(ae) === -1) {
                 continue;
+            }
             var esc = encodeURIComponent(ae);
             if (esc === ae) {
                 esc = escape(ae);
@@ -444,7 +451,7 @@ Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
 
     //to support http.request
     if (this.pathname || this.search) {
-        var p = this.pathname || '';
+        p = this.pathname || '';
         var s = this.search || '';
         this.path = p + s;
     }
@@ -460,9 +467,15 @@ function urlFormat(obj) {
     // If it's an obj, this is a no-op.
     // this way, you can call url_format() on strings
     // to clean up potentially wonky urls.
-    if (isString(obj)) obj = urlParse(obj);
-    if (!(obj instanceof Url)) return Url.prototype.format.call(obj);
-    return obj.format();
+    if (isString(obj)) {
+        obj = urlParse(obj);
+    }
+
+    if (!(obj instanceof Url)) {
+        return Url.prototype.format.call(obj);
+    } else {
+        return obj.format();    
+    }
 }
 
 Url.prototype.format = function() {
@@ -514,8 +527,13 @@ Url.prototype.format = function() {
         host = '';
     }
 
-    if (hash && hash.charAt(0) !== '#') hash = '#' + hash;
-    if (search && search.charAt(0) !== '?') search = '?' + search;
+    if (hash && hash.charAt(0) !== '#') {
+        hash = '#' + hash;
+    }
+
+    if (search && search.charAt(0) !== '?') {
+        search = '?' + search;
+    }
 
     pathname = pathname.replace(/[?#]/g, function(match) {
         return encodeURIComponent(match);
@@ -534,7 +552,9 @@ Url.prototype.resolve = function(relative) {
 };
 
 function urlResolveObject(source, relative) {
-    if (!source) return relative;
+    if (!source) {
+        return relative;
+    }
     return urlParse(source, false, true).resolveObject(relative);
 }
 
@@ -583,6 +603,7 @@ Url.prototype.resolveObject = function(relative) {
         return result;
     }
 
+    var relPath, srcPath;
     if (relative.protocol && relative.protocol !== result.protocol) {
         // if it's a known url protocol, then changing
         // the protocol does weird things
@@ -604,7 +625,7 @@ Url.prototype.resolveObject = function(relative) {
 
         result.protocol = relative.protocol;
         if (!relative.host && !hostlessProtocol[relative.protocol]) {
-            var relPath = (relative.pathname || '').split('/');
+            relPath = (relative.pathname || '').split('/');
             while (relPath.length && !(relative.host = relPath.shift()));
             if (!relative.host) {
               relative.host = '';
@@ -647,9 +668,10 @@ Url.prototype.resolveObject = function(relative) {
         mustEndAbs = (isRelAbs || isSourceAbs ||
             (result.host && relative.pathname)),
         removeAllDots = mustEndAbs,
-        srcPath = result.pathname && result.pathname.split('/') || [],
-        relPath = relative.pathname && relative.pathname.split('/') || [],
         psychotic = result.protocol && !slashedProtocol[result.protocol];
+
+    srcPath = result.pathname && result.pathname.split('/') || [];
+    relPath = relative.pathname && relative.pathname.split('/') || [];
 
     // if the url is a non-slashed url, then relative
     // links like ../.. should be able

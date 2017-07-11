@@ -1045,6 +1045,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
         value: function (node, labeler) {
             var collisionTable,
                 nodeElements,
+                elementId,
                 elementIds,
                 element,
                 newId;
@@ -1052,13 +1053,13 @@ var Template = Montage.specialize( /** @lends Template# */ {
             labeler = labeler || new MontageLabeler();
             // Set up the labeler with the current element ids.
             elementIds = this.getElementIds();
-            for (var i = 0, elementId; (elementId = elementIds[i]); i++) {
+            for (var i = 0; (elementId = elementIds[i]); i++) {
                 labeler.addLabel(elementId);
             }
 
             // Resolve element ids collisions.
             nodeElements = this._getElements(node);
-            for (var elementId in nodeElements) {
+            for (elementId in nodeElements) {
                 if (this.getElementById(elementId)) {
                     element = nodeElements[elementId];
                     newId = labeler.generateLabel(labeler.getLabelBaseName(elementId));

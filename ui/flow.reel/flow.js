@@ -6,6 +6,10 @@ var Component = require("../component").Component,
     FlowBezierSpline = require("./flow-bezier-spline").FlowBezierSpline,
     RangeController = require("../../core/range-controller").RangeController;
 
+
+var PARSE_MS_PATTERN = /^(\d+)ms$/,
+    PARSE_SEC_PATTERN = /^(\d+)s$/;
+
 /**
  * @class Flow
  * @extends Component
@@ -719,9 +723,10 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 value,
                 match;
 
-            if (match = /^(\d+)ms$/.exec(durationString)) {
+            // TODO parseInt ?
+            if ((match = PARSE_MS_PATTERN.exec(durationString))) {
                 value = +match[1];
-            } else if (match = /^(\d+)s$/.exec(durationString)) {
+            } else if ((match = PARSE_SEC_PATTERN.exec(durationString))) {
                 value = +match[1] * 1000;
             } else {
                 value = +durationString;
@@ -1644,7 +1649,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                     iteration = this._repetition._drawnIterations[i];
                     element = iteration.cachedFirstElement || iteration.firstElement;
                     if (indexTime !== null) {
-                        if (elementChildren = element.children[0]) {
+                        if ((elementChildren = element.children[0])) {
                             if (element.classList.contains("selected")) {
                                 elementChildren.classList.add("selected");
                             } else {
@@ -2173,12 +2178,11 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
             // to add elements to the serialization there's really no point in
             // doing anyelse reliably.
             var originalContent = this.originalContent;
-            for (var i = 0, node; node = originalContent[i]; i++) {
+            for (var i = 0, node; (node = originalContent[i]); i++) {
                 if (node.component) {
                     serializer.addObject(node.component);
                 }
             }
         }
     }
-
 });

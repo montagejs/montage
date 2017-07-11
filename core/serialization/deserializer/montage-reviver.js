@@ -494,10 +494,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 unitDeserializer;
 
             try {
-                for (var i = 0, unitsDesc; unitsDesc = unitsToDeserialize[i]; i++) {
+                for (var i = 0, unitsDesc; (unitsDesc = unitsToDeserialize[i]); i++) {
                     unitNames = unitsDesc.unitNames;
 
-                    for (var j = 0, unitName; unitName = unitNames[j]; j++) {
+                    for (var j = 0, unitName; (unitName = unitNames[j]); j++) {
                         if (unitName in unitsDesc.objectDesc) {
                             unitDeserializer = new UnitDeserializer()
                                 .initWithContext(context);

@@ -389,11 +389,11 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
 
     serializablePropertyDescriptors: {
         get: function () {
-            //ToDo: Add some caching and invalidation when this._propertyDescriptors or this.parent.propertyDescriptors
-            //changes, using bindings might be best.
+            // TODO Add some caching and invalidation when this._propertyDescriptors or this.parent.propertyDescriptors
+            // changes, using bindings might be best.
             return this.propertyDescriptors.filter(function(aPropertyDescriptor) {
                 return aPropertyDescriptor.serializable !== false;
-            })
+            });
         }
     },
 

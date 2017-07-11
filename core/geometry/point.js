@@ -138,7 +138,7 @@ var shimImplementation = function () {
             return null;
         }
         var offset;
-        if (offset =_offsetForElement(element)) {
+        if ((offset =_offsetForElement(element))) {
             return new Point().init((point ? point.x:0)+offset.left, (point ? point.y:0)+offset.top);
         } else {
             return new Point().init((point ? point.x:0), (point ? point.y:0));
@@ -150,7 +150,7 @@ var shimImplementation = function () {
             return null;
         }
         var offset;
-        if (offset =_offsetForElement(element)) {
+        if ((offset =_offsetForElement(element))) {
             return new Point().init((point ? point.x:0)-offset.left, (point ? point.y:0)-offset.top);
         } else {
             return new Point().init((point ? point.x:0), (point ? point.y:0));

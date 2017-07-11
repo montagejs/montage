@@ -18,7 +18,7 @@ var Promise = require("./promise").Promise;
  * @returns {Promise.<object>}           A promise for a response object
  * containing `status`, `headers`, `body` and `xhr` properties.
  */
-exports = module.exports = function doRequest(request) {
+ module.exports = function doRequest(request) {
     request = exports.normalizeRequest(request);
     var done = new Promise(function(resolve, reject) {
         var xhr = request.xhr || new XMLHttpRequest();
@@ -70,6 +70,9 @@ exports = module.exports = function doRequest(request) {
 
     return done;
 };
+
+// TODO WTF use .request only
+exports =  module.exports;
 exports.request = exports;
 
 exports.makeOk = function (next) {
