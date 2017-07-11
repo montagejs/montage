@@ -79,7 +79,7 @@
     "jsdoc": "node ../montagejs.org/build/jsdoc/jsdoc.js -out $PWD/builds/jsdoc/ montage@npm-link",
     "lint": "jshint core ui composer window-loader",
     "test:karma": "karma start --no-auto-watch --single-run",
-    "test:karma-debug": "karma start --no-auto-watch --single-run --browsers=PhantomJS_debug",
+    "test:karma-debug": "karma start --browsers=PhantomJS_debug",
     "test:karma-firefox": "karma start --no-auto-watch --single-run --browsers=Firefox",
     "test:karma-chrome": "karma start --no-auto-watch --single-run --browsers=Chrome",
     "test:karma-dev": "karma start --auto-watch --no-single-run --capture",
