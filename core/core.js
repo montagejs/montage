@@ -12,6 +12,11 @@ require("./extras/function");
 require("./extras/regexp");
 require("./extras/string");
 
+
+var Map = require("collections/map");
+var WeakMap = require("collections/weak-map");
+var Set = require("collections/set");
+
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
     PROTO = "__proto__",
@@ -23,6 +28,7 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE_UNICODE = 95,
     ARRAY_PROTOTYPE = Array.prototype,
     OBJECT_PROTOTYPE = Object.prototype,
+    hasOwnProperty = OBJECT_PROTOTYPE.hasOwnProperty,
     accessorPropertyDescriptor = {
         get: void 0,
         set: void 0,
@@ -35,9 +41,6 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
         enumerable: false,
         writable: false
     },
-    Map = require("collections/map"),
-    WeakMap = require("collections/weak-map"),
-    Set = require("collections/set"),
     __superWeakMap = new WeakMap(),
 
     //Entry is a function and value is a set containing specialied functions that have been cached
@@ -302,9 +305,9 @@ Object.defineProperty(Montage.prototype, _serializableAttributeProperties, {
 var ObjectAttributeProperties = new Map();
 function getAttributeProperties(proto, attributeName, privateAttributeName) {
     var attributePropertyName = privateAttributeName || (
-        attributeName === SERIALIZABLE
-        ? _serializableAttributeProperties
-        : (UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES));
+        attributeName === SERIALIZABLE ? 
+            _serializableAttributeProperties : 
+                (UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES));
 
         if(proto !== Object.prototype) {
             if (proto.hasOwnProperty(attributePropertyName)) {
@@ -349,7 +352,7 @@ function __clearSuperDepencies(obj, prop, replacingDescriptor) {
             superWeakMap.delete(descriptor.value);
             dependencies = _superMethodDependenciesFor(descriptor.value);
             iterator = dependencies.values();
-            while (dependency = iterator.next().value) {
+            while ((dependency = iterator.next().value)) {
                 superWeakMap.delete(dependency);
             }
         }
@@ -358,7 +361,7 @@ function __clearSuperDepencies(obj, prop, replacingDescriptor) {
                 superWeakMap.delete(descriptor.get);
                 dependencies = _superMethodDependenciesFor(descriptor.get);
                 iterator = dependencies.values();
-                while (dependency = iterator.next().value) {
+                while ((dependency = iterator.next().value)) {
                     superWeakMap.delete(dependency);
                 }
             }
@@ -366,7 +369,7 @@ function __clearSuperDepencies(obj, prop, replacingDescriptor) {
                 superWeakMap.delete(descriptor.set);
                 dependencies = _superMethodDependenciesFor(descriptor.set);
                 iterator = dependencies.values();
-                while (dependency = iterator.next().value) {
+                while ((dependency = iterator.next().value)) {
                     superWeakMap.delete(dependency);
                 }
             }
@@ -376,7 +379,7 @@ function __clearSuperDepencies(obj, prop, replacingDescriptor) {
     dependencies = _superDependenciesWeakMap.get(obj);
     if(dependencies) {
         iterator = dependencies.values();
-        while (dependency = iterator.next().value) {
+        while ((dependency = iterator.next().value)) {
             __clearSuperDepencies(dependency, prop, replacingDescriptor);
         }
     }
@@ -425,7 +428,7 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
         }
 
 
-        //reset defaults appropriately for framework.
+        // reset defaults appropriately for framework.
         if (PROTO in descriptor) {
             descriptor.__proto__ = (isValueDescriptor ? (typeof descriptor.value === FUNCTION ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
         } else {
@@ -440,16 +443,19 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
                 defaults = _defaultAccessorProperty;
             }
             for (var key in defaults) {
-                if (!(key in descriptor)) {
-                    descriptor[key] = defaults[key];
+                if (hasOwnProperty.call(defaults, key)) {
+                    if (!(key in descriptor)) {
+                        descriptor[key] = defaults[key];
+                    }
                 }
             }
         }
 
-        if (!descriptor.hasOwnProperty(ENUMERABLE) && prop.charCodeAt(0) === UNDERSCORE_UNICODE) {
+        if (!hasOwnProperty.call(descriptor, ENUMERABLE) && prop.charCodeAt(0) === UNDERSCORE_UNICODE) {
             descriptor.enumerable = false;
         }
-        if (!descriptor.hasOwnProperty(SERIALIZABLE)) {
+
+        if (!hasOwnProperty.call(descriptor, SERIALIZABLE)) {
             if (! descriptor.enumerable) {
                 descriptor.serializable = false;
             } else if (descriptor.get && !descriptor.set) {
@@ -464,9 +470,9 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
             getAttributeProperties(obj, SERIALIZABLE)[prop] = descriptor.serializable;
         }
 
-        //clear the cache for super() for property we're about to redefine.
-        //But If we're defining a property as part of a Type/Class construction, we most likely don't need to worry about
-        //clearing super calls caches.
+        // clear the cache for super() for property we're about to redefine.
+        // But If we're defining a property as part of a Type/Class construction, we most likely don't need to worry about
+        // clearing super calls caches.
         if(!inSpecialize) {
             __clearSuperDepencies(obj,prop, descriptor);
         }
@@ -488,7 +494,8 @@ Object.defineProperty(Montage, "defineProperties", {value: function (obj, proper
     if (typeof properties !== "object" || properties === null) {
         throw new TypeError("Properties must be an object, not '" + properties + "'");
     }
-    var propertyKeys = Object.getOwnPropertyNames(properties);
+    var property,
+        propertyKeys = Object.getOwnPropertyNames(properties);
     for (var i = 0; (property = propertyKeys[i]); i++) {
         if ("_bindingDescriptors" !== property) {
             this.defineProperty(obj, property, properties[property], inSpecialize);
@@ -818,9 +825,12 @@ Montage.defineProperty(Montage, "getPropertyAttributes", {value: function (anObj
 
     attributeValues = {};
     for (var name in attributes) {
-        //if (attributes.hasOwnProperty(name)) {
-            attributeValues[name] = attributes[name];   
-        //}
+        if (hasOwnProperty.call(attributes, name)) {
+            attributeValues[name] = attributes[name];
+        // should return the inherited defined attribute values   
+        } else {
+            attributeValues[name] = attributes[name];
+        }
     }
 
     return attributeValues;
@@ -841,8 +851,6 @@ Object.defineProperty(Montage.prototype, "_montage_metadata", {
     value: undefined
 });
 
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-
 /**
  * Get the metadata Montage has on the given object.
  * @function Montage.getInfoForObject
@@ -857,8 +865,6 @@ Montage.defineProperty(Montage, "getInfoForObject", {
     value: function Montage_getInfoForObject(object) {
         var metadata;
         var instanceMetadataDescriptor;
-
-        //jshint -W106
 
         if (hasOwnProperty.call(object, "_montage_metadata") && object._montage_metadata) {
             return object._montage_metadata;
@@ -891,13 +897,14 @@ Montage.defineProperty(Montage, "getInfoForObject", {
                 //For everything else we go more efficient and declare the property only once per prototype
                 else {
                     if(!("_montage_metadata" in object.constructor.prototype)) {
-                    //if(!hasOwnProperty.call(object.constructor.prototype, "_montage_metadata")) {
-                        Object.defineProperty(object.constructor.prototype, "_montage_metadata", {
-                            enumerable: false,
-                            // this object needs to be overriden by the SerializationCompiler because this particular code might be executed on an exported object before the Compiler takes action, for instance, if this function is called within the module definition itself (happens with __core__).
-                            writable: true,
-                            value: undefined
-                        });
+                        if(!hasOwnProperty.call(object.constructor.prototype, "_montage_metadata")) {
+                            Object.defineProperty(object.constructor.prototype, "_montage_metadata", {
+                                enumerable: false,
+                                // this object needs to be overriden by the SerializationCompiler because this particular code might be executed on an exported object before the Compiler takes action, for instance, if this function is called within the module definition itself (happens with __core__).
+                                writable: true,
+                                value: undefined
+                            });
+                        }
                     }
 
                     return (object._montage_metadata = Object.create(metadata, instanceMetadataDescriptor)) || object._montage_metadata;
@@ -908,7 +915,6 @@ Montage.defineProperty(Montage, "getInfoForObject", {
                 return (object._montage_metadata = Object.create(metadata, instanceMetadataDescriptor));
             }
         }
-        //jshint +W106
     }
 });
 
@@ -970,8 +976,15 @@ Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
 
         if (delegate) {
 
-            if ((typeof this.identifier === "string") && (typeof (delegateFunction = delegate[this.identifier + name.toCapitalized()]) === FUNCTION)) {}
-            else if (typeof (delegateFunction = delegate[name]) === FUNCTION) {}
+            // TODO WTF
+            if (
+                (typeof this.identifier === "string") && 
+                    (typeof (delegateFunction = delegate[this.identifier + name.toCapitalized()]) === FUNCTION)) 
+            {
+
+            } else if (typeof (delegateFunction = delegate[name]) === FUNCTION) {
+
+            }
 
             if (delegateFunction) {
                 if(arguments.length === 2) {
