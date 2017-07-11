@@ -119,6 +119,23 @@
     "globals": {
         "require": false,
         "exports": false,
-        "global": false
+        "module": false,
+        "global": false,
+        "console": false,
+        //
+        "escape": false,
+        //
+        "WeakMap": true,
+        "Map": true,
+        "Set": true,
+        //
+        "Promise": false,
+        "CustomEvent": true,
+        "WebSocket": false,
+        "TouchEvent": false,
+        "UIEvent": false,
+        "WebKitPoint": false,
+        "webkitConvertPointFromNodeToPage": false,
+        "webkitConvertPointFromPageToNode": false
     }
 }

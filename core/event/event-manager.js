@@ -937,7 +937,7 @@ if (typeof window !== "undefined") { // client-side
 
                 mapIter = _registeredBubbleEventListeners.keys();
                 while (eventType = mapIter.next().value) {
-                    eventRegistration = _registeredBubbleEventListenersget(eventType);
+                    eventRegistration = _registeredBubbleEventListeners.get(eventType);
                     if (eventRegistration.has(target)) {
                         observedEventListeners.push(eventType);
                     }
