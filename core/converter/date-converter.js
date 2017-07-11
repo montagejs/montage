@@ -102,7 +102,7 @@ var Montage = require("../core").Montage,
     $D.getDayNumberFromName = function (name) {
         var n = $C.dayNames, m = $C.abbreviatedDayNames, o = $C.shortestDayNames, s = name.toLowerCase();
         for (var i = 0; i < n.length; i++) {
-            if (n[i].toLowerCase() == s || m[i].toLowerCase() == s || o[i].toLowerCase() == s) {
+            if (n[i].toLowerCase() === s || m[i].toLowerCase() === s || o[i].toLowerCase() === s) {
                 return i;
             }
         }
@@ -118,7 +118,7 @@ var Montage = require("../core").Montage,
     $D.getMonthNumberFromName = function (name) {
         var n = $C.monthNames, m = $C.abbreviatedMonthNames, s = name.toLowerCase();
         for (var i = 0; i < n.length; i++) {
-            if (n[i].toLowerCase() == s || m[i].toLowerCase() == s) {
+            if (n[i].toLowerCase() === s || m[i].toLowerCase() === s) {
                 return i;
             }
         }
@@ -707,7 +707,7 @@ var Montage = require("../core").Montage,
      * @returns {boolean} true|false
      */
     $P.isDaylightSavingTime = function () {
-        return Date.today().set({month: 0, day: 1}).getTimezoneOffset() != this.getTimezoneOffset();
+        return Date.today().set({month: 0, day: 1}).getTimezoneOffset() !== this.getTimezoneOffset();
     };
 
     /**
@@ -838,7 +838,7 @@ var Montage = require("../core").Montage,
 
         // Standard Date and Time Format Strings. Formats pulled from CultureInfo file and
         // may vary by culture.
-        if (format && format.length == 1) {
+        if (format && format.length === 1) {
             var c = $C.formatPatterns;
             x.t = x.toString;
             switch (format) {
@@ -1231,7 +1231,7 @@ var Montage = require("../core").Montage,
 
         // Standard Date and Time Format Strings. Formats pulled from CultureInfo file and
         // may vary by culture.
-        if (format && format.length == 1) {
+        if (format && format.length === 1) {
             var c = Date.CultureInfo.formatPatterns;
             x.t = x.format;
             switch (format) {
@@ -1505,7 +1505,7 @@ var Montage = require("../core").Montage,
             d = d || _.rtoken(/^\s*/);
             c = c || null;
 
-            if (px.length == 1) {
+            if (px.length === 1) {
                 return px[0];
             }
             return function (s) {
@@ -1583,7 +1583,7 @@ var Montage = require("../core").Montage,
                     q = null;
                     p = null;
                     r = null;
-                    last = (px.length == 1);
+                    last = (px.length === 1);
 
                     // first, we try simply to match the current pattern
                     // if not, try the next pattern
@@ -1632,7 +1632,7 @@ var Montage = require("../core").Montage,
                         // i.e., all but the one we just matched against
                         var qx = [];
                         for (var j = 0; j < px.length; j++) {
-                            if (i != j) {
+                            if (i !== j) {
                                 qx.push(px[j]);
                             }
                         }
@@ -1855,7 +1855,7 @@ var Montage = require("../core").Montage,
         },
         month: function (s) {
             return function () {
-                this.month = (s.length == 3) ? "jan feb mar apr may jun jul aug sep oct nov dec".indexOf(s) / 4 : Number(s) - 1;
+                this.month = (s.length === 3) ? "jan feb mar apr may jun jul aug sep oct nov dec".indexOf(s) / 4 : Number(s) - 1;
             };
         },
         year: function (s) {
@@ -1926,7 +1926,7 @@ var Montage = require("../core").Montage,
             if (this.meridian && this.hour) {
                 if (this.meridian === "p" && this.hour < 12) {
                     this.hour = this.hour + 12;
-                } else if (this.meridian === "a" && this.hour == 12) {
+                } else if (this.meridian === "a" && this.hour === 12) {
                     this.hour = 0;
                 }
             }
@@ -1972,12 +1972,12 @@ var Montage = require("../core").Montage,
             var gap, mod, orient;
             orient = ((this.orient === "past" || this.operator === "subtract") ? -1 : 1);
 
-            if (!this.now && "hour minute second".indexOf(this.unit) != -1) {
+            if (!this.now && "hour minute second".indexOf(this.unit) !== -1) {
                 today.setTimeToNow();
             }
 
             if (this.month || this.month === 0) {
-                if ("year day hour minute second".indexOf(this.unit) != -1) {
+                if ("year day hour minute second".indexOf(this.unit) !== -1) {
                     this.value = this.month + 1;
                     this.month = null;
                     expression = true;
@@ -2045,7 +2045,7 @@ var Montage = require("../core").Montage,
             if (this.meridian && this.hour) {
                 if (this.meridian === "p" && this.hour < 12) {
                     this.hour = this.hour + 12;
-                } else if (this.meridian === "a" && this.hour == 12) {
+                } else if (this.meridian === "a" && this.hour === 12) {
                     this.hour = 0;
                 }
             }

@@ -249,7 +249,9 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 nextHandlers[i] = iPathKnot.nextHandlerPosition;
                 densities[i] = iPathKnot.previousDensity; // TODO: implement previous/next density
                 for (j in pathUnits) {
-                    splinePathParameters[j].data.push(iPathKnot[j]);
+                    if (pathUnits.hasOwnProperty(j)) {
+                        splinePathParameters[j].data.push(iPathKnot[j]);   
+                    }
                 }
             }
             splinePath.knots = knots;
@@ -324,10 +326,12 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                     path.knots.push(knot);
                 }
                 for (j in iSplinePath.parameters) {
-                    path.units[j] = iSplinePath.parameters[j].units;
-                    parametersLength = iSplinePath.parameters[j].data.length;
-                    for (k = 0; k < parametersLength; k++) {
-                        path.knots[k][j] = iSplinePath.parameters[j].data[k];
+                    if (iSplinePath.parameters.hasOwnProperty(j)) {
+                        path.units[j] = iSplinePath.parameters[j].units;
+                        parametersLength = iSplinePath.parameters[j].data.length;
+                        for (k = 0; k < parametersLength; k++) {
+                            path.knots[k][j] = iSplinePath.parameters[j].data[k];
+                        }   
                     }
                 }
                 if (this._paths[i].hasOwnProperty("headOffset")) {

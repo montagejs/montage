@@ -1723,11 +1723,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     },
     _addTemplateObjects: {
         value: function (objects) {
-            var descriptor = this._templateObjectDescriptor,
+            var label, object,
+                descriptor = this._templateObjectDescriptor,
                 templateObjects = this._templateObjects;
 
-            for (var label in objects) {
-                var object = objects[label];
+            for (label in objects) {
+                object = objects[label];
                 if (object !== null && object !== undefined) {
                     if (!Component.prototype.isPrototypeOf(object) || object === this ||
                         object.parentComponent === this) {

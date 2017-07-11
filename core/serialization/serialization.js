@@ -636,7 +636,7 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
 
             visitor(value);
             objects[label] = object = value.data;
-            if (value.label != label) {
+            if (value.label !== label) {
                 this.changeLabel(label, value.label);
             }
 

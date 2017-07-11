@@ -305,11 +305,13 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 mapKeyEntry = mapModifiersEntry[modifiersAndKey.keyCode];
                 if (mapKeyEntry) {
                     for (i in mapKeyEntry) {
-                        entry = mapKeyEntry[i];
-                        if (entry.object === keyComposer) {
-                            entry.refCount ++;
-                            keyAlreadyRegistered = true;
-                            break;
+                        if (mapKeyEntry.hasOwnProperty(i)) {
+                            entry = mapKeyEntry[i];
+                            if (entry.object === keyComposer) {
+                                entry.refCount ++;
+                                keyAlreadyRegistered = true;
+                                break;
+                            }
                         }
                     }
                     if (!keyAlreadyRegistered) {
@@ -346,17 +348,19 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
             if (mapModifiersEntry) {
                 mapKeyEntry = mapModifiersEntry[keyComposer._keyCode];
                 for (i in mapKeyEntry) {
-                    entry = mapKeyEntry[i];
-                    if (entry.object === keyComposer) {
-                        entry.refCount --;
-                        if (entry.refCount <= 0) {
-                            mapKeyEntry.splice(i, 1);
-                            if (mapKeyEntry.length === 0) {
-                                delete mapModifiersEntry[keyComposer._keyCode];
-                                if (Object.keys(mapModifiersEntry).length === 0) {
-                                    delete map[keyComposer._modifiers];
-                                    if (Object.keys(map).length === 0) {
-                                        this._unregisterListeners();
+                    if (mapKeyEntry.hasOwnProperty(i)) {
+                        entry = mapKeyEntry[i];
+                        if (entry.object === keyComposer) {
+                            entry.refCount --;
+                            if (entry.refCount <= 0) {
+                                mapKeyEntry.splice(i, 1);
+                                if (mapKeyEntry.length === 0) {
+                                    delete mapModifiersEntry[keyComposer._keyCode];
+                                    if (Object.keys(mapModifiersEntry).length === 0) {
+                                        delete map[keyComposer._modifiers];
+                                        if (Object.keys(map).length === 0) {
+                                            this._unregisterListeners();
+                                        }
                                     }
                                 }
                             }
@@ -406,12 +410,16 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
             // Patch the KeyCode dictionary for Opera or Firefox
             if (this._operaMac) {
                 for (code in OPERAMAC_KEYNAMES_TO_KEYCODES) {
-                    KEYNAMES_TO_KEYCODES[code] = OPERAMAC_KEYNAMES_TO_KEYCODES[code];
+                    if (OPERAMAC_KEYNAMES_TO_KEYCODES.hasOwnProperty(code)) {
+                        KEYNAMES_TO_KEYCODES[code] = OPERAMAC_KEYNAMES_TO_KEYCODES[code];   
+                    }
                 }
             }
             if (this._firefox) {
                 for (code in FIREFOX_KEYNAMES_TO_KEYCODES) {
-                    KEYNAMES_TO_KEYCODES[code] = FIREFOX_KEYNAMES_TO_KEYCODES[code];
+                    if (FIREFOX_KEYNAMES_TO_KEYCODES.hasOwnProperty(code)) {
+                        KEYNAMES_TO_KEYCODES[code] = FIREFOX_KEYNAMES_TO_KEYCODES[code];   
+                    }
                 }
             }
 
@@ -420,20 +428,24 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
             // Generate the KEYNAMES dictionary
             KEYCODES_TO_KEYNAMES = {};
             for (keyName in KEYNAMES_TO_KEYCODES) {
-                code = KEYNAMES_TO_KEYCODES[keyName];
-                if (KEYCODES_TO_KEYNAMES[code] === undefined) {
-                    // If we have more than one name for a keycode, use only the first one
-                    KEYCODES_TO_KEYNAMES[code] = keyName;
+                if (KEYNAMES_TO_KEYCODES.hasOwnProperty(keyName)) {
+                    code = KEYNAMES_TO_KEYCODES[keyName];
+                    if (KEYCODES_TO_KEYNAMES[code] === undefined) {
+                        // If we have more than one name for a keycode, use only the first one
+                        KEYCODES_TO_KEYNAMES[code] = keyName;
+                    }   
                 }
             }
 
             // Generate the NORMALIZED_CHARS dictionary
             NORMALIZED_CHARS = {};
             for (keyName in NORMALIZED_KEYS) {
-                code = NORMALIZED_KEYS[keyName];
-                if (NORMALIZED_CHARS[code] === undefined) {
-                    // If we have more than one name for a char, use only the first one
-                    NORMALIZED_CHARS[code] = keyName;
+                if (NORMALIZED_KEYS.hasOwnProperty(keyName)) {
+                    code = NORMALIZED_KEYS[keyName];
+                    if (NORMALIZED_CHARS[code] === undefined) {
+                        // If we have more than one name for a char, use only the first one
+                        NORMALIZED_CHARS[code] = keyName;
+                    }
                 }
             }
 
@@ -563,9 +575,11 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
             // In case the user release the modifier key before releasing the main key, we still need to fire a keyup event
             if (!stopped) {
                 for (uuid in this._triggeredKeys) {
-                    triggeredKey = this._triggeredKeys[uuid];
-                    if (triggeredKey._keyCode == keyCode || triggeredKey._keyCode == identifierCode) {
-                        this._dispatchComposerKeyMatches([triggeredKey], event);
+                    if (this._triggeredKeys.hasOwnProperty(uuid)) {
+                        triggeredKey = this._triggeredKeys[uuid];
+                        if (triggeredKey._keyCode === keyCode || triggeredKey._keyCode === identifierCode) {
+                            this._dispatchComposerKeyMatches([triggeredKey], event);
+                        }
                     }
                 }
             }
@@ -632,23 +646,23 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 }
             }
 
-            if (eventType == "keydown" || eventType == "keyup") {
+            if (eventType === "keydown" || eventType === "keyup") {
                 if (this._operaMac) {
                     // Opera Mac is not very good at keeping track of which modifiers are pressed or not!
-                    value = (eventType == "keydown");
-                    if (keyCode == KEYNAMES_TO_KEYCODES.shift) {
+                    value = (eventType === "keydown");
+                    if (keyCode === KEYNAMES_TO_KEYCODES.shift) {
                         this._shiftKey = value;
-                    } else if (keyCode == KEYNAMES_TO_KEYCODES.alt) {
+                    } else if (keyCode === KEYNAMES_TO_KEYCODES.alt) {
                         this._altKey = value;
-                    } else if (keyCode == KEYNAMES_TO_KEYCODES.meta) {
+                    } else if (keyCode === KEYNAMES_TO_KEYCODES.meta) {
                         if (this._mac) {
                             this._metaKey = value;
                         }
-                    } else if (keyCode == KEYNAMES_TO_KEYCODES.control) {
+                    } else if (keyCode === KEYNAMES_TO_KEYCODES.control) {
                         this._ctrlKey = value;
                     }
 
-                    if (eventType == "keyup") {
+                    if (eventType === "keyup") {
                         // Setup a timeout to force reset the modifier state ~3 seconds after the last key up
                         // This is to recover when we miss a keyup event which seems to occurs once in a while with Opera
                         this._operaModifierTimeout = setTimeout(function (){
@@ -667,7 +681,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 }
             }
 
-            if (this._mac && this._webkit && keyCode == KEYNAMES_TO_KEYCODES.contextmenu) {
+            if (this._mac && this._webkit && keyCode === KEYNAMES_TO_KEYCODES.contextmenu) {
                 // Webkit browsers will interpret the right command key as the window context-menu but will keep the
                 // meta modifier on preventing us from having a "context-menu" shortcut. We need to clear the meta flag
                 // (the limitation is that we wont be able to support a "META+CONTEXT-MENU" shortcut
@@ -676,7 +690,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
 
             if (this._chrome) {
                 // Chrome (at least on Mac) generate the same keycode for the NumKeyPad = and NumKeyPad +
-                if (!this._shiftKey && keyCode == KEYNAMES_TO_KEYCODES.plus && (keyIdentifier === "U+002B" || keyIdentifier === "+")) {
+                if (!this._shiftKey && keyCode === KEYNAMES_TO_KEYCODES.plus && (keyIdentifier === "U+002B" || keyIdentifier === "+")) {
                     event.keyCode = KEYNAMES_TO_KEYCODES.add;
                 }
             }
@@ -718,8 +732,8 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         value: function (matches, event) {
             var thisRef = this,
                 stopped = false,
-                keyUp = event.type == "keyup",
-                keyDown = event.type == "keydown",
+                keyUp = event.type === "keyup",
+                keyDown = event.type === "keydown",
                 eventType = keyUp ? KEYRELEASE_EVENT_TYPE : KEYPRESS_EVENT_TYPE,
                 nbrMatches = matches.length,
                 keyComposer,
@@ -743,7 +757,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 while (!onTarget) {
                     onTarget = (target === element);
 
-                    if (target == document) {
+                    if (target === document) {
                         break;
                     } else {
                         target = target.parentElement;
@@ -755,13 +769,13 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
 
                 // Most components can't receive key events directly: the events target the window,
                 // but we should also fire them on composers of the activeTarget component
-                if (!onTarget && defaultEventManager.activeTarget != keyComposer.component) {
+                if (!onTarget && defaultEventManager.activeTarget !== keyComposer.component) {
                     continue;
                 }
 
                 if (keyUp) {
                     triggeredKeys = Object.keys(this._triggeredKeys);
-                    if (triggeredKeys.indexOf(keyComposer.uuid) == -1) {
+                    if (triggeredKeys.indexOf(keyComposer.uuid) === -1) {
                         // Do not generate a keyup event if the composerKey has not been triggered on keydown or keypress
                         continue;
                     }

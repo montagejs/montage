@@ -709,13 +709,14 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 deferred;
 
             if (link) {
+                // TODO use core/request
                 deferred = new Promise(function(resolve, reject) {
                     var req = new XMLHttpRequest();
                     var url = link.getAttribute("href");
                     req.open("GET", url);
                     req.addEventListener("load", function(event) {
                         var req = event.target;
-                        if (req.status == 200) {
+                        if (req.status === 200) {
                             resolve(req.responseText);
                         } else {
                             reject(
@@ -978,24 +979,26 @@ var Template = Montage.specialize( /** @lends Template# */ {
 
             // Expand elements.
             for (var parameterName in parameterElements) {
-                parameterElement = parameterElements[parameterName];
-                argumentElement = templateArgumentProvider.getTemplateArgumentElement(
-                    parameterName);
+                if (parameterElements.hasOwnProperty(parameterName)) {
+                    parameterElement = parameterElements[parameterName];
+                    argumentElement = templateArgumentProvider.getTemplateArgumentElement(
+                        parameterName);
 
-                // Store all element ids of the argument, we need to create
-                // a serialization with the components that point to them.
-                argumentsElementIds.push.apply(argumentsElementIds,
-                    this._getElementIds(argumentElement)
-                );
+                    // Store all element ids of the argument, we need to create
+                    // a serialization with the components that point to them.
+                    argumentsElementIds.push.apply(argumentsElementIds,
+                        this._getElementIds(argumentElement)
+                    );
 
-                // Replace the parameter with the argument and save the
-                // element ids collision table because we need to correct the
-                // serialization that is created from the stored element ids.
-                collisionTable = this.replaceNode(argumentElement, parameterElement);
-                if (collisionTable) {
-                    for (var key in collisionTable) {
-                        argumentElementsCollisionTable[key] = collisionTable[key];
-                    }
+                    // Replace the parameter with the argument and save the
+                    // element ids collision table because we need to correct the
+                    // serialization that is created from the stored element ids.
+                    collisionTable = this.replaceNode(argumentElement, parameterElement);
+                    if (collisionTable) {
+                        for (var key in collisionTable) {
+                            argumentElementsCollisionTable[key] = collisionTable[key];
+                        }
+                    }   
                 }
             }
             result.elementIds = argumentsElementIds;
