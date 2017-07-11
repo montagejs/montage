@@ -225,7 +225,7 @@ var Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
     _formattedLog: {
         value: function (args) {
             var firstArgument = args[0];
-            if(colors.isDebug && typeof firstArgument === "string") {
+            if(exports.colors.isDebug && typeof firstArgument === "string") {
                 Array.prototype.splice.call(args, 0, 1, "%c"+firstArgument, this._logCss);
             }
             console.log.apply(console, args);
@@ -299,7 +299,7 @@ exports.logger = function (loggerName, onStateChange, dontStoreState) {
     return logger;
 };
 
-var colors = exports.logger("colors");
+exports.colors = exports.logger("colors");
 
 var LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
 

@@ -113,6 +113,7 @@ var webkitImplementation = function () {
             _webKitPoint.x = 0;
             _webKitPoint.y = 0;
         }
+        /* globals webkitConvertPointFromNodeToPage */
         point = webkitConvertPointFromNodeToPage(element, _webKitPoint);
         return point ? new Point().init(point.x, point.y) : null;
     };
@@ -125,6 +126,7 @@ var webkitImplementation = function () {
             _webKitPoint.x = 0;
             _webKitPoint.y = 0;
         }
+        /* globals webkitConvertPointFromNodeToPage */
         point = webkitConvertPointFromPageToNode(element, _webKitPoint);
         return point ? new Point().init(point.x, point.y) : null;
     };
@@ -156,7 +158,10 @@ var shimImplementation = function () {
     };
 };
 
-if (typeof WebKitPoint !== "undefined") {
+if (
+    typeof WebKitPoint !== "undefined" && 
+        typeof webkitConvertPointFromNodeToPage !== "undefined"
+) {
     _webKitPoint = new WebKitPoint(0,0);
     webkitImplementation();
 } else {
