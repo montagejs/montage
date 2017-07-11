@@ -28,7 +28,7 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE_UNICODE = 95,
     ARRAY_PROTOTYPE = Array.prototype,
     OBJECT_PROTOTYPE = Object.prototype,
-    hasOwnProperty = OBJECT_PROTOTYPE.hasOwnProperty,
+    hasProperty = OBJECT_PROTOTYPE.hasOwnProperty,
     accessorPropertyDescriptor = {
         get: void 0,
         set: void 0,
@@ -443,7 +443,7 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
                 defaults = _defaultAccessorProperty;
             }
             for (var key in defaults) {
-                if (hasOwnProperty.call(defaults, key)) {
+                if (hasProperty.call(defaults, key)) {
                     if (!(key in descriptor)) {
                         descriptor[key] = defaults[key];
                     }
@@ -451,11 +451,11 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
             }
         }
 
-        if (!hasOwnProperty.call(descriptor, ENUMERABLE) && prop.charCodeAt(0) === UNDERSCORE_UNICODE) {
+        if (!hasProperty.call(descriptor, ENUMERABLE) && prop.charCodeAt(0) === UNDERSCORE_UNICODE) {
             descriptor.enumerable = false;
         }
 
-        if (!hasOwnProperty.call(descriptor, SERIALIZABLE)) {
+        if (!hasProperty.call(descriptor, SERIALIZABLE)) {
             if (! descriptor.enumerable) {
                 descriptor.serializable = false;
             } else if (descriptor.get && !descriptor.set) {
@@ -494,7 +494,7 @@ Object.defineProperty(Montage, "defineProperties", {value: function (obj, proper
     if (typeof properties !== "object" || properties === null) {
         throw new TypeError("Properties must be an object, not '" + properties + "'");
     }
-    
+
     var property,
         propertyKeys = Object.getOwnPropertyNames(properties);
     for (var i = 0; (property = propertyKeys[i]); i++) {
@@ -558,7 +558,8 @@ function __findSuperMethodImplementation( method, classFn, isFunctionSuper, meth
                 //As we start, we don't really know which property name points to method, we're going to find out:
                 for (i=0;(propertyName = propertyNames[i]);i++) {
                     if ((property = Object.getOwnPropertyDescriptor(context, propertyName))) {
-                        if ((func = property.value) != null) {
+                        func = property.value;
+                        if (func !== undefined && func !== null) {
                             if (func === method || func.deprecatedFunction === method) {
                                 methodPropertyName = propertyName;
                                 isValue = true;
@@ -566,14 +567,16 @@ function __findSuperMethodImplementation( method, classFn, isFunctionSuper, meth
                             }
                         }
                         else {
-                            if ((func = property.get) != null) {
+                            func = property.get;
+                            if (func !== undefined && func !== null) {
                                 if (func === method || func.deprecatedFunction === method) {
                                     methodPropertyName = propertyName;
                                     isGetter = true;
                                     break;
                                 }
                             }
-                            if ((func = property.set) != null) {
+                            func = property.set;
+                            if (func !== undefined && func !== null) {
                                 if (func === method || func.deprecatedFunction === method) {
                                     methodPropertyName = propertyName;
                                     isSetter = true;
@@ -826,7 +829,7 @@ Montage.defineProperty(Montage, "getPropertyAttributes", {value: function (anObj
 
     attributeValues = {};
     for (var name in attributes) {
-        if (hasOwnProperty.call(attributes, name)) {
+        if (hasProperty.call(attributes, name)) {
             attributeValues[name] = attributes[name];
         // should return the inherited defined attribute values   
         } else {
@@ -867,7 +870,7 @@ Montage.defineProperty(Montage, "getInfoForObject", {
         var metadata;
         var instanceMetadataDescriptor;
 
-        if (hasOwnProperty.call(object, "_montage_metadata") && object._montage_metadata) {
+        if (hasProperty.call(object, "_montage_metadata") && object._montage_metadata) {
             return object._montage_metadata;
         } else {
             metadata = object._montage_metadata || (object.constructor && object.constructor._montage_metadata) || null;
