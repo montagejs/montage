@@ -30,16 +30,6 @@ var Montage = require("../core/core").Montage,
     Map = require("collections/map"),
     Set = require("collections/set");
 
-
-function loggerToString (object) {
-    if (!object) {
-        return "NIL";
-    }
-    //jshint -W106
-    return object._montage_metadata.objectName + ":" + Object.hash(object) + " id: " + object.identifier;
-    //jshint +W106
-}
-
 /**
  * @const
  * @default
@@ -49,6 +39,15 @@ var ATTR_LE_COMPONENT = "data-montage-le-component",
     ATTR_LE_ARG = "data-montage-le-arg",
     ATTR_LE_ARG_BEGIN = "data-montage-le-arg-begin",
     ATTR_LE_ARG_END = "data-montage-le-arg-end";
+
+
+function loggerToString (object) {
+    if (!object) {
+        return "NIL";
+    }
+
+    return object._montage_metadata.objectName + ":" + Object.hash(object) + " id: " + object.identifier;
+}
 
 var CssBasedAnimation = Montage.specialize({
 
@@ -303,7 +302,6 @@ var CssBasedAnimation = Montage.specialize({
             }
         }
     }
-
 });
 
 var rootComponent;
@@ -768,12 +766,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     getTemplateArgumentElement: {
         value: function (argumentName) {
-            var template = this._ownerDocumentPart.template,
-                ownerModuleId,
-                element,
-                range,
-                label,
-                argument;
+            var ownerModuleId, element, range, argument, label,
+                template = this._ownerDocumentPart.template;
 
             if (global._montage_le_flag) {
                 ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
@@ -889,7 +883,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     rootComponent: {
         enumerable: false,
         get: function () {
-            return rootComponent;
+            return exports.__root__;
         }
     },
 
@@ -1733,17 +1727,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 templateObjects = this._templateObjects;
 
             for (var label in objects) {
-                if (objects.hasOwnProperty(label)) {
-                    var object = objects[label];
-
-                    if (typeof object === "object" && object !== null) {
-                        if (!Component.prototype.isPrototypeOf(object) || object === this ||
-                            object.parentComponent === this) {
-                            templateObjects[label] = object;
-                        } else {
-                            descriptor.get = this._makeTemplateObjectGetter(this, label, object);
-                            Object.defineProperty(templateObjects, label, descriptor);
-                        }
+                var object = objects[label];
+                if (object !== null && object !== undefined) {
+                    if (!Component.prototype.isPrototypeOf(object) || object === this ||
+                        object.parentComponent === this) {
+                        templateObjects[label] = object;
+                    } else {
+                        descriptor.get = this._makeTemplateObjectGetter(this, label, object);
+                        Object.defineProperty(templateObjects, label, descriptor);
                     }
                 }
             }
@@ -2022,7 +2013,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     _getArray: {
         value: function () {
-            if (this._arrayObjectPool.pool === null) {
+            if (!this._arrayObjectPool.pool) {
                 this._arrayObjectPool.pool = [];
                 for (var i = 0; i < this._arrayObjectPool.size; i++) {
                     this._arrayObjectPool.pool[i] = [];
@@ -2241,7 +2232,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 this._leTagStarArgument(ownerModuleId, label, this.element);
             } else {
                 for (var i = 0, name; (name = argumentNames[i]); i++) {
-                    this._leTagNamedArgument(ownerModuleId, label, this._domArguments[name], name);
+                    this._leTagNamedArgument(ownerModuleId, label,
+                        this._domArguments[name], name);
                 }
             }
         }
@@ -2274,7 +2266,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     if (element.nodeType === Node.ELEMENT_NODE) {
                         break;
                     }
-                } while ((element = element.previousSibling));
+                } while ((element = element.previousSibling));
             }
 
             return element;
@@ -2320,6 +2312,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
             for (var key in parameters) {
                 if (parameters.hasOwnProperty(key)) {
+
                     parameterElement = parameters[key];
                     argument = templateArguments ? templateArguments[key] : void 0;
 
@@ -2370,7 +2363,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         for (i = 0; (component = components[i]); i++) {
                             component.attachToParentComponent();
                         }
-                    }
+                    }    
                 }
             }
         }
@@ -3245,17 +3238,17 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 attributes = originalElement.attributes;
                 if (attributes) {
                     length = attributes.length;
-                    for(i=0; i < length; i++) {
+                    for (i=0; i < length; i++) {
                         name = attributes[i].name;
                         value = attributes[i].value;
 
                         descriptor = this._getElementAttributeDescriptor(name, this);
                         // check if this attribute from the markup is a well-defined attribute of the component
-                        if(descriptor || (typeof this[name] !== 'undefined')) {
+                        if (descriptor || (typeof this[name] !== 'undefined')) {
                             // only set the value if a value has not already been set by binding
-                            if(typeof this._elementAttributeValues[name] === 'undefined') {
+                            if (typeof this._elementAttributeValues[name] === 'undefined') {
                                 this._elementAttributeValues[name] = value;
-                                if( (typeof this[name] === 'undefined') || this[name] === null) {
+                                if(this[name] === null || this[name] === undefined) {
                                     this[name] = value;
                                 }
                             }
@@ -3268,11 +3261,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 if(descriptor) {
                     // check if this element has textContent
                     var textContent = originalElement.textContent;
-
-
-                    if(typeof this._elementAttributeValues.textContent === 'undefined') {
+                    if (typeof this._elementAttributeValues.textContent === 'undefined') {
                         this._elementAttributeValues.textContent = textContent;
-                        if (this.textContent === null) {
+                        if (this.textContent === null || this.textContent === undefined) {
                             this.textContent = textContent;
                         }
                     }
@@ -3286,7 +3277,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         if (this._elementAttributeDescriptors.hasOwnProperty(attributeName)) {
                             descriptor = this._elementAttributeDescriptors[attributeName];
                             var _name = "_"+attributeName;
-                            if (this[_name] === null && descriptor !== null && "value" in descriptor) {
+                            if ((this[name] === null || this[name] === undefined) && descriptor !== null && "value" in descriptor) {
                                 this[_name] = descriptor.value;
                             }   
                         }
@@ -3718,7 +3709,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                 }
             }
             this._clearNeedsDrawTimeOut = null;
-			needsDrawList.length = 0;
+            needsDrawList.length = 0;
         }
     },
 
@@ -3842,7 +3833,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      * @function
      */
     requestAnimationFrame: {
-        value: (global.requestAnimationFrame || global.webkitRequestAnimationFrame || global.mozRequestAnimationFrame ||  global.msRequestAnimationFrame || setTimeout),
+        value: (global.requestAnimationFrame || global.webkitRequestAnimationFrame || 
+                    global.mozRequestAnimationFrame ||  global.msRequestAnimationFrame || setTimeout),
         enumerable: false
     },
 
@@ -3851,7 +3843,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      * @function
      */
     cancelAnimationFrame: {
-        value: (global.cancelAnimationFrame ||  global.webkitCancelAnimationFrame || global.mozCancelAnimationFrame || global.msCancelAnimationFrame || clearTimeout),
+        value: (global.cancelAnimationFrame ||  global.webkitCancelAnimationFrame || 
+                    global.mozCancelAnimationFrame || global.msCancelAnimationFrame || clearTimeout),
         enumerable: false
     },
 
@@ -3876,34 +3869,55 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         // Written by John Resig. Used under the Creative Commons Attribution 2.5 License.
         // http://ejohn.org/projects/javascript-diff-algorithm/
         value: function ( o, n ) {
-            var ns = {};
-            var os = {};
+            var ns = {}, 
+                os = {};
+
+            function isNullOrUndefined(o) {
+                return o === undefined || o === null;
+            }
 
             for (var i = 0; i < n.length; i++ ) {
-                if (ns[ n[i] ] === null ) {
-                    ns[ n[i] ] = { rows: [], o: null };
+                if (isNullOrUndefined(ns[n[i]])) {
+                    ns[n[i]] = { 
+                        rows: [], 
+                        o: null 
+                    };
                 }
-                ns[ n[i] ].rows.push( i );
+                ns[n[i]].rows.push( i );
             }
 
             for (i = 0; i < o.length; i++ ) {
-                if (os[ o[i] ] === null ) {
-                    os[ o[i] ] = { rows: [], n: null };
+                if (isNullOrUndefined(os[o[i]])) {
+                    os[o[i]] = { 
+                        rows: [], 
+                        n: null 
+                    };
                 }
-                os[ o[i] ].rows.push( i );
+                os[o[i]].rows.push(i);
             }
 
             for (i in ns ) {
-                if (ns[i].rows.length === 1 && typeof(os[i]) !== "undefined" && os[i].rows.length === 1 ) {
-                    n[ ns[i].rows[0] ] = { text: n[ ns[i].rows[0] ], row: os[i].rows[0] };
-                    o[ os[i].rows[0] ] = { text: o[ os[i].rows[0] ], row: ns[i].rows[0] };
+                if (
+                    ns[i].rows.length === 1 && 
+                        !isNullOrUndefined(os[i]) && 
+                            os[i].rows.length === 1
+                ) {
+                    n[ns[i].rows[0]] = { 
+                        text: n[ns[i].rows[0]], 
+                        row: os[i].rows[0] 
+                    };
+                    o[ os[i].rows[0] ] = { 
+                        text: o[ os[i].rows[0] ], 
+                        row: ns[i].rows[0]  
+                    };
                 }
             }
 
             for (i = 0; i < n.length - 1; i++ ) {
-                if (n[i].text !== null && n[i+1].text === null &&
-                    n[i].row + 1 < o.length && o[ n[i].row + 1 ].text === null &&
-                    n[i+1] === o[ n[i].row + 1 ]
+                if (
+                    !isNullOrUndefined(n[i].text) && isNullOrUndefined(n[i+1].text) &&
+                        n[i].row + 1 < o.length && isNullOrUndefined(o[ n[i].row + 1 ].text) &&
+                            n[i+1] === o[ n[i].row + 1 ]
                 ) {
                     n[i+1] = { text: n[i+1], row: n[i].row + 1 };
                     o[n[i].row+1] = { text: o[n[i].row+1], row: i + 1 };
@@ -3911,16 +3925,26 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             }
 
             for (i = n.length - 1; i > 0; i-- ) {
-                if (n[i].text !== null && n[i-1].text === null &&
-                    n[i].row > 0 && o[ n[i].row - 1 ].text === null &&
-                    n[i-1] === o[ n[i].row - 1 ]
+                if (
+                    !isNullOrUndefined(n[i].text) && isNullOrUndefined(n[i - 1].text) &&
+                        n[i].row > 0 && isNullOrUndefined(o[ n[i].row - 1].text) &&
+                            n[i - 1] === o[ n[i].row - 1 ]
                 ) {
-                    n[i-1] = { text: n[i-1], row: n[i].row - 1 };
-                    o[n[i].row-1] = { text: o[n[i].row-1], row: i - 1 };
+                    n[i - 1] = { 
+                        text: n[i - 1], 
+                        row: n[i].row - 1 
+                    };
+                    o[n[i].row-1] = { 
+                        text: o[n[i].row-1], 
+                        row: i - 1 
+                    };
                 }
             }
 
-            return { o: o, n: n };
+            return { 
+                o: o, 
+                n: n 
+            };
         }
     },
 
@@ -3992,9 +4016,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      */
     drawStylesheets: {
         value: function () {
-            var stylesheet,
+            var documentResources = this._documentResources,
                 stylesheets = this._stylesheets,
-                documentResources = this._documentResources,
+                stylesheet,
                 documentHead = documentResources._document.head,
                 bufferDocumentFragment = this._bufferDocumentFragment;
 
@@ -4079,12 +4103,10 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                     var warning = ["DOM modified outside of the draw loop"];
                     var out = this._diff(this._oldSource.split("\n"), newSource.split("\n"));
                     for (var i = 0; i < out.n.length; i++) {
-                        // == null ok. Is also checking for undefined
-                        if (out.n[i].text === null) {
+                        if (out.n[i].text === undefined || out.n[i].text === null) {
                             warning.push('+ ' + out.n[i]);
                         } else {
-                            // == null ok. Is also checking for undefined
-                            for (var n = out.n[i].row + 1; n < out.o.length && out.o[n].text === null; n++) {
+                            for (var n = out.n[i].row + 1; n < out.o.length && (out.o[n].text === undefined || out.o[n].text === null); n++) {
                                 warning.push('- ' + out.o[n]);
                             }
                         }
@@ -4148,7 +4170,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             if (needsDrawListIndex.has(component)) {
                 // Requesting a draw of a component that has already been drawn in the current cycle
                 if (drawLogger.isDebug) {
-                    if(this !== this.rootComponent) {
+                    if(this !== rootComponent) {
                         drawLogger.debug(loggerToString(this) + " added to the draw cycle twice, this should not happen.");
                     }
                 }
@@ -4316,9 +4338,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         }
     }
 });
-
-rootComponent = new RootComponent().init();
-exports.__root__ = rootComponent;
+ 
+exports.__root__ = rootComponent = new RootComponent().init();
 
 //https://github.com/kangax/html-minifier/issues/63
 //http://www.w3.org/TR/html-markup/global-attributes.html
