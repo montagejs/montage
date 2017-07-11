@@ -1098,8 +1098,8 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                 }
             }
 
-            var mapIter = dataBindings.keys(),
-                key;
+            var key, b,
+                mapIter = dataBindings.keys();
 
             // Loop through bindings seperately in case the bound properties
             // haven't been set on the data object yet.
