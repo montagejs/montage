@@ -71,7 +71,7 @@ var Promise = require("./promise").Promise;
     return done;
 };
 
-// TODO WTF use .request only
+/* global exports: true */
 exports =  module.exports;
 exports.request = exports;
 

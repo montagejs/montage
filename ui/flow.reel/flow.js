@@ -1487,13 +1487,15 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 }
             }
 
-            var time = timestamp,
-                // "iterations" is the number of iterations for the numerical methods
-                // integration of elastic scrolling. The higher the iterations, the more
-                // precise it is, but slower to compute. Setting it to 6 provides
-                // a good balance between precision and performance.
-                iterations = 6,
-                interval1 = this.lastDrawTime ? (time - this.lastDrawTime) * 0.018 * this._elasticScrollingSpeed : 0,
+
+            // "iterations" is the number of iterations for the numerical methods
+            // integration of elastic scrolling. The higher the iterations, the more
+            // precise it is, but slower to compute. Setting it to 6 provides
+            // a good balance between precision and performance.
+            time = timestamp;
+            iterations = 6;
+            
+            var interval1 = this.lastDrawTime ? (time - this.lastDrawTime) * 0.018 * this._elasticScrollingSpeed : 0,
                 interval = 1 - (interval1 / iterations),
                 offset1, offset2, resultOffset,
                 min = this._minSlideOffsetIndex,
@@ -1601,8 +1603,8 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
             }
             if (this._isCameraUpdated) {
                 if (this._isCameraEnabled) {
-                    var perspective = Math.tan(((90 - this._viewpointFov * 0.5) * this._doublePI) / 360) * this._height * 0.5,
-                        vX = viewpointTargetPoint[0] - viewpointPosition[0],
+                    perspective = Math.tan(((90 - this._viewpointFov * 0.5) * this._doublePI) / 360) * this._height * 0.5;
+                    var vX = viewpointTargetPoint[0] - viewpointPosition[0],
                         vY = viewpointTargetPoint[1] - viewpointPosition[1],
                         vZ = viewpointTargetPoint[2] - viewpointPosition[2],
                         yAngle = Math.atan2(-vX, -vZ),  // TODO: Review this
