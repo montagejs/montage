@@ -24,7 +24,7 @@ var MontageInterpreter = Montage.specialize({
         value: function (serialization, objects, element) {
             var context;
 
-            context = new MontageContext()
+            context = new exports.MontageContext()
                 .init(serialization, this._reviver, objects, element, this._require);
 
             return context.getObjects();

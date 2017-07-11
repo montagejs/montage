@@ -1461,7 +1461,7 @@ var Montage = require("../core").Montage,
             return function (s) {
                 var r = null;
                 for (var i = 0; i < px.length; i++) {
-                    if (px[i] == null) {
+                    if (px[i] === null) {
                         continue;
                     }
                     try {
@@ -1481,7 +1481,7 @@ var Montage = require("../core").Montage,
             return function (s) {
                 var rx = [], r = null;
                 for (var i = 0; i < px.length; i++) {
-                    if (px[i] == null) {
+                    if (px[i] === null) {
                         continue;
                     }
                     try {
@@ -1967,7 +1967,8 @@ var Montage = require("../core").Montage,
             }
 
             var expression = !!(this.days && this.days !== null || this.orient || this.operator);
-
+            var temp; 
+            
             var gap, mod, orient;
             orient = ((this.orient === "past" || this.operator === "subtract") ? -1 : 1);
 
@@ -1984,7 +1985,7 @@ var Montage = require("../core").Montage,
             }
 
             if (!expression && this.weekday && !this.day && !this.days) {
-                var temp = Date[this.weekday]();
+                temp = Date[this.weekday]();
                 this.day = temp.getDate();
                 if (!this.month) {
                     this.month = temp.getMonth();
@@ -2004,7 +2005,7 @@ var Montage = require("../core").Montage,
                 this.month = null;
             }
 
-            if (this.value != null && this.month != null && this.year != null) {
+            if (this.value !== null && this.month !== null && this.year !== null) {
                 this.day = this.value * 1;
             }
 
@@ -2034,7 +2035,7 @@ var Montage = require("../core").Montage,
 
             if (!this.value && this.operator && this.operator !== null && this[this.unit + "s"] && this[this.unit + "s"] !== null) {
                 this[this.unit + "s"] = this[this.unit + "s"] + ((this.operator === "add") ? 1 : -1) + (this.value || 0) * orient;
-            } else if (this[this.unit + "s"] == null || this.operator != null) {
+            } else if (this[this.unit + "s"] === null || this.operator !== null) {
                 if (!this.value) {
                     this.value = 1;
                 }
@@ -2050,7 +2051,7 @@ var Montage = require("../core").Montage,
             }
 
             if (this.weekday && !this.day && !this.days) {
-                var temp = Date[this.weekday]();
+                temp = Date[this.weekday]();
                 this.day = temp.getDate();
                 if (temp.getMonth() !== today.getMonth()) {
                     this.month = temp.getMonth();
@@ -2509,7 +2510,7 @@ var DateValidator = exports.DateValidator = Validator.specialize(/** @lends Date
             // for now, just accept what is possible by default
             //var result = Date.parse(v, this.pattern);
             var result = Date.parseExact(v, this.pattern);
-            if (isNaN(result) || result == null) {
+            if (isNaN(result) || result === null) {
                 // The parseDate returns the default Unix date (12/31/1969) if it is unable to parse
                 // the date in the format
                 return {message: 'Unable to parse date - ' + v + ' in the format - ' + this.pattern};

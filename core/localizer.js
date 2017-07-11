@@ -43,6 +43,8 @@ var EMPTY_STRING_FUNCTION = function () { return ""; };
 // http://tools.ietf.org/html/rfc5646, but it's good enough for our purposes.
 var reLanguageTagValidator = /^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/;
 
+var defaultLocalizer;
+
 /**
  * @class Localizer
  * @extends Montage
@@ -164,8 +166,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
         },
         set: function (value) {
             if (this._messages !== value) {
-                // != ok checking for undefined as well
-                if (value != null && typeof value !== "object") {
+                if (value !== undefined && value !== null && typeof value !== "object") {
                     throw new TypeError(value, " is not an object");
                 }
 
@@ -739,7 +740,6 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
  *
  * "montage_locale" (LOCALE_STORAGE_KEY).
  */
-var defaultLocalizer;
 
 Object.defineProperty(exports, "defaultLocalizer", {
     get: function () {
@@ -796,9 +796,17 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
      */
     init: {
         value: function (key, defaultMessage, data) {
-            if (key) this.key = key;
-            if (defaultMessage) this.defaultMessage = defaultMessage;
-            if (data) this.data = data;
+            if (key) {
+                this.key = key;
+            }
+
+            if (defaultMessage) {
+                this.defaultMessage = defaultMessage;
+            }
+
+            if (data) {
+                this.data = data;
+            }
 
             return this;
         }
@@ -817,7 +825,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
             return this._localizer;
         },
         set: function (value) {
-            if (this._localizer == value) {
+            if (this._localizer === value) {
                 return;
             }
             this._localizer = value;
@@ -880,7 +888,9 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
 
     _localize: {
         value: function () {
-            if (this._isLocalizeQueued) return;
+            if (this._isLocalizeQueued) {
+                return;
+            }
             this._isLocalizeQueued = true;
 
             var self = this;
@@ -1096,7 +1106,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                 if (data.hasOwnProperty(p) &&
                     (!dataBindings || !dataBindings[".get('"+ p + "')"])
                 ) {
-                    if (!result.data) result.data = {};
+                    result.data = result.data || {};
                     result.data[p] = data[p];
                 }
             }
@@ -1111,7 +1121,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                 // but we want to serialize into an object literal instead.
                 key = /\.get\('([^']+)'\)/.exec(b)[1];
 
-                if (!result.data) result.data = {};
+                result.data = result.data || {};
                 result.data[key] = {};
                 this._serializeBinding(this.data, result.data[key], dataBindings.get(b), serializer);
             }
@@ -1119,12 +1129,12 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
 
             // Loop through bindings seperately in case the bound properties
             // haven't been set on the data object yet.
-            // for (var b in dataBindings) {
+            // for (b in dataBindings) {
             //     // binding is in the form of "get('key')" because it's a map
             //     // but we want to serialize into an object literal instead.
             //     var key = /\.get\('([^']+)'\)/.exec(b)[1];
 
-            //     if (!result.data) result.data = {};
+            //     result.data = result.data || {};
             //     result.data[key] = {};
             //     this._serializeBinding(this.data, result.data[key], dataBindings[b], serializer);
             // }

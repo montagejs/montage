@@ -190,6 +190,7 @@ var KEYPRESS_EVENT_TYPE = "keyPress",
     LONGKEYPRESS_EVENT_TYPE = "longKeyPress",
     KEYRELEASE_EVENT_TYPE = "keyRelease";
 
+var defaultKeyManager = null;
 
 /**
  * The KeyManager dispatches KeyComposer events when it detects a keyComposer
@@ -371,7 +372,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
             var userAgent = global.navigator ? global.navigator.userAgent : "",
                 code;
 
-            if (_defaultKeyManager) {
+            if (defaultKeyManager) {
                 console.warn("Rather than creating a new KeyManager object, you might want to use the default key manager");
             }
 
@@ -938,13 +939,12 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     }
 });
 
-var _defaultKeyManager = null;
 Montage.defineProperty(exports, "defaultKeyManager", {
     get: function () {
-        if (!_defaultKeyManager) {
-            _defaultKeyManager = new KeyManager();
+        if (!defaultKeyManager) {
+            defaultKeyManager = new KeyManager();
         }
-        return _defaultKeyManager;
+        return defaultKeyManager;
     }
 });
 

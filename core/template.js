@@ -370,7 +370,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
             var resources = this._resources;
 
             if (!resources) {
-                resources = this._resources = new TemplateResources();
+                resources = this._resources = new exports.TemplateResources();
                 resources.initWithTemplate(this);
             }
 
@@ -742,12 +742,12 @@ var Template = Montage.specialize( /** @lends Template# */ {
     createHtmlDocumentWithHtml: {
         value: function (html, baseURI) {
             var htmlDocument = document.implementation.createHTMLDocument("");
-            if(html) {
+            if (html) {
                 htmlDocument.documentElement.innerHTML = html;
-                if(baseURI) this.normalizeRelativeUrls(htmlDocument, baseURI);
+                if (baseURI) {
+                    this.normalizeRelativeUrls(htmlDocument, baseURI);
+                }
             }
-
-
             return htmlDocument;
         }
     },

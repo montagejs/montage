@@ -142,7 +142,7 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
 
     getSerializationLabelsWithElements: {
         value: function (elementIds) {
-            var inspector = new SerializationInspector(),
+            var inspector = new exports.SerializationInspector(),
                 labels = [];
 
             inspector.initWithSerialization(this);
@@ -167,7 +167,7 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
 
     renameElementReferences: {
         value: function (elementsTable) {
-            var inspector = new SerializationInspector();
+            var inspector = new exports.SerializationInspector();
 
             inspector.initWithSerialization(this);
             inspector.visitSerialization(function (node) {
@@ -180,7 +180,7 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
 
     renameSerializationLabels: {
         value: function (labelsTable) {
-            var inspector = new SerializationInspector();
+            var inspector = new exports.SerializationInspector();
 
             inspector.initWithSerialization(this);
             inspector.visitSerialization(function (node) {
@@ -204,13 +204,13 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
 
     mergeSerialization: {
         value: function (serialization, delegate) {
-            return SerializationMerger.mergeSerializations(this, serialization, delegate);
+            return exports.SerializationMerger.mergeSerializations(this, serialization, delegate);
         }
     },
 
     extractSerialization: {
         value: function (labels, externalLabels) {
-            var extractor = new SerializationExtractor();
+            var extractor = new exports.SerializationExtractor();
 
             extractor.initWithSerialization(this);
             return extractor.extractSerialization(labels, externalLabels);
@@ -617,7 +617,7 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
                 }
             }
 
-            if (label != null && label !== value && value.label !== label) {
+            if (label !== null && label !== undefined && label !== value && value.label !== label) {
                 this.changeLabel(label, value.label);
             }
         }
@@ -831,7 +831,7 @@ var SerializationExtractor = Montage.specialize( /** @lends SerializationExtract
         value: function (labels, externalLabels) {
 
             var i, label,
-                inspector = new SerializationInspector(),
+                inspector = new exports.SerializationInspector(),
                 serializationObject,
                 objects = {},
                 references = [];
