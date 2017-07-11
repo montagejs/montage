@@ -28,8 +28,8 @@
     "unused"        : false,
     "bitwise"       : false,     // Prohibit bitwise operators (&, |, ^, etc.).
     "curly"         : true,     // Require {} for every new block or scope.
-    "eqeqeq"        : false,     // Require triple equals i.e. `===`.
-    "forin"         : false,     // Tolerate `for in` loops without `hasOwnPrototype`.
+    "eqeqeq"        : true,     // Require triple equals i.e. `===`.
+    "forin"         : true,     // Tolerate `for in` loops without `hasOwnPrototype`.
     "immed"         : true,     // Require immediate invocations to be wrapped in parens e.g. `( function(){}() );`
     "latedef"       : true,     // Prohibit variable use before definition.
     "newcap"        : false,     // Require capitalization of all constructor functions e.g. `new F()`.
