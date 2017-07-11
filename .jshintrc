@@ -15,17 +15,25 @@
     "eqnull": true,
     "browser": true,
     "globals": {
-        "CustomEvent": true,
-        "WebSocket": false,
-
         "require": false,
         "exports": false,
+        "module": false,
         "global": false,
-
+        "console": false,
+        //
+        "escape": false,
+        //
         "WeakMap": true,
         "Map": true,
         "Set": true,
-
-        "console": false
+        //
+        "Promise": false,
+        "CustomEvent": true,
+        "WebSocket": false,
+        "TouchEvent": false,
+        "UIEvent": false,
+        "WebKitPoint": false,
+        "webkitConvertPointFromNodeToPage": false,
+        "webkitConvertPointFromPageToNode": false
     }
 }
