@@ -318,17 +318,18 @@
 
             var Promise = montageRequire("core/promise").Promise;
             var deepLoadPromises = [];
+            var self = this;
 
-            for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {
-              deepLoadPromises.push(montageRequire.deepLoad(iDependency));
+            for (var i = 0, iDependency; (iDependency = dependencies[i]); i++) {
+                deepLoadPromises.push(montageRequire.deepLoad(iDependency));
             }
 
             return Promise.all(deepLoadPromises)
-            .then(function () {
+                .then(function () {
 
-                for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {
-                  montageRequire(iDependency);
-                }
+                    for (var i = 0, iDependency; (iDependency = dependencies[i]); i++) {
+                        montageRequire(iDependency);
+                    }
 
                 var Montage = montageRequire("core/core").Montage;
                 var EventManager = montageRequire("core/event/event-manager").EventManager;
@@ -336,43 +337,203 @@
                 var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                 var logger = montageRequire("core/logger").logger;
 
-                var application;
+                    // montageWillLoad is mostly for testing purposes
+                    if (typeof global.montageWillLoad === "function") {
+                        global.montageWillLoad();
+                    }
 
-                // montageWillLoad is mostly for testing purposes
-                if (typeof global.montageWillLoad === "function") {
-                    global.montageWillLoad();
-                }
+                    // Load the application
 
-                // Load the application
+                    var appProto = applicationRequire.packageDescription.applicationPrototype,
+                        applicationLocation, appModulePromise;
+                
+                    if (appProto) {
+                        applicationLocation = MontageReviver.parseObjectLocationId(appProto);
+                        appModulePromise = applicationRequire.async(applicationLocation.moduleId);
+                    } else {
+                        appModulePromise = montageRequire.async("core/application");
+                    }
 
-                var appProto = applicationRequire.packageDescription.applicationPrototype,
-                    applicationLocation, appModulePromise;
-                if (appProto) {
-                    applicationLocation = MontageReviver.parseObjectLocationId(appProto);
-                    appModulePromise = applicationRequire.async(applicationLocation.moduleId);
-                } else {
-                    appModulePromise = montageRequire.async("core/application");
-                }
+                    return appModulePromise.then(function (exports) {
+                        var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
+                        application = new Application();
+                        defaultEventManager.application = application;
+                        application.eventManager = defaultEventManager;
+                        self.initMontageCustomElement(applicationRequire, montageRequire, application);
 
-                return appModulePromise.then(function (exports) {
-                    var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
-                    application = new Application();
-                    defaultEventManager.application = application;
-                    application.eventManager = defaultEventManager;
-
-                    return application._load(applicationRequire, function() {
-                        if (params.module) {
-                            // If a module was specified in the config then we initialize it now
-                            applicationRequire.async(params.module);
-                        }
-                        if (typeof global.montageDidLoad === "function") {
-                            global.montageDidLoad();
-                        }
+                        return application._load(applicationRequire, function () {
+                            if (params.module) {
+                                // If a module was specified in the config then we initialize it now
+                                applicationRequire.async(params.module);
+                            }
+                            if (typeof global.montageDidLoad === "function") {
+                                global.montageDidLoad();
+                            }
+                        });
                     });
+
                 });
 
-            });
+        },
+        
+        initMontageCustomElement: function (applicationRequire, montageRequire, application) {
+            var MontageElement = function () {
+                return Reflect.construct(
+                    HTMLElement, [], MontageElement
+                );
+            };
 
+            MontageElement.prototype.__proto__ = HTMLElement.prototype;
+            MontageElement.__proto__ = HTMLElement;
+
+            MontageElement.prototype.connectedCallback = function () {
+                if (!this.__montageComponent__) {
+                    var self = this;
+                    this.startListenToAttibuteChanges();
+
+                    return this.getRootComponent().then(function (rootComponent) {
+                        return self.instantiateComponent().then(function (component) {
+                            self.__montageComponent__ = component;
+                            rootComponent.addChildComponent(component);
+                            component._canDrawOutsideDocument = true;
+                            component.needsDraw = true;
+                        });
+                    });
+                } else {
+                    this.listenToAttibuteChanges();
+                }
+            };
+
+            MontageElement.prototype.disconnectedCallback = function () {
+                this._attributesObserver.disconnect();
+            };
+
+            MontageElement.prototype.getRootComponent = function () {
+                if (!MontageElement.rootComponentPromise) {
+                    MontageElement.rootComponentPromise = montageRequire.async("ui/component")
+                        .then(function (exports) {
+                            return exports.__root__;
+                        });
+                }
+
+                return MontageElement.rootComponentPromise;
+            };
+
+            MontageElement.prototype.startListenToAttibuteChanges = function () {
+                if (!this._attributesObserver) {
+                    var self = this;
+                    this._attributesObserver = new MutationObserver(function (mutations) {
+                        mutations.forEach(function (mutation) {
+                            var attributeName = mutation.attributeName;
+
+                            if (attributeName.startsWith('data-') &&
+                                attributeName !== "data-module-id") {
+                                
+                                attributeName = attributeName.replace(/^data-/, "");
+                                this.handleAttributeChanged(
+                                    attributeName,
+                                    this.dataset[attributeName]
+                                );
+                            }
+                        }, self);
+                    });
+                }
+
+                this._attributesObserver.observe(this, {
+                    attributes: true
+                });
+            };
+
+            MontageElement.prototype.instantiateComponent = function () {
+                var moduleId = this.getAttribute('data-module-id'),
+                    self = this;
+
+                if (!moduleId) {
+                    throw new Error(
+                        "data-module-id attribute missing on montage-element"
+                    );
+                }
+
+                return applicationRequire.async(moduleId).then(function (exports) {
+                    var component = new exports[Object.keys(exports)[0]]();
+                    self. bootstrapComponent(component);
+                    component.element = document.createElement("div");
+                    return component;
+                });
+            };
+
+            MontageElement.prototype.bootstrapComponent = function (component) {
+                var shadowRoot = this.attachShadow({ mode: 'open' }),
+                    mainEnterDocument = component.enterDocument,
+                    mainTemplateDidLoad = component.templateDidLoad,
+                    self = this;
+
+                application.eventManager.registerTargetForActivation(shadowRoot);
+
+                component.templateDidLoad = function () {
+                    var resources = component.getResources();
+
+                    if (resources) {
+                        self.injectResourcesWithinCustomElement(
+                            resources.styles,
+                            shadowRoot
+                        );
+
+                        self.injectResourcesWithinCustomElement(
+                            resources.scripts,
+                            shadowRoot
+                        );
+                    }
+
+                    var keys = Object.keys(self.dataset),
+                        key;
+
+                    for (var i = 0, length = keys.length; i < length; i++) {
+                        key = keys[i];
+                        if (key !== "moduleId") {
+                            component.defineBinding(
+                                key,
+                                {
+                                    "<->": key,
+                                    source: self.dataset
+                                }
+                            );
+                        }
+                    }
+
+                    this.templateDidLoad = mainTemplateDidLoad;
+
+                    if (typeof templateDidLoad === "function") {
+                        this.templateDidLoad(firstTime);
+                    }
+                };
+
+                component.enterDocument = function (firstTime) {
+                    shadowRoot.appendChild(this.element);
+                    this.enterDocument = mainEnterDocument;
+
+                    if (typeof enterDocument === "function") {
+                        this.enterDocument(firstTime);
+                    }
+                };
+            };
+
+            MontageElement.prototype.injectResourcesWithinCustomElement = function (resources, shadowRoot) {
+                if (resources && resources.length) {
+                    for (var i = 0, length = resources.length; i < length; i++) {
+                        shadowRoot.appendChild(resources[i]);
+                    }
+                }
+            };
+
+            MontageElement.prototype.handleAttributeChanged = function (attributeName, newValue) {
+                if (this.dataset[attributeName] && this.__montageComponent__ &&
+                    this.__montageComponent__[attributeName] != newValue) {
+                    this.__montageComponent__[attributeName] = newValue;
+                }
+            };
+
+            customElements.define("montage-element", MontageElement);
         }
     };
 

@@ -560,6 +560,15 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
             aWindow.document.nativeAddEventListener = aWindow.document.addEventListener;
             aWindow.XMLHttpRequest.prototype.nativeAddEventListener = aWindow.XMLHttpRequest.prototype.addEventListener;
+
+            if (aWindow.DocumentFragment) {
+                aWindow.DocumentFragment.prototype.nativeAddEventListener = aWindow.DocumentFragment.prototype.addEventListener;
+            }
+
+            if (aWindow.ShadowRoot) {
+                aWindow.ShadowRoot.prototype.nativeAddEventListener = aWindow.ShadowRoot.prototype.addEventListener;
+            }
+
             if (aWindow.Worker) {
                 aWindow.Worker.prototype.nativeAddEventListener = aWindow.Worker.prototype.addEventListener;
             }
@@ -575,6 +584,15 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
             aWindow.document.nativeRemoveEventListener = aWindow.document.removeEventListener;
             aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener = aWindow.XMLHttpRequest.prototype.removeEventListener;
+
+            if (aWindow.DocumentFragment) {
+                aWindow.DocumentFragment.prototype.nativeRemoveEventListener = aWindow.DocumentFragment.prototype.removeEventListener;
+            }
+
+            if (aWindow.ShadowRoot) {
+                aWindow.ShadowRoot.prototype.nativeRemoveEventListener = aWindow.ShadowRoot.prototype.removeEventListener;
+            }
+
             if (aWindow.Worker) {
                 aWindow.Worker.prototype.nativeRemoveEventListener = aWindow.Worker.prototype.removeEventListener;
             }
@@ -1167,12 +1185,27 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
                 if (bubbles) {
                     // TODO why on the document and not the window?
-                    return /* isWindow*/target.screen ? target.document : target.ownerDocument;
+                    var shadowRoot;
+                    return /* isWindow*/target.screen ? target.document :
+                        (shadowRoot = this._getShawdowRootFromNode(target)) ?
+                            shadowRoot : target.ownerDocument;
                 } else {
                     return target;
                 }
             }
 
+        }
+    },
+
+    _getShawdowRootFromNode: {
+        value: function isInShadow(node) {
+            var parent = (node && node.parentNode);
+            while (parent) {
+                if (parent.toString() === "[object ShadowRoot]") {
+                    return parent;
+                }
+                parent = parent.parentNode;
+            }
         }
     },
 
@@ -1277,29 +1310,8 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     }
                 };
             }
-
-            // The EventManager needs to handle "gateway/pointer/activation events" that we
-            // haven't let children listen for yet
-            // when the EM handles them eventually it will need to allow
-            // all components from the event target to the window to prepareForActivationEvents
-            // before finding event handlers that were registered for these events
-            if (aWindow.PointerEvent) {
-                aWindow.nativeAddEventListener("pointerdown", this._activationHandler, true);
-                aWindow.document.nativeAddEventListener("pointerenter", this._activationHandler, true);
-
-            } else if (aWindow.MSPointerEvent && aWindow.navigator.msPointerEnabled) {
-                aWindow.nativeAddEventListener("MSPointerDown", this._activationHandler, true);
-                // IE10 has no support for pointerenter or pointerleave events.
-                aWindow.document.nativeAddEventListener("mouseenter", this._activationHandler, true);
-
-            } else {
-                aWindow.nativeAddEventListener("touchstart", this._activationHandler, true);
-                aWindow.nativeAddEventListener("mousedown", this._activationHandler, true);
-                // mouseenter events are not dispatched from window under Chrome and Safari.
-                aWindow.document.nativeAddEventListener("mouseenter", this._activationHandler, true);
-            }
-
-            aWindow.nativeAddEventListener("focus", this._activationHandler, true);
+                
+            this.registerTargetForActivation(aWindow);
 
             if (this.application) {
 
@@ -1309,8 +1321,36 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 for (eventType in applicationLevelEvents) {
                     if (applicationLevelEvents.hasOwnProperty(eventType)) {
                         this._observeTarget_forEventType_(aWindow, eventType);
-                    }
+                    }    
                 }
+            }
+        },
+
+        registerTargetForActivation: {
+            value: function (target) {
+                var _document = target instanceof Window ? target.document : target;
+                // The EventManager needs to handle "gateway/pointer/activation events" that we
+                // haven't let children listen for yet
+                // when the EM handles them eventually it will need to allow
+                // all components from the event target to the window to prepareForActivationEvents
+                // before finding event handlers that were registered for these events
+                if (window.PointerEvent) {
+                    target.nativeAddEventListener("pointerdown", this._activationHandler, true);
+                    _document.nativeAddEventListener("pointerenter", this._activationHandler, true);
+
+                } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                    target.nativeAddEventListener("MSPointerDown", this._activationHandler, true);
+                    // IE10 has no support for pointerenter or pointerleave events.
+                    _document.nativeAddEventListener("mouseenter", this._activationHandler, true);
+
+                } else {
+                    target.nativeAddEventListener("touchstart", this._activationHandler, true);
+                    target.nativeAddEventListener("mousedown", this._activationHandler, true);
+                    // mouseenter events are not dispatched from window under Chrome and Safari.
+                    _document.nativeAddEventListener("mouseenter", this._activationHandler, true);
+                }
+
+                target.nativeAddEventListener("focus", this._activationHandler, true);
             }
 
         }
