@@ -280,7 +280,8 @@ if (typeof window !== "undefined") { // client-side
             value: function EventManager () {
                 this._trackingTouchStartList = new Map();
                 this._trackingTouchEndList = new Map();
-
+                this._findActiveTargetMap = new Map();
+                this._eventPathForTargetMap = new Map();
                 this._claimedPointers = new Map();
                 this._registeredCaptureEventListeners = new Map();
                 this._registeredBubbleEventListeners = new Map();
@@ -942,6 +943,7 @@ if (typeof window !== "undefined") { // client-side
                 }
 
                 mapIter = _registeredBubbleEventListeners.keys();
+              
                 while ((eventType = mapIter.next().value)) {
                     eventRegistration = _registeredBubbleEventListeners.get(eventType);
                     if (eventRegistration.has(target)) {
@@ -2664,7 +2666,9 @@ if (typeof window !== "undefined") { // client-side
                 }
             }
         },
-
+        _findActiveTargetMap : {
+            value: undefined
+        },
         /**
          * @private
          */
@@ -2672,8 +2676,9 @@ if (typeof window !== "undefined") { // client-side
             value: function (target) {
 
                 var foundTarget = null,
-                    checkedTargetMap = new WeakMap();
+                    checkedTargetMap = this._findActiveTargetMap;
 
+                checkedTargetMap.clear();
                 //TODO report if a cycle is detected?
                 while (!foundTarget && target && !(checkedTargetMap.has(target))) {
 
@@ -2692,6 +2697,9 @@ if (typeof window !== "undefined") { // client-side
             }
         },
 
+        _eventPathForTargetMap : {
+            value: undefined
+        },
         /**
          * Build the event target chain for the the specified Target
          * @private
@@ -2707,7 +2715,9 @@ if (typeof window !== "undefined") { // client-side
                 var targetCandidate = target,
                     application = this.application,
                     eventPath = [],
-                    discoveredTargets = new WeakMap();
+                    discoveredTargets = this._eventPathForTargetMap;
+
+                discoveredTargets.clear();
 
                 // Consider the target "discovered" for less specialized detection of cycles
                 discoveredTargets.set(target,true);

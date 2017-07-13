@@ -131,6 +131,15 @@
         "Promise": true,
         // Native
         "escape": false,
+        "console": false,
+        //
+        "escape": false,
+        //
+        "WeakMap": true,
+        "Map": true,
+        "Set": true,
+        //
+        "Promise": false,
         "CustomEvent": true,
         "WebSocket": false,
         "TouchEvent": false,
