@@ -33,11 +33,11 @@ exports.PipelineConverter = Converter.specialize({
 
     convert: {
         value: function (value) {
-            return this._convertWithNextConverter(value, 0);
+            return this._convertWithConverterAtIndex(value, 0);
         }
     },
 
-    _convertWithNextConverter: {
+    _convertWithConverterAtIndex: {
         value: function (input, index) {
             var self = this,
                 converter = this.converters[index],
@@ -53,17 +53,11 @@ exports.PipelineConverter = Converter.specialize({
             if (isFinalOutput) {
                 result = isPromise ? output : Promise.resolve(output);
             } else if (isPromise) {
-                if (this.converters[0].isRolesConverter) {
-                    debugger;
-                }
                 result = output.then(function (value) {
-                    if (self.converters[0].isRolesConverter) {
-                        debugger;
-                    }
-                    return self._convertWithNextConverter(value, index);
+                    return self._convertWithConverterAtIndex(value, index);
                 });
             } else {
-                result = this._convertWithNextConverter(output, index);
+                result = this._convertWithConverterAtIndex(output, index);
             }
 
             return result;
@@ -79,11 +73,11 @@ exports.PipelineConverter = Converter.specialize({
 
     revert: {
         value: function (value) {
-            return this._revertWithNextConverter(value, this.converters.length - 1);
+            return this._revertWithConverterAtIndex(value, this.converters.length - 1);
         }
     },
 
-    _revertWithNextConverter: {
+    _revertWithConverterAtIndex: {
         value: function (input, index) {
             var self = this,
                 converter = this.converters[index],
@@ -98,10 +92,10 @@ exports.PipelineConverter = Converter.specialize({
                 result = isPromise ? output : Promise.resolve(output);
             } else if (isPromise) {
                 result = output.then(function (value) {
-                    return self._revertWithNextConverter(value, index);
+                    return self._revertWithConverterAtIndex(value, index);
                 });
             } else {
-                result = this._revertWithNextConverter(output, index);
+                result = this._revertWithConverterAtIndex(output, index);
             }
 
             return result;
