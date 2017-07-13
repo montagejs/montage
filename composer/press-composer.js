@@ -693,17 +693,35 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     _addEventListeners: {
         value: function () {
             if (window.PointerEvent) {
+                if (this.shawdowRoot) {
+                    this.shawdowRoot.addEventListener("pointerup", this, false);
+                    this.shawdowRoot.addEventListener("pointermove", this, false);
+                    this.shawdowRoot.addEventListener("pointercancel", this, false);
+                }
+
                 document.addEventListener("pointerup", this, false);
                 document.addEventListener("pointermove", this, false);
                 document.addEventListener("pointercancel", this, false);
 
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                if (this.shawdowRoot) {
+                    this.shawdowRoot.addEventListener("MSPointerUp", this, false);
+                    this.shawdowRoot.addEventListener("MSPointerMove", this, false);
+                    this.shawdowRoot.addEventListener("MSPointerCancel", this, false);
+                }
+
                 document.addEventListener("MSPointerUp", this, false);
                 document.addEventListener("MSPointerMove", this, false);
                 document.addEventListener("MSPointerCancel", this, false);
 
             } else {
                 if (this._observedPointer === "mouse") {
+                    if (this.shawdowRoot) {
+                        this.shawdowRoot.addEventListener("mouseup", this, false);
+                        this.shawdowRoot.addEventListener("mousemove", this, false);
+                        this.shawdowRoot.addEventListener("dragstart", this, false);
+                    }
+
                     document.addEventListener("mouseup", this, false);
                     document.addEventListener("mousemove", this, false);
 
@@ -713,6 +731,12 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                     this._element.addEventListener("dragstart", this, false);
 
                 } else {
+                    if (this.shawdowRoot) {
+                        this.shawdowRoot.addEventListener("touchend", this, false);
+                        this.shawdowRoot.addEventListener("touchcancel", this, false);
+                        this.shawdowRoot.addEventListener("touchmove", this, false);
+                    }
+
                     document.addEventListener("touchend", this, false);
                     document.addEventListener("touchcancel", this, false);
                     document.addEventListener("touchmove", this, false);
@@ -721,6 +745,11 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
             var wheelEventName = typeof window.onwheel !== "undefined" || typeof window.WheelEvent !== "undefined" ?
                 "wheel" : "mousewheel";
+            
+            if (this.shawdowRoot) {
+                this.shawdowRoot.addEventListener(wheelEventName, this, true);
+                this.shawdowRoot.addEventListener("scroll", this, true);
+            }
 
             document.addEventListener(wheelEventName, this, true);
             document.addEventListener("scroll", this, true);
@@ -730,17 +759,35 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     _removeEventListeners: {
         value: function () {
             if (window.PointerEvent) {
+                if (this.shawdowRoot) {
+                    this.shawdowRoot.removeEventListener("pointerup", this, false);
+                    this.shawdowRoot.removeEventListener("pointermove", this, false);
+                    this.shawdowRoot.removeEventListener("pointercancel", this, false);
+                }
+
                 document.removeEventListener("pointerup", this, false);
                 document.removeEventListener("pointermove", this, false);
                 document.removeEventListener("pointercancel", this, false);
 
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                if (this.shawdowRoot) {
+                    this.shawdowRoot.removeEventListener("MSPointerUp", this, false);
+                    this.shawdowRoot.removeEventListener("MSPointerMove", this, false);
+                    this.shawdowRoot.removeEventListener("MSPointerCancel", this, false);
+                }
+
                 document.removeEventListener("MSPointerUp", this, false);
                 document.removeEventListener("MSPointerMove", this, false);
                 document.removeEventListener("MSPointerCancel", this, false);
 
             } else {
                 if (this._observedPointer === "mouse") {
+                    if (this.shawdowRoot) {
+                        this.shawdowRoot.removeEventListener("mouseup", this, false);
+                        this.shawdowRoot.removeEventListener("mousemove", this, false);
+                        this.shawdowRoot.removeEventListener("dragstart", this, false);
+                    }
+
                     document.removeEventListener("mouseup", this, false);
                     document.removeEventListener("mousemove", this, false);
 
@@ -748,8 +795,15 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                     // no mouse events are fired
                     // http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#initiate-the-drag-and-drop-operation
                     this._element.removeEventListener("dragstart", this, false);
+                    
 
                 } else {
+                    if (this.shawdowRoot) {
+                        this.shawdowRoot.removeEventListener("touchend", this, false);
+                        this.shawdowRoot.removeEventListener("touchcancel", this, false);
+                        this.shawdowRoot.removeEventListener("touchmove", this, false);
+                    }
+
                     document.removeEventListener("touchend", this, false);
                     document.removeEventListener("touchcancel", this, false);
                     document.removeEventListener("touchmove", this, false);
@@ -758,6 +812,11 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
             var wheelEventName = typeof window.onwheel !== "undefined" || typeof window.WheelEvent !== "undefined" ?
                 "wheel" : "mousewheel";
+            
+            if (this.shawdowRoot) {
+                this.shawdowRoot.removeEventListener(wheelEventName, this, true);
+                this.shawdowRoot.removeEventListener("scroll", this, true);
+            }
 
             document.removeEventListener(wheelEventName, this, true);
             document.removeEventListener("scroll", this, true);

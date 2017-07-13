@@ -584,7 +584,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
             aWindow.document.nativeRemoveEventListener = aWindow.document.removeEventListener;
             aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener = aWindow.XMLHttpRequest.prototype.removeEventListener;
-
+            
             if (aWindow.DocumentFragment) {
                 aWindow.DocumentFragment.prototype.nativeRemoveEventListener = aWindow.DocumentFragment.prototype.removeEventListener;
             }
@@ -1187,24 +1187,24 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     // TODO why on the document and not the window?
                     var shadowRoot;
                     return /* isWindow*/target.screen ? target.document :
-                        (shadowRoot = this._getShawdowRootFromNode(target)) ?
+                        (shadowRoot = this.getShawdowRootFromNode(target)) ?
                             shadowRoot : target.ownerDocument;
                 } else {
                     return target;
                 }
             }
-
         }
     },
 
-    _getShawdowRootFromNode: {
+    getShawdowRootFromNode: {
         value: function isInShadow(node) {
-            var parent = (node && node.parentNode);
-            while (parent) {
-                if (parent.toString() === "[object ShadowRoot]") {
-                    return parent;
+            if (window.ShadowRoot) {
+                while (node) {
+                    if (node.toString() === "[object ShadowRoot]") {
+                        return node;
+                    }
+                    node = node.parentNode;
                 }
-                parent = parent.parentNode;
             }
         }
     },
@@ -2402,10 +2402,10 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     break;
                 }
             }
-
             return identifier;
         }
     },
+    
 
     /**
      * @function
@@ -2427,6 +2427,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             return false;
         }
     },
+
 
     // Event Handling
     /**
@@ -2467,7 +2468,8 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
     handleEvent: {
         enumerable: false,
         value: function (event) {
-            if (event instanceof UIEvent && !this._shouldDispatchEvent(event)) {
+            if ((window.MontageElement && event.target instanceof MontageElement) ||
+                (event instanceof UIEvent && !this._shouldDispatchEvent(event))) {
                 return void 0;
             }
 

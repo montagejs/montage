@@ -377,7 +377,11 @@
         },
         
         initMontageCustomElement: function (applicationRequire, montageRequire, application) {
-            var MontageElement = function () {
+            if (typeof window.customElements === "undefined") {
+                return void 0;
+            }
+
+            var MontageElement = window.MontageElement = function () {
                 return Reflect.construct(
                     HTMLElement, [], MontageElement
                 );
