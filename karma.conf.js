@@ -100,11 +100,11 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-        'montage.js': 'coverage',
-        'core/**/*.js': 'coverage',
-        'ui/**/*.js': 'coverage',
-        'composer/**/*.js': 'coverage',
-        'window-loader/**/*.js': 'coverage'
+        'montage.js': ['coverage'],
+        'core/**/*.js': ['coverage', 'babel'],
+        'ui/**/*.js': ['coverage', 'babel'],
+        'composer/**/*.js': ['coverage', 'babel'],
+        'window-loader/**/*.js': ['coverage', 'babel'],
     },
 
     // test results reporter to use
@@ -115,6 +115,15 @@ module.exports = function(config) {
     coverageReporter: {
         type: 'html',
         dir: 'report/coverage/'
+    },
+
+    babelPreprocessor: {
+        options: {
+            presets: [
+                ['es2015', { modules: false }]
+            ],
+            sourceMap: 'inline'
+        }
     },
 
     // web server port
@@ -203,7 +212,8 @@ module.exports = function(config) {
         'karma-firefox-launcher',
         'karma-safari-launcher',
         'karma-ie-launcher',
-        'karma-phantomjs-launcher'
+        'karma-phantomjs-launcher',
+        'karma-babel-preprocessor'
     ]
-  })
-}
+  });
+};

@@ -57,11 +57,13 @@
     "q-io": "^1.13.3"
   },
   "devDependencies": {
+    "babel-preset-es2015": "^6.24.1",
     "concurrently": "^3.4.0",
     "http-server": "^0.10.0",
     "jasmine-console-reporter": "^1.2.7",
     "jasmine-core": "^2.5.2",
     "karma": "^1.5.0",
+    "karma-babel-preprocessor": "^6.0.1",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",
     "karma-firefox-launcher": "^1.0.1",
