@@ -495,13 +495,8 @@
                     for (var i = 0, length = keys.length; i < length; i++) {
                         key = keys[i];
                         if (key !== "moduleId") {
-                            component.defineBinding(
-                                key,
-                                {
-                                    "<->": key,
-                                    source: self.dataset
-                                }
-                            );
+                            this[key] = self.dataset[key];
+                            this.addPathChangeListener(key, self, "handleValueChange");
                         }
                     }
 
@@ -536,6 +531,27 @@
                     this.__montageComponent__[attributeName] = newValue;
                 }
             };
+
+
+            MontageElement.prototype.handleValueChange = function (newValue, attributeName) {
+                if (this.dataset[attributeName] != newValue) {
+                    var oldValue = this.dataset[attributeName];
+                    this.dataset[attributeName] = newValue;
+
+                    this.dispatchEvent(new CustomEvent(
+                        'dataAttributeChange',
+                        {
+                            cancelable: true,
+                            bubbles: true,
+                            detail: {
+                                attribute: "data-" + attributeName,
+                                oldValue: oldValue,
+                                newValue: this.dataset[attributeName]
+                            }
+                        }
+                    ))
+                }
+            }
 
             customElements.define("montage-element", MontageElement);
         }
