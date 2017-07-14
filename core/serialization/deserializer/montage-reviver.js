@@ -259,7 +259,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             }
 
             if (Promise.is(module)) {
-                return module.then(function(exports) {
+                return module.then(function (exports) {
                     return self.instantiateObject(exports, locationDesc, value, objectName, context, label);
                 }, function (error) {
                     if (error.stack) {
@@ -277,49 +277,41 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     instantiateObject: {
         value: function (module, locationDesc, value, objectName, context, label) {
-            var prototypeModuleId = false, moduleId, promise;
-
-            if ((prototypeModuleId = "prototype" in value)) {
-                moduleId = value.prototype;
-            } else if ("object" in value) {
-                moduleId = value.object;
-            }
+            var self = this,
+                moduleId = value.prototype || value.object,
+                object;
 
             if (moduleId && moduleId.endsWith(".mjson")) {
-                if (prototypeModuleId) {
-                    promise = this.instantiateMjsonObject(module, locationDesc.moduleId);
-                } else {
-                    promise = this.getMjsonObject(module, locationDesc.moduleId);
-                }
-
-                return promise.then(function (object) {
-                    context.setObjectLabel(object, label);
-                    return object;
-                });
+                return this.getMjsonObject(value, module, moduleId)
+                    .then(function (object) {
+                        context.setObjectLabel(object, label);
+                        return self.instantiateMjsonObject(value, object, objectName, context, label);
+                    });
             } else {
-                return this.instantiateMontageObject(value, module, objectName, context, label);
+                object = this.getMontageObject(value, module, objectName, context, label);
+                context.setObjectLabel(object, label);
+                return this.instantiateMontageObject(value, object, objectName, context, label);
             }
         }
     },
 
     getMjsonObject: {
-        value: function (json, moduleId) {
+        value: function (serialization, json, moduleId) {
             var self = this;
             return MontageReviver.getMontageDeserializer().then(function (MontageDeserializer) {
-                var topId = self._require.resolve(moduleId),
-                    module = self._require.getModuleDescriptor(topId);
-                
-                //FIXME: Can't require ObjectDescriptor! 
-                if (module.exports._rootPromise) {
-                    return module.exports._rootPromise;
-                }
-
-                // TODO: MontageDeserializer needs an API to pass in an object 
+                // TODO: MontageDeserializer needs an API to pass in an object
                 // instead of the stringified version of the object
-                return (module.exports._rootPromise = new MontageDeserializer().init(
+                var deserializer = new MontageDeserializer().init(
                     JSON.stringify(json),
                     MontageDeserializer.getModuleRequire(self._require, moduleId)
-                ).deserializeObject());
+                );
+                return deserializer.deserializeObject();
+            }).then(function (object) {
+                if ("prototype" in serialization) {
+                    return Object.create(object);
+                } else {
+                    return object;
+                }
             });
         }
     },
@@ -369,48 +361,66 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     },
 
     instantiateMjsonObject: {
-        value: function (json, moduleId) {
-            var self = this;
-            return this.getMjsonObject(json, moduleId).then(function (object) {
-                return Object.create(object);
-            });
-        }
-    },
-
-    instantiateMontageObject: {
-        value: function (value, module, objectName, context, label) {
+        value: function (serialization, object, objectName, context, label) {
             var self = this,
-                object,
                 montageObjectDesc;
 
-            object = this.getMontageObject(value, module, objectName, context, label);
-            context.setObjectLabel(object, label);
-            
             if (object !== null && object !== void 0) {
                 object.isDeserializing = true;
             }
 
-            if (value.bindings) {
-                deprecate.deprecationWarningOnce(
-                    "'bindings' block is deprecated, use 'values' instead"
-                );
-            }
-
-            if (value.properties) {
-                deprecate.deprecationWarningOnce(
-                    "'properties' block is deprecated, use 'values' instead"
-                );
-            }
-
-            context.setBindingsToDeserialize(object, value);
-            montageObjectDesc = this.reviveObjectLiteral(value, context);
+            context.setBindingsToDeserialize(object, serialization);
+            montageObjectDesc = this.reviveObjectLiteral(serialization, context);
 
             if (Promise.is(montageObjectDesc)) {
                 return montageObjectDesc.then(function(montageObjectDesc) {
                     return self.deserializeMontageObject(montageObjectDesc, object, context, label);
                 });
             } else {
-                return this.deserializeMontageObject(montageObjectDesc, object,  context, label);
+                return this.deserializeMontageObject(montageObjectDesc, object, context, label);
+            }
+        }
+    },
+
+    instantiateMontageObject: {
+        value: function (serialization, object, objectName, context, label) {
+            var self = this,
+                montageObjectDesc;
+
+
+            if (object !== null && object !== void 0) {
+                object.isDeserializing = true;
+            }
+
+            if (serialization.bindings) {
+                deprecate.deprecationWarningOnce(
+                    "'bindings' block is deprecated, use 'values' instead"
+                );
+            }
+
+            if (serialization.properties) {
+                deprecate.deprecationWarningOnce(
+                    "'properties' block is deprecated, use 'values' instead"
+                );
+            }
+
+            context.setBindingsToDeserialize(object, serialization);
+            montageObjectDesc = this.reviveObjectLiteral(serialization, context);
+
+            if (Promise.is(montageObjectDesc)) {
+                return montageObjectDesc.then(function(montageObjectDesc) {
+                    if (typeof object.deserializeSelf === "function") {
+                        return self.deserializeCustomMontageObject(object, montageObjectDesc, context, label);
+                    } else {
+                        return self.deserializeMontageObject(montageObjectDesc, object, context, label);
+                    }
+                });
+            } else {
+                if (typeof object.deserializeSelf === "function") {
+                    return this.deserializeCustomMontageObject(object, montageObjectDesc, context, label);
+                } else {
+                    return this.deserializeMontageObject(montageObjectDesc, object, context, label);
+                }
             }
         }
     },
@@ -419,26 +429,16 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (montageObjectDesc, object, context, label) {
             var values;
 
-            if (typeof object.deserializeSelf === "function") {
-                return this.deserializeCustomMontageObject(object, montageObjectDesc, context, label);
-            } else {
-                // Units are deserialized after all objects have been revived.
-                // This happens at didReviveObjects.
-                context.setUnitsToDeserialize(object, montageObjectDesc, MontageReviver._unitNames);
-                values = this.deserializeMontageObjectValues(
-                    object,
-                    montageObjectDesc.values || montageObjectDesc.properties, //deprecated
-                    context
-                );
+            // Units are deserialized after all objects have been revived.
+            // This happens at didReviveObjects.
+            context.setUnitsToDeserialize(object, montageObjectDesc, MontageReviver._unitNames);
+            values = this.deserializeMontageObjectValues(
+                object,
+                montageObjectDesc.values || montageObjectDesc.properties, //deprecated
+                context
+            );
 
-                if (Promise.is(values)) {
-                    return values.then(function() {
-                        return object;
-                    });
-                } else {
-                    return object;
-                }
-            }
+            return object;
         }
     },
 
@@ -533,7 +533,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             var bindingsToDeserialize = context.getBindingsToDeserialize(),
                 unitDeserializer = new UnitDeserializer(),
                 bindingsToDeserializeDesc;
-            
+
             if (bindingsToDeserialize) {
                 try {
                     for (var i = 0, length = bindingsToDeserialize.length; i < length; i++) {

@@ -709,7 +709,11 @@ describe("serialization/montage-deserializer-spec", function () {
         it("should deserialize using prototype: module.mjson", function (done) {
             var serialization = {
                     "root": {
-                        "prototype": "spec/serialization/testmjson.mjson"
+                        "prototype": "spec/serialization/testmjson.mjson",
+                        "values": {
+                            "number": 42,
+                            "string": {"<-": "'a string'"}
+                        }
                     }
                 },
                 serializationString = JSON.stringify(serialization);
@@ -721,6 +725,8 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(info.isInstance).toBe(true);
                 expect(root.type).toBeUndefined();
                 expect(root.name).toBe("RootBlueprint");
+                expect(root.number).toBe(42);
+                expect(root.string).toBe("a string");
             }).catch(function (reason) {
                 fail(reason);
             }).finally(function () {
@@ -759,7 +765,11 @@ describe("serialization/montage-deserializer-spec", function () {
         it("should deserialize using object: module.mjson", function (done) {
             var serialization = {
                     "root": {
-                        "object": "spec/serialization/testmjson.mjson"
+                        "object": "spec/serialization/testmjson.mjson",
+                        "values": {
+                            "number": 42,
+                            "string": {"<-": "'a string'"}
+                        }
                     }
                 },
                 serializationString = JSON.stringify(serialization);
@@ -771,6 +781,8 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(info.isInstance).toBe(true);
                 expect(root.type).toBeUndefined();
                 expect(root.name).toBe("RootBlueprint");
+                expect(root.number).toBe(42);
+                expect(root.string).toBe("a string");
             }).catch(function (reason) {
                 fail(reason);
             }).finally(function () {
