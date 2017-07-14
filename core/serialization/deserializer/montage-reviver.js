@@ -8,8 +8,7 @@ var Montage = require("../../core").Montage,
     deprecate = require("../../deprecate"),
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
-    TWO_WAY = "<->",
-    deprecate = require("../../deprecate");
+    TWO_WAY = "<->";
 
 require("../../shim/string");
 
@@ -170,17 +169,13 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     return object;
                 }
 
-                var revivedValue;
+                var revivedValue = this.reviveValue(value.value, context, label);
 
                 if (this.getTypeOf(value.value) === "Element") {
-                    revivedValue = this.reviveElement(value.value, context, label);
-
                     if (!Promise.is(revivedValue)) {
                         var montageObjectDesc = this.reviveObjectLiteral(value, context);
                         context.setUnitsToDeserialize(revivedValue, montageObjectDesc, MontageReviver._unitNames);
                     }
-                } else {
-                    revivedValue = this.reviveValue(value.value, context, label);
                 }
 
                 return revivedValue;
@@ -235,6 +230,16 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             } else {
                 return this.reviveMontageObject(value, context, label);
             }
+        }
+    },
+
+    reviveAlias: {
+        value: function (value, context, label) {
+            var alias = new Alias();
+            alias.value = value.alias;
+
+            context.setObjectLabel(alias, label);
+            return alias;
         }
     },
 
@@ -316,6 +321,50 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     MontageDeserializer.getModuleRequire(self._require, moduleId)
                 ).deserializeObject());
             });
+        }
+    },
+
+    getMontageObject: {
+        value: function (value, module, objectName, context, label) {
+            var object;
+
+            if (context.hasUserObject(label)) {
+
+                return context.getUserObject(label);
+
+            } else if ("prototype" in value) {
+
+                if (!(objectName in module)) {
+                    throw new Error('Error deserializing "' + label +
+                        '": object named "' + objectName + '"' +
+                        ' was not found in "' + value.prototype + '".' +
+                        " Available objects are: " + Object.keys(module) + ".");
+                }
+                // TODO: For now we need this because we need to set
+                // isDeserilizing before calling didCreate.
+                object = Object.create(module[objectName].prototype);
+                object.isDeserializing = true;
+                if (typeof object.didCreate === "function") {
+                    object.didCreate();
+                } else if (typeof object.constructor === "function") {
+                    object.constructor();
+                }
+                return object;
+            } else if ("object" in value) {
+                if (value.object.endsWith(".json")) {
+                    return module;
+                }
+
+                if (!(objectName in module)) {
+                    throw new Error('Error deserializing "' + label +
+                        '": object named "' + object +
+                        "' was not found given '" + value.object + "'");
+                }
+                return module[objectName];
+
+            } else {
+                throw new Error("Error deserializing " + JSON.stringify(value) + ", might need \"prototype\" or \"object\" on label " + JSON.stringify(label));
+            }
         }
     },
 
@@ -440,62 +489,6 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             } else {
                 return object;
             }
-        }
-    },
-
-    getMontageObject: {
-        value: function (value, module, objectName, context, label) {
-            var object;
-
-            if (context.hasUserObject(label)) {
-
-                return context.getUserObject(label);
-
-            } else if ("prototype" in value) {
-
-                if (!(objectName in module)) {
-                    throw new Error('Error deserializing "' + label +
-                        '": object named "' + objectName + '"' +
-                        ' was not found in "' + value.prototype + '".' +
-                        " Available objects are: " + Object.keys(module) + ".");
-                }
-                // TODO: For now we need this because we need to set
-                // isDeserilizing before calling didCreate.
-                object = Object.create(module[objectName].prototype);
-                object.isDeserializing = true;
-                if (typeof object.didCreate === "function") {
-                    object.didCreate();
-                } else if (typeof object.constructor === "function") {
-                    object.constructor();
-                }
-                return object;
-                //return module[objectName].create();
-
-            } else if ("object" in value) {
-                if (value.object.endsWith(".json")) {
-                    return module;
-                }
-
-                if (!(objectName in module)) {
-                    throw new Error('Error deserializing "' + label +
-                        '": object named "' + object +
-                        "' was not found given '" + value.object + "'");
-                }
-                return module[objectName];
-
-            } else {
-                throw new Error("Error deserializing " + JSON.stringify(value) + ", might need \"prototype\" or \"object\" on label " + JSON.stringify(label));
-            }
-        }
-    },
-
-    reviveAlias: {
-        value: function (value, context, label) {
-            var alias = new Alias();
-            alias.value = value.alias;
-
-            context.setObjectLabel(alias, label);
-            return alias;
         }
     },
 
