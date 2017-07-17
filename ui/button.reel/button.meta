@@ -147,9 +147,6 @@
             },
             "propertyDescriptors": [
                 {
-                    "@": "blueprint_button_enabled"
-                },
-                {
                     "@": "blueprint_button_formaction"
                 },
                 {
@@ -178,9 +175,6 @@
                     },
                     {
                         "@": "blueprint_button_type"
-                    },
-                    {
-                        "@": "blueprint_button_enabled"
                     }
                 ],
                 "button-form": [
