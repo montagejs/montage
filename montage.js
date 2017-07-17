@@ -460,7 +460,7 @@
 
                 return applicationRequire.async(moduleId).then(function (exports) {
                     var component = new exports[Object.keys(exports)[0]]();
-                    self. bootstrapComponent(component);
+                    self.bootstrapComponent(component);
                     component.element = document.createElement("div");
                     return component;
                 });
@@ -470,7 +470,18 @@
                 var shadowRoot = this.attachShadow({ mode: 'open' }),
                     mainEnterDocument = component.enterDocument,
                     mainTemplateDidLoad = component.templateDidLoad,
-                    self = this;
+                    keys = Object.keys(this.dataset),
+                    self = this,
+                    key;
+
+                for (var i = 0, length = keys.length; i < length; i++) {
+                    key = keys[i];
+
+                    if (key !== "moduleId") {
+                        component[key] = this.dataset[key];
+                        component.addPathChangeListener(key, this, "handleValueChange");
+                    }
+                }
 
                 application.eventManager.registerTargetForActivation(shadowRoot);
 
@@ -489,20 +500,9 @@
                         );
                     }
 
-                    var keys = Object.keys(self.dataset),
-                        key;
-
-                    for (var i = 0, length = keys.length; i < length; i++) {
-                        key = keys[i];
-                        if (key !== "moduleId") {
-                            this[key] = self.dataset[key];
-                            this.addPathChangeListener(key, self, "handleValueChange");
-                        }
-                    }
-
                     this.templateDidLoad = mainTemplateDidLoad;
 
-                    if (typeof templateDidLoad === "function") {
+                    if (typeof this.templateDidLoad === "function") {
                         this.templateDidLoad(firstTime);
                     }
                 };
@@ -511,7 +511,7 @@
                     shadowRoot.appendChild(this.element);
                     this.enterDocument = mainEnterDocument;
 
-                    if (typeof enterDocument === "function") {
+                    if (typeof this.enterDocument === "function") {
                         this.enterDocument(firstTime);
                     }
                 };
