@@ -4,8 +4,7 @@
 
 var Bindings = require("core/bindings").Bindings,
     RangeController = require("core/range-controller").RangeController,
-    Control = require("ui/control").Control,
-    PressComposer = require("composer/press-composer").PressComposer;
+    Control = require("ui/control").Control;
 
 /**
     Wraps the a &lt;select&gt; element with binding support for the element's
@@ -24,8 +23,9 @@ var Bindings = require("core/bindings").Bindings,
 var Select = exports.Select =  Control.specialize(/** @lends module:"montage/ui/native/select.reel".Select */ {
 
     _fromInput: {value: null},
+    
     _synching: {value: null},
-    //_internalSet: {value: null},
+
     hasTemplate: {value: false },
     
     _selectedIndexes: {
@@ -391,9 +391,9 @@ var Select = exports.Select =  Control.specialize(/** @lends module:"montage/ui/
 
     prepareForActivationEvents: {
         value: function() {
-            // add pressComposer to handle the claimPointer related work
-            var pressComposer = new PressComposer();
-            this.addComposer(pressComposer);
+            this._pressComposer.addEventListener("pressStart", this, false);
+            this._pressComposer.addEventListener("press", this, false);
+            this._pressComposer.addEventListener("pressCancel", this, false);
         }
     },
 
@@ -489,7 +489,57 @@ var Select = exports.Select =  Control.specialize(/** @lends module:"montage/ui/
             }
             this._dispatchActionEvent();
         }
-    }
+    },
+
+     // Handlers
+
+    /**
+     * Called when the user starts interacting with the component.
+     */
+    handlePressStart: {
+        value: function (event) {
+            this.active = true;
+
+            if (event.touch) {
+                // Prevent default on touchmove so that if we are inside a scroller,
+                // it scrolls and not the webpage
+                document.addEventListener("touchmove", this, false);
+            }
+        }
+    },
+
+    /**
+     * Called when the user has interacted with the select.
+     */
+    handlePress: {
+        value: function (event) {
+            this.active = false;
+
+            if (!this.enabled) {
+                return;
+            }
+
+            this.dispatchActionEvent();
+            document.removeEventListener("touchmove", this, false);
+        }
+    },
+
+    /**
+     * Called when all interaction is over.
+     * @private
+     */
+    handlePressCancel: {
+        value: function (event) {
+            this.active = false;
+            document.removeEventListener("touchmove", this, false);
+        }
+    },
+
+    handleTouchmove: {
+        value: function (event) {
+            event.preventDefault();
+        }
+    },
 
 
 });
