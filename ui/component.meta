@@ -1,7 +1,7 @@
 {
     "blueprint_component_identifier": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "identifier",
             "blueprint": {
                 "@": "root"
@@ -13,7 +13,7 @@
     },
     "blueprint_component_element": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "element",
             "blueprint": {
                 "@": "root"
@@ -26,7 +26,7 @@
     },
     "blueprint_component_classList": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "classList",
             "blueprint": {
                 "@": "root"
@@ -43,7 +43,7 @@
     },
     "blueprint_component_accesskey": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "accesskey",
             "blueprint": {
                 "@": "root"
@@ -59,7 +59,7 @@
     },
     "blueprint_component_contenteditable": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "contenteditable",
             "blueprint": {
                 "@": "root"
@@ -80,7 +80,7 @@
     },
     "blueprint_component_contextmenu": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "contextmenu",
             "blueprint": {
                 "@": "root"
@@ -96,7 +96,7 @@
     },
     "blueprint_component_dir": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "dir",
             "blueprint": {
                 "@": "root"
@@ -117,7 +117,7 @@
     },
     "blueprint_component_draggable": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "draggable",
             "blueprint": {
                 "@": "root"
@@ -138,7 +138,7 @@
     },
     "blueprint_component_dropzone": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "dropzone",
             "blueprint": {
                 "@": "root"
@@ -154,7 +154,7 @@
     },
     "blueprint_component_hidden": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "hidden",
             "blueprint": {
                 "@": "root"
@@ -170,7 +170,7 @@
     },
     "blueprint_component_lang": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "lang",
             "blueprint": {
                 "@": "root"
@@ -186,7 +186,7 @@
     },
     "blueprint_component_spellcheck": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "spellcheck",
             "blueprint": {
                 "@": "root"
@@ -202,7 +202,7 @@
     },
     "blueprint_component_style": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "style",
             "blueprint": {
                 "@": "root"
@@ -218,7 +218,7 @@
     },
     "blueprint_component_tabindex": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "tabindex",
             "blueprint": {
                 "@": "root"
@@ -234,7 +234,7 @@
     },
     "blueprint_component_title": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "title",
             "blueprint": {
                 "@": "root"
@@ -250,7 +250,7 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "Component",
             "customPrototype": false,
             "propertyDescriptors": [

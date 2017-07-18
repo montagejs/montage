@@ -40,13 +40,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
             "application": {
                 "prototype": "montage/core/application",
-                "properties": {
+                "values": {
                     "delegate": {"@": "repetitiontest1"}
                 }
             },
             "repetitiontest1": {
                 "prototype": "spec/ui/repetition/repetition-test",
-                "properties": {
+                "values": {
                     "repetition1": {"@": "repetition1"},
                     "repetition2": {"@": "repetition2"},
                     "repetition3": {"@": "repetition3"},
@@ -102,188 +102,158 @@ POSSIBILITY OF SUCH DAMAGE.
             },
             "repetition1": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
-                    "element": {"#": "list1"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list1"},
                     "content": {"<-": "@repetitiontest1.list1Objects"}
                 }
             },
             "textfield1": {
                 "prototype": "spec/ui/repetition/textfield.reel[TextField]",
-                "properties": {
-                    "element": {"#": "textfield1"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "textfield1"},
                     "text": {"<-": "@repetition2:iteration.object.text"}
                 }
             },
             "repetition2": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
-                    "element": {"#": "list2"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list2"},
                     "content": {"<-": "@repetitiontest1.list2Objects"}
                 }
             },
             "textfield2": {
                 "prototype": "spec/ui/repetition/textfield.reel[TextField]",
-                "properties": {
-                    "element": {"#": "textfield2"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "textfield2"},
                     "text": {"<-": "@repetition3:iteration.object.text"}
                 }
             },
             "repetition3": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
-                    "element": {"#": "list3a"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list3a"},
                     "content": {"<-": "@repetition4:iteration.object"}
                 }
             },
             "repetition4": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
-                    "element": {"#": "list3"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list3"},
                     "content": {"<-": "@repetitiontest1.list3Objects"}
                 }
             },
             "componenty1": {
                 "prototype": "spec/ui/repetition/componenty.reel[ComponentY]",
-                "properties": {
+                "values": {
                     "element": {"#": "content3"}
                 }
             },
             "repetition6": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
-                    "element": {"#": "list4a"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list4a"},
                     "content": {"<-": "@repetition5:iteration.object"}
                 }
             },
             "repetition5": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
-                    "element": {"#": "list4"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list4"},
                     "content": {"<-": "@repetitiontest1.list4Objects"}
                 }
             },
             "textfield3": {
                 "prototype": "spec/ui/repetition/textfield.reel[TextField]",
-                "properties": {
+                "values": {
                     "element": {"#": "textfield4"},
                     "text": "X here"
                 }
             },
             "componentx1": {
                 "prototype": "spec/ui/repetition/componentx.reel[ComponentX]",
-                "properties": {
+                "values": {
                     "element": {"#": "content4"},
                     "textfield": {"@": "textfield3"}
                 }
             },
             "repetition8": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
-                    "element": {"#": "list5a"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list5a"},
                     "content": {"<-": "@repetition7:iteration.object"}
                 }
             },
             "repetition7": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
-                    "element": {"#": "list5"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list5"},
                     "content": {"<-": "@repetitiontest1.list5Objects"}
                 }
             },
             "componentrep1": {
                 "prototype": "spec/ui/repetition/componentrep.reel[ComponentRep]",
-                "properties": {
+                "values": {
                     "element": {"#": "componentrep1"}
                 }
             },
             "componentrep2": {
                 "prototype": "spec/ui/repetition/componentrep.reel[ComponentRep]",
-                "properties": {
+                "values": {
                     "element": {"#": "componentrep2"}
                 }
             },
             "componentrep3": {
                 "prototype": "spec/ui/repetition/componentrep.reel[ComponentRep]",
-                "properties": {
-                    "element": {"#": "list6comp1"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list6comp1"},
                     "listObjects": {"<-": "@repetition9:iteration.object.elements1"}
                 }
             },
             "componentrep4": {
                 "prototype": "spec/ui/repetition/componentrep.reel[ComponentRep]",
-                "properties": {
-                    "element": {"#": "list6comp2"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list6comp2"},
                     "listObjects": {"<-": "@repetition9:iteration.object.elements2"}
                 }
             },
             "repetition9": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
-                    "element": {"#": "list6"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list6"},
                     "content": {"<-": "@repetitiontest1.list6Objects"}
                 }
             },
             "textfield4": {
                 "prototype": "spec/ui/repetition/textfield.reel[TextField]",
-                "properties": {
-                    "element": {"#": "textfield5"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "textfield5"},
                     "text": {"<-": "@repetitiontest1.text"}
                 }
             },
             "componentx2": {
                 "prototype": "spec/ui/repetition/componentx.reel[ComponentX]",
-                "properties": {
+                "values": {
                     "element": {"#": "content5"},
                     "textfield": {"@": "textfield4"}
                 }
             },
             "repetition10": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
-                    "element": {"#": "list7"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list7"},
                     "content": {"<-": "@repetitiontest1.list7Objects"}
                 }
             },
             "actioneventlistener1": {
                 "prototype": "montage/core/event/action-event-listener",
-                "properties": {
+                "values": {
                     "handler": {"@": "repetitiontest1"},
                     "action": "listener"
                 }
             },
             "textfield5": {
                 "prototype": "spec/ui/repetition/textfield.reel[TextField]",
-                "properties": {
+                "values": {
                     "element": {"#": "textfield6"}
                 },
                 "listeners": [
@@ -297,158 +267,150 @@ POSSIBILITY OF SUCH DAMAGE.
             },
             "repetition11": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
-                    "element": {"#": "list8"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list8"},
                     "content": {"<-": "@repetitiontest1.list8Objects"}
                 }
             },
             "textfield6": {
                 "prototype": "spec/ui/repetition/textfield.reel[TextField]",
-                "properties": {
+                "values": {
                     "element": {"#": "textfield7"}
                 }
             },
             "repetition12": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
-                    "element": {"#": "list9"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list9"},
                     "content": {"<-": "@repetitiontest1.list9Objects"}
                 }
             },
             "componentz1": {
                 "prototype": "spec/ui/repetition/componentz.reel[ComponentZ]",
-                "properties": {
+                "values": {
                     "element": {"#": "componentz1"},
                     "text": "o1"
                 }
             },
             "componentz2": {
                 "prototype": "spec/ui/repetition/componentz.reel[ComponentZ]",
-                "properties": {
+                "values": {
                     "element": {"#": "componentz2"},
                     "text": "o2"
                 }
             },
             "componentslowload1": {
                 "prototype": "spec/ui/repetition/componentslowload[ComponentSlowLoad]",
-                "properties": {
+                "values": {
                     "element": {"#": "componentslowload1"}
                 }
             },
             "repetition13": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
-                    "element": {"#": "list10"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list10"},
                     "content": {"<-": "@repetitiontest1.list10Objects"}
                 }
             },
             "repetitionController": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "repetitionController"},
                     "contentController": {"@": "simpleArrayController"}
                 }
             },
             "simpleArrayController": {
                 "prototype": "montage/core/range-controller",
-                "bindings": {
+                "values": {
                     "content": {"<-": "@repetitiontest1.simpleArrayControllerContent"}
                 }
              },
             "repetitionControllerText": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "repetitionControllerText"},
                     "value": "foo"
                 }
             },
             "repetition14": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "list11"},
                     "content": [1, 2, 3]
                 }
             },
             "repetition14a": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "list11a"},
                     "content": [1, 2, 3]
                 }
             },
             "repetition14b": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "list11b"},
                     "content": [1, 2, 3]
                 }
             },
             "repetition14btemplate": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "list11btemplate"},
                     "content": [1, 2, 3]
                 }
             },
             "text11b": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "text11b"},
                     "value": "Y"
                 }
             },
             "repetition15": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "list13"},
                     "content": [1, 2, 3]
                 }
             },
             "repetition16": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "list14"}
                 }
             },
             "slider": {
                 "prototype": "montage/ui/component",
-                "properties": {
+                "values": {
                     "element": {"#": "slider"},
                     "hasTemplate": false
                 }
             },
             "repetition17": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "list15"},
                     "content": []
                 }
             },
             "textfield8": {
                 "prototype": "spec/ui/repetition/textfield.reel[TextField]",
-                "properties": {
-                    "element": {"#": "textfield8"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "textfield8"},
                     "text": {"<-": "@repetition17:iteration.object"}
                 }
             },
             "repetition18": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "list16"},
                     "content": [1, 2, 3]
                 }
             },
             "repetition19": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "list17"},
                     "content": [1, 2]
                 }
@@ -456,14 +418,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
             "listParameters": {
                 "prototype": "spec/ui/repetition/list-parameters.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "listParameters"}
                 }
             },
 
             "listParametersText": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "listParametersText"},
                     "value": "Text"
                 }
@@ -471,14 +433,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
             "listParametersDecorator": {
                 "prototype": "spec/ui/repetition/list-parameters-decorator.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "listParametersDecorator"}
                 }
             },
 
             "listParametersDecoratorText": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "listParametersDecoratorText"},
                     "value": "Text"
                 }
@@ -486,7 +448,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
             "listParametersDecoratorColliding": {
                 "prototype": "spec/ui/repetition/list-parameters-decorator.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "listParametersDecoratorColliding"}
                 }
             },
@@ -497,7 +459,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
             "listParametersDecoratorCollidingText": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "listParametersDecoratorCollidingText"},
                     "text": {"@": "text"}
                 }
@@ -505,14 +467,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
             "namedParameters": {
                 "prototype": "spec/ui/repetition/named-parameters.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "namedParameters"}
                 }
             },
 
             "textfield9": {
                 "prototype": "spec/ui/repetition/textfield.reel[TextField]",
-                "properties": {
+                "values": {
                     "element": {"#": "textfield9"},
                     "text": "left"
                 }
@@ -520,7 +482,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
             "textfield10": {
                 "prototype": "spec/ui/repetition/textfield.reel[TextField]",
-                "properties": {
+                "values": {
                     "element": {"#": "textfield10"},
                     "text": "right"
                 }
@@ -528,7 +490,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
             "substitution": {
                 "prototype": "montage/ui/substitution.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "substitution"},
                     "switchValue": "default"
                 }
@@ -536,7 +498,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
             "repetitionInSubstitution": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "repetitionInSubstitution"},
                     "content": [1, 2, 3]
                 }
@@ -544,95 +506,83 @@ POSSIBILITY OF SUCH DAMAGE.
 
             "textInSubstitution": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
-                    "element": {"#": "textInSubstitution"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "textInSubstitution"},
                     "value": {"<-": "@repetitionInSubstitution:iteration.object"}
                 }
             },
 
             "aliasRepetitionIteration": {
                 "prototype": "spec/ui/repetition/alias-repetition-iteration.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "aliasRepetitionIteration"}
                 }
             },
 
             "text100": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
-                    "element": {"#": "text100"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "text100"},
                     "value": {"<-": "@aliasRepetitionIteration:i.object"}
                 }
             },
 
             "aliasNestedRepetitionIteration": {
                 "prototype": "spec/ui/repetition/alias-nested-repetition-iteration.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "aliasNestedRepetitionIteration"}
                 }
             },
 
             "text110": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
-                    "element": {"#": "text110"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "text110"},
                     "value": {"<-": "@aliasNestedRepetitionIteration:i.object + '-' + @aliasNestedRepetitionIteration:j.object"}
                 }
             },
 
             "aliasChainedRepetitionIteration": {
                 "prototype": "spec/ui/repetition/alias-chained-repetition-iteration.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "aliasChainedRepetitionIteration"}
                 }
             },
 
             "text120": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
-                    "element": {"#": "text120"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "text120"},
                     "value": {"<-": "@aliasChainedRepetitionIteration:i.object"}
                 }
             },
 
             "aliasMixedRepetitionIteration": {
                 "prototype": "spec/ui/repetition/alias-mixed-repetition-iteration.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "aliasMixedRepetitionIteration"}
                 }
             },
 
             "aliasMixedRepetitionIterationText": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
-                    "element": {"#": "aliasMixedRepetitionIterationText"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "aliasMixedRepetitionIterationText"},
                     "value": {"<-": "@aliasMixedRepetitionIteration:inner.object"}
                 }
             },
 
             "aliasMixedRepetitionIterationHeader": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
-                    "element": {"#": "aliasMixedRepetitionIterationHeader"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "aliasMixedRepetitionIterationHeader"},
                     "value": {"<-": "@aliasMixedRepetitionIteration:header.object"}
                 }
             },
 
             "repetitionWithObjectAtCurrentIteration": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "repetitionWithObjectAtCurrentIteration"},
                     "content": ["a"]
                 }
@@ -640,17 +590,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
             "objectAtCurrentIteration": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
-                    "element": {"#": "objectAtCurrentIteration"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "objectAtCurrentIteration"},
                     "value": {"<-": "@repetitionWithObjectAtCurrentIteration:iteration.object"}
                 }
             },
 
             "domRepetition": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "domRepetition"},
                     "content": [1, 2, 3],
                     "isSelectionEnabled": true
@@ -659,26 +607,22 @@ POSSIBILITY OF SUCH DAMAGE.
 
             "tableElementA": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
-                    "element": {"#": "tableElementA"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "tableElementA"},
                     "value": {"<-": "@tableRepetition:iteration.object.a"}
                 }
             },
             "tableElementB": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
-                    "element": {"#": "tableElementB"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "tableElementB"},
                     "value": {"<-": "@tableRepetition:iteration.object.b"}
                 }
             },
 
             "tableRepetition": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "tableRepetition"},
                     "content": [
                         {"a": "1-1", "b": "1-2"},

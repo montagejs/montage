@@ -37,7 +37,7 @@ exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidati
             serializer.setProperty("objectDescriptor", this.owner, "reference");
             //            serializer.setProperty("validationSelector", this._validationSelector, "reference");
             serializer.setProperty("messageKey", this.messageKey);
-            serializer.setAllProperties();
+            serializer.setAllValues();
         }
     },
 

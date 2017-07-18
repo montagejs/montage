@@ -60,7 +60,7 @@ var MontageBuilder = Montage.specialize(/** @lends MontageBuilder# */ {
                 externalReferences = [];
 
             for (var label in references) {
-                // placeholder properties are not created at reference creation
+                // placeholder values are not created at reference creation
                 // time, so we need to check for both states, before a
                 // placeholder is created and after.
                 if (!root.hasProperty(label) ||

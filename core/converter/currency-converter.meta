@@ -1,7 +1,7 @@
 {
     "currenyConverter_currency": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "currency",
             "blueprint": {
                 "@": "root"
@@ -12,7 +12,7 @@
     },
     "number_converter_blueprint_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "NumberConverter",
                 "prototypeName": "NumberConverter",
@@ -24,7 +24,7 @@
     },
     "currencyConverter_showCurrencyBeforeNumber": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "showCurrencyBeforeNumber",
             "blueprint": {
                 "@": "root"
@@ -35,7 +35,7 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "CurrencyConverter",
             "customPrototype": false,
             "parent": {

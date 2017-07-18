@@ -1,7 +1,7 @@
 {
     "root": {
-        "prototype": "montage/core/meta/blueprint",
-        "properties": {
+        "prototype": "montage/core/meta/object-descriptor",
+        "values": {
             "name": "RootBlueprint"
         }
     }

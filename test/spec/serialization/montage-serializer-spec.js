@@ -227,7 +227,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         object: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         }
                     }
@@ -246,7 +246,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         }
                     }
@@ -265,7 +265,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2",
-                        properties: {
+                        values: {
                             identifier: null
                         }
                     }
@@ -303,7 +303,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[OneProp]",
-                        properties: {
+                        values: {
                             identifier: null,
                             prop: {"%": "pass"}
                         }
@@ -327,7 +327,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[TwoProps]",
-                        properties: {
+                        values: {
                             identifier: null,
                             prop1: {"%": "pass"},
                             prop2: {"%": "pass"}
@@ -387,7 +387,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[OneProp]",
-                        properties: {
+                        values: {
                             identifier: null
                         }
                     }
@@ -408,7 +408,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[OneProp]",
-                        properties: {
+                        values: {
                             identifier: null,
                             prop: [1, 2, 3, 4, 5]
                         }
@@ -430,7 +430,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[DistinctArrayProp]",
-                        properties: {
+                        values: {
                             identifier: null,
                             prop: []
                         }
@@ -449,7 +449,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[DistinctLiteralProp]",
-                        properties: {
+                        values: {
                             identifier: null,
                             prop: {}
                         }
@@ -469,7 +469,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Simple]",
-                        properties: {
+                        values: {
                             identifier: null,
                             number: 42,
                             string: "string"
@@ -492,7 +492,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[SerializableAttribute]",
-                        properties: {
+                        values: {
                             prop1a: {"@": "oneprop"},
                             prop1b: {"@": "oneprop"},
                             prop2a: {"@": "oneprop2"},
@@ -503,7 +503,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
 
                     oneprop: {
                         prototype: "spec/serialization/testobjects-v2[OneProp]",
-                        properties: {
+                        values: {
                             prop: "prop1",
                             identifier: null
                         }
@@ -535,14 +535,14 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[SerializableAttribute]",
-                        properties: {
+                        values: {
                             prop1a: {"@": "empty"},
                             prop2a: {"@": "empty"}
                         }
                     },
                     empty: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         }
                     }
@@ -567,14 +567,14 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[SerializableAttribute]",
-                        properties: {
+                        values: {
                             prop2a: {"@": "empty"},
                             prop1a: {"@": "empty"}
                         }
                     },
                     empty: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         }
                     }
@@ -598,7 +598,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
             expectedSerialization = {
                 root: {
                     prototype: "spec/serialization/testobjects-v2[OneProp]",
-                    properties: {
+                    values: {
                         identifier: null,
                         prop: {"@": "simple"}
                     }
@@ -606,7 +606,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
 
                 simple: {
                     prototype: "spec/serialization/testobjects-v2[Simple]",
-                    properties: {
+                    values: {
                         identifier: null,
                         number: 42,
                         string: "string"
@@ -629,14 +629,14 @@ describe("spec/serialization/montage-serializer-spec", function () {
             expectedSerialization = {
                 anObject: {
                     prototype: "spec/serialization/testobjects-v2[Empty]",
-                    properties: {
+                    values: {
                         identifier: null
                     }
                 },
 
                 anotherObject: {
                     prototype: "spec/serialization/testobjects-v2[Simple]",
-                    properties: {
+                    values: {
                         identifier: null,
                         number: 42,
                         string: "string"
@@ -659,7 +659,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[OneProp]",
-                        properties: {
+                        values: {
                             identifier: null,
                             prop: {"@": "root"}
                         }
@@ -682,7 +682,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[OneProp]",
-                        properties: {
+                        values: {
                             identifier: null,
                             prop: {"@": "oneprop"}
                         }
@@ -690,7 +690,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
 
                     oneprop: {
                         prototype: "spec/serialization/testobjects-v2[OneProp]",
-                        properties: {
+                        values: {
                             prop: {"@": "root"},
                             identifier: null
                         }
@@ -715,7 +715,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             number: 42
                         }
                     }
@@ -739,14 +739,14 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             object: {"@": "empty"}
                         }
                     },
 
                     empty: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         }
                     }
@@ -770,7 +770,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             object: {"@": "empty"}
                         }
                     },
@@ -795,7 +795,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             object: {"@": "empty"}
                         }
                     },
@@ -823,7 +823,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[CustomAllProperties]",
-                        properties: {
+                        values: {
                             identifier: null,
                             manchete: 42,
                             rodriguez: {"@": "empty"},
@@ -833,7 +833,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                     empty: {},
                     empty2: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         }
                     }
@@ -853,7 +853,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             string: "string",
                             number: 42,
                             boolean: true,
@@ -887,7 +887,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
 
                     empty: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         }
                     }
@@ -977,7 +977,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[TwoProps]",
-                        properties: {
+                        values: {
                             identifier: null,
                             prop1: "prop1",
                             prop2: "prop2"
@@ -986,7 +986,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 };
 
                 object.serializeSelf = function (serializer) {
-                    serializer.setAllProperties();
+                    serializer.setAllValues();
                 };
 
                 serialization = serializer.serializeObject(object);
@@ -1078,7 +1078,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             manchete: 42
                         }
                     }
@@ -1102,14 +1102,14 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             object: {"@": "empty"}
                         }
                     },
 
                     empty: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         }
                     }
@@ -1133,7 +1133,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             object: {"@": "empty"}
                         }
                     },
@@ -1158,7 +1158,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         }
                     }
@@ -1207,14 +1207,14 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[TwoProps]",
-                        properties: {
+                        values: {
                             prop1: {"@": "simple"},
                             prop2: {"@": "simple"}
                         }
                     },
                     simple: {
                         prototype: "spec/serialization/testobjects-v2[Simple]",
-                        properties: {
+                        values: {
                             identifier: null,
                             number: 42,
                             string: "string"
@@ -1247,14 +1247,14 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[TwoProps]",
-                        properties: {
+                        values: {
                             prop1: {"@": "simple"},
                             prop2: {"@": "simple"}
                         }
                     },
                     simple: {
                         prototype: "spec/serialization/testobjects-v2[Simple]",
-                        properties: {
+                        values: {
                             identifier: null,
                             number: 42,
                             string: "string"
@@ -1286,7 +1286,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     object: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         }
                     }
@@ -1310,7 +1310,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[OneProp]",
-                        properties: {
+                        values: {
                             identifier: null,
                             prop: {"@": "root"}
                         }
@@ -1337,7 +1337,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[OneProp]",
-                        properties: {
+                        values: {
                             identifier: null,
                             prop: {"@": "root"}
                         }
@@ -1365,14 +1365,14 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[TwoProps]",
-                        properties: {
+                        values: {
                             prop1: {"@": "empty"},
                             prop2: {"@": "empty"}
                         }
                     },
                     empty: {
                         prototype: "spec/serialization/testobjects-v2[Simple]",
-                        properties: {
+                        values: {
                             identifier: null,
                             number: 42,
                             string: "string"
@@ -1403,7 +1403,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     empty: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         }
                     }
@@ -1432,7 +1432,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
 
                     simple: {
                         prototype: "spec/serialization/testobjects-v2[Simple]",
-                        properties: {
+                        values: {
                             identifier: null,
                             number: 42,
                             string: "string"
@@ -1467,7 +1467,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
 
                     simple: {
                         prototype: "spec/serialization/testobjects-v2[Simple]",
-                        properties: {
+                        values: {
                             identifier: null,
                             number: 42,
                             string: "string"
@@ -1498,7 +1498,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[OneProp]",
-                        properties: {
+                        values: {
                             identifier: null,
                             prop: null
                         }
@@ -1531,7 +1531,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
 
                     empty: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         }
                     }
@@ -1576,7 +1576,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[TwoProps]",
-                        properties: {
+                        values: {
                             prop1: {"@": "empty"},
                             prop2: {"@": "empty"}
                         }
@@ -1586,7 +1586,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                     },
                     empty: {
                         prototype: "spec/serialization/testobjects-v2[Simple]",
-                        properties: {
+                        values: {
                             identifier: null,
                             number: 42,
                             string: "string"
@@ -1619,7 +1619,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[OneProp]",
-                        properties: {
+                        values: {
                             identifier: null,
                             prop: {"@": "anObject"}
                         }
@@ -1627,7 +1627,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
 
                     anObject: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: "anObject"
                         }
                     }
@@ -1650,7 +1650,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[OneProp]",
-                        properties: {
+                        values: {
                             identifier: null,
                             prop: {"@": "empty"}
                         }
@@ -1658,7 +1658,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
 
                     empty: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: "an-object"
                         }
                     }
@@ -1681,7 +1681,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     generated: {
                         prototype: "spec/serialization/testobjects-v2[OneProp]",
-                        properties: {
+                        values: {
                             prop: {"@": "generated2"},
                             identifier: null
                         }
@@ -1689,7 +1689,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
 
                     generated2: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: "generated"
                         }
                     }
@@ -1714,7 +1714,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[OneReferenceProp]",
-                        properties: {
+                        values: {
                             identifier: null,
                             referenceProp: {"@": "empty"}
                         }
@@ -1774,7 +1774,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         },
                         testing: {
@@ -1806,7 +1806,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         },
                         testing: {
@@ -1842,7 +1842,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         },
                         testing: {
@@ -1852,7 +1852,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                     },
                     simple: {
                         prototype: "spec/serialization/testobjects-v2[Simple]",
-                        properties: {
+                        values: {
                             identifier: null,
                             number: 42,
                             string: "string"
@@ -1889,7 +1889,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         },
                         testing: {
@@ -1899,7 +1899,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                     },
                     simple: {
                         prototype: "spec/serialization/testobjects-v2[Simple]",
-                        properties: {
+                        values: {
                             identifier: null,
                             number: 42,
                             string: "string"
@@ -1935,7 +1935,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 expectedSerialization = {
                     root: {
                         prototype: "spec/serialization/testobjects-v2[Simple]",
-                        properties: {
+                        values: {
                             identifier: null,
                             number: 42,
                             string: "string"
@@ -1943,7 +1943,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                     },
                     empty: {
                         prototype: "spec/serialization/testobjects-v2[Empty]",
-                        properties: {
+                        values: {
                             identifier: null
                         }
                     }

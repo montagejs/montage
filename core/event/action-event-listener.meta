@@ -1,7 +1,7 @@
 {
     "actionEventListener_handler": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "handler",
             "blueprint": {
                 "@": "root"
@@ -11,7 +11,7 @@
     },
     "actionEventListener_action": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "action",
             "blueprint": {
                 "@": "root"
@@ -21,7 +21,7 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "ActionEventListener",
             "customPrototype": false,
             "propertyDescriptors": [

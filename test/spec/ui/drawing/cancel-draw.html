@@ -37,7 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
     {
         "test": {
             "prototype": "spec/ui/drawing/test",
-            "properties": {
+            "values": {
                 "slotC": {"@": "slot1"},
                 "customC": {"@": "custom1"},
                 "sliderC": {"@": "slider1"}
@@ -45,25 +45,25 @@ POSSIBILITY OF SUCH DAMAGE.
         },
         "custom1": {
             "prototype": "spec/ui/drawing/component/custom.reel",
-            "properties": {
+            "values": {
 
             }
         },
         "slider1": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
+            "values": {
                 "value": 2
             }
         },
         "slot1": {
             "prototype": "montage/ui/slot.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "slot-test"}
             }
         },
         "application": {
             "prototype": "montage/core/application",
-            "properties": {
+            "values": {
                 "delegate": {"@": "test"}
             }
         }

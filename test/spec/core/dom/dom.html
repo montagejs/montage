@@ -45,13 +45,13 @@ POSSIBILITY OF SUCH DAMAGE.
     {
         "application": {
             "prototype": "montage/core/application",
-            "properties": {
+            "values": {
                 "delegate": {"@": "test"}
             }
         },
         "test": {
             "prototype": "spec/core/dom/test",
-            "properties": {
+            "values": {
                 "convertPoint1": {"#": "convertPoint1"},
                 "convertPoint2": {"#": "convertPoint2"},
                 "convertPoint3": {"#": "convertPoint3"},
@@ -65,7 +65,7 @@ POSSIBILITY OF SUCH DAMAGE.
         },
         "pageLoaded": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "text"},
                 "value": "Loaded"
             }

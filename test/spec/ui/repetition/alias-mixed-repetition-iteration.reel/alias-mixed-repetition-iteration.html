@@ -5,7 +5,7 @@
     <title></title>
     <script type="text/montage-serialization">{
         "owner": {
-            "properties": {
+            "values": {
                 "element": {"#": "owner"}
             }
         },
@@ -20,7 +20,7 @@
         
         "repetition": {
             "prototype": "montage/ui/repetition.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "repetition"},
                 "content": [
                     "a1",
@@ -31,17 +31,15 @@
         
         "aliasMixedRepetitionIteration": {
             "prototype": "./level-one.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "aliasMixedRepetitionIteration"}
             }
         },
         
         "aliasMixedRepetitionIterationText": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "aliasMixedRepetitionIterationText"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "aliasMixedRepetitionIterationText"},
                 "value": {"<-": "@repetition:iteration.object"}
             }
         }

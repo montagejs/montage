@@ -8,23 +8,21 @@
         {
             "application": {
                 "prototype": "montage/core/application",
-                "properties": {
+                "values": {
                     "delegate": {"@": "flow"}
                 }
             },
             "flow": {
                 "prototype": "montage/ui/flow.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "flow"}
                 }
             },
             "text": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "text"},
-                    "value": "foo"
-                },
-                "bindings": {
+                    "value": "foo",
                     "iteration": {"<-": "@flow:iteration"},
                     "value": {"<-": "@flow:iteration.object"}
                 }

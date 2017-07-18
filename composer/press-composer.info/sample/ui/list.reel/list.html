@@ -5,22 +5,18 @@
     <script type="text/montage-serialization">
     {
         "owner": {
-            "properties": {
+            "values": {
                 "element": {"#": "owner"},
-                "cells": {"@": "cells"}
-            },
-            "bindings": {
+                "cells": {"@": "cells"},
                 "selectedCell": {"<-": "@cells.selection.one()"}
             }
         },
 
         "cells": {
             "prototype": "montage/ui/repetition.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "cells"},
-                "isSelectionEnabled": true
-            },
-            "bindings": {
+                "isSelectionEnabled": true,
                 "content": {"<-": "@owner.content"}
             }
         },

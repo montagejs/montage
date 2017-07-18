@@ -42,7 +42,7 @@ describe("meta/event-blueprint-spec", function () {
                 blueprintSerialization = {
                     "root": {
                         "prototype": "montage/core/meta/event-blueprint",
-                        "properties": {
+                        "values": {
                             "name": "event",
                             "blueprint": {"@": "blueprint_testblueprint"}
                         }
@@ -52,7 +52,7 @@ describe("meta/event-blueprint-spec", function () {
                 objectDescriptorSerialization = {
                     "root": {
                         "prototype": "montage/core/meta/event-descriptor",
-                        "properties": {
+                        "values": {
                             "name": "event",
                             "objectDescriptor": {"@": "objectDescriptor_testblueprint"}
                         }

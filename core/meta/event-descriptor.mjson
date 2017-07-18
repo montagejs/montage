@@ -1,7 +1,7 @@
 {
     "owner_reference": {
         "prototype": "core/meta/object-descriptor-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "objectDescriptorName": "ObjectDescriptor",
                 "prototypeName": "ObjectDescriptor",
@@ -13,7 +13,7 @@
     },
     "name": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "name",
             "objectDescriptor": {
                 "@": "root"
@@ -24,7 +24,7 @@
     },
     "owner": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "owner",
             "objectDescriptor": {
                 "@": "root"
@@ -40,7 +40,7 @@
     },
     "detailKeys": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "detailKeys",
             "objectDescriptor": {
                 "@": "root"
@@ -52,7 +52,7 @@
     },
     "helpKey": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "helpKey",
             "objectDescriptor": {
                 "@": "root"
@@ -63,7 +63,7 @@
     },
     "root": {
         "prototype": "core/meta/module-object-descriptor",
-        "properties": {
+        "values": {
             "name": "EventDescriptor",
             "customPrototype": false,
             "propertyDescriptors": [

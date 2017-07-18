@@ -125,7 +125,7 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
 
         xit("should not serialize bindings in the iteration template", function () {
             var serialization = delegate.repetition1._iterationTemplate._ownerSerialization;
-            expect(serialization).toBe('{"owner":{"prototype":"montage/ui/repetition.reel","properties":{"element":{"#":"list1"},"_isComponentExpanded":true,"ownerComponent":{"@":"__root__"}}},"__root__":{}}');
+            expect(serialization).toBe('{"owner":{"prototype":"montage/ui/repetition.reel","values":{"element":{"#":"list1"},"_isComponentExpanded":true,"ownerComponent":{"@":"__root__"}}},"__root__":{}}');
         });
 
         describe("The static repetition", function () {
@@ -917,7 +917,7 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                 // Make sure that external object "text" that collided with
                 // another object's label has the correct instance associated
                 // with it.
-                textObjectLabel = serializationObject.listParametersDecoratorCollidingText.properties.text["@"];
+                textObjectLabel = serializationObject.listParametersDecoratorCollidingText.values.text["@"];
                 expect(instances[textObjectLabel]).toBe("Text Collision");
             });
 

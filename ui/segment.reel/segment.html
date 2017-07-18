@@ -6,16 +6,14 @@
     <script type="text/montage-serialization">
     {
         "owner": {
-            "properties": {
+            "values": {
                 "element": {"#": "Segment"}
             }
         },
         "text": {
             "prototype": "ui/text.reel",
-            "properties": {
-                "element": {"#": "text"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "text"},
                 "value": {"<-": "@owner.label"}
             }
         }

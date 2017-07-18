@@ -35,17 +35,15 @@ POSSIBILITY OF SUCH DAMAGE.
     {
         "componentholder": {
             "prototype": "montage/ui/component",
-            "properties": {
+            "values": {
                 "element": {"#": "textfield2"},
-                "hasTemplate": false
-            },
-            "bindings": {
+                "hasTemplate": false,
                 "domContent": {"<-": "@owner.originalContent"}
             }
         },
         "owner": {
             "prototype": "reel/template/componentx.reel[ComponentX]",
-            "properties": {
+            "values": {
                 "element": {"#": "componentx"},
                 "textfield": {"@": "componentholder"}
             }

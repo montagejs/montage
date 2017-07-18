@@ -36,25 +36,21 @@ POSSIBILITY OF SUCH DAMAGE.
 
     "dynamictext1": {
         "prototype": "montage/ui/text.reel",
-        "properties": {
-            "element": {"#": "description"}
-        },
-        "bindings": {
+        "values": {
+            "element": {"#": "description"},
             "value": {"<-": "@owner.video.description"}
         }
     },
     "dynamictext2": {
         "prototype": "montage/ui/text.reel",
-        "properties": {
-            "element": {"#": "duration"}
-        },
-        "bindings": {
+        "values": {
+            "element": {"#": "duration"},
             "value": {"<-": "@owner.video.duration"}
         }
     },
     "owner": {
         "prototype": "video-viewer",
-        "properties": {
+        "values": {
             "element": {"#": "VideoViewer"}
         }
     }

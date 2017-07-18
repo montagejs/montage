@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
     "translateComposer": {
         "prototype": "montage/composer/translate-composer",
-        "properties": {
+        "values": {
             "component": {"@": "example"},
             "maxTranslateX": 350,
             "maxTranslateY": 350,
@@ -49,21 +49,21 @@ POSSIBILITY OF SUCH DAMAGE.
     },
     "example": {
         "prototype": "montage/ui/text.reel",
-        "properties": {
+        "values": {
             "element": {"#": "example"},
             "value": "hi"
         }
     },
     "outermover": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "outermover"},
             "hasTemplate": false
         }
     },
     "outermoverComposer": {
         "prototype": "montage/composer/translate-composer",
-        "properties": {
+        "values": {
             "component": {"@": "outermover"},
             "maxTranslateX": 200,
             "maxTranslateY": 200,
@@ -75,7 +75,7 @@ POSSIBILITY OF SUCH DAMAGE.
     },
     "innermover": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "innermover"},
             "hasTemplate": false
         }
@@ -83,7 +83,7 @@ POSSIBILITY OF SUCH DAMAGE.
     },
     "innermoverComposer": {
         "prototype": "montage/composer/translate-composer",
-        "properties": {
+        "values": {
             "component": {"@": "innermover"},
             "maxTranslateX": 150,
             "maxTranslateY": 150,
@@ -96,16 +96,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
     "test": {
         "prototype": "spec/composer/translate-composer/translate-composer-test",
-        "properties": {
+        "values": {
             "translateComposer": {"@": "translateComposer"},
             "example": {"@": "example"},
             "innermover": {"@": "innermover"},
             "innermoverComposer": {"@": "innermoverComposer"},
             "outermover": {"@": "outermover"},
-            "outermoverComposer": {"@": "outermoverComposer"}
-
-        },
-        "bindings": {
+            "outermoverComposer": {"@": "outermoverComposer"},
             "x": {"<-": "@translateComposer.translateX"},
             "y": {"<-": "@translateComposer.translateY"},
             "inner_x": {"<-": "@innermoverComposer.translateX"},
@@ -116,7 +113,7 @@ POSSIBILITY OF SUCH DAMAGE.
     },
     "application": {
         "prototype": "montage/core/application",
-        "properties": {
+        "values": {
             "delegate": {"@": "test"}
         }
     }

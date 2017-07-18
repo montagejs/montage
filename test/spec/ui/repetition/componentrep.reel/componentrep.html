@@ -35,25 +35,21 @@ POSSIBILITY OF SUCH DAMAGE.
 
             "textfield1": {
                 "prototype": "spec/ui/repetition/textfield.reel[TextField]",
-                "properties": {
-                    "element": {"#": "textfield"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "textfield"},
                     "text": {"<-": "@repetition1:iteration.object.text"}
                 }
             },
             "repetition1": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
-                    "element": {"#": "list1"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "list1"},
                     "content": {"<-": "@owner.listObjects"}
                 }
             },
             "owner": {
                 "prototype": "spec/ui/repetition/componentrep.reel[ComponentRep]",
-                "properties": {
+                "values": {
                     "element": {"#": "componentrep"}
                 }
             }

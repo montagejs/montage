@@ -164,7 +164,7 @@ describe("reel/serialization/serialization-merger-spec", function () {
                         },
                         "object3": {
                             "prototype": "montage/ui/component",
-                            "properties": {
+                            "values": {
                                 "value": {"@": "object2"}
                             }
                         }
@@ -178,7 +178,7 @@ describe("reel/serialization/serialization-merger-spec", function () {
 
                         "object3": {
                             "prototype": "montage/ui/component",
-                            "properties": {
+                            "values": {
                                 "value": {"@": "object1"}
                             }
                         }
@@ -217,7 +217,7 @@ describe("reel/serialization/serialization-merger-spec", function () {
                         },
                         "object3": {
                             "prototype": "montage/ui/component",
-                            "properties": {
+                            "values": {
                                 "value": {"@": "object2"}
                             }
                         }
@@ -235,7 +235,7 @@ describe("reel/serialization/serialization-merger-spec", function () {
                         },
                         "object3": {
                             "prototype": "montage/ui/component",
-                            "properties": {
+                            "values": {
                                 "value": {"@": "object1"}
                             }
                         }

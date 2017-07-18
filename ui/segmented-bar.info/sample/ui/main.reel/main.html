@@ -10,40 +10,34 @@
     <script type="text/montage-serialization">
     {
         "owner": {
-            "properties": {
+            "values": {
                 "element": {"#": "main"}
             }
         },
         "rangeController": {
             "prototype": "montage/core/range-controller",
-            "bindings": {
+            "values": {
                 "content": {"<-": "@owner.data"}
             }
         },
         "treeController": {
             "prototype": "montage/core/tree-controller",
-            "properties": {
-                "childrenPath": "regions"
-            },
-            "bindings": {
+            "values": {
+                "childrenPath": "regions",
                 "data": {"<-": "@owner.tree"}
             }
         },
         "text": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "text"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "text"},
                 "value": {"<-": "@owner.currentSegment"}
             }
         },
         "segmentedBar1": {
             "prototype": "montage/ui/segmented-bar.reel",
-            "properties": {
-                "element": {"#": "segmentedBar1"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "segmentedBar1"},
                 "data": {"<-": "@owner.data"}
             },
             "listeners": [
@@ -55,17 +49,15 @@
         },
         "segment1": {
             "prototype": "montage/ui/segment.reel",
-            "properties": {
-                "element": {"#": "segment1"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "segment1"},
                 "label": {"<-": "@segmentedBar1:segment.object.region"},
                 "length": {"<-": "@segmentedBar1:segment.object.size"}
             }
         },
         "segmentedBar2": {
             "prototype": "montage/ui/segmented-bar.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "segmentedBar2"},
                 "dataController": {"@": "rangeController"},
                 "enabled": false
@@ -79,17 +71,15 @@
         },
         "segment2": {
             "prototype": "montage/ui/segment.reel",
-            "properties": {
-                "element": {"#": "segment2"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "segment2"},
                 "label": {"<-": "@segmentedBar2:segment.object.region"},
                 "length": {"<-": "@segmentedBar2:segment.object.size"}
             }
         },
         "segmentedBar3": {
             "prototype": "montage/ui/segmented-bar.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "segmentedBar3"},
                 "dataController": {"@": "treeController"}
             },
@@ -102,17 +92,15 @@
         },
         "segment3": {
             "prototype": "montage/ui/segment.reel",
-            "properties": {
-                "element": {"#": "segment3"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "segment3"},
                 "label": {"<-": "@segmentedBar3:segment.object.content.region"},
                 "length": {"<-": "@segmentedBar3:segment.object.content.size"}
             }
         },
         "segmentedBar4": {
             "prototype": "montage/ui/segmented-bar.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "segmentedBar4"},
                 "dataController": {"@": "rangeController"},
                 "orientation": "vertical"
@@ -126,10 +114,8 @@
         },
         "segment4": {
             "prototype": "montage/ui/segment.reel",
-            "properties": {
-                "element": {"#": "segment4"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "segment4"},
                 "label": {"<-": "@segmentedBar4:segment.object.region"},
                 "length": {"<-": "@segmentedBar4:segment.object.size"}
             }

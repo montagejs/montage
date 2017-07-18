@@ -52,7 +52,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "number": 42,
                             "string": "a string"
                         }
@@ -78,14 +78,14 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "oneprop": {"@": "oneprop"}
                         }
                     },
 
                     "oneprop": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "prop": 42
                         }
                     }
@@ -105,7 +105,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "simple": {"@": "simple"}
                         }
                     },
@@ -134,7 +134,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "simple": {"@": "simple"}
                         }
                     },
@@ -165,7 +165,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "spec/serialization/testobjects-v2[Singleton]",
-                        "properties": {
+                        "values": {
                             "number": 42
                         }
                     }
@@ -188,7 +188,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "number": 42
                         }
                     }
@@ -215,7 +215,7 @@ describe("serialization/montage-deserializer-spec", function () {
         it("should deserialize an object's properties when an instance is given for that object even when the serialization doesn't have a prototype or object property", function (done) {
             var serialization = {
                     "owner": {
-                        "properties": {
+                        "values": {
                             "number": 42
                         }
                     }
@@ -239,11 +239,107 @@ describe("serialization/montage-deserializer-spec", function () {
             });
         });
 
+        it("should deserialize a simple one-time assignment in normal form", function (done) {
+            var serialization = {
+                "root": {
+                    "prototype": "montage",
+                    "values": {
+                        "foo": 10,
+                        "bar": { "=": "foo" }
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+            deserialize(serializationString, require).then(function (object) {
+                expect(object.foo).toBe(10);
+                expect(object.bar).toBe(10);
+                object.foo = 20;
+                expect(object.bar).toBe(10);
+            }).finally(function () {
+                done();
+            });
+        });
+
+        it("should deserialize a simple one-time assignment with a component reference", function (done) {
+            var serialization = {
+                "root": {
+                    "prototype": "montage",
+                    "values": {
+                        "foo": 10,
+                        "bar": { "=": "@root.foo" }
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+
+            deserialize(serializationString, require).then(function (object) {
+                expect(object.foo).toBe(10);
+                expect(object.bar).toBe(10);
+                object.foo = 20;
+                expect(object.bar).toBe(10);
+            }).finally(function () {
+                done();
+            });
+        });
+
+        it("should deserialize a complex one-time assignment", function (done) {
+            var serialization = {
+                "root": {
+                    "prototype": "montage",
+                    "values": {
+                        "foo": {
+                            "qux": 10
+                        },
+                        "corge": [ 1, 2, 3, 4, 5 ],
+                        "bar": { "=": "foo.qux" },
+                        "qux": { "=": "foo.qux + 10" },
+                        "quuz": { "=": "foo.qux + bar + @root.bar" },
+                        "quux": { "=": "corge.sum()" }
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+            deserialize(serializationString, require).then(function (object) {
+                expect(object.foo.qux).toBe(10);
+                expect(object.bar).toBe(10);
+                expect(object.qux).toBe(20);
+                expect(object.quuz).toBe(30);
+                expect(object.quux).toBe(15);
+                object.foo.qux = 20;
+                expect(object.bar).toBe(10);
+                expect(object.qux).toBe(20);
+            }).finally(function () {
+                done();
+            });
+        });
+
+        it("should fail deserializing an one-time assignment to a non existing object", function (done) {
+            var serialization = {
+                "root": {
+                    "prototype": "montage",
+                    "values": {
+                        "foo": 10,
+                        "bar": { "=": "@unknown.foo" }
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+
+            deserialize(serializationString, require).then(function (object) {
+                expect("deserialization").toBe("fail");
+            }).catch(function (err) {
+                expect(err).toBeDefined();
+            }).finally(function () {
+                done();
+            });
+        });
+        
+
         it("should call deserializedFromSerialization function on the instantiated objects", function (done) {
             var serialization = {
                     "root": {
                         "prototype": "spec/serialization/testobjects-v2[OneProp]",
-                        "properties": {
+                        "values": {
                             "prop": {"@": "oneprop"}
                         }
                     },
@@ -280,7 +376,7 @@ describe("serialization/montage-deserializer-spec", function () {
                root: {
                    module: "serialization/testobjects-v2",
                    name: "OneProp",
-                   properties: {
+                   values: {
                        prop: {"@": "oneprop"}
                    }
                },
@@ -301,7 +397,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "spec/serialization/testobjects-v2[OneProp]",
-                        "properties": {
+                        "values": {
                             "prop": 42
                         },
                         "spec": {}
@@ -461,7 +557,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "spec/serialization/testobjects-v2[TestobjectsV2]",
-                        "properties": {
+                        "values": {
                             "number": 42,
                             "string": "a string"
                         }
@@ -485,7 +581,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "spec/serialization/testobjects-v2",
-                        "properties": {
+                        "values": {
                             "number": 42,
                             "string": "a string"
                         }
@@ -514,7 +610,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "spec/serialization/module-name.reel",
-                        "properties": {
+                        "values": {
                             "number": 42,
                             "string": "a string"
                         }
@@ -539,7 +635,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "object": "spec/serialization/testobjects-v2[TestobjectsV2]",
-                        "properties": {
+                        "values": {
                             "number": 42,
                             "string": "a string"
                         }
@@ -567,7 +663,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "object": "spec/serialization/testobjects-v2",
-                        "properties": {
+                        "values": {
                             "number": 42,
                             "string": "a string"
                         }
@@ -610,22 +706,112 @@ describe("serialization/montage-deserializer-spec", function () {
             });
         });
 
+        it("should deserialize using prototype: module.mjson", function (done) {
+            var serialization = {
+                    "root": {
+                        "prototype": "spec/serialization/testmjson.mjson",
+                        "values": {
+                            "number": 42,
+                            "string": {"<-": "'a string'"}
+                        }
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(serializationString, require);
+            deserializer.deserializeObject().then(function (root) {
+                var info = Montage.getInfoForObject(root);
+                expect(info.moduleId).toBe("core/meta/object-descriptor");
+                expect(info.isInstance).toBe(true);
+                expect(root.type).toBeUndefined();
+                expect(root.name).toBe("RootBlueprint");
+                expect(root.number).toBe(42);
+                expect(root.string).toBe("a string");
+            }).catch(function (reason) {
+                fail(reason);
+            }).finally(function () {
+                done();
+            });
+        });
+        
+        it("should deserialize instances using prototype: module.mjson", function (done) {
+            var serialization = {
+                    "root": {
+                        "prototype": "montage",
+                        "values": {
+                            "bar": { "@": "bar" },
+                            "foo": { "@": "foo" }
+                        }
+                    },
+                    "bar": {
+                        "prototype": "spec/serialization/testmjson.mjson"
+                    },
+                    "foo": {
+                        "prototype": "spec/serialization/testmjson.mjson"
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(serializationString, require);
+            deserializer.deserializeObject().then(function (root) {
+                expect(root.foo).not.toBe(root.bar);
+            }).catch(function (reason) {
+                fail(reason);
+            }).finally(function () {
+                done();
+            });
+        });
+
         it("should deserialize using object: module.mjson", function (done) {
             var serialization = {
                     "root": {
+                        "object": "spec/serialization/testmjson.mjson",
+                        "values": {
+                            "number": 42,
+                            "string": {"<-": "'a string'"}
+                        }
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(serializationString, require);
+            deserializer.deserializeObject().then(function (root) {
+                var info = Montage.getInfoForObject(root);
+                expect(info.moduleId).toBe("core/meta/object-descriptor");
+                expect(info.isInstance).toBe(true);
+                expect(root.type).toBeUndefined();
+                expect(root.name).toBe("RootBlueprint");
+                expect(root.number).toBe(42);
+                expect(root.string).toBe("a string");
+            }).catch(function (reason) {
+                fail(reason);
+            }).finally(function () {
+                done();
+            });
+        });
+
+        it("should deserialize singleton using object: module.mjson", function (done) {
+            var serialization = {
+                    "root": {
+                        "prototype": "montage",
+                        "values": {
+                            "bar": { "@": "bar" },
+                            "foo": { "@": "foo" }
+                        }
+                    },
+                    "bar": {
+                        "object": "spec/serialization/testmjson.mjson"
+                    },
+                    "foo": {
                         "object": "spec/serialization/testmjson.mjson"
                     }
                 },
                 serializationString = JSON.stringify(serialization);
 
             deserializer.init(serializationString, require);
-            deserializer.deserializeObject().then(function (object) {
-                    var info = Montage.getInfoForObject(object);
-                    expect(info.moduleId).toBe("core/meta/object-descriptor");
-                    expect(info.isInstance).toBe(true);
-                    expect(object.type).toBeUndefined();
-                    expect(object.name).toBe("RootBlueprint");
-            }).catch(function(reason) {
+            deserializer.deserializeObject().then(function (root) {
+                expect(root.foo).toBe(root.foo);
+            }).catch(function (reason) {
                 fail(reason);
             }).finally(function () {
                 done();
@@ -638,7 +824,7 @@ describe("serialization/montage-deserializer-spec", function () {
             deserializer.initWithObject({
                root: {
                    prototype: "montage",
-                   properties: {
+                   values: {
                        number: 15,
                        string: "string"
                    }
@@ -667,7 +853,7 @@ describe("serialization/montage-deserializer-spec", function () {
            deserializer.initWithObject({
                root: {
                    object: "montage",
-                   properties: {
+                   values: {
                        number: 15,
                        string: "string"
                    }
@@ -742,10 +928,8 @@ describe("serialization/montage-deserializer-spec", function () {
             serialization = {
                 "root": {
                     "prototype": "spec/serialization/testobjects-v2[CustomDeserialization]",
-                    "properties": {
-                        "prop1": 3.14
-                    },
-                    "bindings": {
+                    "values": {
+                        "prop1": 3.14,
                         "prop2": {"<-": "@oneprop.prop"}
                     },
                     "listeners": [{
@@ -756,7 +940,7 @@ describe("serialization/montage-deserializer-spec", function () {
 
                 "oneprop": {
                     "prototype": "spec/serialization/testobjects-v2[OneProp]",
-                    "properties": {
+                    "values": {
                         "prop": 42
                     }
                 }
@@ -860,7 +1044,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 serializationString, require);
 
             customDeserialization.prototype.deserializeSelf = function (deserializer) {
-                deserializer.deserializeProperties();
+                deserializer.deserializeValues();
             };
 
             deserializer.deserializeObject().then(function (root) {
@@ -880,7 +1064,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 serializationString, require);
 
             customDeserialization.prototype.deserializeSelf = function (deserializer) {
-                deserializer.deserializeProperties();
+                deserializer.deserializeValues();
                 deserializer.deserializeUnit("listeners");
             };
 
@@ -901,7 +1085,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 serializationString, require);
 
             customDeserialization.prototype.deserializeSelf = function (deserializer) {
-                deserializer.deserializeProperties();
+                deserializer.deserializeValues();
                 deserializer.deserializeUnit("bindings");
             };
 
@@ -922,7 +1106,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 serializationString, require);
 
             customDeserialization.prototype.deserializeSelf = function (deserializer) {
-                deserializer.deserializeProperties();
+                deserializer.deserializeValues();
                 deserializer.deserializeUnits();
             };
 
@@ -1005,7 +1189,7 @@ describe("serialization/montage-deserializer-spec", function () {
             var serialization = {
                     "root": {
                         "prototype": "montage",
-                        "properties": {
+                        "values": {
                             "number": 42,
                             "string": "a string"
                         }

@@ -12,7 +12,7 @@
 
         "missingKey": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "missingKey"},
                 "value": "Pass"
             },
@@ -25,7 +25,7 @@
 
         "basic": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "basic"}
             },
             "localizations": {
@@ -38,7 +38,7 @@
 
         "resources": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "resources"}
             },
             "localizations": {
@@ -51,14 +51,14 @@
 
         "bindingInput": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "bindingInput"},
                 "value": "World"
             }
         },
         "binding": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "binding"},
                 "defaultValue": "fail"
             },
@@ -75,7 +75,7 @@
 
         "twoProperties": {
             "prototype": "double.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "twoProperties"}
             },
             "localizations": {
@@ -86,17 +86,15 @@
 
         "message": {
             "prototype": "montage/core/localizer[Message]",
-            "properties": {
-                "key": "welcome"
-            },
-            "bindings": {
+            "values": {
+                "key": "welcome",
                 "data.get('name')": {"<-": "@bindingInput.value"}
             }
         },
 
         "messageRepetition": {
             "prototype": "montage/ui/repetition.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "messageRepetition"},
                 "content": [
                     {"animal": "cow", "number": 4},
@@ -108,7 +106,7 @@
 
         "repeatedMessageText": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "repeatedMessageText"}
             },
             "localizations": {
@@ -123,7 +121,7 @@
 
         "test": {
             "prototype": "montage",
-            "properties": {
+            "values": {
                 "missingKey": {"@": "missingKey"},
                 "basic": {"@": "basic"},
                 "resources": {"@": "resources"},
@@ -135,7 +133,7 @@
         },
         "application": {
             "prototype": "montage/core/application",
-            "properties": {
+            "values": {
                 "delegate": {"@": "test"}
             }
         }

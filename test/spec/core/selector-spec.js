@@ -28,7 +28,7 @@ describe("core/selector-spec", function () {
         expect(json).toEqual({
             root: {
                 prototype: "montage/core/criteria",
-                properties: {
+                values: {
                     expression: "a.b"
                 }
             }
@@ -39,7 +39,7 @@ describe("core/selector-spec", function () {
         var serialization = {
                 "root": {
                     "prototype": "montage/core/selector",
-                    "properties": {
+                    "values": {
                         "path": "a.b"
                     }
                 }

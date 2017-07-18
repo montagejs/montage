@@ -9,34 +9,28 @@
     <script type="text/montage-serialization">
     {
         "owner": {
-            "properties": {
+            "values": {
                 "element": {"#": "Foo"}
             }
         },
         "text": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "text"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "text"},
                 "value": {"<-": "@owner.title"}
             }
         },
         "data": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "data"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "data"},
                 "value": {"<-": "@owner.destinationData"}
             }
         },
         "condition": {
             "prototype": "montage/ui/condition.reel",
-            "properties": {
-                "element": {"#": "condition"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "condition"},
                 "condition": {"<-": "@owner.destinationData"}
             }
         }

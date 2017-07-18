@@ -1,7 +1,7 @@
 {
     "converter_object-descriptor_reference": {
         "prototype": "core/meta/object-descriptor-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Converter",
                 "prototypeName": "Converter",
@@ -13,7 +13,7 @@
     },
     "convertExpression": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "convertExpression",
             "objectDescriptor": {
                 "@": "root"
@@ -24,7 +24,7 @@
     },
     "revertExpression": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "revertExpression",
             "objectDescriptor": {
                 "@": "root"
@@ -35,7 +35,7 @@
     },
     "root": {
         "prototype": "core/meta/module-object-descriptor",
-        "properties": {
+        "values": {
             "name": "ExpressionConverter",
             "customPrototype": false,
             "parent": {
