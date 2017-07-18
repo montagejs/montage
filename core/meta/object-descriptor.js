@@ -572,7 +572,9 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             var groups = [],
                 name;
             for (name in this._propertyDescriptorGroups) {
-                groups.push(name);
+                if (this._propertyDescriptorGroups.hasOwnProperty(name)) {
+                    groups.push(name);   
+                }
             }
             if (this.parent) {
                 groups = groups.concat(this.parent.propertyDescriptorGroups);
@@ -806,9 +808,12 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
      */
     propertyValidationRules: {
         get: function () {
-            var propertyValidationRules = [], name;
-            for (name in this._propertyValidationRules) {
-                propertyValidationRules.push(this._propertyValidationRules[name]);
+            var propertyName,
+                propertyValidationRules = [];
+            for (propertyName in this._propertyValidationRules) {
+                if (this._propertyValidationRules.hasOwnProperty(propertyName)) {
+                    propertyValidationRules.push(this._propertyValidationRules[propertyName]);   
+                }
             }
             if (this.parent) {
                 propertyValidationRules = propertyValidationRules.concat(this.parent.propertyValidationRules);
@@ -873,11 +878,15 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
      */
     evaluateRules: {
         value: function (objectInstance) {
-            var messages = [], name, rule;
+            var name, rule,
+                messages = [];
+
             for (name in this._propertyValidationRules) {
-                rule = this._propertyValidationRules[name];
-                if (rule.evaluateRule(objectInstance)) {
-                    messages.push(rule.messageKey);
+                if (this._propertyValidationRules.hasOwnProperty(name)) {
+                    rule = this._propertyValidationRules[name];
+                    if (rule.evaluateRule(objectInstance)) {
+                        messages.push(rule.messageKey);
+                    }   
                 }
             }
             return messages;

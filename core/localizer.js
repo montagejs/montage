@@ -466,11 +466,13 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
 
             // Go through each set of messages, adding any keys that haven't
             // already been set
-            for (var i = 0, len = localesMessages.length; i < len; i++) {
+            for (var i = 0, l = localesMessages.length; i < l; i++) {
                 var localeMessages = localesMessages[i];
                 for (var key in localeMessages) {
-                    if (!(key in messages)) {
-                        messages[key] = localeMessages[key];
+                    if (localeMessages.hasOwnProperty(key)) {
+                        if (!(key in messages)) {
+                            messages[key] = localeMessages[key];
+                        }
                     }
                 }
             }
@@ -546,7 +548,9 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                 compiled = function () { return message; };
                 compiled.toString = compiled;
             } else {
+                /* jshint evil:true */
                 compiled = (new Function('MessageFormat', 'return ' + this.messageFormat.precompile(ast))(MessageFormat));
+                /* jshint evil:false */
             }
 
             this._compiledMessageCache[message] = compiled;
@@ -1206,16 +1210,18 @@ var createMessageBinding = function (object, prop, key, defaultMessage, data, de
         var d, property, typeOfProperty;
 
         for (d in data) {
-            property = data[d];
-            typeOfProperty = typeof property;
+            if (data.hasOwnProperty(d)) {
+                property = data[d];
+                typeOfProperty = typeof property;
 
-            if (typeOfProperty === "string") {
-                dataMap.set(d, property);
+                if (typeOfProperty === "string") {
+                    dataMap.set(d, property);
 
-            } else if (typeOfProperty === "object") {
-                Bindings.defineBinding(dataMap, ".get('" + d + "')", property, {
-                    components: deserializer
-                });
+                } else if (typeOfProperty === "object") {
+                    Bindings.defineBinding(dataMap, ".get('" + d + "')", property, {
+                        components: deserializer
+                    });
+                }   
             }
         }
 
@@ -1253,13 +1259,15 @@ Serializer.defineSerializationUnit("localizations", function (serializer, object
     if (bindingDescriptors) {
         var result;
         for (var prop in bindingDescriptors) {
-            var desc = bindingDescriptors[prop];
-            if (Message.prototype.isPrototypeOf(desc.source)) {
-                if (!result) {
-                    result = {};
+            if (bindingDescriptors.hasOwnProperty(prop)) {
+                var desc = bindingDescriptors[prop];
+                if (Message.prototype.isPrototypeOf(desc.source)) {
+                    if (!result) {
+                        result = {};
+                    }
+                    var message = desc.source;
+                    result[prop] = message.serializeForLocalizations(serializer);
                 }
-                var message = desc.source;
-                result[prop] = message.serializeForLocalizations(serializer);
             }
         }
         return result;
@@ -1267,22 +1275,27 @@ Serializer.defineSerializationUnit("localizations", function (serializer, object
 });
 
 Deserializer.defineDeserializationUnit("localizations", function (deserializer, object, properties) {
+
+    var desc,
+        key,
+        defaultMessage;
+
     for (var prop in properties) {
-        var desc = properties[prop],
-            key,
-            defaultMessage;
+        if (properties.hasOwnProperty(prop)) {
 
-        if (!(KEY_KEY in desc)) {
-            console.error("localized property '" + prop + "' must contain a key property (" + KEY_KEY + "), in ", properties[prop]);
-            continue;
+            desc = properties[prop];
+            if (!(KEY_KEY in desc)) {
+                console.error("localized property '" + prop + "' must contain a key property (" + KEY_KEY + "), in ", properties[prop]);
+                continue;
+            }
+            if(logger.isDebug && !(DEFAULT_MESSAGE_KEY in desc)) {
+                logger.debug(this, "Warning: localized property '" + prop + "' does not contain a default message property (" + DEFAULT_MESSAGE_KEY + "), in ", object);
+            }
+
+            key = desc[KEY_KEY];
+            defaultMessage = desc[DEFAULT_MESSAGE_KEY];
+
+            createMessageBinding(object, prop, key, defaultMessage, desc.data, deserializer);
         }
-        if(logger.isDebug && !(DEFAULT_MESSAGE_KEY in desc)) {
-            logger.debug(this, "Warning: localized property '" + prop + "' does not contain a default message property (" + DEFAULT_MESSAGE_KEY + "), in ", object);
-        }
-
-        key = desc[KEY_KEY];
-        defaultMessage = desc[DEFAULT_MESSAGE_KEY];
-
-        createMessageBinding(object, prop, key, defaultMessage, desc.data, deserializer);
     }
 });
