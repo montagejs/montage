@@ -130,9 +130,10 @@
         "URL": true,
         "console": true,
         "Promise": true,
+        "Event": true,
+        "CustomEvent": true,
         // Native
         "escape": false,
-        "CustomEvent": true,
         "WebSocket": false,
         "TouchEvent": false,
         "UIEvent": false,
