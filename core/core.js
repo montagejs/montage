@@ -980,14 +980,14 @@ Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
 
         if (delegate) {
 
-            // TODO WTF
+            var delegateFunctionName = this.identifier + name.toCapitalized();
             if (
-                (typeof this.identifier === "string") && 
-                    (typeof (delegateFunction = delegate[this.identifier + name.toCapitalized()]) === FUNCTION)) 
-            {
-
-            } else if (typeof (delegateFunction = delegate[name]) === FUNCTION) {
-
+                typeof this.identifier === "string" && 
+                    typeof delegate[delegateFunctionName] === FUNCTION
+            ) {
+                delegateFunction = delegate[delegateFunctionName];
+            } else if (typeof delegate[name] === FUNCTION) {
+                delegateFunction = delegate[name];
             }
 
             if (delegateFunction) {

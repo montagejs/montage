@@ -16,7 +16,11 @@ if (typeof Node !== "undefined") {
     };
 
     NodePrototype.parentOf = function (child) {
-        while ((child = child.parentNode) && child !== this) {}
+
+        do {
+            child = child.parentNode;
+        } while(child && child !== this);
+
         //If child is defined then we didn't walk all the way up to the root
         return child ? true : false;
     };
