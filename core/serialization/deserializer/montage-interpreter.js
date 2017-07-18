@@ -245,13 +245,15 @@ var MontageContext = Montage.specialize({
             var value;
 
             for (var key in values) {
-                value = values[key];
+                if (values.hasOwnProperty(key)) {
+                    value = values[key];
 
-                if (typeof value === "object" && value &&
-                    Object.keys(value).length === 1 &&
-                    (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) {
-                    bindings[key] = value;
-                    delete values[key];
+                    if (typeof value === "object" && value &&
+                        Object.keys(value).length === 1 &&
+                        (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) {
+                        bindings[key] = value;
+                        delete values[key];
+                    }   
                 }
             }
 

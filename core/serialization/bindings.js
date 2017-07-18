@@ -80,28 +80,28 @@ var deserializeObjectBindings = exports.deserializeObjectBindings = function (de
         targetPath,
         descriptor;
 
+    /* jshint forin: true */
     for (targetPath in bindings) {
-        if (bindings.hasOwnProperty(targetPath)) {
+    /* jshint forin: false */
 
-            descriptor = bindings[targetPath];
+        descriptor = bindings[targetPath];
 
-            if (typeof descriptor !== "object") {
-                throw new Error("Binding descriptor must be an object, not " + typeof descriptor);
-                // TODO isolate the source document and produce a more useful error
-            }
+        if (typeof descriptor !== "object") {
+            throw new Error("Binding descriptor must be an object, not " + typeof descriptor);
+            // TODO isolate the source document and produce a more useful error
+        }
 
-            if (ONE_ASSIGNMENT in descriptor) {
-                assign(
-                    object,
-                    targetPath,
-                    evaluate(descriptor[ONE_ASSIGNMENT], object, null, null, deserializer),
-                    null,
-                    null,
-                    deserializer
-                );
-            } else {
-                Bindings.defineBinding(object, targetPath, descriptor, commonDescriptor);
-            }
+        if (ONE_ASSIGNMENT in descriptor) {
+            assign(
+                object,
+                targetPath,
+                evaluate(descriptor[ONE_ASSIGNMENT], object, null, null, deserializer),
+                null,
+                null,
+                deserializer
+            );
+        } else {
+            Bindings.defineBinding(object, targetPath, descriptor, commonDescriptor);
         }
     }
 };

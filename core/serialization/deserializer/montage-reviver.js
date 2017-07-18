@@ -462,15 +462,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     value = object.deserializeProperties(valuesDeserializer);
                 }
             } else {
-<<<<<<< HEAD
                 /* jshint forin: true */
-                for (var key in properties) {
-                /* jshint forin: false */
-                    object[key] = properties[key];
-=======
                 for (var key in values) {
+                /* jshint forin: false */
                     object[key] = values[key];
->>>>>>> master
                 }
             }
 

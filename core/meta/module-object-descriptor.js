@@ -123,7 +123,7 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
                 return OBJECT_DESCRIPTOR_CACHE[key];
             }
 
-            return OBJECT_DESCRIPTOR_CACHE[key] = _require.async(moduleId)
+            return (OBJECT_DESCRIPTOR_CACHE[key] = _require.async(moduleId)
                 .then(function (object) {
                     // Need to get the require from the module, because thats
                     // what all the moduleId references are relative to.
@@ -149,7 +149,7 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
                     }
 
                     return objectDescriptor;
-                });
+                }));
         }
     },
 

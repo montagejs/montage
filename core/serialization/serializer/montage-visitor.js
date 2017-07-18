@@ -285,9 +285,13 @@ var MontageVisitor = Montage.specialize({
                     var valuesObject = this.builder.top.getProperty("values");
                     this.builder.push(valuesObject);
 
+                    
+                    /* jshint forin: true */
                     for (var key in bindings) {
+                    /* jshint forin: false */
                         this.builder.top.setProperty(key, bindings[key]);
                     }
+
                     this.builder.pop();
                 }
             }
