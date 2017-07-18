@@ -1,7 +1,7 @@
 {
     "value_target_object_descriptor": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "value",
             "objectDescriptor": {
                 "@": "root"
@@ -15,7 +15,7 @@
     },
     "root": {
         "prototype": "core/meta/module-object-descriptor",
-        "properties": {
+        "values": {
             "name": "ObjectDescriptorReference",
             "customPrototype": false,
             "propertyDescriptors": [

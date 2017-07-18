@@ -1,7 +1,7 @@
 {
     "checked_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "checked",
             "valueType": "boolean",
             "blueprint": {
@@ -11,7 +11,7 @@
     },
     "blueprint_parent": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "AbstractControl",
                 "prototypeName": "AbstractControl",
@@ -23,7 +23,7 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "AbstractToggleSwitch",
             "parent": {
                 "@": "blueprint_parent"

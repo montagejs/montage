@@ -38,28 +38,28 @@ POSSIBILITY OF SUCH DAMAGE.
 {
     "component1": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentA"},
             "hasTemplate": false
         }
     },
     "component2": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentB"},
             "hasTemplate": false
         }
     },
     "claimedpointertest1": {
         "prototype": "spec/claimed-pointer-test/claimed-pointer-test",
-        "properties": {
+        "values": {
             "componentA": {"@": "component1"},
             "componentB": {"@": "component2"}
         }
     },
     "application": {
         "prototype": "montage/core/application",
-        "properties": {
+        "values": {
             "delegate": {"@": "claimedpointertest1"}
         }
     }

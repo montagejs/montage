@@ -2,11 +2,13 @@ var Montage = require("../../core").Montage;
 
 var MontageWalker = exports.MontageWalker = Montage.specialize({
     _visitHandler: {value: null},
-    _enteredObjects: {value: null},
+    _enteredObjects: { value: null },
+    legacyMode: { value: false },
 
     constructor: {
-        value: function Malker(visitHandler) {
+        value: function Malker(visitHandler, legacyMode) {
             this._visitHandler = visitHandler;
+            this.legacyMode = !!legacyMode;
             this._enteredObjects = {};
         }
     },
@@ -216,7 +218,7 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
     }
 });
 
-exports.visit = function(object, visitHandler) {
-    var malker = new MontageWalker(visitHandler);
+exports.visit = function(object, visitHandler, legacyMode) {
+    var malker = new MontageWalker(visitHandler, legacyMode);
     malker.visit(object);
 };

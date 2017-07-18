@@ -17,19 +17,19 @@ describe("reel/serialization/serialization-extractor-spec", function () {
     it("should extract an object", function () {
         var objects = {
                 "one": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "oneId"}
                     }
                 },
 
                 "two": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "twoId"}
                     }
                 },
 
                 "three": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "threeId"}
                     }
                 }
@@ -52,7 +52,7 @@ describe("reel/serialization/serialization-extractor-spec", function () {
     it("should extract an object and add a defined external", function () {
         var objects = {
                 "one": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "oneId"}
                     }
                 },
@@ -79,20 +79,20 @@ describe("reel/serialization/serialization-extractor-spec", function () {
     it("should extract an object with its object dependencies as external objects", function () {
         var objects = {
                 "one": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "oneId"},
                         "three": {"@": "three"}
                     }
                 },
 
                 "two": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "twoId"}
                     }
                 },
 
                 "three": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "threeId"}
                     }
                 }
@@ -116,20 +116,20 @@ describe("reel/serialization/serialization-extractor-spec", function () {
     it("should extract objects with dependencies between them", function () {
         var objects = {
                 "one": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "oneId"},
                         "three": {"@": "three"}
                     }
                 },
 
                 "two": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "twoId"}
                     }
                 },
 
                 "three": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "threeId"}
                     }
                 }
@@ -153,14 +153,14 @@ describe("reel/serialization/serialization-extractor-spec", function () {
     it("should extract two objects even when one of them is a defined external", function () {
         var objects = {
                 "one": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "oneId"},
                         "two": {"@": "two"}
                     }
                 },
 
                 "two": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "twoId"}
                     }
                 },
@@ -185,7 +185,7 @@ describe("reel/serialization/serialization-extractor-spec", function () {
     it("should extract two objects even if one of them is an external reference", function () {
         var objects = {
                 "one": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "oneId"},
                         "two": {"@": "two"}
                     }
@@ -212,7 +212,7 @@ describe("reel/serialization/serialization-extractor-spec", function () {
     it("should ignore passed external objects that do not exist", function () {
         var objects = {
                 "one": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "oneId"}
                     }
                 }
@@ -237,16 +237,14 @@ describe("reel/serialization/serialization-extractor-spec", function () {
         it("should extract an object and its one way bindings as external objects", function () {
             var objects = {
                     "one": {
-                        "properties": {
+                        "values": {
                             "element": {"#": "oneId"},
-                        },
-                        "bindings": {
                             "name": {"<-": "@two.name"}
                         }
                     },
 
                     "two": {
-                        "properties": {
+                        "values": {
                             "element": {"#": "twoId"},
                             "name": "two"
                         }
@@ -271,16 +269,14 @@ describe("reel/serialization/serialization-extractor-spec", function () {
         it("should extract an object and its two way bindings as external objects", function () {
             var objects = {
                     "one": {
-                        "properties": {
+                        "values": {
                             "element": {"#": "oneId"},
-                        },
-                        "bindings": {
                             "name": {"<->": "@two.name"}
                         }
                     },
 
                     "two": {
-                        "properties": {
+                        "values": {
                             "element": {"#": "twoId"},
                             "name": "two"
                         }
@@ -305,21 +301,21 @@ describe("reel/serialization/serialization-extractor-spec", function () {
         it("should extract an object with bindings that have multiple references", function () {
             var objects = {
                     "one": {
-                        "properties": {
+                        "values": {
                             "element": {"#": "oneId"},
                             "value": 1
                         }
                     },
 
                     "two": {
-                        "properties": {
+                        "values": {
                             "element": {"#": "twoId"},
                             "value": 2
                         }
                     },
 
                     "sum": {
-                        "bindings": {
+                        "values": {
                             "value": {"<-": "@one.value + @two.value"}
                         }
                     }
@@ -345,7 +341,7 @@ describe("reel/serialization/serialization-extractor-spec", function () {
     it("should extract an object and its listeners as external objects", function () {
         var objects = {
                 "one": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "oneId"},
                     },
                     "listeners": [{
@@ -355,7 +351,7 @@ describe("reel/serialization/serialization-extractor-spec", function () {
                 },
 
                 "two": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "twoId"}
                     }
                 }

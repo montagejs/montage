@@ -1,7 +1,7 @@
 {
 	"root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "TextInput",
             "customPrototype": false,
             "propertyDescriptors": [],

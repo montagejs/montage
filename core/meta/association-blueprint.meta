@@ -1,7 +1,7 @@
 {
     "association_target_blueprint": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "targetBlueprint",
             "blueprint": {
                 "@": "root"
@@ -15,7 +15,7 @@
     },
     "property_blueprint_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "PropertyBlueprint",
                 "prototypeName": "PropertyBlueprint",
@@ -27,7 +27,7 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "AssociationBlueprint",
             "customPrototype": false,
             "parent": {

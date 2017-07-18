@@ -1,7 +1,7 @@
 {
     "promiseController_promise": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "promise",
             "blueprint": {
                 "@": "root"
@@ -12,7 +12,7 @@
     },
     "promiseController_value": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "value",
             "blueprint": {
                 "@": "root"
@@ -23,7 +23,7 @@
     },
     "promiseController_error": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "error",
             "blueprint": {
                 "@": "root"
@@ -34,7 +34,7 @@
     },
     "promiseController_pending": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "pending",
             "blueprint": {
                 "@": "root"
@@ -45,7 +45,7 @@
     },
     "promiseController_fulfilled": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "fulfilled",
             "blueprint": {
                 "@": "root"
@@ -56,7 +56,7 @@
     },
     "promiseController_rejected": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "rejected",
             "blueprint": {
                 "@": "root"
@@ -67,7 +67,7 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "PromiseController",
             "customPrototype": false,
             "propertyDescriptors": [

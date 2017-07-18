@@ -36,25 +36,21 @@ POSSIBILITY OF SUCH DAMAGE.
 
     "dynamictext1": {
         "prototype": "montage/ui/text.reel",
-        "properties": {
-            "element": {"#": "description"}
-        },
-        "bindings": {
+        "values": {
+            "element": {"#": "description"},
             "value": {"<-": "@owner.photo.description"}
         }
     },
     "dynamictext2": {
         "prototype": "montage/ui/text.reel",
-        "properties": {
-            "element": {"#": "location"}
-        },
-        "bindings": {
+        "values": {
+            "element": {"#": "location"},
             "value": {"<-": "@owner.photo.location"}
         }
     },
     "owner": {
         "prototype": "ui/slot-test/photo-viewer.reel",
-        "properties": {
+        "values": {
             "element": {"#": "PhotoViewer"}
         }
     }

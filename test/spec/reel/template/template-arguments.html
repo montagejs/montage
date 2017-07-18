@@ -6,14 +6,14 @@
     <script type="text/montage-serialization">{
         "section": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "section"}
             }
         },
 
         "foo": {
             "prototype": "montage/ui/component",
-            "properties": {
+            "values": {
                 "element": {"#": "foo"},
                 "hasTemplate": false
             }
@@ -21,7 +21,7 @@
 
         "leftSide": {
             "prototype": "montage/ui/component",
-            "properties": {
+            "values": {
                 "element": {"#": "leftSide"},
                 "hasTemplate": false
             }
@@ -29,28 +29,24 @@
 
         "rightSide": {
             "prototype": "montage/ui/component",
-            "properties": {
+            "values": {
                 "element": {"#": "rightSide"},
-                "hasTemplate": false
-            },
-            "bindings": {
+                "hasTemplate": false,
                 "value": {"<-": "@leftSide.value"}
             }
         },
 
         "templateProperties": {
             "prototype": "montage/ui/component",
-            "properties": {
+            "values": {
                 "element": {"#": "template-properties"}
             }
         },
 
         "iterationItem": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "iterationItem"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "iterationItem"},
                 "value": {"<-": "@templateProperties:cell"}
             }
         }

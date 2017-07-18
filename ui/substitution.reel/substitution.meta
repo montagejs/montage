@@ -1,7 +1,7 @@
 {
     "blueprint_substitution_switchValue": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "switchValue",
             "blueprint": {
                 "@": "root"
@@ -10,7 +10,7 @@
     },
     "blueprint_substitution_shouldLoadComponentTree": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "shouldLoadComponentTree",
             "blueprint": {
                 "@": "root"
@@ -20,7 +20,7 @@
     },
     "blueprint_substitution_transition": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "transition",
             "blueprint": {
                 "@": "root"
@@ -30,7 +30,7 @@
     },
     "blueprint_component_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Component",
                 "prototypeName": "Component",
@@ -42,7 +42,7 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "Substitution",
             "parent": {
                 "@": "blueprint_component_reference"

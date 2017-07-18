@@ -1,5 +1,12 @@
 /* global console */
 var Montage = require("./core").Montage;
+    Map = require("collections/map");
+
+var deprecatedFeaturesOnceMap = new Map();
+
+function generateDeprecatedKey(name, alternative) {
+    return alternative ? name + "_" + alternative : name;
+}
 
 /**
  * @module montage/core/deprecate
@@ -34,6 +41,22 @@ var deprecationWarning = exports.deprecationWarning = function deprecationWarnin
         Error.stackTraceLimit = stackTraceLimitOrigin;
     }
 };
+
+/**
+ *
+ * Call deprecationWarning function only once.
+ *
+ * @param {String} name - Name of the thing that is deprecated.
+ * @param {String} alternative - Name of alternative that should be used instead.
+ * @param {Number} [stackTraceLimit] - depth of the stack trace to print out. Set to falsy value to disable stack.
+ */
+var deprecationWarningOnce = exports.deprecationWarningOnce = function deprecationWarningOnce(name, alternative, stackTraceLimit) {
+    var key = generateDeprecatedKey(name, alternative);
+    if (!deprecatedFeaturesOnceMap.has(key)) {
+        deprecationWarning(name, alternative, stackTraceLimit);
+        deprecatedFeaturesOnceMap.set(key, true);
+    }
+}
 
 /**
  * Provides a function that can replace a method that has been deprecated.

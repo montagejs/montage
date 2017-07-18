@@ -531,7 +531,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
      * ```json
      * {
      *    "component": {
-     *        "properties": {
+     *        "values": {
      *            "element": {"#": "dataMontageId"}
      *        }
      *    }
@@ -558,7 +558,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
      * ```json
      * {
      *    "owner": {
-     *        "properties": {
+     *        "values": {
      *            "element": {"#": "dataMontageId"}
      *        }
      *    }

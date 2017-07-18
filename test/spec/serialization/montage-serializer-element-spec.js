@@ -83,7 +83,7 @@ describe("spec/serialization/montage-serializer-element-spec", function () {
             expectedSerialization = {
                 root: {
                     prototype: "spec/serialization/testobjects-v2[OneProp]",
-                    properties: {
+                    values: {
                         identifier: null,
                         prop: {"#": "id"}
                     }
@@ -107,7 +107,7 @@ describe("spec/serialization/montage-serializer-element-spec", function () {
             expectedSerialization = {
                 root: {
                     prototype: "spec/serialization/testobjects-v2[TwoProps]",
-                    properties: {
+                    values: {
                         identifier: null,
                         prop1: {"#": "id"},
                         prop2: {"#": "id"}

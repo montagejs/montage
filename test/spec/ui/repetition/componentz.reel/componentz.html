@@ -35,17 +35,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
             "textfield1": {
                 "prototype": "spec/ui/repetition/textfield.reel[TextField]",
-                "properties": {
+                "values": {
                     "element": {"#": "textfield1"},
-                    "text": "a component Z textfield"
-                },
-                "bindings": {
+                    "text": "a component Z textfield",
                     "text": {"<->": "@owner.text"}
                 }
             },
             "repetition1": {
                 "prototype": "montage/ui/repetition.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "list"},
                     "content": [
                         1
@@ -54,7 +52,7 @@ POSSIBILITY OF SUCH DAMAGE.
             },
             "owner": {
                 "prototype": "spec/ui/repetition/componentz.reel[ComponentZ]",
-                "properties": {
+                "values": {
                     "element": {"#": "componentz"}
                 }
             }

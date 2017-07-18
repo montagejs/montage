@@ -1,7 +1,7 @@
 {
     "owner_reference": {
         "prototype": "core/meta/object-descriptor-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "objectDescriptorName": "ObjectDescriptor",
                 "prototypeName": "ObjectDescriptor",
@@ -13,7 +13,7 @@
     },
     "validation_rule_object_descriptor_name": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "name",
             "objectDescriptor": {
                 "@": "root"
@@ -29,7 +29,7 @@
     },
     "validation_rule_owner_object_descriptor": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "objectDescriptor",
             "objectDescriptor": {
                 "@": "root"
@@ -48,7 +48,7 @@
     },
     "validation_rule_object_descriptor_validationSelector": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "validationSelector",
             "objectDescriptor": {
                 "@": "root"
@@ -66,7 +66,7 @@
     },
     "validation_rule_object_descriptor_messageKey": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "messageKey",
             "objectDescriptor": {
                 "@": "root"
@@ -82,7 +82,7 @@
     },
     "root": {
         "prototype": "core/meta/module-object-descriptor",
-        "properties": {
+        "values": {
             "name": "PropertyValidationRule",
             "customPrototype": false,
             "propertyDescriptors": [

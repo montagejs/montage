@@ -1,7 +1,7 @@
 {
     "blueprint_text_value": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "value",
             "blueprint": {
                 "@": "root"
@@ -12,7 +12,7 @@
     },
     "blueprint_text_converter": {
         "prototype": "core/meta/association-blueprint",
-        "properties": {
+        "values": {
             "name": "converter",
             "blueprint": {
                 "@": "root"
@@ -26,7 +26,7 @@
     },
     "blueprint_converter_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Converter",
                 "prototypeName": "Converter",
@@ -38,7 +38,7 @@
     },
     "blueprint_component_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Component",
                 "prototypeName": "Component",
@@ -50,7 +50,7 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "Text",
             "customPrototype": false,
             "parent": {

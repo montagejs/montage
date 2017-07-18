@@ -1,7 +1,7 @@
 {
     "blueprint_radio_button_controller_value": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "value",
             "blueprint": { "@": "root" },
             "valueType": "object",
@@ -10,7 +10,7 @@
     },
     "blueprint_radio_button_controller_contentController": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "contentController",
             "blueprint": { "@": "root" },
             "valueType": "object",
@@ -19,7 +19,7 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "RadioButtonController",
             "propertyDescriptors": [
                 { "@": "blueprint_radio_button_controller_value" },

@@ -40,25 +40,21 @@ POSSIBILITY OF SUCH DAMAGE.
         },
         "outerCondition": {
             "prototype": "montage/ui/condition.reel",
-            "properties": {
-                "element": {"#": "outerCondition"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "outerCondition"},
                 "condition": {"<->": "@test.outerConditionValue"}
             }
         },
         "innerCondition": {
             "prototype": "montage/ui/condition.reel",
-            "properties": {
-                "element": {"#": "innerCondition"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "innerCondition"},
                 "condition": {"<->": "@test.innerConditionValue"}
             }
         },
         "application": {
             "prototype": "montage/core/application",
-            "properties": {
+            "values": {
                 "delegate" : {"@": "test"}
             }
         }

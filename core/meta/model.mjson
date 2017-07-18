@@ -1,7 +1,7 @@
 {
     "object_descriptor_reference": {
         "prototype": "core/meta/object-descriptor-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "objectDescriptorName": "ObjectDescriptor",
                 "prototypeName": "ObjectDescriptor",
@@ -13,7 +13,7 @@
     },
     "model_objectDescriptors": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "objectDescriptors",
             "objectDescriptor": {
                 "@": "root"
@@ -32,7 +32,7 @@
     },
     "model_name": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "name",
             "objectDescriptor": {
                 "@": "root"
@@ -48,7 +48,7 @@
     },
     "model_modelInstanceModuleId": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "modelInstanceModuleId",
             "objectDescriptor": {
                 "@": "root"
@@ -64,7 +64,7 @@
     },
     "root": {
         "prototype": "core/meta/module-object-descriptor",
-        "properties": {
+        "values": {
             "name": "Model",
             "customPrototype": false,
             "propertyDescriptors": [

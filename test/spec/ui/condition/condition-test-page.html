@@ -40,32 +40,28 @@ POSSIBILITY OF SUCH DAMAGE.
         },
         "conditionHide": {
             "prototype": "montage/ui/condition.reel",
-            "properties": {
-                "element": {"#": "hideMe"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "hideMe"},
                 "condition": {"<->": "@test.hideValue"}
             }
         },
         "conditionRemove": {
             "prototype": "montage/ui/condition.reel",
-            "properties": {
-                "element": {"#": "removeContent"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "removeContent"},
                 "condition": {"<->": "@test.removeValue"}
             }
         },
         "conditionTrue": {
             "prototype": "montage/ui/condition.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "conditionTrue"},
                 "condition": true
             }
         },
         "application": {
             "prototype": "montage/core/application",
-            "properties": {
+            "values": {
                 "delegate" : {"@": "test"}
             }
         }

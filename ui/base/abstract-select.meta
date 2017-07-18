@@ -1,7 +1,7 @@
 {
     "enabled_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "enabled",
             "valueType": "boolean",
             "blueprint": {
@@ -11,7 +11,7 @@
     },
     "contentController_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "contentController",
             "valueType": "object",
             "blueprint": {
@@ -21,7 +21,7 @@
     },
     "content_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "content",
             "valueType": "object",
             "blueprint": {
@@ -31,7 +31,7 @@
     },
     "labelPropertyName_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "labelPropertyName",
             "valueType": "string",
             "blueprint": {
@@ -41,7 +41,7 @@
     },
     "value_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "value",
             "valueType": "object",
             "blueprint": {
@@ -51,7 +51,7 @@
     },
     "values_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "values",
             "valueType": "object",
             "blueprint": {
@@ -61,7 +61,7 @@
     },
     "multiSelect_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "multiSelect",
             "valueType": "boolean",
             "blueprint": {
@@ -71,7 +71,7 @@
     },
     "blueprint_parent": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "AbstractControl",
                 "prototypeName": "AbstractControl",
@@ -83,7 +83,7 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "AbstractSelect",
             "parent": {
                 "@": "blueprint_parent"

@@ -8,7 +8,7 @@
             {
                 "test": {
                     "prototype": "spec/meta/component-blueprint-test/component-blueprint-test",
-                    "properties": {
+                    "values": {
                         "component1": {"@": "component1"},
                         "component2": {"@": "component2"},
                         "component3": {"@": "component3"}
@@ -16,25 +16,25 @@
                 },
                 "component1": {
                     "prototype": "spec/meta/component-blueprint-test/component-blueprint-test-1.reel",
-                    "properties": {
+                    "values": {
                          "element": {"#": "component1"}
                     }
                 },
                 "component2": {
                     "prototype": "spec/meta/component-blueprint-test/component-blueprint-test-2.reel",
-                    "properties": {
+                    "values": {
                         "element": {"#": "component2"}
                     }
                 },
                 "component3": {
                     "prototype": "spec/meta/component-blueprint-test/component-blueprint-test-3.reel",
-                    "properties": {
+                    "values": {
                          "element": {"#": "component3"}
                     }
                 },
                 "application": {
                     "prototype": "montage/core/application",
-                    "properties": {
+                    "values": {
                         "delegate" : {"@": "test"}
                     }
                 }

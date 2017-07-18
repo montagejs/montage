@@ -16,7 +16,7 @@ describe("reel/serialization/serialization-spec", function () {
     it("should clone", function () {
         var objects = {
                 "one": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "oneId"}
                     }
                 }
@@ -89,19 +89,19 @@ describe("reel/serialization/serialization-spec", function () {
     it("should find the labels of objects with a specific element id", function () {
         var objects = {
                 "one": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "oneId"}
                     }
                 },
 
                 "two": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "twoId"}
                     }
                 },
 
                 "three": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "threeId"}
                     }
                 }
@@ -120,13 +120,13 @@ describe("reel/serialization/serialization-spec", function () {
     it("should rename an element reference", function () {
         var objects = {
                 "one": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "oneId"}
                     }
                 },
 
                 "two": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "twoId"},
                         "details": {
                             "oneElement": {"#": "oneId"}
@@ -141,9 +141,9 @@ describe("reel/serialization/serialization-spec", function () {
         serialization.initWithObject(objects);
         serialization.renameElementReferences(elementIdsTable);
 
-        expect(objects.one.properties.element["#"]).toBe("newId");
-        expect(objects.two.properties.details.oneElement["#"]).toBe("newId");
-        expect(objects.two.properties.element["#"]).toBe("twoId");
+        expect(objects.one.values.element["#"]).toBe("newId");
+        expect(objects.two.values.details.oneElement["#"]).toBe("newId");
+        expect(objects.two.values.element["#"]).toBe("twoId");
     });
 
 
@@ -192,7 +192,7 @@ describe("reel/serialization/serialization-spec", function () {
     it("should get the element id of a component's element", function () {
         var object = {
                 "one": {
-                    "properties": {
+                    "values": {
                         "element": {"#": "mid"}
                     }
                 }

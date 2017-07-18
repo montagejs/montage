@@ -37,25 +37,23 @@ POSSIBILITY OF SUCH DAMAGE.
 
         "owner": {
             "prototype": "spec/ui/draw/component-layout.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "component-layout"}
             }
         },
 
         "left": {
             "prototype": "montage/ui/component",
-            "properties": {
+            "values": {
                 "element": {"#": "left"},
-                "hasTemplate": false
-            },
-            "bindings": {
+                "hasTemplate": false,
                 "domContent": {"<->": "@owner.left"}
             }
         },
 
         "center": {
             "prototype": "montage/ui/component",
-            "properties": {
+            "values": {
                 "element": {"#": "center"},
                 "hasTemplate": false
             }
@@ -63,11 +61,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
         "right": {
             "prototype": "montage/ui/component",
-            "properties": {
+            "values": {
                 "element": {"#": "right"},
-                "hasTemplate": false
-            },
-            "bindings": {
+                "hasTemplate": false,
                 "domContent": {"<->": "@owner.right"}
             }
         }

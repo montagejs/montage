@@ -5,7 +5,7 @@
     <script type="text/montage-serialization">
 {
     "owner": {
-        "properties": {
+        "values": {
             "element": {
                 "#": "list"
             },
@@ -16,24 +16,20 @@
     },
     "repetition1": {
         "prototype": "montage/ui/repetition.reel",
-        "properties": {
+        "values": {
             "element": {
                 "#": "repetition"
-            }
-        },
-        "bindings": {
+            },
             "innerTemplate": {"<-": "@owner.innerTemplate"},
             "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"}
         }
     },
     "scroller1": {
         "prototype": "spec/ui/draw/scroller.reel",
-        "properties": {
+        "values": {
             "element": {
                 "#": "scroller"
-            }
-        },
-        "bindings": {
+            },
             "axis": {"<-": "@owner.axis"}
         }
     }

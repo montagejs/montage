@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 {
     "key_composer1": {
         "prototype": "montage/composer/key-composer",
-        "properties": {
+        "values": {
             "keys": "command+j",
             "identifier": "j",
             "component": {"@": "example"}
@@ -46,7 +46,7 @@ POSSIBILITY OF SUCH DAMAGE.
     },
     "key_composer2": {
         "prototype": "montage/composer/key-composer",
-        "properties": {
+        "values": {
             "keys": "shift+control+k",
             "identifier": "k",
             "component": {"@": "application"}
@@ -64,7 +64,7 @@ POSSIBILITY OF SUCH DAMAGE.
     },
     "example": {
         "prototype": "montage/ui/text.reel",
-        "properties": {
+        "values": {
             "element": {"#": "example"},
             "value": "hi"
         }
@@ -72,7 +72,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
     "test": {
         "prototype": "spec/composer/key-composer-test/key-composer-test",
-        "properties": {
+        "values": {
             "key_composer1": {"@": "key_composer1"},
             "key_composer2": {"@": "key_composer2"},
             "example": {"@": "example"}
@@ -80,7 +80,7 @@ POSSIBILITY OF SUCH DAMAGE.
     },
     "application": {
         "prototype": "montage/core/application",
-        "properties": {
+        "values": {
             "delegate": {"@": "test"}
         }
     }

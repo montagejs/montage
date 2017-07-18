@@ -39,7 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
 {
     "test": {
         "prototype": "spec/ui/draw/draw",
-        "properties": {
+        "values": {
             "repetition": {"@": "repetition"},
             "componentC": {"@": "componentC"},
             "componentC1": {"@": "componentC1"},
@@ -92,21 +92,21 @@ POSSIBILITY OF SUCH DAMAGE.
     },
     "repetition": {
         "prototype": "montage/ui/repetition.reel",
-        "properties": {
+        "values": {
             "element": {"#": "repetition"},
             "content": [1, 2, 3]
         }
     },
     "componentC": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentC"},
             "hasTemplate": false
         }
     },
     "componentC1": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentC1"},
             "hasTemplate": false
         }
@@ -114,7 +114,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
     "componentNoelement": {
         "prototype": "spec/ui/draw/component-noelement.reel",
-        "properties": {
+        "values": {
             "value": "componentNoelement",
             "parentOfNoElement": {"@": "componentE"}
         }
@@ -122,42 +122,42 @@ POSSIBILITY OF SUCH DAMAGE.
 
     "componentD": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentD"},
             "hasTemplate": false
         }
     },
     "componentD1": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentD1"},
             "hasTemplate": false
         }
     },
     "componentDtarget": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentDtarget"},
             "hasTemplate": false
         }
     },
     "componentE": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentE"},
             "hasTemplate": false
         }
     },
     "componentE11": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentE11"},
             "hasTemplate": false
         }
     },
     "componentStyle": {
         "prototype": "spec/ui/draw/component-style.reel",
-        "properties": {
+        "values": {
             "element": {"#": "component-style"}
         }
     },
@@ -167,20 +167,20 @@ POSSIBILITY OF SUCH DAMAGE.
     },
     "componentWithIdentifier": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "identifier": "anIdentifier",
             "hasTemplate": false
         }
     },
     "componentOwner": {
         "prototype": "spec/ui/draw/component-owner.reel",
-        "properties": {
+        "values": {
             "element": {"#": "component-owner"}
         }
     },
     "componentLayout": {
         "prototype": "spec/ui/draw/component-layout.reel",
-        "properties": {
+        "values": {
             "element": {"#": "component-layout"},
             "left": {"#": "component-layout-left"},
             "right": {"#": "component-layout-right"},
@@ -190,21 +190,21 @@ POSSIBILITY OF SUCH DAMAGE.
     },
     "componentLayoutLeft": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "component-layout-left"},
             "hasTemplate": false
         }
     },
     "componentLayoutRight": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "component-layout-right"},
             "hasTemplate": false
         }
     },
     "componentToBeCleaned": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "component-tobeclean"},
             "hasTemplate": false,
             "text": {"@": "text1"}
@@ -212,190 +212,186 @@ POSSIBILITY OF SUCH DAMAGE.
     },
     "text1": {
         "prototype": "montage/ui/text.reel",
-        "properties": {
+        "values": {
             "element": {"#": "text1"},
             "value": "Text"
         }
     },
     "componentDrawsParent": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentDrawsParent"},
             "hasTemplate": false
         }
     },
     "componentParent": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "parentComponent"},
             "hasTemplate": false
         }
     },
     "componentWithDelegate": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "delegate": {"@": "test"},
             "hasTemplate": false
         }
     },
     "componentList": {
         "prototype": "spec/ui/draw/component-list.reel",
-        "properties": {
+        "values": {
             "element": {"#": "componentList"}
         }
     },
     "text2": {
         "prototype": "montage/ui/text.reel",
-        "properties": {
+        "values": {
             "element": {"#": "text2"},
             "value": "Text 2"
         }
     },
     "arguments1": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "arguments1"},
             "hasTemplate": false
         }
     },
     "arguments2": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "arguments2"},
             "hasTemplate": false
         }
     },
     "noArguments": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "noArguments"},
             "hasTemplate": false
         }
     },
     "nestedArguments": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "nestedArguments"},
             "hasTemplate": false
         }
     },
     "nestedArgumentsComponent": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "nestedArgumentsComponent"},
             "hasTemplate": false
         }
     },
     "wrappedArguments": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "wrappedArguments"},
             "hasTemplate": false
         }
     },
     "componentBindingStar1": {
         "prototype": "spec/ui/draw/component-binding-star.reel",
-        "properties": {
+        "values": {
             "element": {"#": "componentBindingStar1"}
         }
     },
     "componentBindingStarText1": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentBindingStarText1"},
             "hasTemplate": false
         }
     },
     "componentBindingStar2": {
         "prototype": "spec/ui/draw/component-binding-star.reel",
-        "properties": {
+        "values": {
             "element": {"#": "componentBindingStar2"}
         }
     },
     "componentBindingStarText2": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentBindingStarText2"},
             "hasTemplate": false
         }
     },
     "componentBindingParams1": {
         "prototype": "spec/ui/draw/component-binding-params.reel",
-        "properties": {
+        "values": {
             "element": {"#": "componentBindingParams1"}
         }
     },
     "componentBindingParamsLeft1": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentBindingParamsLeft1"},
                         "hasTemplate": false
         }
     },
     "componentBindingParamsRight1": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentBindingParamsRight1"},
             "hasTemplate": false
         }
     },
     "componentBindingParams2": {
         "prototype": "spec/ui/draw/component-binding-params.reel",
-        "properties": {
+        "values": {
             "element": {"#": "componentBindingParams2"}
         }
     },
     "componentBindingParamsLeft2": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentBindingParamsLeft2"},
             "hasTemplate": false
         }
     },
     "componentBindingParamsRight2": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentBindingParamsRight2"},
             "hasTemplate": false
         }
     },
     "templateObjects": {
         "prototype": "spec/ui/draw/template-objects.reel",
-        "properties": {
+        "values": {
             "element": {"#": "templateObjects"}
         }
     },
 
     "componentClassList": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentClassList"},
-            "hasTemplate": false
-        },
-        "bindings": {
+            "hasTemplate": false,
             "classList.has('class1')": {"<-": "@test.class1"},
             "classList.has('class2')": {"<-": "@test.class2"}
         }
     },
     "componentClassInMarkup": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentClassInMarkup"},
             "hasTemplate": false
         }
     },
     "componentClassInTemplate": {
         "prototype": "spec/ui/draw/class-list-template.reel",
-        "properties": {
+        "values": {
             "element": {"#": "componentClassInTemplate"}
         }
     },
     "componentClassInTemplateAndBindings": {
         "prototype": "spec/ui/draw/class-list-template.reel",
-        "properties": {
-            "element": {"#": "componentClassInTemplateAndBindings"}
-        },
-        "bindings": {
+        "values": {
+            "element": {"#": "componentClassInTemplateAndBindings"},
             "classList.has('class1')": {"<-": "@test.classListTemplate1"},
             "classList.has('class2')": {"<-": "@test.classListTemplate2"}
         }
@@ -403,7 +399,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
     "componentF": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentF"},
             "hasTemplate": false
         }
@@ -411,7 +407,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
     "componentF1": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentF1"},
             "hasTemplate": false
         }
@@ -419,7 +415,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
     "componentG": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentG"},
             "hasTemplate": false
         }
@@ -427,7 +423,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
     "componentH": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentH"},
             "hasTemplate": false
         }
@@ -435,7 +431,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
     "componentH1": {
         "prototype": "montage/ui/component",
-        "properties": {
+        "values": {
             "element": {"#": "componentH1"},
             "hasTemplate": false,
             "ownerComponent": {"@": "componentH"},

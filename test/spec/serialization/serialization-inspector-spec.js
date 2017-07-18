@@ -223,7 +223,7 @@ describe("reel/serialization/serialization-inspector-spec", function () {
             var object = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "properties": {
+                        "values": {
                             "identifier": "text"
                         }
                     }
@@ -242,13 +242,14 @@ describe("reel/serialization/serialization-inspector-spec", function () {
 
             args = visitorSpy.calls.all()[1].args;
             expect(args[0].type).toBe("object");
-            expect(args[0].data).toEqual(object.text.properties);
+            expect(args[0].data).toEqual(object.text.values);
 
             args = visitorSpy.calls.all()[2].args;
             expect(args[0].type).toBe("string");
-            expect(args[0].data).toEqual(object.text.properties.identifier);
+            expect(args[0].data).toEqual(object.text.values.identifier);
         });
 
+        // deprecated        
         it("should visit bindings", function () {
             var object = {
                     "text": {
@@ -275,7 +276,7 @@ describe("reel/serialization/serialization-inspector-spec", function () {
             var object = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "bindings": {
+                        "values": {
                             "value": {"<-": "path"}
                         }
                     }
@@ -291,14 +292,13 @@ describe("reel/serialization/serialization-inspector-spec", function () {
             args = visitorSpy.calls.all()[2].args;
             expect(args[0].type).toBe("binding");
             expect(args[0].name).toBe("value");
-            expect(args[0].data).toEqual(object.text.bindings.value);
         });
 
         it("should visit a binding reference", function () {
             var object = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "bindings": {
+                        "values": {
                             "value": {"<-": "@object"}
                         }
                     }
@@ -320,7 +320,7 @@ describe("reel/serialization/serialization-inspector-spec", function () {
             var object = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "bindings": {
+                        "values": {
                             "value": {"<-": "@objects.filter{@owner.selected}"}
                         }
                     }
@@ -346,7 +346,7 @@ describe("reel/serialization/serialization-inspector-spec", function () {
             var serialization = new Serialization().initWithObject({
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "bindings": {
+                        "values": {
                             "value": {
                                 "<-": "@object",
                                 "converter": {"@": "converter"}
@@ -719,7 +719,7 @@ describe("reel/serialization/serialization-inspector-spec", function () {
             var serialization = new Serialization().initWithObject({
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "bindings": {
+                        "values": {
                             "value": {"<-": "@object"}
                         }
                     }
@@ -727,7 +727,7 @@ describe("reel/serialization/serialization-inspector-spec", function () {
                 expectedSerialization = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "bindings": {
+                        "values": {
                             "value": {"<-": "@array"}
                         }
                     }
@@ -753,7 +753,7 @@ describe("reel/serialization/serialization-inspector-spec", function () {
             var serialization = new Serialization().initWithObject({
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "bindings": {
+                        "values": {
                             "value": {"<-": "@objects.filter{@owner.selected}"}
                         }
                     }
@@ -761,7 +761,7 @@ describe("reel/serialization/serialization-inspector-spec", function () {
                 expectedSerialization = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "bindings": {
+                        "values": {
                             "value": {"<-": "@objects2.filter{@owner2.selected}"}
                         }
                     }
@@ -791,7 +791,7 @@ describe("reel/serialization/serialization-inspector-spec", function () {
             var serialization = new Serialization().initWithObject({
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "bindings": {
+                        "values": {
                             "value": {
                                 "<-": "@object",
                                 "converter": {"@": "converter"}
@@ -802,7 +802,7 @@ describe("reel/serialization/serialization-inspector-spec", function () {
                 expectedSerialization = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
-                        "bindings": {
+                        "values": {
                             "value": {
                                 "<-": "@object",
                                 "converter": {"@": "converterNewLabel"}
