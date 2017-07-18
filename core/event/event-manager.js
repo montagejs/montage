@@ -29,12 +29,12 @@ if (typeof window !== "undefined") { // client-side
     //This is a quick polyfill for IE10 that is not exposing CustomEvent as a function.
     //From https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
     if ( typeof window.CustomEvent !== "function" ) {
-        function CustomEvent ( event, params ) {
+        var CustomEvent = function CustomEvent ( event, params ) {
             params = params || { bubbles: false, cancelable: false, detail: undefined };
             var evt = document.createEvent( 'CustomEvent' );
             evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
             return evt;
-        }
+        };
 
         CustomEvent.prototype = window.Event.prototype;
 
@@ -48,7 +48,6 @@ if (typeof window !== "undefined") { // client-side
 
         (function () {
             var onFirstTouchstart;
-
             document.addEventListener("touchstart", onFirstTouchstart = function onFirstTouchstart(event) {
                 window.Touch = event.touches[0].constructor;
                 if (document.nativeRemoveEventListener) {
@@ -63,7 +62,6 @@ if (typeof window !== "undefined") { // client-side
             }, true);
         })();
     }
-
 
     var _PointerVelocity = Montage.specialize({
         _identifier: {
@@ -214,23 +212,24 @@ if (typeof window !== "undefined") { // client-side
     });
 
 
-    function _serializeObjectRegisteredEventListenersForPhase(serializer,object,registeredEventListeners,eventListenerDescriptors,capture) {
-        var type, listenerRegistrations, listeners, mapIter;
+    var _serializeObjectRegisteredEventListenersForPhase = function (serializer, object, registeredEventListeners, eventListenerDescriptors, capture) {
+        
+        var i, l, type, listenerRegistrations, listeners, mapIter, aListener;
         mapIter = registeredEventListeners.keys();
 
         while ((type = mapIter.next().value)) {
             listenerRegistrations = registeredEventListeners.get(type);
             listeners = listenerRegistrations && listenerRegistrations.get(object);
-            if(Array.isArray(listeners) && listeners.length > 0) {
-                listeners.forEach(function(aListener) {
+            if (Array.isArray(listeners) && listeners.length > 0) {
+                for (i = 0, l = listeners.length; i < l; i++) {
+                    aListener = listeners[i];
                     eventListenerDescriptors.push({
                         type: type,
                         listener: serializer.addObjectReference(aListener),
                         capture: capture
                     });
-                });
-            }
-            else if(listeners){
+                }
+            } else if(listeners){
                 eventListenerDescriptors.push({
                     type: type,
                     listener: serializer.addObjectReference(listeners),
@@ -238,8 +237,7 @@ if (typeof window !== "undefined") { // client-side
                 });
             }
         }
-    }
-
+    };
 
     Serializer.defineSerializationUnit("listeners", function listenersSerializationUnit(serializer, object) {
         var eventManager = defaultEventManager,
@@ -1280,12 +1278,11 @@ if (typeof window !== "undefined") { // client-side
                 aWindow.nativeAddEventListener("focus", this._activationHandler, true);
 
                 if (this.application) {
-
-                    var applicationLevelEvents = this.registeredEventListenersOnTarget_(this.application),
-                        eventType;
-
-                    for (eventType in applicationLevelEvents) {
-                        this._observeTarget_forEventType_(aWindow, eventType);
+                    var applicationLevelEvents = this.registeredEventListenersOnTarget_(this.application);
+                    for (var eventType in applicationLevelEvents) {
+                        if (applicationLevelEvents.hasOwnProperty(eventType)) {
+                            this._observeTarget_forEventType_(aWindow, eventType);
+                        }
                     }
                 }
 
@@ -1305,11 +1302,15 @@ if (typeof window !== "undefined") { // client-side
                     index;
 
                 for (eventType in applicationLevelEvents) {
-                    this._stopObservingTarget_forEventType_(aWindow, eventType);
+                    if (applicationLevelEvents.hasOwnProperty(eventType)) {
+                        this._stopObservingTarget_forEventType_(aWindow, eventType);
+                    }
                 }
 
                 for (eventType in windowLevelEvents) {
-                    this._stopObservingTarget_forEventType_(aWindow, eventType);
+                    if (windowLevelEvents.hasOwnProperty(eventType)) {
+                        this._stopObservingTarget_forEventType_(aWindow, eventType);
+                    }
                 }
 
                 if ((index = this._listeningWindowOnTouchCancel.indexOf(aWindow)) > -1) {
@@ -1325,17 +1326,18 @@ if (typeof window !== "undefined") { // client-side
         _resetRegisteredEventListeners: {
             enumerable: false,
             value: function (registeredEventListeners) {
-                var eventType,
-                    eventRegistration,
+                var i, l, target, eventType, eventRegistration,
                     self = this;
 
                 for (eventType in registeredEventListeners) {
-                    eventRegistration = registeredEventListeners.get(eventType);
-
-                    if(eventRegistration) {
-                        eventRegistration.forEach(function(listeners, target, map) {
-                            self._stopObservingTarget_forEventType_(target, eventType);
-                        });
+                    if (registeredEventListeners.hasOwnProperty(eventType)) {
+                        eventRegistration = registeredEventListeners.get(eventType);
+                        if (eventRegistration && eventRegistration.length > 0) {
+                            for (i = 0, l = eventRegistration.length; i < l; i++) {
+                                target = eventRegistration[i];
+                                self._stopObservingTarget_forEventType_(target, eventType);
+                            }
+                        }
                     }
                 }
             }
@@ -1680,6 +1682,8 @@ if (typeof window !== "undefined") { // client-side
                             case "MSPointerDown":
                             case "mousedown":
                                 defaultEventManager._isMouseDragging = true;
+                                /* falls through */
+                            
                             // roll into mousemove. break omitted intentionally.
                             case "pointermove":
                             case "MSPointerMove":

@@ -42,22 +42,24 @@ if (typeof window !== "undefined") {
             value: function (event) {
                 var key, proto = this.__proto__ || Object.getPrototypeOf(this);
                 for (key in event) {
+                    if (event.hasOwnProperty(key)) {
 
-                    //  Don't overwrite keys we have installed
-                    if (key in this || Object.getOwnPropertyDescriptor(proto,key)) {
-                        continue;
+                        //  Don't overwrite keys we have installed
+                        if (key in this || Object.getOwnPropertyDescriptor(proto, key)) {
+                            continue;
+                        }
+
+                        // Skip methods, the ones we care about have been wrapped
+                        // already.
+                        // TODO actually wrap all known functions generically
+                        //if (typeof this[key] === "function") {
+                        // continue;
+                        //}
+
+                        // TODO ok, maybe it would be quicker to not make this a
+                        // function, but I really hate duplicated code.
+                        wrapProperty(this, key);   
                     }
-
-                    // Skip methods, the ones we care about have been wrapped
-                    // already.
-                    // TODO actually wrap all known functions generically
-                    //if (typeof this[key] === "function") {
-                    // continue;
-                    //}
-
-                    // TODO ok, maybe it would be quicker to not make this a
-                    // function, but I really hate duplicated code.
-                    wrapProperty(this, key);
                 }
 
                 wrapProperty(this, "replayed");

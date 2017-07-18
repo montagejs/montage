@@ -795,6 +795,8 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                     }
 
                     if (keyComposer._shouldDispatchLongPress && !keyComposer._longPressTimeout) {
+
+                        /* jshint loopfunc:true */
                         keyComposer._longPressTimeout = setTimeout(function () {
                             var longPressEvent = MutableEvent.fromEvent(longPressEvent);
                             longPressEvent.type = LONGKEYPRESS_EVENT_TYPE;
@@ -804,7 +806,8 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                             keyComposer._longPressTimeout = null;
                             keyComposer.dispatchEvent(longPressEvent);
                             delete thisRef._longPressKeys[keyComposer.uuid];
-                        }, this._longPressThreshold);
+                        }, this._longPressThreshold);   
+                        /* jshint loopfunc:false */
 
                         // Let's remember any longKeyPress key waiting for timeout
                         this._longPressKeys[keyComposer.uuid] = keyComposer;

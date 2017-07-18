@@ -1727,7 +1727,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 descriptor = this._templateObjectDescriptor,
                 templateObjects = this._templateObjects;
 
+            /*jshint forin:true */
+            // TODO add hasOwnProperty to objects
             for (label in objects) {
+            /*jshint forin:false */
                 object = objects[label];
                 if (object !== null && object !== undefined) {
                     if (!Component.prototype.isPrototypeOf(object) || object === this ||

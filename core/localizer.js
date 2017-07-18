@@ -974,7 +974,9 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                 }
 
                 for (var d in data) {
-                    this.data.set(d, data[d]);
+                    if (data.hasOwnProperty(d)) {
+                        this.data.set(d, data[d]);
+                    }
                 }
 
                 this._data.addMapChangeListener(this, "data");
