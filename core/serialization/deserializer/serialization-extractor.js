@@ -68,7 +68,9 @@ var SerializationExtractor = Montage.specialize( {
                 }
             } else if (type === "object") {
                 for (var key in serialization) {
-                    this._collectLabels(serialization[key], labels);
+                    if (serialization.hasOwnProperty(key)) {
+                        this._collectLabels(serialization[key], labels);
+                    }
                 }
             }
         }
@@ -94,9 +96,11 @@ var SerializationExtractor = Montage.specialize( {
                 sourcePath;
 
             for (var propertyName in unitSerialization) {
-                binding = unitSerialization[propertyName];
-                sourcePath = binding["<-"] || binding["<->"];
-                this._collectLabelsInBindingPath(sourcePath, labels);
+                if (unitSerialization.hasOwnProperty(propertyName)) {
+                    binding = unitSerialization[propertyName];
+                    sourcePath = binding["<-"] || binding["<->"];
+                    this._collectLabelsInBindingPath(sourcePath, labels);   
+                }
             }
         }
     },
@@ -135,8 +139,10 @@ var SerializationExtractor = Montage.specialize( {
     _collectLabelsInLocalizations: {
         value: function (unitSerialization, labels) {
             for (var propertyName in unitSerialization) {
-                this._collectLabelsInLocalizationProperty(
-                    unitSerialization[propertyName], labels);
+                if (unitSerialization.hasOwnProperty(propertyName)) {
+                    this._collectLabelsInLocalizationProperty(
+                        unitSerialization[propertyName], labels);
+                }
             }
         }
     },
@@ -158,9 +164,10 @@ var SerializationExtractor = Montage.specialize( {
             if ("data" in property) {
                 data = property.data;
 
+                /* jshint forin: true */
                 for (var key in data) {
-                    this._collectLabelsInLocalizationBinding(
-                        data[key], labels);
+                /* jshint forin: false */
+                    this._collectLabelsInLocalizationBinding(data[key], labels);
                 }
             }
         }

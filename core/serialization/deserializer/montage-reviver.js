@@ -359,7 +359,9 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     .initWithReviverAndObjects(this, context);
                 value = object.deserializeProperties(propertiesDeserializer);
             } else {
+                /* jshint forin: true */
                 for (var key in properties) {
+                /* jshint forin: false */
                     object[key] = properties[key];
                 }
             }
@@ -468,7 +470,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (objects, context) {
             var object;
 
+            /* jshint forin: true */
             for (var label in objects) {
+            /* jshint forin: false */
+            
                 object = objects[label];
 
                 if (object !== null && object !== void 0) {
@@ -566,16 +571,18 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             }
 
             for (var propertyName in value) {
-                item = this.reviveValue(value[propertyName], context);
+                if (value.hasOwnProperty(propertyName)) {
+                    item = this.reviveValue(value[propertyName], context);
 
-                if (Promise.is(item)) {
-                    promises.push(
-                        item.then(this._createAssignValueFunction(
-                                value, propertyName)
-                        )
-                    );
-                } else {
-                    value[propertyName] = item;
+                    if (Promise.is(item)) {
+                        promises.push(
+                            item.then(this._createAssignValueFunction(
+                                    value, propertyName)
+                            )
+                        );
+                    } else {
+                        value[propertyName] = item;
+                    }   
                 }
             }
 
@@ -741,7 +748,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function(reviver) {
             var customObjectRevivers = this.customObjectRevivers;
 
+            /* jshint forin: true */
             for (var methodName in reviver) {
+            /* jshint forin: false */
+
                 if (methodName === "getTypeOf") {
                     continue;
                 }

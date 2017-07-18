@@ -42,16 +42,19 @@ var MontageInterpreter = Montage.specialize({
                 promises = [];
 
             for (var label in serialization) {
-                object = serialization[label];
+                if (serialization.hasOwnProperty(label)) {
 
-                locationId = object.prototype || object.object;
-                if (locationId) {
-                    locationDesc = MontageReviver.parseObjectLocationId(locationId);
-                    module = moduleLoader.getModule(
-                        locationDesc.moduleId, label);
-                    if (Promise.is(module)) {
-                        promises.push(module);
-                    }
+                    object = serialization[label];
+
+                    locationId = object.prototype || object.object;
+                    if (locationId) {
+                        locationDesc = MontageReviver.parseObjectLocationId(locationId);
+                        module = moduleLoader.getModule(
+                            locationDesc.moduleId, label);
+                        if (Promise.is(module)) {
+                            promises.push(module);
+                        }
+                    }   
                 }
             }
 
@@ -87,7 +90,9 @@ var MontageContext = Montage.specialize({
             if (objects) {
                 this._userObjects = Object.create(null);
 
+                /* jshint forin: true */
                 for (var label in objects) {
+                /* jshint forin: false */
                     this._userObjects[label] = objects[label];
                 }
             }
@@ -140,10 +145,12 @@ var MontageContext = Montage.specialize({
                 result;
 
             for (var label in serialization) {
-                result = this.getObject(label);
+                if (serialization.hasOwnProperty(label)) {
+                    result = this.getObject(label);
 
-                if (Promise.is(result)) {
-                    promises.push(result);
+                    if (Promise.is(result)) {
+                        promises.push(result);
+                    }
                 }
             }
 
