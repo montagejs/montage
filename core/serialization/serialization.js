@@ -533,7 +533,9 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
 
     _walkRootObjects: {
         value: function (visitor, objects) {
-            for (var label in objects) {
+            /* jshint forin: true */
+            for (var label in objects) {                
+            /* jshint forin: false */
                 this._walkRootObject(visitor, objects, label);
             }
         }
@@ -542,8 +544,9 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
     _walkRootObject: {
         value: function (visitor, objects, label) {
             var object = objects[label];
-
+            /* jshint forin: true */
             if ("value" in object) {
+            /* jshint forin: false */
                 this._walkObject(visitor, object, "value", label);
             } else {
                 this._walkCustomObject(visitor, objects, label);
@@ -612,7 +615,9 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
                 visitor(value);
                 parentObject[key] = object = value.data;
 
+                /* jshint forin: true */
                 for (var prop in object) {
+                /* jshint forin: false */
                     this._walkObject(visitor, object, prop, null, value);
                 }
             }
@@ -669,7 +674,9 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
             visitor(value);
             parentObject.bindings = object = value.data;
 
+            /* jshint forin: true */
             for (var key in object) {
+            /* jshint forin: false */
                 this._walkBinding(visitor, object, key, value);
             }
         }
@@ -742,7 +749,9 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
             visitor(value);
             parentObject.localizations = object = value.data;
 
+            /* jshint forin: true */
             for (var key in object) {
+            /* jshint forin: false */
                 this._walkLocalization(visitor, object, key, value);
             }
         }
@@ -775,7 +784,9 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
             if (typeof object.data === "object") {
                 data = object.data;
 
+                /* jshint forin: true */
                 for (var prop in data) {
+                /* jshint forin: false */
                     this._walkBindingData(visitor, data[prop], value);
                 }
             }

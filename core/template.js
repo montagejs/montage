@@ -53,7 +53,10 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 metadata = this._metadata;
                 if (metadata) {
                     requires = Object.create(null);
+
+                    /* jshint forin: true */
                     for (var label in metadata) {
+                    /* jshint forin: false */
                         requires[label] = metadata[label].require;
                     }
                 }
@@ -487,7 +490,10 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 objectOwner,
                 objectLabel;
 
+            /* jshint forin: true */
             for (var label in objects) {
+            /* jshint forin: false */
+
                 // Don't call delegate methods on objects that were passed to
                 // the instantiation.
                 if (instances && label in instances) {
@@ -995,7 +1001,9 @@ var Template = Montage.specialize( /** @lends Template# */ {
                     // serialization that is created from the stored element ids.
                     collisionTable = this.replaceNode(argumentElement, parameterElement);
                     if (collisionTable) {
+                        /* jshint forin: true */
                         for (var key in collisionTable) {
+                        /* jshint forin: false */
                             argumentElementsCollisionTable[key] = collisionTable[key];
                         }
                     }   
