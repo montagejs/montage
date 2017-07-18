@@ -65,14 +65,7 @@
         }
     },
     "blueprint_parent": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "Component",
-                "blueprintModuleId": "ui/component.meta",
-                "prototypeName": "Component"
-            }
-        }
+        "object": "ui/component.meta"
     },
     "root": {
         "prototype": "core/meta/blueprint",

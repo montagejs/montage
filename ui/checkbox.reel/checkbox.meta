@@ -10,16 +10,7 @@
         }
     },
     "blueprint_parent": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "Control",
-                "prototypeName": "Control",
-                "blueprintModule": {
-                    "%": "ui/control.meta"
-                }
-            }
-        }
+        "object": "ui/control.meta"
     },
     "root": {
         "prototype": "core/meta/module-blueprint",

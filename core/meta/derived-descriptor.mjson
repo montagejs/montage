@@ -48,16 +48,7 @@
         }
     },
     "property_descriptor_reference": {
-        "prototype": "core/meta/object-descriptor-reference",
-        "values": {
-            "valueReference": {
-                "objectDescriptorName": "PropertyDescriptor",
-                "prototypeName": "PropertyDescriptor",
-                "objectDescriptorModule": {
-                    "%": "core/meta/property-descriptor.mjson"
-                }
-            }
-        }
+        "object": "core/meta/property-descriptor.mjson"
     },
     "root": {
         "prototype": "core/meta/module-object-descriptor",

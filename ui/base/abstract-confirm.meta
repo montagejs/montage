@@ -16,16 +16,7 @@
         }
     },
     "blueprint_parent": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "AbstractAlert",
-                "prototypeName": "AbstractAlert",
-                "blueprintModule": {
-                    "%": "ui/base/abstract-alert.meta"
-                }
-            }
-        }
+        "object": "ui/base/abstract-alert.meta"
     },
     "root": {
         "prototype": "core/meta/module-blueprint",

@@ -11,16 +11,7 @@
         }
     },
     "number_converter_blueprint_reference": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "NumberConverter",
-                "prototypeName": "NumberConverter",
-                "blueprintModule": {
-                    "%": "core/converter/number-converter.meta"
-                }
-            }
-        }
+        "object": "core/converter/number-converter.meta"
     },
     "currencyConverter_showCurrencyBeforeNumber": {
         "prototype": "core/meta/property-blueprint",
