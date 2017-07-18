@@ -583,6 +583,8 @@ var mparser = (function() {
                 return result0;
             }
 
+            var charPattern = "[^{}\\\\\\0-   \\n\\r]", // jshint ignore:line
+                charPatternMatch = new RegExp("/" + charPattern + "/");
             function parse_char() {
                 var cacheKey = 'char@' + pos;
                 var cachedResult = cache[cacheKey];
@@ -594,13 +596,13 @@ var mparser = (function() {
 
                 var savedPos5 = pos;
                 var result19;
-                if (input.substr(pos).match(/^[^{}\\\0-   \n\r]/) !== null) {
+                if (input.substr(pos).match(charPatternMatch) !== null) {
                     result19 = input.charAt(pos);
                     pos++;
                 } else {
                     result19 = null;
                     if (reportMatchFailures) {
-                        matchFailed("[^{}\\\\\\0-   \\n\\r]");
+                        matchFailed(charPattern);
                     }
                 }
 
@@ -1831,7 +1833,7 @@ MessageFormat.prototype.precompile = function(ast) {
         // Set some default data
         data = data || {};
         var s = '',
-            i, tmp, lastkeyname;
+            res, i, tmp, lastkeyname;
 
         switch (ast.type) {
             case 'program':
@@ -1896,12 +1898,9 @@ MessageFormat.prototype.precompile = function(ast) {
                     } else {
                         tmp = 1;
                     }
-                    s += '"' + ast.pluralForms[i].key + '" : ' + interpMFP(ast.pluralForms[i].val,
-                        (function() {
-                            var res = JSON.parse(JSON.stringify(data));
-                            res.pf_count++;
-                            return res;
-                        })());
+                    res = JSON.parse(JSON.stringify(data));
+                    res.pf_count++;
+                    s += '"' + ast.pluralForms[i].key + '" : ' + interpMFP(ast.pluralForms[i].val, res);
                 }
                 s += '\n};\n';
                 if (needOther) {
@@ -1924,13 +1923,9 @@ MessageFormat.prototype.precompile = function(ast) {
                     } else {
                         tmp = 1;
                     }
-                    s += '"' + ast.pluralForms[i].key + '" : ' + interpMFP(ast.pluralForms[i].val,
-                        (function() {
-                            var res = JSON.parse(JSON.stringify(data));
-                            res.pf_count++;
-                            return res;
-                        })()
-                    );
+                    res = JSON.parse(JSON.stringify(data));
+                    res.pf_count++;
+                    s += '"' + ast.pluralForms[i].key + '" : ' + interpMFP(ast.pluralForms[i].val, res);
                 }
                 s += '\n};\n';
                 if (needOther) {

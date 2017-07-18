@@ -853,7 +853,7 @@ var SerializationExtractor = Montage.specialize( /** @lends SerializationExtract
             for (i = 0, label; (label = labels[i]); i++) {
                 objects[label] = serializationObject[label];
 
-                inspector.visitSerializationObject(label, function (node) {
+                inspector.visitSerializationObject(label, function (node) { // jshint ignore:line
                     var label;
 
                     if (node.type === "reference") {

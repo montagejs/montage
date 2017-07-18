@@ -152,7 +152,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             // level of debugging in the serialization.
             if (value.debugger) {
                 console.log("enable debugger statement here");
-                debugger;
+                debugger; // jshint ignore:line
             }
 
             if ("value" in value) {
