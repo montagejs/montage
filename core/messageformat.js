@@ -109,6 +109,7 @@ var mparser = (function() {
             var rightmostMatchFailuresPos = 0;
             var rightmostMatchFailuresExpected = [];
             var cache = {};
+            var parse_elementFormat;
 
             function padLeft(input, padding, length) {
                 var result = input;
@@ -1429,7 +1430,7 @@ var mparser = (function() {
                 return result0;
             }
 
-            function parse_elementFormat() {
+            parse_elementFormat = function () {
                 var cacheKey = 'elementFormat@' + pos;
                 var cachedResult = cache[cacheKey];
                 if (cachedResult) {
@@ -1617,7 +1618,7 @@ var mparser = (function() {
                     result: result0
                 };
                 return result0;
-            }
+            };
 
             function parse_start() {
                 var cacheKey = 'start@' + pos;
@@ -1953,12 +1954,14 @@ MessageFormat.prototype.precompile = function(ast) {
 };
 
 MessageFormat.prototype.compile = function(message) {
+    /* jshint evil: true */
     return new Function('MessageFormat',
         'return ' +
         this.precompile(
             this.parse(message)
         )
     )(MessageFormat);
+    /* jshint evil: false */
 };
 
 module.exports = MessageFormat;

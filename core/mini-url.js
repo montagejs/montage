@@ -44,15 +44,19 @@ var protocolPattern = /^([a-z0-9.+-]+:)/i,
     hostnamePartPattern = /^[+a-z0-9A-Z_-]{0,63}$/,
     hostnamePartStart = /^([+a-z0-9A-Z_-]{0,63})(.*)$/,
     // protocols that can allow "unsafe" and "unwise" chars.
+    /* jshint scripturl: true */
     unsafeProtocol = {
         'javascript': true,
         'javascript:': true
     },
+    /* jshint scripturl: false */
     // protocols that never have a hostname.
+     /* jshint scripturl: true */
     hostlessProtocol = {
         'javascript': true,
         'javascript:': true
     },
+    /* jshint scripturl: false */
     // protocols that always contain a // bit.
     slashedProtocol = {
         'http': true,
