@@ -583,7 +583,7 @@ var mparser = (function() {
                 return result0;
             }
 
-            var charPattern = "[^{}\\\\\\0-   \\n\\r]", // jshint ignore:line
+            var charPattern = "^[^{}\\\0-     \n\r]", // jshint ignore:line
                 charPatternMatch = new RegExp("/" + charPattern + "/");
             function parse_char() {
                 var cacheKey = 'char@' + pos;
@@ -596,7 +596,7 @@ var mparser = (function() {
 
                 var savedPos5 = pos;
                 var result19;
-                if (input.substr(pos).match(charPatternMatch) !== null) {
+                if (input.substr(pos).match(charPattern) !== null) {
                     result19 = input.charAt(pos);
                     pos++;
                 } else {
