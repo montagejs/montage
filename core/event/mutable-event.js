@@ -41,25 +41,26 @@ if (typeof window !== "undefined") {
         _initPrototypeWithEvent: {
             value: function (event) {
                 var key, proto = this.__proto__ || Object.getPrototypeOf(this);
+
+                /* jshint forin: true */
                 for (key in event) {
-                    if (event.hasOwnProperty(key)) {
+                /* jshint forin: false */
 
-                        //  Don't overwrite keys we have installed
-                        if (key in this || Object.getOwnPropertyDescriptor(proto, key)) {
-                            continue;
-                        }
-
-                        // Skip methods, the ones we care about have been wrapped
-                        // already.
-                        // TODO actually wrap all known functions generically
-                        //if (typeof this[key] === "function") {
-                        // continue;
-                        //}
-
-                        // TODO ok, maybe it would be quicker to not make this a
-                        // function, but I really hate duplicated code.
-                        wrapProperty(this, key);   
+                    //  Don't overwrite keys we have installed
+                    if (key in this || Object.getOwnPropertyDescriptor(proto,key)) {
+                        continue;
                     }
+
+                    // Skip methods, the ones we care about have been wrapped
+                    // already.
+                    // TODO actually wrap all known functions generically
+                    //if (typeof this[key] === "function") {
+                    // continue;
+                    //}
+
+                    // TODO ok, maybe it would be quicker to not make this a
+                    // function, but I really hate duplicated code.
+                    wrapProperty(this, key);
                 }
 
                 wrapProperty(this, "replayed");
