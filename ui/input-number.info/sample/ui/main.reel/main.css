@@ -6,7 +6,7 @@ html, body, .Main {
     font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
 }
 
-.Main, .number-fields {
+.Main, .input-numbers {
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -23,6 +23,6 @@ header {
 }
 
 
-.number-field {
+.input-number {
     margin-top: 40px;
 }

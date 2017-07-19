@@ -1,5 +1,5 @@
 /**
-    @module "montage/ui/native/input-number.reel"
+    @module "montage/ui/input-number.reel"
     @requires montage/ui/component
     @requires montage/ui/text-input
 */
@@ -8,14 +8,16 @@ var TextInput = require("ui/text-input").TextInput;
 
 /**
  * Wraps the a &lt;input type="date"> element with binding support for the element's standard attributes.
-   @class module:"montage/ui/native/input-number.reel".InputNumber
+   @class module:"montage/ui/input-number.reel".InputNumber
    @extends module:montage/ui/text-input.TextInput
  */
-var NumberField = exports.NumberField = TextInput.specialize({
-	hasTemplate: {value: false }
+var InputNumber = exports.InputNumber = TextInput.specialize({
+
+    hasTemplate: {value: false }
+
 });
 
-NumberField.addAttributes(/** @lends module:"montage/ui/native/input-number.reel".InputNumber */{
+InputNumber.addAttributes(/** @lends module:"montage/ui/input-number.reel".InputNumber */{
 
 /**
 	The maximum value displayed but the number control.

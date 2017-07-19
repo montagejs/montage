@@ -1,17 +1,17 @@
 /**
-    @module "montage/ui/native/input-text.reel"
+    @module "montage/ui/input-text.reel"
 */
 var TextInput = require("ui/text-input").TextInput,
     KeyComposer = require("../../composer/key-composer").KeyComposer;
 /**
  * Wraps the a &lt;input type="text"> element with binding support for the element's standard attributes.
-   @class module:"montage/ui/native/input-text.reel".InputText
+   @class module:"montage/ui/input-text.reel".InputText
    @extends module:montage/ui/text-input.TextInput
 
  */
-exports.TextField = TextInput.specialize({
+exports.InputText = TextInput.specialize({
     constructor: {
-        value: function TextField() {
+        value: function InputText() {
             TextInput.constructor.call(this); // super
 
             this._keyComposer = new KeyComposer();

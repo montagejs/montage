@@ -6,7 +6,7 @@ html, body, .Main {
     font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
 }
 
-.Main, .text-fields {
+.Main, .input-texts {
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -23,6 +23,6 @@ header {
 }
 
 
-.text-field {
+.input-text {
     margin-top: 40px;
 }

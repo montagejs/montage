@@ -1,5 +1,5 @@
 {
-    "blueprint_textfield_updateOnInput": {
+    "blueprint_inputText_updateOnInput": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
             "name": "updateOnInput",
@@ -40,23 +40,23 @@
     "root": {
         "prototype": "core/meta/module-blueprint",
         "properties": {
-            "name": "text-field",
+            "name": "input-text",
             "customPrototype": false,
             "parent": {
                 "@": "blueprint_control_reference"
             },
             "propertyDescriptors": [
                 {
-                    "@": "blueprint_textfield_updateOnInput"
+                    "@": "blueprint_inputText_updateOnInput"
                 },
                 {
                     "@": "maxlength_property"
                 }
             ],
             "propertyDescriptorGroups": {
-                "text-field": [
+                "input-text": [
                     {
-                        "@": "blueprint_textfield_updateOnInput"
+                        "@": "blueprint_inputText_updateOnInput"
                     },
                     {
                         "@": "maxlength_property"
@@ -65,11 +65,11 @@
             },
             "propertyValidationRules": {},
             "blueprintModule": {
-                "%": "ui/text-field.reel/text-field.meta"
+                "%": "ui/input-text.reel/input-text.meta"
             },
-            "exportName": "TextField",
+            "exportName": "InputText",
             "module": {
-                "%": "ui/text-field.reel"
+                "%": "ui/input-text.reel"
             }
         }
     }
