@@ -174,6 +174,12 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 if (this.getTypeOf(value.value) === "Element") {
                     if (!Promise.is(revivedValue)) {
                         var montageObjectDesc = this.reviveObjectLiteral(value, context);
+                        context.setBindingsToDeserialize(revivedValue, montageObjectDesc);
+                        this.deserializeMontageObjectValues(
+                            revivedValue,
+                            montageObjectDesc.values || montageObjectDesc.properties, //deprecated
+                            context
+                        );
                         context.setUnitsToDeserialize(revivedValue, montageObjectDesc, MontageReviver._unitNames);
                     }
                 }
