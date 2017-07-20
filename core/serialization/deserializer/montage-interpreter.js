@@ -10,13 +10,12 @@ var MontageInterpreter = Montage.specialize({
     _reviver: {value: null},
 
     init: {
-        value: function (_require, objectRequires) {
+        value: function (_require, reviver) {
             if (typeof _require !== "function") {
                 throw new Error("Function 'require' missing.");
             }
 
-            this._reviver = new MontageReviver()
-                .init(_require, objectRequires);
+            this._reviver = reviver;
             this._require = _require;
 
             return this;

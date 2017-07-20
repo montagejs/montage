@@ -1,6 +1,7 @@
 var Montage = require("../../core").Montage,
     MontageInterpreter = require("./montage-interpreter").MontageInterpreter,
     MontageReviver = require("./montage-reviver").MontageReviver,
+    Map = require("collections/map").Map,
     deprecate = require("../../deprecate");
 
 var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
@@ -26,18 +27,23 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
     },
 
     init: {
-        value: function (serializationString, _require, objectRequires) {
+        value: function (serializationString, _require, objectRequires, locationId, deserializedModules) {
             this._serializationString = serializationString;
-            this._interpreter = new MontageInterpreter().init(_require, objectRequires);
+            deserializedModules = deserializedModules || new Map();
+            this._interpreter = new MontageInterpreter().init(_require,
+                new MontageReviver().init(_require, objectRequires, locationId, deserializedModules));
 
             return this;
         }
     },
 
     initWithObject: {
-        value: function (serialization, _require, objectRequires) {
+        value: function (serialization, _require, objectRequires, locationId, deserializedModules) {
             this._serializationString = JSON.stringify(serialization);
-            this._interpreter = new MontageInterpreter().init(_require, objectRequires);
+            deserializedModules = deserializedModules || new Map();
+            this._interpreter = new MontageInterpreter().init(_require,
+                new MontageReviver().init(_require, objectRequires, locationId, deserializedModules));
+
             return this;
         }
     },
