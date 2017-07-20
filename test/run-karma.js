@@ -6,9 +6,6 @@ var globalEval = eval,
     global = globalEval('this');
 /*jshint evil:false */
 
-
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
-
 // Bootsrap Karma
 if (global.__karma__) {
     
@@ -24,6 +21,8 @@ if (global.__karma__) {
     // Init
     var jasmine = jasmineRequire.core(jasmineRequire);
     var jasmineEnv = jasmine.getEnv();
+
+    jasmineEnv.DEFAULT_TIMEOUT_INTERVAL = 30000;
 
     // Export interface
     var jasmineInterface = jasmineRequire.interface(jasmine, jasmineEnv);
