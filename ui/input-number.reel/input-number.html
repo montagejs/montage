@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <!-- <link rel="stylesheet" type="text/css" href="input-number.css"> -->
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "properties": {
+                    "element": {"#": "inputNumber"},
+                    "_InputNumberInputComponent": {"@": "inputText"},
+                    "_InputNumberMinusComponent": {"@": "minus"},
+                    "_InputNumberPlusComponent": {"@": "plus"}
+                }
+            },
+
+            "inputText": {
+                "prototype": "ui/input-text.reel",
+                "properties": {
+                    "element": {"#": "inputText"}
+                },
+                "bindings" : {
+                    "value": {"<->": "@owner.value"}
+                }
+            },
+
+            "plus": {
+                "prototype": "ui/button.reel",
+                "properties": {
+                    "element": {"#": "buttonPlus"},
+                    "value": "+"
+                }
+            },
+
+            "minus": {
+                "prototype": "ui/button.reel",
+                "properties": {
+                    "element": {"#": "buttonMinus"},
+                    "value": "-"
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="inputNumber" class="montage-InputNumber">
+        <button data-montage-id="buttonMinus" class="InputNumber-minus" tabindex="-1">&minus;</button>
+        <input data-montage-id="inputText"></input>
+        <button data-montage-id="buttonPlus" class="InputNumber-plus" tabindex="-1">+</button>
+    </div>
+</body>
+</html>

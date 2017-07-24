@@ -30,9 +30,9 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
         }
     },
 
-    _hasStandardElement: {
-        value: true
-    },
+    // _hasStandardElement: {
+    //     value: true
+    // },
 
     /**
         Hard to imagine a text-input that is not using a input nor textarea
