@@ -1,4 +1,4 @@
-/*global Window,Document,Element,Event,Components,Touch */
+/*global Window,Document,Element,Event,Components,Touch, defaultEventManager */
 
 /**
  * @author Lea Verou
@@ -20,8 +20,7 @@ var Montage = require("../core").Montage,
     Deserializer = require("../serialization/deserializer/montage-deserializer").MontageDeserializer,
     Map = require("collections/map"),
     WeakMap = require("collections/weak-map"),
-    currentEnvironment = require("../environment").currentEnvironment,
-    defaultEventManager;
+    currentEnvironment = require("../environment").currentEnvironment;
 
 // XXX Does not presently function server-side
 if (typeof window !== "undefined") { // client-side
@@ -526,11 +525,11 @@ if (typeof window !== "undefined") { // client-side
             value: function (aWindow) {
 
                 if (aWindow.defaultEventManager && aWindow.defaultEventManager !== this) {
-                    throw "EventManager cannot register a window already registered to another EventManager";
+                    throw Error("EventManager cannot register a window already registered to another EventManager");
                 }
 
                 if (this._registeredWindows && this._registeredWindows.indexOf(aWindow) >= 0) {
-                    throw "EventManager cannot register a window more than once";
+                    throw new Error("EventManager cannot register a window more than once");
                 }
 
                 if (!this._registeredWindows) {
@@ -2908,6 +2907,17 @@ if (typeof window !== "undefined") { // client-side
             }
         }
 
+    });
+
+
+    Object.defineProperty(exports, "defaultEventManager", {
+        get: function () {
+            if (typeof defaultEventManager === "undefined") {
+                defaultEventManager = new EventManager().initWithWindow(window);
+            }
+
+            return defaultEventManager;
+        }
     });
 
 } // client-side
