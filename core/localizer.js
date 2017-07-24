@@ -43,6 +43,8 @@ var EMPTY_STRING_FUNCTION = function () { return ""; };
 // http://tools.ietf.org/html/rfc5646, but it's good enough for our purposes.
 var reLanguageTagValidator = /^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/;
 
+var defaultLocalizer;
+
 /**
  * @class Localizer
  * @extends Montage
@@ -164,8 +166,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
         },
         set: function (value) {
             if (this._messages !== value) {
-                // != ok checking for undefined as well
-                if (value != null && typeof value !== "object") {
+                if (value !== undefined && value !== null && typeof value !== "object") {
                     throw new TypeError(value, " is not an object");
                 }
 
@@ -249,11 +250,15 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                 return this._availableLocales;
             }
 
-            return this._availableLocales = this.callDelegateMethod("localizerWillPromiseAvailableLocales", this) ||
+            this._availableLocales = this.callDelegateMethod("localizerWillPromiseAvailableLocales", this);
 
-                this._manifest.get("files").get(LOCALES_DIRECTORY).get("files").then(function (locales) {
+            if (!this._availableLocales) {
+                this._availableLocales = this._manifest.get("files").get(LOCALES_DIRECTORY).get("files").then(function (locales) {
                     return Object.keys(locales);
                 });
+            }
+
+            return this._availableLocales;
         }
     },
 
@@ -299,11 +304,10 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
             var messageRequire = this.require;
 
             if (messageRequire.packageDescription.manifest === true) {
-                if (this.__manifest) {
-                    return this.__manifest;
-                } else {
-                    return this.__manifest = messageRequire.async(MANIFEST_FILENAME);
+                if (!this.__manifest) {
+                    this.__manifest = messageRequire.async(MANIFEST_FILENAME);
                 }
+                return this.__manifest;
             } else {
                 return Promise.reject(new Error(
                     "Package has no manifest. " + messageRequire.location +
@@ -356,13 +360,11 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                 });
             }
 
-            return this.messagesPromise = promise.then(function (localesMessages) {
+            this.messagesPromise = promise.then(function (localesMessages) {
                 return self._collapseMessages(localesMessages);
-
             },function(error) {
                 console.error("Could not load messages for '" + self.locale + "': " + error);
                 throw error;
-
             }).then(function (messages) {
                 if (typeof callback === "function") {
                     callback(messages);
@@ -370,6 +372,8 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
 
                 return messages;
             });
+
+            return this.messagesPromise;
         }
     },
 
@@ -462,11 +466,13 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
 
             // Go through each set of messages, adding any keys that haven't
             // already been set
-            for (var i = 0, len = localesMessages.length; i < len; i++) {
+            for (var i = 0, l = localesMessages.length; i < l; i++) {
                 var localeMessages = localesMessages[i];
                 for (var key in localeMessages) {
-                    if (!(key in messages)) {
-                        messages[key] = localeMessages[key];
+                    if (localeMessages.hasOwnProperty(key)) {
+                        if (!(key in messages)) {
+                            messages[key] = localeMessages[key];
+                        }
                     }
                 }
             }
@@ -542,7 +548,9 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                 compiled = function () { return message; };
                 compiled.toString = compiled;
             } else {
+                /* jshint evil:true */
                 compiled = (new Function('MessageFormat', 'return ' + this.messageFormat.precompile(ast))(MessageFormat));
+                /* jshint evil:false */
             }
 
             this._compiledMessageCache[message] = compiled;
@@ -736,7 +744,6 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
  *
  * "montage_locale" (LOCALE_STORAGE_KEY).
  */
-var defaultLocalizer;
 
 Object.defineProperty(exports, "defaultLocalizer", {
     get: function () {
@@ -793,9 +800,17 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
      */
     init: {
         value: function (key, defaultMessage, data) {
-            if (key) this.key = key;
-            if (defaultMessage) this.defaultMessage = defaultMessage;
-            if (data) this.data = data;
+            if (key) {
+                this.key = key;
+            }
+
+            if (defaultMessage) {
+                this.defaultMessage = defaultMessage;
+            }
+
+            if (data) {
+                this.data = data;
+            }
 
             return this;
         }
@@ -814,7 +829,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
             return this._localizer;
         },
         set: function (value) {
-            if (this._localizer == value) {
+            if (this._localizer === value) {
                 return;
             }
             this._localizer = value;
@@ -877,7 +892,9 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
 
     _localize: {
         value: function () {
-            if (this._isLocalizeQueued) return;
+            if (this._isLocalizeQueued) {
+                return;
+            }
             this._isLocalizeQueued = true;
 
             var self = this;
@@ -961,7 +978,9 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                 }
 
                 for (var d in data) {
-                    this.data.set(d, data[d]);
+                    if (data.hasOwnProperty(d)) {
+                        this.data.set(d, data[d]);
+                    }
                 }
 
                 this._data.addMapChangeListener(this, "data");
@@ -1005,7 +1024,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
 
             // TODO: Remove when possible to bind to promises
             value.then(function (message) {
-                return self.__localizedResolved = message;
+                return (self.__localizedResolved = message);
             });
 
             this._localizedDeferred = value;
@@ -1093,7 +1112,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                 if (data.hasOwnProperty(p) &&
                     (!dataBindings || !dataBindings[".get('"+ p + "')"])
                 ) {
-                    if (!result.data) result.data = {};
+                    result.data = result.data || {};
                     result.data[p] = data[p];
                 }
             }
@@ -1103,12 +1122,12 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
 
             // Loop through bindings seperately in case the bound properties
             // haven't been set on the data object yet.
-            while (b = mapIter.next().value) {
+            while ((b = mapIter.next().value)) {
                 // binding is in the form of "get('key')" because it's a map
                 // but we want to serialize into an object literal instead.
                 key = /\.get\('([^']+)'\)/.exec(b)[1];
 
-                if (!result.data) result.data = {};
+                result.data = result.data || {};
                 result.data[key] = {};
                 this._serializeBinding(this.data, result.data[key], dataBindings.get(b), serializer);
             }
@@ -1116,12 +1135,12 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
 
             // Loop through bindings seperately in case the bound properties
             // haven't been set on the data object yet.
-            // for (var b in dataBindings) {
+            // for (b in dataBindings) {
             //     // binding is in the form of "get('key')" because it's a map
             //     // but we want to serialize into an object literal instead.
             //     var key = /\.get\('([^']+)'\)/.exec(b)[1];
 
-            //     if (!result.data) result.data = {};
+            //     result.data = result.data || {};
             //     result.data[key] = {};
             //     this._serializeBinding(this.data, result.data[key], dataBindings[b], serializer);
             // }
@@ -1144,10 +1163,12 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                 return;
             }
 
-            var syntax = input.sourceSyntax;
+            var scope,
+                syntax = input.sourceSyntax;
+                
             if (input.source !== object) {
                 var reference = serializer.addObjectReference(input.source);
-                var scope = new Scope({
+                scope = new Scope({
                     type: "component",
                     label: reference["@"]
                 });
@@ -1155,7 +1176,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                 syntax = expand(syntax, scope);
             }
 
-            var scope = new Scope();
+            scope = new Scope();
             scope.components = serializer;
             var sourcePath = stringify(syntax, scope);
 
@@ -1189,16 +1210,18 @@ var createMessageBinding = function (object, prop, key, defaultMessage, data, de
         var d, property, typeOfProperty;
 
         for (d in data) {
-            property = data[d];
-            typeOfProperty = typeof property;
+            if (data.hasOwnProperty(d)) {
+                property = data[d];
+                typeOfProperty = typeof property;
 
-            if (typeOfProperty === "string") {
-                dataMap.set(d, property);
+                if (typeOfProperty === "string") {
+                    dataMap.set(d, property);
 
-            } else if (typeOfProperty === "object") {
-                Bindings.defineBinding(dataMap, ".get('" + d + "')", property, {
-                    components: deserializer
-                });
+                } else if (typeOfProperty === "object") {
+                    Bindings.defineBinding(dataMap, ".get('" + d + "')", property, {
+                        components: deserializer
+                    });
+                }   
             }
         }
 
@@ -1236,13 +1259,15 @@ Serializer.defineSerializationUnit("localizations", function (serializer, object
     if (bindingDescriptors) {
         var result;
         for (var prop in bindingDescriptors) {
-            var desc = bindingDescriptors[prop];
-            if (Message.prototype.isPrototypeOf(desc.source)) {
-                if (!result) {
-                    result = {};
+            if (bindingDescriptors.hasOwnProperty(prop)) {
+                var desc = bindingDescriptors[prop];
+                if (Message.prototype.isPrototypeOf(desc.source)) {
+                    if (!result) {
+                        result = {};
+                    }
+                    var message = desc.source;
+                    result[prop] = message.serializeForLocalizations(serializer);
                 }
-                var message = desc.source;
-                result[prop] = message.serializeForLocalizations(serializer);
             }
         }
         return result;
@@ -1250,22 +1275,27 @@ Serializer.defineSerializationUnit("localizations", function (serializer, object
 });
 
 Deserializer.defineDeserializationUnit("localizations", function (deserializer, object, properties) {
+
+    var desc,
+        key,
+        defaultMessage;
+
     for (var prop in properties) {
-        var desc = properties[prop],
-            key,
-            defaultMessage;
+        if (properties.hasOwnProperty(prop)) {
 
-        if (!(KEY_KEY in desc)) {
-            console.error("localized property '" + prop + "' must contain a key property (" + KEY_KEY + "), in ", properties[prop]);
-            continue;
+            desc = properties[prop];
+            if (!(KEY_KEY in desc)) {
+                console.error("localized property '" + prop + "' must contain a key property (" + KEY_KEY + "), in ", properties[prop]);
+                continue;
+            }
+            if(logger.isDebug && !(DEFAULT_MESSAGE_KEY in desc)) {
+                logger.debug(this, "Warning: localized property '" + prop + "' does not contain a default message property (" + DEFAULT_MESSAGE_KEY + "), in ", object);
+            }
+
+            key = desc[KEY_KEY];
+            defaultMessage = desc[DEFAULT_MESSAGE_KEY];
+
+            createMessageBinding(object, prop, key, defaultMessage, desc.data, deserializer);
         }
-        if(logger.isDebug && !(DEFAULT_MESSAGE_KEY in desc)) {
-            logger.debug(this, "Warning: localized property '" + prop + "' does not contain a default message property (" + DEFAULT_MESSAGE_KEY + "), in ", object);
-        }
-
-        key = desc[KEY_KEY];
-        defaultMessage = desc[DEFAULT_MESSAGE_KEY];
-
-        createMessageBinding(object, prop, key, defaultMessage, desc.data, deserializer);
     }
 });

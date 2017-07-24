@@ -87,8 +87,9 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
             var drawValue;
             if (value === null ||  typeof value === "undefined") {
                 drawValue = "";
+            } else {
+                drawValue = String((value === null || value === undefined ? '' : value));
             }
-            else drawValue = String((value == null ? '' : value));
 
             if (drawValue !== this.element.value) {
                 this.element.value = drawValue;
@@ -124,7 +125,7 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
     didDraw: {
         enumerable: false,
         value: function() {
-            if (this._hasFocus && this._value != null) {
+            if (this._hasFocus && this._value !== null && this._value !== undefined) {
                 var length = this._value.toString().length;
                 this.element.setSelectionRange(length, length);
             }
@@ -151,7 +152,7 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
             }
         }
     },
-/**
+    /**
     Description TODO
     @function
     @param {Event Handler} event TODO
@@ -164,7 +165,7 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
             this._hasFocus = false;
         }
     },
-/**
+    /**
     Description TODO
     @function
     @param {Event Handler} event TODO
@@ -180,7 +181,7 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
 
     placeholderValue: {
         set: function (value) {
-            deprecate.deprecationWarning("placeholderValue", "placeholder")
+            deprecate.deprecationWarning("placeholderValue", "placeholder");
             this.placeholder = value;
         },
         get: function () {

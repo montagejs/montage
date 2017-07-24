@@ -119,8 +119,7 @@ var DraggableSquare = exports.DraggableSquare = Component.specialize(/** @lends 
             this._startPositionY = startPosition.pageY;
 
             this._addEventListeners();
-            console.log(this.identifier, event.type);
-            this.classList.add("active")
+            this.classList.add("active");
         }
     },
 
@@ -133,9 +132,8 @@ var DraggableSquare = exports.DraggableSquare = Component.specialize(/** @lends 
             event.startPositionY = this._startPositionY;
 
             this._isDragging = true;
-            console.log(this.identifier, event.type);
             this.needsDraw = true;
-            this.classList.remove("active")
+            this.classList.remove("active");
         }
     },
 
@@ -144,8 +142,7 @@ var DraggableSquare = exports.DraggableSquare = Component.specialize(/** @lends 
             this._isDragging = false;
 
             this.needsDraw = true;
-            console.log(this.identifier, event.type);
-            this.classList.remove("active")
+            this.classList.remove("active");
         }
     },
 

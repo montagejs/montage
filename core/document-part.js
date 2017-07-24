@@ -41,7 +41,7 @@ var DocumentPart = Montage.specialize({
 
     addChildComponent: {
         value: function (childComponent) {
-            if (this.childComponents.indexOf(childComponent) == -1) {
+            if (this.childComponents.indexOf(childComponent) === -1) {
                 this.childComponents.push(childComponent);
             }
         }

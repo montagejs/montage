@@ -133,7 +133,7 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
                         value = values[i];
 
                         if (value === void 0 && value === null) {
-                            throw new Error("A value of an enumeration cannot be null or undefined")
+                            throw new Error("A value of an enumeration cannot be null or undefined");
                         }
                     }
 
@@ -143,7 +143,6 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
                 }
             }
         }
-    },
-
+    }
 });
 

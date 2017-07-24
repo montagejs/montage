@@ -103,7 +103,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
      */
     windowsSortOrder: {
         get: function () {
-            if (this.parentApplication == null) {
+            if (this.parentApplication === null) {
                 return this._windowsSortOrder;
             } else {
                 return this.mainApplication.windowsSortOrder;
@@ -111,7 +111,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
         },
 
         set: function (value) {
-            if (this.parentApplication == null) {
+            if (this.parentApplication === null) {
                 if (["z-order", "reverse-z-order", "z-order", "reverse-open-order"].indexOf(value) !== -1) {
                     this._windowsSortOrder = value;
                 }
@@ -131,7 +131,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
      */
     windows: {
         get: function () {
-            if (this.parentApplication == null) {
+            if (this.parentApplication === null) {
                 if (!this._windows) {
                     var theWindow = new MontageWindow();
                     theWindow.application = this;
@@ -160,7 +160,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
      */
     window: {
         get: function () {
-            if (!this._window && this == this.mainApplication) {
+            if (!this._window && this === this.mainApplication) {
                 var theWindow = new MontageWindow();
                 theWindow.application = this;
                 theWindow.window = window;
@@ -207,9 +207,9 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             var windows = this.windows,
                 sortOrder = this.windowsSortOrder;
 
-            if (sortOrder == "z-order") {
+            if (sortOrder === "z-order") {
                 return windows[0];
-            } else if (sortOrder == "reverse-z-order") {
+            } else if (sortOrder === "reverse-z-order") {
                 return windows[windows.length - 1];
             } else {
                 for (var i in windows) {
@@ -260,7 +260,8 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
      */
     openWindow: {
         value: function (component, name, parameters) {
-            var thisRef = this,
+
+            var self = this,
                 childWindow = new MontageWindow(),
                 childApplication,
                 event,
@@ -292,13 +293,13 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                     childWindow.component = aComponent;
                     childApplication.window = childWindow;
 
-                    thisRef.attachedWindows.push(childWindow);
+                    self.attachedWindows.push(childWindow);
 
-                    sortOrder = thisRef.mainApplication.windowsSortOrder;
-                    if (sortOrder == "z-order" || sortOrder == "reverse-open-order") {
-                        thisRef.windows.unshift(childWindow);
+                    sortOrder = self.mainApplication.windowsSortOrder;
+                    if (sortOrder === "z-order" || sortOrder === "reverse-open-order") {
+                        self.windows.unshift(childWindow);
                     } else {
-                        thisRef.windows.push(childWindow);
+                        self.windows.push(childWindow);
                     }
 
                     event = document.createEvent("CustomEvent");
@@ -313,8 +314,8 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 var montageWindow = this.window;    // Will cause to create a Montage Window for the mainApplication and install the needed event handlers
             }
 
-            if (typeof parameters == "object") {
-                var param, value, separator = "", stringParamaters = "";
+            var param, value, separator = "", stringParamaters = "";
+            if (typeof parameters === "object") {
 
                 // merge the windowParams with the parameters
                 for (param in parameters) {
@@ -327,9 +328,9 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             // now convert the windowParams into a string
             var excludedParams = ["name"];
             for (param in windowParams) {
-                if (excludedParams.indexOf(param) == -1) {
+                if (excludedParams.indexOf(param) === -1) {
                     value = windowParams[param];
-                    if (typeof value == "boolean") {
+                    if (typeof value === "boolean") {
                         value = value ? "yes" : "no";
                     } else {
                         value = String(value);
@@ -372,7 +373,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 this.attachedWindows.push(montageWindow);
 
                 sortOrder = this.mainApplication.windowsSortOrder;
-                if (sortOrder == "z-order" || sortOrder == "reverse-open-order") {
+                if (sortOrder === "z-order" || sortOrder === "reverse-open-order") {
                     this.windows.unshift(montageWindow);
                 } else {
                     this.windows.push(montageWindow);
@@ -401,7 +402,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             }
             parentApplicaton = montageWindow.application.parentApplication;
 
-            if (parentApplicaton == this) {
+            if (parentApplicaton === this) {
                 index = this.attachedWindows.indexOf(montageWindow);
                 if (index !== -1) {
                     this.attachedWindows.splice(index, 1);
@@ -464,9 +465,8 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 if (hasAlreadyBeenLoaded === null) {
                     try {
                         localStorage.setItem(alreadyLoadedLocalStorageKey, true);
-                    }
-                    catch(error) {
-                        console.log("In private mode you are")
+                    } catch (error) {
+                        //console.log("Browser is in private mode.");
                     }
                 }
 

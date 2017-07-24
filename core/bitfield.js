@@ -46,7 +46,9 @@ var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
             var fieldName;
             this.reset();
             for (fieldName in propertyDescriptor) {
-                this.addField(fieldName, propertyDescriptor[fieldName].value);
+                if (propertyDescriptor.hasOwnProperty(fieldName)) {
+                    this.addField(fieldName, propertyDescriptor[fieldName].value);   
+                }
             }
             return this;
         }
@@ -75,7 +77,13 @@ var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
                     return (this._value === this._trueValue);
                 },
                 set: function (value) {
-                    value ? (this._value |= this._fields[aFieldName]) : (this._value &= ~ (this._fields[aFieldName]));
+
+                    if (value) {
+                        this._value |= this._fields[aFieldName];
+                    } else {
+                        this._value &= ~ (this._fields[aFieldName]);
+                    }
+
                     if (this.value) {
                         this.callDelegateMethod();
                     }
