@@ -19,6 +19,13 @@
             }
         }
 
+        "step": {
+            "prototype": "montage/ui/input-number.reel",
+            "properties": {
+                "element": {"#": "input-with-step"}
+            }
+        }
+
     }
     </script>
 </head>
@@ -28,6 +35,9 @@
 
         <section class="input-numbers">
             <input type="number" data-montage-id="input-number-native" class="input-number native" />
+
+            <!-- Use non-standard element to get step controls -->
+            <div data-montage-id="input-with-step" min="0" max="100" step="5"></div>
 
             <!-- @benoit: add a custom one with content editable set to true or the one in digit ?-->
         </section>
