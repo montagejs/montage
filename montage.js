@@ -203,7 +203,9 @@
                     "mini-url": {
                         // Preloaded
                         shim: function (bootRequire, exports) {
-                            return resolveUrl;
+                            return {
+                                resolve: resolveUrl
+                            };
                         }
                     },
                     "promise": {

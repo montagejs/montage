@@ -1,4 +1,4 @@
-/*global Window,Document,Element,Event,Components,Touch, defaultEventManager */
+/*global Window,Document,Element,Event,Components,Touch */
 
 /**
  * @author Lea Verou
@@ -25,6 +25,9 @@ var Montage = require("../core").Montage,
 // XXX Does not presently function server-side
 if (typeof window !== "undefined") { // client-side
 
+
+    var defaultEventManager;
+    
     //This is a quick polyfill for IE10 that is not exposing CustomEvent as a function.
     //From https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
     if ( typeof window.CustomEvent !== "function" ) {
@@ -62,7 +65,6 @@ if (typeof window !== "undefined") { // client-side
             }, true);
         })();
     }
-
 
     var _PointerVelocity = Montage.specialize({
         _identifier: {
