@@ -39,9 +39,18 @@ jasmineEnv.addReporter({
 
 // Execute
 var mrRequire = require('../montage');
+//var mrRequire = require('mr');
 var PATH = require("path");
 
-mrRequire.loadPackage(PATH.join(__dirname, ".")).then(function (mr) {
+mrRequire.loadPackage(PATH.join(__dirname, "."))
+// Preload montage to avoid montage-testing/montage to be loaded
+.then(function (mr) {
+    return mr.async('montage').then(function (montage) {
+         return mr;
+    });
+})
+// Execute
+.then(function (mr) {
     return mr.async("all");
 }).then(function () {
     console.log('Done');
