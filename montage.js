@@ -450,7 +450,7 @@
                 location = params.location,
                 applicationModuleId = params.module || "",
                 applicationLocation = miniURL.resolve(platform.getLocation(), params.package || ".");
-
+                
             // execute the preloading plan and stall the fallback module loader
             // until it has finished
             if (global.preload) {
@@ -488,6 +488,9 @@
             var applicationRequirePromise;
 
             if (!("remoteTrigger" in params)) {
+
+
+                // TODO need test
                 if ("autoPackage" in params) {
                     mrRequire.injectPackageDescription(location, {
                         dependencies: {
@@ -495,15 +498,11 @@
                         }
                     }, config);
                 } else {
+
                     // handle explicit package.json location
                     if (applicationLocation.slice(applicationLocation.length - 5) === ".json") {
                         var packageDescriptionLocation = location;
                         applicationLocation = miniURL.resolve(applicationLocation, ".");
-                        mrRequire.injectPackageDescriptionLocation(
-                            applicationLocation,
-                            packageDescriptionLocation,
-                            config
-                        );
                     }
                 }
                 applicationRequirePromise = mrRequire.loadPackage({
@@ -511,7 +510,9 @@
                     hash: params.applicationHash
                 }, config);
 
+            // TODO need test
             } else {
+
                 // allows the bootstrapping to be remote controlled by the
                 // parent window, with a dynamically generated package
                 // description
@@ -543,6 +544,8 @@
                     window.addEventListener("message", messageCallback);
                 });
 
+                
+                // TODO need test
                 applicationRequirePromise = trigger.spread(function (location, injections) {
                     var promise = mrRequire.loadPackage({
                         location: applicationLocation,
