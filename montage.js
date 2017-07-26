@@ -316,10 +316,8 @@
 
             exports.Require = Require;
 
-            var montageLocation = URL.resolve(config.location, params.montageLocation);
-
-            var location = URL.resolve(config.location, params.package || ".");
-            var applicationHash = params.applicationHash;
+            var applicationLocation = URL.resolve(config.location, params.package || ".");
+            var applicationHash = params.applicationHash || "";
 
             if (typeof global.BUNDLE === "object") {
                 var bundleDefinitions = {};
@@ -369,25 +367,25 @@
 
             if (!("remoteTrigger" in params)) {
                 if ("autoPackage" in params) {
-                    Require.injectPackageDescription(location, {
+                    Require.injectPackageDescription(applicationLocation, {
                         dependencies: {
                             montage: "*"
                         }
                     }, config);
                 } else {
                     // handle explicit package.json location
-                    if (location.slice(location.length - 5) === ".json") {
-                        var packageDescriptionLocation = location;
-                        location = URL.resolve(location, ".");
+                    if (applicationLocation.slice(applicationLocation.length - 5) === ".json") {
+                        var packageDescriptionLocation = applicationLocation;
+                        applicationLocation = URL.resolve(applicationLocation, ".");
                         Require.injectPackageDescriptionLocation(
-                            location,
+                            applicationLocation,
                             packageDescriptionLocation,
                             config
                         );
                     }
                 }
                 applicationRequirePromise = Require.loadPackage({
-                    location: location,
+                    location: applicationLocation,
                     hash: applicationHash
                 }, config);
             } else {
@@ -407,7 +405,7 @@
                             switch (event.data.type) {
                             case "montageInit":
                                 window.removeEventListener("message", messageCallback);
-                                resolve([event.data.location, event.data.injections]);
+                                resolve(event.data);
                                 break;
                             case "isMontageReady":
                                 // allow the injector to query the state in case
@@ -422,14 +420,17 @@
                     window.addEventListener("message", messageCallback);
                 });
 
-                applicationRequirePromise = trigger.spread(function (location, injections) {
-                    var promise = Require.loadPackage({
-                        location: location,
-                        hash: applicationHash
+                applicationRequirePromise = trigger.then(function (packageDescription) {
+                    
+                    var applicationLoader = Require.loadPackage({
+                        location: packageDescription.location,
+                        hash: packageDescription.applicationHash
                     }, config);
-                    if (injections) {
-                        promise = promise.then(function (applicationRequire) {
-                            location = URL.resolve(location, ".");
+
+                    if (packageDescription.injections) {
+                        var injections = packageDescription.injections;
+                        applicationLoader = applicationLoader.then(function (applicationRequire) {
+
                             var packageDescriptions = injections.packageDescriptions,
                                 packageDescriptionLocations = injections.packageDescriptionLocations,
                                 mappings = injections.mappings,
@@ -476,44 +477,26 @@
                         });
                     }
 
-                    return promise;
+                    return applicationLoader;
                 });
             }
 
             applicationRequirePromise.then(function (applicationRequire) {
-                return applicationRequire.loadPackage({
+                var montageLocation = URL.resolve(config.location, params.montageLocation);
+
+                return Require.loadPackage({
                     location: montageLocation,
                     hash: params.montageHash
                 })
                 .then(function (montageRequire) {
-                    // load the promise package so we can inject the bootstrapped
-                    // promise library back into it
-                    var promiseLocation;
-                    if (params.promiseLocation) {
-                        promiseLocation = URL.resolve(Require.getLocation(), params.promiseLocation);
-                    } else {
-                        //promiseLocation = URL.resolve(montageLocation, "packages/mr/packages/q");
-                        //node tools/build --features="core timers call_get" --browser
-                        promiseLocation = URL.resolve(montageLocation, "node_modules/bluebird");
-                    }
 
-                    var result = [
-                        montageRequire,
-                        montageRequire.loadPackage({
-                            location: promiseLocation,
-                            hash: params.promiseHash
-                        })
-                    ];
-
-                    return result;
-                })
-                .spread(function (montageRequire, promiseRequire) {
+                    // Default free module
                     montageRequire.inject("core/mini-url", URL);
                     montageRequire.inject("core/promise", {Promise: Promise});
-                    promiseRequire.inject("bluebird", Promise);
+                    montageRequire.inject("bluebird", Promise);
                     
                     // This prevents bluebird to be loaded twice by mousse's code
-                    promiseRequire.inject("js/browser/bluebird", Promise);
+                    montageRequire.inject("js/browser/bluebird", Promise);
                     
                     // install the linter, which loads on the first error
                     config.lint = function (module) {
@@ -540,11 +523,9 @@
                     var dependencies = [
                         "core/core",
                         "core/event/event-manager",
-                        "core/serialization/deserializer/montage-reviver",
-                        "core/logger"
+                        "core/serialization/deserializer/montage-reviver"
                     ];
 
-                    //var Promise = montageRequire("core/promise").Promise;
                     var deepLoadPromises = [];
 
                     for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {
@@ -559,11 +540,9 @@
                         }
 
                         var Montage = montageRequire("core/core").Montage;
-                        var EventManager = montageRequire("core/event/event-manager").EventManager;
                         var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
                         var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
-                        var logger = montageRequire("core/logger").logger;
-
+                        
                         var application;
 
                         // montageWillLoad is mostly for testing purposes
