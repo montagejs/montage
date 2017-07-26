@@ -216,6 +216,7 @@
 // We build the application inside a function so that we produce only a single
 // global variable. That function will be invoked immediately, and its return
 // value is the JSHINT function itself.
+"use strict";
 
 var JSHINT = (function (setup) {
 
@@ -230,8 +231,7 @@ var JSHINT = (function (setup) {
     return JSHINT;
 
 })(function (JSHINT) {
-    "use strict";
-
+    
     var anonname,       // The guessed name for anonymous functions.
 
         // These are operators that should not be used with the ! operator.
@@ -248,8 +248,8 @@ var JSHINT = (function (setup) {
             '+'  : true,
             '-'  : true,
             '*'  : true,
-            '/'  : true,
-            '%'  : true
+            '/'  : true, // jshint ignore:line
+            '%'  : true 
         },
 
         // These are the JSHint boolean options.
@@ -413,7 +413,7 @@ var JSHINT = (function (setup) {
             '\f': '\\f',
             '\r': '\\r',
             '"' : '\\"',
-            '/' : '\\/',
+            '/' : '\\/', // jshint ignore:line
             '\\': '\\\\'
         },
 
@@ -589,7 +589,7 @@ var JSHINT = (function (setup) {
             'eval'              : false,
             EvalError           : false,
             Function            : false,
-            hasOwnProperty      : false,
+            hasOwnProperty      : false, // jshint ignore:line
             isFinite            : false,
             isNaN               : false,
             JSON                : false,
@@ -981,7 +981,7 @@ var JSHINT = (function (setup) {
 
                 // If the first line is a shebang (#!), make it a blank and move on.
                 // Shebangs are used by Node scripts.
-                if (lines[0] && lines[0].substr(0, 2) == '#!') {
+                if (lines[0] && lines[0].substr(0, 2) === '#!') {
                     lines[0] = '';
                 }
 
@@ -1745,9 +1745,9 @@ var JSHINT = (function (setup) {
                 }
             }
             while (rbp < nexttoken.lbp) {
-                isArray = token.value == 'Array';
+                isArray = token.value === 'Array';
                 advance();
-                if (isArray && token.id == '(' && nexttoken.id == ')') {
+                if (isArray && token.id === '(' && nexttoken.id === ')') {
                     warning("Use the array literal notation [].", token);
                 }
                 if (token.led) {
@@ -2099,7 +2099,7 @@ var JSHINT = (function (setup) {
                 // `undefined` as a function param is a common pattern to protect
                 // against the case when somebody does `undefined = true` and
                 // help with minification. More info: https://gist.github.com/315916
-                if (!fnparam || token.value != 'undefined') {
+                if (!fnparam || token.value !== 'undefined') {
                     warning("Expected an identifier and instead saw '{a}' (a reserved word).",
                         token, token.id);
                 }
@@ -2194,7 +2194,7 @@ var JSHINT = (function (setup) {
                 warning("Do not use 'new' for side effects.");
             }
             if (nexttoken.id !== ';') {
-                if (!option.asi && !(option.lastsemic && nexttoken.id == '}' && nexttoken.line == token.line)) {
+                if (!option.asi && !(option.lastsemic && nexttoken.id === '}' && nexttoken.line === token.line)) {
                     warningAt("Missing semicolon.", token.line, token.from + token.value.length);
                 }
             } else {
@@ -2390,7 +2390,7 @@ var JSHINT = (function (setup) {
                 // inside of typeof or delete.
 
             } else if (funct['(global)']) {
-                if (anonname != 'typeof' && anonname != 'delete' &&
+                if (anonname !== 'typeof' && anonname !== 'delete' &&
                     option.undef && typeof predefined[v] !== 'boolean') {
                     warning("'{a}' is not defined.", token, v);
                 }
@@ -2428,7 +2428,7 @@ var JSHINT = (function (setup) {
                             // Operators typeof and delete do not raise runtime errors even if the base object of
                             // a reference is null so no need to display warning if we're inside of typeof or delete.
 
-                            if (anonname != 'typeof' && anonname != 'delete' && option.undef) {
+                            if (anonname !== 'typeof' && anonname !== 'delete' && option.undef) {
                                 warning("'{a}' is not defined.", token, v);
                             } else {
                                 funct[v] = true;
@@ -2542,7 +2542,7 @@ var JSHINT = (function (setup) {
     bitwise('&', 'bitand', 90);
     relation('==', function (left, right) {
         var eqnull = option.eqnull &&
-            (left.value == 'null' || right.value == 'null');
+            (left.value === 'null' || right.value === 'null');
 
         if (!eqnull && option.eqeqeq) {
             warning("Expected '{a}' and instead saw '{b}'.",
@@ -3939,7 +3939,6 @@ if (typeof exports === "object") {
 
 if (typeof bootstrap !== "undefined") {
     bootstrap("core/jshint", function (require, exports) {
-        "use strict";
         exports.JSHINT = JSHINT;
     });
 }
