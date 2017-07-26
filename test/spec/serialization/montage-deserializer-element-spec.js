@@ -72,6 +72,32 @@ describe("serialization/montage-deserializer-element-spec", function () {
                 done();
             });
         });
+
+        it("should deserialize an element reference and set its values/bindings", function (done) {
+            var serialization = {
+                "rootEl": {
+                    "value": { "#": "id" },
+                    "values": {
+                        "foo": 42,
+                        "bar": {
+                            "<-": "@rootEl.foo + 58"
+                        }
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+
+            rootEl.innerHTML = '<div data-montage-id="id">content</div>';
+            deserializer.init(serializationString, require);
+
+            deserializer.deserialize(null, rootEl).then(function (objects) {
+                expect(objects.rootEl instanceof Element).toBe(true);
+                expect(objects.rootEl.foo).toBe(42);
+                expect(objects.rootEl.bar).toBe(100);
+            }).finally(function () {
+                done();
+            });
+        });
     });
 
     xdescribe("Object Element Deserialization", function () {

@@ -46,7 +46,8 @@ function deletePage(page) {
 
 describe("spec/reel/template-spec", function () {
     var template,
-        baseURI = baseURI || window.location.href;
+        base = document.querySelector("head > base"),
+        baseURI = base ? base.href :  window.location;
 
     beforeEach(function () {
         template = new Template();
@@ -1669,7 +1670,7 @@ describe("spec/reel/template-spec", function () {
 
                 // Make sure the binding from rightSide to leftSide was
                 // changed to the new label.
-                expect(rightSide.bindings.value["<-"])
+                expect(rightSide.values.value["<-"])
                     .toBe("@" + labelsCollisions.leftSide + ".value");
             }).finally(function () {
                 done();
@@ -1702,7 +1703,8 @@ describe("spec/reel/template-spec", function () {
                 serialization = parametersTemplate.getSerialization();
                 serializationObject = serialization.getSerializationObject();
 
-                expect(serializationObject.iterationItem.bindings).toEqual({
+                expect(serializationObject.iterationItem.values).toEqual({
+                    "element": {"#": "iterationItem"},
                     "value": {"<-": "@repetition:iteration"}
                 });
             }).finally(function () {
@@ -1736,7 +1738,8 @@ describe("spec/reel/template-spec", function () {
                 serialization = parametersTemplate.getSerialization();
                 serializationObject = serialization.getSerializationObject();
 
-                expect(serializationObject.iterationItem.bindings).toEqual({
+                expect(serializationObject.iterationItem.values).toEqual({
+                    "element": {"#": "iterationItem"},
                     "value": {"<-": "@list:iteration"}
                 });
             }).finally(function () {
@@ -1771,7 +1774,8 @@ describe("spec/reel/template-spec", function () {
                 serialization = parametersTemplate.getSerialization();
                 serializationObject = serialization.getSerializationObject();
 
-                expect(serializationObject.iterationItem.bindings).toEqual({
+                expect(serializationObject.iterationItem.values).toEqual({
+                    "element": {"#": "iterationItem"},
                     "value": {"<-": "@" + templatePropertyAlias}
                 });
             }).finally(function () {
