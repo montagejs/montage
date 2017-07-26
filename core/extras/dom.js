@@ -1,4 +1,4 @@
-/*global Node,Element, */
+/*global Node, Element*/
 
 /**
  * @module montage/core/dom

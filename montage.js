@@ -332,13 +332,11 @@
 
                 var Montage = montageRequire("core/core").Montage;
                 var EventManager = montageRequire("core/event/event-manager").EventManager;
+                var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
                 var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                 var logger = montageRequire("core/logger").logger;
 
-                var defaultEventManager, application;
-
-                // Load the event-manager
-                defaultEventManager = new EventManager().initWithWindow(window);
+                var application;
 
                 // montageWillLoad is mostly for testing purposes
                 if (typeof global.montageWillLoad === "function") {

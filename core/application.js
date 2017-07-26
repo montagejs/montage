@@ -11,6 +11,7 @@
  */
 
 var Target = require("./target").Target,
+    Template = require("./template"),
     MontageWindow = require("../window-loader/montage-window").MontageWindow,
     Slot;
 
@@ -421,7 +422,10 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
 
     constructor: {
         value: function Application() {
-            if (window.loadInfo && !this.parentApplication) {
+            if (
+                typeof window !== "undefined" &&
+                    window.loadInfo && !this.parentApplication
+            ) {
                 this.parentApplication = window.loadInfo.parent.document.application;
             }
         }
@@ -438,20 +442,22 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             // assign to the exports so that it is available in the deserialization of the template
             exports.application = self;
 
-            return require.async("ui/component")
-            .then(function(exports) {
-                rootComponent = exports.__root__;
-                rootComponent.element = document;
+            return require.async("ui/component").then(function(exports) {
 
-                return require("./template").instantiateDocument(window.document, applicationRequire)
-                .then(function (part) {
-                    self.callDelegateMethod("willFinishLoading", self);
-                    rootComponent.needsDraw = true;
-                    if (callback) {
-                        callback(self);
-                    }
-                    return self;
-                });
+                rootComponent = exports.__root__;
+
+                if (typeof document !== "undefined") {
+                    rootComponent.element = document;
+                    return Template.instantiateDocument(document, applicationRequire);
+                }
+
+            }).then(function (part) {
+                self.callDelegateMethod("willFinishLoading", self);
+                rootComponent.needsDraw = true;
+                if (callback) {
+                    callback(self);
+                }
+                return self;
             });
         }
     },
@@ -459,14 +465,19 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     _loadApplicationContext: {
         value: function () {
             if (this._isFirstLoad === null) {
-                var alreadyLoadedLocalStorageKey = this.name + FIRST_LOAD_KEY_SUFFIX,
-                    hasAlreadyBeenLoaded = localStorage.getItem(alreadyLoadedLocalStorageKey);
 
-                if (hasAlreadyBeenLoaded === null) {
-                    try {
-                        localStorage.setItem(alreadyLoadedLocalStorageKey, true);
-                    } catch (error) {
-                        //console.log("Browser is in private mode.");
+                var hasAlreadyBeenLoaded,
+                    alreadyLoadedLocalStorageKey = this.name + FIRST_LOAD_KEY_SUFFIX;
+
+                if (typeof localStorage !== "undefined") {
+                    localStorage.getItem(alreadyLoadedLocalStorageKey);
+                
+                    if (hasAlreadyBeenLoaded === null) {
+                        try {
+                            localStorage.setItem(alreadyLoadedLocalStorageKey, true);
+                        } catch (error) {
+                            //console.log("Browser is in private mode.");
+                        }
                     }
                 }
 
