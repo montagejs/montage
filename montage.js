@@ -316,12 +316,10 @@
             
             var montageLocation = URL.resolve(location, params.montageLocation);
             var applicationLocation = URL.resolve(location, params.package || ".");
-            var applicationHash = params.applicationHash || "";            
-            var mainPackageLocation = montageLocation;
+            var applicationHash = params.applicationHash || "";         
 
             var config = {
-                location: location,
-                mainPackageLocation: mainPackageLocation
+                location: location
             };
 
             if (typeof global.BUNDLE === "object") {
