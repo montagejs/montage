@@ -498,9 +498,8 @@ var Select = exports.Select =  Control.specialize(/** @lends module:"montage/ui/
      */
     handlePressStart: {
         value: function (event) {
-            this.active = true;
-
             if (event.touch) {
+                this.active = true;
                 // Prevent default on touchmove so that if we are inside a scroller,
                 // it scrolls and not the webpage
                 document.addEventListener("touchmove", this, false);
