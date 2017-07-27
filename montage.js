@@ -308,16 +308,21 @@
         // Platform dependent
         platform.bootstrap(function (Require, Promise, URL) {
 
-            var params = platform.getParams();
-            var config = {
-                // This takes <base> into account
-                location: Require.getLocation()
-            };
-
+            // Export Require
             exports.Require = Require;
 
-            var applicationLocation = URL.resolve(config.location, params.package || ".");
-            var applicationHash = params.applicationHash || "";
+            var params = platform.getParams();
+            var location = Require.getLocation();  // This takes <base> into account
+            
+            var montageLocation = URL.resolve(location, params.montageLocation);
+            var applicationLocation = URL.resolve(location, params.package || ".");
+            var applicationHash = params.applicationHash || "";            
+            var mainPackageLocation = montageLocation;
+
+            var config = {
+                location: location,
+                mainPackageLocation: mainPackageLocation
+            };
 
             if (typeof global.BUNDLE === "object") {
                 var bundleDefinitions = {};
@@ -483,8 +488,7 @@
 
             applicationRequirePromise.then(function (applicationRequire) {
                 var montageLocation = URL.resolve(config.location, params.montageLocation);
-
-                return Require.loadPackage({
+                return applicationRequire.loadPackage({
                     location: montageLocation,
                     hash: params.montageHash
                 })
