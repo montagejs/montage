@@ -52,7 +52,7 @@
     "collections": "~5.0.x",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
-    "mr": "github:montagejs/mr#master",
+    "mr": "^17.0.6",
     "q-io": "^1.13.3"
   },
   "devDependencies": {
