@@ -93,18 +93,18 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
      * @param {Object} objectRequires A dictionary indexed by object label with
      *        the require object to use for a specific object of the
      *        serialization.
-     * @param {?Map} deserializedModules A map indexed by module ID with the
-     *        deserialized object to use for a specific external object
+     * @param {?Map} moduleContexts A map indexed by module ID with the
+     *        MontageContext to use for a specific external object
      *        reference. Used to prevent circular references from creating
      *        an infinite loop.
      */
     init: {
-        value: function (_require, objectRequires, locationId, deserializedModules) {
+        value: function (_require, objectRequires, locationId, moduleContexts) {
             this.moduleLoader = new ModuleLoader()
                                  .init(_require, objectRequires);
             this._require = _require;
             this._locationId = locationId;
-            this._deserializedModules = deserializedModules;
+            this._moduleContexts = moduleContexts;
             return this;
         }
     },
@@ -294,7 +294,6 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 moduleId = value.prototype || value.object,
                 object;
 
-
             if (moduleId && (moduleId.endsWith(".mjson") || moduleId.endsWith(".meta"))) {
                 return this.getMjsonObject(value, module, moduleId, context)
                     .then(function (object) {
@@ -313,13 +312,13 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (serialization, json, moduleId, context) {
             var self = this,
                 mjsonObjectPromise;
-            if (moduleId && this._deserializedModules.has(moduleId)) {
+            if (moduleId && this._moduleContexts.has(moduleId)) {
                 // We have a circular reference. If we wanted to forbid circular
                 // references this is where we would throw an error.
-                mjsonObjectPromise = Promise.resolve(this._deserializedModules.get(moduleId));
+                mjsonObjectPromise = Promise.resolve(this._moduleContexts.get(moduleId)._objects.root);
             } else {
-                if (this._locationId && !this._deserializedModules.has(this._locationId)) {
-                    this._deserializedModules.set(this._locationId, context._objects.root);
+                if (this._locationId && !this._moduleContexts.has(this._locationId)) {
+                    this._moduleContexts.set(this._locationId, context);
                 }
                 mjsonObjectPromise = MontageReviver.getMontageDeserializer().then(function (MontageDeserializer) {
                     var deserializer = new MontageDeserializer().initWithObject(
@@ -327,7 +326,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                         MontageDeserializer.getModuleRequire(self._require, moduleId),
                         void 0,
                         moduleId,
-                        self._deserializedModules
+                        self._moduleContexts
                     );
                     return deserializer.deserializeObject();
                 });

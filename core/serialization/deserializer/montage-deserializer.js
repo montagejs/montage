@@ -27,22 +27,22 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
     },
 
     init: {
-        value: function (serializationString, _require, objectRequires, locationId, deserializedModules) {
+        value: function (serializationString, _require, objectRequires, locationId, moduleContexts) {
             this._serializationString = serializationString;
-            deserializedModules = deserializedModules || new Map();
+            moduleContexts = moduleContexts || new Map();
             this._interpreter = new MontageInterpreter().init(_require,
-                new MontageReviver().init(_require, objectRequires, locationId, deserializedModules));
+                new MontageReviver().init(_require, objectRequires, locationId, moduleContexts));
 
             return this;
         }
     },
 
     initWithObject: {
-        value: function (serialization, _require, objectRequires, locationId, deserializedModules) {
+        value: function (serialization, _require, objectRequires, locationId, moduleContexts) {
             this._serializationString = JSON.stringify(serialization);
-            deserializedModules = deserializedModules || new Map();
+            moduleContexts = moduleContexts || new Map();
             this._interpreter = new MontageInterpreter().init(_require,
-                new MontageReviver().init(_require, objectRequires, locationId, deserializedModules));
+                new MontageReviver().init(_require, objectRequires, locationId, moduleContexts));
 
             return this;
         }
