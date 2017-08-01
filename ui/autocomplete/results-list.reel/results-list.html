@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="results-list.css">
+    <script type="text/montage-serialization">
+{
+    "owner": {
+        "prototype": "ui/autocomplete/results-list.reel",
+        "properties": {
+            "element": {"#": "results-list"}
+        }
+    },
+
+    "results": {
+        "prototype": "montage/core/range-controller",
+        "properties": {
+            "selectAddedObjects": true
+        }
+    },
+
+    "repetition1": {
+        "prototype": "montage/ui/repetition.reel",
+        "properties": {
+            "element": {
+                "#": "repetition1"
+            },
+            "contentController": {"@": "results"},
+            "isSelectionEnabled": true
+        },
+        "bindings": {
+            "contentController": {"<-": "@owner.contentController"},
+            "activeIterations.rangeContent()": {"<-": "iterations.filter{@owner.activeIndexes.has(index)}"}
+
+        }
+    },
+
+    "resultItem": {
+        "prototype": "ui/autocomplete/result-item.reel",
+        "properties": {
+            "element": {"#": "result-item"}
+        },
+        "bindings": {
+            "textPropertyPath": {"<-": "@owner.textPropertyPath"},
+            "object": {"<-": "@repetition1:iteration.object"}
+        }
+    }
+}
+    </script>
+</head>
+<body>
+    <div data-montage-id="results-list" class="results-list">
+        <ul class="repetition" data-montage-id="repetition1">
+            <li class="result-item" data-montage-id="result-item"></li>
+        </ul>
+    </div>
+</body>
+</html>

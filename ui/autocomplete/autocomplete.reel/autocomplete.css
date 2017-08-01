@@ -1,0 +1,7 @@
+ .matte-Autocomplete {
+     padding-right: 20px;
+ }
+ .matte-Autocomplete--loading {
+     background: url('loading.gif') no-repeat;
+     background-position: right;
+ }
