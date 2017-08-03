@@ -185,3 +185,14 @@ if (typeof Node !== "undefined") {
         }
     };
 }
+
+// Extend DOMTokenList.prototype
+if (typeof DOMTokenList !== "undefined") {
+    var DOMTokenListPrototype = window.DOMTokenList.prototype;
+
+    Object.defineProperty(DOMTokenListPrototype, 'has', {
+        value: function (key) {
+            return this.contains(key);
+        }
+    });
+}
