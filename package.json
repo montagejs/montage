@@ -55,7 +55,8 @@
     "jshint": "^2.9.5",
     "mr": "^17.0.4",
     "q-io": "^1.13.3",
-    "lodash": "4.17.4"
+    "lodash": "4.17.4",
+    "proxy-polyfill": "~0.1.7"
   },
   "devDependencies": {
     "concurrently": "^3.4.0",

@@ -11,6 +11,7 @@ require("./extras/element");
 require("./extras/function");
 require("./extras/regexp");
 require("./extras/string");
+require("proxy-polyfill/proxy.min");
 
 
 var Map = require("collections/map");

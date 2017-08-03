@@ -5,6 +5,7 @@ var Montage = require("../../core").Montage,
     UnitDeserializer = require("./unit-deserializer").UnitDeserializer,
     ModuleReference = require("../../module-reference").ModuleReference,
     Alias = require("../alias").Alias, Bindings = require("../bindings"),
+    WeakMap = require("collections/weak-map"),
     Promise = require("../../promise").Promise,
     deprecate = require("../../deprecate"),
     ONE_ASSIGNMENT = "=",
@@ -12,6 +13,8 @@ var Montage = require("../../core").Montage,
     TWO_WAY = "<->";
 
 require("../../shim/string");
+
+var PROXY_ELEMENT_MAP = new WeakMap();
 
 var ModuleLoader = Montage.specialize( {
     _require: {value: null},
@@ -145,6 +148,119 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         }
     },
 
+    lowerCamelCaseToDashCase: {
+        value: function (string) {
+            return string.replace(/([A-Z])/g, function (g) { return '-' + g[0].toLowerCase() });
+        }
+    },
+
+    setProxyForDatasetOnElement: {
+        value: function (element, montageObjectDesc) {
+            var originalDataset = element.dataset;
+
+            if (Object.getPrototypeOf(originalDataset) !== null) {
+                var datasetAttributes = Object.keys(originalDataset),
+                    targetObject = Object.create(null), self = this,
+                    datasetAttribute, propertyNames;
+                
+                if (Proxy.prototype) { // The native Proxy has no prototype property.
+                    // Workaround for Proxy polyfill https://github.com/GoogleChrome/proxy-polyfill
+                    // the properties of a proxy must be known at creation time.
+                    // TODO: remove when we drop the support of IE11.
+                    if (montageObjectDesc.values) {
+                        propertyNames = Object.keys(montageObjectDesc.values);
+                    } else { // deprecated
+                        propertyNames = Object.keys(montageObjectDesc.properties)
+                            .concat(Object.keys(montageObjectDesc.bindings));
+                    }
+
+                    datasetAttributes = datasetAttributes.concat(
+                        propertyNames.filter(function (propertyName) {
+                            return propertyName.startsWith("dataset.");
+                        })
+                    );
+
+                    for (var i = 0, length = datasetAttributes.length; i < length; i++) {
+                        datasetAttribute = datasetAttributes[i];
+                        if (originalDataset[datasetAttribute]) {
+                            targetObject[datasetAttribute] =
+                                originalDataset[datasetAttribute];
+                        } else {
+                            targetObject[datasetAttribute.replace(/^dataset\./, '')] = void 0;
+                        }
+                    }
+                }                
+
+                Object.defineProperty(element, "dataset", {
+                    value: new Proxy(targetObject, {
+                        set: function (target, propertyName, value) {
+                            element.setAttribute('data-' +
+                                self.lowerCamelCaseToDashCase(propertyName),
+                                value
+                            );
+                            target[propertyName] = value;
+                            originalDataset[propertyName] = value;
+                            return true;
+                        },
+                        get: function (target, propertyName) {
+                            return target[propertyName];
+                        }
+                    })
+                });
+            }
+        }
+    },
+
+    setProxyOnElement: {
+        value: function (element, montageObjectDesc) {
+            if (!PROXY_ELEMENT_MAP.has(element)) {
+                var targetObject = Object.create(null);
+                
+                if (Proxy.prototype) { // The native Proxy has no prototype property. 
+                    // Workaround for Proxy polyfill https://github.com/GoogleChrome/proxy-polyfill
+                    // the properties of a proxy must be known at creation time.
+                    // TODO: remove when we drop the support of IE11.
+                    var propertyNames, propertyName;
+
+                    for (propertyName in element) {
+                        targetObject[propertyName] = void 0;
+                    }
+
+                    if (montageObjectDesc.values) {
+                        propertyNames = Object.keys(montageObjectDesc.values);
+                    } else { // deprecated
+                        propertyNames = Object.keys(montageObjectDesc.properties)
+                            .concat(Object.keys(montageObjectDesc.bindings));
+                    }
+
+                    for (var i = 0, length = propertyNames.length; i < length; i++) {
+                        propertyName = propertyNames[i];
+                        if (!(propertyName in element) && propertyName.indexOf('.') === -1) {
+                            targetObject[propertyName] = void 0;
+                        }
+                    }
+                }
+                
+                PROXY_ELEMENT_MAP.set(element, new Proxy(targetObject, {
+                    set: function (target, propertyName, value) {
+                        if (!(propertyName in Object.getPrototypeOf(element))) {
+                            element.setAttribute(propertyName, value);
+                            target[propertyName] = value;
+                        }
+
+                        element[propertyName] = value;
+                        return true;
+                    },
+                    get: function (target, propertyName) {
+                        return target[propertyName] || element[propertyName];
+                    }
+                }));
+            }
+            
+            return PROXY_ELEMENT_MAP.get(element);
+        }
+    },
+
     reviveRootObject: {
         value: function (value, context, label) {
             var error,
@@ -180,10 +296,14 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
                 if (this.getTypeOf(value.value) === "Element") {
                     if (!Promise.is(revivedValue)) {
-                        var montageObjectDesc = this.reviveObjectLiteral(value, context);
-                        context.setBindingsToDeserialize(revivedValue, montageObjectDesc);
+                        var montageObjectDesc = this.reviveObjectLiteral(value, context),
+                            proxyElement = this.setProxyOnElement(revivedValue, montageObjectDesc);
+                        
+                        this.setProxyForDatasetOnElement(revivedValue, montageObjectDesc);
+                        context.setBindingsToDeserialize(proxyElement, montageObjectDesc);
+
                         this.deserializeMontageObjectValues(
-                            revivedValue,
+                            proxyElement,
                             montageObjectDesc.values || montageObjectDesc.properties, //deprecated
                             context
                         );
