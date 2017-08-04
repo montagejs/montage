@@ -37,7 +37,7 @@ jasmineEnv.addReporter({
     }
 });
 
-var Montage = require('../montage');
+var Montage = require('montage');
 var PATH = require("path");
 
 // Load package
