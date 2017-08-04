@@ -10,7 +10,6 @@
  * @requires montage/core/logger
  * @requires montage/core/event/event-manager
  * @requires montage/core/serialization/alias
- * @requires collections/set
  */
 var Montage = require("../core/core").Montage,
     Target = require("../core/target").Target,
@@ -25,10 +24,7 @@ var Montage = require("../core/core").Montage,
     drawPerformanceLogger = require("../core/logger").logger("Drawing performance").color.green(),
     drawListLogger = require("../core/logger").logger("drawing list").color.blue(),
     needsDrawLogger = require("../core/logger").logger("drawing needsDraw").color.violet(),
-    drawLogger = require("../core/logger").logger("drawing").color.blue(),
-    WeakMap = require("collections/weak-map"),
-    Map = require("collections/map"),
-    Set = require("collections/set");
+    drawLogger = require("../core/logger").logger("drawing").color.blue();
 
 /**
  * @const

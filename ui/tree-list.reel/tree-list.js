@@ -3,8 +3,7 @@
  * @requires montage/ui/component
  */
 var Component = require("ui/component").Component,
-    TreeNode = require("core/tree-controller").TreeNode,
-    WeakMap = require("collections/weak-map");
+    TreeNode = require("core/tree-controller").TreeNode;
 
 /**
  * @class TreeList
