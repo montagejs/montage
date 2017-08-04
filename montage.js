@@ -298,29 +298,35 @@
         }
     };
 
+
     /**
      * Initializes Montage and creates the application singleton if
      * necessary.
      */
     exports.initMontage = function () {
+
         var platform = exports.getPlatform();
 
         // Platform dependent
-        platform.bootstrap(function (Require, Promise, URL) {
+        return platform.bootstrap(function (Require, Promise, URL) {
 
             // Export Require
             exports.Require = Require;
 
             var params = platform.getParams();
             var location = Require.getLocation();  // This takes <base> into account
-            
+
             var montageLocation = URL.resolve(location, params.montageLocation);
             var applicationLocation = URL.resolve(location, params.package || ".");
+            var mainPackageLocation = params.main ? URL.resolve(location, params.main) : applicationLocation;
             var applicationHash = params.applicationHash || "";         
 
             var config = {
-                location: location
+                location: location,
+                mainPackageLocation: mainPackageLocation
             };
+
+            //console.log('config', config);
 
             if (typeof global.BUNDLE === "object") {
                 var bundleDefinitions = {};
@@ -387,6 +393,7 @@
                         );
                     }
                 }
+
                 applicationRequirePromise = Require.loadPackage({
                     location: applicationLocation,
                     hash: applicationHash
@@ -484,7 +491,7 @@
                 });
             }
 
-            applicationRequirePromise.then(function (applicationRequire) {
+            return applicationRequirePromise.then(function (applicationRequire) {
                 var montageLocation = URL.resolve(config.location, params.montageLocation);
                 return applicationRequire.loadPackage({
                     location: montageLocation,
@@ -534,28 +541,26 @@
                       deepLoadPromises.push(montageRequire.deepLoad(iDependency));
                     }
 
-                    return Promise.all(deepLoadPromises)
-                    .then(function () {
+                    return Promise.all(deepLoadPromises).then(function () {
 
                         for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {
                             montageRequire(iDependency);
                         }
-
-                        var Montage = montageRequire("core/core").Montage;
-                        var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
-                        var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                         
-                        var application;
-
+                        // Inject montage for appliction
+                        applicationRequire.inject("montage", montageRequire("core/core"));
+                        
                         // montageWillLoad is mostly for testing purposes
                         if (typeof global.montageWillLoad === "function") {
                             global.montageWillLoad();
                         }
 
-                        // Load the application
+                        // Load the application serialization     
+                        // TODO move to "core/application" Factory
                         var appProto = applicationRequire.packageDescription.applicationPrototype,
                             applicationLocation, appModulePromise;
                         if (appProto) {
+                            var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                             applicationLocation = MontageReviver.parseObjectLocationId(appProto);
                             appModulePromise = applicationRequire.async(applicationLocation.moduleId);
                         } else {
@@ -563,8 +568,12 @@
                         }
 
                         return appModulePromise.then(function (exports) {
-                            var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
-                            application = new Application();
+                            
+                            var ApplicationObject = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
+                            var application = new ApplicationObject();
+
+                            // TODO move to "core/application" Factory
+                            var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
                             defaultEventManager.application = application;
                             application.eventManager = defaultEventManager;
 
@@ -573,6 +582,8 @@
                                     // If a module was specified in the config then we initialize it now
                                     applicationRequire.async(params.module);
                                 }
+
+                                // montageDidLoad is mostly for testing purposes
                                 if (typeof global.montageDidLoad === "function") {
                                     global.montageDidLoad();
                                 }
