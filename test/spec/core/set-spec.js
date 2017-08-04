@@ -1,6 +1,3 @@
-
-var Set = require("montage/collections/set");
-
 describe("test/core/set-spec", function () {
 
     function newSet(values) {

@@ -5,8 +5,7 @@
  * @requires montage/core/logger
  */
 var Montage = require("./core").Montage,
-    logger = require("./logger").logger("gate"),
-    Map = require("collections/map");
+    logger = require("./logger").logger("gate");
 
 /**
  * @class Gate

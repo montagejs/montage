@@ -2,7 +2,6 @@
  * @module montage/core/core
  */
 
-require("collections/shim");
 require("./shim/object");
 require("./shim/array");
 require("./extras/object");
@@ -11,11 +10,6 @@ require("./extras/element");
 require("./extras/function");
 require("./extras/regexp");
 require("./extras/string");
-
-
-var Map = require("collections/map");
-var WeakMap = require("collections/weak-map");
-var Set = require("collections/set");
 
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
