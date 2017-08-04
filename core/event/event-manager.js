@@ -17,7 +17,7 @@
 var Montage = require("../core").Montage,
     MutableEvent = require("./mutable-event").MutableEvent,
     Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
-    Deserializer = require("../serialization/deserializer/montage-deserializer").MontageDeserializer
+    Deserializer = require("../serialization/deserializer/montage-deserializer").MontageDeserializer,
     currentEnvironment = require("../environment").currentEnvironment;
 
 var defaultEventManager;

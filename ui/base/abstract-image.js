@@ -4,13 +4,7 @@
  * @module montage/ui/base/abstract-image.reel
  */
 var Component = require("../component").Component,
-    Url = require("../../core/mini-url")
-
-    if (typeof window !== "undefined") { // client-side
-        Map = window.Map || Map;
-    }
-
-
+    Url = require("../../core/mini-url");
 
 /**
  * @class AbstractImage
