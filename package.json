@@ -73,6 +73,9 @@
     "mop-integration": "git://github.com/montagejs/mop-integration.git#master",
     "open": "0.0.5"
   },
+  "mappings": {
+    "montage": "./"
+  },
   "scripts": {
     "test": "node test/run-node.js",
     "integration": "MONTAGE_VERSION=${MONTAGE_VERSION:=./} MOP_VERSION=${MOP_VERSION:=#master} node node_modules/mop-integration/integration",
