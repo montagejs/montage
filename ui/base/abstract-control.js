@@ -53,7 +53,7 @@ exports.AbstractControl = Component.specialize( /** @lends AbstractControl.proto
      */
     detail: {
         get: function () {
-            if (this._detail == null) {
+            if (this._detail === null || this._detail === undefined) {
                 this._detail = new Map();
             }
             return this._detail;

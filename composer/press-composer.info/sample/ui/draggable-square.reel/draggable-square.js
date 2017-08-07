@@ -1,3 +1,4 @@
+/* global console */
 /**
  * @module ui/draggable-square.reel
  */

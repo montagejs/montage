@@ -1,3 +1,5 @@
+/* global console */
+
 /**
  * @module ui/main.reel
  * @requires montage/ui/component
@@ -16,5 +18,4 @@ exports.Main = Component.specialize(/** @lends Main.prototype */ {
             console.log("handleSliderAction");
         }
     }
-
 });

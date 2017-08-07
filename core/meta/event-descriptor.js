@@ -70,7 +70,7 @@ exports.EventDescriptor = Montage.specialize( /** @lends EventDescriptor# */ {
 
     _setPropertyWithDefaults: {
         value:function (serializer, propertyName, value) {
-            if (value != Defaults[propertyName]) {
+            if (value !== Defaults[propertyName]) {
                 serializer.setProperty(propertyName, value);
             }
         }

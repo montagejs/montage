@@ -13,10 +13,10 @@ require.loadPackage(parentWindow.require.location)
     window.require = window.mr = require;
 
     return require.async("montage/ui/component")
-    .then(function (exports) {
+    .then(function (/*exports*/) {
         return require.async("montage/ui/loader.reel")
         .then(function (exports) {
-            var mainComponent = exports["Loader"].create();
+            var mainComponent = exports.Loader.create();
             mainComponent.mainModule = module;
             mainComponent.mainName = name;
             mainComponent.element = window.document.body;
@@ -24,8 +24,8 @@ require.loadPackage(parentWindow.require.location)
             mainComponent.needsDraw = true;
 
             if (callback) {
-                mainComponent.addEventListener("componentLoaded", function (event) {
-                    mainComponent.removeEventListener("componentLoaded", arguments.callee);
+                mainComponent.addEventListener("componentLoaded", function componentLoaded(event) {
+                    mainComponent.removeEventListener("componentLoaded", componentLoaded);
                     callback(window, event.detail);
                 });
             }

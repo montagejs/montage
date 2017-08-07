@@ -55,7 +55,7 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(/
 
     placeholderValue: {
         set: function (value) {
-            deprecate.deprecationWarning("placeholderValue", "placeholder")
+            deprecate.deprecationWarning("placeholderValue", "placeholder");
             this.placeholder = value;
         },
         get: function () {
@@ -233,8 +233,10 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(/
 
     _updateValueFromDom: {
         value: function () {
-            var displayedValue,
-                value = displayedValue = this.element.value;
+
+            var displayedValue, value;
+            
+            value = displayedValue = this.element.value;
 
             if (this.converter) {
                 try {

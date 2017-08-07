@@ -45,7 +45,7 @@ exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
             var info;
             if (!prototype.hasOwnProperty("objectDescriptor")) {
                 info = Montage.getInfoForObject(prototype);
-                if (info != null && info.isInstance === false) {
+                if (info !== null && info.isInstance === false) {
                     if (objectDescriptor === undefined) {
                         objectDescriptor = Model.group.objectDescriptorForPrototype(info.objectName, info.moduleId);
                     } else if (objectDescriptor.prototypeName !== info.objectName || objectDescriptor.moduleId !== info.moduleId) {
@@ -75,7 +75,7 @@ exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
 
     applyWithObjectDescriptor: {
         value: function (prototype, objectDescriptor) {
-            if (objectDescriptor != null) {
+            if (objectDescriptor !== null) {
                 this.addProperties(prototype, objectDescriptor);
                 if (objectDescriptor.parent !== null) {
                     this.apply(Object.getPrototypeOf(prototype), objectDescriptor);
@@ -274,7 +274,7 @@ exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
         value: function (propertyName, value) {
             var propertyDescriptor = this.objectDescriptor.propertyDescriptorForName(propertyName),
                 storageKey = "_" + propertyDescriptor.name;
-            if (value == null && propertyDescriptor.denyDelete) {
+            if (value === null && propertyDescriptor.denyDelete) {
                 throw new Exception().initWithMessageTargetAndMethod("Deny Delete", this, propertyDescriptor.name);
             } else {
                 this[storageKey] = value;

@@ -258,7 +258,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
 
     defaultPlaybackRate: {
         set: function (defaultPlaybackRate) {
-            return this._mediaElement.defaultPlaybackRate = defaultPlaybackRate;
+            return (this._mediaElement.defaultPlaybackRate = defaultPlaybackRate);
         },
         get: function () {
             return this._mediaElement.defaultPlaybackRate;

@@ -1,3 +1,4 @@
+/* global console */
 /**
  * @module ui/square.reel
  */
@@ -152,7 +153,7 @@ var Square = exports.Square = Component.specialize(/** @lends Square# */ {
                 this._handleReset = handleReset.bind(this);
             }
 
-            this._resetTimeoutID = setTimeout(this._handleReset, this.resetTimeout)
+            this._resetTimeoutID = setTimeout(this._handleReset, this.resetTimeout);
         }
     },
 

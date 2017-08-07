@@ -10,6 +10,9 @@ tmp/
 *.tmp.*
 log.txt
 *.log
+
+## jsdoc
+/doc
  
 ### SublimeText ###
 *.sublime-project

@@ -1,4 +1,4 @@
-/*global Node,Element, */
+/*global Node, Element*/
 
 /**
  * @module montage/core/dom
@@ -16,7 +16,11 @@ if (typeof Node !== "undefined") {
     };
 
     NodePrototype.parentOf = function (child) {
-        while ((child = child.parentNode) && child !== this) {}
+
+        do {
+            child = child.parentNode;
+        } while(child && child !== this);
+
         //If child is defined then we didn't walk all the way up to the root
         return child ? true : false;
     };
@@ -154,7 +158,7 @@ if (typeof Node !== "undefined") {
 
     DocumentPrototype.addRule = function (selectorText, definition) {
         var styleSheet, cssRule;
-        if ((styleSheet = document.styleSheets[0]) == null) {
+        if (!(styleSheet = document.styleSheets[0])) {
             var style = document.createElement("style");
             style.type = "text/css";
             document.head.appendChild(style);

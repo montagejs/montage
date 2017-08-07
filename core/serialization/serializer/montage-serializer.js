@@ -69,7 +69,9 @@ var MontageSerializer = Montage.specialize({
             this._labeler.initWithObjects(objects);
 
             for (var label in objects) {
-                this._malker.visit(objects[label]);
+                if (Object.hasOwnProperty.call(objects, label)) {
+                    this._malker.visit(objects[label]);
+                }
             }
 
             serializationString = this._formatSerialization(

@@ -132,7 +132,7 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
      */
     _resolveDefaults: {
         value: function () {
-            if (!this.element && this.element == null && this.component != null) {
+            if (!this.element && this.element === null && this.component !== null) {
                 this.element = this.component.element;
             }
         }

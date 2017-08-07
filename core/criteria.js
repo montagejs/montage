@@ -19,12 +19,14 @@ var Criteria = exports.Criteria = Montage.specialize({
      *
      * @type {string}
      */
-
     expression: {
         get: function() {
-            return this._expression
+            return this._expression;
         }
     },
+    /**
+     * @type {object}
+     */
     parameters: {
         value: null
     },

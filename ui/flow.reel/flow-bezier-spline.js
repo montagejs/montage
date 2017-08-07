@@ -244,7 +244,7 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
                         (jParameterData[index + 1] !== void 0)) {
                             jStyle = parameterName;
                             jStyle += ":";
-                            jStyle += ((((jParameterData[index] * y + jParameterData[index + 1] * time)  * 100000) >> 0) * .00001);
+                            jStyle += ((((jParameterData[index] * y + jParameterData[index + 1] * time)  * 100000) >> 0) * 0.00001);
                             jStyle += jParameter.units;
                             jStyle += ";";
 
@@ -386,7 +386,7 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
 
     _halfPI: {
         enumerable: false,
-        value: Math.PI * .5
+        value: Math.PI * 0.5
     },
 
     reflectionMatrix: {
@@ -490,13 +490,13 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
             while ((i < r.length) && (r[i] < 1)) {
                 min = max;
                 max = r[i];
-                mid = (min + max) * .5;
+                mid = (min + max) * 0.5;
                 if (this.cubic(a, b, c, d, mid) >= 0) {
                     segments.push([min, max]);
                 }
                 i++;
             }
-            mid = (max + 1) * .5;
+            mid = (max + 1) * 0.5;
             if (this.cubic(a, b, c, d, mid) >= 0) {
                 segments.push([max, 1]);
             }

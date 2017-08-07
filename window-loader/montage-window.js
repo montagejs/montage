@@ -10,7 +10,7 @@ var Montage = require("../core/core").Montage;
  * @class MontageWindow
  * @extends Montage
  */
-var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends MontageWindow.prototype # */ {
+exports.MontageWindow = Montage.specialize( /** @lends MontageWindow.prototype # */ {
 
     _application: {
         value: null
@@ -132,20 +132,22 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
             if (application._multipleWindow) {
                 windows = application.windows;
                 for (i in windows) {
-                    theWindow = windows[i];
-                    if (theWindow.window === aWindow) {
-                        if (theWindow.focused !== true) {
-                            theWindow.focused = true;
-                            if (application.windowsSortOrder == "z-order") {
-                                windows.splice(i, 1);
-                                windows.unshift(theWindow);
-                            } else if (application.windowsSortOrder == "reverse-z-order") {
-                                windows.splice(i, 1);
-                                windows.push(theWindow);
+                    if (windows.hasOwnProperty(i)) {
+                        theWindow = windows[i];
+                        if (theWindow.window === aWindow) {
+                            if (theWindow.focused !== true) {
+                                theWindow.focused = true;
+                                if (application.windowsSortOrder === "z-order") {
+                                    windows.splice(i, 1);
+                                    windows.unshift(theWindow);
+                                } else if (application.windowsSortOrder === "reverse-z-order") {
+                                    windows.splice(i, 1);
+                                    windows.push(theWindow);
+                                }
                             }
-                        }
-                    } else {
-                        theWindow.focused = false;
+                        } else {
+                            theWindow.focused = false;
+                        }   
                     }
                 }
             } else {
@@ -241,8 +243,10 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
 
             // Close the attached windows
             application.attachedWindows = []; // this is necessary to prevent the unload of the child window to mess with the array while we iterate it
-            for (var i in attachedWindows) {
-                attachedWindows[i].close();
+            for (i in attachedWindows) {
+                if (attachedWindows.hasOwnProperty(i)) {
+                    attachedWindows[i].close();
+                }
             }
 
             if (application.parentApplication) {

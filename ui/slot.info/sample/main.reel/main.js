@@ -7,7 +7,6 @@ exports.Main = Component.specialize(/** @lends Main# */ {
             this.super();
         }
     }
-
 });
 
 var Media = Montage.specialize( {
@@ -19,7 +18,6 @@ var Media = Montage.specialize( {
     description: {
         value: null
     }
-
 });
 
 var PhotoMedia = Media.specialize( {
@@ -31,7 +29,6 @@ var PhotoMedia = Media.specialize( {
     location: {
         value: null
     }
-
 });
 
 var VideoMedia = Media.specialize( {
@@ -43,7 +40,6 @@ var VideoMedia = Media.specialize( {
     duration: {
         value: null
     }
-
 });
 
 var SlotTest = exports.SlotTest = Component.specialize( {
@@ -52,7 +48,7 @@ var SlotTest = exports.SlotTest = Component.specialize( {
         value: function () {
             this.video = new VideoMedia();
             this.video.duration = "VIDEO 81 Minutes";
-            this.video.description = "VIDEO: The Last Dispatch"
+            this.video.description = "VIDEO: The Last Dispatch";
 
             this.photo = new PhotoMedia();
             this.photo.location = "PHOTO North Attleboro, MA";

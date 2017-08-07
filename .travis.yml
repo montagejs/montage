@@ -6,6 +6,7 @@ node_js:
   #- "7"
 script: npm run $COMMAND
 env:
+  - COMMAND=lint
   - COMMAND=test
   - COMMAND=test:karma-travis
   #- COMMAND=integration MONTAGE_VERSION=. MOP_VERSION=0.13
