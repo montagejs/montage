@@ -269,11 +269,6 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         value: false
     },
 
-    /**
-     * Description TODO
-     * @function
-     * @param {Event Handler} event TODO
-     */
     handleFocus: {
         enumerable: false,
         value: function (event) {
