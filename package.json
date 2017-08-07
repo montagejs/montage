@@ -76,8 +76,8 @@
   },
   "scripts": {
     "test": "node test/run-node.js",
+    "jsdoc": "jsdoc -c jsdoc.json",
     "integration": "MONTAGE_VERSION=${MONTAGE_VERSION:=./} MOP_VERSION=${MOP_VERSION:=#master} node node_modules/mop-integration/integration",
-    "jsdoc": "node ../montagejs.org/build/jsdoc/jsdoc.js -out $PWD/builds/jsdoc/ montage@npm-link",
     "test:karma": "karma start --no-auto-watch --single-run",
     "test:karma-travis": "karma start --no-auto-watch --single-run --browsers=Chrome_travis_ci",
     "test:karma-firefox": "karma start --no-auto-watch --single-run --browsers=Firefox",
