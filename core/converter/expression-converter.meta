@@ -1,0 +1,63 @@
+{
+    "converter_object-descriptor_reference": {
+        "prototype": "core/meta/object-descriptor-reference",
+        "values": {
+            "valueReference": {
+                "blueprintName": "Converter",
+                "prototypeName": "Converter",
+                "blueprintModule": {
+                    "%": "core/converter/converter.meta"
+                }
+            }
+        }
+    },
+    "convertExpression": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "convertExpression",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+    "revertExpression": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "revertExpression",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "ExpressionConverter",
+            "customPrototype": false,
+            "parent": {
+                "@": "converter_object-descriptor_reference"
+            },
+            "propertyDescriptors": [
+                {
+                    "@": "convertExpression"
+                },
+                {
+                    "@": "revertExpression"
+                }
+            ],
+            "propertyDescriptorGroups": {},
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/converter/expression-converter.meta"
+            },
+            "exportName": "ExpressionConverter",
+            "module": {
+                "%": "core/converter/expression-converter"
+            }
+        }
+    }
+}

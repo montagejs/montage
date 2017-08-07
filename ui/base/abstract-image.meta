@@ -1,7 +1,7 @@
 {
     "src_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "src",
             "valueType": "string",
             "blueprint": {
@@ -11,7 +11,7 @@
     },
     "width_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "width",
             "valueType": "number",
             "blueprint": {
@@ -21,7 +21,7 @@
     },
     "height_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "height",
             "valueType": "number",
             "blueprint": {
@@ -31,7 +31,7 @@
     },
     "crossOrigin_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "crossOrigin",
             "blueprint": {
                 "@": "root"
@@ -47,7 +47,7 @@
     },
     "blueprint_parent": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Component",
                 "prototypeName": "Component",
@@ -59,12 +59,12 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "AbstractImage",
             "parent": {
                 "@": "blueprint_parent"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "src_property"
                 },
@@ -78,7 +78,7 @@
                     "@": "crossOrigin_property"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Main": [
                     {
                         "@": "src_property"

@@ -1,7 +1,7 @@
 {
     "enabled_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "enabled",
             "valueType": "boolean",
             "blueprint": {
@@ -11,7 +11,7 @@
     },
     "value_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "value",
             "valueType": "object",
             "blueprint": {
@@ -21,7 +21,7 @@
     },
     "min_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "min",
             "valueType": "number",
             "blueprint": {
@@ -31,7 +31,7 @@
     },
     "max_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "max",
             "valueType": "number",
             "blueprint": {
@@ -41,7 +41,7 @@
     },
     "step_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "step",
             "valueType": "number",
             "blueprint": {
@@ -51,7 +51,7 @@
     },
     "axis_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "axis",
             "valueType": "enum",
             "enumValues": [
@@ -65,7 +65,7 @@
     },
     "blueprint_parent": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Control",
                 "prototypeName": "Control",
@@ -77,12 +77,12 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "Slider",
             "parent": {
                 "@": "blueprint_parent"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "enabled_property"
                 },
@@ -102,7 +102,7 @@
                     "@": "axis_property"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Main": [
                     {
                         "@": "enabled_property"

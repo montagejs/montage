@@ -1,6 +1,7 @@
 /*global require, exports, document, Error*/
 var AbstractControl = require("./abstract-control").AbstractControl,
-    KeyComposer = require("../../composer/key-composer").KeyComposer;
+    KeyComposer = require("../../composer/key-composer").KeyComposer,
+    deprecate = require('../../core/deprecate');
 
 
 /**
@@ -48,17 +49,27 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(/
         value: true
     },
 
-    _placeholderValue: {
+    _placeholder: {
         value: null
     },
 
     placeholderValue: {
         set: function (value) {
-            this._placeholderValue = value;
+            deprecate.deprecationWarning("placeholderValue", "placeholder")
+            this.placeholder = value;
+        },
+        get: function () {
+            return this.placeholder;
+        }
+    },
+
+    placeholder: {
+        set: function (value) {
+            this._placeholder = value;
             this.needsDraw = true;
         },
         get: function () {
-            return this._placeholderValue;
+            return this._placeholder;
         }
     },
 
@@ -178,10 +189,10 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(/
                 // restore the previous cursor position.
                 // TODO: contenteditable?
                 this.element.setSelectionRange(start, end);
-            }
+            }   
 
-            if (this.placeholderValue != null) {
-                this.element.setAttribute("placeholder", this.placeholderValue);
+            if (this._placeholder) {
+                this.element.setAttribute("placeholder", this._placeholder);
             }
 
             this.element.disabled = !this.enabled;

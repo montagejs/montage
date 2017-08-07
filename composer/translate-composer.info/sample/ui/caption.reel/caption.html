@@ -6,7 +6,7 @@
     <script type="text/montage-serialization">
     {
         "owner": {
-            "properties": {
+            "values": {
                 "element": {"#": "owner"},
                 "captionCodeElement": {"#": "caption-code"}
             }
@@ -14,10 +14,8 @@
 
          "captionLabel": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "caption-label"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "caption-label"},
                 "value": {"<-": "@owner.caption.label"}
             }
         }

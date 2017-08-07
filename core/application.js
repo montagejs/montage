@@ -342,7 +342,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 }
             }
 
-            self.mr.loadPackage({name: "montage"}).then(function (require) {
+            global.require.loadPackage({name: "montage"}).then(function (require) {
                 var newWindow = window.open(require.location + "window-loader/index.html", "_blank", stringParamaters);
                 newWindow.loadInfo = loadInfo;
             });
@@ -528,19 +528,19 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 if(isSystemPopup) {
                     switch (type) {
                         case "alert":
-                            zIndex = 9004;
+                            zIndex = 19004;
                             break;
                         case "confirm":
-                            zIndex = 9003;
+                            zIndex = 19003;
                             break;
                         case "notify":
-                            zIndex = 9002;
+                            zIndex = 19002;
                             break;
                     }
                 } else {
                     // custom popup
                     if(!self._zIndex) {
-                        self._zIndex = 7000;
+                        self._zIndex = 17000;
                     } else {
                         self._zIndex = self._zIndex + 1;
                     }

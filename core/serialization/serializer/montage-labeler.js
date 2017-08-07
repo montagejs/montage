@@ -55,7 +55,7 @@ exports.MontageLabeler = Montage.specialize({
             var label = this._getObjectLabel(object);
 
             if (label[0] === ":") {
-                throw new Error("Labels starting with colon (:) can only be used for template properties, (\"" + label + "\").");
+                throw new Error("Labels starting with colon (:) can only be used for template values, (\"" + label + "\").");
             }
 
             return label;

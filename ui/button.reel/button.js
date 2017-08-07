@@ -27,7 +27,7 @@ b1.addEventListener("action", function(event) {
 {
     "aButton": {
         "prototype": "montage/ui/native/button.reel",
-        "properties": {
+        "values": {
             "element": {"#": "btnElement"}
         },
         "listeners": [

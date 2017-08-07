@@ -2,6 +2,7 @@
  * @module montage/core/logger
  * @requires montage/core/core
  */
+var console = require('./extras/console').console;
 var Montage = require("./core").Montage,
     Logger,
     loggers,
@@ -44,6 +45,12 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
 
     constructor: {
         value: function Logger() {
+
+            // Set Function.noop on construcot 
+            // to avoid issue with Object.create
+            this.debug = Function.noop; 
+            this.error = Function.noop;
+
             addColorProperty(this);
         }
     },
@@ -218,7 +225,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
      * @param {string} [...]
      */
     debug: {
-        value: Function.noop
+        value: null
     },
 
     /**
@@ -227,7 +234,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
      * @param {string} [...]
      */
     error: {
-        value: Function.noop
+        value: null
     },
 
     /**

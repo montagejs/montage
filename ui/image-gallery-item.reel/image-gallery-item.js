@@ -40,7 +40,7 @@ exports.ImageGalleryItem = Component.specialize(/** @lends ImageGalleryItem# */ 
 
     handleLoad: {
         value: function (event) {
-            window.clearTimeout(this._loaderTimeout);
+            clearTimeout(this._loaderTimeout);
             this._status = null;
             event.target.removeEventListener("load",this,false);
             event.target.removeEventListener("error",this,false);
@@ -49,7 +49,7 @@ exports.ImageGalleryItem = Component.specialize(/** @lends ImageGalleryItem# */ 
 
     handleError: {
         value: function (event) {
-            window.clearTimeout(this._loaderTimeout);
+            clearTimeout(this._loaderTimeout);
             this._status = "error";
             event.target.removeEventListener("load",this,false);
             event.target.removeEventListener("error",this,false);
@@ -102,9 +102,9 @@ exports.ImageGalleryItem = Component.specialize(/** @lends ImageGalleryItem# */ 
             if (this._needsUpdateSource) {
                 this._needsUpdateSource = false;
                 this._image.src = this._src;
-                window.clearTimeout(this._loaderTimeout);
+                clearTimeout(this._loaderTimeout);
                 self = this;
-                this._loaderTimeout = window.setTimeout(function () {
+                this._loaderTimeout = setTimeout(function () {
                     self._status = "loading";
                 }, 200);
                 this._element.style.backgroundImage = "url(" + this._src + ")";

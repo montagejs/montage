@@ -1,8 +1,0 @@
-{
-    "owner": {
-        "prototype": "reel/template/externalserialization.reel[ExternalSerialization]",
-        "properties": {
-            "element": {"#": "main"}
-        }
-    }
-}

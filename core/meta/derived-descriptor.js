@@ -1,4 +1,4 @@
-var PropertyDescriptor = require("./property-descriptor").PropertyBlueprint,
+var PropertyDescriptor = require("./property-descriptor").PropertyDescriptor,
     logger = require("../logger").logger("objectDescriptor"),
     Defaults = {
         dependencies:[],

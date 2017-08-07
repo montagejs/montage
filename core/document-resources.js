@@ -265,7 +265,7 @@ var DocumentResources = Montage.specialize({
     },
 
     domain: {
-        value: window.location.protocol + "//" + window.location.host
+        value: global.location ? global.location.protocol + "//" + global.location.host : ''
     },
 
     isCrossDomain: {

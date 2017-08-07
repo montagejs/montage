@@ -117,21 +117,17 @@ var Criteria = exports.Criteria = Montage.specialize({
         }
     },
 
-    stringify: {
-        value: function () {
-            return this._expression || (this._expression = stringify(this.syntax));
-        }
-    },
-
     serializeSelf: {
         value: function (serializer) {
-            serializer.setProperty("expression", this.stringify());
+            serializer.setProperty("expression", this._expression || (this._expression = stringify(this.syntax)));
+            serializer.setProperty("parameters", this.parameters);
         }
     },
 
     deserializeSelf: {
         value: function (deserializer) {
             this._expression = deserializer.getProperty("expression") || deserializer.getProperty("path");
+            this.parameters = deserializer.getProperty("parameters");
         }
     },
     __scope: {
@@ -147,6 +143,66 @@ var Criteria = exports.Criteria = Montage.specialize({
             this._scope.parameters = parameters || this.parameters;
             this._scope.value = value;
             return this.compiledSyntax(this._scope);
+        }
+    }
+
+},{
+    forObjectsLike: {
+        value: function(object) {
+            var properties = Object.keys(object),
+                expression = "",
+                i, iKey, iValue,
+                j, jValue, jExpression, jKey;
+
+            for(i=0;(iKey = properties[i]);i++) {
+                iValue = object[iKey];
+                if(Array.isArray(iValue)) {
+                    jExpression = "";
+
+                    for(j=0;(jValue = iValue[j]);j++) {
+                        jKey = iKey;
+                        jKey += j;
+
+                        if(jExpression.length > 0) {
+                            jExpression += " && ";
+                        }
+                        jExpression += iKey;
+                        jExpression += ".has($";
+                        jExpression += jKey;
+                        jExpression += ")";
+
+                        //Now alias the value on object;
+                        object[jKey] = jValue;
+                    }
+
+                    if(expression.length > 0) {
+                        expression += " && ";
+                    }
+                    expression += jExpression;
+                }
+                else {
+                    if(expression.length > 0) {
+                        expression += " && ";
+                    }
+
+                    expression += iKey;
+                    expression += "== $";
+                    expression += iKey;
+                }
+            }
+
+            return (new this).initWithExpression(expression,object);
+        }
+    },
+
+    withExpression: {
+        value: function(expression,parameters) {
+            return (new this).initWithExpression(expression,parameters);
+        }
+    },
+    withSyntax: {
+        value: function(syntax,parameters) {
+            return (new this).initWithSyntax(syntax,parameters);
         }
     }
 

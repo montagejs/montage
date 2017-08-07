@@ -1,7 +1,7 @@
 {
     "value_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "value",
             "valueType": "number",
             "blueprint": {
@@ -11,7 +11,7 @@
     },
     "max_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "max",
             "valueType": "number",
             "blueprint": {
@@ -21,7 +21,7 @@
     },
     "blueprint_parent": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "AbstractControl",
                 "prototypeName": "AbstractControl",
@@ -33,12 +33,12 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "AbstractProgressBar",
             "parent": {
                 "@": "blueprint_parent"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "value_property"
                 },
@@ -46,7 +46,7 @@
                     "@": "max_property"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Main": [
                     {
                         "@": "value_property"

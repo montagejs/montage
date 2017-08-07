@@ -1,4 +1,11 @@
-var Montage = require("./core").Montage;
+var Montage = require("./core").Montage,
+    Map = require("collections/map");
+
+var deprecatedFeaturesOnceMap = new Map();
+
+var generateDeprecatedKey = function generateDeprecatedKey(name, alternative) {
+    return alternative ? name + "_" + alternative : name;
+}
 
 /**
  * @module montage/core/deprecate
@@ -34,6 +41,22 @@ var deprecationWarning = exports.deprecationWarning = function deprecationWarnin
 };
 
 /**
+ *
+ * Call deprecationWarning function only once.
+ *
+ * @param {String} name - Name of the thing that is deprecated.
+ * @param {String} alternative - Name of alternative that should be used instead.
+ * @param {Number} [stackTraceLimit] - depth of the stack trace to print out. Set to falsy value to disable stack.
+ */
+var deprecationWarningOnce = exports.deprecationWarningOnce = function deprecationWarningOnce(name, alternative, stackTraceLimit) {
+    var key = generateDeprecatedKey(name, alternative);
+    if (!deprecatedFeaturesOnceMap.has(key)) {
+        deprecationWarning(name, alternative, stackTraceLimit);
+        deprecatedFeaturesOnceMap.set(key, true);
+    }
+}
+
+/**
  * Provides a function that can replace a method that has been deprecated.
  * Prints out a deprecation warning to the console.warn with the format:
  * `name` is deprecated, use `alternative` instead.
@@ -65,7 +88,7 @@ exports.deprecateMethod = function deprecate(scope, deprecatedFunction, name, al
  * @param alternative
  * @returns {*}
  */
-exports.callDeprecatedFunction = function callDeprecatedFunction(scope, callback, name, alternative/*, ...args */) {
+exports.callDeprecatedFunction = function (scope, callback, name, alternative/*, ...args */) {
     var depth = Error.stackTraceLimit,
         scopeName,
         args;
@@ -74,10 +97,10 @@ exports.callDeprecatedFunction = function callDeprecatedFunction(scope, callback
     if (typeof console !== "undefined" && typeof console.warn === "function") {
         scopeName = Montage.getInfoForObject(scope).objectName;
 
-        if(alternative) {
+        if (alternative) {
             console.warn(name + " is deprecated, use " + alternative + " instead.", scopeName);
         } else {
-            //name is a complete message
+            // name is a complete message
             console.warn(name, scopeName);
         }
 

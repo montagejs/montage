@@ -1,8 +1,8 @@
 var Montage = require("../core").Montage,
     ModelGroup = require("./model-group").ModelGroup,
     ObjectDescriptorModule = require("./object-descriptor"),
-    deprecate = require("../deprecate");
-
+    deprecate = require("../deprecate"),
+    application = require("../application").application;
     var _group = null;
 
 /**
@@ -45,6 +45,11 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
 
     serializeSelf: {
         value: function (serializer) {
+
+            if (this.version > 1) {
+                serializer.setProperty("version", this.version);
+            }
+
             serializer.setProperty("name", this.name);
             if (this.objectDescriptors.length > 0) {
                 serializer.setProperty("objectDescriptors", this.objectDescriptors);
@@ -55,9 +60,14 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
 
     deserializeSelf: {
         value: function (deserializer) {
+            var value = deserializer.getProperty("version");
+            if (value !== undefined) {
+                this.version = value;
+            }
+
             this._name = deserializer.getProperty("name");
             //copy contents into the objectDescriptors array
-            var value = deserializer.getProperty("objectDescriptors") || deserializer.getProperty("blueprints");
+            value = deserializer.getProperty("objectDescriptors") || deserializer.getProperty("blueprints");
             if (value) {
                 this._objectDescriptors = value;
             }
@@ -356,6 +366,8 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
         get: function () {
             if (_group === null) {
                 _group = new ModelGroup();
+                _group.name = application ? application.name : "";
+                console.log("Default ModelGroup name is ",_group.name);
             }
             return _group;
         }

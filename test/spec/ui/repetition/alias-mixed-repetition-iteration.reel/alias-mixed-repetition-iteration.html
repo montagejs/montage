@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script type="text/montage-serialization">{
+        "owner": {
+            "values": {
+                "element": {"#": "owner"}
+            }
+        },
+        
+        ":inner": {
+            "alias": "@aliasMixedRepetitionIteration:i"
+        },
+        
+        ":header": {
+            "alias": "@repetition:iteration"
+        },
+        
+        "repetition": {
+            "prototype": "montage/ui/repetition.reel",
+            "values": {
+                "element": {"#": "repetition"},
+                "content": [
+                    "a1",
+                    "a2"
+                ]
+            }
+        },
+        
+        "aliasMixedRepetitionIteration": {
+            "prototype": "./level-one.reel",
+            "values": {
+                "element": {"#": "aliasMixedRepetitionIteration"}
+            }
+        },
+        
+        "aliasMixedRepetitionIterationText": {
+            "prototype": "montage/ui/text.reel",
+            "values": {
+                "element": {"#": "aliasMixedRepetitionIterationText"},
+                "value": {"<-": "@repetition:iteration.object"}
+            }
+        }
+        
+    }</script>
+</head>
+<body>
+    <div data-montage-id="owner">
+        <div data-montage-id="repetition">
+            Outer repetition
+            <span data-param="header"></span>
+            <div data-montage-id="aliasMixedRepetitionIteration">
+                <div data-param="inner"></div>
+                <span data-montage-id="aliasMixedRepetitionIterationText" class="outerText"></span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

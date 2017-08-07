@@ -1,7 +1,7 @@
 {
     "rangeController_content": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "content",
             "blueprint": {
                 "@": "root"
@@ -13,7 +13,7 @@
     },
     "rangeController_organizedContent": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "organizedContent",
             "blueprint": {
                 "@": "root"
@@ -25,7 +25,7 @@
     },
     "rangeController_sortPath": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "sortPath",
             "blueprint": {
                 "@": "root"
@@ -36,7 +36,7 @@
     },
     "rangeController_reversed": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "reversed",
             "blueprint": {
                 "@": "root"
@@ -47,7 +47,7 @@
     },
     "rangeController_filterPath": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "filterPath",
             "blueprint": {
                 "@": "root"
@@ -58,7 +58,7 @@
     },
     "rangeController_selectAddedContent": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "selectAddedContent",
             "blueprint": {
                 "@": "root"
@@ -69,7 +69,7 @@
     },
     "rangeController_deselectInvisibleContent": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "deselectInvisibleContent",
             "blueprint": {
                 "@": "root"
@@ -80,7 +80,7 @@
     },
     "rangeController_clearSelectionOnOrderChange": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "clearSelectionOnOrderChange",
             "blueprint": {
                 "@": "root"
@@ -91,7 +91,7 @@
     },
     "rangeController_avoidsEmptySelection": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "avoidsEmptySelection",
             "blueprint": {
                 "@": "root"
@@ -102,7 +102,7 @@
     },
     "rangeController_multiSelect": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "multiSelect",
             "blueprint": {
                 "@": "root"
@@ -113,10 +113,10 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "RangeController",
             "customPrototype": false,
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "rangeController_content"
                 },
@@ -148,7 +148,7 @@
                     "@": "rangeController_multiSelect"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "rangeController": [
                     {
                         "@": "rangeController_content"

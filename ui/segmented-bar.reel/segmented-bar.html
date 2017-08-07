@@ -6,17 +6,15 @@
     <script type="text/montage-serialization">
     {
         "owner": {
-            "properties": {
+            "values": {
                 "element": {"#": "SegmentedBar"}
             }
         },
         "repetition": {
             "prototype": "ui/repetition.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "repetition"},
-                "isSelectionEnabled": false
-            },
-            "bindings": {
+                "isSelectionEnabled": false,
                 "contentController": {"<-": "@owner._repetitionDataController"}
             }
         },

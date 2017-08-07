@@ -5,7 +5,7 @@
     <script type="text/montage-serialization">
         {
             "owner": {
-                "properties": {
+                "values": {
                     "element": {"#": "main"},
                     "promiseButton": {"@": "promiseButton"}
                 },
@@ -23,7 +23,7 @@
 
             "custom": {
                 "prototype": "montage/ui/button.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "button-custom"},
                     "label": "custom"
                 }
@@ -31,7 +31,7 @@
 
             "input": {
                 "prototype": "montage/ui/button.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "button-input"},
                     "label": "input"
                 }
@@ -39,7 +39,7 @@
 
             "native": {
                 "prototype": "montage/ui/button.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "button-native"},
                     "label": "native"
                 }
@@ -47,7 +47,7 @@
 
             "promiseButton": {
                 "prototype": "montage/ui/button.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "button-promise"},
                     "label": "promise"
                 }
@@ -55,10 +55,8 @@
 
             "text": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
-                    "element": {"#": "text"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "text"},
                     "value": {"<-": "@owner.message || 'please hit a button'"}
                 }
             }

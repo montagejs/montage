@@ -27,6 +27,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         value: function ObjectDescriptor() {
             this._eventDescriptors = [];
             this._propertyDescriptors = [];
+            this.addRangeAtPathChangeListener("_propertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
             this._propertyDescriptorGroups = {};
             Object.defineProperty(this,"_propertyDescriptorsTable",{ value:{}, writable: false});
             Object.defineProperty(this,"_eventPropertyDescriptorsTable",{ value:{}, writable: false});
@@ -76,6 +77,9 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             if (this._propertyValidationRules.length > 0) {
                 serializer.setProperty("propertyValidationRules", this._propertyValidationRules);
             }
+            if (typeof this.maxAge === "number") {
+                serializer.setProperty("maxAge", this.maxAge);
+            }
         }
     },
 
@@ -96,6 +100,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             if (value) {
                 this._propertyDescriptors = value;
             }
+
             value = deserializer.getProperty("propertyDescriptorGroups") || deserializer.getProperty("propertyBlueprintGroups");
             if (value) {
                 this._propertyDescriptorGroups = value;
@@ -107,6 +112,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             value = deserializer.getProperty("propertyValidationRules");
             if (value) {
                 this._propertyValidationRules = value;
+            }
+            value = deserializer.getProperty("maxAge");
+            if (value) {
+                this.maxAge = value;
             }
         }
     },
@@ -338,8 +347,23 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         value: false
     },
 
+
     _propertyDescriptors: {
         value: null
+    },
+
+    _handlePropertyDescriptorsRangeChange: {
+        value: function (plus, minus, index) {
+            var i, n;
+            for (i = 0, n = minus.length; i < n; ++i) {
+                minus[i]._owner = null;
+            }
+
+            for (i = 0, n = plus.length; i < n; ++i) {
+                plus[i]._owner = plus[i]._owner || this;
+            }
+
+        }
     },
 
     /**
@@ -353,6 +377,23 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                 propertyDescriptors = propertyDescriptors.concat(this.parent.propertyDescriptors);
             }
             return propertyDescriptors;
+        }
+    },
+
+    /**
+     * Returns all property descriptors that have their serializable property true
+     *
+     * @method
+     * @returns {Array.<PropertyDescriptor>} Arrat of relevant propertyDescriptors
+     */
+
+    serializablePropertyDescriptors: {
+        get: function () {
+            //ToDo: Add some caching and invalidation when this._propertyDescriptors or this.parent.propertyDescriptors
+            //changes, using bindings might be best.
+            return this.propertyDescriptors.filter(function(aPropertyDescriptor) {
+                return aPropertyDescriptor.serializable !== false;
+            })
         }
     },
 
@@ -797,7 +838,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         value: function (name) {
             var propertyValidationRule = this._propertyValidationRules[name];
             if (propertyValidationRule == null) {
-                propertyValidationRule = new PropertyValidationRule().initWithNameAndBlueprint(name, this);
+                propertyValidationRule = new PropertyValidationRule().initWithNameAndObjectDescriptor(name, this);
                 this._propertyValidationRules[name] = propertyValidationRule;
             }
             return propertyValidationRule;
@@ -1167,6 +1208,18 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         value: deprecate.deprecateMethod(void 0, function (groupName) {
             this.removePropertyDescriptorGroupNamed(groupName);
         }, "removePropertyBlueprintGroupNamed", "removePropertyDescriptorGroupNamed")
+    },
+
+     /**
+     *  Specifies the maximum amount of time that the values of on object
+     * described by an ObjectDescriptor will be considered fresh.
+     *
+     * Value is in seconds, default to 4 minutes
+     *
+     * @returns {number} this.maxAge
+     */
+    maxAge: {
+        value: 240
     },
 
     blueprintModuleId:require("../core")._objectDescriptorModuleIdDescriptor,

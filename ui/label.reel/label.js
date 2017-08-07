@@ -19,6 +19,10 @@ var Label = exports.Label = Text.specialize({
         }
     },
 
+    hasTemplate: {
+        value: false 
+    },
+
     prepareForActivationEvents: {
         value: function () {
             this.super();

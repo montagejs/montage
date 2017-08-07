@@ -115,7 +115,7 @@ var CssBasedAnimation = Montage.specialize({
                 i, j;
 
             if (this.component && this.component.element) {
-                computedStyle = window.getComputedStyle(this.component.element)
+                computedStyle = global.getComputedStyle(this.component.element)
                 for (i = 0; i < this._animationAndTransitionProperties.length; i++) {
                     durations = this._parseComputedStyleTimeValue(
                         computedStyle.getPropertyValue(this._animationAndTransitionProperties[i] + "-duration")
@@ -159,7 +159,7 @@ var CssBasedAnimation = Montage.specialize({
 
     _cancelOnAnimationsCompletedEvent: {
         value: function () {
-            window.clearTimeout(this._onAnimationsCompletedTimeout);
+            clearTimeout(this._onAnimationsCompletedTimeout);
         }
     },
 
@@ -174,7 +174,7 @@ var CssBasedAnimation = Montage.specialize({
             }
             self = this;
             this._cancelOnAnimationsCompletedEvent();
-            this._onAnimationsCompletedTimeout = window.setTimeout(function () {
+            this._onAnimationsCompletedTimeout = setTimeout(function () {
                 callback.call(self);
             }, maxTime * 1000);
          }
@@ -521,7 +521,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
      * ```json
      * {
      *    "component": {
-     *        "properties": {
+     *        "values": {
      *            "element": {"#": "dataMontageId"}
      *        }
      *    }
@@ -548,7 +548,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
      * ```json
      * {
      *    "owner": {
-     *        "properties": {
+     *        "values": {
      *            "element": {"#": "dataMontageId"}
      *        }
      *    }
@@ -582,7 +582,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             }
 
             //jshint -W106
-            if (window._montage_le_flag) {
+            if (global._montage_le_flag) {
             //jshint +W106
                 value.setAttribute(ATTR_LE_COMPONENT, Montage.getInfoForObject(this).moduleId);
             }
@@ -764,7 +764,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 argument;
 
             //jshint -W106
-            if (window._montage_le_flag) {
+            if (global._montage_le_flag) {
                 var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
                 var label = this._montage_metadata.label;
             }
@@ -775,13 +775,13 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 range = template.document.createRange();
                 range.selectNodeContents(element);
                 argument = range.cloneContents();
-                if (window._montage_le_flag && element.children.length > 0) {
+                if (global._montage_le_flag && element.children.length > 0) {
                     this._leTagStarArgument(ownerModuleId, label, argument);
                 }
             } else {
                 argument = this._getTemplateDomArgument(argumentName).cloneNode(true);
                 argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
-                if (window._montage_le_flag) {
+                if (global._montage_le_flag) {
                     this._leTagNamedArgument(ownerModuleId, label, argument,
                         argumentName);
                 }
@@ -1246,8 +1246,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     },
 
     /**
-     * Lifecycle method called when this component is removed from the
-     * document's DOM tree.
+     * Called when this component is removed from the document's DOM tree.
      * @function
      */
     exitDocument: {
@@ -2138,7 +2137,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             for (i = 0; (attribute = attributes[i]); i++) {
                 attributeName = attribute.nodeName;
                 //jshint -W106
-                if (window._montage_le_flag && attributeName === ATTR_LE_COMPONENT) {
+                if (global._montage_le_flag && attributeName === ATTR_LE_COMPONENT) {
                     //jshint +W106
                     value = attribute.nodeValue;
                 } else if (attributeName === "id" || attributeName === "data-montage-id") {
@@ -2200,7 +2199,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
             var leTagArguments;
             //jshint -W106
-            if (window._montage_le_flag) {
+            if (global._montage_le_flag) {
                 //jshint +W106
                 leTagArguments = this.element.children.length > 0;
             }
@@ -3639,7 +3638,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             this._cannotDrawList = (this._cannotDrawList ? this._cannotDrawList : new Set());
             this._cannotDrawList.add(component);
             if (this._clearNeedsDrawTimeOut) {
-                window.clearTimeout(this._clearNeedsDrawTimeOut);
+                clearTimeout(this._clearNeedsDrawTimeOut);
                 this._clearNeedsDrawTimeOut = null;
             }
         }
@@ -3670,14 +3669,14 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                     if (!this._clearNeedsDrawTimeOut) {
                         var self = this;
                         // Wait to clear the needsDraw list as components could be loaded synchronously
-                        this._clearNeedsDrawTimeOut = window.setTimeout(function () {
+                        this._clearNeedsDrawTimeOut = setTimeout(function () {
                             self._clearNeedsDrawList();
                         }, 0);
                     }
                 }
             } else {
                 if (this._clearNeedsDrawTimeOut) {
-                    window.clearTimeout(this._clearNeedsDrawTimeOut);
+                    clearTimeout(this._clearNeedsDrawTimeOut);
                     this._clearNeedsDrawTimeOut = null;
                 }
             }
@@ -3717,7 +3716,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             if (this._cannotDrawList.size === 0 && this._needsDrawList.length > 0) {
                 if (!this._clearNeedsDrawTimeOut) {
                     var self = this;
-                    this._clearNeedsDrawTimeOut = window.setTimeout(function () {
+                    this._clearNeedsDrawTimeOut = setTimeout(function () {
                         self._clearNeedsDrawList();
                     }, 0);
                 }
@@ -3735,9 +3734,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                         logger.debug(this, "clearing draw");
                     }
                     if (cancelAnimationFrame) {
-                        cancelAnimationFrame.call(window, requestedAnimationFrame);
+                        cancelAnimationFrame(requestedAnimationFrame);
                     } else {
-                        window.clearTimeout(requestedAnimationFrame);
+                        clearTimeout(requestedAnimationFrame);
                     }
                     this.requestedAnimationFrame = null;
                 }
@@ -3822,8 +3821,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      * @function
      */
     requestAnimationFrame: {
-        value: (window.requestAnimationFrame || window.webkitRequestAnimationFrame
-             || window.mozRequestAnimationFrame ||  window.msRequestAnimationFrame),
+        value: (global.requestAnimationFrame || global.webkitRequestAnimationFrame
+             || global.mozRequestAnimationFrame ||  global.msRequestAnimationFrame || setTimeout),
         enumerable: false
     },
 
@@ -3832,8 +3831,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      * @function
      */
     cancelAnimationFrame: {
-        value: (window.cancelAnimationFrame ||  window.webkitCancelAnimationFrame
-             || window.mozCancelAnimationFrame || window.msCancelAnimationFrame),
+        value: (global.cancelAnimationFrame ||  global.webkitCancelAnimationFrame
+             || global.mozCancelAnimationFrame || global.msCancelAnimationFrame || clearTimeout),
         enumerable: false
     },
 

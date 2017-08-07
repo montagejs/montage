@@ -1,7 +1,7 @@
 {
     "owner_reference": {
         "prototype": "core/meta/object-descriptor-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "objectDescriptorName": "ObjectDescriptor",
                 "prototypeName": "ObjectDescriptor",
@@ -13,7 +13,7 @@
     },
     "property_name": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "name",
             "objectDescriptor": {
                 "@": "root"
@@ -29,7 +29,7 @@
     },
     "property_owner": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "owner",
             "objectDescriptor": {
                 "@": "root"
@@ -48,7 +48,7 @@
     },
     "property_cardinality": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "cardinality",
             "objectDescriptor": {
                 "@": "root"
@@ -64,7 +64,7 @@
     },
     "property_mandatory": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "mandatory",
             "objectDescriptor": {
                 "@": "root"
@@ -80,7 +80,7 @@
     },
     "property_denyDelete": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "denyDelete",
             "objectDescriptor": {
                 "@": "root"
@@ -96,7 +96,7 @@
     },
     "property_readOnly": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "readOnly",
             "objectDescriptor": {
                 "@": "root"
@@ -112,7 +112,7 @@
     },
     "property_valueType": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "valueType",
             "objectDescriptor": {
                 "@": "root"
@@ -137,7 +137,7 @@
     },
     "property_collectionValueType": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "collectionValueType",
             "objectDescriptor": {
                 "@": "root"
@@ -158,7 +158,7 @@
     },
     "property_valueObjectPrototypeName": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "valueObjectPrototypeName",
             "objectDescriptor": {
                 "@": "root"
@@ -174,7 +174,7 @@
     },
     "property_valueObjectModuleId": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "valueObjectModuleId",
             "objectDescriptor": {
                 "@": "root"
@@ -190,7 +190,7 @@
     },
     "property_enumValues": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "enumValues",
             "objectDescriptor": {
                 "@": "root"
@@ -206,7 +206,7 @@
     },
     "property_helpKey": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "helpKey",
             "objectDescriptor": {
                 "@": "root"
@@ -220,9 +220,27 @@
             "helpKey": ""
         }
     },
+    "property_serializable": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "serializable",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "boolean",
+            "enumValues": [],
+            "helpKey": "",
+            "serializable": true
+        }
+    },
+
     "root": {
         "prototype": "core/meta/module-object-descriptor",
-        "properties": {
+        "values": {
             "name": "PropertyDescriptor",
             "customPrototype": false,
             "propertyDescriptors": [

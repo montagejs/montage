@@ -279,7 +279,8 @@ if (typeof window !== "undefined") { // client-side
             value: function EventManager () {
                 this._trackingTouchStartList = new Map();
                 this._trackingTouchEndList = new Map();
-
+                this._findActiveTargetMap = new Map();
+                this._eventPathForTargetMap = new Map();
                 this._claimedPointers = new Map();
                 this._registeredCaptureEventListeners = new Map();
                 this._registeredBubbleEventListeners = new Map();
@@ -937,7 +938,7 @@ if (typeof window !== "undefined") { // client-side
 
                 mapIter = _registeredBubbleEventListeners.keys();
                 while (eventType = mapIter.next().value) {
-                    eventRegistration = _registeredBubbleEventListenersget(eventType);
+                    eventRegistration = _registeredBubbleEventListeners.get(eventType);
                     if (eventRegistration.has(target)) {
                         observedEventListeners.push(eventType);
                     }
@@ -1235,7 +1236,7 @@ if (typeof window !== "undefined") { // client-side
                     var eventManager = this;
                     this._activationHandler = function _activationHandler(evt) {
                         var eventType = evt.type,
-                            canBecomeActiveTarget = eventType !== "mouseenter" && eventType !== "pointerenter", 
+                            canBecomeActiveTarget = eventType !== "mouseenter" && eventType !== "pointerenter",
                             touchCount;
 
                         // Prepare any components associated with elements that may receive this event
@@ -2161,13 +2162,20 @@ if (typeof window !== "undefined") { // client-side
             value: function (event) {
                 if (this._shouldDispatchEventCondition) {
                     /**
-                     * Under IOS emulated mouse events have a timestamp set to 0. (Just WKWebView not UIWebView)
+                     * Under IOS < 10.3.1, emulated mouse events have a timestamp set to 0. (Just WKWebView not UIWebView)
+                     * starting with 10.3.1, timeStamp is non null. However, emulated events don't have the property movementX/Y
+                     * that desktop Safari has, so we're adding logic to leverage that.
                      * Plus, this property can't be used for Firefox.
                      * Firefox has an open bug since 2004: the property timeStamp is not populated correctly.
                      * -> https://bugzilla.mozilla.org/show_bug.cgi?id=238041
                      */
                     if (this.environment.isIOSDevice && this.environment.isWKWebView) {
-                        return !(event.timeStamp === 0);
+                        if(event.timeStamp === 0) {
+                            return false;
+                        }
+                        if(this._couldEventBeSimulated(event) && !event.hasOwnProperty("movementX")) {
+                            return false;
+                        }
                     }
 
                     /**
@@ -2385,7 +2393,7 @@ if (typeof window !== "undefined") { // client-side
         handleEvent: {
             enumerable: false,
             value: function (event) {
-                if (!this._shouldDispatchEvent(event)) {
+                if (event instanceof UIEvent && !this._shouldDispatchEvent(event)) {
                     return void 0;
                 }
 
@@ -2654,7 +2662,9 @@ if (typeof window !== "undefined") { // client-side
                 }
             }
         },
-
+        _findActiveTargetMap : {
+            value: undefined
+        },
         /**
          * @private
          */
@@ -2662,8 +2672,9 @@ if (typeof window !== "undefined") { // client-side
             value: function (target) {
 
                 var foundTarget = null,
-                    checkedTargetMap = new WeakMap();
+                    checkedTargetMap = this._findActiveTargetMap;
 
+                checkedTargetMap.clear();
                 //TODO report if a cycle is detected?
                 while (!foundTarget && target && !(checkedTargetMap.has(target))) {
 
@@ -2682,6 +2693,9 @@ if (typeof window !== "undefined") { // client-side
             }
         },
 
+        _eventPathForTargetMap : {
+            value: undefined
+        },
         /**
          * Build the event target chain for the the specified Target
          * @private
@@ -2697,7 +2711,9 @@ if (typeof window !== "undefined") { // client-side
                 var targetCandidate = target,
                     application = this.application,
                     eventPath = [],
-                    discoveredTargets = new WeakMap();
+                    discoveredTargets = this._eventPathForTargetMap;
+
+                discoveredTargets.clear();
 
                 // Consider the target "discovered" for less specialized detection of cycles
                 discoveredTargets.set(target,true);
@@ -2871,9 +2887,11 @@ if (typeof window !== "undefined") { // client-side
                     return;
                 }
 
-                value.willBecomeActiveTarget(this.activeTarget);
-                this._activeTarget = value;
-                value.didBecomeActiveTarget();
+                if (value) {
+                    value.willBecomeActiveTarget(this.activeTarget);
+                    this._activeTarget = value;
+                    value.didBecomeActiveTarget();
+                }
             }
         }
 

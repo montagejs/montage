@@ -1,4 +1,5 @@
-var Montage = require("../../core").Montage;
+var Montage = require("../../core").Montage,
+    deprecate = require("../../deprecate");
 
 var SelfDeserializer = Montage.specialize( {
     _object: {value: null},
@@ -26,7 +27,9 @@ var SelfDeserializer = Montage.specialize( {
 
     getProperty: {
         value: function (name) {
-            if (this._objectDescriptor.properties) {
+            if (this._objectDescriptor.values) {
+                return this._objectDescriptor.values[name];
+            } else if (this._objectDescriptor.properties) { // deprecated
                 return this._objectDescriptor.properties[name];
             }
         }
@@ -50,24 +53,31 @@ var SelfDeserializer = Montage.specialize( {
 
     getObjectByLabel: {
         value: function (label) {
-            this._context.getObject(label);
+            return this._context.getObject(label);
         }
     },
 
     deserializeProperties: {
+        value: deprecate.deprecateMethod(void 0, function (propertyNames) {
+            return this.deserializeValues(propertyNames);
+        }, "deserializeProperties", "deserializeValues")
+    },
+
+    deserializeValues: {
         value: function (propertyNames) {
             var object = this._object,
-                properties = this._objectDescriptor.properties,
+                // .properties deprecated
+                values = this._objectDescriptor.values || this._objectDescriptor.properties,
                 propertyName;
 
-            if (properties) {
+            if (values) {
                 if (!propertyNames) {
                     propertyNames = Montage.getSerializablePropertyNames(object);
                 }
 
                 for (var i = 0, ii = propertyNames.length; i < ii; i++) {
                     propertyName = propertyNames[i];
-                    object[propertyName] = properties[propertyName];
+                    object[propertyName] = values[propertyName];
                 }
             }
         }

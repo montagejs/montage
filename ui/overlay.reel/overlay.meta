@@ -1,7 +1,7 @@
 {
     "blueprint_loader_anchor": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "anchor",
             "blueprint": {
                 "@": "root"
@@ -11,7 +11,7 @@
     },
     "blueprint_loader_position": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "position",
             "blueprint": {
                 "@": "root"
@@ -21,7 +21,7 @@
     },
     "blueprint_loader_delegate": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "delegate",
             "blueprint": {
                 "@": "root"
@@ -31,7 +31,7 @@
     },
     "blueprint_loader_dismissOnExternalInteraction": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "dismissOnExternalInteraction",
             "blueprint": {
                 "@": "root"
@@ -41,7 +41,7 @@
     },
     "blueprint_component_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Component",
                 "prototypeName": "Component",
@@ -53,12 +53,12 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "Overlay",
             "parent": {
                 "@": "blueprint_component_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_loader_position"
                 },
@@ -69,7 +69,7 @@
                     "@": "blueprint_loader_dismissOnExternalInteraction"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Overlay": [
                     {
                         "@": "blueprint_loader_position"

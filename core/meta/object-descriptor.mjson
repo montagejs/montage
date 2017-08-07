@@ -1,7 +1,7 @@
 {
     "model_reference": {
         "prototype": "core/meta/model-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "objectDescriptorName": "Model",
                 "prototypeName": "Model",
@@ -13,7 +13,7 @@
     },
     "property_descriptor_reference": {
         "prototype": "core/meta/object-descriptor-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "objectDescriptorName": "PropertyDescriptor",
                 "prototypeName": "PropertyDescriptor",
@@ -25,7 +25,7 @@
     },
     "property_validation_rules_reference": {
         "prototype": "core/meta/object-descriptor-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "objectDescriptorName": "PropertyValidationRule",
                 "prototypeName": "PropertyValidationRule",
@@ -37,7 +37,7 @@
     },
     "name": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "name",
             "objectDescriptor": {
                 "@": "root"
@@ -51,9 +51,25 @@
             "helpKey": ""
         }
     },
+    "maxAge": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "name",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "number",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
     "objectDescriptorInstanceModuleId": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "objectDescriptorInstanceModuleId",
             "objectDescriptor": {
                 "@": "root"
@@ -69,7 +85,7 @@
     },
     "object_model": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "objectModel",
             "objectDescriptor": {
                 "@": "root"
@@ -86,7 +102,7 @@
     },
     "property_descriptors": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "propertyDescriptors",
             "objectDescriptor": {
                 "@": "root"
@@ -105,7 +121,7 @@
     },
     "property_descriptor_groups": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "propertyDescriptorGroups",
             "objectDescriptor": {
                 "@": "root"
@@ -124,7 +140,7 @@
     },
     "property_validation_rules": {
         "prototype": "core/meta/property-descriptor",
-        "properties": {
+        "values": {
             "name": "propertyValidationRules",
             "objectDescriptor": {
                 "@": "root"
@@ -143,7 +159,7 @@
     },
     "root": {
         "prototype": "core/meta/module-object-descriptor",
-        "properties": {
+        "values": {
             "name": "ObjectDescriptor",
             "module": {
                 "%": "core/meta/object-descriptor"
@@ -153,6 +169,9 @@
             "propertyDescriptors": [
                 {
                     "@": "name"
+                },
+                {
+                    "@": "maxAge"
                 },
                 {
                     "@": "objectDescriptorInstanceModuleId"
@@ -174,6 +193,9 @@
                 "objectDescriptor": [
                     {
                         "@": "name"
+                    },
+                    {
+                        "@": "maxAge"
                     },
                     {
                         "@": "objectDescriptorInstanceModuleId"

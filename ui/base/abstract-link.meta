@@ -1,7 +1,7 @@
 {
     "enabled_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "enabled",
             "valueType": "boolean",
             "blueprint": {
@@ -11,7 +11,7 @@
     },
     "src_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "src",
             "valueType": "string",
             "blueprint": {
@@ -21,7 +21,7 @@
     },
     "label_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "label",
             "valueType": "string",
             "blueprint": {
@@ -31,7 +31,7 @@
     },
     "textAlternative_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "textAlternative",
             "valueType": "string",
             "blueprint": {
@@ -41,7 +41,7 @@
     },
     "active_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "active",
             "valueType": "boolean",
             "blueprint": {
@@ -51,7 +51,7 @@
     },
     "blueprint_parent": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "AbstractControl",
                 "prototypeName": "AbstractControl",
@@ -63,12 +63,12 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "AbstractLink",
             "parent": {
                 "@": "blueprint_parent"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "enabled_property"
                 },
@@ -85,7 +85,7 @@
                     "@": "active_property"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Main": [
                     {
                         "@": "enabled_property"

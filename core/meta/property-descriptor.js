@@ -109,6 +109,8 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             }
             this._setPropertyWithDefaults(serializer, "defaultValue", this.defaultValue);
             this._setPropertyWithDefaults(serializer, "helpKey", this.helpKey);
+            this._setPropertyWithDefaults(serializer, "definition", this.definition);
+
         }
     },
 
@@ -131,11 +133,8 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this.enumValues = this._getPropertyWithDefaults(deserializer, "enumValues");
             this.defaultValue = this._getPropertyWithDefaults(deserializer, "defaultValue");
             this.helpKey = this._getPropertyWithDefaults(deserializer, "helpKey");
-            // DO NOT USE FOR DEVELOPMENT ONLY
-            var value = deserializer.getProperty("synonym");
-            if (value) {
-                this.synonym = value;
-            }
+            this.definition = this._getPropertyWithDefaults(deserializer, "definition");
+
         }
     },
 
@@ -260,9 +259,25 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @default false
      */
     isDerived: {
-        get:function () {
+        get: function () {
             return false;
         }
+    },
+
+    /**
+     * @type {string}
+     * Definition can be used to express a property as the result of evaluating an expression
+     * An example would be to flatten/traverse two properties across two objects to make its
+     * content accessible as a new property name. For example, in a many to many relaational
+     * style, a Movie would have a toDirector property to a "DirectorRole" which itself would
+     * point through a toTalent property to the actual Person. A "director" property definition
+     * would then be "toDirector.toTalent"
+     *
+     * TODO: It is likely that if a property has a definition, it should return true to isDerived
+     * and false to serializable
+     */
+    definition: {
+        value: null
     },
 
     /**
@@ -309,6 +324,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             return this._valueDescriptorReference && this._valueDescriptorReference.promise(this.require);
         },
         set: function (descriptor) {
+
             this._valueDescriptorReference = new ObjectDescriptorReference().initWithValue(descriptor);
         }
     },
@@ -349,6 +365,15 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
 
     objectDescriptorModuleId:require("../core")._objectDescriptorModuleIdDescriptor,
     objectDescriptor:require("../core")._objectDescriptorDescriptor,
+
+    /**
+     * @type {boolean}
+     * possible values are: "reference" | "value" | "auto" | true | false,
+     * @default false
+     */
+    serializable: {
+        value: true
+    },
 
     /********************************************************
      * Deprecated functions

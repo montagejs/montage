@@ -233,8 +233,8 @@ valuePropertyDescriptor.value = function specialize(prototypeProperties, constru
         Montage.defineProperties(constructor, constructorProperties, true);
 
         Montage.defineProperty(constructor,"__isConstructor__", {
-                value: true,
-                enumerable: false
+            value: true,
+            enumerable: false
         });
 
 
@@ -371,7 +371,7 @@ Object.defineProperty(Montage, "defineProperties", {value: function (obj, proper
     if (typeof properties !== "object" || properties === null) {
         throw new TypeError("Properties must be an object, not '" + properties + "'");
     }
-    var propertyKeys = Object.getOwnPropertyNames(properties);
+    var property, propertyKeys = Object.getOwnPropertyNames(properties);
     for (var i = 0; (property = propertyKeys[i]); i++) {
         if ("_bindingDescriptors" !== property) {
             this.defineProperty(obj, property, properties[property], inSpecialize);
@@ -948,6 +948,22 @@ Montage.defineProperty(Montage.prototype, "identifier", {
     value: null,
     serializable: true
 });
+
+
+
+/**
+ * The version of an object (integer). This is intended to represent the current version of an Object.
+ * As an object evolves, properties are added, removed, re-factored, an object's moduleId doesn't change
+ * and deserialisation needs to be able to deserialize older versions, with the abilty to look at the version
+ * serialized vs the current one at deserialization.
+ *
+ * @type {Number} .
+ */
+Montage.defineProperty(Montage.prototype, "version", {
+    value: 1,
+    serializable: false //This should be on my default, but will have to require testing and some adaptation around the code base. Specialized objects off Montage will have to override it if they want the default serialization of the version property, or to deal with it in serialize/deserializeSelf
+});
+
 
 /**
  * Returns true if two objects are equal, otherwise returns false.
@@ -1533,8 +1549,7 @@ var pathPropertyDescriptors = {
      * @see Montage#addPathChangeListener
      * @function Montage#removePathChangeListener
      * @param {string} path
-     * @param {object|function}
-     * @param {string} handlerMethodName
+     * @param {object|function} handler
      * @param {boolean} beforeChange
      */
     removePathChangeListener: {

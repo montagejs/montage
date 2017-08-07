@@ -1,8 +1,0 @@
-{
-    "name": "named-parent-package",
-    "version": "0.0.0",
-    "main": "program",
-    "dependencies": {
-        "child-package": "0.0.0"
-    }
-}

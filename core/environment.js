@@ -12,7 +12,7 @@ var Environment = exports.Environment = Montage.specialize({
 
     constructor: {
         value: function Environment (userAgent) {
-            this.userAgent = userAgent || navigator.userAgent;
+            this.userAgent = userAgent ?  userAgent : global.navigator ? global.navigator.userAgent : '';
         }
     },
 
@@ -62,8 +62,8 @@ var Environment = exports.Environment = Montage.specialize({
     supportsPointerEvents: {
         get: function () {
             return typeof this._supportsPointerEvents !== "boolean" ?
-                (this._supportsPointerEvents = !!(window.PointerEvent ||
-                (window.MSPointerEvent && window.navigator.msPointerEnabled))) : this._supportsPointerEvents;
+                (this._supportsPointerEvents = !!(global.PointerEvent ||
+                (global.MSPointerEvent && global.navigator.msPointerEnabled))) : this._supportsPointerEvents;
         }
     },
 
@@ -90,7 +90,7 @@ var Environment = exports.Environment = Montage.specialize({
     },
 
     isCordova: {
-        value: !!window.cordova
+        value: !!global.cordova
     },
 
     _isMobileDevice: {
@@ -190,7 +190,7 @@ var Environment = exports.Environment = Montage.specialize({
     isWKWebView: {
         get: function () {
             return typeof this._isWKWebView !== "boolean" ?
-                (this._isWKWebView = this.isIOSDevice && !!window.indexedDB) : this._isWKWebView;
+                (this._isWKWebView = this.isIOSDevice && !!global.indexedDB) : this._isWKWebView;
         }
     },
 

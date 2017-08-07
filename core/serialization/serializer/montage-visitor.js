@@ -1,9 +1,11 @@
-var Montage = require("../../core").Montage;
-var MontageSerializerModule = require("./montage-serializer");
-var PropertiesSerializer = require("./properties-serializer").PropertiesSerializer;
-var SelfSerializer = require("./self-serializer").SelfSerializer;
-var UnitSerializer = require("./unit-serializer").UnitSerializer;
-var Alias = require("../alias").Alias;
+var Montage = require("../../core").Montage,
+    MontageSerializerModule = require("./montage-serializer"),
+    ValuesSerializer = require("./values-serializer").ValuesSerializer,
+    SelfSerializer = require("./self-serializer").SelfSerializer,
+    UnitSerializer = require("./unit-serializer").UnitSerializer,
+    Alias = require("../alias").Alias,
+    Bindings = require("../bindings"),
+    deprecate = require("../../deprecate");
 
 var MontageVisitor = Montage.specialize({
     _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
@@ -200,10 +202,10 @@ var MontageVisitor = Montage.specialize({
         value: function (malker, object, builderObject) {
             var selfSerializer,
                 substituteObject,
-                propertiesBuilderObject = this.builder.createObjectLiteral();
+                valuesBuilderObject = this.builder.createObjectLiteral();
 
             this.setObjectType(object, builderObject);
-            builderObject.setProperty("properties", propertiesBuilderObject);
+            builderObject.setProperty("values", valuesBuilderObject);
 
             this.builder.push(builderObject);
 
@@ -213,18 +215,19 @@ var MontageVisitor = Montage.specialize({
                         malker, this, object, builderObject);
                 substituteObject = object.serializeSelf(selfSerializer);
             } else {
-                this.setObjectProperties(malker, object);
+                this.setObjectValues(malker, object);
+                this.setObjectBindings(malker, object);
                 this.setObjectCustomUnits(malker, object);
             }
 
             this.builder.pop();
 
-            // Remove the properties unit in case none was serialized,
+            // Remove the values unit in case none was serialized,
             // we need to add it before any other units to make sure that
             // it's the first unit to show up in the serialization, since we
             // don't have a way to order the property names in a serialization.
-            if (propertiesBuilderObject.getPropertyNames().length === 0) {
-                builderObject.clearProperty("properties");
+            if (valuesBuilderObject.getPropertyNames().length === 0) {
+                builderObject.clearProperty("values");
             }
 
             return substituteObject;
@@ -271,33 +274,68 @@ var MontageVisitor = Montage.specialize({
         }
     },
 
+    setObjectBindings: {
+        value: function (malker, object) {
+            if (!malker.legacyMode) {
+                var unitSerializer = new UnitSerializer()
+                    .initWithMalkerAndVisitorAndObject(malker, this, object),
+                    bindings = Bindings.serializeObjectBindings(unitSerializer, object);
+
+                if (bindings) {
+                    var valuesObject = this.builder.top.getProperty("values");
+                    this.builder.push(valuesObject);
+
+                    for (var key in bindings) {
+                        this.builder.top.setProperty(key, bindings[key]);
+                    }
+                    this.builder.pop();
+                }
+            }
+        }
+    },
+
+    setObjectProperties: {
+        value: deprecate.deprecateMethod(void 0, function (malker, object) {
+            return this.setObjectValues(malker, object);
+        }, "setObjectProperties", "setObjectValues")
+    },
+
     /*
      * Expected object at the top of the stack: CustomObject
      */
-    setObjectProperties: {
+    setObjectValues: {
         value: function (malker, object) {
-            var propertiesSerializer,
-                propertiesObject;
+            var valuesSerializer,
+                valuesObject = this.builder.top.getProperty("values");
+            
+            this.builder.push(valuesObject);
 
-            propertiesObject = this.builder.top.getProperty("properties");
-            this.builder.push(propertiesObject);
-
-            if (typeof object.serializeProperties === "function") {
-                propertiesSerializer = new PropertiesSerializer()
+            if (typeof object.serializeProperties === "function" || typeof object.serializeValues === "function") {
+                valuesSerializer = new ValuesSerializer()
                     .initWithMalkerAndVisitorAndObject(malker, this, object);
-                object.serializeProperties(propertiesSerializer);
+                if (object.serializeValues) {
+                    object.serializeValues(valuesSerializer);
+                } else { // deprecated
+                    object.serializeProperties(valuesSerializer);
+                }
             } else {
-                this.setSerializableObjectProperties(malker, object);
+                this.setSerializableObjectValues(malker, object);
             }
 
             this.builder.pop();
         }
     },
 
+    setSerializableObjectProperties: {
+        value: deprecate.deprecateMethod(void 0, function (malker, object) {
+            return this.setSerializableObjectValues(malker, object);
+        }, "setSerializableObjectProperties", "setSerializableObjectValues")
+    },
+
     /*
      * Expected object at the top of the stack: ObjectLiteral
      */
-    setSerializableObjectProperties: {
+    setSerializableObjectValues: {
         value: function (malker, object) {
             var type,
                 propertyName,
@@ -347,6 +385,10 @@ var MontageVisitor = Montage.specialize({
     setObjectCustomUnits: {
         value: function (malker, object) {
             for (var unitName in this._units) {
+                if (unitName === "bindings" && !malker.legacyMode) {
+                    continue;
+                }
+
                 this.setObjectCustomUnit(malker, object, unitName);
             }
         }

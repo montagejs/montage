@@ -1,0 +1,25 @@
+language: node_js
+node_js:
+  - "4"
+  # Disabled until Montage support flat node_modules aka npm 3+
+  #- "6"
+  #- "7"
+script: npm run $COMMAND
+env:
+  - COMMAND=test
+  - COMMAND=test:karma-travis
+  #- COMMAND=integration MONTAGE_VERSION=. MOP_VERSION=0.13
+  #- COMMAND=integration MONTAGE_VERSION=. MOP_VERSION=latest
+  - COMMAND=integration MONTAGE_VERSION=. MOP_VERSION="#master"
+before_install:
+  - "npm set legacy-bundling=true"
+  - export CHROME_BIN=chromium-browser
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+notifications:
+  irc:
+    channels:
+      - "chat.freenode.net#montage"
+    on_success: false
+    template:
+      - "%{author} broke the %{repository} tests on %{branch}: %{build_url}"

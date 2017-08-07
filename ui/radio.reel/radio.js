@@ -2,7 +2,7 @@
     @module "montage/ui/input-radio.reel"
 */
 var CheckControl = require("ui/check-control").CheckControl,
-    PressComposer = require("../../composer/press-composer").PressComposer
+    PressComposer = require("../../composer/press-composer").PressComposer,
     KeyComposer = require("../../composer/key-composer").KeyComposer;
 /**
  * Wraps the a &lt;input type="radio"> element with binding support for the element's standard attributes.
@@ -81,7 +81,7 @@ var Radio = exports.Radio = CheckControl.specialize({
                 this._radioButtonController.unregisterRadioButton(this);
             }
             this._radioButtonController = value;
-            value.registerRadioButton(this);
+            if(value) value.registerRadioButton(this);
         },
         get: function () {
             return this._radioButtonController;

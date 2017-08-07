@@ -1,5 +1,6 @@
 /*global require, exports, document, Error*/
-var Component = require("../component").Component;
+var Component = require("../component").Component,
+    deprecate = require('../../core/deprecate');
 
 var CLASS_PREFIX = "montage-TextArea";
 
@@ -34,17 +35,27 @@ var AbstractTextArea = exports.AbstractTextArea = Component.specialize(
         value: true
     },
 
-    _placeholderValue: {
+    _placeholder: {
         value: null
     },
 
     placeholderValue: {
         set: function (value) {
-            this._placeholderValue = value;
+            deprecate.deprecationWarning("placeholderValue", "placeholder")
+            this.placeholder = value;
+        },
+        get: function () {
+            return this.placeholder;
+        }
+    },
+
+    placeholder: {
+        set: function (value) {
+            this._placeholder = value;
             this.needsDraw = true;
         },
         get: function () {
-            return this._placeholderValue;
+            return this._placeholder;
         }
     },
 
@@ -75,8 +86,8 @@ var AbstractTextArea = exports.AbstractTextArea = Component.specialize(
         value: function () {
             var value = this.value;
             this.element.value = value || false === value ? value.toString() : "";
-            if (this._placeholderValue != null) {
-                this.element.setAttribute("placeholder", this._placeholderValue);
+            if (this._placeholder) {
+                this.element.setAttribute("placeholder", this._placeholder);
             }
             this.element.disabled = !this.enabled;
         }

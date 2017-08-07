@@ -6,17 +6,15 @@
     <script type="text/montage-serialization">
     {
         "owner": {
-            "properties": {
+            "values": {
                 "element": {"#": "owner"},
-                "_flow": {"@": "flow"}
-            },
-            "bindings": {
+                "_flow": {"@": "flow"},
                 "_flowScroll": {"<-" : "@flow.scroll"}
             }
         },
         "flow": {
             "prototype": "ui/flow.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "flow"},
                 "isCameraEnabled": false,
                 "elasticScrollingSpeed": 0.6,
@@ -64,32 +62,26 @@
                             "opacity": ""
                         }
                     }
-                ]
-            },
-            "bindings": {
+                ],
                 "sceneScaleX.numerator": {"<-": "viewportWidth"},
                 "content": {"<-": "@owner.images"}
             }
         },
         "image": {
             "prototype": "ui/image-gallery-item.reel",
-            "properties": {
+            "values": {
                 "element": {
                     "#": "image"
-                }
-            },
-            "bindings": {
+                },
                 "src": {"<-" : "@flow:iteration.object"}
             }
         },
         "previous": {
             "prototype": "ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {
                     "#": "previous"
-                }
-            },
-            "bindings": {
+                },
                 "enabled": {"<-" : "@owner.currentImageIndex > 0"}
             },
             "listeners": [
@@ -101,12 +93,10 @@
         },
         "next": {
             "prototype": "ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {
                     "#": "next"
-                }
-            },
-            "bindings": {
+                },
                 "enabled": {"<-" : "@owner.currentImageIndex < @owner.images.length - 1"}
             },
             "listeners": [

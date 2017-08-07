@@ -1,6 +1,7 @@
 var Montage = require("../../core").Montage,
     MontageInterpreter = require("./montage-interpreter").MontageInterpreter,
-    MontageReviver = require("./montage-reviver").MontageReviver;
+    MontageReviver = require("./montage-reviver").MontageReviver,
+    deprecate = require("../../deprecate");
 
 var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
 
@@ -31,6 +32,21 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
 
             return this;
         }
+    },
+
+    initWithObject: {
+        value: function (serialization, _require, objectRequires) {
+            this._serializationString = JSON.stringify(serialization);
+            this._interpreter = new MontageInterpreter().init(_require, objectRequires);
+            return this;
+        }
+    },
+
+
+    initWithObjectAndRequire: {
+         value: deprecate.deprecateMethod(void 0, function (serialization, _require, objectRequires) {
+            return this.initWithObject(serialization, _require, objectRequires);
+        }, "initWithObjectAndRequire", "initWithObject")
     },
 
     deserialize: {
@@ -86,7 +102,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                 gutterSize,
                 line;
 
-            return require.async("core/jshint").then(function (module) {
+            return require.async("jshint/dist/jshint").then(function (module) {
                 if (!module.JSHINT(source)) {
                     error = module.JSHINT.errors[0];
                     lines = source.split("\n");
@@ -110,6 +126,26 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
         }
     }
 
+}, {
+    // Adapted from mr/sandbox
+    getModuleRequire: {
+        value: function (parentRequire, moduleId) {
+            var topId = parentRequire.resolve(moduleId);
+            var module = parentRequire.getModuleDescriptor(topId);
+
+            while (module.redirect || module.mappingRedirect) {
+                if (module.redirect) {
+                    topId = module.redirect;
+                } else {
+                    parentRequire = module.mappingRequire;
+                    topId = module.mappingRedirect;
+                }
+                module = parentRequire.getModuleDescriptor(topId);
+            }
+
+            return module.require;
+        }
+    }
 });
 
 

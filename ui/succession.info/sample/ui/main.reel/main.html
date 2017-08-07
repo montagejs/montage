@@ -9,7 +9,7 @@
     <script type="text/montage-serialization">
     {
         "owner": {
-            "properties": {
+            "values": {
                 "element": {"#": "Main"},
                 "succession1": {"@": "succession1"}
             },
@@ -22,7 +22,7 @@
         },
         "succession1": {
             "prototype": "montage/ui/succession.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "succession1"}
             },
             "listeners": [
@@ -38,73 +38,73 @@
         },
         "succession1DefaultContent": {
             "prototype": "ui/foo.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "succession1DefaultContent"}
             }
         },
         "push": {
             "prototype": "montage/ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "push"}
             }
         },
         "pushx5": {
             "prototype": "montage/ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "pushx5"}
             }
         },
         "pop": {
             "prototype": "montage/ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "pop"}
             }
         },
         "popx5": {
             "prototype": "montage/ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "popx5"}
             }
         },
         "contentComponent": {
             "prototype": "montage/ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "contentComponent"}
             }
         },
         "contentNull": {
             "prototype": "montage/ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "contentNull"}
             }
         },
         "multiOp": {
             "prototype": "montage/ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "multiOp"}
             }
         },
         "toggleOverflow": {
             "prototype": "montage/ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "toggleOverflow"}
             }
         },
         "setSuccessionBuildInOut": {
             "prototype": "montage/ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "setSuccessionBuildInOut"}
             }
         },
         "clearSuccessionBuildInOut": {
             "prototype": "montage/ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "clearSuccessionBuildInOut"}
             }
         },
         "disableSuccessionBuildInOut": {
             "prototype": "montage/ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "disableSuccessionBuildInOut"}
             }
         },
@@ -112,73 +112,57 @@
 
         "stack": {
             "prototype": "montage/ui/repetition.reel",
-            "properties": {
-                "element": {"#": "stack"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "stack"},
                 "content": {"<-": "@succession1.history.reversed()"}
             }
         },
         "lastBuildInComponentIdentifier": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "lastBuildInComponentIdentifier"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "lastBuildInComponentIdentifier"},
                 "value": {"<-": "@owner.lastBuildInComponentIdentifier"}
             }
         },
         "lastBuildOutComponentIdentifier": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "lastBuildOutComponentIdentifier"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "lastBuildOutComponentIdentifier"},
                 "value": {"<-": "@owner.lastBuildOutComponentIdentifier"}
             }
         },
         "buildInOverride": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "buildInOverride"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "buildInOverride"},
                 "value": {"<-": "@succession1.contentBuildInCssClass || 'none'"}
             }
         },
         "buildOutOverride": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "buildOutOverride"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "buildOutOverride"},
                 "value": {"<-": "@succession1.contentBuildOutCssClass || 'none'"}
             }
         },
         "displayTitle": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "displayTitle"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "displayTitle"},
                 "value": {"<-": "@stack:iteration.object.title ?? 'N/A'"}
             }
         },
         "animation": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "animation"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "animation"},
                 "value": {"<-": "@stack:iteration.object.buildInCssClass + ' ' + @stack:iteration.object.buildInTransitionCssClass + ' ' + @stack:iteration.object.buildOutCssClass"}
             }
         },
         "animationOverride": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "animationOverride"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "animationOverride"},
                 "value": {"<-": "@stack:iteration.object.buildInCssClassOverride + ' ' + @stack:iteration.object.buildInTransitionCssClassOverride + ' ' + @stack:iteration.object.buildOutCssClassOverride"}
             }
         },
@@ -186,7 +170,7 @@
 
         "select": {
             "prototype": "montage/ui/select.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "select"},
                 "content": [
                     {"label": "Foo"},
@@ -197,16 +181,14 @@
         },
         "SubstitutionMultiOp": {
             "prototype": "montage/ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "SubstitutionMultiOp"}
             }
         },
         "substitution": {
             "prototype": "montage/ui/substitution.reel",
-            "properties": {
-                "element": {"#": "substitution"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "substitution"},
                 "switchValue": {
                     "<->": "@select.value.label"
                 }
@@ -214,13 +196,13 @@
         },
         "FooForSubstitution": {
             "prototype": "ui/foo.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "FooForSubstitution"}
             }
         },
         "BarForSubstitution": {
             "prototype": "ui/bar.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "BarForSubstitution"}
             }
         },
@@ -228,19 +210,19 @@
 
         "detach": {
             "prototype": "montage/ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "detach"}
             }
         },
         "Bar2": {
             "prototype": "ui/bar.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "Bar2"}
             }
         },
         "text": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "text"},
                 "value": "Hello World.",
                 "buildInCssClass": "transition-build-in",
@@ -251,7 +233,7 @@
 
         "Slot": {
             "prototype": "montage/ui/slot.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "Slot"},
                 "content": {"@": "Bar3"},
                 "buildInCssClass": "slideInDown"
@@ -259,7 +241,7 @@
         },
         "Bar3": {
             "prototype": "ui/bar.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "Bar3"},
                 "buildInCssClass": null,
                 "buildInTransitionCssClass": null
@@ -269,14 +251,14 @@
 
         "Container": {
             "prototype": "montage/ui/component[Component]",
-            "properties": {
+            "values": {
                 "element": {"#": "Container"},
                 "hasTemplate": false
             }
         },
         "innerText": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "innerText"},
                 "value": "Text Inside Empty Component"
             }
@@ -284,20 +266,20 @@
 
         "conditionToggle": {
             "prototype": "montage/ui/button.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "conditionToggle"}
             }
         },
         "condition": {
             "prototype": "montage/ui/condition.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "condition"},
                 "condition": true
             }
         },
         "baz": {
             "prototype": "ui/baz.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "baz"}
             }
         }

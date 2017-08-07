@@ -1,3 +1,29 @@
+### 17.0.10
+- Fix Mop support again
+
+### v17.0.5
+- Fix undefined 'deprecate' in AbstractTextField and AbstractTextArea
+
+### v17.0.4
+- Minor NodeJS fix
+
+### v17.0.3
+- Fix Mop support 
+
+### v17.0.2
+ - Fix Mop-integration support
+ 
+### v17.0.1
+
+  - Upgrade tests stack
+    - Add travis support
+    - Remove hardcoded dependency in favor of npm packages for Jasmine and  js-beautify
+    - Migrate specs to Jasmine 2.5.2O (npm run test:jasmine)
+    - Revamp NodeJS tests runner (npm test)
+    - Migrate Phantom.js tests runner to Karma (npm run test:karma)
+  - jshint and other minors fix.
+  - implement initial support for NodeJS
+  
 ### v17.0.0
 
 - Other minor fixes

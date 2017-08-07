@@ -1,7 +1,7 @@
 {
     "converter_blueprint_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Converter",
                 "prototypeName": "Converter",
@@ -13,14 +13,14 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "NewLineToBrConverter",
             "customPrototype": false,
             "parent": {
                 "@": "converter_blueprint_reference"
             },
-            "propertyBlueprints": [],
-            "propertyBlueprintGroups": {},
+            "propertyDescriptors": [],
+            "propertyDescriptorGroups": {},
             "propertyValidationRules": {},
             "blueprintModule": {
                 "%": "core/converter/new-line-to-br-converter.meta"

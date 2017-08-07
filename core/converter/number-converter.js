@@ -40,6 +40,7 @@ var Converter = require("./converter").Converter;
 var Validator = require("./converter").Validator;
 var isNumber = require("./converter").isNumber;
 var isDef = require("./converter").isDef;
+var String = require('../shim/string')
 
 /**
  * Regular expression for detecting scaling units, such as K, M, G, etc. for

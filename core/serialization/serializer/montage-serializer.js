@@ -15,7 +15,14 @@ var MontageSerializer = Montage.specialize({
     _labeler: {value: null},
     _builder: {value: null},
     _serializationIndentation: {value: 2},
-    _malker: {value: null},
+    _malker: { value: null },
+    legacyMode: { value: false },
+
+    constructor: {
+        value: function (legacyMode) {
+            this.legacyMode = !!legacyMode;
+        }
+    },
 
     initWithRequire: {
         value: function (_require) {
@@ -31,7 +38,7 @@ var MontageSerializer = Montage.specialize({
                     this.constructor._units
                 );
 
-            this._malker = new MontageWalker(this._visitor);
+            this._malker = new MontageWalker(this._visitor, this.legacyMode);
 
             return this;
         }
@@ -146,7 +153,7 @@ var MontageSerializer = Montage.specialize({
 });
 
 exports.MontageSerializer = MontageSerializer;
-exports.serialize = function (object, _require) {
-    return new MontageSerializer().initWithRequire(_require)
+exports.serialize = function (object, _require, legacyMode) {
+    return new MontageSerializer(legacyMode).initWithRequire(_require)
         .serializeObject(object);
 };

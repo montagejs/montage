@@ -1,6 +1,0 @@
-{
-    "name": "redirects-package",
-    "dependencies": {
-        "foo": "*"
-    }
-}

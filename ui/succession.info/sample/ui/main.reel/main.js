@@ -140,22 +140,22 @@ exports.Main = Component.specialize({
                 numberOfPops = 5,
                 self = this;
 
-            var pushInterval = window.setInterval(function () {
+            var pushInterval = setInterval(function () {
                 self.handlePushAction();
                 numberOfPushes--;
 
                 if (numberOfPushes === 0) {
-                    window.clearInterval(pushInterval);
+                    clearInterval(pushInterval);
                 }
             }, 500)
 
-            window.setTimeout(function () {
-                var popInterval = window.setInterval(function () {
+            setTimeout(function () {
+                var popInterval = setInterval(function () {
                     self.handlePopAction();
                     numberOfPops--;
 
                     if (numberOfPops === 0) {
-                        window.clearInterval(popInterval);
+                        clearInterval(popInterval);
                     }
                 }, 750)
             }, 900)
@@ -168,13 +168,13 @@ exports.Main = Component.specialize({
             var numberOfPushes = 10,
                 self = this;
 
-            var pushInterval = window.setInterval(function () {
+            var pushInterval = setInterval(function () {
                 numberOfPushes--;
 
                 self.handlePushAction();
 
                 if (numberOfPushes === 0) {
-                    window.clearInterval(pushInterval);
+                    clearInterval(pushInterval);
                 }
             }, 50)
         }
@@ -185,13 +185,13 @@ exports.Main = Component.specialize({
             var numberOfPops = 5,
                 self = this;
 
-            var popInterval = window.setInterval(function () {
+            var popInterval = setInterval(function () {
                 numberOfPops--;
 
                 self.handlePopAction();
 
                 if (numberOfPops === 0) {
-                    window.clearInterval(popInterval);
+                    clearInterval(popInterval);
                 }
             }, 750)
 
@@ -249,12 +249,12 @@ exports.Main = Component.specialize({
             self.templateObjects.substitution.switchValue =
                 self.templateObjects.substitution.switchValue === 'Foo' ? 'Bar' : 'Foo';
 
-            /*window.setTimeout(function () {
+            /*setTimeout(function () {
                 self.templateObjects.substitution.switchValue =
                     self.templateObjects.substitution.switchValue === 'Foo' ? 'Bar' : 'Foo';
             }, 500)
 
-            window.setTimeout(function () {
+            setTimeout(function () {
                 self.templateObjects.substitution.switchValue =
                     self.templateObjects.substitution.switchValue === 'Foo' ? 'Bar' : 'Foo';
             }, 1000)*/
