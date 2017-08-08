@@ -11,6 +11,7 @@
       "montage.js",
       "composer/",
       "core/",
+      "core/converter/",
       "ui/"
     ],
     "includePattern": ".+\\.js(doc)?$",
