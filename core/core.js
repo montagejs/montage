@@ -12,6 +12,11 @@ require("./extras/function");
 require("./extras/regexp");
 require("./extras/string");
 
+
+var Map = require("collections/map");
+var WeakMap = require("collections/weak-map");
+var Set = require("collections/set");
+
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
     PROTO = "__proto__",
@@ -23,6 +28,7 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE_UNICODE = 95,
     ARRAY_PROTOTYPE = Array.prototype,
     OBJECT_PROTOTYPE = Object.prototype,
+    hasProperty = OBJECT_PROTOTYPE.hasOwnProperty,
     accessorPropertyDescriptor = {
         get: void 0,
         set: void 0,
@@ -35,10 +41,8 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
         enumerable: false,
         writable: false
     },
-    Map = require("collections/map"),
-    WeakMap = require("collections/weak-map"),
-    Set = require("collections/set"),
-    __superWeakMap = new WeakMap();
+    __superWeakMap = new WeakMap(),
+
     //Entry is a function and value is a set containing specialied functions that have been cached
     _superDependenciesWeakMap = new WeakMap();
 
@@ -47,19 +51,17 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
         var fnNamePrefixRegex = /^[\S\s]*?function\s*/;
         var fnNameSuffixRegex = /[\s\(\/][\S\s]+$/;
 
-        function _name() {
-          var name = "";
-          if (this === Function || this === Function.prototype.constructor) {
-            name = "Function";
-          }
-          else if (this !== Function.prototype) {
-            name = ("" + this).replace(fnNamePrefixRegex, "").replace(fnNameSuffixRegex, "");
-          }
-          return name;
-        }
-
         Object.defineProperty(Function.prototype, 'name', {
-            get: _name
+            get: function () {
+              var name = "";
+              if (this === Function || this === Function.prototype.constructor) {
+                name = "Function";
+              }
+              else if (this !== Function.prototype) {
+                name = ("" + this).replace(fnNamePrefixRegex, "").replace(fnNameSuffixRegex, "");
+              }
+              return name;
+            }
         });
     }
 
@@ -83,7 +85,8 @@ Montage.defineValueProperty = function Montage_defineValueProperty(object, prope
     Montage_defineValueProperty.template.writable = writable;
 
     this.defineProperty(object, propertyName, Montage_defineValueProperty.template);
-}
+};
+
 Montage.defineValueProperty.template = valuePropertyDescriptor;
 Montage.defineAccessorProperty = function Montage_defineAccessorProperty(object, propertyName, get, set, configurable, enumerable) {
     Montage_defineAccessorProperty.template.get = get;
@@ -91,8 +94,9 @@ Montage.defineAccessorProperty = function Montage_defineAccessorProperty(object,
     Montage_defineAccessorProperty.template.configurable = configurable;
     Montage_defineAccessorProperty.template.enumerable = enumerable;
 
-    this.defineProperty(object, propertyName, Montage_defineValueProperty.template);
-}
+    this.defineProperty(object, propertyName, Montage_defineAccessorProperty.template);
+};
+
 Montage.defineAccessorProperty.template = accessorPropertyDescriptor;
 
 
@@ -267,6 +271,120 @@ if (!PROTO_IS_SUPPORTED) {
     };
 }
 
+
+
+var _defaultAccessorProperty = {
+    enumerable: true,
+    configurable: true,
+    serializable: true
+};
+var _defaultObjectValueProperty = {
+    writable: true,
+    enumerable: true,
+    configurable: true,
+    serializable: "reference"
+};
+var _defaultFunctionValueProperty = {
+    writable: true,
+    enumerable: false,
+    configurable: true
+    /*,
+    serializable: false
+    */
+};
+
+var _serializableAttributeProperties = "_serializableAttributeProperties";
+Object.defineProperty(Montage.prototype, _serializableAttributeProperties, {
+    enumerable: false,
+    configurable: false,
+    writable: true,
+    value: {}
+});
+
+
+var ObjectAttributeProperties = new Map();
+function getAttributeProperties(proto, attributeName, privateAttributeName) {
+    var attributePropertyName = privateAttributeName || (
+        attributeName === SERIALIZABLE ? 
+            _serializableAttributeProperties : 
+                (UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES));
+
+        if(proto !== Object.prototype) {
+            if (proto.hasOwnProperty(attributePropertyName)) {
+                return proto[attributePropertyName];
+            } else {
+               return Object.defineProperty(proto, attributePropertyName, {
+                    enumerable: false,
+                    configurable: false,
+                    writable: true,
+                    value: Object.create(getAttributeProperties(Object.getPrototypeOf(proto), attributeName, attributePropertyName))
+                })[attributePropertyName];
+            }
+        }
+        else {
+            if(!ObjectAttributeProperties.has(attributeName)) {
+                ObjectAttributeProperties.set(attributeName,{});
+            }
+            return ObjectAttributeProperties.get(attributeName);
+        }
+}
+
+var _superMethodDependenciesMap = new Map();
+function _superMethodDependenciesFor(anObject) {
+    var dependents = _superMethodDependenciesMap.get(anObject);
+    if(!dependents) {
+        _superMethodDependenciesMap.set(anObject,(dependents = new Set()));
+    }
+    return dependents;
+}
+
+function __clearSuperDepencies(obj, prop, replacingDescriptor) {
+
+    var superWeakMap = __superWeakMap,
+        descriptor = Object.getOwnPropertyDescriptor(obj, prop),
+        dependencies,
+        iterator,
+        dependency,
+        methodFn;
+
+    if(descriptor) {
+        if(typeof descriptor.value === FUNCTION && typeof replacingDescriptor.value === FUNCTION) {
+            superWeakMap.delete(descriptor.value);
+            dependencies = _superMethodDependenciesFor(descriptor.value);
+            iterator = dependencies.values();
+            while ((dependency = iterator.next().value)) {
+                superWeakMap.delete(dependency);
+            }
+        }
+        else {
+            if(typeof descriptor.get === FUNCTION && typeof replacingDescriptor.get === FUNCTION) {
+                superWeakMap.delete(descriptor.get);
+                dependencies = _superMethodDependenciesFor(descriptor.get);
+                iterator = dependencies.values();
+                while ((dependency = iterator.next().value)) {
+                    superWeakMap.delete(dependency);
+                }
+            }
+            if(typeof descriptor.set === FUNCTION && typeof replacingDescriptor.set === FUNCTION) {
+                superWeakMap.delete(descriptor.set);
+                dependencies = _superMethodDependenciesFor(descriptor.set);
+                iterator = dependencies.values();
+                while ((dependency = iterator.next().value)) {
+                    superWeakMap.delete(dependency);
+                }
+            }
+        }
+    }
+
+    dependencies = _superDependenciesWeakMap.get(obj);
+    if(dependencies) {
+        iterator = dependencies.values();
+        while ((dependency = iterator.next().value)) {
+            __clearSuperDepencies(dependency, prop, replacingDescriptor);
+        }
+    }
+}
+
 /**
  * Defines a property on an object using a Montage property descriptor.
  * Montage property descriptors extend and slightly vary ECMAScript 5 property
@@ -310,7 +428,7 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
         }
 
 
-        //reset defaults appropriately for framework.
+        // reset defaults appropriately for framework.
         if (PROTO in descriptor) {
             descriptor.__proto__ = (isValueDescriptor ? (typeof descriptor.value === FUNCTION ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
         } else {
@@ -325,16 +443,19 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
                 defaults = _defaultAccessorProperty;
             }
             for (var key in defaults) {
-                if (!(key in descriptor)) {
-                    descriptor[key] = defaults[key];
+                if (hasProperty.call(defaults, key)) {
+                    if (!(key in descriptor)) {
+                        descriptor[key] = defaults[key];
+                    }
                 }
             }
         }
 
-        if (!descriptor.hasOwnProperty(ENUMERABLE) && prop.charCodeAt(0) === UNDERSCORE_UNICODE) {
+        if (!hasProperty.call(descriptor, ENUMERABLE) && prop.charCodeAt(0) === UNDERSCORE_UNICODE) {
             descriptor.enumerable = false;
         }
-        if (!descriptor.hasOwnProperty(SERIALIZABLE)) {
+
+        if (!hasProperty.call(descriptor, SERIALIZABLE)) {
             if (! descriptor.enumerable) {
                 descriptor.serializable = false;
             } else if (descriptor.get && !descriptor.set) {
@@ -349,10 +470,12 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
             getAttributeProperties(obj, SERIALIZABLE)[prop] = descriptor.serializable;
         }
 
-        //clear the cache for super() for property we're about to redefine.
-        //But If we're defining a property as part of a Type/Class construction, we most likely don't need to worry about
-        //clearing super calls caches.
-        if(!inSpecialize) __clearSuperDepencies(obj,prop, descriptor);
+        // clear the cache for super() for property we're about to redefine.
+        // But If we're defining a property as part of a Type/Class construction, we most likely don't need to worry about
+        // clearing super calls caches.
+        if(!inSpecialize) {
+            __clearSuperDepencies(obj,prop, descriptor);
+        }
 
         return Object.defineProperty(obj, prop, descriptor);
     };
@@ -371,7 +494,9 @@ Object.defineProperty(Montage, "defineProperties", {value: function (obj, proper
     if (typeof properties !== "object" || properties === null) {
         throw new TypeError("Properties must be an object, not '" + properties + "'");
     }
-    var property, propertyKeys = Object.getOwnPropertyNames(properties);
+
+    var property,
+        propertyKeys = Object.getOwnPropertyNames(properties);
     for (var i = 0; (property = propertyKeys[i]); i++) {
         if ("_bindingDescriptors" !== property) {
             this.defineProperty(obj, property, properties[property], inSpecialize);
@@ -380,66 +505,141 @@ Object.defineProperty(Montage, "defineProperties", {value: function (obj, proper
     return obj;
 }});
 
-var _defaultAccessorProperty = {
-    enumerable: true,
-    configurable: true,
-    serializable: true
-};
-var _defaultObjectValueProperty = {
-    writable: true,
-    enumerable: true,
-    configurable: true,
-    serializable: "reference"
-};
-var _defaultFunctionValueProperty = {
-    writable: true,
-    enumerable: false,
-    configurable: true
-    /*,
-    serializable: false
-    */
-};
-
-
-var _serializableAttributeProperties = "_serializableAttributeProperties";
-Object.defineProperty(Montage.prototype, _serializableAttributeProperties, {
-    enumerable: false,
-    configurable: false,
-    writable: true,
-    value: {}
-});
-
-var ObjectAttributeProperties = new Map();
-function getAttributeProperties(proto, attributeName, privateAttributeName) {
-    var attributePropertyName = privateAttributeName || (
-        attributeName === SERIALIZABLE
-        ? _serializableAttributeProperties
-        : (UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES));
-
-        if(proto !== Object.prototype) {
-            if (proto.hasOwnProperty(attributePropertyName)) {
-                return proto[attributePropertyName];
-            } else {
-               return Object.defineProperty(proto, attributePropertyName, {
-                    enumerable: false,
-                    configurable: false,
-                    writable: true,
-                    value: Object.create(getAttributeProperties(Object.getPrototypeOf(proto), attributeName, attributePropertyName))
-                })[attributePropertyName];
-            }
-        }
-        else {
-            if(!ObjectAttributeProperties.has(attributeName)) {
-                ObjectAttributeProperties.set(attributeName,{});
-            }
-            return ObjectAttributeProperties.get(attributeName);
-        }
-}
-
 Montage.defineProperty(Montage, "didCreate", {
     value: Function.noop
 });
 
+function _superDependenciesFor(anObject) {
+    var dependents = _superDependenciesWeakMap.get(anObject);
+    if(!dependents) {
+        _superDependenciesWeakMap.set(anObject,(dependents = new Set()));
+    }
+    return dependents;
+}
+
+/*
+ * Find the super implementation for the given method, starting at the given
+ * point in the class hierarchy and walking up.
+ *
+ * This is done first by enumerating all object's own prototype members to find the
+ * function identical to the method we're looking for in order to know which property name it's attached to
+ * We walk up until we find one.
+ *
+ * Once found, then we continue walking up to find the true super now looking only for that known property.
+ *
+ * Returns the function once found
+ */
+var _propertyNames = [];
+function __findSuperMethodImplementation( method, classFn, isFunctionSuper, methodPropertyNameArg, isValueArg, isGetterArg, isSetterArg) {
+
+    // See if this particular class defines the function.
+    //var prototype = classFn.prototype;
+    var Object = global.Object,
+        propertyNames,
+        i, propertyName, property, func,
+        methodPropertyName,
+        isValue = isValueArg,
+        isGetter = isGetterArg,
+        isSetter = isSetterArg,
+        startContext, previousContext, context, foundSuper;
+
+        //context = isFunctionSuper ? Object.getPrototypeOf(classFn) : classFn.prototype;
+        startContext = context = isFunctionSuper ? classFn : classFn.prototype;
+
+        while (!foundSuper && context !== null) {
+
+            if(!methodPropertyName) {
+                //If methodPropertyNameArg is passed as an argument, we know what to look for,
+                //But it may not be there...
+                propertyNames = methodPropertyNameArg ? 
+                    (_propertyNames[0] = methodPropertyNameArg) && _propertyNames : 
+                        Object.getOwnPropertyNames(context);
+
+                //As we start, we don't really know which property name points to method, we're going to find out:
+                for (i=0;(propertyName = propertyNames[i]);i++) {
+                    if ((property = Object.getOwnPropertyDescriptor(context, propertyName))) {
+                        func = property.value;
+                        if (func !== undefined && func !== null) {
+                            if (func === method || func.deprecatedFunction === method) {
+                                methodPropertyName = propertyName;
+                                isValue = true;
+                                break;
+                            }
+                        }
+                        else {
+                            func = property.get;
+                            if (func !== undefined && func !== null) {
+                                if (func === method || func.deprecatedFunction === method) {
+                                    methodPropertyName = propertyName;
+                                    isGetter = true;
+                                    break;
+                                }
+                            }
+                            func = property.set;
+                            if (func !== undefined && func !== null) {
+                                if (func === method || func.deprecatedFunction === method) {
+                                    methodPropertyName = propertyName;
+                                    isSetter = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //Now that we know the property name pointing to method and wether it's a value or getter/setter
+            //We're going to walk up the tree.
+            else {
+
+                if((property = Object.getOwnPropertyDescriptor(context, methodPropertyName))) {
+                    if (property.hasOwnProperty("value")) {
+                        func = property.value;
+                        foundSuper = true;
+                        break;
+                    }
+                    else if (isGetter && property.hasOwnProperty("get")) {
+                        func = property.get;
+                        foundSuper = true;
+                        break;
+                    }
+                    else if (isSetter && property.hasOwnProperty("set")) {
+                        func = property.set;
+                        foundSuper = true;
+                        break;
+                    }
+                }
+            }
+
+            previousContext = context;
+            if ((context = Object.getPrototypeOf(context))) {
+                _superDependenciesFor(context).add(previousContext);
+            }
+        }
+
+        return foundSuper && typeof func === FUNCTION ? func : Function.noop;
+}
+
+function __super(callerFn, methodPropertyName, isValue, isGetter, isSetter) {
+    if ( !callerFn && !methodPropertyName) {
+        return undefined;
+    }
+
+    // Have we called super() within the calling function before?
+    var superFn = __superWeakMap.get(callerFn);
+
+    if ( !superFn ) {
+        var isFunctionSuper = typeof this === FUNCTION, dependents;
+
+        // Find the class implementing this method.
+        superFn = __findSuperMethodImplementation( callerFn, isFunctionSuper ? this : this.constructor , isFunctionSuper, methodPropertyName, isValue, isGetter, isSetter);
+        if ( superFn ) {
+            __superWeakMap.set(callerFn,superFn);
+            _superMethodDependenciesFor(superFn).add(callerFn);
+        }
+    }
+
+    return superFn;
+}
 
 /*
  * Call a function of the same name in a superclass.
@@ -476,253 +676,36 @@ Montage.defineProperty(Montage, "didCreate", {
  * a relative term, and this approach might easily have acceptable performance
  * for many applications.
  */
-
-function _superForValue(methodName) {
-      var callerFn = ( _superForValue && _superForValue.caller )
-        ? _superForValue.caller             // Modern browser
-        : arguments.callee.caller,        // IE9 and earlier
-      superFn = __super.call(this,callerFn,methodName,true,false,false),
-        self = this;
-
-    //We may need to cache that at some point if it gets called too often
-    return superFn ? function() {
-        return superFn.apply( self, arguments );
-    }
-    : Function.noop;
-};
-
-function _superForGet(methodName) {
-     var callerFn = ( _superForGet && _superForGet.caller )
-        ? _superForGet.caller             // Modern browser
-        : arguments.callee.caller,        // IE9 and earlier
-       superFn = __super.call(this,callerFn,methodName,false,true,false),
-        self = this;
-
-    //We may need to cache that at some point if it gets called too often
-    return superFn ? function() {
-        return superFn.apply( self, arguments );
-    }
-    : Function.noop;
-};
-
-
-function _superForSet(methodName) {
-     var callerFn = ( _superForSet && _superForSet.caller )
-        ? _superForSet.caller             // Modern browser
-        : arguments.callee.caller,        // IE9 and earlier
-       superFn = __super.call(this,callerFn,methodName,false,false,true),
-        self = this;
-
-    //We may need to cache that at some point if it gets called too often
-    return superFn ? function() {
-        return superFn.apply( self, arguments );
-    }
-    : Function.noop;
-};
-
-
 function _super() {
     // Figure out which function called us.
-    var callerFn = ( _super && _super.caller )
-        ? _super.caller             // Modern browser
-        : arguments.callee.caller,        // IE9 and earlier
+    var callerFn = ( _super && _super.caller ) ? _super.caller : arguments.callee.caller,        
         superFn = __super.call(this,callerFn);
-    return superFn
-        ? superFn.apply( this, arguments )  // Invoke superfunction
-        : undefined;;
-};
-
-
-
-
-function _superDependenciesFor(anObject) {
-    var dependents = _superDependenciesWeakMap.get(anObject);
-    if(!dependents) {
-        _superDependenciesWeakMap.set(anObject,(dependents = new Set()));
-    }
-    return dependents;
+    return superFn ? superFn.apply(this, arguments) : undefined;
 }
 
-var _superMethodDependenciesMap = new Map();
-function _superMethodDependenciesFor(anObject) {
-    var dependents = _superMethodDependenciesMap.get(anObject);
-    if(!dependents) {
-        _superMethodDependenciesMap.set(anObject,(dependents = new Set()));
-    }
-    return dependents;
+function _superForValue(methodName) {
+    var callerFn = ( _superForValue && _superForValue.caller ) ? _superForValue.caller  : arguments.callee.caller, 
+        superFn = __super.call(this, callerFn, methodName, true, false, false);
+
+    //We may need to cache that at some point if it gets called too often
+    return superFn ? superFn.bind(this) : Function.noop;
 }
 
+function _superForGet(methodName) {
+     var callerFn = ( _superForGet && _superForGet.caller ) ? _superForGet.caller : arguments.callee.caller,       
+       superFn = __super.call(this, callerFn, methodName, false, true, false);
 
-function __super(callerFn, methodPropertyName, isValue, isGetter, isSetter) {
-    if ( !callerFn && !methodPropertyName) {
-        return undefined;
-    }
-
-    // Have we called super() within the calling function before?
-    var superFn = __superWeakMap.get(callerFn);
-
-    if ( !superFn ) {
-        var isFunctionSuper = typeof this === FUNCTION, dependents;
-
-        // Find the class implementing this method.
-        superFn = findSuperMethodImplementation( callerFn, isFunctionSuper ? this : this.constructor , isFunctionSuper, methodPropertyName, isValue, isGetter, isSetter);
-        if ( superFn ) {
-            __superWeakMap.set(callerFn,superFn);
-            _superMethodDependenciesFor(superFn).add(callerFn);
-        }
-    }
-
-    return superFn;
-};
-
-function __clearSuperDepencies(obj, prop, replacingDescriptor) {
-
-    var superWeakMap = __superWeakMap,
-        descriptor = Object.getOwnPropertyDescriptor(obj, prop),
-        dependencies,
-        iterator,
-        dependency,
-        methodFn;
-
-    if(descriptor) {
-        if(typeof descriptor.value === FUNCTION && typeof replacingDescriptor.value === FUNCTION) {
-            superWeakMap.delete(descriptor.value);
-            dependencies = _superMethodDependenciesFor(descriptor.value);
-            iterator = dependencies.values();
-            while (dependency = iterator.next().value) {
-                superWeakMap.delete(dependency);
-            }
-        }
-        else {
-            if(typeof descriptor.get === FUNCTION && typeof replacingDescriptor.get === FUNCTION) {
-                superWeakMap.delete(descriptor.get);
-                dependencies = _superMethodDependenciesFor(descriptor.get);
-                iterator = dependencies.values();
-                while (dependency = iterator.next().value) {
-                    superWeakMap.delete(dependency);
-                }
-            }
-            if(typeof descriptor.set === FUNCTION && typeof replacingDescriptor.set === FUNCTION) {
-                superWeakMap.delete(descriptor.set);
-                dependencies = _superMethodDependenciesFor(descriptor.set);
-                iterator = dependencies.values();
-                while (dependency = iterator.next().value) {
-                    superWeakMap.delete(dependency);
-                }
-            }
-        }
-    }
-
-    dependencies = _superDependenciesWeakMap.get(obj);
-    if(dependencies) {
-        iterator = dependencies.values();
-        while (dependency = iterator.next().value) {
-            __clearSuperDepencies(dependency, prop, replacingDescriptor);
-        }
-    }
-
+    //We may need to cache that at some point if it gets called too often
+    return superFn ? superFn.bind(this) : Function.noop;
 }
 
-/*
- * Find the super implementation for the given method, starting at the given
- * point in the class hierarchy and walking up.
- *
- * This is done first by enumerating all object's own prototype members to find the
- * function identical to the method we're looking for in order to know which property name it's attached to
- * We walk up until we find one.
- *
- * Once found, then we continue walking up to find the true super now looking only for that known property.
- *
- * Returns the function once found
- */
-var _propertyNames = [];
-function findSuperMethodImplementation( method, classFn, isFunctionSuper, methodPropertyNameArg, isValueArg, isGetterArg, isSetterArg) {
+function _superForSet(methodName) {
+     var callerFn = ( _superForSet && _superForSet.caller ) ? _superForSet.caller : arguments.callee.caller,     
+        superFn = __super.call(this,callerFn,methodName,false,false,true);
 
-    // See if this particular class defines the function.
-    //var prototype = classFn.prototype;
-    var Object = global.Object,
-        propertyNames,
-        i, propertyName, property, func,
-        methodPropertyName,
-        isValue = isValueArg,
-        isGetter = isGetterArg,
-        isSetter = isSetterArg,
-        startContext, previousContext, context, foundSuper;
-
-        //context = isFunctionSuper ? Object.getPrototypeOf(classFn) : classFn.prototype;
-        startContext = context = isFunctionSuper ? classFn : classFn.prototype;
-
-        while (!foundSuper && context !== null) {
-
-            if(!methodPropertyName) {
-                //If methodPropertyNameArg is passed as an argument, we know what to look for,
-                //But it may not be there...
-                propertyNames = methodPropertyNameArg
-                    ? (_propertyNames[0] = methodPropertyNameArg) && _propertyNames
-                    : Object.getOwnPropertyNames(context);
-
-                //As we start, we don't really know which property name points to method, we're going to find out:
-                for (i=0;(propertyName = propertyNames[i]);i++) {
-                    if((property = Object.getOwnPropertyDescriptor(context, propertyName))) {
-                        if ((func = property.value) != null) {
-                            if (func === method || func.deprecatedFunction === method) {
-                                methodPropertyName = propertyName;
-                                isValue = true;
-                                break;
-                            }
-                        }
-                        else {
-                            if ((func = property.get) != null) {
-                                if (func === method || func.deprecatedFunction === method) {
-                                    methodPropertyName = propertyName;
-                                    isGetter = true;
-                                    break;
-                                }
-                            }
-                            if ((func = property.set) != null) {
-                                if (func === method || func.deprecatedFunction === method) {
-                                    methodPropertyName = propertyName;
-                                    isSetter = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            //Now that we know the property name pointing to method and wether it's a value or getter/setter
-            //We're going to walk up the tree.
-            else {
-
-                if((property = Object.getOwnPropertyDescriptor(context, methodPropertyName))) {
-                    if (property.hasOwnProperty("value")) {
-                        func = property.value;
-                        foundSuper = true;
-                        break;
-                    }
-                    else if (isGetter && property.hasOwnProperty("get")) {
-                        func = property.get;
-                        foundSuper = true;
-                        break;
-                    }
-                    else if (isSetter && property.hasOwnProperty("set")) {
-                        func = property.set;
-                        foundSuper = true;
-                        break;
-                    }
-                }
-            }
-
-            previousContext = context;
-            if(context = Object.getPrototypeOf(context)) {
-                _superDependenciesFor(context).add(previousContext);
-            }
-
-        }
-
-        return foundSuper && typeof func === FUNCTION ? func : Function.noop;
+    //We may need to cache that at some point if it gets called too often
+    return superFn ? superFn.bind(this) : Function.noop;
 }
-
 
 /**
  * Calls the method with the same name as the caller from the parent of the
@@ -800,7 +783,7 @@ Montage.defineProperty(Montage, "getSerializablePropertyNames", {value: function
         attributes = getAttributeProperties(anObject, SERIALIZABLE);
 
     if (attributes) {
-        propertyNames = []
+        propertyNames = [];
         for (var name in attributes) {
             if (attributes[name]) {
                 propertyNames.push(name);
@@ -846,7 +829,12 @@ Montage.defineProperty(Montage, "getPropertyAttributes", {value: function (anObj
 
     attributeValues = {};
     for (var name in attributes) {
-        attributeValues[name] = attributes[name];
+        if (hasProperty.call(attributes, name)) {
+            attributeValues[name] = attributes[name];
+        // should return the inherited defined attribute values   
+        } else {
+            attributeValues[name] = attributes[name];
+        }
     }
 
     return attributeValues;
@@ -882,9 +870,7 @@ Montage.defineProperty(Montage, "getInfoForObject", {
         var metadata;
         var instanceMetadataDescriptor;
 
-        //jshint -W106
-
-        if (hasOwnProperty.call(object, "_montage_metadata") && object._montage_metadata) {
+        if (hasProperty.call(object, "_montage_metadata") && object._montage_metadata) {
             return object._montage_metadata;
         } else {
             metadata = object._montage_metadata || (object.constructor && object.constructor._montage_metadata) || null;
@@ -915,13 +901,14 @@ Montage.defineProperty(Montage, "getInfoForObject", {
                 //For everything else we go more efficient and declare the property only once per prototype
                 else {
                     if(!("_montage_metadata" in object.constructor.prototype)) {
-                    //if(!hasOwnProperty.call(object.constructor.prototype, "_montage_metadata")) {
-                        Object.defineProperty(object.constructor.prototype, "_montage_metadata", {
-                            enumerable: false,
-                            // this object needs to be overriden by the SerializationCompiler because this particular code might be executed on an exported object before the Compiler takes action, for instance, if this function is called within the module definition itself (happens with __core__).
-                            writable: true,
-                            value: undefined
-                        });
+                        if(!hasOwnProperty.call(object.constructor.prototype, "_montage_metadata")) {
+                            Object.defineProperty(object.constructor.prototype, "_montage_metadata", {
+                                enumerable: false,
+                                // this object needs to be overriden by the SerializationCompiler because this particular code might be executed on an exported object before the Compiler takes action, for instance, if this function is called within the module definition itself (happens with __core__).
+                                writable: true,
+                                value: undefined
+                            });
+                        }
                     }
 
                     return (object._montage_metadata = Object.create(metadata, instanceMetadataDescriptor)) || object._montage_metadata;
@@ -932,24 +919,18 @@ Montage.defineProperty(Montage, "getInfoForObject", {
                 return (object._montage_metadata = Object.create(metadata, instanceMetadataDescriptor));
             }
         }
-        //jshint +W106
     }
 });
-
-
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-
 
 Montage.defineProperty(Montage, "identifier", {
     value: null,
     serializable: true
 });
+
 Montage.defineProperty(Montage.prototype, "identifier", {
     value: null,
     serializable: true
 });
-
-
 
 /**
  * The version of an object (integer). This is intended to represent the current version of an Object.
@@ -975,7 +956,9 @@ Montage.defineProperty(Montage.prototype, "version", {
  */
 Montage.defineProperty(Montage.prototype, "equals", {
     value: function (anObject) {
-        if (!anObject) return false;
+        if (!anObject) {
+            return false;
+        }
         return this === anObject || (this.uuid && this.uuid === anObject.uuid);
     }
 });
@@ -997,8 +980,15 @@ Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
 
         if (delegate) {
 
-            if ((typeof this.identifier === "string") && (typeof (delegateFunction = delegate[this.identifier + name.toCapitalized()]) === FUNCTION)) {}
-            else if (typeof (delegateFunction = delegate[name]) === FUNCTION) {}
+            var delegateFunctionName = this.identifier + name.toCapitalized();
+            if (
+                typeof this.identifier === "string" && 
+                    typeof delegate[delegateFunctionName] === FUNCTION
+            ) {
+                delegateFunction = delegate[delegateFunctionName];
+            } else if (typeof delegate[name] === FUNCTION) {
+                delegateFunction = delegate[name];
+            }
 
             if (delegateFunction) {
                 if(arguments.length === 2) {
@@ -1266,29 +1256,28 @@ var parse = require("frb/parse"),
 var PathChangeDescriptor = function PathChangeDescriptor() {
     this._willChangeListeners = null;
     this._changeListeners = null;
-	return this;
-}
+    return this;
+};
 
-Object.defineProperties(PathChangeDescriptor.prototype,{
-	_willChangeListeners: {
-		value:null,
-		writable: true
-	},
-	willChangeListeners: {
-		get: function() {
-			return this._willChangeListeners || (this._willChangeListeners = new Map());
-		}
-	},
-	_changeListeners: {
-		value:null,
-		writable: true
-	},
+Object.defineProperties(PathChangeDescriptor.prototype, {
+    _willChangeListeners: {
+        value:null,
+        writable: true
+    },
+    willChangeListeners: {
+        get: function() {
+            return this._willChangeListeners || (this._willChangeListeners = new Map());
+        }
+    },
+    _changeListeners: {
+        value:null,
+        writable: true
+    },
     changeListeners: {
-		get: function() {
-			return this._changeListeners || (this._changeListeners = new Map());
-		}
-	}
-
+        get: function() {
+            return this._changeListeners || (this._changeListeners = new Map());
+        }
+    }
 });
 
 var pathChangeDescriptors = new WeakMap();

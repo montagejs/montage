@@ -256,9 +256,9 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
                     // try to grab <source> child elements from original element
                     var sources = this.originalElement.getElementsByTagName("source"),
                         mediaSrc, mediaType;
-                    for (var i = 0; i < sources.length; i++) {
-                        mediaSrc = sources[i].getAttribute("src");
-                        mediaType = sources[i].getAttribute("type");
+                    for (var sourceIdx = 0; sourceIdx < sources.length; sourceIdx++) {
+                        mediaSrc = sources[sourceIdx].getAttribute("src");
+                        mediaType = sources[sourceIdx].getAttribute("type");
                         if (mediaType && !this.mediaElement.canPlayType(mediaType)) {
                             continue;
                         }
@@ -269,15 +269,15 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
 
                 // try to grab <track> child elements from original element
                 var tracks = this.originalElement.getElementsByTagName("track");
-                for (var i = 0; i < tracks.length; i++) {
-                    var trackKind = tracks[i].getAttribute("kind");
-                    if (trackKind == "captions" || trackKind == "subtitles") {
+                for (var trackIdx = 0; trackIdx < tracks.length; trackIdx++) {
+                    var trackKind = tracks[trackIdx].getAttribute("kind");
+                    if (trackKind === "captions" || trackKind === "subtitles") {
                         var track = document.createElement("track");
                         track.kind = trackKind;
-                        track.label = tracks[i].getAttribute("label");
-                        track.src = tracks[i].getAttribute("src");
-                        track.srclang = tracks[i].getAttribute("srclang");
-                        track.default = tracks[i].hasAttribute("default");
+                        track.label = tracks[trackIdx].getAttribute("label");
+                        track.src = tracks[trackIdx].getAttribute("src");
+                        track.srclang = tracks[trackIdx].getAttribute("srclang");
+                        track.default = tracks[trackIdx].hasAttribute("default");
                         this.mediaElement.appendChild(track);
                         this.mediaElement.textTracks[this.mediaElement.textTracks.length - 1].mode = "showing";
                     }

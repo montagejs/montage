@@ -1,0 +1,37 @@
+{
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "opts": {
+    "readme": "README.md",
+    "destination": "./doc",
+    "recurse": true
+  },
+  "source": {
+    "include": [
+      "montage.js",
+      "composer/",
+      "core/",
+      "ui/",
+      "data/"
+    ],
+    "includePattern": ".+\\.js(doc)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "plugins": [],
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false,
+    "default": {
+      "outputSourceFiles": true
+    },
+    "systemName"      : "MontageJS",
+    "footer"          : "",
+    "copyright"       : "BSD-3-Clause",
+    "navType"         : "vertical",
+    "theme"           : "oblivion",
+    "linenums"        : true,
+    "collapseSymbols" : false,
+    "inverseNav"      : true
+  }
+}

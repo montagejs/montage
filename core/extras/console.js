@@ -1,4 +1,4 @@
-/*global module: false */
+/*global module: false, console */
 if (typeof window !== "undefined") {
     document._montageTiming = document._montageTiming || {};
     document._montageTiming.loadStartTime = Date.now();

@@ -166,7 +166,7 @@ exports.AbstractAlert = Component.specialize(/** @lends AbstractAlert# */ {
 
             instance = this._instance;
 
-            return this._nextMessagePromise = this._nextMessagePromise.then(function () {
+            this._nextMessagePromise = this._nextMessagePromise.then(function () {
                 if (title) {
                     instance.title = title;
                 } else {
@@ -176,6 +176,8 @@ exports.AbstractAlert = Component.specialize(/** @lends AbstractAlert# */ {
 
                 return instance.show();
             });
+
+            return this._nextMessagePromise;
         }
     }
 });

@@ -55,7 +55,7 @@ Montage.loadPackage(PATH.join(__dirname, "."), {
 }).then(function () {
     console.log('Done');
 }, function (err) {
-    console.error('Fail', err);
+    console.error('Fail', err, err.stack);
     exitCode = 1;
 }).then(function () {
     process.exit(exitCode);

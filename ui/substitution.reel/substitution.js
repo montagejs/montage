@@ -128,7 +128,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
                 components.push(element.component);
             } else {
                 nodes = element.children;
-                for (var i = 0, node; node = nodes[i]; i++) {
+                for (var i = 0, node; (node = nodes[i]); i++) {
                     this._findFringeComponents(node, components);
                 }
             }

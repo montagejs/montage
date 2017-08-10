@@ -285,9 +285,13 @@ var MontageVisitor = Montage.specialize({
                     var valuesObject = this.builder.top.getProperty("values");
                     this.builder.push(valuesObject);
 
+                    
+                    /* jshint forin: true */
                     for (var key in bindings) {
+                    /* jshint forin: false */
                         this.builder.top.setProperty(key, bindings[key]);
                     }
+
                     this.builder.pop();
                 }
             }
@@ -358,10 +362,9 @@ var MontageVisitor = Montage.specialize({
             // a reference to an object but that would be an external reference
             // the problem here is that the serializable defaults to "reference"
             // for most cases when in reality we probably just want "value".
-            return typeof value === "object" &&
-                   value != null &&
-                   !(typeof Element !== "undefined" &&
-                     Element.isElement(value));
+            return typeof value === "object" && 
+                (value !== null && value !== undefined) && 
+                    !(typeof Element !== "undefined" && Element.isElement(value));
         }
     },
 
@@ -385,12 +388,14 @@ var MontageVisitor = Montage.specialize({
     setObjectCustomUnits: {
         value: function (malker, object) {
             for (var unitName in this._units) {
-                if (unitName === "bindings" && !malker.legacyMode) {
-                    continue;
-                }
+                if (Object.hasOwnProperty.call(this._units, unitName)) {
+                    if (unitName === "bindings" && !malker.legacyMode) {
+                        continue;
+                    }
 
-                this.setObjectCustomUnit(malker, object, unitName);
-            }
+                    this.setObjectCustomUnit(malker, object, unitName);
+                }
+            }   
         }
     },
 
@@ -408,7 +413,7 @@ var MontageVisitor = Montage.specialize({
                 .initWithMalkerAndVisitorAndObject(malker, this, object);
 
             value = unit(unitSerializer, object);
-            if (value != null) {
+            if (value !== null && value !== undefined) {
                 malker.visit(value, unitName);
             }
         }
@@ -420,7 +425,7 @@ var MontageVisitor = Montage.specialize({
                 labels = this.builder.getExternalReferences(),
                 label;
 
-            for (var i = 0; label = labels[i]; i++) {
+            for (var i = 0; (label = labels[i]); i++) {
                 externalObjects[label] = this.labeler.getObjectByLabel(label);
             }
 
@@ -442,7 +447,6 @@ var MontageVisitor = Montage.specialize({
     isCustomObject: {
         value: function(object) {
             var type = this.getCustomObjectTypeOf(object);
-
             return typeof type === "string";
         }
     },
@@ -582,11 +586,10 @@ var MontageVisitor = Montage.specialize({
     makeGetCustomObjectTypeOf: {
         value: function makeGetCustomObjectTypeOf(getCustomObjectTypeOf) {
             var previousGetCustomObjectTypeOf = this.prototype.getCustomObjectTypeOf;
-
             return function(value) {
                 return getCustomObjectTypeOf(value) ||
                     previousGetCustomObjectTypeOf(value);
-            }
+            };
         }
     },
 
@@ -595,17 +598,22 @@ var MontageVisitor = Montage.specialize({
             var customObjectVisitors = this.customObjectVisitors;
 
             for (var methodName in visitor) {
-                if (methodName === "getTypeOf") {
-                    continue;
-                }
+                if (Object.hasOwnProperty.call(visitor, methodName)) {
 
-                if (typeof visitor[methodName] === "function"
-                    && /^visit/.test(methodName)) {
-                    if (typeof customObjectVisitors[methodName] === "undefined") {
-                        customObjectVisitors[methodName] = visitor[methodName].bind(visitor);
-                    } else {
-                        return new Error("Visitor '" + methodName + "' is already registered.");
+                    if (methodName === "getTypeOf") {
+                        continue;
                     }
+
+                    if (
+                        typeof visitor[methodName] === "function" && 
+                            methodName.substr(0, 5) === "visit"
+                    ) {
+                        if (typeof customObjectVisitors[methodName] === "undefined") {
+                            customObjectVisitors[methodName] = visitor[methodName].bind(visitor);
+                        } else {
+                            return new Error("Visitor '" + methodName + "' is already registered.");
+                        }
+                    }   
                 }
             }
 

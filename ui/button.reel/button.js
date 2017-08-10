@@ -158,7 +158,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 this._promise = value;
 
                 if (this._promise){
-                    this.classList.add('montage--pending')
+                    this.classList.add('montage--pending');
                     test.promise = value;
                     this._promise.then(test);
                 }
@@ -366,7 +366,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                     }
                     //<button> && Custom
                 } else {
-                    if(!this.originalElement !== this.element && this._label === undefined) {
+                    if(this.originalElement === this.element && this._label === undefined) {
                         this._label = this.originalElement.data;
                     }
                     if (!this.element.firstChild) {

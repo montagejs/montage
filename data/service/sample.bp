@@ -1,0 +1,55 @@
+/**
+ * Sample blueprint file. Kept here as a record of the current thinking on
+ * blueprint file properties and structure.
+ *
+ * If this were a blueprint file this comments would have to be removed to allow
+ * the file to be valid JSON.
+ *
+ * Information that still needs to be represented:
+ *
+ * - Locking strategies and which properties to use for locking.
+ *
+ * - Whether properties should be fetched. By default non-derived properties
+ *   would be fetched and others not.
+ *
+ * - Whether properties should be saved. By default non-derived properties would
+ *   be saved and others not.
+ *
+ * - Raw data to data object mappings for properties.
+ *
+ * - Raw data to data property Mappings for dependency fetches.
+ */
+{
+    objects: {
+        movie: {
+            properties: {
+                id: "?string"
+                director: "Person",
+                crew: "Array.<Person>",
+                reviews: "Array.<string>",
+                ratings: "Array.<number>",
+                averageRating: "number",
+                expenses: "?number",
+                income: "?number",
+                realProfit: "?number",
+                contractualProfit: "?number",
+                flag: "number"
+            }
+        }
+    },
+    services: {
+        movie: {
+            identifiers: ["id"],
+            relationships: {
+                director: {criteria: "Person.id = Movie.directorId"},
+                crew: {criteria: "Person.movies.id.has(Movie.id)"},
+                reviews: {criteria: "type = Review && Review.movieId = Movie.id"},
+                ratings: {"*": "review"}, /* Same fetch as review. */
+                averageRating: {"<-": "ratings"}, /* Derived from ratings. */
+                realProfit: {"<-": ["expenses", "income"]}, /* Derived from both expenses and income. */
+                contractualProfit: {"<-": ["expenses", "income"]} /* Also derived from both expenses and income. */
+                flag: {"isGlobal": true, criteria: "..."} /* Fetching one instances fetches values for all instances. */
+            }
+        }
+    }
+}

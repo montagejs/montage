@@ -93,11 +93,13 @@ exports.PromiseController = Montage.specialize( {
 
     /**
      * The last known progress value emitted by the promise.
+     * @type {string}
      */
     progress: {value: null},
 
     /**
      * The fulfillment value of the promise, if any.
+     * @type {object}
      */
     value: {value: null},
 

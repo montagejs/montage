@@ -54,14 +54,14 @@ exports.component = function () {
                 typedEvent.target = this;
                 typedEvent.currentTarget = this;
 
-                for (var i = 0, listener; listener = listeners[i]; i++) {
+                for (var i = 0, listener; (listener = listeners[i]); i++) {
                     if (typeof listener === "function" && !listener.__isConstructor__) {
                         listener(typedEvent);
                     } else {
                         names = ["handle" + type[0].toUpperCase() + type.slice(1),
                             "handleEvent"];
 
-                        for (var j = 0, name; name = names[j]; j++) {
+                        for (var j = 0, name; (name = names[j]); j++) {
                             if (typeof listener[name] === "function") {
                                 listener[name](typedEvent);
                                 break;

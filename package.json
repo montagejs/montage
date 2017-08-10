@@ -50,17 +50,22 @@
   "dependencies": {
     "bluebird": "~3.4.7",
     "collections": "~5.0.x",
+    "dexie": "~1.4.1",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
     "jshint": "^2.9.5",
+    "moment-timezone": "^0.5.11",
     "mr": "^17.0.4",
-    "q-io": "^1.13.3"
+    "q-io": "^1.13.3",
+    "weak-map": "^1.0.5",
+    "xhr2": "^0.1.4"
   },
   "devDependencies": {
     "concurrently": "^3.4.0",
     "http-server": "^0.10.0",
     "jasmine-console-reporter": "^1.2.7",
     "jasmine-core": "^2.5.2",
+    "jshint": "^2.9.5",
     "karma": "^1.5.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",
@@ -71,12 +76,14 @@
     "karma-safari-launcher": "^1.0.0",
     "montage-testing": "git://github.com/montagejs/montage-testing.git#master",
     "mop-integration": "git://github.com/montagejs/mop-integration.git#master",
+    "mr": "git://github.com/montagejs/mr.git#master",
     "open": "0.0.5"
   },
   "scripts": {
     "test": "node test/run-node.js",
+    "jsdoc": "jsdoc -c jsdoc.json",
     "integration": "MONTAGE_VERSION=${MONTAGE_VERSION:=./} MOP_VERSION=${MOP_VERSION:=#master} node node_modules/mop-integration/integration",
-    "jsdoc": "node ../montagejs.org/build/jsdoc/jsdoc.js -out $PWD/builds/jsdoc/ montage@npm-link",
+    "lint": "jshint .",
     "test:karma": "karma start --no-auto-watch --single-run",
     "test:karma-travis": "karma start --no-auto-watch --single-run --browsers=Chrome_travis_ci",
     "test:karma-firefox": "karma start --no-auto-watch --single-run --browsers=Firefox",
@@ -87,6 +94,7 @@
   },
   "exclude": [
     "report",
+    "doc",
     "test",
     "tools"
   ]

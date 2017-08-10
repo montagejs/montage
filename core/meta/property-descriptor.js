@@ -139,8 +139,8 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     },
 
     _setPropertyWithDefaults: {
-        value:function (serializer, propertyName, value) {
-            if (value != Defaults[propertyName]) {
+        value: function (serializer, propertyName, value) {
+            if (value !== null && value !== Defaults[propertyName]) {
                 serializer.setProperty(propertyName, value);
             }
         }
@@ -268,7 +268,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @type {string}
      * Definition can be used to express a property as the result of evaluating an expression
      * An example would be to flatten/traverse two properties across two objects to make its
-     * content accessible as a new property name. For example, in a many to many relaational
+     * content accessible as a new property name. For example, in a many to many relational
      * style, a Movie would have a toDirector property to a "DirectorRole" which itself would
      * point through a toTalent property to the actual Person. A "director" property definition
      * would then be "toDirector.toTalent"
