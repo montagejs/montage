@@ -345,8 +345,7 @@
 
     exports.initNodeJS = function initServer() {
 
-        var PATH = require("path"),
-            FS  = require("fs");
+        var PATH = require("path");
 
         return  {
 
@@ -394,7 +393,7 @@
                             }
 
                             params.module = PATH.basename(module);
-                            params.package = PATH.dirname(FS.realpathSync(module)) + "/";  
+                            params.package = PATH.dirname(module) + "/";  
                         }
                     }
                 }

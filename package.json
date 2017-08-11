@@ -71,13 +71,15 @@
     "karma-safari-launcher": "^1.0.0",
     "montage-testing": "git://github.com/montagejs/montage-testing.git#master",
     "mop-integration": "git://github.com/montagejs/mop-integration.git#master",
-    "open": "0.0.5"
+    "open": "0.0.5",
+    "webpack": "^3.5.3"
   },
   "scripts": {
     "test": "node test/run-node.js",
     "jsdoc": "jsdoc -c jsdoc.json",
     "integration": "MONTAGE_VERSION=${MONTAGE_VERSION:=./} MOP_VERSION=${MOP_VERSION:=#master} node node_modules/mop-integration/integration",
     "lint": "jshint .",
+    "build": "webpack",
     "test:karma": "karma start --no-auto-watch --single-run",
     "test:karma-travis": "karma start --no-auto-watch --single-run --browsers=Chrome_travis_ci",
     "test:karma-firefox": "karma start --no-auto-watch --single-run --browsers=Firefox",
