@@ -52,7 +52,7 @@ exports.ModuleReference = Montage.specialize( /** @lends ModuleReference.prototy
             if (this._exports) {
                 return this._exports;
             }
-            return this._exports = this.require.async(this.id);
+            return (this._exports = this.require.async(this.id));
         }
     },
 

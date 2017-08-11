@@ -1,4 +1,4 @@
-/* global global:true,  __dirname, jasmineRequire */
+/* global global:true, jasmine:true, __dirname, jasmineRequire */
 
 /*jshint evil:true */
 // reassigning causes eval to not use lexical scope.

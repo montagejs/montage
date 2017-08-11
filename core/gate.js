@@ -51,7 +51,9 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate.prototype # */ {
             var fieldName;
             this.reset();
             for (fieldName in propertyDescriptor) {
-                this.setField(fieldName, propertyDescriptor[fieldName].value);
+                if (propertyDescriptor.hasOwnProperty(fieldName)) {
+                    this.setField(fieldName, propertyDescriptor[fieldName].value);   
+                }
             }
             return this;
         }

@@ -10,11 +10,11 @@ var Component = require("ui/component").Component;
    @class module:"montage/ui/native/image.reel".Image
    @extends module:montage/ui/control.Control
  */
-var Image = exports.Image = Component.specialize({
+exports.Image = Component.specialize({
     hasTemplate: {value: false }
 });
 
-Image.addAttributes(/** @lends module:"montage/ui/native/image.reel".Image */{
+exports.Image.addAttributes(/** @lends module:"montage/ui/native/image.reel".Image */{
 
 /**
     A text description to display in place of the image.

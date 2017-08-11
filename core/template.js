@@ -53,7 +53,10 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 metadata = this._metadata;
                 if (metadata) {
                     requires = Object.create(null);
+
+                    /* jshint forin: true */
                     for (var label in metadata) {
+                    /* jshint forin: false */
                         requires[label] = metadata[label].require;
                     }
                 }
@@ -370,7 +373,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
             var resources = this._resources;
 
             if (!resources) {
-                resources = this._resources = new TemplateResources();
+                resources = this._resources = new exports.TemplateResources();
                 resources.initWithTemplate(this);
             }
 
@@ -487,7 +490,10 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 objectOwner,
                 objectLabel;
 
+            /* jshint forin: true */
             for (var label in objects) {
+            /* jshint forin: false */
+
                 // Don't call delegate methods on objects that were passed to
                 // the instantiation.
                 if (instances && label in instances) {
@@ -709,13 +715,14 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 deferred;
 
             if (link) {
+                // TODO use core/request
                 deferred = new Promise(function(resolve, reject) {
                     var req = new XMLHttpRequest();
                     var url = link.getAttribute("href");
                     req.open("GET", url);
                     req.addEventListener("load", function(event) {
                         var req = event.target;
-                        if (req.status == 200) {
+                        if (req.status === 200) {
                             resolve(req.responseText);
                         } else {
                             reject(
@@ -742,12 +749,12 @@ var Template = Montage.specialize( /** @lends Template# */ {
     createHtmlDocumentWithHtml: {
         value: function (html, baseURI) {
             var htmlDocument = document.implementation.createHTMLDocument("");
-            if(html) {
+            if (html) {
                 htmlDocument.documentElement.innerHTML = html;
-                if(baseURI) this.normalizeRelativeUrls(htmlDocument, baseURI);
+                if (baseURI) {
+                    this.normalizeRelativeUrls(htmlDocument, baseURI);
+                }
             }
-
-
             return htmlDocument;
         }
     },
@@ -978,24 +985,28 @@ var Template = Montage.specialize( /** @lends Template# */ {
 
             // Expand elements.
             for (var parameterName in parameterElements) {
-                parameterElement = parameterElements[parameterName];
-                argumentElement = templateArgumentProvider.getTemplateArgumentElement(
-                    parameterName);
+                if (parameterElements.hasOwnProperty(parameterName)) {
+                    parameterElement = parameterElements[parameterName];
+                    argumentElement = templateArgumentProvider.getTemplateArgumentElement(
+                        parameterName);
 
-                // Store all element ids of the argument, we need to create
-                // a serialization with the components that point to them.
-                argumentsElementIds.push.apply(argumentsElementIds,
-                    this._getElementIds(argumentElement)
-                );
+                    // Store all element ids of the argument, we need to create
+                    // a serialization with the components that point to them.
+                    argumentsElementIds.push.apply(argumentsElementIds,
+                        this._getElementIds(argumentElement)
+                    );
 
-                // Replace the parameter with the argument and save the
-                // element ids collision table because we need to correct the
-                // serialization that is created from the stored element ids.
-                collisionTable = this.replaceNode(argumentElement, parameterElement);
-                if (collisionTable) {
-                    for (var key in collisionTable) {
-                        argumentElementsCollisionTable[key] = collisionTable[key];
-                    }
+                    // Replace the parameter with the argument and save the
+                    // element ids collision table because we need to correct the
+                    // serialization that is created from the stored element ids.
+                    collisionTable = this.replaceNode(argumentElement, parameterElement);
+                    if (collisionTable) {
+                        /* jshint forin: true */
+                        for (var key in collisionTable) {
+                        /* jshint forin: false */
+                            argumentElementsCollisionTable[key] = collisionTable[key];
+                        }
+                    }   
                 }
             }
             result.elementIds = argumentsElementIds;
@@ -1045,6 +1056,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
         value: function (node, labeler) {
             var collisionTable,
                 nodeElements,
+                elementId,
                 elementIds,
                 element,
                 newId;
@@ -1052,13 +1064,13 @@ var Template = Montage.specialize( /** @lends Template# */ {
             labeler = labeler || new MontageLabeler();
             // Set up the labeler with the current element ids.
             elementIds = this.getElementIds();
-            for (var i = 0, elementId; (elementId = elementIds[i]); i++) {
+            for (var i = 0; (elementId = elementIds[i]); i++) {
                 labeler.addLabel(elementId);
             }
 
             // Resolve element ids collisions.
             nodeElements = this._getElements(node);
-            for (var elementId in nodeElements) {
+            for (elementId in nodeElements) {
                 if (this.getElementById(elementId)) {
                     element = nodeElements[elementId];
                     newId = labeler.generateLabel(labeler.getLabelBaseName(elementId));

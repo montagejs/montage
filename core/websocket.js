@@ -5,8 +5,9 @@ var Target = require("./target").Target;
 
 /* A WebSocket that offers automatic reconnection and re-send of data that couldn't if closed. */
 
-var _WebSocket = global.WebSocket,
-    WebSocket = exports.WebSocket = Target.specialize({
+var _WebSocket = global.WebSocket;
+
+exports.WebSocket = Target.specialize({
 
     /*
         The constructor can throw exceptions from inside _connect():
@@ -16,7 +17,7 @@ var _WebSocket = global.WebSocket,
 
     */
     constructor: {
-        value: function WebSocket(url, protocols) {
+        value: function (url, protocols) {
             this._url = url;
             this._protocols = protocols;
             this._messageQueue = [];
@@ -64,7 +65,7 @@ var _WebSocket = global.WebSocket,
             if (!this._isMessagePending && this._messageQueue.length) {
                 if (this._webSocket) {
                     this._isMessagePending = true;
-                    if ((this._webSocket.readyState !== WebSocket.CLOSING) && (this._webSocket.readyState !== WebSocket.CLOSED)) {
+                    if ((this._webSocket.readyState !== exports.WebSocket.CLOSING) && (this._webSocket.readyState !== exports.WebSocket.CLOSED)) {
                         try {
                             this._webSocket.send(this._messageQueue[0]);
                         } catch (e) {

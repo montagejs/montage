@@ -17,8 +17,8 @@ var serializeObjectBindings = exports.serializeObjectBindings = function (serial
         mapIter = inputs.keys(),
         targetPath;
 
-    while (targetPath = mapIter.next().value) {
-        //for (var targetPath in inputs) {
+    while ((targetPath = mapIter.next().value)) {
+    //for (var targetPath in inputs) {
         var input = inputs.get(targetPath);
 
         var output = {};
@@ -29,11 +29,12 @@ var serializeObjectBindings = exports.serializeObjectBindings = function (serial
             continue;
         }
 
+        var scope;
         var sourcePath = input.sourcePath;
         var syntax = input.sourceSyntax;
         if (input.source && input.source !== object) {
             var label = serializer.getObjectLabel(input.source);
-            var scope = new Scope({
+            scope = new Scope({
                 type: "component",
                 label: label
             });
@@ -41,7 +42,7 @@ var serializeObjectBindings = exports.serializeObjectBindings = function (serial
             syntax = expand(syntax, scope);
         }
 
-        var scope = new Scope();
+        scope = new Scope();
         scope.components = serializer;
         sourcePath = stringify(syntax, scope);
 
@@ -79,7 +80,10 @@ var deserializeObjectBindings = exports.deserializeObjectBindings = function (de
         targetPath,
         descriptor;
 
+    /* jshint forin: true */
     for (targetPath in bindings) {
+    /* jshint forin: false */
+
         descriptor = bindings[targetPath];
 
         if (typeof descriptor !== "object") {

@@ -1,6 +1,7 @@
-var Component = require("montage/ui/component").Component;
+var Component = require("montage/ui/component").Component,
+    Promise = require('montage/core/promise');
 
-exports.Main = Component.specialize(/** @lends Main# */ {
+exports.Main = Component.specialize(/** @lends Main# */{
 
     message: {
         value: null
@@ -27,17 +28,17 @@ exports.Main = Component.specialize(/** @lends Main# */ {
             this.promiseButton.promise = new Promise(function(resolve){
                 setTimeout(function(){
                     resolve();
-                }, 2000)
+                }, 2000);
             }).then(function(){
-                self.message = "First promise resolved!"
+                self.message = "First promise resolved!";
             });
 
             this.promiseButton.promise = new Promise(function(resolve){
                 setTimeout(function(){
                     resolve();
-                }, 5000)
+                }, 5000);
             }).then(function(){
-                self.message = "Second promise resolved!"
+                self.message = "Second promise resolved!";
             });
         }
     }

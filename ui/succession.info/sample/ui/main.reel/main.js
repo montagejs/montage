@@ -147,7 +147,7 @@ exports.Main = Component.specialize({
                 if (numberOfPushes === 0) {
                     clearInterval(pushInterval);
                 }
-            }, 500)
+            }, 500);
 
             setTimeout(function () {
                 var popInterval = setInterval(function () {
@@ -157,8 +157,8 @@ exports.Main = Component.specialize({
                     if (numberOfPops === 0) {
                         clearInterval(popInterval);
                     }
-                }, 750)
-            }, 900)
+                }, 750);
+            }, 900);
 
         }
     },
@@ -176,7 +176,7 @@ exports.Main = Component.specialize({
                 if (numberOfPushes === 0) {
                     clearInterval(pushInterval);
                 }
-            }, 50)
+            }, 50);
         }
     },
 
@@ -193,7 +193,7 @@ exports.Main = Component.specialize({
                 if (numberOfPops === 0) {
                     clearInterval(popInterval);
                 }
-            }, 750)
+            }, 750);
 
         }
     },

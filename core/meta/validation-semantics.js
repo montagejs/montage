@@ -101,9 +101,13 @@ var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantic
 });
 
 for (var operator in Semantics.operators) {
-    PropertyValidationSemantics.operators[operator] = Semantics.operators[operator];
+    if (Semantics.operators.hasOwnProperty(operator)) {
+        PropertyValidationSemantics.operators[operator] = Semantics.operators[operator];
+    }
 }
 
 for (var evaluator in Semantics.evaluators) {
-    PropertyValidationSemantics.evaluators[evaluator] = Semantics.evaluators[evaluator];
+    if (Semantics.evaluators.hasOwnProperty(evaluator)) {
+        PropertyValidationSemantics.evaluators[evaluator] = Semantics.evaluators[evaluator];   
+    }
 }
