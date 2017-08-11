@@ -17,7 +17,7 @@ var PersistentDataService = require("data/service/persistent-data-service").Pers
  * @class
  * @extends RawDataService
  */
-exports.IndexedDBDataService = IndexedDBDataService = PersistentDataService.specialize(/** @lends PersistentDataService.prototype */ {
+exports.IndexedDBDataService = PersistentDataService.specialize(/** @lends PersistentDataService.prototype */ {
 
     /***************************************************************************
      * Initializing
@@ -101,7 +101,7 @@ exports.IndexedDBDataService = IndexedDBDataService = PersistentDataService.spec
      */
     provideStorageForObjectDescriptor: {
         value: function(objectDescriptor) {
-           return this.storagePromiseForNameVersion(objectDescriptor.model.name,objectDescriptor.model.version)
+           return this.storagePromiseForNameVersion(objectDescriptor.model.name,objectDescriptor.model.version);
         }
     },
 

@@ -7,7 +7,8 @@ var RawDataService = require("data/service/raw-data-service").RawDataService,
     DESCENDING = DataOrdering.DESCENDING,
     evaluate = require("frb/evaluate"),
     Map = require("collections/map"),
-    OfflineService;
+    PersistentDataService, OfflineService;
+
 /**
  * TODO: Document
  *
@@ -469,7 +470,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                         return storage;
                     }
                     return Promise.reject(null);
-                })
+                });
         }
     },
 
@@ -764,10 +765,8 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
 
                     //Need to structure the API to
                     return this.closeTransaction();
-
-                })
-
-            })
+                });
+            });
         }
     },
 
@@ -1606,7 +1605,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                         console.error("deleteOfflinePrimaryKeys failed",e);
                         reject(e);
                     });
-                })
+                });
             }
         }
     });

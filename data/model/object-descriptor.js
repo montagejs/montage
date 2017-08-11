@@ -169,7 +169,7 @@ exports.ObjectDescriptor = Montage.specialize(/** @lends ObjectDescriptor.protot
                     }
                 }
                 return this._TYPE;
-            }
+            };
         }
     }
 

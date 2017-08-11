@@ -112,12 +112,20 @@ exports.SnapshotService = Montage.specialize(/** @lends SnapshotService# */ {
             var result = a === b;
             if (!result) {
                 if (typeof a === "object" && typeof b === "object") {
+                    
+                    // TODO WTF
                     result = !!a === !!b;
+
                     if (result) {
                         var aKeys = Object.keys(a).sort(), aValue,
                             bKeys = Object.keys(b).sort(), bValue,
                             key;
-                        result = aKeys.filter(function(x) { return a[x] !== null }).length === bKeys.filter(function(x) { return b[x] !== null }).length;
+
+                        var aResult = aKeys.filter(function(x) { return a[x] !== null; }).length,
+                            bResult = bKeys.filter(function(x) { return b[x] !== null;  }).length;
+
+                        result = aResult === bResult;
+
                         if (result) {
                             for (var i = 0, length = bKeys.length; i < length; i++) {
                                 key = bKeys[i];
@@ -162,9 +170,7 @@ exports.SnapshotService = Montage.specialize(/** @lends SnapshotService# */ {
         value: function (object) {
             return Object.keys(object).sort().filter(function (key) {
                 return object[key] !== null;
-            })
+            });
         }
     }
-
-
 });

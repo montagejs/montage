@@ -549,9 +549,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     isOffline: {
         get: function () {
-            return this === this.rootService
-                ? this.superForGet("isOffline")()
-                : this.rootService.isOffline;
+            return this === this.rootService ? 
+                    this.superForGet("isOffline")() : 
+                        this.rootService.isOffline;
         }
     },
 
@@ -739,11 +739,11 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 }
 
                 if(!dataIdentifier) {
-                    var typeName = type.typeName/*DataDescriptor*/||type.name,
+                    var typeName = type.typeName /*DataDescriptor*/ || type.name;
                         //This should be done by ObjectDescriptor/blueprint using primaryProperties
                         //and extract the corresponsing values from rawData
                         //For now we know here that MileZero objects have an "id" attribute.
-                        dataIdentifier = new DataIdentifier()
+                        dataIdentifier = new DataIdentifier();
                         dataIdentifier.objectDescriptor = type;
                         dataIdentifier.dataService = this;
                         dataIdentifier.typeName = type.name;

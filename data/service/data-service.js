@@ -389,7 +389,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
             return child._childServiceRegistrationPromise.then(function () {
                 return self._registerChildServiceTypesAndMappings(child, types, mappings);
-            })
+            });
         }
     },
 
@@ -1536,7 +1536,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     objectForDataIdentifier: {
         value: function(dataIdentifier) {
-            return this._objectByDataIdentifier.get(dataIdentifier)
+            return this._objectByDataIdentifier.get(dataIdentifier);
         }
     },
     /**
@@ -1824,7 +1824,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     stream.query = self.mapSelectorToRawDataQuery(streamSelector);
                     self.fetchRawData(stream);
                     stream.query = streamSelector;
-                })
+                });
             }
         }
     },
@@ -1892,7 +1892,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
               if(Promise.is(rawDataService)) {
                     rawDataService.then(function(service) {
                         self._cancelServiceDataStream(service, dataStream, reason);
-                    })
+                    });
                 }
                 else {
                     this._cancelServiceDataStream(rawDataService, dataStream, reason);

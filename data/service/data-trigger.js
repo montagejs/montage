@@ -483,7 +483,7 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
             trigger._isGlobal = propertyDescriptor.isGlobal;
             if(!serviceTriggers) {
                 serviceTriggers = {};
-                service._dataObjectTriggers.set(objectDescriptor,serviceTriggers)
+                service._dataObjectTriggers.set(objectDescriptor,serviceTriggers);
             }
             serviceTriggers[name] = trigger;
             return trigger;

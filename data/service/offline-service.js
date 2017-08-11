@@ -52,7 +52,7 @@ exports.OfflineService = OfflineService = RawDataService.specialize(/** @lends O
                 ["iPhone OS 10_3_0", "AppleWebKit/603.1.30"],
                 ["iPhone OS 10_3_1", "AppleWebKit/603.1.30"],
                 ["Mac OS X 10_12_4", "AppleWebKit/603.1.30"]
-            ]
+            ];
         }
     },
 
@@ -61,7 +61,7 @@ exports.OfflineService = OfflineService = RawDataService.specialize(/** @lends O
             return this._faulty_safari_versions.some(function (userAgentStrings) {
                 return userAgentStrings.every(function (userAgentString) {
                     return navigator.userAgent.indexOf(userAgentString) !== -1;
-                })
+                });
             });
         }
     },
@@ -152,7 +152,7 @@ exports.OfflineService = OfflineService = RawDataService.specialize(/** @lends O
                     return Promise.all(db.tables.map(function (table) {
                         return table.toArray().then(function (rows) {
                             return dbCopy.table(table.name).bulkAdd(rows);
-                        })
+                        });
                     }));
                 }).catch(function (error) {
                     console.log("Error copying database (", error, ")");
@@ -160,7 +160,7 @@ exports.OfflineService = OfflineService = RawDataService.specialize(/** @lends O
                     db.close();
                     dbCopy.close();
                 });
-            })
+            });
         }
     },
 
@@ -713,7 +713,7 @@ exports.OfflineService = OfflineService = RawDataService.specialize(/** @lends O
                             console.error(e);
                             reject(e);
                         });
-                    })
+                    });
                 });
             });
         }
@@ -1410,7 +1410,7 @@ exports.OfflineService = OfflineService = RawDataService.specialize(/** @lends O
                     console.error("deleteOfflinePrimaryKeys failed",e);
                     reject(e);
                 });
-            })
+            });
         }
     }
 });

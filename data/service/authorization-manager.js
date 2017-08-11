@@ -101,7 +101,7 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
                         panel, i, n;
 
                     for (i = 0, n = exportNames.length; i < n && !panel; ++i) {
-                        panel = self._panelForConstructorAndProvider(exports[exportNames[i]], provider)
+                        panel = self._panelForConstructorAndProvider(exports[exportNames[i]], provider);
                     }
                     panel.service = provider;
                     self._panelsByModuleID.set(panelModuleID, panel);
@@ -175,7 +175,7 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
             self._pendingServicesCount++;
             return this._managerPanel().then(function (authManagerPanel) {
                 managerPanel = authManagerPanel;
-                return self._panelForProvider(provider)
+                return self._panelForProvider(provider);
             }).then(function (panel) {
                 return managerPanel.authorizeWithPanel(panel);
             }).then(function (authorization) {
@@ -209,7 +209,7 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
                         //We tell the data service we're authorizing about authorizationService we create and are about to use.
                         dataService.authorizationManagerWillAuthorizeWithService(this, services[i]);
                     }
-                })
+                });
             }
 
             return Promise.resolve(null);
