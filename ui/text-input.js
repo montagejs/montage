@@ -152,11 +152,6 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
             }
         }
     },
-    /**
-    Description TODO
-    @function
-    @param {Event Handler} event TODO
-    */
     handleChange: {
         enumerable: false,
         value: function(event) {
@@ -165,11 +160,6 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
             this._hasFocus = false;
         }
     },
-    /**
-    Description TODO
-    @function
-    @param {Event Handler} event TODO
-    */
     handleBlur: {
         enumerable: false,
         value: function(event) {
