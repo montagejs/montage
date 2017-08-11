@@ -5,6 +5,9 @@ module.exports = {
   context: __dirname,
   devtool: debug ? "inline-sourcemap" : null,
   entry: "./montage.js",
+  node: {
+    fs: "empty"
+  },
   output: {
     path: __dirname + "/dist",
     filename: "montage.min.js"

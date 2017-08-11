@@ -11,6 +11,9 @@ tmp/
 log.txt
 *.log
 
+## Build
+/dist
+
 ## jsdoc
 /doc
  
