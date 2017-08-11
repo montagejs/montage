@@ -209,6 +209,7 @@
                         }
                     },
                     "promise": {
+                        exports: Promise,
                         global: "Promise",
                         export: "Promise",
                         location: "node_modules/bluebird/js/browser/bluebird.min.js",
@@ -345,7 +346,8 @@
 
     exports.initNodeJS = function initServer() {
 
-        var PATH = require("path");
+        var PATH = require("path"),
+            FS  = require("fs");
 
         return  {
 
@@ -393,7 +395,7 @@
                             }
 
                             params.module = PATH.basename(module);
-                            params.package = PATH.dirname(module) + "/";  
+                            params.package = PATH.dirname(FS.realpathSync(module)) + "/";  
                         }
                     }
                 }
