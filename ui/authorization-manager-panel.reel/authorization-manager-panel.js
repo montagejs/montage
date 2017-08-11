@@ -59,7 +59,7 @@ exports.AuthorizationManagerPanel = Component.specialize({
                     self._panels.set(authorizationPanel, {
                         resolve: resolve,
                         reject: reject
-                    })
+                    });
                 });
                 this.authorizationPanels.push(authorizationPanel);
             } else {

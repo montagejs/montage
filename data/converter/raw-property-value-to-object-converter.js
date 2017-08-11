@@ -262,7 +262,7 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
 
 
                 if (self.serviceIdentifier) {
-                    criteria.parameters.serviceIdentifier = self.serviceIdentifier
+                    criteria.parameters.serviceIdentifier = self.serviceIdentifier;
                 }
 
                 query = DataQuery.withTypeAndCriteria(type, criteria);

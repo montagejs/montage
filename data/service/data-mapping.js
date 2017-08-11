@@ -51,7 +51,7 @@ exports.DataMapping = Montage.specialize(/** @lends DataMapping.prototype */ {
             var key;
             if (data) {
                 for (key in data) {
-                    object[key] = data[key]
+                    object[key] = data[key];
                 }
             }
         }

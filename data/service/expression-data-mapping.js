@@ -301,9 +301,8 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 }
                 result = Promise.all(promises);
             } else {
-                result  = Promise.resolve(null)
+                result  = Promise.resolve(null);
             }
-
 
             return result;
         }
@@ -645,7 +644,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 if (self._isThenable(value)) {
                     value.then(function (data) {
                         self._assignDataToObjectProperty(object, propertyDescriptor, data);
-                        resolve(null)
+                        resolve(null);
                     });
                 } else {
                     object[propertyDescriptor.name] = value;
@@ -723,7 +722,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             return {
                 parsed: parsed,
                 expression: expression
-            }
+            };
         }
     },
 

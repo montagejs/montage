@@ -123,7 +123,7 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
             if (authorization && authorization.headerValueExpression && this.authorizationHeaderName) {
                 scope = new Scope(authorization);
                 evaluate = compile(parse(authorization.headerValueExpression));
-                headers[this.authorizationHeaderName] = evaluate(scope)
+                headers[this.authorizationHeaderName] = evaluate(scope);
             } else if (query && this.authorizationHeaderName && this.authorizationHeaderValueExpression) {
                 scope = new Scope(query);
                 evaluate = compile(parse(this.authorizationHeaderValueExpression));
@@ -429,9 +429,9 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
 
 
             if (last === 5 && arguments[4] instanceof DataQuery) {
-                parsed.query = arguments[4]
+                parsed.query = arguments[4];
             } else if (last === 4 && arguments[3] instanceof DataQuery) {
-                parsed.query = arguments[3]
+                parsed.query = arguments[3];
             }
             // Return the parsed arguments.
             return last >= 0 ? parsed : undefined;
