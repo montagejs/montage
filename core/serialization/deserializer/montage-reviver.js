@@ -5,7 +5,6 @@ var Montage = require("../../core").Montage,
     UnitDeserializer = require("./unit-deserializer").UnitDeserializer,
     ModuleReference = require("../../module-reference").ModuleReference,
     Alias = require("../alias").Alias, Bindings = require("../bindings"),
-    WeakMap = require("collections/weak-map"),
     Promise = require("../../promise").Promise,
     deprecate = require("../../deprecate"),
     ONE_ASSIGNMENT = "=",
@@ -150,7 +149,13 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     lowerCamelCaseToDashCase: {
         value: function (string) {
-            return string.replace(/([A-Z])/g, function (g) { return '-' + g[0].toLowerCase() });
+            return string.replace(/([A-Z])/g, function (g) { return '-' + g[0].toLowerCase();});
+        }
+    },
+
+    dashCaseTolowerCamelCase: {
+        value: function (string) {
+            return string.replace(/(-[a-z])/g, function (g, t, y) { return g[1].toUpperCase();});
         }
     },
 
@@ -194,7 +199,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 Object.defineProperty(element, "dataset", {
                     value: new Proxy(targetObject, {
                         set: function (target, propertyName, value) {
-                            element.setAttribute('data-' +
+                            element.nativeSetAttribute('data-' +
                                 self.lowerCamelCaseToDashCase(propertyName),
                                 value
                             );
@@ -244,7 +249,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 PROXY_ELEMENT_MAP.set(element, new Proxy(targetObject, {
                     set: function (target, propertyName, value) {
                         if (!(propertyName in Object.getPrototypeOf(element))) {
-                            element.setAttribute(propertyName, value);
+                            element.nativeSetAttribute(propertyName, value);
                             target[propertyName] = value;
                         }
 
@@ -258,6 +263,27 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             }
             
             return PROXY_ELEMENT_MAP.get(element);
+        }
+    },
+
+    wrapSetAttributeForElement: {
+        value: function (element) {
+            if (element.setAttribute === element.nativeSetAttribute) {
+                var proxyElement = PROXY_ELEMENT_MAP.get(element),
+                    self = this;    
+
+                element.setAttribute = function (key, value) {
+                    var propertyName;
+                    if (key.startsWith('data-')) {
+                        propertyName = self.dashCaseTolowerCamelCase(key.replace('data-', ''));
+                        proxyElement.dataset[propertyName] = value;
+                    } else {
+                        propertyName = self.dashCaseTolowerCamelCase(key);
+                        proxyElement[propertyName] = value;
+                    }
+                    element.nativeSetAttribute(key, value);
+                }
+            }
         }
     },
 
@@ -300,6 +326,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                             proxyElement = this.setProxyOnElement(revivedValue, montageObjectDesc);
                         
                         this.setProxyForDatasetOnElement(revivedValue, montageObjectDesc);
+                        this.wrapSetAttributeForElement(revivedValue);
                         context.setBindingsToDeserialize(proxyElement, montageObjectDesc);
 
                         this.deserializeMontageObjectValues(
