@@ -1309,12 +1309,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     fetchObjectProperty: {
         value: function (object, propertyName) {
-
             var isHandler = this.parentService && this.parentService._getChildServiceForObject(object) === this,
                 useDelegate = isHandler && typeof this.fetchRawObjectProperty === "function",
                 delegateFunction = !useDelegate && isHandler && this._delegateFunctionForPropertyName(propertyName),
                 propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
                 childService = !isHandler && this._getChildServiceForObject(object);
+
 
             return  useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
                     delegateFunction ?                  delegateFunction.call(this, object) :
@@ -1342,7 +1342,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (mapping) {
 
                 Object.assign(data, this.snapshotForObject(object));
-
 
                 return mapping.mapObjectToCriteriaSourceForProperty(object, data, propertyName).then(function() {
                     Object.assign(data, self.snapshotForObject(object));
@@ -1781,6 +1780,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
                     // Use a child service to fetch the data.
                     try {
+
                         service = self.childServiceForType(query.type);
                         if (service) {
                             stream = service.fetchData(query, stream) || stream;
@@ -1834,8 +1834,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             var serviceModuleID = this._serviceIdentifierForQuery(query),
                 service = serviceModuleID && this._childServicesByIdentifier.get(serviceModuleID);
 
-            if (!service) {
-                service = this.childServiceForType(query.type);
+            if (!service && this._childServicesByType.has(query.type)) {
+                service = this._childServicesByType.get(query.type);
             }
 
             return service || null;
