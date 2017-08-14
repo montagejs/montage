@@ -50,7 +50,6 @@
   "dependencies": {
     "bluebird": "~3.4.7",
     "collections": "~5.0.x",
-    "dexie": "~1.4.1",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
     "jshint": "^2.9.5",
