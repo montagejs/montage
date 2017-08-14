@@ -35,8 +35,6 @@ describe("serialization/montage-deserializer-element-spec", function () {
 
             deserializer.deserialize(null, rootEl).then(function (objects) {
                 expect(objects.rootEl instanceof Element).toBe(true);
-                console.log(objects.rootEl instanceof Element)
-                console.log(objects.rootEl.textContent)
                 expect(objects.rootEl.textContent).toBe("content");
             }).finally(function () {
                 done();
