@@ -162,7 +162,7 @@ var Select = exports.Select =  Control.specialize(/** @lends module:"montage/ui/
             }
 
             this._contentController = value;
-            value.multiSelect = this.multiple;
+            value.allowsMultipleSelection = this.multiple;
 
             Bindings.defineBindings(this, {
                 "content": {"<-": "_contentController.organizedContent"},
