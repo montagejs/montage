@@ -131,7 +131,9 @@ describe("serialization/montage-deserializer-element-spec", function () {
                     "values": {
                         "foo": 42,
                         "qux": "bar",
-                        "dataset.foo": { "=" : "'montage'" }
+                        "dataset.foo": { "=": "'montage'" },
+                        "quuz": { "<->": "foo" },
+                        "baz": { "<->": "quux" }
                     }
                 }
             },
@@ -146,6 +148,12 @@ describe("serialization/montage-deserializer-element-spec", function () {
                 expect(objects.rootEl.getAttribute('qux')).toBe('bar');
                 expect(objects.rootEl.dataset.foo).toBe('montage');
                 expect(objects.rootEl.foo).toBe(42);
+                expect(objects.rootEl.quuz).toBe(42);
+                objects.rootEl.foo = 0;
+                expect(objects.rootEl.foo).toBe(0);
+                expect(objects.rootEl.quuz).toBe(0);
+                expect(objects.rootEl.getAttribute('foo')).toBe('0');
+                expect(objects.rootEl.getAttribute('baz')).toBe(null);
                 expect(objects.rootEl.qux).toBe('bar');
             }).finally(function () {
                 done();

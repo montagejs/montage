@@ -248,12 +248,29 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 
                 PROXY_ELEMENT_MAP.set(element, new Proxy(targetObject, {
                     set: function (target, propertyName, value) {
-                        if (!(propertyName in Object.getPrototypeOf(element))) {
-                            element.nativeSetAttribute(propertyName, value);
-                            target[propertyName] = value;
+                        if (!(propertyName in Object.getPrototypeOf(element))) {                
+                            if (Object.getOwnPropertyDescriptor(element, propertyName) === void 0) {
+                                Object.defineProperty(element, propertyName, {
+                                    set: function (value) {
+                                        if (value === null || value === void 0) {
+                                            element.removeAttribute(propertyName);
+                                        } else {
+                                            element.nativeSetAttribute(propertyName, value);
+                                        }
+
+                                        target[propertyName] = value;
+                                    },
+                                    get: function () {
+                                        return target[propertyName];
+                                    }
+                                });
+                            }
                         }
 
-                        element[propertyName] = value;
+                        if (target[propertyName] !== value) {
+                            element[propertyName] = value;
+                        }
+
                         return true;
                     },
                     get: function (target, propertyName) {
