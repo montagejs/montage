@@ -1,13 +1,9 @@
 var DataService = require("data/service/data-service").DataService,
     BlueprintDataMapping = require("data/service/blueprint-data-mapping").BlueprintDataMapping,
-    DataObjectDescriptor = require("data/model/data-object-descriptor").DataObjectDescriptor,
     DataIdentifier = require("data/model/data-identifier").DataIdentifier,
-    DataQuery = require("data/model/data-query").DataQuery,
-    DataStream = require("data/service/data-stream").DataStream,
     Deserializer = require("core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     Map = require("collections/map"),
     Montage = require("montage").Montage,
-    ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor,
     WeakMap = require("collections/weak-map"),
     deprecate = require("core/deprecate");
 
@@ -550,8 +546,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     isOffline: {
         get: function () {
-            return this === this.rootService ? 
-                    this.superForGet("isOffline")() : 
+            return this === this.rootService ?
+                    this.superForGet("isOffline")() :
                         this.rootService.isOffline;
         }
     },
