@@ -61,19 +61,21 @@ var _WebSocket = global.WebSocket,
     _sendNextMessage: {
         value: function () {
             if (this._messageQueue.length) {
-                if (
-                    this._webSocket &&
-                    this._webSocket.readyState !== WebSocket.CLOSING &&
-                    this._webSocket.readyState !== WebSocket.CLOSED
-                ) {
-                    try {
-                        this._webSocket.send(this._messageQueue[0]);
-                        this._messageQueue.shift();
-                    } catch (e) {
+                switch (this.readyState) {
+                    case WebSocket.CONNECTING:
+                        break;
+                    case WebSocket.CLOSING:
+                    case WebSocket.CLOSED:
                         this._reconnect();
-                    }
-                } else {
-                    this._reconnect();
+                        break;
+                    case WebSocket.OPEN:
+                        try {
+                            this._webSocket.send(this._messageQueue[0]);
+                            this._messageQueue.shift();
+                        } catch (e) {
+                            this._reconnect();
+                        }
+                        break;
                 }
             }
         }
@@ -155,7 +157,7 @@ var _WebSocket = global.WebSocket,
     },
     readyState: {
         get: function () {
-            return this._webSocket.readyState;
+            return this._webSocket ? this._webSocket.readyState : WebSocket.CLOSED;
         }
     },
 
