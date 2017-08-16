@@ -1834,8 +1834,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             var serviceModuleID = this._serviceIdentifierForQuery(query),
                 service = serviceModuleID && this._childServicesByIdentifier.get(serviceModuleID);
 
+
             if (!service && this._childServicesByType.has(query.type)) {
                 service = this._childServicesByType.get(query.type);
+                service = service && service[0];
             }
 
             return service || null;
