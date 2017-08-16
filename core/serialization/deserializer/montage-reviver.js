@@ -1,4 +1,4 @@
-/* global console */
+/*global console, Proxy */
 var Montage = require("../../core").Montage,
     ValuesDeserializer = require("./values-deserializer").ValuesDeserializer,
     SelfDeserializer = require("./self-deserializer").SelfDeserializer,
@@ -228,7 +228,9 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     var propertyNames, propertyName;
 
                     for (propertyName in element) {
-                        targetObject[propertyName] = void 0;
+                        if (element.hasOwnProperty(propertyName)) {
+                            targetObject[propertyName] = void 0;
+                        }
                     }
 
                     if (montageObjectDesc.values) {
@@ -299,7 +301,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                         proxyElement[propertyName] = value;
                     }
                     element.nativeSetAttribute(key, value);
-                }
+                };
             }
         }
     },
@@ -335,24 +337,29 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     return object;
                 }
 
-                var revivedValue = this.reviveValue(value.value, context, label);
+                var revivedValue = this.reviveValue(value.value, context, label),
+                    valueType = this.getTypeOf(value.value);
 
-                if (this.getTypeOf(value.value) === "Element") {
+                if (valueType === "Element") {
                     if (!Promise.is(revivedValue)) {
-                        var montageObjectDesc = this.reviveObjectLiteral(value, context),
-                            proxyElement = this.setProxyOnElement(revivedValue, montageObjectDesc);
-                        
-                        this.setProxyForDatasetOnElement(revivedValue, montageObjectDesc);
+                        var proxyElement = this.setProxyOnElement(revivedValue, value);
+                        this.setProxyForDatasetOnElement(revivedValue, value);
                         this.wrapSetAttributeForElement(revivedValue);
-                        context.setBindingsToDeserialize(proxyElement, montageObjectDesc);
-
+                        context.setBindingsToDeserialize(proxyElement, value);
                         this.deserializeMontageObjectValues(
                             proxyElement,
-                            montageObjectDesc.values || montageObjectDesc.properties, //deprecated
+                            value.values || value.properties, //deprecated
                             context
                         );
-                        context.setUnitsToDeserialize(revivedValue, montageObjectDesc, MontageReviver._unitNames);
                     }
+                } else if (valueType === "object") {
+                    context.setBindingsToDeserialize(revivedValue, value);
+                    this.deserializeMontageObjectValues(
+                        revivedValue,
+                        value.values || value.properties, //deprecated
+                        context
+                    );
+                    context.setUnitsToDeserialize(revivedValue, value, MontageReviver._unitNames);
                 }
 
                 return revivedValue;
@@ -827,6 +834,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
             for (var propertyName in value) {
                 if (value.hasOwnProperty(propertyName)) {
+                    if (value[propertyName] === value) {
+                        // catch object property that point to its parent
+                        return value;
+                    }
+
                     item = this.reviveValue(value[propertyName], context);
 
                     if (Promise.is(item)) {
