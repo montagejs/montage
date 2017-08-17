@@ -1969,6 +1969,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         value: function () {
             if (this._currentActiveIteration) {
                 this._currentActiveIteration.shouldBecomeActive = false;
+                this._currentActiveIteration.active = false;
                 this._currentActiveIteration = null;
             }
 
