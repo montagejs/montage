@@ -8,7 +8,10 @@
  */
 var Montage = require("../core/core").Montage,
     Composer = require("./composer").Composer,
-    MutableEvent = require("../core/event/mutable-event").MutableEvent;
+    MutableEvent = require("../core/event/mutable-event").MutableEvent,
+    EnvironmentModule = require("../core/environment"),
+    Environment = EnvironmentModule.Environment,
+    currentEnvironment = EnvironmentModule.currentEnvironment;
 
 /*
  * @class PressEvent
@@ -548,8 +551,12 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
             if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 this._needDispatchSafePress = false;
 
-                if (event.type === "touchstart") {
+                if (event.type === "touchstart" && currentEnvironment.browserName === Environment.Browser.CHROME) {
                     var self = this;
+
+                    if (this._dispatchSafePressCallBack) {
+                        this._dispatchSafePress(this._dispatchSafePressCallBack.pressEvent);
+                    }
 
                     window.nativeAddEventListener("touchstart", function _touchStartDefaultPrevented (touchStartEvent) {
                         window.nativeRemoveEventListener("touchstart", _touchStartDefaultPrevented, false);
@@ -840,8 +847,8 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                     // walking the dom. An issue could happen here when the positioning of elements is changing (z-index)
                     // after the press event has been raised, which could result to giving the focus to a wrong element.
                     // @example: @see press-composer.info
-                    //@todo: should be deprecated when browsers will support PointerEvents.
-                    var dispatchSafePressCallBack = function (mouseDownEvent) {
+                    // FIXME: should be deprecated when browsers will support PointerEvents.
+                    var dispatchSafePressCallBack = this._dispatchSafePressCallBack = function (mouseDownEvent) {
                         if (touchEndTargetElement === mouseDownEvent.target ||
                             eventManager._couldEmulatedEventHaveWrongTarget(
                                 event.changedTouches[0],
@@ -850,15 +857,16 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                                 eventManager._emulatedEventTimestampThreshold
                             )
                         ) {
-                            self._dispatchSafePress(pressEvent, dispatchSafePressCallBack);
+                            self._dispatchSafePress(pressEvent);
                         }
                     };
 
-                    window.nativeAddEventListener("mousedown", dispatchSafePressCallBack, true);
+                    dispatchSafePressCallBack.pressEvent = pressEvent;
+                    window.nativeAddEventListener("mousedown", this._dispatchSafePressCallBack, true);
 
                     // -> long press fallBack: no simulated events with long touch press.
                     dispatchSafePressCallBack.timeoutID = setTimeout(function () {
-                        self._dispatchSafePress(pressEvent, dispatchSafePressCallBack);
+                        self._dispatchSafePress(pressEvent);
                     }, 300);
 
                     return void 0;
@@ -871,10 +879,16 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     },
 
     _dispatchSafePress: {
-        value: function (pressEvent, dispatchSafePressCallBack) {
-            clearTimeout(dispatchSafePressCallBack.timeoutID);
-            dispatchSafePressCallBack.timeoutID = null;
-            window.nativeRemoveEventListener("mousedown", dispatchSafePressCallBack, true);
+        value: function (pressEvent) {
+            var dispatchSafePressCallBack = this._dispatchSafePressCallBack;
+
+            if (dispatchSafePressCallBack) {
+                clearTimeout(dispatchSafePressCallBack.timeoutID);
+                dispatchSafePressCallBack.timeoutID = null;
+                this._dispatchSafePressCallBack = null;
+                window.nativeRemoveEventListener("mousedown", dispatchSafePressCallBack, true);
+            }
+            
             this.dispatchEvent(pressEvent);
             this._state = PressComposer.UNPRESSED;
         }
