@@ -706,8 +706,8 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             var self = this;
             return rule.converter.convert(rule.expression(scope)).then(function (data) {
                 self._assignDataToObjectProperty(object, propertyDescriptor, data);
-                return rule.inversePropertyName ? self._assignObjectToDataInverseProperty(object, propertyDescriptor, data, rule.inversePropertyName) :
-                                                  null;
+                return rule.inversePropertyName && data && data.length ? self._assignObjectToDataInverseProperty(object, propertyDescriptor, data, rule.inversePropertyName) :
+                                                                         null;
 
             });
         }
