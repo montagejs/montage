@@ -201,6 +201,15 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
         }
     },
 
+    owner: {
+        get: function () {
+            return this._owner ? this._owner.then ? this._owner : Promise.resolve(this._owner) : undefined;
+        },
+        set: function (value) {
+            this._owner = value;
+        }
+    },
+
     __scope: {
         value: null
     },
@@ -222,12 +231,12 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
      */
     service: {
         get: function () {
-            return  this._service                    ? this._service :
-                    this.owner && this.owner.service ? this.owner.service :
+            return  this._service ? this._service :
+                    this.owner    ? this.owner.then(function (object) { return object.service; }) :
                                                        undefined;
         },
         set: function (value) {
-            this._service = value;
+            this._service = !value || value.then ? value : Promise.resolve(value);
         }
     },
 
@@ -259,16 +268,15 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
             return descriptorPromise.then(function (typeToFetch) {
                 var type = [typeToFetch.module.id, typeToFetch.name].join("/");
 
-
-
                 if (self.serviceIdentifier) {
                     criteria.parameters.serviceIdentifier = self.serviceIdentifier;
                 }
 
                 query = DataQuery.withTypeAndCriteria(type, criteria);
 
-                return self.service ? self.service.rootService.fetchData(query) :
-                                      null;
+                return self.service ? self.service.then(function (service) {
+                        return service.rootService.fetchData(query)
+                    }) : null;
             });
         }
     },
