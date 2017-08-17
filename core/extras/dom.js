@@ -190,9 +190,11 @@ if (typeof Node !== "undefined") {
 if (typeof DOMTokenList !== "undefined") {
     var DOMTokenListPrototype = window.DOMTokenList.prototype;
 
-    Object.defineProperty(DOMTokenListPrototype, 'has', {
-        value: function (key) {
-            return this.contains(key);
-        }
-    });
+    if (typeof DOMTokenListPrototype.has === 'undefined') {
+        Object.defineProperty(DOMTokenListPrototype, 'has', {
+            value: function (key) {
+                return this.contains(key);
+            }
+        });
+    }
 }
