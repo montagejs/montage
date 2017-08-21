@@ -1,0 +1,140 @@
+{
+    "root": {
+        "prototype": "data/service/rest-mapping.js",
+        "properties": {
+            "base": "t/json/",
+            "objectDescriptor": {"@": "hazard"},
+            "create": [{
+                "method": "POST",
+                "path": {"<-": "@root.base + 'create_hazard'"}
+            }],
+            "update": {
+                "method": "PUT",
+                "path": "2/json/edit_hazard",
+                "auth": "session"
+            },
+            "delete": {
+                "method": "DELETE",
+                "path": "2/json/delete_hazard"
+            },
+            "read": [{
+                "path": "/hazards/t/json/get_hazard_info",
+                "queryEvaluationExpression": "parameters.hazard_ID",
+                "method": "GET",
+                "parameters": [
+                    {
+                        "name": "app_ids",
+                        "in": "query",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "where",
+                        "in": "query",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "orderby",
+                        "in": "query",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/HazardBean"
+                            }
+                        },
+                        "headers": {}
+                    }
+                },
+                "security": [
+                    {
+                        "oAuth2": [
+                            "openid"
+                        ]
+                    }
+                ]
+            },
+                {
+                    "get": {
+                        "tags": [
+                            "hazards"
+                        ],
+                        "operationId": "getHazardsTokenServer_JSON",
+                        "consumes": [
+                            "application/x-www-form-urlencoded"
+                        ],
+                        "produces": [
+                            "application/json"
+                        ],
+                        "parameters": [
+                            {
+                                "name": "app_ids",
+                                "in": "query",
+                                "required": false,
+                                "type": "string"
+                            },
+                            {
+                                "name": "where",
+                                "in": "query",
+                                "required": false,
+                                "type": "string"
+                            },
+                            {
+                                "name": "orderby",
+                                "in": "query",
+                                "required": false,
+                                "type": "string"
+                            },
+                            {
+                                "name": "Authorization",
+                                "in": "header",
+                                "required": false,
+                                "type": "string"
+                            }
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "successful operation",
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/definitions/HazardBean"
+                                    }
+                                },
+                                "headers": {}
+                            }
+                        },
+                        "security": [
+                            {
+                                "oAuth2": [
+                                    "openid"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+
+    "hazardFilterToWhereClauseConverter": {
+        "prototype": "logic/converter/filter-to-where-clause-converter"
+    },
+
+    "hazard": {
+        "object": "logic/model/descriptors/hazard.mjson"
+    }
+}

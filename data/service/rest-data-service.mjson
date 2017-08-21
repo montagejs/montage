@@ -1,0 +1,65 @@
+{
+    "root": {
+        "prototype": "data/service/rest-data-service.js",
+        "properties": {
+            "types": [
+                {"@": "foo"},
+                {"@": "hazard"}
+            ],
+            "restMappings": [
+                {"@": "fooServiceMapping"},
+                {"@": "hazardServiceMapping"}
+            ]
+        }
+    },
+
+    "foo": {
+        "object": "logic/model/descriptors/foo.mjson"
+    },
+
+    "fooServiceMapping": {
+        "prototype": "data/service/rest-mapping.js",
+        "properties": {
+            "objectDescriptor": {"@": "foo"},
+            "create": [{
+                "method": "POST",
+                "path": {"<-": "/service/foo/"}
+            }],
+            "update": {
+                "method": "PUT",
+                "path": {"<-": "/service/foo/ + parameters.foo_ID"},
+                "auth": "session"
+            },
+            "delete": {
+                "method": "DELETE",
+                "path": {"<-": "/service/foo/ + parameters.foo_ID"}
+            },
+            "read": [{
+                "path": {"<-": "/service/foo/ + (parameters.foo_ID ? parameters.foo_ID : ''"},
+                "method": "GET",
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/HazardBean"
+                            }
+                        },
+                        "headers": {}
+                    }
+                }
+            }
+            ]
+        }
+    },
+
+    "hazard": {
+        "object": "logic/model/descriptors/hazard.mjson"
+    },
+
+    "hazardServiceMapping": {
+        "object": "logic/service/mapping/rest-service-mapping.mjson"
+    }
+
+}
