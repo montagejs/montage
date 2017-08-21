@@ -74,7 +74,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                     expect(content.length).toBe(3);
                 });
 
-                it("should change the content of the component for markup part1", function () {
+                it("should change the content of the component for markup part1", function (done) {
                     var componentC = testPage.test.componentC,
                         content = componentC.domContent,
                         newContent = componentC._element.ownerDocument.createElement("div");
@@ -83,16 +83,13 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                     testPage.test.componentC.domContent = newContent;
                     // should only draw at draw cycle.
                     expect(componentC.domContent).toEqual(content);
-               });
 
-                it("should change the content of the component for markup part2", function (done) {
-                    var componentC = testPage.test.componentC;
                     testPage.waitForComponentDraw(componentC).then(function () {
                         expect(componentC.domContent.length).toBe(1);
                         expect(componentC.domContent[0].outerHTML).toBe('<div class="markup"></div>');
                         done();
                     });
-                });
+               });
 
                 it("should change the content of the component for another component part1", function (done) {
                     var componentC = testPage.test.componentC,
