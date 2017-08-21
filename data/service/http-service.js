@@ -310,7 +310,7 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
                     request.onreadystatechange = function () {
                         if (request.readyState === 4) {
                             resolve(request);
-                            console.log("Completed request for (", parsed.url, ") in (", ((new Date().getTime() - startTime)), ") ms");
+                            // console.log("Completed request for (", parsed.url, ") in (", ((new Date().getTime() - startTime)), ") ms");
                         }
                     };
                     request.onerror = function () {
