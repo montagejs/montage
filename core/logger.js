@@ -2,18 +2,10 @@
  * @module montage/core/logger
  * @requires montage/core/core
  */
-var Montage = require("./core").Montage,
-    Logger,
-    loggers,
-    consoleLog,
-    getFunctionName,
-    toTimeString,
-    LoggerUI,
-    localStorage;
+var console = require('./extras/console').console;
+var Montage = require("./core").Montage;
 
-loggers = exports.loggers = {};
-
-getFunctionName = function (montageObject) {
+function getFunctionName(montageObject) {
     var aCaller = getFunctionName.caller.caller,
         aFunctionName;
     aFunctionName = aCaller.name;
@@ -21,29 +13,74 @@ getFunctionName = function (montageObject) {
         aFunctionName = "anonymous";
     }
     return aFunctionName;
-};
+}
 
-toTimeString = function (date) {
+function toTimeString(date) {
     if (date.getHours) {
         var hours = date.getHours(),
         mins = date.getMinutes(),
         secs = date.getSeconds();
         return (hours.length === 1 ? "0" + hours : hours) + ":" + (mins.length === 1 ? "0" + mins : mins) + ":" + (secs.length === 1 ? "0" + secs : secs) + "." + date.getMilliseconds();
     }
+}
+
+function consoleLog() {
+    console.log(arguments);
+}
+
+var loggers = exports.loggers = {};
+
+var SOLARIZED_COLORS = {
+    "base03":  "#002b36",
+    "base02":  "#073642",
+    "base01":  "#586e75",
+    "base00":  "#657b83",
+    "base0":   "#839496",
+    "base1":   "#93a1a1",
+    "base2":   "#eee8d5",
+    "base3":   "#fdf6e3",
+    "yellow":  "#b58900",
+    "orange":  "#cb4b16",
+    "red":     "#dc322f",
+    "magenta": "#d33682",
+    "violet":  "#6c71c4",
+    "blue":    "#268bd2",
+    "cyan":    "#2aa198",
+    "green":   "#859900"
 };
 
-consoleLog = function () {
-    console.log(arguments);
-};
+function addColorProperty (logger) {
+    var _color = function (cssString) {
+            this._color = cssString;
+            return this;
+        },
+        _getColor = function (name) {
+            return function () {
+                return logger.color(SOLARIZED_COLORS[name]);
+            };
+        };
+    for (var name in SOLARIZED_COLORS) {
+        if (SOLARIZED_COLORS.hasOwnProperty(name)) {
+            _color[name] = _getColor(name);
+        }
+    }
+    logger.color = _color;
+}
 
 /**
  * @class Logger
  * @extends Montage
  */
-Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
+var Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
 
     constructor: {
         value: function Logger() {
+
+            // Set Function.noop on construcot 
+            // to avoid issue with Object.create
+            this.debug = Function.noop; 
+            this.error = Function.noop;
+
             addColorProperty(this);
         }
     },
@@ -56,11 +93,12 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
      */
     init: {
         value: function (name, onStateChange, dontStoreState) {
+            var storedState;
             this.name = name;
             this._onStateChange = onStateChange;
             this._storeState = !dontStoreState;
-            if (this._storeState && localStorage) {
-                var storedState = localStorage.getItem("_montage_logger_" + name);
+            if (this._storeState && typeof localStorage !== "undefined") {
+                storedState = localStorage.getItem("_montage_logger_" + name);
                 if (storedState) {
                     this.isDebug = storedState === "true";
                 }
@@ -187,7 +225,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
     _formattedLog: {
         value: function (args) {
             var firstArgument = args[0];
-            if(colors.isDebug && typeof firstArgument === "string") {
+            if(exports.colors.isDebug && typeof firstArgument === "string") {
                 Array.prototype.splice.call(args, 0, 1, "%c"+firstArgument, this._logCss);
             }
             console.log.apply(console, args);
@@ -218,7 +256,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
      * @param {string} [...]
      */
     debug: {
-        value: Function.noop
+        value: null
     },
 
     /**
@@ -227,7 +265,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
      * @param {string} [...]
      */
     error: {
-        value: Function.noop
+        value: null
     },
 
     /**
@@ -247,46 +285,12 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
     }
 });
 
-function addColorProperty (logger) {
-    var _color = function (cssString) {
-        this._color = cssString;
-        return this;
-    };
-    for (var name in SOLARIZED_COLORS) {
-        _color[name] = function (name) {
-            return function () {
-                return logger.color(SOLARIZED_COLORS[name]);
-            }
-        }(name);
-    }
-    logger.color = _color;
-}
-
-var SOLARIZED_COLORS = {
-    "base03":  "#002b36",
-    "base02":  "#073642",
-    "base01":  "#586e75",
-    "base00":  "#657b83",
-    "base0":   "#839496",
-    "base1":   "#93a1a1",
-    "base2":   "#eee8d5",
-    "base3":   "#fdf6e3",
-    "yellow":  "#b58900",
-    "orange":  "#cb4b16",
-    "red":     "#dc322f",
-    "magenta": "#d33682",
-    "violet":  "#6c71c4",
-    "blue":    "#268bd2",
-    "cyan":    "#2aa198",
-    "green":   "#859900"
-};
-
 /**
  * @function module:montage/core/logger#logger
  */
 exports.logger = function (loggerName, onStateChange, dontStoreState) {
     var logger;
-    if ((logger = loggers[loggerName]) == null) {
+    if (!(logger = loggers[loggerName])) {
         logger = new Logger().init(loggerName, onStateChange, dontStoreState);
         Montage.defineProperty(loggers, loggerName, {
             value: logger
@@ -295,7 +299,9 @@ exports.logger = function (loggerName, onStateChange, dontStoreState) {
     return logger;
 };
 
-LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
+exports.colors = exports.logger("colors");
+
+var LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
 
     init: {
         value: function () {
@@ -336,10 +342,10 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
 
     keyup: {
         value: function (event) {
-            if (event.which == 17) {
+            if (event.which === 17) {
                 this.isCtrl = false;
             }
-            if (event.which == 18) {
+            if (event.which === 18) {
                 this.isAlt = false;
             }
         }
@@ -347,13 +353,13 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
 
     keydown: {
         value: function (event) {
-            if (event.which == 17) {
+            if (event.which === 17) {
                 this.isCtrl = true;
             }
-            if (event.which == 18) {
+            if (event.which === 18) {
                 this.isAlt = true;
             }
-            if (event.which == 76 && this.isCtrl === true && this.isAlt === true) {
+            if (event.which === 76 && this.isCtrl === true && this.isAlt === true) {
                 if (this.shown) {
                     this.hideInspector();
                 } else {
@@ -373,7 +379,7 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
             if (logger._onStateChange) {
                 logger._onStateChange(value);
             }
-            if (logger._storeState && localStorage) {
+            if (logger._storeState && typeof localStorage !== "undefined") {
                 localStorage.setItem("_montage_logger_" + name, value);
             }
         }
@@ -414,7 +420,7 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
                 div2.appendChild(h1);
                 loggerKeys = Object.keys(loggers);
 
-                for (i = 0; iLogger = loggers[loggerKeys[i]]; i++) {
+                for (i = 0; (iLogger = loggers[loggerKeys[i]]); i++) {
                     label = document.createElement("label");
                     input = document.createElement("input");
                     span = document.createElement("span");
@@ -426,9 +432,9 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
                     input.type = "checkbox";
                     input.checked = !!iLogger.isDebug;
                     storageKey = "_montage_logger_" + iLogger.name;
-                    if (iLogger._storeState && localStorage) {
+                    if (iLogger._storeState && typeof localStorage !== "undefined") {
                         storedValue = localStorage.getItem(storageKey);
-                        if (storedValue == null) {
+                        if (!storedValue) {
                             localStorage.setItem(storageKey, iLogger.isDebug);
                         }
                     }
@@ -502,19 +508,9 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
     }
 });
 
-var setupUI = function () {
-    new LoggerUI().init();
-};
 if (typeof window !== "undefined") {
-    // assigning to a local allows us to feature-test without typeof
-    try {
-        localStorage = window.localStorage;
-    } catch (e) {
-        console.log("Error accessing localStorage", e);
-    }
     window.loggers = loggers;
-    if (localStorage) {
-        setupUI();
+    if (typeof localStorage !== "undefined") {
+        new LoggerUI().init();
     }
 }
-var colors = exports.logger("colors");

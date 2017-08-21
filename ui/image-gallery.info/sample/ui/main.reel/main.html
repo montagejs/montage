@@ -9,38 +9,32 @@
     <script type="text/montage-serialization">
     {
         "owner": {
-            "properties": {
+            "values": {
                 "element": {"#": "owner"},
-                "_gallery": {"@": "gallery"}
-            },
-            "bindings": {
+                "_gallery": {"@": "gallery"},
                 "_isSliderActive": {"<-": "@slider.active"}
             }
         },
         "index": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "index"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "index"},
                 "value": {"<-": "'Image ' + (@gallery.currentImageIndex + 1) + ' of ' + @gallery.images.length"}
             }
         },
         "gallery": {
             "prototype": "montage/ui/image-gallery.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "gallery"}
             }
         },
         "slider": {
             "prototype": "ui/slider",
-            "properties": {
+            "values": {
                "element": {"#": "slider"},
                "_sliderThumbElement": {"#": "sliderKnob"},
                "hasTemplate": false,
-               "min": 0
-            },
-            "bindings": {
+               "min": 0,
                 "max": {"<-": "@gallery.images.length - 1"},
                 "value": {"<->": "@gallery.scroll"}
             }

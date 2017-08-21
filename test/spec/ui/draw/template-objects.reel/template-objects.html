@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+    <script type="text/montage-serialization">{
+        "owner": {
+            "values": {
+                "element": {"#": "owner"}
+            }
+        },
+
+        "object": {
+            "value": {}
+        },
+
+        "text": {
+            "prototype": "montage/ui/text.reel",
+            "values": {
+                "element": {"#": "text"}
+            }
+        },
+
+        "repetition": {
+            "prototype": "montage/ui/repetition.reel",
+            "values": {
+                "element": {"#": "repetition"},
+                "content": [1, 2, 3]
+            }
+        },
+
+        "repeatedText": {
+            "prototype": "montage/ui/text.reel",
+            "values": {
+                "element": {"#": "repeatedText"}
+            }
+        }
+    }</script>
+</head>
+<body>
+    <div data-montage-id="owner">
+        <span data-montage-id="text" class="text"></span>
+        <ul data-montage-id="repetition">
+            <li>
+                <span data-montage-id="repeatedText" class="repeatedText"></span>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

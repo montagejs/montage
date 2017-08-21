@@ -1,0 +1,109 @@
+{
+    "owner_reference": {
+        "prototype": "core/meta/object-descriptor-reference",
+        "values": {
+            "valueReference": {
+                "objectDescriptorName": "ObjectDescriptor",
+                "prototypeName": "ObjectDescriptor",
+                "objectDescriptorModule": {
+                    "%": "core/meta/object-descriptor.mjson"
+                }
+            }
+        }
+    },
+    "name": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "name",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+    "owner": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "owner",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "mandatory": true,
+            "readOnly": true,
+            "valueType": "object",
+            "helpKey": "",
+            "valueDescriptor": {
+                "@": "owner_reference"
+            }
+        }
+    },
+    "detailKeys": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "detailKeys",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": -1,
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+    "helpKey": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "helpKey",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "EventDescriptor",
+            "customPrototype": false,
+            "propertyDescriptors": [
+                {
+                    "@": "name"
+                },
+                {
+                    "@": "owner"
+                },
+                {
+                    "@": "detailKeys"
+                },
+                {
+                    "@": "helpKey"
+                }
+            ],
+            "propertyDescriptorGroups": {
+                "event-descriptor": [
+                    {
+                        "@": "name"
+                    },
+                    {
+                        "@": "owner"
+                    },
+                    {
+                        "@": "detailKeys"
+                    },
+                    {
+                        "@": "helpKey"
+                    }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/meta/event-descriptor.mjson"
+            },
+            "exportName": "EventDescriptor",
+            "module": {
+                "%": "core/meta/event-descriptor"
+            }
+        }
+    }
+}

@@ -73,11 +73,7 @@ Object.defineProperty(_RangeSelection.prototype, "clone", {
         return this.slice();
     }
 });
-var oldSwap = self.swap;
-Object.defineProperty(_RangeSelection.prototype, "oldSwap", {
-    configurable: false,
-    value: observableArrayProperties.swap.value
-});
+_RangeSelection.prototype.oldSwap = observableArrayProperties.swap.value;
 Object.defineProperty(_RangeSelection.prototype, "swap", {
     configurable: false,
     value: function(start, howMany, itemsToAdd) {
@@ -120,6 +116,7 @@ Object.defineProperty(_RangeSelection.prototype, "swap_or_push", {
         var content = this.rangeController.content;
         this.contentEquals = content && content.contentEquals || Object.is;
         start = start >= 0 ? start : this.length + start;
+        var plus;
         var oldLength = this.length;
         var minusLength = Math.min(howMany, oldLength - start);
 
@@ -127,7 +124,7 @@ Object.defineProperty(_RangeSelection.prototype, "swap_or_push", {
 
             itemsToAdd.contentEquals = this.contentEquals;
 
-            var plus = itemsToAdd.filter(function(item, index){
+            plus = itemsToAdd.filter(function(item, index){
                 // do not add items to the selection if they aren't in content
                 if (content && !content.has(item)) {
                     return false;
@@ -600,7 +597,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
         value: function (index, length, values) {
             var result = this.content.swap.apply(this.content, arguments);
             if (values) {
-                for (var index = 2; index < values.length; index++) {
+                // TODO WTF index vs index
+                for (index = 2; index < values.length; index++) {
                     this.handleAdd(values[index]);
                 }
             }
@@ -769,7 +767,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
                         this._selection.clear();
                         this._selection.add(last);
                     }
-                    if (this.avoidsEmptySelection && this._selection.length == 0) {
+                    if (this.avoidsEmptySelection && this._selection.length === 0) {
                         this._selection.add(minus[0]);
                     }
                 } else {

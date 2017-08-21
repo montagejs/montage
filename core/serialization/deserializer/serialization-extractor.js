@@ -13,19 +13,21 @@ var SerializationExtractor = Montage.specialize( {
 
     extractObjects: {
         value: function (labels, externalLabels) {
-            var serialization = this._serialization,
+
+            var i, label,
+                serialization = this._serialization,
                 objects = {};
 
             externalLabels = externalLabels || [];
 
-            for (var i = 0, label; (label = labels[i]); i++) {
+            for (i = 0, label; (label = labels[i]); i++) {
                 if (label in serialization) {
                     objects[label] = serialization[label];
                     this._findLabels(label, externalLabels);
                 }
             }
 
-            for (var i = 0, label; (label = externalLabels[i]); i++) {
+            for (i = 0, label; (label = externalLabels[i]); i++) {
                 if (!(label in objects) && (label in serialization)) {
                     objects[label] = {};
                 }
@@ -66,7 +68,9 @@ var SerializationExtractor = Montage.specialize( {
                 }
             } else if (type === "object") {
                 for (var key in serialization) {
-                    this._collectLabels(serialization[key], labels);
+                    if (serialization.hasOwnProperty(key)) {
+                        this._collectLabels(serialization[key], labels);
+                    }
                 }
             }
         }
@@ -92,9 +96,11 @@ var SerializationExtractor = Montage.specialize( {
                 sourcePath;
 
             for (var propertyName in unitSerialization) {
-                binding = unitSerialization[propertyName];
-                sourcePath = binding["<-"] || binding["<->"];
-                this._collectLabelsInBindingPath(sourcePath, labels);
+                if (unitSerialization.hasOwnProperty(propertyName)) {
+                    binding = unitSerialization[propertyName];
+                    sourcePath = binding["<-"] || binding["<->"];
+                    this._collectLabelsInBindingPath(sourcePath, labels);   
+                }
             }
         }
     },
@@ -133,8 +139,10 @@ var SerializationExtractor = Montage.specialize( {
     _collectLabelsInLocalizations: {
         value: function (unitSerialization, labels) {
             for (var propertyName in unitSerialization) {
-                this._collectLabelsInLocalizationProperty(
-                    unitSerialization[propertyName], labels);
+                if (unitSerialization.hasOwnProperty(propertyName)) {
+                    this._collectLabelsInLocalizationProperty(
+                        unitSerialization[propertyName], labels);
+                }
             }
         }
     },
@@ -156,9 +164,10 @@ var SerializationExtractor = Montage.specialize( {
             if ("data" in property) {
                 data = property.data;
 
+                /* jshint forin: true */
                 for (var key in data) {
-                    this._collectLabelsInLocalizationBinding(
-                        data[key], labels);
+                /* jshint forin: false */
+                    this._collectLabelsInLocalizationBinding(data[key], labels);
                 }
             }
         }

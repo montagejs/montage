@@ -1,7 +1,7 @@
 {
     "blueprint_loader_mainModule": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "mainModule",
             "blueprint": {
                 "@": "root"
@@ -10,7 +10,7 @@
     },
     "blueprint_loader_mainName": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "mainName",
             "blueprint": {
                 "@": "root"
@@ -19,7 +19,7 @@
     },
     "blueprint_loader_includeFrameworkModules": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "includeFrameworkModules",
             "blueprint": {
                 "@": "root"
@@ -28,7 +28,7 @@
     },
     "blueprint_loader_minimumBootstrappingDuration": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "minimumBootstrappingDuration",
             "blueprint": {
                 "@": "root"
@@ -37,7 +37,7 @@
     },
     "blueprint_loader_minimumLoadingDuration": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "minimumLoadingDuration",
             "blueprint": {
                 "@": "root"
@@ -46,7 +46,7 @@
     },
     "blueprint_loader_currentStage": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "currentStage",
             "blueprint": {
                 "@": "root"
@@ -55,7 +55,7 @@
     },
     "blueprint_loader_isLoadingMainComponent": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "isLoadingMainComponent",
             "blueprint": {
                 "@": "root"
@@ -64,7 +64,7 @@
     },
     "blueprint_loader_readyToShowLoader": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "readyToShowLoader",
             "blueprint": {
                 "@": "root"
@@ -73,7 +73,7 @@
     },
     "blueprint_loader_readyToShowMainComponent": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "readyToShowMainComponent",
             "blueprint": {
                 "@": "root"
@@ -82,7 +82,7 @@
     },
     "blueprint_loader_removeContentOnLoad": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "removeContentOnLoad",
             "blueprint": {
                 "@": "root"
@@ -91,7 +91,7 @@
     },
     "blueprint_component_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Component",
                 "prototypeName": "Component",
@@ -103,12 +103,12 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "Loader",
             "parent": {
                 "@": "blueprint_component_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_loader_mainModule"
                 },

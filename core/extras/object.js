@@ -79,50 +79,14 @@ Object.defineProperty(Object.prototype, "clear", {
     configurable: true
 });
 
-Object.defineProperty(Object, "defineBinding", {
-    value: function (target, targetPath, descriptor) {
-        var depth = Error.stackTraceLimit;
-        Error.stackTraceLimit = 2;
-        console.warn(
-            "Object.defineBinding deprecated.  " +
-            "See the comment below this warning for migration instructions.",
-            new Error("deprecated").stack
-        );
-        Error.stackTraceLimit = depth;
-
-        //
-        // Migration instructions:
-        //
-        // Replace Object.defineBinding with
-        // import Bindings from "montage/core/bindings"
-        // Bindings.defineBinding(target, targetPath, descriptor);
-        // - Use "<-", "<->", and "source" in place of
-        //   "boundObjectPropertyPath", "oneway", and "boundObject".
-        // - Use "convert" or "converter.convert" in place of
-        //   "boundValueMutator".
-        //
-
-        var Bindings = require("frb");
-
-        descriptor.source = descriptor.boundObject;
-        if (descriptor.oneway) {
-            descriptor["<-"] = descriptor.boundObjectPropertyPath;
-        } else {
-            descriptor["<->"] = descriptor.boundObjectPropertyPath;
-        }
-
-        if (descriptor.boundValueMutator) {
-            descriptor.convert = descriptor.boundValueMutator;
-        }
-
-        Bindings.defineBinding(target, targetPath, descriptor);
-    }
-});
-
-Object.defineProperty(Object, "deleteBinding", {
-    value: function (target, targetPath) {
-        var Bindings = require("frb");
-        Bindings.cancelBinding(target, targetPath);
-    }
-});
+if (Object.hasOwnProperty('deleteBinding') === false) {
+    Object.defineProperty(Object, "deleteBinding", {
+        value: function (target, targetPath) {
+            var Bindings = require("frb");
+            Bindings.cancelBinding(target, targetPath);
+        },
+        writable: true,
+        configurable: true
+    });
+}
 

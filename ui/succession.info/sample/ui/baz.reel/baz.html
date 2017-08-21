@@ -9,25 +9,21 @@
     <script type="text/montage-serialization">
     {
         "owner": {
-            "properties": {
+            "values": {
                 "element": {"#": "Baz"}
             }
         },
         "width": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "width"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "width"},
                 "value": {"<-": "@owner.width"}
             }
         },
         "height": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "height"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "height"},
                 "value": {"<-": "@owner.height"}
             }
         }

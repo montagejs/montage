@@ -1,7 +1,7 @@
 {
     "blueprint_flow_stride": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "stride",
             "blueprint": {
                 "@": "root"
@@ -12,7 +12,7 @@
     },
     "blueprint_flow_hasElasticScrolling": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "hasElasticScrolling",
             "blueprint": {
                 "@": "root"
@@ -23,7 +23,7 @@
     },
     "blueprint_flow_momentumDuration": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "momentumDuration",
             "blueprint": {
                 "@": "root"
@@ -34,7 +34,7 @@
     },
     "blueprint_flow_content": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "content",
             "blueprint": {
                 "@": "root"
@@ -46,7 +46,7 @@
     },
     "blueprint_flow_contentController": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "contentController",
             "blueprint": {
                 "@": "root"
@@ -57,7 +57,7 @@
     },
     "blueprint_flow_activeIndexes": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "activeIndexes",
             "blueprint": {
                 "@": "root"
@@ -69,7 +69,7 @@
     },
     "blueprint_flow_isSelectionEnabled": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "isSelectionEnabled",
             "blueprint": {
                 "@": "root"
@@ -80,7 +80,7 @@
     },
     "blueprint_flow_hasSelectedIndexScrolling": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "hasSelectedIndexScrolling",
             "blueprint": {
                 "@": "root"
@@ -91,7 +91,7 @@
     },
     "blueprint_flow_scrollingTransitionDuration": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "scrollingTransitionDuration",
             "blueprint": {
                 "@": "root"
@@ -102,7 +102,7 @@
     },
     "blueprint_flow_selectedIndexes": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "selectedIndexes",
             "blueprint": {
                 "@": "root"
@@ -114,7 +114,7 @@
     },
     "blueprint_component_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Component",
                 "prototypeName": "Component",
@@ -126,13 +126,13 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "Flow",
             "customPrototype": false,
             "parent": {
                 "@": "blueprint_component_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_flow_stride"
                 },

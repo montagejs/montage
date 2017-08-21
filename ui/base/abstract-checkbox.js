@@ -42,6 +42,10 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
         }
     },
 
+    hasTemplate: {
+        value: false
+    },
+
     /**
      * This property is true when the checkbox is being interacted with, either through mouse click or touch event, otherwise false.
      * @type {boolean}

@@ -1,7 +1,7 @@
 {
     "mediaController_status": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "status",
             "blueprint": {
                 "@": "root"
@@ -13,7 +13,7 @@
 
     "mediaController_STOPPED": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "STOPPED",
             "blueprint": {
                 "@": "root"
@@ -25,7 +25,7 @@
 
     "mediaController_PLAYING": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "PLAYING",
             "blueprint": {
                 "@": "root"
@@ -37,7 +37,7 @@
 
     "mediaController_PAUSED": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "PAUSED",
             "blueprint": {
                 "@": "root"
@@ -49,7 +49,7 @@
 
     "mediaController_EMPTY": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "EMPTY",
             "blueprint": {
                 "@": "root"
@@ -61,7 +61,7 @@
 
     "mediaController_mediaController": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "mediaController",
             "blueprint": {
                 "@": "root"
@@ -73,7 +73,7 @@
 
     "mediaController_position": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "position",
             "blueprint": {
                 "@": "root"
@@ -85,7 +85,7 @@
 
     "mediaController_duration": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "duration",
             "blueprint": {
                 "@": "root"
@@ -97,7 +97,7 @@
 
     "mediaController_autoplay": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "autoplay",
             "blueprint": {
                 "@": "root"
@@ -109,7 +109,7 @@
 
     "mediaController_playbackRate": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "playbackRate",
             "blueprint": {
                 "@": "root"
@@ -121,7 +121,7 @@
 
     "mediaController_currentTime": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "currentTime",
             "blueprint": {
                 "@": "root"
@@ -133,7 +133,7 @@
 
     "mediaController_volume": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "volume",
             "blueprint": {
                 "@": "root"
@@ -145,7 +145,7 @@
 
     "mediaController_mute": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "mute",
             "blueprint": {
                 "@": "root"
@@ -157,7 +157,7 @@
 
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "MediaController",
             "exportName": "MediaController",
             "module": {
@@ -168,7 +168,7 @@
             },
             "prototypeName": "MediaController",
             "customPrototype": false,
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "mediaController_status"
                 },
@@ -209,7 +209,7 @@
                     "@": "mediaController_mute"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "rangeController": [
                     {
                         "@": "mediaController_status"

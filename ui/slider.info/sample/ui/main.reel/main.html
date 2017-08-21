@@ -5,7 +5,7 @@
     <script type="text/montage-serialization">
     {
         "owner": {
-            "properties": {
+            "values": {
                 "element": {"#": "main"}
             },
             "listeners": [
@@ -15,14 +15,12 @@
 
         "slider": {
             "prototype": "montage/ui/slider.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "slider"},
                 "thumbElement": {"#": "sliderThumb"},
                 "values": [],
                 "min":0,
-                "max":180
-            },
-            "bindings": {
+                "max":180,
                 "values.0": {"<->": "@sliderFieldMin.value"},
                 "values.1": {"<->": "@sliderFieldMid.value"},
                 "values.2": {"<->": "@sliderFieldMax.value"}
@@ -32,7 +30,7 @@
 
         "sliderFieldMin": {
             "prototype": "montage/ui/text-field.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "slider-field-min"},
                 "value": 10
             }
@@ -40,7 +38,7 @@
 
         "sliderFieldMid": {
             "prototype": "montage/ui/text-field.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "slider-field-mid"},
                 "value": 75
             }
@@ -48,7 +46,7 @@
 
         "sliderFieldMax": {
             "prototype": "montage/ui/text-field.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "slider-field-max"},
                 "value": 120
             }
@@ -56,7 +54,7 @@
 
         "sliderWithBareKnob": {
             "prototype": "montage/ui/slider.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "sliderWithBareKnob"},
                 "step": 15,
                 "min":5,
@@ -66,7 +64,7 @@
 
         "sliderWithComplexKnob": {
             "prototype": "montage/ui/slider.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "sliderWithComplexKnob"},
                 "values": [],
                 "step": 15,
@@ -77,27 +75,25 @@
 
         "sliderWithStep": {
             "prototype": "montage/ui/slider.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "sliderWithStep"},
                 "step": 15,
                 "min":5,
-                "max":500
-            },
-            "bindings": {
+                "max":500,
                 "value": {"<->": "@sliderWithStepField.value"}
             }
         },
 
         "sliderWithStepField": {
             "prototype": "montage/ui/text-field.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "sliderWithStepField"}
             }
         },
 
         "sliderWithStickyLabel": {
             "prototype": "montage/ui/slider.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "sliderWithStickyLabel"},
                 "value":1000,
                 "min":0,
@@ -107,34 +103,30 @@
 
         "stickyThumbLabel": {
             "prototype": "montage/ui/text.reel",
-            "properties":{
-                "element": {"#": "stickyThumbLabel"}
-            },
-            "bindings": {
+            "values":{
+                "element": {"#": "stickyThumbLabel"},
                 "value": {"<-": "@sliderWithStickyLabel.value.round()"}
             } 
         },
 
         "sliderRange": {
             "prototype": "montage/ui/slider.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "slider-range"}
             }
         },
 
         "sliderRangeField": {
             "prototype": "montage/ui/text-field.reel",
-            "properties": {
-                "element": {"#": "slider-range-field"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "slider-range-field"},
                 "value": {"<->": "@sliderRange.value"}
             }
         },
 
         "verticalSliderWithStep": {
             "prototype": "montage/ui/slider.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "verticalSliderWithStep"},
                 "orientation": "vertical",
                 "step": 15,
@@ -145,17 +137,15 @@
 
         "verticalSliderWithStepField": {
             "prototype": "montage/ui/text-field.reel",
-            "properties": {
-                "element": {"#": "verticalSliderWithStepField"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "verticalSliderWithStepField"},
                 "value": {"<->": "@verticalSliderWithStep.value"}
             }
         },
 
         "verticalSlider": {
             "prototype": "montage/ui/slider.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "verticalSlider"},
                 "orientation": "vertical",
                 "values": [0,0,180],
@@ -166,30 +156,24 @@
 
         "verticalSliderFieldMin": {
             "prototype": "montage/ui/text-field.reel",
-            "properties": {
-                "element": {"#": "vertical-slider-field-min"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "vertical-slider-field-min"},
                 "value": {"<->": "@verticalSlider.values.0"}
             }
         },
 
         "verticalSliderFieldMid": {
             "prototype": "montage/ui/text-field.reel",
-            "properties": {
-                "element": {"#": "vertical-slider-field-mid"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "vertical-slider-field-mid"},
                 "value": {"<->": "@verticalSlider.values.1"}
             }
         },
         
         "verticalSliderFieldMax": {
             "prototype": "montage/ui/text-field.reel",
-            "properties": {
-                "element": {"#": "vertical-slider-field-max"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "vertical-slider-field-max"},
                 "value": {"<->": "@verticalSlider.values.2"}
             }
         }

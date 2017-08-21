@@ -1,12 +1,1 @@
-{
-
-    "root":{
-        "prototype":"core/meta/blueprint",
-        "properties":{
-            "name":"RemoteReference",
-            "blueprintModuleId":"core/meta/remote-reference.meta",
-            "prototypeName":"RemoteReference",
-            "customPrototype":false,
-         }
-    }
-}
+remote-reference.mjson

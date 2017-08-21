@@ -1,7 +1,7 @@
 {
     "treeController_content": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "content",
             "blueprint": {
                 "@": "root"
@@ -13,7 +13,7 @@
     },
     "treeController_childrenPath": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "childrenPath",
             "blueprint": {
                 "@": "root"
@@ -24,7 +24,7 @@
     },
     "treeController_initiallyExpanded": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "initiallyExpanded",
             "blueprint": {
                 "@": "root"
@@ -35,7 +35,7 @@
     },
     "treeController_noneExpanded": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "noneExpanded",
             "blueprint": {
                 "@": "root"
@@ -46,7 +46,7 @@
     },
     "treeController_allExpanded": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "allExpanded",
             "blueprint": {
                 "@": "root"
@@ -57,7 +57,7 @@
     },
     "treeController_root": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "root",
             "blueprint": {
                 "@": "root"
@@ -70,10 +70,10 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "TreeController",
             "customPrototype": false,
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "treeController_content"
                 },
@@ -93,7 +93,7 @@
                     "@": "treeController_root"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "treeController": [
                     {
                         "@": "treeController_content"
@@ -127,7 +127,7 @@
     },
     "treeControllerNode_content": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "content",
             "blueprint": {
                 "@": "root"
@@ -139,7 +139,7 @@
     },
     "treeControllerNode_expanded": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "expanded",
             "blueprint": {
                 "@": "treeControllerNode"
@@ -150,7 +150,7 @@
     },
     "treeControllerNode_depth": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "depth",
             "blueprint": {
                 "@": "treeControllerNode"
@@ -161,7 +161,7 @@
     },
     "treeControllerNode_index": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "index",
             "blueprint": {
                 "@": "treeControllerNode"
@@ -172,7 +172,7 @@
     },
     "treeControllerNode_isFinal": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "isFinal",
             "blueprint": {
                 "@": "treeControllerNode"
@@ -183,7 +183,7 @@
     },
     "treeControllerNode_parent": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "parent",
             "blueprint": {
                 "@": "treeControllerNode"
@@ -196,7 +196,7 @@
     },
     "treeControllerNode_children": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "children",
             "blueprint": {
                 "@": "treeControllerNode"
@@ -210,7 +210,7 @@
     },
     "treeControllerNode_junctions": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "junctions",
             "blueprint": {
                 "@": "treeControllerNode"
@@ -221,12 +221,12 @@
     },
     "treeControllerNode": {
         "prototype": "core/meta/blueprint",
-        "properties": {
+        "values": {
             "name": "TreeControllerNode",
             "blueprintModuleId": "core/tree-controller.meta",
             "prototypeName": "TreeControllerNode",
             "customPrototype": false,
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "treeControllerNode_content"
                 },
@@ -252,7 +252,7 @@
                     "@": "treeControllerNode_junctions"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "treeControllerNode": [
                     {
                         "@": "treeControllerNode_content"

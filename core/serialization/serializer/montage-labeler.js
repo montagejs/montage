@@ -40,7 +40,9 @@ exports.MontageLabeler = Montage.specialize({
                 label;
 
             if (hash in this._objectsLabels) {
-                label = this._objectsLabels[hash];
+                if (Object.hasOwnProperty.call(this._objectsLabels, hash)) {
+                    label = this._objectsLabels[hash];
+                }
             } else {
                 label = this.generateObjectLabel(object);
                 this.setObjectLabel(object, label);
@@ -55,7 +57,7 @@ exports.MontageLabeler = Montage.specialize({
             var label = this._getObjectLabel(object);
 
             if (label[0] === ":") {
-                throw new Error("Labels starting with colon (:) can only be used for template properties, (\"" + label + "\").");
+                throw new Error("Labels starting with colon (:) can only be used for template values, (\"" + label + "\").");
             }
 
             return label;
@@ -93,8 +95,10 @@ exports.MontageLabeler = Montage.specialize({
     initWithObjects: {
         value: function(labels) {
             for (var label in labels) {
-                this.setObjectLabel(labels[label], label);
-                this._userDefinedLabels[label] = true;
+                if (labels.hasOwnProperty(label)) {
+                    this.setObjectLabel(labels[label], label);
+                    this._userDefinedLabels[label] = true;   
+                }
             }
         }
     },

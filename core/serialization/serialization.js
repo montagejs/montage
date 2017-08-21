@@ -73,7 +73,7 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
             var serializationObject;
 
             if (!this._serializationLabels) {
-                if (serializationObject = this.getSerializationObject()) {
+                if ((serializationObject = this.getSerializationObject())) {
                     this._serializationLabels = Object.keys(serializationObject);
                 }
             }
@@ -133,7 +133,13 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
 
             // TODO: much faster than using the visitor, need to make the visitor
             // faster.
-            var element = Montage.getPath.call(object, label + ".properties.element");
+            var element = Montage.getPath.call(object, label + ".values.element");
+
+            if (!element) {
+                // .properties deprecated
+                element = Montage.getPath.call(object, label + ".properties.element");
+            }
+
             if (element) {
                 return element["#"];
             }
@@ -142,16 +148,17 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
 
     getSerializationLabelsWithElements: {
         value: function (elementIds) {
-            var inspector = new SerializationInspector(),
+            var inspector = new exports.SerializationInspector(),
                 labels = [];
 
             inspector.initWithSerialization(this);
             inspector.visitSerialization(function (node) {
                 // Check if this is one of the elements we're looking for
                 if (node.type === "Element" && elementIds.indexOf(node.data) >= 0) {
-                    // Check if it's inside a "properties" block
+                    // Check if it's inside a "values" block
                     node = node.parent;
-                    if (node && node.name === "properties") {
+                    // .properties deprecated
+                    if (node && (node.name === "values" || node.name === "properties")) {
                         // Check if it's in a montage object
                         node = node.parent;
                         if (node && node.type === "montageObject") {
@@ -167,7 +174,7 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
 
     renameElementReferences: {
         value: function (elementsTable) {
-            var inspector = new SerializationInspector();
+            var inspector = new exports.SerializationInspector();
 
             inspector.initWithSerialization(this);
             inspector.visitSerialization(function (node) {
@@ -180,7 +187,7 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
 
     renameSerializationLabels: {
         value: function (labelsTable) {
-            var inspector = new SerializationInspector();
+            var inspector = new exports.SerializationInspector();
 
             inspector.initWithSerialization(this);
             inspector.visitSerialization(function (node) {
@@ -204,13 +211,13 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
 
     mergeSerialization: {
         value: function (serialization, delegate) {
-            return SerializationMerger.mergeSerializations(this, serialization, delegate);
+            return exports.SerializationMerger.mergeSerializations(this, serialization, delegate);
         }
     },
 
     extractSerialization: {
         value: function (labels, externalLabels) {
-            var extractor = new SerializationExtractor();
+            var extractor = new exports.SerializationExtractor();
 
             extractor.initWithSerialization(this);
             return extractor.extractSerialization(labels, externalLabels);
@@ -343,9 +350,8 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
                     inDestination = this._isLabelValidInSerialization(
                         newLabel, serialization1);
                     if (!inDestination) {
-                        renameLabel = !this._isLabelValidInSerialization(
-                            newLabel, serialization2)
-                            && collisionLabels.indexOf(newLabel) === -1;
+                        renameLabel = !this._isLabelValidInSerialization(newLabel, serialization2) && 
+                                        collisionLabels.indexOf(newLabel) === -1;
                     }
 
                     if (inDestination || renameLabel) {
@@ -397,9 +403,9 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
      * that already exist in the labels1 array.
      *
      * This function knows how to deal with labels that refer to template
-     * properties. A label for a template property has the following syntax:
+     * values. A label for a template property has the following syntax:
      * <component label>:<label>.
-     * The collision table guarantees that template properties' labels will
+     * The collision table guarantees that template values' labels will
      * always be in sync with their corresponding component label.
      *
      * When a collision exist with a label for a template property the
@@ -418,15 +424,16 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
      */
     _createCollisionTable: {
         value: function (labels1, labels2, collisionTable, labeler) {
-            var labeler = labeler || new MontageLabeler(),
-                foundCollisions = false,
+            
+            labeler = labeler || new MontageLabeler();
+            var foundCollisions = false,
                 componentLabel,
                 labels1Index = Object.create(null),
                 newLabel,
                 label,
-                ix;
+                ix, i;
 
-            for (var i = 0; i < labels1.length; i++) {
+            for (i = 0; i < labels1.length; i++) {
                 label = labels1[i];
 
                 // If this label is a property template then we need to register
@@ -444,7 +451,7 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
                 labels1Index[label] = 1;
             }
 
-            for (var i = 0; (label = labels2[i]); i++) {
+            for (i = 0; (label = labels2[i]); i++) {
                 // If the label is a template property then check to see if
                 // the component label has been renamed already or if the entire
                 // label or component label have a collision to solve.
@@ -533,7 +540,9 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
 
     _walkRootObjects: {
         value: function (visitor, objects) {
-            for (var label in objects) {
+            /* jshint forin: true */
+            for (var label in objects) {                
+            /* jshint forin: false */
                 this._walkRootObject(visitor, objects, label);
             }
         }
@@ -542,8 +551,9 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
     _walkRootObject: {
         value: function (visitor, objects, label) {
             var object = objects[label];
-
+            /* jshint forin: true */
             if ("value" in object) {
+            /* jshint forin: false */
                 this._walkObject(visitor, object, "value", label);
             } else {
                 this._walkCustomObject(visitor, objects, label);
@@ -607,18 +617,22 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
                     this._walkObject(visitor, object, ""+i, null, value);
                 }
 
+            } else if (type === "binding") {
+                this._walkBinding(visitor, parentObject, key, value);
+
             } else if (type === "object") {
                 value.data = object;
                 visitor(value);
                 parentObject[key] = object = value.data;
 
-                for (var key in object) {
-                    this._walkObject(visitor, object, key, null, value);
+                /* jshint forin: true */
+                for (var prop in object) {
+                /* jshint forin: false */
+                    this._walkObject(visitor, object, prop, null, value);
                 }
             }
 
-            // Update the label if it was changed.
-            if (value.label != label) {
+            if (label !== null && label !== undefined && label !== value && value.label !== label) {
                 this.changeLabel(label, value.label);
             }
         }
@@ -637,18 +651,20 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
 
             visitor(value);
             objects[label] = object = value.data;
-            if (value.label != label) {
+            if (value.label !== label) {
                 this.changeLabel(label, value.label);
             }
 
-            if (object.properties) {
+            if (object.values) {
+                this._walkObject(visitor, object, "values", null, value);
+            } else if (object.properties) { // deprecated
                 this._walkObject(visitor, object, "properties", null, value);
+            }
+            if (object.bindings) { // deprecated
+                this._walkBindings(visitor, object, null, value);
             }
             if (object.listeners) {
                 this._walkObject(visitor, object, "listeners", null, value);
-            }
-            if (object.bindings) {
-                this._walkBindings(visitor, object, null, value);
             }
             if (object.localizations) {
                 this._walkLocalizations(visitor, object, null, value);
@@ -670,7 +686,9 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
             visitor(value);
             parentObject.bindings = object = value.data;
 
+            /* jshint forin: true */
             for (var key in object) {
+            /* jshint forin: false */
                 this._walkBinding(visitor, object, key, value);
             }
         }
@@ -743,7 +761,9 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
             visitor(value);
             parentObject.localizations = object = value.data;
 
+            /* jshint forin: true */
             for (var key in object) {
+            /* jshint forin: false */
                 this._walkLocalization(visitor, object, key, value);
             }
         }
@@ -776,8 +796,10 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
             if (typeof object.data === "object") {
                 data = object.data;
 
-                for (var key in data) {
-                    this._walkBindingData(visitor, data[key], value);
+                /* jshint forin: true */
+                for (var prop in data) {
+                /* jshint forin: false */
+                    this._walkBindingData(visitor, data[prop], value);
                 }
             }
         }
@@ -830,7 +852,9 @@ var SerializationExtractor = Montage.specialize( /** @lends SerializationExtract
      */
     extractSerialization: {
         value: function (labels, externalLabels) {
-            var inspector = new SerializationInspector(),
+
+            var i, label,
+                inspector = new exports.SerializationInspector(),
                 serializationObject,
                 objects = {},
                 references = [];
@@ -838,26 +862,26 @@ var SerializationExtractor = Montage.specialize( /** @lends SerializationExtract
             serializationObject = this._serialization.getSerializationObject();
             inspector.initWithSerialization(this._serialization);
 
-            for (var i = 0, label; (label = labels[i]); i++) {
+            for (i = 0, label; (label = labels[i]); i++) {
                 objects[label] = serializationObject[label];
 
-                inspector.visitSerializationObject(label, function (node) {
+                inspector.visitSerializationObject(label, function (node) { // jshint ignore:line
                     var label;
 
                     if (node.type === "reference") {
                         label = node.data;
-                        // We don't process template properties here, meaning
+                        // We don't process template values here, meaning
                         // that if we have "table" and a reference like
                         // "@table:cell" the latter will be considered an
                         // external reference even though the component is in
                         // scope.
                         // We do this on purpose because it allow us to process
-                        // all template properties of the serialization without
+                        // all template values of the serialization without
                         // having to walk the entire serialization tree looking
                         // for them.
                         // If for some reason we need to "correct" this behavior
                         // then we also need to change the way we resolve
-                        // template properties' alias in
+                        // template values' alias in
                         // Template.expandParameters.
                         // Instead of relying on willMergeObjectWithLabel we
                         // need to walk the serialization looking for these.
@@ -870,7 +894,7 @@ var SerializationExtractor = Montage.specialize( /** @lends SerializationExtract
             }
 
             if (externalLabels) {
-                for (var i = 0, label; (label = externalLabels[i]); i++) {
+                for (i = 0, label; (label = externalLabels[i]); i++) {
                     // Make sure we don't add objects that are not part of the
                     // serialization we're extracting from.
                     // If the same label is defined in both labels and
@@ -881,7 +905,7 @@ var SerializationExtractor = Montage.specialize( /** @lends SerializationExtract
                 }
             }
 
-            for (var i = 0, label; (label = references[i]); i++) {
+            for (i = 0, label; (label = references[i]); i++) {
                 objects[label] = {};
             }
 

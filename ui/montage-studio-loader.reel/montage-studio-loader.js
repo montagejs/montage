@@ -29,6 +29,19 @@ var MontageStudioLoader = exports.MontageStudioLoader = Loader.specialize(/** @l
     },
 
 
+    _shouldRotate: {
+        value: false
+    },
+
+
+    animationInterval: {
+        value: 3500
+    },
+
+    minimumFirstLoadingDuration: {
+        value: 6000
+    },
+
     state: {
         set: function (state) {
             if (this._state !== state) {
@@ -42,20 +55,6 @@ var MontageStudioLoader = exports.MontageStudioLoader = Loader.specialize(/** @l
 
             return this._state;
         }
-    },
-
-
-    _shouldRotate: {
-        value: false
-    },
-
-
-    animationInterval: {
-        value: 3500
-    },
-
-    minimumFirstLoadingDuration: {
-        value: 6000
     },
 
     enterDocument: {
@@ -77,22 +76,20 @@ var MontageStudioLoader = exports.MontageStudioLoader = Loader.specialize(/** @l
         }
     },
 
-
     startAnimation: {
         value: function () {
             if (this.state !== LOADER_STATE_STOPPED) {
                 var self = this;
 
                 this._animationIntervalTimeoutID = setTimeout(function () {
-                    if (self.state === LOADER_STATE_STOPPED) return;
-                    self.state = LOADER_STATE_ANIMATING;
-
-                    self.needsDraw = true;
+                    if (self.state !== LOADER_STATE_STOPPED) {
+                        self.state = LOADER_STATE_ANIMATING;
+                        self.needsDraw = true;
+                    }
                 }, this.animationInterval);
             }
         }
     },
-
 
     stopAnimation: {
         value: function () {
@@ -107,7 +104,6 @@ var MontageStudioLoader = exports.MontageStudioLoader = Loader.specialize(/** @l
             }
         }
     },
-
 
     draw: {
         value: function () {
@@ -134,10 +130,8 @@ var MontageStudioLoader = exports.MontageStudioLoader = Loader.specialize(/** @l
                 this._logoSVGContainerElement = null;
                 this._logoWtrianglesElement = null;
                 this._logoLinesElement = null;
-
                 this.element.classList.add(OFF_CLASS_NAME);
             }
         }
     }
-
 });

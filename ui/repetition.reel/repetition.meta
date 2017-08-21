@@ -1,7 +1,7 @@
 {
     "blueprint_repetition_content": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "content",
             "blueprint": {
                 "@": "root"
@@ -12,7 +12,7 @@
     },
     "blueprint_repetition_contentController": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "contentController",
             "blueprint": {
                 "@": "root"
@@ -22,7 +22,7 @@
     },
     "blueprint_repetition_isSelectionEnabled": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "isSelectionEnabled",
             "blueprint": {
                 "@": "root"
@@ -32,7 +32,7 @@
     },
     "blueprint_repetition_selection": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "selection",
             "blueprint": {
                 "@": "root"
@@ -42,7 +42,7 @@
     },
     "blueprint_repetition_selectedIndexes": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "selectedIndexes",
             "blueprint": {
                 "@": "root"
@@ -53,7 +53,7 @@
     },
     "blueprint_repetition_clonesChildComponents": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "clonesChildComponents",
             "blueprint": {
                 "@": "root"
@@ -63,7 +63,7 @@
     },
     "blueprint_component_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Component",
                 "prototypeName": "Component",
@@ -75,12 +75,12 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "Repetition",
             "parent": {
                 "@": "blueprint_component_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_repetition_content"
                 },
@@ -100,7 +100,7 @@
                     "@": "blueprint_repetition_clonesChildComponents"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Repetition": [
                     {
                         "@": "blueprint_repetition_content"

@@ -1,0 +1,104 @@
+{
+    "object_descriptor_reference": {
+        "prototype": "core/meta/object-descriptor-reference",
+        "values": {
+            "valueReference": {
+                "objectDescriptorName": "ObjectDescriptor",
+                "prototypeName": "ObjectDescriptor",
+                "objectDescriptorModule": {
+                    "%": "core/meta/object-descriptor.mjson"
+                }
+            }
+        }
+    },
+    "model_objectDescriptors": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "objectDescriptors",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": -1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "set",
+            "enumValues": [],
+            "helpKey": "",
+            "valueDescriptor": {
+                "@": "object_descriptor_reference"
+            }
+        }
+    },
+    "model_name": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "name",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": true,
+            "denyDelete": false,
+            "readOnly": true,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "model_modelInstanceModuleId": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "modelInstanceModuleId",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": true,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "Model",
+            "customPrototype": false,
+            "propertyDescriptors": [
+                {
+                    "@": "model_name"
+                },
+                {
+                    "@": "model_objectDescriptors"
+                },
+                {
+                    "@": "model_modelInstanceModuleId"
+                }
+            ],
+            "propertyDescriptorGroups": {
+                "model": [
+                    {
+                        "@": "model_name"
+                    },
+                    {
+                        "@": "model_objectDescriptors"
+                    },
+                    {
+                        "@": "model_modelInstanceModuleId"
+                    }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/meta/model.mjson"
+            },
+            "exportName": "Model",
+            "module": {
+                "%": "core/meta/model"
+            }
+        }
+    }
+}

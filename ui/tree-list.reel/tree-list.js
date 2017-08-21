@@ -2,9 +2,9 @@
  * @module ui/tree-list.reel
  * @requires montage/ui/component
  */
-var Component = require("montage/ui/component").Component,
-    TreeNode = require("montage/core/tree-controller").TreeNode,
-    WeakMap = require("montage/collections/weak-map");
+var Component = require("ui/component").Component,
+    TreeNode = require("core/tree-controller").TreeNode,
+    WeakMap = require("collections/weak-map");
 
 /**
  * @class TreeList
@@ -192,7 +192,8 @@ exports.TreeList = Component.specialize(/** @lends TreeList.prototype */ {
                     row++;
                 }
                 if (this._controller.isNodeExpanded(node)) {
-                    if (children = this._controller.childrenFromNode(node)) {
+                    children = this._controller.childrenFromNode(node);
+                    if (children) {
                         length = children.length;
                         for (i = 0; i < length; i++) {
                             if (this._isVisible(row, height = this._getNodeHeight(children[i]))) {

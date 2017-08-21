@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * @module "ui/segmented-bar.reel/segment.reel"
  * @requires montage/ui/component
@@ -26,7 +24,9 @@ exports.Segment = Component.specialize( /** @lends Segment.prototype */ {
      * @property {String} label - optional
      */
     label: {
-        get: function () {return this._label},
+        get: function () {
+            return this._label;
+        },
         set: function (label) {
             if (label !== this._label) {
                 this._label = label;
@@ -46,7 +46,9 @@ exports.Segment = Component.specialize( /** @lends Segment.prototype */ {
      * @property {Number} newData.length
      */
     length: {
-        get: function () {return this._length},
+        get: function () {
+            return this._length;
+        },
         set: function (length) {
             if (length !== this._length) {
                 this._length = length;

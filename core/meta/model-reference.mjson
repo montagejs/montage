@@ -1,0 +1,43 @@
+{
+    "target_object_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "value",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "mandatory": true,
+            "valueType": "object",
+            "valueObjectPrototypeName": "ObjectDescriptor",
+            "valueObjectModuleId": "core/meta/object-descriptor",
+            "helpKey": ""
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "ModelReference",
+            "customPrototype": false,
+            "propertyDescriptors": [
+                {
+                    "@": "target_object_descriptor"
+                }
+            ],
+            "propertyObjectDescriptorGroups": {
+                "relationships": [
+                    {
+                        "@": "target_object_descriptor"
+                    }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/meta/model-reference.mjson"
+            },
+            "exportName": "ModelReference",
+            "module": {
+                "%": "core/meta/model-reference"
+            }
+        }
+    }
+}

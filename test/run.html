@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title></title>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Montage-Testing - Browser</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link  href="../node_modules/jasmine-core/lib/jasmine-core/jasmine.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-    <script src="../node_modules/montage-testing/support/jasmine.js"></script>
-    <script src="../node_modules/montage-testing/support/js-beautify/beautify.js"></script>
-    <link  href="../node_modules/montage-testing/reporter/style.css" rel="stylesheet" type="text/css" >
-    <script src="../node_modules/montage-testing/reporter/trivial-html.js"></script>
-    <script src="../node_modules/montage-testing/jasmine-additions.js" ></script>
-
-    <script src="../montage.js" data-module="run"></script>
+	<script type="text/javascript" src="../node_modules/jasmine-core/lib/jasmine-core/jasmine.js"></script>
+	<script type="text/javascript" src="../node_modules/jasmine-core/lib/jasmine-core/jasmine-html.js"></script>
+	<script type="text/javascript" src="../test/run-browser.js" ></script>
+	<script type="text/javascript" src="../montage.js" data-module="./all"></script>
 </body>
 </html>

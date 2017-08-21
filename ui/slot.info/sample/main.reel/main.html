@@ -5,7 +5,7 @@
     <script type="text/montage-serialization">
         {
             "owner": {
-                "properties": {
+                "values": {
                     "element": {"#": "main"},
                     "componentWithNoElement": {"@": "dynamictext3"},
                     "componentInPageWithElement": {"@": "dynamictext1"},
@@ -27,175 +27,167 @@
             },
             "application": {
                 "prototype": "montage/core/application",
-                "properties": {
+                "values": {
                     "delegate": {"@": "owner"}
                 }
             },
             "slot1": {
                 "prototype": "montage/ui/slot.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "slot"}
                 }
             },
             "slider1": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "slider"}
                 }
             },
             "dynamictext1": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "componentInPageWithElement"},
                     "value": "This is a component in the page with an element"
                 }
             },
             "dynamictext2": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
-                    "element": {"#": "sliderValue"}
-                },
-                "bindings": {
+                "values": {
+                    "element": {"#": "sliderValue"},
                     "value": {"<-": "@slider1.value"}
                 }
             },
             "dynamictext3": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "value": "Hey there, I'm the foo component!"
                 }
             },
             "photoviewer1": {
                 "prototype": "../photo-viewer.reel",
-                "properties": {
-
-                },
-                "bindings": {
+                "values": {
                     "photo": {"<-": "@owner.currentMedia"}
                 }
             },
             "videoviewer1": {
                 "prototype": "../video-viewer.reel",
-                "properties": {
-
-                },
-                "bindings": {
+                "values": {
                     "video": {"<-": "@owner.currentMedia"}
                 }
             },
             "slider2": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "value": 20
                 }
             },
             "button1Composer": {
                 "prototype": "montage/composer/press-composer",
-                "properties": {
+                "values": {
                     "component": {"@": "button1"},
                     "identifier": "componentWithNoElementButton"
                 }
             },
             "button1": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "componentWithNoElementButton"},
                     "identifier": "componentWithNoElementButton"
                 }
             },
             "button2Composer": {
                 "prototype": "montage/composer/press-composer",
-                "properties": {
+                "values": {
                     "component": {"@": "button2"},
                     "identifier": "componentInPageWithElementButton"
                 }
             },
             "button2": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "componentInPageWithElementButton"},
                     "identifier": "componentInPageWithElementButton"
                 }
             },
             "button3Composer": {
                 "prototype": "montage/composer/press-composer",
-                "properties": {
+                "values": {
                     "component": {"@": "button3"},
                     "identifier": "barButton"
                 }
             },
             "button3": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "barButton"}
                 }
             },
             "button4Composer": {
                 "prototype": "montage/composer/press-composer",
-                "properties": {
+                "values": {
                     "component": {"@": "button4"},
                     "identifier": "bazButton"
                 }
             },
             "button4": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "bazButton"},
                     "identifier": "bazButton"
                 }
             },
             "button5Composer": {
                 "prototype": "montage/composer/press-composer",
-                "properties": {
+                "values": {
                     "component": {"@": "button5"},
                     "identifier": "quxButton"
                 }
             },
             "button5": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "quxButton"},
                     "identifier": "quxButton"
                 }
             },
             "button6Composer": {
                 "prototype": "montage/composer/press-composer",
-                "properties": {
+                "values": {
                     "component": {"@": "button6"},
                     "identifier": "emptyButton"
                 }
             },
             "button6": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "emptyButton"},
                     "identifier": "emptyButton"
                 }
             },
             "button7Composer": {
                 "prototype": "montage/composer/press-composer",
-                "properties": {
+                "values": {
                     "component": {"@": "button7"},
                     "identifier": "videoButton"
                 }
             },
             "button7": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "videoButton"},
                     "identifier": "videoButton"
                 }
             },
             "button8Composer": {
                 "prototype": "montage/composer/press-composer",
-                "properties": {
+                "values": {
                     "component": {"@": "button8"},
                     "identifier": "photoButton"
                 }
             },
             "button8": {
                 "prototype": "montage/ui/text.reel",
-                "properties": {
+                "values": {
                     "element": {"#": "photoButton"},
                     "identifier": "photoButton"
                 }

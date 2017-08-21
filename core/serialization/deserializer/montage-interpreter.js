@@ -1,6 +1,9 @@
 var Montage = require("../../core").Montage,
     MontageReviver = require("./montage-reviver").MontageReviver,
-    Promise = require("../../promise").Promise;
+    Promise = require("../../promise").Promise,
+    ONE_ASSIGNMENT = "=",
+    ONE_WAY = "<-",
+    TWO_WAY = "<->";
 
 var MontageInterpreter = Montage.specialize({
     _require: {value: null},
@@ -24,7 +27,7 @@ var MontageInterpreter = Montage.specialize({
         value: function (serialization, objects, element) {
             var context;
 
-            context = new MontageContext()
+            context = new exports.MontageContext()
                 .init(serialization, this._reviver, objects, element, this._require);
 
             return context.getObjects();
@@ -42,15 +45,23 @@ var MontageInterpreter = Montage.specialize({
                 promises = [];
 
             for (var label in serialization) {
-                object = serialization[label];
+                if (serialization.hasOwnProperty(label)) {
+                    object = serialization[label];
+                    locationId = object.prototype || object.object;
 
-                locationId = object.prototype || object.object;
-                if (locationId) {
-                    locationDesc = MontageReviver.parseObjectLocationId(locationId);
-                    module = moduleLoader.getModule(
-                        locationDesc.moduleId, label);
-                    if (Promise.is(module)) {
-                        promises.push(module);
+                    if (locationId) {
+                        if (typeof locationId !== "string") {
+                            throw new Error(
+                                "Property 'object' of the object with the label '" +
+                                label + "' must be a module id"
+                            );
+                        }
+                        locationDesc = MontageReviver.parseObjectLocationId(locationId);
+                        module = moduleLoader.getModule(
+                            locationDesc.moduleId, label);
+                        if (Promise.is(module)) {
+                            promises.push(module);
+                        }
                     }
                 }
             }
@@ -70,7 +81,8 @@ var MontageContext = Montage.specialize({
     _objects: {value: null},
     _userObjects: {value: null},
     _serialization: {value: null},
-    _reviver: {value: null},
+    _reviver: { value: null },
+    _bindingsToDeserialize: { value: null },
 
     constructor: {
         value: function () {
@@ -87,7 +99,9 @@ var MontageContext = Montage.specialize({
             if (objects) {
                 this._userObjects = Object.create(null);
 
+                /* jshint forin: true */
                 for (var label in objects) {
+                /* jshint forin: false */
                     this._userObjects[label] = objects[label];
                 }
             }
@@ -140,10 +154,12 @@ var MontageContext = Montage.specialize({
                 result;
 
             for (var label in serialization) {
-                result = this.getObject(label);
+                if (serialization.hasOwnProperty(label)) {
+                    result = this.getObject(label);
 
-                if (Promise.is(result)) {
-                    promises.push(result);
+                    if (Promise.is(result)) {
+                        promises.push(result);
+                    }
                 }
             }
 
@@ -221,6 +237,56 @@ var MontageContext = Montage.specialize({
             var selector = '*[' + this._ELEMENT_ID_ATTRIBUTE + '="' + id + '"]';
 
             return this._element.querySelector(selector);
+        }
+    },
+
+    _extractBindingsToDeserialize: {
+        value: function (values, bindings) {
+            var value;
+
+            for (var key in values) {
+                if (values.hasOwnProperty(key)) {
+                    value = values[key];
+
+                    if (typeof value === "object" && value &&
+                        Object.keys(value).length === 1 &&
+                        (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) {
+                        bindings[key] = value;
+                        delete values[key];
+                    }   
+                }
+            }
+
+            return bindings;
+        }
+    },
+
+    getBindingsToDeserialize: {
+        value: function () {
+            return this._bindingsToDeserialize;
+        }
+    },
+
+    setBindingsToDeserialize: {
+        value: function (object, objectDesc) {
+            var bindings = Object.create(null);
+
+            if (objectDesc.values) {
+                this._extractBindingsToDeserialize(objectDesc.values, bindings);
+            } else if (objectDesc.properties) { // deprecated
+                this._extractBindingsToDeserialize(objectDesc.properties, bindings);
+            }
+
+            if (Object.keys(bindings).length > 0) {
+                if (!this._bindingsToDeserialize) {
+                    this._bindingsToDeserialize = [];
+                }
+
+                this._bindingsToDeserialize.push({
+                    object: object,
+                    bindings: bindings
+                });
+            }
         }
     },
 

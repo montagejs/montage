@@ -1,7 +1,7 @@
 {
     "target_property": {
         "prototype": "core/meta/association-blueprint",
-        "properties": {
+        "values": {
             "name": "target",
             "blueprint": {
                 "@": "root"
@@ -14,7 +14,7 @@
     },
     "action_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "action",
             "blueprint": {
                 "@": "root"
@@ -24,7 +24,7 @@
     },
     "component_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Component",
                 "prototypeName": "Component",
@@ -36,7 +36,7 @@
     },
     "text_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Text",
                 "prototypeName": "Text",
@@ -48,13 +48,13 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "Label",
             "customPrototype": false,
             "parent": {
                 "@": "text_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "target_property"
                 },

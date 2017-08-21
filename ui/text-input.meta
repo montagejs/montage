@@ -1,0 +1,19 @@
+{
+	"root": {
+        "prototype": "core/meta/module-blueprint",
+        "values": {
+            "name": "TextInput",
+            "customPrototype": false,
+            "propertyDescriptors": [],
+            "propertyBlueprintGroups": {},
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "ui/text-input.meta"
+            },
+            "exportName": "TextInput",
+            "module": {
+                "%": "ui/text-input"
+            }
+        }
+    }
+}

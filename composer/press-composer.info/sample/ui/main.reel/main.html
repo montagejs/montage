@@ -7,56 +7,48 @@
     <script type="text/montage-serialization">
     {
         "owner": {
-            "properties": {
+            "values": {
                 "element": {"#": "main"}
             }
         },
 
         "cases": {
             "prototype": "montage/ui/repetition.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "cases"},
-                "isSelectionEnabled": true
-            },
-            "bindings": {
+                "isSelectionEnabled": true,
                 "content": {"<-": "@owner.configuration.cases"}
             }
         },
 
         "case": {
             "prototype": "montage/ui/component",
-            "properties": {
+            "values": {
                 "element": {"#": "case"},
-                "hasTemplate": false
-            },
-            "bindings": {
+                "hasTemplate": false,
                 "case": {"<-": "@cases:iteration.object"}
             }
         },
 
         "caseLabel": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "case-label"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "case-label"},
                 "value": {"<-": "@cases:iteration.object.label"}
             }
         },
 
         "casesSubstitution": {
             "prototype": "montage/ui/substitution.reel",
-            "properties": {
-                "element": {"#": "cases-substitution"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "cases-substitution"},
                 "switchValue": {"<-": "@cases.selection.0.arg"}
             }
         },
 
         "hitBox": {
             "prototype": "../square.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "hit-box"},
                 "label": "Hit Me!"
             }
@@ -64,96 +56,84 @@
 
         "nestHitBox1": {
             "prototype": "../square.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "nest-hit-box-1"}
             }
         },
 
         "nestHitBox2": {
             "prototype": "../square.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "nest-hit-box-2"}
             }
         },
 
         "nestHitBox3": {
             "prototype": "../square.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "nest-hit-box-3"}
             }
         },
 
         "draggableHitBox": {
             "prototype": "../draggable-square.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "drag-hit-box"}
             }
         },
 
         "regularList": {
             "prototype": "../list.reel",
-            "properties": {
-                "element": {"#": "regular-list"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "regular-list"},
                 "content": {"<-": "@owner.numbers"}
             }
         },
 
         "regularListNumberLabel": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "regular-list-number-label"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "regular-list-number-label"},
                 "value": {"<-": "@regularList:iteration.object"}
             }
         },
 
         "innerPressList": {
             "prototype": "../list.reel",
-            "properties": {
-                "element": {"#": "inner-press-list"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "inner-press-list"},
                 "content": {"<-": "@owner.numbers"}
             }
         },
 
         "innerPressListButton": {
             "prototype": "montage/ui/button.reel",
-            "properties": {
-                "element": {"#": "inner-press-list-number-label"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "inner-press-list-number-label"},
                 "label": {"<-": "@innerPressList:iteration.object"}
             }
         },
 
         "pressComposerLayers": {
             "prototype": "../press-composer-layers.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "press-composer-layers"}
             }
         },
 
         "captions": {
             "prototype": "montage/ui/repetition.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "captions"},
-                "isSelectionEnabled": true
-            },
-            "bindings": {
+                "isSelectionEnabled": true,
                 "content": {"<-": "@cases.selection.0.captions"}
             }
         },
 
         "caption": {
             "prototype": "../caption.reel",
-            "properties": {
-                "element": {"#": "caption"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "caption"},
                 "caption": {"<-": "@captions:iteration.object"}
             }
         }

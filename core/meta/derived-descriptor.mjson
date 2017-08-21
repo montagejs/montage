@@ -1,0 +1,104 @@
+{
+    "derived_descriptor_getterDefinition": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "getterDefinition",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "derived_descriptor_setterDefinition": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "setterDefinition",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "derived_descriptor_dependencies": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "valueType",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": -1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "property_descriptor_reference": {
+        "prototype": "core/meta/object-descriptor-reference",
+        "values": {
+            "valueReference": {
+                "objectDescriptorName": "PropertyDescriptor",
+                "prototypeName": "PropertyDescriptor",
+                "objectDescriptorModule": {
+                    "%": "core/meta/property-descriptor.mjson"
+                }
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "DerivedDescriptor",
+            "customPrototype": false,
+            "parent": {
+                "@": "property_descriptor_reference"
+            },
+            "propertyDescriptors": [
+                {
+                    "@": "derived_descriptor_dependencies"
+                },
+                {
+                    "@": "derived_descriptor_getterDefinition"
+                },
+                {
+                    "@": "derived_descriptor_setterDefinition"
+                }
+            ],
+            "propertyDescriptorGroups": {
+                "association-property-descriptors": [
+                    {
+                        "@": "derived_descriptor_dependencies"
+                    },
+                    {
+                        "@": "derived_descriptor_getterDefinition"
+                    },
+                    {
+                        "@": "derived_descriptor_setterDefinition"
+                    }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/meta/derived-descriptor.mjson"
+            },
+            "exportName": "DerivedDescriptor",
+            "module": {
+                "%": "core/meta/derived-descriptor"
+            }
+        }
+    }
+}

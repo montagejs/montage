@@ -40,14 +40,14 @@ var EventTarget = {
             typedEvent.target = this;
             typedEvent.currentTarget = this;
 
-            for (var i = 0, listener; listener = listeners[i]; i++) {
+            for (var i = 0, listener; (listener = listeners[i]); i++) {
                 if (typeof listener === "function" && !listener.__isConstructor__) {
                     listener(typedEvent);
                 } else {
                     names = ["handle" + type[0].toUpperCase() + type.slice(1),
                         "handleEvent"];
 
-                    for (var j = 0, name; name = names[j]; j++) {
+                    for (var j = 0, name; (name = names[j]); j++) {
                         if (typeof listener[name] === "function") {
                             listener[name](typedEvent);
                             break;
@@ -127,7 +127,7 @@ exports.element = function (_document) {
                 if (child === this) {
                     return true;
                 }
-            } while (child = /* assignment */ child.parentNode);
+            } while ((child = child.parentNode));
 
             return false;
         },
@@ -139,6 +139,12 @@ exports.element = function (_document) {
                 }
             }
             return elements;
+        },
+        querySelectorAll: function () {
+            return [];
+        },
+        querySelector: function () {
+            return [];
         },
         focus: function () {},
         blur: function () {},
@@ -169,23 +175,33 @@ exports.window = function () {
 
 exports.document = function () {
     var result = {
+        location: {
+            href: 'http://example.com'
+        },
         defaultView: exports.window(),
         body: null,
+        rootElement: null,
         _eventListeners: {},
         createElement: function (tagName) {
             return exports.element(this);
         },
         createDocumentFragment: function () {
             return exports.element(this);
+        },
+        importNode: function (el) {
+            return exports.element(el);
         }
     };
     Object.addEach(result, EventTarget);
 
+    result.rootElement = exports.element(result);
     result.body = exports.element(result);
+    
     // configure html element
+    result.querySelectorAll = result.rootElement.querySelectorAll;
+    result.querySelector = result.rootElement.querySelector;
     result.body.parentNode = exports.element(result);
     result.body.parentNode.parentNode = result;
-
     result.rootComponent = Component.rootComponent(result);
 
     return result;
@@ -233,14 +249,17 @@ exports.keyPressEvent = function (keys, target) {
     }
 
     // Clone the event so we can set a target and modifiers on it.
-    var customEvent = {};
-    for (var key in event) {
-        customEvent[key] = event[key];
+    var key,
+        customEvent = {};
+    for (key in event) {
+        if (event.hasOwnProperty(key)) {
+            customEvent[key] = event[key];            
+        }
     }
     customEvent.charCode = modifiersAndKeyCode.keyCode;
     customEvent.target = target;
 
-    for (var key in MODIFIERS) {
+    for (key in MODIFIERS) {
         if (modifiersAndKeyCode.modifiers & MODIFIERS[key]) {
             customEvent[key] = true;
         }

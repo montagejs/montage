@@ -2,42 +2,32 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="main.css">
-    <script type="text/montage-serialization">
-        {
-            "owner": {
-                "properties": {
-                    "element": {"#": "main"}
-                }
-            },
-
-            "custom": {
-                "prototype": "montage/ui/radio.reel",
-                "properties": {
-                    "element": {"#": "radio-custom"}
-                }
-            },
-
-            "native": {
-                "prototype": "montage/ui/radio.reel",
-                "properties": {
-                    "element": {"#": "radio-native"}
-                }
-            }
-        }
-    </script>
+    <link href="main.mjson" rel="serialization" type="text/montage-serialization">
 
 </head>
 <body>
     <div data-montage-id="main" class="Main">
         <header>Radio Sample</header>
         <section class="radios">
-             <span data-montage-id="radio-custom" class="radio custom">
+             <span data-montage-id="radio-custom1" class="radio custom">
+                <svg viewBox="0 0 22 22">
+                    <path class="radioCustomIcon" d="M11,16 C13.7614239,16 16,13.7614239 16,11 C16,8.23857611 13.7614239,6 11,6 C8.23857611,6 6,8.23857611 6,11 C6,13.7614239 8.23857611,16 11,16 L11,16 Z"></path>
+                </svg>
+            </span>
+             <span data-montage-id="radio-custom2" class="radio custom">
                 <svg viewBox="0 0 22 22">
                     <path class="radioCustomIcon" d="M11,16 C13.7614239,16 16,13.7614239 16,11 C16,8.23857611 13.7614239,6 11,6 C8.23857611,6 6,8.23857611 6,11 C6,13.7614239 8.23857611,16 11,16 L11,16 Z"></path>
                 </svg>
             </span>
 
-            <input type="radio" data-montage-id="radio-native" class="radio native" />
+            <input type="radio" data-montage-id="radio-native1" class="radio native" />1
+            <input type="radio" data-montage-id="radio-native2" class="radio native" />2
+
+
+              <input type="radio" name="gender" value="male" checked> Male<br>
+                <input type="radio" name="gender" value="female"> Female<br>
+                <input type="radio" name="gender" value="other"> Other
+
         </section>
     </div>
 </body>

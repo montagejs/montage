@@ -1,0 +1,334 @@
+{
+    "owner_reference": {
+        "prototype": "core/meta/object-descriptor-reference",
+        "values": {
+            "valueReference": {
+                "objectDescriptorName": "ObjectDescriptor",
+                "prototypeName": "ObjectDescriptor",
+                "objectDescriptorModule": {
+                    "%": "core/meta/object-descriptor.mjson"
+                }
+            }
+        }
+    },
+    "property_name": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "name",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": true,
+            "denyDelete": false,
+            "readOnly": true,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "property_owner": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "owner",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": true,
+            "denyDelete": false,
+            "readOnly": true,
+            "valueType": "object",
+            "enumValues": [],
+            "helpKey": "",
+            "valueDescriptor": {
+                "@": "owner_reference"
+            }
+        }
+    },
+    "property_cardinality": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "cardinality",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": true,
+            "valueType": "number",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "property_mandatory": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "mandatory",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "boolean",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "property_denyDelete": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "denyDelete",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "boolean",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "property_readOnly": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "readOnly",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "boolean",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "property_valueType": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "valueType",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "enum",
+            "enumValues": [
+                "string",
+                "number",
+                "boolean",
+                "date",
+                "enum",
+                "url",
+                "object"
+            ],
+            "defaultValue": "string",
+            "helpKey": ""
+        }
+    },
+    "property_collectionValueType": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "collectionValueType",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "enum",
+            "enumValues": [
+                "list",
+                "set",
+                "map"
+            ],
+            "defaultValue": "list",
+            "helpKey": ""
+        }
+    },
+    "property_valueObjectPrototypeName": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "valueObjectPrototypeName",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "property_valueObjectModuleId": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "valueObjectModuleId",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "property_enumValues": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "enumValues",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": -1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "property_helpKey": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "helpKey",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "property_serializable": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "serializable",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "boolean",
+            "enumValues": [],
+            "helpKey": "",
+            "serializable": true
+        }
+    },
+
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "PropertyDescriptor",
+            "customPrototype": false,
+            "propertyDescriptors": [
+                {
+                    "@": "property_name"
+                },
+                {
+                    "@": "property_owner"
+                },
+                {
+                    "@": "property_cardinality"
+                },
+                {
+                    "@": "property_valueType"
+                },
+                {
+                    "@": "property_collectionValueType"
+                },
+                {
+                    "@": "property_valueObjectPrototypeName"
+                },
+                {
+                    "@": "property_valueObjectModuleId"
+                },
+                {
+                    "@": "property_mandatory"
+                },
+                {
+                    "@": "property_denyDelete"
+                },
+                {
+                    "@": "property_readOnly"
+                },
+                {
+                    "@": "property_enumValues"
+                },
+                {
+                    "@": "property_helpKey"
+                }
+            ],
+            "propertyDescriptorGroups": {
+                "property-descriptor": [
+                    {
+                        "@": "property_name"
+                    },
+                    {
+                        "@": "property_owner"
+                    },
+                    {
+                        "@": "property_cardinality"
+                    },
+                    {
+                        "@": "property_valueType"
+                    },
+                    {
+                        "@": "property_collectionValueType"
+                    },
+                    {
+                        "@": "property_valueObjectPrototypeName"
+                    },
+                    {
+                        "@": "property_valueObjectModuleId"
+                    },
+                    {
+                        "@": "property_mandatory"
+                    },
+                    {
+                        "@": "property_denyDelete"
+                    },
+                    {
+                        "@": "property_readOnly"
+                    },
+                    {
+                        "@": "property_enumValues"
+                    },
+                    {
+                        "@": "property_helpKey"
+                    }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/meta/property-descriptor.mjson"
+            },
+            "exportName": "PropertyDescriptor",
+            "module": {
+                "%": "core/meta/property-descriptor"
+            }
+        }
+    }
+}

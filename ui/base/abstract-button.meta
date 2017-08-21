@@ -1,7 +1,7 @@
 {
     "enabled_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "enabled",
             "valueType": "boolean",
             "blueprint": {
@@ -11,7 +11,7 @@
     },
     "label_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "label",
             "valueType": "string",
             "blueprint": {
@@ -21,7 +21,7 @@
     },
     "holdThreshold_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "holdThreshold",
             "valueType": "number",
             "blueprint": {
@@ -31,7 +31,7 @@
     },
     "active_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "active",
             "valueType": "boolean",
             "blueprint": {
@@ -41,7 +41,7 @@
     },
     "blueprint_parent": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "AbstractControl",
                 "prototypeName": "AbstractControl",
@@ -53,12 +53,12 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "AbstractButton",
             "parent": {
                 "@": "blueprint_parent"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "enabled_property"
                 },
@@ -72,7 +72,7 @@
                     "@": "active_property"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Main": [
                     {
                         "@": "enabled_property"

@@ -1,113 +1,380 @@
-/*global BUNDLE, module: false */
-if (typeof window !== "undefined") {
-    document._montageTiming = {};
-    document._montageTiming.loadStartTime = Date.now();
-
-    console._groupTime = Object.create(null);
-    console.groupTime = function(name) {
-        var groupTimeEntry = this._groupTime[name];
-        if(!groupTimeEntry) {
-            groupTimeEntry = {
-                count: 0,
-                start: 0,
-                sum:0
-            }
-            this._groupTime[name] = groupTimeEntry;
-        }
-        groupTimeEntry.start = performance.now();
-    };
-    console.groupTimeEnd = function(name) {
-        var end = performance.now();
-        var groupTimeEntry = this._groupTime[name];
-        var time = end - groupTimeEntry.start;
-
-        groupTimeEntry.count = groupTimeEntry.count+1;
-        groupTimeEntry.sum = groupTimeEntry.sum+time;
-    }
-    console.groupTimeAverage = function(name) {
-        var groupTimeEntry = this._groupTime[name];
-        return groupTimeEntry.sum/groupTimeEntry.count;
-    }
-    console.groupTimeTotal = function(name) {
-        var groupTimeEntry = this._groupTime[name];
-        return groupTimeEntry.sum;
-    }
-    console.groupTimeCount = function(name) {
-        var groupTimeEntry = this._groupTime[name];
-        return groupTimeEntry.count;
-    }
-
-}
-
-/**
- * Defines standardized shims for the intrinsic String object.
- * @see {external:String}
- * @module montage/core/shim/string
- */
-
-/**
- * @external String
- */
-
-/**
- * Returns whether this string begins with a given substring.
- *
- * @function external:String#startsWith
- * @param {string} substring a potential substring of this string
- * @returns {boolean} whether this string starts with the given substring
- */
-if (!String.prototype.startsWith) {
-    Object.defineProperty(String.prototype, 'startsWith', {
-        value: function (searchString, position) {
-            return this.lastIndexOf(searchString, position || 0) === 0;
-            // return this.length >= start.length &&
-            //     this.slice(0, start.length) === start;
-        },
-        writable: true,
-        configurable: true
-    });
-}
-
-/**
- * Returns whether this string ends with a given substring.
- *
- * @function external:String#endsWith
- * @param {string} substring a potential substring of this string
- * @returns {boolean} whether this string ends with the given substring
- */
-if (!String.prototype.endsWith) {
-    Object.defineProperty(String.prototype, 'endsWith', {
-        value: function (searchString, position) {
-            if (typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > this.length) {
-                position = this.length;
-            }
-            position -= searchString.length;
-            var lastIndex = this.lastIndexOf(searchString, position);
-            return lastIndex !== -1 && lastIndex === position;
-        },
-        writable: true,
-        configurable: true
-    });
-}
-
-
-(function (definition) {
-    if (typeof require !== "undefined") {
-        // CommonJS / NodeJS
-        definition.call(
-            typeof global !== "undefined" ? global : this,
-            require,
-            exports,
-            module
-        );
+/*global define, module, console */
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define('montage', [], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like environments that support module.exports,
+        // like Node.
+        module.exports = factory(require, exports, module);
     } else {
-        // <script>
-        definition({}, {}, {});
+        // Browser globals (root is window)
+        root.Montage = factory({}, {}, {});
     }
-})(function (require, exports, module) {
+}(this, function (require, exports, module) {
 
-    // The global context object
-    global = this;
+    "use strict";
+
+    // reassigning causes eval to not use lexical scope.
+    var globalEval = eval,
+    /*jshint evil:true */
+    global = globalEval('this'); 
+    /*jshint evil:false */
+
+    // Here we expose global for legacy mop support.
+    // TODO move to mr cause it's loader role to expose
+    // TODO make sure mop closure has it also cause it's mop role to expose
+    global.global = global;
+
+    var browser = {
+
+        makeResolve: function () {
+            
+            try {
+
+                var testHost = "http://example.org",
+                    testPath = "/test.html",
+                    resolved = new URL(testPath, testHost).href;
+
+                if (!resolved || resolved !== testHost + testPath) {
+                    throw new Error('NotSupported');
+                }
+
+                return function (base, relative) {
+                    return new URL(relative, base).href;
+                };
+
+            } catch (err) {
+
+                var IS_ABSOLUTE_REG = /^[\w\-]+:/,
+                    head = document.querySelector("head"),
+                    currentBaseElement = head.querySelector("base"),
+                    baseElement = document.createElement("base"),
+                    relativeElement = document.createElement("a"),
+                    needsRestore = false;
+
+                    if(currentBaseElement) {
+                        needsRestore = true;
+                    }
+                    else {
+                        currentBaseElement = document.createElement("base");
+                    }
+
+                // Optimization, we won't check ogain if there's a base tag.
+                baseElement.href = "";
+
+                return function (base, relative) {
+                    var restore;
+
+                    if (!needsRestore) {
+                        head.appendChild(currentBaseElement);
+                    }
+
+                    base = String(base);
+                    if (IS_ABSOLUTE_REG.test(base) === false) {
+                        throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
+                    }
+                    if(needsRestore) {
+                        restore = currentBaseElement.href;
+                    }
+                    currentBaseElement.href = base;
+                    relativeElement.href = relative;
+                    var resolved = relativeElement.href;
+                    if (needsRestore) {
+                        currentBaseElement.href = restore;
+                    } else {
+                        head.removeChild(currentBaseElement);
+                    }
+                    return resolved;
+                };
+            }
+        },
+
+        load: function (location,loadCallback) {
+            var script = document.createElement("script");
+            script.src = location;
+            script.onload = function () {
+                if(loadCallback) {
+                    loadCallback(script);
+                }
+                // remove clutter
+                script.parentNode.removeChild(script);
+            };
+            document.getElementsByTagName("head")[0].appendChild(script);
+        },
+
+        getParams: function () {
+            var i, j,
+                match,
+                script,
+                montage,
+                attr,
+                name;
+            if (!this._params) {
+                this._params = {};
+                // Find the <script> that loads us, so we can divine our
+                // parameters from its attributes.
+                var scripts = document.getElementsByTagName("script");
+                for (i = 0; i < scripts.length; i++) {
+                    script = scripts[i];
+                    montage = false;
+                    if (script.src && (match = script.src.match(/^(.*)montage.js(?:[\?\.]|$)/i))) {
+                        this._params.montageLocation = match[1];
+                        montage = true;
+                    }
+                    if (script.hasAttribute("data-montage-location")) {
+                        this._params.montageLocation = script.getAttribute("data-montage-location");
+                        montage = true;
+                    }
+                    if (montage) {
+                        if (script.dataset) {
+                            for (name in script.dataset) {
+                                if (script.dataset.hasOwnProperty(name)) {
+                                    this._params[name] = script.dataset[name];   
+                                }
+                            }
+                        } else if (script.attributes) {
+                            var dataRe = /^data-(.*)$/, // TODO cache RegEx
+                                letterAfterDash = /-([a-z])/g,
+                                upperCaseChar = function (_, c) {
+                                    return c.toUpperCase();
+                                };
+
+                            for (j = 0; j < script.attributes.length; j++) {
+                                attr = script.attributes[j];
+                                match = attr.name.match(dataRe);
+                                if (match) {
+                                    this._params[match[1].replace(letterAfterDash, upperCaseChar)] = attr.value;
+                                }
+                            }
+                        }
+                        // Permits multiple montage.js <scripts>; by
+                        // removing as they are discovered, next one
+                        // finds itself.
+                        script.parentNode.removeChild(script);
+                        break;
+                    }
+                }
+            }
+            return this._params;
+        },
+
+        bootstrap: function (callback) {
+            var Require, DOM, Promise, URL;
+
+            var params = this.getParams();
+            var resolve = this.makeResolve();
+
+            // observe dom loading and load scripts in parallel
+            function callbackIfReady() {
+                if (DOM && Require) {
+                    callback(Require, Promise, URL);
+                }
+            }
+
+            // observe dom loaded
+            function domLoad() {
+                document.removeEventListener("DOMContentLoaded", domLoad, true);
+                DOM = true;
+
+                // Give a threshold before we decide we need to show the bootstrapper progress
+                // Applications that use our loader will interact with this timeout
+                // and class name to coordinate a nice loading experience. Applications that do not will
+                // just go about business as usual and draw their content as soon as possible.
+                var root = document.documentElement;
+
+                if(!!root.classList) {
+                    root.classList.add("montage-app-bootstrapping");
+                } else {
+                    root.className = root.className + " montage-app-bootstrapping";
+                }
+
+                document._montageTiming = document._montageTiming || {};
+                document._montageTiming.bootstrappingStartTime = Date.now();
+
+                callbackIfReady();
+            }
+
+            // this permits montage.js to be injected after DOMContentLoaded
+            // http://jsperf.com/readystate-boolean-vs-regex/2
+            if (/interactive|complete/.test(document.readyState)) {
+                domLoad();
+            } else {
+                document.addEventListener("DOMContentLoaded", domLoad, true);
+            }
+
+            // determine which scripts to load
+            var pending = {
+                "require": "node_modules/mr/require.js",
+                "require/browser": "node_modules/mr/browser.js",
+                "promise": "node_modules/bluebird/js/browser/bluebird.min.js"
+                // "shim-string": "core/shim/string.js" // needed for the `endsWith` function.
+            };
+
+            // miniature module system
+            var definitions = {};
+            var bootModules = {};
+            function bootRequire(id) {
+                if (!bootModules[id] && definitions[id]) {
+                    var exports = bootModules[id] = {};
+                    bootModules[id] = definitions[id](bootRequire, exports) || exports;
+                }
+                return bootModules[id];
+            }
+
+            // execute bootstrap scripts
+            function allModulesLoaded() {
+                URL = bootRequire("mini-url");
+                Promise = bootRequire("promise");
+                Require = bootRequire("require");
+
+                // if we get past the for loop, bootstrapping is complete.  get rid
+                // of the bootstrap function and proceed.
+                delete global.bootstrap;
+
+                callbackIfReady();
+            }
+
+            // register module definitions for deferred,
+            // serial execution
+            global.bootstrap = function (id, factory) {
+                definitions[id] = factory;
+                delete pending[id];
+                for (var module in pending) {
+                    if (pending.hasOwnProperty(module)) {
+                        // this causes the function to exit if there are any remaining
+                        // scripts loading, on the first iteration.  consider it
+                        // equivalent to an array length check
+                        return;   
+                    }
+                }
+
+                allModulesLoaded();
+            };
+
+            // load in parallel, but only if we're not using a preloaded cache.
+            // otherwise, these scripts will be inlined after already
+            if (typeof global.BUNDLE === "undefined") {
+                var montageLocation = resolve(global.location, params.montageLocation);
+
+                //Special Case bluebird for now:
+                browser.load(resolve(montageLocation, pending.promise), function() {
+                    delete pending.promise;
+
+                    //global.bootstrap cleans itself from global once all known are loaded. "bluebird" is not known, so needs to do it first
+                    global.bootstrap("bluebird", function (require, exports) {
+                        return global.Promise;
+                    });
+                    global.bootstrap("promise", function (require, exports) {
+                        return global.Promise;
+                    });
+
+                    for (var module in pending) {
+                        if (pending.hasOwnProperty(module)) {
+                            browser.load(resolve(montageLocation, pending[module]));
+                        }
+                    }
+                });
+
+            } else {
+
+                global.nativePromise = global.Promise;
+                Object.defineProperty(global, "Promise", {
+                    configurable: true,
+                    set: function(PromiseValue) {
+                        Object.defineProperty(global, "Promise", {
+                            value: PromiseValue
+                        });
+
+                        global.bootstrap("bluebird", function (require, exports) {
+                            return global.Promise;
+                        });
+                        global.bootstrap("promise", function (require, exports) {
+                            return global.Promise;
+                        });
+                    }
+                });
+            }
+
+            // global.bootstrap("shim-string");
+
+            // one module loaded for free, for use in require.js, browser.js
+            global.bootstrap("mini-url", function (require, exports) {
+                exports.resolve = resolve;
+            });
+
+        },
+        initMontage: function (montageRequire, applicationRequire, params) {
+
+            //exports.Require.delegate = this;
+
+            var dependencies = [
+                "core/core",
+                "core/event/event-manager",
+                "core/serialization/deserializer/montage-reviver",
+                "core/logger"
+            ];
+
+            var Promise = montageRequire("core/promise").Promise;
+            var deepLoadPromises = [];
+
+            for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {
+              deepLoadPromises.push(montageRequire.deepLoad(iDependency));
+            }
+
+            return Promise.all(deepLoadPromises)
+            .then(function () {
+
+                for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {
+                  montageRequire(iDependency);
+                }
+
+                var Montage = montageRequire("core/core").Montage;
+                var EventManager = montageRequire("core/event/event-manager").EventManager;
+                var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
+                var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
+                var logger = montageRequire("core/logger").logger;
+
+                var application;
+
+                // montageWillLoad is mostly for testing purposes
+                if (typeof global.montageWillLoad === "function") {
+                    global.montageWillLoad();
+                }
+
+                // Load the application
+
+                var appProto = applicationRequire.packageDescription.applicationPrototype,
+                    applicationLocation, appModulePromise;
+                if (appProto) {
+                    applicationLocation = MontageReviver.parseObjectLocationId(appProto);
+                    appModulePromise = applicationRequire.async(applicationLocation.moduleId);
+                } else {
+                    appModulePromise = montageRequire.async("core/application");
+                }
+
+                return appModulePromise.then(function (exports) {
+                    var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
+                    application = new Application();
+                    defaultEventManager.application = application;
+                    application.eventManager = defaultEventManager;
+
+                    return application._load(applicationRequire, function() {
+                        if (params.module) {
+                            // If a module was specified in the config then we initialize it now
+                            applicationRequire.async(params.module);
+                        }
+                        if (typeof global.montageDidLoad === "function") {
+                            global.montageDidLoad();
+                        }
+                    });
+                });
+
+            });
+
+        }
+    };
 
     /**
      * Initializes Montage and creates the application singleton if
@@ -128,34 +395,10 @@ if (!String.prototype.endsWith) {
 
             var montageLocation = URL.resolve(config.location, params.montageLocation);
 
-            config.moduleTypes = ["html", "meta", "mjson"];
-
-            // setup the reel loader
-            config.makeLoader = function (config) {
-                return exports.ReelLoader(
-                    config,
-                    Require.makeLoader(config)
-                );
-            };
-
-            // setup serialization compiler
-            config.makeCompiler = function (config) {
-                return exports.MetaCompiler(
-                    config,
-                    exports.SerializationCompiler(
-                        config,
-                        exports.TemplateCompiler(
-                            config,
-                            Require.makeCompiler(config)
-                        )
-                    )
-                );
-            };
-
-            var location = URL.resolve(config.location, params["package"] || ".");
+            var location = URL.resolve(config.location, params.package || ".");
             var applicationHash = params.applicationHash;
 
-            if (typeof BUNDLE === "object") {
+            if (typeof global.BUNDLE === "object") {
                 var bundleDefinitions = {};
                 var getDefinition = function (name) {
                      if(!bundleDefinitions[name]) {
@@ -184,7 +427,7 @@ if (!String.prototype.endsWith) {
                 config.preloaded = preloading.promise;
                 // preload bundles sequentially
                 var preloaded = Promise.resolve();
-                BUNDLE.forEach(function (bundleLocations) {
+                global.BUNDLE.forEach(function (bundleLocations) {
                     preloaded = preloaded.then(function () {
                         return Promise.all(bundleLocations.map(function (bundleLocation) {
                             browser.load(bundleLocation);
@@ -194,8 +437,8 @@ if (!String.prototype.endsWith) {
                 });
                 // then release the module loader to run normally
                 preloading.resolve(preloaded.then(function () {
-                    delete BUNDLE;
-                    delete bundleLoaded;
+                    delete global.BUNDLE;
+                    delete global.bundleLoaded;
                 }));
             }
 
@@ -231,7 +474,8 @@ if (!String.prototype.endsWith) {
                 window.postMessage({
                     type: "montageReady"
                 }, "*");
-                var trigger = new Promise(function(resolve, reject){
+
+                var trigger = new Promise(function(resolve) {
                     var messageCallback = function (event) {
                         if (
                             params.remoteTrigger === event.origin &&
@@ -251,6 +495,7 @@ if (!String.prototype.endsWith) {
                             }
                         }
                     };
+
                     window.addEventListener("message", messageCallback);
                 });
 
@@ -312,8 +557,7 @@ if (!String.prototype.endsWith) {
                 });
             }
 
-            applicationRequirePromise
-            .then(function (applicationRequire) {
+            applicationRequirePromise.then(function (applicationRequire) {
                 return applicationRequire.loadPackage({
                     location: montageLocation,
                     hash: params.montageHash
@@ -344,13 +588,13 @@ if (!String.prototype.endsWith) {
                     montageRequire.inject("core/mini-url", URL);
                     montageRequire.inject("core/promise", {Promise: Promise});
                     promiseRequire.inject("bluebird", Promise);
-                    //This prevents bluebird to be loaded twice by mousse's code
+                    
+                    // This prevents bluebird to be loaded twice by mousse's code
                     promiseRequire.inject("js/browser/bluebird", Promise);
-                    // montageRequire.inject("core/shim/string", String);
-
+                    
                     // install the linter, which loads on the first error
                     config.lint = function (module) {
-                        montageRequire.async("core/jshint")
+                        montageRequire.async("jshint/dist/jshint")
                         .then(function (JSHINT) {
                             if (!JSHINT.JSHINT(module.text)) {
                                 console.warn("JSHint Error: "+module.location);
@@ -366,168 +610,16 @@ if (!String.prototype.endsWith) {
                         });
                     };
 
-                    // Fixe me: transition to .mr only
-                    self.require = self.mr = applicationRequire;
+                    // Expose global require and mr
+                    global.require = global.mr = applicationRequire;
+
                     return platform.initMontage(montageRequire, applicationRequire, params);
                 });
-                return applicationRequire;
             });
-
         });
-
-    };
-
-    /**
-     Adds "_montage_metadata" property to all objects and function attached to
-     the exports object.
-     @see Compiler middleware in require/require.js
-     @param config
-     @param compiler
-     */
-    var MontageMetaData = function(require,id,name) {
-        this.require = require;
-        this.module = id;
-        //moduleId: id, // deprecated
-        this.property = name;
-        //objectName: name, // deprecated
-        //this.aliases = [name];
-        //this.isInstance = false;
-        return this;
-    };
-
-    MontageMetaData.prototype = {
-          get moduleId () {
-              return this.module;
-          },
-           get objectName () {
-              return this.property;
-          },
-           get aliases () {
-              return this._aliases || (this._aliases = [this.property]);
-          },
-          _aliases: null,
-          isInstance: false
-   };
-
-
-    var reverseReelExpression = /((.*)\.reel)\/\2$/,
-        reverseReelFunction = function ($0, $1) { return $1; },
-        _MONTAGE_METADATA = "_montage_metadata";
-    exports.SerializationCompiler = function (config, compile) {
-        return function (module) {
-            compile(module);
-            if (!module.factory)
-                return;
-            var defaultFactory = module.factory;
-            module.factory = function (require, exports, module) {
-                        //call it to validate:
-                try{
-                        defaultFactory.call(this, require, exports, module);
-                }catch(e){
-                    if(e instanceof SyntaxError) {
-                        config.lint(module);
-                    }
-                }
-
-                var keys = Object.keys(exports),
-                    i, object;
-                for (var i=0, name;(name=keys[i]); i++) {
-                    // avoid attempting to initialize a non-object
-                    if (((object = exports[name]) instanceof Object)) {
-                        // avoid attempting to reinitialize an aliased property
-                        //jshint -W106
-                        if (object.hasOwnProperty(_MONTAGE_METADATA) && !object._montage_metadata.isInstance) {
-                            object._montage_metadata.aliases.push(name);
-                            object._montage_metadata.objectName = name;
-                            //jshint +W106
-                        } else if (!Object.isSealed(object)) {
-                            object._montage_metadata = new MontageMetaData(require,/*id*/ module.id.replace(reverseReelExpression, reverseReelFunction),name);
-                        }
-                    }
-                }
-            };
-            return module;
-        };
-    };
-
-    var reelExpression = /([^\/]+)\.reel$/,
-        dotREEL = ".reel"
-        SLASH = "/";
-    /**
-     * Allows reel directories to load the contained eponymous JavaScript
-     * module.
-     * @see Loader middleware in require/require.js
-     * @param config
-     * @param loader the next loader in the chain
-     */
-    exports.ReelLoader = function (config, load) {
-        return function reelLoader(id, module) {
-            if (id.endsWith(dotREEL)) {
-                module.redirect = id;
-                module.redirect += SLASH;
-                module.redirect += reelExpression.exec(id)[1];
-                return module;
-            } else {
-                return load(id, module);
-            }
-        };
-    };
-
-    /**
-     * Allows the .meta and .mjson files to be loaded as json
-     * @see Compiler middleware in require/require.js
-     * @param config
-     * @param compile
-     */
-    exports.MetaCompiler = function (config, compile) {
-        return function (module) {
-            if (module.location && (module.location.endsWith(".meta") || module.location.endsWith(".mjson"))) {
-                module.exports = JSON.parse(module.text);
-                return module;
-            } else {
-                return compile(module);
-            }
-        };
-    };
-
-    /**
-     * Allows the reel's html file to be loaded via require.
-     *
-     * @see Compiler middleware in require/require.js
-     * @param config
-     * @param compile
-     */
-    var directoryExpression = /(.*\/)?(?=[^\/]+)/,
-        dotHTML = ".html",
-        dotHTML_LOAD_JS = ".html.load.js";
-
-    exports.TemplateCompiler = function (config, compile) {
-        return function (module) {
-            var location = module.location;
-
-            if (!location)
-                return;
-
-            if (location.endsWith(dotHTML) || location.endsWith(dotHTML_LOAD_JS)) {
-                var match = location.match(directoryExpression);
-
-                if (match) {
-                    module.dependencies = module.dependencies || [];
-                    module.exports = {
-                        directory: match[1],
-                        content: module.text
-                    };
-
-                    return module;
-                }
-            }
-
-            compile(module);
-        };
     };
 
     // Bootstrapping for multiple-platforms
-
     exports.getPlatform = function () {
         if (typeof window !== "undefined" && window && window.document) {
             return browser;
@@ -535,358 +627,6 @@ if (!String.prototype.endsWith) {
             return require("./node.js");
         } else {
             throw new Error("Platform not supported.");
-        }
-    };
-
-    function URLMakeResolve (base, relative) {
-        return new URL(relative, base).href;
-    }
-
-    var browser = {
-
-        // mini-url library
-        makeResolve: function () {
-
-          if(this._hasURLSupport()) {
-            return URLMakeResolve
-          }
-          else {
-            var head = document.querySelector("head"),
-                currentBaseElement = head.querySelector("base"),
-                baseElement = document.createElement("base"),
-                relativeElement = document.createElement("a"),
-                needsRestore = false;
-
-                if(currentBaseElement) {
-                    needsRestore = true;
-                }
-                else {
-                    currentBaseElement = document.createElement("base");
-                }
-
-                //Optimization, we won't check ogain if there's a base tag.
-
-            baseElement.href = "";
-
-            return function (base, relative) {
-                var restore;
-
-                if (!needsRestore) {
-                    head.appendChild(currentBaseElement);
-                }
-
-                base = String(base);
-                if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
-                    throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
-                }
-                if(needsRestore) restore = currentBaseElement.href;
-                currentBaseElement.href = base;
-                relativeElement.href = relative;
-                var resolved = relativeElement.href;
-                if(needsRestore) currentBaseElement.href = restore;
-                else {
-                    head.removeChild(currentBaseElement);
-                }
-                return resolved;
-            };
-          }
-
-        },
-
-        __hasURLSupport: null,
-
-        _testHasURLSupport: function () {
-            // Testing for window.URL will not help here as it does exist in IE10 and IE11.
-            // but IE supports just the File API specification.
-            try { // window IE 10+ support
-                return !!(new URL("http://montagestudio.com")); // 1 parameter required at least.
-            } catch (e) {
-                return false;
-            }
-        },
-
-        _hasURLSupport: function () {
-            if (this.__hasURLSupport === null) {
-                this.__hasURLSupport = this._testHasURLSupport();
-            }
-            return this.__hasURLSupport;
-        },
-
-        load: function (location,loadCallback) {
-            var script = document.createElement("script");
-            script.src = location;
-            script.onload = function () {
-                if(loadCallback) loadCallback(script);
-                // remove clutter
-                script.parentNode.removeChild(script);
-            };
-            document.getElementsByTagName("head")[0].appendChild(script);
-        },
-
-        getParams: function () {
-            var i, j,
-                match,
-                script,
-                montage,
-                attr,
-                name;
-            if (!this._params) {
-                this._params = {};
-                // Find the <script> that loads us, so we can divine our
-                // parameters from its attributes.
-                var scripts = document.getElementsByTagName("script");
-                for (i = 0; i < scripts.length; i++) {
-                    script = scripts[i];
-                    montage = false;
-                    if (script.src && (match = script.src.match(/^(.*)montage.js(?:[\?\.]|$)/i))) {
-                        this._params.montageLocation = match[1];
-                        montage = true;
-                    }
-                    if (script.hasAttribute("data-montage-location")) {
-                        this._params.montageLocation = script.getAttribute("data-montage-location");
-                        montage = true;
-                    }
-                    if (montage) {
-                        if (script.dataset) {
-                            for (name in script.dataset) {
-                                this._params[name] = script.dataset[name];
-                            }
-                        } else if (script.attributes) {
-                            var dataRe = /^data-(.*)$/,
-                                letterAfterDash = /-([a-z])/g,
-                                upperCaseChar = function (_, c) {
-                                    return c.toUpperCase();
-                                };
-
-                            for (j = 0; j < script.attributes.length; j++) {
-                                attr = script.attributes[j];
-                                match = attr.name.match(/^data-(.*)$/);
-                                if (match) {
-                                    this._params[match[1].replace(letterAfterDash, upperCaseChar)] = attr.value;
-                                }
-                            }
-                        }
-                        // Permits multiple montage.js <scripts>; by
-                        // removing as they are discovered, next one
-                        // finds itself.
-                        script.parentNode.removeChild(script);
-                        break;
-                    }
-                }
-            }
-            return this._params;
-        },
-
-        bootstrap: function (callback) {
-            var base, Require, DOM, Promise, URL;
-
-            var params = this.getParams();
-            var resolve = this.makeResolve();
-
-            // observe dom loading and load scripts in parallel
-
-            // observe dom loaded
-            function domLoad() {
-                document.removeEventListener("DOMContentLoaded", domLoad, true);
-                DOM = true;
-
-                // Give a threshold before we decide we need to show the bootstrapper progress
-                // Applications that use our loader will interact with this timeout
-                // and class name to coordinate a nice loading experience. Applications that do not will
-                // just go about business as usual and draw their content as soon as possible.
-                var root = document.documentElement;
-
-                if(!!root.classList) {
-                    root.classList.add("montage-app-bootstrapping");
-                } else {
-                    root.className = root.className + " montage-app-bootstrapping";
-                }
-
-                document._montageTiming.bootstrappingStartTime = Date.now();
-
-                callbackIfReady();
-            }
-
-            // this permits montage.js to be injected after DOMContentLoaded
-            // http://jsperf.com/readystate-boolean-vs-regex/2
-            if (/interactive|complete/.test(document.readyState)) {
-                domLoad();
-            } else {
-                document.addEventListener("DOMContentLoaded", domLoad, true);
-            }
-
-            // determine which scripts to load
-            var pending = {
-                "require": "node_modules/mr/require.js",
-                "require/browser": "node_modules/mr/browser.js"
-                // "shim-string": "core/shim/string.js" // needed for the `endsWith` function.
-            };
-
-            // register module definitions for deferred,
-            // serial execution
-            var definitions = {};
-            global.bootstrap = function (id, factory) {
-                definitions[id] = factory;
-                delete pending[id];
-                for (var id in pending) {
-                    // this causes the function to exit if there are any remaining
-                    // scripts loading, on the first iteration.  consider it
-                    // equivalent to an array length check
-                    return;
-                }
-
-                allModulesLoaded();
-            };
-
-            // load in parallel, but only if we're not using a preloaded cache.
-            // otherwise, these scripts will be inlined after already
-            if (typeof BUNDLE === "undefined") {
-                var montageLocation = resolve(window.location, params.montageLocation);
-
-
-                //Special Case bluebird for now:
-                browser.load(resolve(montageLocation, "node_modules/bluebird/js/browser/bluebird.min.js"),function() {
-
-                    //global.bootstrap cleans itself from window once all known are loaded. "bluebird" is not known, so needs to do it first
-                    global.bootstrap("bluebird", function (require, exports) {
-                        return window.Promise;
-                    });
-                    global.bootstrap("promise", function (require, exports) {
-                        return window.Promise;
-                    });
-
-                    for (var id in pending) {
-                        browser.load(resolve(montageLocation, pending[id]));
-                    }
-
-                });
-
-            }
-            else {
-                pending.promise = "node_modules/bluebird/js/browser/bluebird.min.js";
-
-                window.nativePromise = window.Promise;
-                Object.defineProperty(window,"Promise", {
-                    set: function(PromiseValue) {
-                        Object.defineProperty(window,"Promise",{value:PromiseValue});
-
-                        global.bootstrap("bluebird", function (require, exports) {
-                            return window.Promise;
-                        });
-                        global.bootstrap("promise", function (require, exports) {
-                            return window.Promise;
-                        });
-                    }
-                });
-            }
-
-            // global.bootstrap("shim-string");
-
-            // one module loaded for free, for use in require.js, browser.js
-            global.bootstrap("mini-url", function (require, exports) {
-                exports.resolve = resolve;
-            });
-
-            // miniature module system
-            var bootModules = {};
-            function bootRequire(id) {
-                if (!bootModules[id] && definitions[id]) {
-                    var exports = bootModules[id] = {};
-                    bootModules[id] = definitions[id](bootRequire, exports) || exports;
-                }
-                return bootModules[id];
-            }
-
-            // execute bootstrap scripts
-            function allModulesLoaded() {
-                URL = bootRequire("mini-url");
-                Promise = bootRequire("promise");
-                Require = bootRequire("require");
-
-                // if we get past the for loop, bootstrapping is complete.  get rid
-                // of the bootstrap function and proceed.
-                delete global.bootstrap;
-
-                callbackIfReady();
-            }
-
-            function callbackIfReady() {
-                if (DOM && Require) {
-                    callback(Require, Promise, URL);
-                }
-            }
-
-        },
-        initMontage: function (montageRequire, applicationRequire, params) {
-
-            //exports.Require.delegate = this;
-
-            var dependencies = [
-                "core/core",
-                "core/event/event-manager",
-                "core/serialization/deserializer/montage-reviver",
-                "core/logger"
-            ];
-
-            var Promise = montageRequire("core/promise").Promise;
-            var deepLoadPromises = [];
-
-            for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {
-              deepLoadPromises.push(montageRequire.deepLoad(iDependency));
-            }
-
-            return Promise.all(deepLoadPromises)
-            .then(function () {
-
-                for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {
-                  montageRequire(iDependency);
-                }
-
-                var Montage = montageRequire("core/core").Montage;
-                var EventManager = montageRequire("core/event/event-manager").EventManager;
-                var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
-                var logger = montageRequire("core/logger").logger;
-
-                var defaultEventManager, application;
-
-                // Load the event-manager
-                defaultEventManager = new EventManager().initWithWindow(window);
-
-                // montageWillLoad is mostly for testing purposes
-                if (typeof global.montageWillLoad === "function") {
-                    global.montageWillLoad();
-                }
-
-                // Load the application
-
-                var appProto = applicationRequire.packageDescription.applicationPrototype,
-                    applicationLocation, appModulePromise;
-                if (appProto) {
-                    applicationLocation = MontageReviver.parseObjectLocationId(appProto);
-                    appModulePromise = applicationRequire.async(applicationLocation.moduleId);
-                } else {
-                    appModulePromise = montageRequire.async("core/application");
-                }
-
-                return appModulePromise.then(function (exports) {
-                    var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
-                    application = new Application();
-                    defaultEventManager.application = application;
-                    application.eventManager = defaultEventManager;
-
-                    return application._load(applicationRequire, function() {
-                        if (params.module) {
-                            // If a module was specified in the config then we initialize it now
-                            applicationRequire.async(params.module);
-                        }
-                        if (typeof global.montageDidLoad === "function") {
-                            global.montageDidLoad();
-                        }
-                    });
-                });
-
-            });
-
         }
     };
 
@@ -902,4 +642,5 @@ if (!String.prototype.endsWith) {
         exports.getPlatform();
     }
 
-});
+    return exports;
+}));

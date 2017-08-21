@@ -1,0 +1,128 @@
+{
+    "owner_reference": {
+        "prototype": "core/meta/object-descriptor-reference",
+        "values": {
+            "valueReference": {
+                "objectDescriptorName": "ObjectDescriptor",
+                "prototypeName": "ObjectDescriptor",
+                "objectDescriptorModule": {
+                    "%": "core/meta/object-descriptor.mjson"
+                }
+            }
+        }
+    },
+    "validation_rule_object_descriptor_name": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "name",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": true,
+            "denyDelete": false,
+            "readOnly": true,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "validation_rule_owner_object_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "objectDescriptor",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": true,
+            "denyDelete": false,
+            "readOnly": true,
+            "valueType": "object",
+            "enumValues": [],
+            "helpKey": "",
+            "valueDescriptor": {
+                "@": "owner_reference"
+            }
+        }
+    },
+    "validation_rule_object_descriptor_validationSelector": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "validationSelector",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "object",
+            "valueObjectPrototypeName": "Selector",
+            "valueObjectModuleId": "core/selector",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "validation_rule_object_descriptor_messageKey": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "messageKey",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "PropertyValidationRule",
+            "customPrototype": false,
+            "propertyDescriptors": [
+                {
+                    "@": "validation_rule_object_descriptor_name"
+                },
+                {
+                    "@": "validation_rule_owner_object_descriptor"
+                },
+                {
+                    "@": "validation_rule_object_descriptor_validationSelector"
+                },
+                {
+                    "@": "validation_rule_object_descriptor_messageKey"
+                }
+            ],
+            "propertyDescriptorGroups": {
+                "validation-rule-object-descriptor": [
+                    {
+                        "@": "validation_rule_object_descriptor_name"
+                    },
+                    {
+                        "@": "validation_rule_owner_object_descriptor"
+                    },
+                    {
+                        "@": "validation_rule_object_descriptor_validationSelector"
+                    },
+                    {
+                        "@": "validation_rule_object_descriptor_messageKey"
+                    }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/meta/validation-rule.mjson"
+            },
+            "exportName": "ValidationRule",
+            "module": {
+                "%": "core/meta/validation-rule"
+            }
+        }
+    }
+}

@@ -1,1 +1,137 @@
-.main{ }
+body {
+    background: #678;
+}
+
+.window {
+    box-shadow: 0 5px 30px rgba(0,0,0,.5);
+    background: white;
+}
+
+.title {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 36px;
+    text-align: center;
+    background: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#ccc));
+    border-bottom: 1px solid #888;
+    color: black;
+    margin: 0;
+}
+
+.window > div {
+    position: absolute;
+    top: 37px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+
+.flow1 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 50%;
+    bottom: 50%;
+    margin: 20px 10px 10px 20px;
+}
+
+.flow2 {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    right: 0;
+    bottom: 50%;
+    margin: 20px 20px 10px 10px;
+}
+
+.flow3 {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 50%;
+    bottom: 0;
+    margin: 10px 10px 20px 20px;
+    background: white;
+}
+
+.flow4 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    right: 0;
+    bottom: 0;
+    margin: 10px 20px 20px 10px;
+    background: white;
+}
+
+.slide:before {
+    content: "";
+    display: block;
+    height: 50%;
+    margin-top: -45px;
+}
+
+.slide {
+    border-top: 3px solid rgba(255,255,255,.35);
+    border-left: 3px solid rgba(255,255,255,.35);
+    border-bottom: 3px solid rgba(0,0,0,.2);
+    border-right: 3px solid rgba(0,0,0,.2);
+    background: -webkit-gradient(linear, left top, right bottom, from(#00b7ea), to(#009ec3));
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    line-height: 90px;
+    font-size: 70px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: 100;
+    text-align: center;
+    box-sizing: border-box;
+    color: white;
+}
+
+.flow1.window {
+    background: black;
+}
+
+.flow1 .montage-Flow-Repetition > div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: auto;
+    height: auto;
+}
+
+.flow2 .montage-Flow-Repetition > div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: auto;
+    height: auto;
+}
+
+.flow2 .slide {
+    height: 65px;
+    font-size: 30px;
+}
+
+.flow3 .slide {
+    margin-top: -150px;
+    margin-left: -95px;
+    height: 300px;
+    width: 190px;
+    font-size: 80px;
+}
+.flow4 .slide {
+    margin-top: -160px;
+    margin-left: -160px;
+    height: 320px;
+    width: 320px;
+    font-size: 80px;
+}

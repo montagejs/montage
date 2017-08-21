@@ -1,7 +1,7 @@
 {
     "blueprint_condition_condition": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "condition",
             "blueprint": {
                 "@": "root"
@@ -11,7 +11,7 @@
     },
     "blueprint_condition_removalStrategy": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "removalStrategy",
             "blueprint": {
                 "@": "root"
@@ -26,7 +26,7 @@
     },
     "blueprint_component_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Component",
                 "prototypeName": "Component",
@@ -38,12 +38,12 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "Condition",
             "parent": {
                 "@": "blueprint_component_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_condition_condition"
                 },
@@ -51,7 +51,7 @@
                     "@": "blueprint_condition_removalStrategy"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Condition": [
                     {
                         "@": "blueprint_condition_condition"

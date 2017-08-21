@@ -15,7 +15,6 @@ var State = exports.State = Montage.specialize( /** @lends State# */{
         value: null
     },
 
-
     /**
      * Initializes a State object with a set of options.
      * @function
@@ -172,10 +171,10 @@ var State = exports.State = Montage.specialize( /** @lends State# */{
 
     _encloseGotoState: {
         value: function (state) {
-            return (function (stateChart, owner) {
+            return function (stateChart, owner) {
                 // Not relying on original implementation to save an extra function call, despite duplicated code
                 return this._stateChart._gotoState(state, owner);
-            });
+            };
         }
     },
 
@@ -396,7 +395,9 @@ var StateChart = exports.StateChart = Montage.specialize(/** @lends StateChart# 
 
             var substateName;
             for (substateName in state.substates) {
-                this._prepareState(state.substates[substateName]);
+                if (state.substates.hasOwnProperty(substateName)) {
+                    this._prepareState(state.substates[substateName]);   
+                }
             }
         }
     },

@@ -27,7 +27,7 @@ b1.addEventListener("action", function(event) {
 {
     "aButton": {
         "prototype": "montage/ui/native/button.reel",
-        "properties": {
+        "values": {
             "element": {"#": "btnElement"}
         },
         "listeners": [
@@ -72,6 +72,11 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     hasTemplate: {
         value: false
     },
+
+    drawsFocusOnPointerActivation : {
+        value: true
+    },
+
     /**
         converter
         A Montage converter object used to convert or format the label displayed by the Button instance. When a new value is assigned to <code>label</code>, the converter object's <code>convert()</code> method is invoked, passing it the newly assigned label value.
@@ -153,7 +158,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 this._promise = value;
 
                 if (this._promise){
-                    this.classList.add('montage--pending')
+                    this.classList.add('montage--pending');
                     test.promise = value;
                     this._promise.then(test);
                 }
@@ -361,7 +366,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                     }
                     //<button> && Custom
                 } else {
-                    if(!this.originalElement !== this.element && this._label === undefined) {
+                    if(this.originalElement === this.element && this._label === undefined) {
                         this._label = this.originalElement.data;
                     }
                     if (!this.element.firstChild) {

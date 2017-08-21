@@ -7,91 +7,79 @@
     <script type="text/montage-serialization">
     {
         "owner": {
-            "properties": {
+            "values": {
                 "element": {"#": "main"}
             }
         },
 
         "cases": {
             "prototype": "montage/ui/repetition.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "cases"},
-                "isSelectionEnabled": true
-            },
-            "bindings": {
+                "isSelectionEnabled": true,
                 "content": {"<-": "@owner.configuration.cases"}
             }
         },
 
         "case": {
             "prototype": "montage/ui/component",
-            "properties": {
+            "values": {
                 "element": {"#": "case"},
-                "hasTemplate": false
-            },
-            "bindings": {
+                "hasTemplate": false,
                 "case": {"<-": "@cases:iteration.object"}
             }
         },
 
         "caseLabel": {
             "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "case-label"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "case-label"},
                 "value": {"<-": "@cases:iteration.object.label"}
             }
         },
 
         "casesSubstitution": {
             "prototype": "montage/ui/substitution.reel",
-            "properties": {
-                "element": {"#": "cases-substitution"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "cases-substitution"},
                 "switchValue": {"<-": "@cases.selection.0.arg"}
             }
         },
 
         "draggableHitBox": {
             "prototype": "../draggable-square.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "drag-box"}
             }
         },
 
         "outerDraggableHitBox": {
             "prototype": "../draggable-square.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "outer-drag-box"}
             }
         },
 
         "innerDraggableHitBox": {
             "prototype": "../draggable-square.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "inner-drag-box"}
             }
         },
 
         "captions": {
             "prototype": "montage/ui/repetition.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "captions"},
-                "isSelectionEnabled": true
-            },
-            "bindings": {
+                "isSelectionEnabled": true,
                 "content": {"<-": "@cases.selection.0.captions"}
             }
         },
 
          "caption": {
             "prototype": "../caption.reel",
-            "properties": {
-                "element": {"#": "caption"}
-            },
-            "bindings": {
+            "values": {
+                "element": {"#": "caption"},
                 "caption": {"<-": "@captions:iteration.object"}
             }
         }

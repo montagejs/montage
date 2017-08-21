@@ -1,6 +1,6 @@
 // jshint -W015, -W106
 exports.am = function (n) {
-  if (n === 0 || n == 1) {
+  if (n === 0 || n === 1) {
     return 'one';
   }
   return 'other';
@@ -9,16 +9,16 @@ exports.ar = function (n) {
   if (n === 0) {
     return 'zero';
   }
-  if (n == 1) {
+  if (n === 1) {
     return 'one';
   }
-  if (n == 2) {
+  if (n === 2) {
     return 'two';
   }
-  if ((n % 100) >= 3 && (n % 100) <= 10 && n == Math.floor(n)) {
+  if ((n % 100) >= 3 && (n % 100) <= 10 && n === Math.floor(n)) {
     return 'few';
   }
-  if ((n % 100) >= 11 && (n % 100) <= 99 && n == Math.floor(n)) {
+  if ((n % 100) >= 11 && (n % 100) <= 99 && n === Math.floor(n)) {
     return 'many';
   }
   return 'other';
@@ -39,16 +39,16 @@ exports.br = function (n) {
   if (n === 0) {
     return 'zero';
   }
-  if (n == 1) {
+  if (n === 1) {
     return 'one';
   }
-  if (n == 2) {
+  if (n === 2) {
     return 'two';
   }
-  if (n == 3) {
+  if (n === 3) {
     return 'few';
   }
-  if (n == 6) {
+  if (n === 6) {
     return 'many';
   }
   return 'other';
@@ -60,10 +60,10 @@ exports.ca = function ( n ) {
   return "other";
 };
 exports.cs = function (n) {
-  if (n == 1) {
+  if (n === 1) {
     return 'one';
   }
-  if (n == 2 || n == 3 || n == 4) {
+  if (n === 2 || n === 3 || n === 4) {
     return 'few';
   }
   return 'other';
@@ -72,16 +72,16 @@ exports.cy = function (n) {
   if (n === 0) {
     return 'zero';
   }
-  if (n == 1) {
+  if (n === 1) {
     return 'one';
   }
-  if (n == 2) {
+  if (n === 2) {
     return 'two';
   }
-  if (n == 3) {
+  if (n === 3) {
     return 'few';
   }
-  if (n == 6) {
+  if (n === 6) {
     return 'many';
   }
   return 'other';
@@ -138,7 +138,7 @@ exports.fi = function ( n ) {
   return "other";
 };
 exports.fil = function (n) {
-  if (n === 0 || n == 1) {
+  if (n === 0 || n === 1) {
     return 'one';
   }
   return 'other';
@@ -150,10 +150,10 @@ exports.fr = function (n) {
   return 'other';
 };
 exports.ga = function (n) {
-  if (n == 1) {
+  if (n === 1) {
     return 'one';
   }
-  if (n == 2) {
+  if (n === 2) {
     return 'two';
   }
   return 'other';
@@ -183,21 +183,21 @@ exports.he = function ( n ) {
   return "other";
 };
 exports.hi = function (n) {
-  if (n === 0 || n == 1) {
+  if (n === 0 || n === 1) {
     return 'one';
   }
   return 'other';
 };
 exports.hr = function (n) {
-  if ((n % 10) == 1 && (n % 100) != 11) {
+  if ((n % 10) === 1 && (n % 100) !== 11) {
     return 'one';
   }
   if ((n % 10) >= 2 && (n % 10) <= 4 &&
-      ((n % 100) < 12 || (n % 100) > 14) && n == Math.floor(n)) {
+      ((n % 100) < 12 || (n % 100) > 14) && n === Math.floor(n)) {
     return 'few';
   }
   if ((n % 10) === 0 || ((n % 10) >= 5 && (n % 10) <= 9) ||
-      ((n % 100) >= 11 && (n % 100) <= 14) && n == Math.floor(n)) {
+      ((n % 100) >= 11 && (n % 100) <= 14) && n === Math.floor(n)) {
     return 'many';
   }
   return 'other';
@@ -248,17 +248,17 @@ exports.lag = function (n) {
   return 'other';
 };
 exports.ln = function (n) {
-  if (n === 0 || n == 1) {
+  if (n === 0 || n === 1) {
     return 'one';
   }
   return 'other';
 };
 exports.lt = function (n) {
-  if ((n % 10) == 1 && ((n % 100) < 11 || (n % 100) > 19)) {
+  if ((n % 10) === 1 && ((n % 100) < 11 || (n % 100) > 19)) {
     return 'one';
   }
   if ((n % 10) >= 2 && (n % 10) <= 9 &&
-      ((n % 100) < 11 || (n % 100) > 19) && n == Math.floor(n)) {
+      ((n % 100) < 11 || (n % 100) > 19) && n === Math.floor(n)) {
     return 'few';
   }
   return 'other';
@@ -267,13 +267,13 @@ exports.lv = function (n) {
   if (n === 0) {
     return 'zero';
   }
-  if ((n % 10) == 1 && (n % 100) != 11) {
+  if ((n % 10) === 1 && (n % 100) !== 11) {
     return 'one';
   }
   return 'other';
 };
 exports.mk = function (n) {
-  if ((n % 10) == 1 && n != 11) {
+  if ((n % 10) === 1 && n !== 11) {
     return 'one';
   }
   return 'other';
@@ -285,11 +285,11 @@ exports.ml = function ( n ) {
   return "other";
 };
 exports.mo = function (n) {
-  if (n == 1) {
+  if (n === 1) {
     return 'one';
   }
-  if (n === 0 || n != 1 && (n % 100) >= 1 &&
-      (n % 100) <= 19 && n == Math.floor(n)) {
+  if (n === 0 || n !== 1 && (n % 100) >= 1 &&
+      (n % 100) <= 19 && n === Math.floor(n)) {
     return 'few';
   }
   return 'other';
@@ -304,16 +304,22 @@ exports.ms = function ( n ) {
   return "other";
 };
 exports.mt = function (n) {
-  if (n == 1) {
+  if (n === 1) {
     return 'one';
   }
-  if (n === 0 || ((n % 100) >= 2 && (n % 100) <= 4 && n == Math.floor(n))) {
+  if (n === 0 || ((n % 100) >= 2 && (n % 100) <= 4 && n === Math.floor(n))) {
     return 'few';
   }
-  if ((n % 100) >= 11 && (n % 100) <= 19 && n == Math.floor(n)) {
+  if ((n % 100) >= 11 && (n % 100) <= 19 && n === Math.floor(n)) {
     return 'many';
   }
   return 'other';
+};
+exports.ne = function ( n ) {
+    if ( n === 1 ) {
+        return "one";
+    }
+    return "other";
 };
 exports.nl = function ( n ) {
   if ( n === 1 ) {
@@ -334,16 +340,16 @@ exports.or = function ( n ) {
   return "other";
 };
 exports.pl = function (n) {
-  if (n == 1) {
+  if (n === 1) {
     return 'one';
   }
   if ((n % 10) >= 2 && (n % 10) <= 4 &&
-      ((n % 100) < 12 || (n % 100) > 14) && n == Math.floor(n)) {
+      ((n % 100) < 12 || (n % 100) > 14) && n === Math.floor(n)) {
     return 'few';
   }
-  if ((n % 10) === 0 || n != 1 && (n % 10) == 1 ||
+  if ((n % 10) === 0 || n !== 1 && (n % 10) === 1 ||
       ((n % 10) >= 5 && (n % 10) <= 9 || (n % 100) >= 12 && (n % 100) <= 14) &&
-      n == Math.floor(n)) {
+      n === Math.floor(n)) {
     return 'many';
   }
   return 'other';
@@ -355,25 +361,25 @@ exports.pt = function ( n ) {
   return "other";
 };
 exports.ro = function (n) {
-  if (n == 1) {
+  if (n === 1) {
     return 'one';
   }
-  if (n === 0 || n != 1 && (n % 100) >= 1 &&
-      (n % 100) <= 19 && n == Math.floor(n)) {
+  if (n === 0 || n !== 1 && (n % 100) >= 1 &&
+      (n % 100) <= 19 && n === Math.floor(n)) {
     return 'few';
   }
   return 'other';
 };
 exports.ru = function (n) {
-  if ((n % 10) == 1 && (n % 100) != 11) {
+  if ((n % 10) === 1 && (n % 100) !== 11) {
     return 'one';
   }
   if ((n % 10) >= 2 && (n % 10) <= 4 &&
-      ((n % 100) < 12 || (n % 100) > 14) && n == Math.floor(n)) {
+      ((n % 100) < 12 || (n % 100) > 14) && n === Math.floor(n)) {
     return 'few';
   }
   if ((n % 10) === 0 || ((n % 10) >= 5 && (n % 10) <= 9) ||
-      ((n % 100) >= 11 && (n % 100) <= 14) && n == Math.floor(n)) {
+      ((n % 100) >= 11 && (n % 100) <= 14) && n === Math.floor(n)) {
     return 'many';
   }
   return 'other';
@@ -382,28 +388,28 @@ exports.shi = function (n) {
   if (n >= 0 && n <= 1) {
     return 'one';
   }
-  if (n >= 2 && n <= 10 && n == Math.floor(n)) {
+  if (n >= 2 && n <= 10 && n === Math.floor(n)) {
     return 'few';
   }
   return 'other';
 };
 exports.sk = function (n) {
-  if (n == 1) {
+  if (n === 1) {
     return 'one';
   }
-  if (n == 2 || n == 3 || n == 4) {
+  if (n === 2 || n === 3 || n === 4) {
     return 'few';
   }
   return 'other';
 };
 exports.sl = function (n) {
-  if ((n % 100) == 1) {
+  if ((n % 100) === 1) {
     return 'one';
   }
-  if ((n % 100) == 2) {
+  if ((n % 100) === 2) {
     return 'two';
   }
-  if ((n % 100) == 3 || (n % 100) == 4) {
+  if ((n % 100) === 3 || (n % 100) === 4) {
     return 'few';
   }
   return 'other';
@@ -415,15 +421,15 @@ exports.sq = function ( n ) {
   return "other";
 };
 exports.sr = function (n) {
-  if ((n % 10) == 1 && (n % 100) != 11) {
+  if ((n % 10) === 1 && (n % 100) !== 11) {
     return 'one';
   }
   if ((n % 10) >= 2 && (n % 10) <= 4 &&
-      ((n % 100) < 12 || (n % 100) > 14) && n == Math.floor(n)) {
+      ((n % 100) < 12 || (n % 100) > 14) && n === Math.floor(n)) {
     return 'few';
   }
   if ((n % 10) === 0 || ((n % 10) >= 5 && (n % 10) <= 9) ||
-      ((n % 100) >= 11 && (n % 100) <= 14) && n == Math.floor(n)) {
+      ((n % 100) >= 11 && (n % 100) <= 14) && n === Math.floor(n)) {
     return 'many';
   }
   return 'other';
@@ -456,7 +462,7 @@ exports.th = function ( n ) {
   return "other";
 };
 exports.tl = function (n) {
-  if (n === 0 || n == 1) {
+  if (n === 0 || n === 1) {
     return 'one';
   }
   return 'other';
@@ -465,15 +471,15 @@ exports.tr = function (n) {
   return 'other';
 };
 exports.uk = function (n) {
-  if ((n % 10) == 1 && (n % 100) != 11) {
+  if ((n % 10) === 1 && (n % 100) !== 11) {
     return 'one';
   }
   if ((n % 10) >= 2 && (n % 10) <= 4 &&
-      ((n % 100) < 12 || (n % 100) > 14) && n == Math.floor(n)) {
+      ((n % 100) < 12 || (n % 100) > 14) && n === Math.floor(n)) {
     return 'few';
   }
   if ((n % 10) === 0 || ((n % 10) >= 5 && (n % 10) <= 9) ||
-      ((n % 100) >= 11 && (n % 100) <= 14) && n == Math.floor(n)) {
+      ((n % 100) >= 11 && (n % 100) <= 14) && n === Math.floor(n)) {
     return 'many';
   }
   return 'other';

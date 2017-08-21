@@ -1,7 +1,7 @@
 {
     "detail_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "detail",
             "valueType": "object",
             "readOnly": true,
@@ -13,7 +13,7 @@
     },
     "blueprint_parent": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Component",
                 "prototypeName": "Component",
@@ -25,17 +25,17 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "AbstractControl",
             "parent": {
                 "@": "blueprint_parent"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "detail_property"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Control": [
                     {
                         "@": "detail_property"

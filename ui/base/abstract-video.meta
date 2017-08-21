@@ -1,7 +1,7 @@
 {
     "mediaElement_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "mediaElement",
             "blueprint": {"@": "root"},
             "valueType": "object"
@@ -9,7 +9,7 @@
     },
     "videoController_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "videoController",
             "blueprint": {"@": "root"},
             "valueType": "object"
@@ -17,7 +17,7 @@
     },
     "src_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "src",
             "blueprint": {"@": "root"},
             "valueType": "string"
@@ -25,7 +25,7 @@
     },
     "sources_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "sources",
             "blueprint": {"@": "root"},
             "valueType": "object"
@@ -33,7 +33,7 @@
     },
     "repeat_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "repeat",
             "blueprint": {"@": "root"},
             "valueType": "boolean"
@@ -41,7 +41,7 @@
     },
     "posterSrc_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "posterSrc",
             "blueprint": {"@": "root"},
             "valueType": "string"
@@ -49,7 +49,7 @@
     },
     "supportsFullScreen_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "supportsFullScreen",
             "blueprint": {"@": "root"},
             "valueType": "boolean"
@@ -57,7 +57,7 @@
     },
     "isFullScreen_property": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "isFullScreen",
             "blueprint": {"@": "root"},
             "readOnly": true,
@@ -66,7 +66,7 @@
     },
     "blueprint_parent": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Component",
                 "blueprintModuleId": "ui/component.meta",
@@ -76,12 +76,12 @@
     },
     "root": {
         "prototype": "core/meta/blueprint",
-        "properties": {
+        "values": {
             "name": "AbstractVideo",
             "blueprintModuleId": "ui/base/abstract-video.meta",
             "prototypeName": "AbstractVideo",
             "parent": {"@": "blueprint_parent"},
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {"@": "mediaElement_property"},
                 {"@": "videoController_property"},
                 {"@": "src_property"},
@@ -91,7 +91,7 @@
                 {"@": "supportsFullScreen_property"},
                 {"@": "isFullScreen_property"}
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Main": [
                     {"@": "mediaElement_property"},
                     {"@": "videoController_property"},

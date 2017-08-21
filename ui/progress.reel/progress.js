@@ -11,7 +11,7 @@ var Control = require("ui/control").Control;
 
 */
 var Progress = exports.Progress =  Control.specialize({
-
+    hasTemplate: {value: false }
 });
 
 Progress.addAttributes( /** @lends module:"montage/ui/native/progress.reel".Progress# */{

@@ -258,12 +258,12 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                 var velocity = event.velocity;
 
                 if ((this._hasMomentum) && ((velocity.speed>40) || this.translateStrideX)) {
-                    if (this._axis != "vertical") {
+                    if (this._axis !== "vertical") {
                         this.momentumX = velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
                     } else {
                         this.momentumX = 0;
                     }
-                    if (this._axis != "horizontal") {
+                    if (this._axis !== "horizontal") {
                         this.momentumY = velocity.y * this._pointerSpeedMultiplier * (this._invertYAxis ? 1 : -1);
                     } else {
                         this.momentumY=0;
@@ -328,7 +328,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     delta;
 
                 if (this.translateStrideX) {
-                    window.clearTimeout(this._mousewheelStrideTimeout);
+                    clearTimeout(this._mousewheelStrideTimeout);
                     if (Math.abs(this._linearScrollingVector[0]) > Math.abs(this._linearScrollingVector[1])) {
                         if (Math.abs(deltaX) > Math.abs(deltaY)) {
                             delta = this._linearScrollingVector[0] * -deltaX / Math.abs(this._linearScrollingVector[0]);
@@ -351,7 +351,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                             }
                         }
                     }
-                    this._mousewheelStrideTimeout = window.setTimeout(function () {
+                    this._mousewheelStrideTimeout = setTimeout(function () {
                         self._mousewheelStrideTimeout = null;
                         self._previousDelta = 0;
                     }, 70);
@@ -367,8 +367,8 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     this._pageY = this._pageY + ((deltaY * 20) / 100);
                     this._updateScroll();
                     this._dispatchTranslate();
-                    window.clearTimeout(this._translateEndTimeout);
-                    this._translateEndTimeout = window.setTimeout(function () {
+                    clearTimeout(this._translateEndTimeout);
+                    this._translateEndTimeout = setTimeout(function () {
                         self._dispatchTranslateEnd();
                         self._translateEndTimeout = null;
                     }, 400);
@@ -545,9 +545,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     yAngle = Math.atan2(vX, vZ),
                     tmpZ = vZ * Math.cos(-yAngle) - vX * Math.sin(-yAngle),
                     xAngle = Math.atan2(flow._viewpointTargetPoint[1] - flow._viewpointPosition[1], tmpZ),
-                    x2 = this._element.clientWidth * .5 - this._pointerX,
-                    y2 = this._pointerY - this._element.clientHeight * .5,
-                    perspective = (this._element.offsetHeight * .5) / Math.tan((flow._viewpointFov * flow._doublePI) * (1 / 720)),
+                    x2 = this._element.clientWidth * 0.5 - this._pointerX,
+                    y2 = this._pointerY - this._element.clientHeight * 0.5,
+                    perspective = (this._element.offsetHeight * 0.5) / Math.tan((flow._viewpointFov * flow._doublePI) * (1 / 720)),
                     z2, tmp,
                     splines = this._computePointedElement_spline,
                     visibleIndexes = flow._visibleIndexes,
@@ -580,8 +580,8 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                             scale.x.numerator / scale.x.denominator, 0, 0, 0,
                             0, scale.y.numerator / scale.y.denominator, 0, 0,
                             0, 0, scale.z.numerator / scale.z.denominator, 0,
-                            -flow._viewpointPosition[0] + flow._firstIterationWidth * .5 + flow._firstIterationOffsetLeft,
-                            -flow._viewpointPosition[1] + flow._firstIterationHeight * .5 + flow._firstIterationOffsetTop,
+                            -flow._viewpointPosition[0] + flow._firstIterationWidth * 0.5 + flow._firstIterationOffsetLeft,
+                            -flow._viewpointPosition[1] + flow._firstIterationHeight * 0.5 + flow._firstIterationOffsetTop,
                             -flow._viewpointPosition[2],
                             1
                         ]);
@@ -593,7 +593,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     slideTime = offset.slideTime;
                     indexTime = splines[pathIndex]._convertSplineTimeToBezierIndexTime(slideTime);
                     if (indexTime !== null) {
-                        pos = splines[pathIndex].getPositionAtIndexTime(indexTime);
+                        var pos = splines[pathIndex].getPositionAtIndexTime(indexTime);
                         distance = this._rayPointDistance(rayVector, pos);
                         if (distance !== false) {
                             if (distance < minDistance) {
@@ -703,7 +703,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     this._pageX = this.startX + ((this.momentumX+this.momentumX*(this.__momentumDuration-t)/this.__momentumDuration)*t/1000)/2;
                     this._pageY = this.startY + ((this.momentumY+this.momentumY*(this.__momentumDuration-t)/this.__momentumDuration)*t/1000)/2;
                     this._updateScroll();
-                    if (this.translateStrideX && (this.startStrideXTime === null) && ((this.__momentumDuration - t < this.translateStrideDuration) || (Math.abs(this.scroll - this._scrollEnd) < this.translateStrideX * .75))) {
+                    if (this.translateStrideX && (this.startStrideXTime === null) && ((this.__momentumDuration - t < this.translateStrideDuration) || (Math.abs(this.scroll - this._scrollEnd) < this.translateStrideX * 0.75))) {
                         this.startStrideXTime = time;
                         this._strideStartScroll = this._scroll;
                     }
@@ -720,7 +720,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
             if (this.startStrideXTime && (time - this.startStrideXTime > 0)) {
                 tmp = Math.round(this._scrollEnd / this.translateStrideX);
                 if (time - this.startStrideXTime < this.translateStrideDuration) {
-                    t = this._bezierTValue((time - this.startStrideXTime) / this.translateStrideDuration, .275, 0, .275, 1);
+                    t = this._bezierTValue((time - this.startStrideXTime) / this.translateStrideDuration, 0.275, 0, 0.275, 1);
                     t2 = (time - this.startStrideXTime) / this.translateStrideDuration;
                     scroll = scroll * (1 - t2) + ((tmp *  this.translateStrideX) * t + (this._strideStartScroll) * (1 - t)) * t2;
                     animateStride = true;

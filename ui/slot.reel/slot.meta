@@ -1,7 +1,7 @@
 {
     "blueprint_slot_delegate": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "delegate",
             "blueprint": {
                 "@": "root"
@@ -11,7 +11,7 @@
     },
     "blueprint_slot_content": {
         "prototype": "core/meta/property-blueprint",
-        "properties": {
+        "values": {
             "name": "content",
             "blueprint": {
                 "@": "root"
@@ -21,7 +21,7 @@
     },
     "blueprint_component_reference": {
         "prototype": "core/meta/blueprint-reference",
-        "properties": {
+        "values": {
             "valueReference": {
                 "blueprintName": "Component",
                 "prototypeName": "Component",
@@ -33,12 +33,12 @@
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
-        "properties": {
+        "values": {
             "name": "Slot",
             "parent": {
                 "@": "blueprint_component_reference"
             },
-            "propertyBlueprints": [
+            "propertyDescriptors": [
                 {
                     "@": "blueprint_slot_delegate"
                 },
@@ -46,7 +46,7 @@
                     "@": "blueprint_slot_content"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Slot": [
                     {
                         "@": "blueprint_slot_delegate"
