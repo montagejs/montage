@@ -1,7 +1,13 @@
 var Converter = require("./converter").Converter,
     Promise = require("core/promise").Promise;
 
-
+/**
+ * Converter that chains a series of converters together
+ *
+ *
+ * @class PipelineConverter
+ * @extends Converter
+ */
 exports.PipelineConverter = Converter.specialize({
 
 
@@ -27,9 +33,14 @@ exports.PipelineConverter = Converter.specialize({
      * Convert/Revert
      */
 
+    /**
+     * The converters to chain on convert()
+     * @type {Converter[]}
+     */
     converters: {
         value: undefined
     },
+
 
     convert: {
         value: function (value) {
