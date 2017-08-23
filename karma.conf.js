@@ -1,6 +1,7 @@
+/* global module */
+
 // Karma configuration
 // Generated on Tue Mar 07 2017 13:59:10 GMT-0800 (PST)
-
 module.exports = function(config) {
   config.set({
 
@@ -185,6 +186,16 @@ module.exports = function(config) {
                 '--allow-insecure-localhost',
                 '--allow-running-insecure-content'
             ]
+        },
+        Chrome_travis_ci: {
+            base: 'Chrome',
+            flags: [
+                '--no-sandbox',
+                '--ignore-certificate-errors=true',
+                '--user-data-dir=./tmp',
+                '--allow-insecure-localhost',
+                '--allow-running-insecure-content'
+            ]
         }
     },
 
@@ -205,5 +216,5 @@ module.exports = function(config) {
         'karma-ie-launcher',
         'karma-phantomjs-launcher'
     ]
-  })
-}
+  });
+};

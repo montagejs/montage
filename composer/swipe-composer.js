@@ -121,13 +121,16 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
                 threshold = this._threshold,
                 swipeAngle = this._findSwipeAngle(dX, dY);
 
-            if (this._startSwipeAngle != null && Math.abs(this._startSwipeAngle - swipeAngle) > this._thresholdSwipeAngle) {
+            if (
+                this._startSwipeAngle !== null && 
+                    Math.abs(this._startSwipeAngle - swipeAngle) > this._thresholdSwipeAngle
+            ) {
                 //Direction changed; Abort touch
                 //this.captureTouchcancel();
                 this._startSwipeAngle = null;
             }
 
-            if (this._startSwipeAngle == null) {
+            if (this._startSwipeAngle === null) {
                 this._startSwipeAngle = swipeAngle;
                 this._startX = touches.clientX;
                 this._startY = touches.clientY;
@@ -151,7 +154,7 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
                 }
             }
 
-            if (dX != 0 || dY != 0) {
+            if (dX !== 0 || dY !== 0) {
                 swipeEvent = document.createEvent("CustomEvent");
                 swipeEvent.initCustomEvent("swipemove", true, false, null);
                 swipeEvent.direction = direction;
@@ -178,7 +181,7 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
     captureTouchend: {
         value: function (event) {
 
-            if (event == null) {
+            if (!event) {
                 return;
             }
 

@@ -37,7 +37,9 @@ exports.ModelGroup = Montage.specialize( /** @lends ModelGroup.prototype # */ {
             return this._name;
         },
         set: function (value) {
-            if(value !== this._name) this._name = value;
+            if(value !== this._name) {
+                this._name = value;
+            }
         }
     },
 

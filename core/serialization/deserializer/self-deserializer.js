@@ -104,7 +104,7 @@ var SelfDeserializer = Montage.specialize( {
                 objectUnitNames = this._objectUnitNames = this._unitNames;
                 this._context.setUnitsToDeserialize(this._object, this._objectDescriptor, objectUnitNames);
             } else {
-                for (var i = 0, name; name = objectUnitNames[i]; i++) {
+                for (var i = 0, name; (name = objectUnitNames[i]); i++) {
                     if (objectUnitNames.indexOf(name) === -1) {
                         objectUnitNames.push(name);
                     }

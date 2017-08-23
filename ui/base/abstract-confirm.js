@@ -73,7 +73,7 @@ var AbstractConfirm = exports.AbstractConfirm = AbstractAlert.specialize(/** @le
 
             instance = this._instance;
 
-            return this._nextMessagePromise = this._nextMessagePromise.then(function () {
+            this._nextMessagePromise = this._nextMessagePromise.then(function () {
                 if (title) {
                     instance.title = title;
                 } else {
@@ -93,6 +93,8 @@ var AbstractConfirm = exports.AbstractConfirm = AbstractAlert.specialize(/** @le
 
                 return instance.show();
             });
+
+            return this._nextMessagePromise;
         }
     },
 

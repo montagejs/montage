@@ -76,7 +76,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
      */
     detail: {
         get: function () {
-            if (this._detail == null) {
+            if (this._detail === null || this._detail === undefined) {
                 this._detail = new Map();
             }
             return this._detail;
@@ -252,8 +252,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
 /**
     Specifies whether the button should receive focus or not.
     @type {boolean}
-    @default false
-    @event longpress @benoit: no events here?
+    @event longpress 
 */
     preventFocus: {
         get: function () {
@@ -269,11 +268,6 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         value: false
     },
 
-    /**
-     * Description TODO
-     * @function
-     * @param {Event Handler} event TODO
-     */
     handleFocus: {
         enumerable: false,
         value: function (event) {
@@ -332,7 +326,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         set: function (value, fromInput) {
 
             if (value !== this._value) {
-                var shouldAcceptValue
+                var shouldAcceptValue;
                 if (!this.delegate ||  (shouldAcceptValue = this.callDelegateMethod("shouldAcceptValue", this, value) ) === undefined ? true : shouldAcceptValue ){
                     // console.log("_setValue past first step value is ",value);
 

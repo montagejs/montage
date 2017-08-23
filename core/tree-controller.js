@@ -219,7 +219,7 @@ exports.TreeController = Montage.specialize({
         value: function () {
             this._expansionMap = new WeakMap();
             this.handleTreeChange();
-            return true
+            return true;
         }
     },
 
@@ -331,7 +331,9 @@ exports.TreeController = Montage.specialize({
                 delete this._listenersHash[expansionMetadata.listenerId];
             }
             for (id in this._listenersHash) {
-                this._removeListener(id);
+                if (this._listenersHash.hasOwnProperty(id)) {
+                    this._removeListener(id);
+                }
             }
             this._listenersHash = listenersHash;
         }

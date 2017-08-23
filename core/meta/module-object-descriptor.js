@@ -5,6 +5,25 @@ var Montage = require("../core").Montage,
     ModuleReference = require("../module-reference").ModuleReference,
     deprecate = require("../deprecate");
 
+
+// Adapted from mr/sandbox
+function getModuleRequire(parentRequire, moduleId) {
+    var topId = parentRequire.resolve(moduleId);
+    var module = parentRequire.getModuleDescriptor(topId);
+
+    while (module.redirect || module.mappingRedirect) {
+        if (module.redirect) {
+            topId = module.redirect;
+        } else {
+            parentRequire = module.mappingRequire;
+            topId = module.mappingRedirect;
+        }
+        module = parentRequire.getModuleDescriptor(topId);
+    }
+
+    return module.require;
+}
+    
 // Cache all loaded object descriptors
 var OBJECT_DESCRIPTOR_CACHE = Object.create(null);
 
@@ -104,7 +123,7 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
                 return OBJECT_DESCRIPTOR_CACHE[key];
             }
 
-            return OBJECT_DESCRIPTOR_CACHE[key] = _require.async(moduleId)
+            return (OBJECT_DESCRIPTOR_CACHE[key] = _require.async(moduleId)
                 .then(function (object) {
                     // Need to get the require from the module, because thats
                     // what all the moduleId references are relative to.
@@ -130,7 +149,7 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
                     }
 
                     return objectDescriptor;
-                });
+                }));
         }
     },
 
@@ -176,6 +195,4 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
             return ModuleObjectDescriptor.createDefaultObjectDescriptorForObject(object);
         }, "ModuleBlueprint.createDefaultBlueprintForObject", "ModuleObjectDescriptor.createDefaultObjectDescriptorForObject")
     }
-
-
 });

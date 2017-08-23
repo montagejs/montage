@@ -162,7 +162,7 @@ var Select = exports.Select =  Control.specialize(/** @lends module:"montage/ui/
             }
 
             this._contentController = value;
-            value.multiSelect = this.multiple;
+            value.allowsMultipleSelection = this.multiple;
 
             Bindings.defineBindings(this, {
                 "content": {"<-": "_contentController.organizedContent"},
@@ -253,7 +253,7 @@ var Select = exports.Select =  Control.specialize(/** @lends module:"montage/ui/
             this._value = value;
 
             if(!this._synching) {
-                if(value == null) {
+                if(value === null || value === undefined) {
                     this.values = [];
                 } else {
                     this.values = [value];

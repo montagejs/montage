@@ -111,7 +111,7 @@ var MontageBuilder = Montage.specialize(/** @lends MontageBuilder# */ {
                 ix = labelReferences.indexOf(reference);
 
                 if (ix === -1) {
-                    console.log("BUG: reference '" + label + "' not found in registry.");
+                    throw new Error("Reference '" + label + "' not found in registry.");
                 } else {
                     labelReferences.splice(ix, 1);
                 }
@@ -125,8 +125,10 @@ var MontageBuilder = Montage.specialize(/** @lends MontageBuilder# */ {
                 root = this._root;
 
             for (var label in references) {
-                if (!root.hasProperty(label)) {
-                    root.setProperty(label, this._placeholderProperty);
+                if (Object.hasOwnProperty.call(references, label)) {
+                    if (!root.hasProperty(label)) {
+                        root.setProperty(label, this._placeholderProperty);
+                    }   
                 }
             }
         }

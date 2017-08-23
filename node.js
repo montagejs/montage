@@ -20,11 +20,11 @@ function findPackage(path) {
             return findPackage(directory);
         }
     });
-};
+}
 
 function loadFreeModule(/*program, command, args*/) {
     throw new Error("Can't load module that is not in a package");
-};
+}
 
 function loadPackagedModule(directory, program/*, command, args*/) {
     return MontageBoot.loadPackage(directory)
@@ -32,7 +32,7 @@ function loadPackagedModule(directory, program/*, command, args*/) {
         var id = program.slice(directory.length + 1);
         return require.async(id);
     });
-};
+}
 
 exports.bootstrap = function () {
     var command = process.argv.slice(0, 3);
@@ -66,73 +66,7 @@ MontageBoot.loadPackage = function (location, config) {
     return Require.loadPackage(config.location, config);
 };
 
-MontageBoot.TemplateLoader = function (config, load) {
-    return function (id, module) {
-        var html = id.match(/(.*\/)?(?=[^\/]+\.html$)/);
-        var serialization = id.match(/(?=[^\/]+\.json$)/); // XXX this is not necessarily a strong indicator of a serialization alone
-        var reelModule = id.match(/(.*\/)?([^\/]+)\.reel\/\2$/);
-        if (html) {
-            return load(id, module)
-            .then(function () {
-                module.dependencies = parseHtmlDependencies(module.text, module.location);
-                return module;
-            });
-        } else if (serialization) {
-            return load(id, module)
-            .then(function () {
-                module.dependencies = collectSerializationDependencies(module.text, []);
-                return module;
-            });
-        } else if (reelModule) {
-            return load(id, module)
-            .then(function () {
-                var reelHtml = URL.resolve(module.location, reelModule[2] + ".html");
-                return FS.stat(URL.parse(reelHtml).pathname)
-                .then(function (stat) {
-                    if (stat.isFile()) {
-                        module.extraDependencies = [id + ".html"];
-                    }
-                }, function (error) {
-                    // not a problem
-                    // montage/ui/loader.reel/loader.html": Error: ENOENT: no such file or directory
-                    console.log(error.message);
-                });
-            });
-        } else {
-            return load(id, module);
-        }
-    };
-};
 
-// add the TemplateLoader to the middleware chain
-Require.makeLoader = (function (makeLoader) {
-    return function (config) {
-        return MontageBoot.TemplateLoader(config, makeLoader(config));
-    };
-})(Require.makeLoader);
-
-var parseHtmlDependencies = function (text/*, location*/) {
-    var dependencies = [];
-    var dom = parseHtml(text);
-    collectHtmlDependencies(dom, dependencies);
-    return dependencies;
-};
-
-var collectHtmlDependencies = function (dom, dependencies) {
-    visit(dom, function (element) {
-        if (DomUtils.isTag(element)) {
-            if (element.name === "script") {
-                if (getAttribute(element, "type") === "text/montage-serialization") {
-                    collectSerializationDependencies(getText(element), dependencies);
-                }
-            } else if (element.name === "link") {
-                if (getAttribute(element, "type") === "text/montage-serialization") {
-                    dependencies.push(getAttribute(element, "href"));
-                }
-            }
-        }
-    });
-};
 
 function parseHtml(html) {
     var dom, error;
@@ -182,7 +116,11 @@ function getText(element) {
     return DomUtils.getText(element);
 }
 
-var collectSerializationDependencies = function (text, dependencies) {
+function parsePrototypeForModule(prototype) {
+    return prototype.replace(/\[[^\]]+\]$/, "");
+}
+
+function collectSerializationDependencies(text, dependencies) {
     var serialization = JSON.parse(text);
     Object.keys(serialization).forEach(function (label) {
         var description = serialization[label];
@@ -197,8 +135,73 @@ var collectSerializationDependencies = function (text, dependencies) {
         }
     });
     return dependencies;
+}
+
+function collectHtmlDependencies(dom, dependencies) {
+    visit(dom, function (element) {
+        if (DomUtils.isTag(element)) {
+            if (element.name === "script") {
+                if (getAttribute(element, "type") === "text/montage-serialization") {
+                    collectSerializationDependencies(getText(element), dependencies);
+                }
+            } else if (element.name === "link") {
+                if (getAttribute(element, "type") === "text/montage-serialization") {
+                    dependencies.push(getAttribute(element, "href"));
+                }
+            }
+        }
+    });
+}
+
+function parseHtmlDependencies(text/*, location*/) {
+    var dependencies = [];
+    var dom = parseHtml(text);
+    collectHtmlDependencies(dom, dependencies);
+    return dependencies;
+}
+
+MontageBoot.TemplateLoader = function (config, load) {
+    return function (id, module) {
+        var html = id.match(/(.*\/)?(?=[^\/]+\.html$)/);
+        var serialization = id.match(/(?=[^\/]+\.json$)/); // XXX this is not necessarily a strong indicator of a serialization alone
+        var reelModule = id.match(/(.*\/)?([^\/]+)\.reel\/\2$/);
+        if (html) {
+            return load(id, module)
+            .then(function () {
+                module.dependencies = parseHtmlDependencies(module.text, module.location);
+                return module;
+            });
+        } else if (serialization) {
+            return load(id, module)
+            .then(function () {
+                module.dependencies = collectSerializationDependencies(module.text, []);
+                return module;
+            });
+        } else if (reelModule) {
+            return load(id, module)
+            .then(function () {
+                var reelHtml = URL.resolve(module.location, reelModule[2] + ".html");
+                return FS.stat(URL.parse(reelHtml).pathname)
+                .then(function (stat) {
+                    if (stat.isFile()) {
+                        module.extraDependencies = [id + ".html"];
+                    }
+                }, function (error) {
+                    // not a problem
+                    // montage/ui/loader.reel/loader.html": Error: ENOENT: no such file or directory
+                    console.log(error.message);
+                });
+            });
+        } else {
+            return load(id, module);
+        }
+    };
 };
 
-function parsePrototypeForModule(prototype) {
-    return prototype.replace(/\[[^\]]+\]$/, "");
-}
+// add the TemplateLoader to the middleware chain
+Require.makeLoader = (function (makeLoader) {
+    return function (config) {
+        return MontageBoot.TemplateLoader(config, makeLoader(config));
+    };
+})(Require.makeLoader);
+

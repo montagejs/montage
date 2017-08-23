@@ -631,11 +631,12 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      */
     captureMousedown: {
         value: function (event) {
-            if (!this.enabled) return;
+            if (!this.enabled) {
+                return;
+            }
 
             if (event.button === 0) {
                 this._observedPointer = this._MOUSE_POINTER;
-
                 this._start(event.clientX, event.clientY, event.target, event.timeStamp);
             }
         }
@@ -643,17 +644,18 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     captureMousemove: {
         value: function (event) {
-            if (!this.enabled) return;
+            if (this.enabled) {
+                this._handleMove(event);                
+            }
 
-            this._handleMove(event);
         }
     },
 
     handleMouseup: {
         value: function (event) {
-            if (!this.enabled) return;
-
-            this._end(event);
+            if (this.enabled) {
+                this._end(event);
+            }
         }
     },
 
@@ -661,7 +663,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     captureTouchstart: {
         value: function (event) {
             // If already scrolling, ignore any new touchstarts
-            if (!this.enabled || this._observedPointer !== null) return;
+            if (!this.enabled || this._observedPointer !== null) {
+                return;
+            }
 
             if (event.pointerId !== void 0) {
                 this._observedPointer = event.pointerId;
@@ -685,11 +689,11 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     captureTouchmove: {
         value: function (event) {
-            if (!this.enabled) return;
-
+            if (!this.enabled) {
+                return;
+            }
             if (event.pointerId !== void 0) {
                 this._handleMove(event);
-
             } else {
                 var touch = this._findObservedTouch(event.changedTouches);
                 if (touch) {
@@ -701,7 +705,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     handleTouchend: {
         value: function (event) {
-            if (!this.enabled) return;
+            if (!this.enabled) {
+                return;
+            }
 
             if (event.pointerId !== void 0) {
                 this._end(event);
@@ -718,7 +724,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     handleTouchcancel: {
         value: function (event) {
-            if (!this.enabled) return;
+            if (!this.enabled) {
+                return;
+            }
 
             if (event.pointerId !== void 0) {
                 this._cancel(event);
@@ -1223,7 +1231,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     handleWheel: {
         value: function (event) {
-            if (!this.enabled) return;
+            if (!this.enabled) {
+                return;
+            }
 
             // If this composers' component is claiming the "wheel" pointer then handle the event
             if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this)) {
@@ -1442,5 +1452,5 @@ TranslateComposer.prototype.handleTouchstart = TranslateComposer.prototype._hand
 if(Math.sign !== void 0) {
     TranslateComposer.prototype._isNegativeNumber = function(_number) {
         return Math.sign(_number) === -1;
-    }
+    };
 }

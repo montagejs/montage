@@ -68,8 +68,6 @@ module.exports = require("montage-testing").run(require, [
     //
     {name: "spec/geometry/cubicbezier-spec", node: false},
     {name: "spec/geometry/point-spec", node: false},
-    // Reel
-    {name: "spec/reel/template-spec", node: false},
     // Serialization
     "spec/serialization/alias-spec",
     "spec/serialization/labeler-spec",
@@ -104,20 +102,21 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/ui/segmented-bar/segmented-bar-spec", node: false, karma: false},
     {name: "spec/ui/flow-spec", node: false},
     {name: "spec/ui/component-spec", node: false},
+    // Reel
+    {name: "spec/reel/template-spec", node: false, karma: true},
     // UI - repetition
     {name: "spec/ui/repetition-spec", node: false},
     {name: "spec/ui/repetition-selection-spec", node: false, karma: false},
     {name: "spec/ui/repetition-binding-spec", node: false},
-    //
     {name: "spec/core/localizer-spec", node: false, karma: false},
     {name: "spec/core/localizer/serialization-spec", node: false, karma: false},
     // Bluerint
     {name: "spec/meta/converter-blueprint-spec", karma: false},
     {name: "spec/meta/module-blueprint-spec", karma: false},
     {name: "spec/meta/build-in-component-blueprint-spec", node: false, karma: false},
-    {name: "spec/meta/component-blueprint-spec", node: false, karma: false},
-    {name: "spec/meta/controller-blueprint-spec", node: false, karma: false},
-    {name: "spec/meta/event-blueprint-spec"},
+    {name: "spec/meta/component-blueprint-spec", node: false},
+    {name: "spec/meta/controller-blueprint-spec", node: false},
+    {name: "spec/meta/event-blueprint-spec", node: false},
     {name: "spec/meta/blueprint-spec"}
 ]).then(function () {
     console.log('montage-testing', 'End');

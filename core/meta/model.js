@@ -33,8 +33,11 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
      */
     initWithNameAndRequire: {
         value: function (name, _require) {
-            if (!name) throw new Error("name is required");
-            if (!_require) throw new Error("require is required");
+            if (!name) {
+                throw new Error("name is required");
+            } else if (!_require) {
+                throw new Error("require is required");
+            }
 
             this._name = name;
             this._require = _require;

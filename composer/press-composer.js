@@ -10,6 +10,80 @@ var Montage = require("../core/core").Montage,
     Composer = require("./composer").Composer,
     MutableEvent = require("../core/event/mutable-event").MutableEvent;
 
+/*
+ * @class PressEvent
+ * @inherits MutableEvent
+ * @classdesc The event dispatched by the `PressComposer`, providing access to
+ * the raw DOM event and proxying its properties.
+ */
+var PressEvent = (function (){
+
+    function eventPropDescriptor(prop) {
+        return {
+            get: function () {
+                return this._event[prop];
+            }
+        };
+    }
+
+    function typePropDescriptor(prop) {
+        return {
+            get: function () {
+                return (this._touch) ? this._touch[prop] : this._event[prop];
+            }
+        };
+    }
+
+    var PressEvent = MutableEvent.specialize({
+        type: {
+            value: "press"
+        },
+        _event: {
+            enumerable: false,
+            value: null
+        },
+        event: {
+            get: function () {
+                return this._event;
+            },
+            set: function (value) {
+                this._event = value;
+            }
+        },
+        _touch: {
+            enumerable: false,
+            value: null
+        },
+        touch: {
+            get: function () {
+                return this._touch;
+            },
+            set: function (value) {
+                this._touch = value;
+            }
+        }
+    });
+
+    // These properties are available directly on the event
+    [
+        "altKey", "ctrlKey", "metaKey", "shiftKey",
+        "cancelBubble", "currentTarget", "defaultPrevented",
+        "eventPhase", "timeStamp", "preventDefault",
+        "stopImmediatePropagation", "stopPropagation"
+    ].forEach(function (eventProp) {
+        Montage.defineProperty(PressEvent, eventProp, eventPropDescriptor(eventProp));
+    });
+
+
+    // These properties are available on the event in the case of mouse, and
+    // on the _touch in the case of touch
+    ["clientX", "clientY", "pageX", "pageY", "screenX", "screenY", "target"].forEach(function (typeProp) {
+        Montage.defineProperty(PressEvent, typeProp, typePropDescriptor(typeProp));
+    });
+
+    return PressEvent;
+}());
+
 /**
  * @class PressComposer
  * @classdesc The `PressComposer` abstracts away handling mouse and touch
@@ -854,75 +928,3 @@ PressComposer.prototype.handlePointerdown = PressComposer.prototype._handlePoint
 PressComposer.prototype.handleMousedown = PressComposer.prototype._handlePointerDown;
 PressComposer.prototype.handleTouchstart = PressComposer.prototype._handlePointerDown;
 
-/*
- * @class PressEvent
- * @inherits MutableEvent
- * @classdesc The event dispatched by the `PressComposer`, providing access to
- * the raw DOM event and proxying its properties.
- */
-var PressEvent = (function (){
-    var value, eventProps, typeProps, eventPropDescriptor, typePropDescriptor, i;
-
-    value = MutableEvent.specialize({
-        type: {
-            value: "press"
-        },
-        _event: {
-            enumerable: false,
-            value: null
-        },
-        event: {
-            get: function () {
-                return this._event;
-            },
-            set: function (value) {
-                this._event = value;
-            }
-        },
-        _touch: {
-            enumerable: false,
-            value: null
-        },
-        touch: {
-            get: function () {
-                return this._touch;
-            },
-            set: function (value) {
-                this._touch = value;
-            }
-        }
-    });
-
-    // These properties are available directly on the event
-    eventProps = ["altKey", "ctrlKey", "metaKey", "shiftKey",
-    "cancelBubble", "currentTarget", "defaultPrevented",
-    "eventPhase", "timeStamp", "preventDefault",
-    "stopImmediatePropagation", "stopPropagation"];
-    // These properties are available on the event in the case of mouse, and
-    // on the _touch in the case of touch
-    typeProps = ["clientX", "clientY", "pageX", "pageY", "screenX", "screenY", "target"];
-
-    eventPropDescriptor = function (prop) {
-        return {
-            get: function () {
-                return this._event[prop];
-            }
-        };
-    };
-    typePropDescriptor = function (prop) {
-        return {
-            get: function () {
-                return (this._touch) ? this._touch[prop] : this._event[prop];
-            }
-        };
-    };
-
-    for (i = eventProps.length - 1; i >= 0; i--) {
-        Montage.defineProperty(value, eventProps[i], eventPropDescriptor(eventProps[i]));
-    }
-    for (i = typeProps.length - 1; i >= 0; i--) {
-        Montage.defineProperty(value, typeProps[i], typePropDescriptor(typeProps[i]));
-    }
-
-    return value;
-}());

@@ -1,3 +1,5 @@
+/*global console */
+
 /**
  * @module ui/list.reel
  */

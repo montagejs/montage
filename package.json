@@ -61,6 +61,7 @@
     "http-server": "^0.10.0",
     "jasmine-console-reporter": "^1.2.7",
     "jasmine-core": "^2.5.2",
+    "jshint": "^2.9.5",
     "karma": "^1.5.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",
@@ -75,17 +76,20 @@
   },
   "scripts": {
     "test": "node test/run-node.js",
+    "jsdoc": "jsdoc -c jsdoc.json",
     "integration": "MONTAGE_VERSION=${MONTAGE_VERSION:=./} MOP_VERSION=${MOP_VERSION:=#master} node node_modules/mop-integration/integration",
-    "jsdoc": "node ../montagejs.org/build/jsdoc/jsdoc.js -out $PWD/builds/jsdoc/ montage@npm-link",
+    "lint": "jshint .",
     "test:karma": "karma start --no-auto-watch --single-run",
+    "test:karma-travis": "karma start --no-auto-watch --single-run --browsers=Chrome_travis_ci",
     "test:karma-firefox": "karma start --no-auto-watch --single-run --browsers=Firefox",
     "test:karma-chrome": "karma start --no-auto-watch --single-run --browsers=Chrome",
     "test:karma-debug": "karma start --auto-watch --no-single-run --browsers=PhantomJS_debug",
     "test:karma-dev": "karma start --auto-watch --no-single-run --capture",
-    "test:jasmine": "concurrently \"http-server -a localhost -p 8085\" \"open http://localhost:8085/test/run.html\""
+    "test:jasmine": "concurrently \"http-server -p 8085\" \"open http://localhost:8085/test/run.html\""
   },
   "exclude": [
     "report",
+    "doc",
     "test",
     "tools"
   ]

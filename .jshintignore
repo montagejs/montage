@@ -1,3 +1,4 @@
+**/doc/**
 **/node_modules/**
 **/test/spec/**
 **/report/**

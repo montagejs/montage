@@ -41,7 +41,10 @@ if (typeof window !== "undefined") {
         _initPrototypeWithEvent: {
             value: function (event) {
                 var key, proto = this.__proto__ || Object.getPrototypeOf(this);
+
+                /* jshint forin: true */
                 for (key in event) {
+                /* jshint forin: false */
 
                     //  Don't overwrite keys we have installed
                     if (key in this || Object.getOwnPropertyDescriptor(proto,key)) {
