@@ -33,27 +33,31 @@ exports.PipelineConverter = Converter.specialize({
 
     convert: {
         value: function (value) {
-            return this._convertWithNextConverter(value, this.converters.slice());
+            return this._convertWithConverterAtIndex(value, 0);
         }
     },
 
-    _convertWithNextConverter: {
-        value: function (input, converters) {
+    _convertWithConverterAtIndex: {
+        value: function (input, index) {
             var self = this,
-                converter = converters.shift(),
+                converter = this.converters[index],
                 output = converter.convert(input),
-                isFinalOutput = converters.length === 0,
+                isFinalOutput = index === (this.converters.length - 1),
                 isPromise = this._isThenable(output),
                 result;
+
+            index++;
+
+
 
             if (isFinalOutput) {
                 result = isPromise ? output : Promise.resolve(output);
             } else if (isPromise) {
                 result = output.then(function (value) {
-                    return self._convertWithNextConverter(value, converters);
+                    return self._convertWithConverterAtIndex(value, index);
                 });
             } else {
-                result = this._convertWithNextConverter(output, converters);
+                result = this._convertWithConverterAtIndex(output, index);
             }
 
             return result;
@@ -69,27 +73,29 @@ exports.PipelineConverter = Converter.specialize({
 
     revert: {
         value: function (value) {
-            return this._revertWithNextConverter(value, this.converters.slice());
+            return this._revertWithConverterAtIndex(value, this.converters.length - 1);
         }
     },
 
-    _revertWithNextConverter: {
-        value: function (input, converters) {
+    _revertWithConverterAtIndex: {
+        value: function (input, index) {
             var self = this,
-                converter = converters.pop(),
+                converter = this.converters[index],
                 output = converter.revert(input),
-                isFinalOutput = converters.length === 0,
+                isFinalOutput = index === 0,
                 isPromise = this._isThenable(output),
                 result;
+
+            index--;
 
             if (isFinalOutput) {
                 result = isPromise ? output : Promise.resolve(output);
             } else if (isPromise) {
                 result = output.then(function (value) {
-                    return self._revertWithNextConverter(value, converters);
+                    return self._revertWithConverterAtIndex(value, index);
                 });
             } else {
-                result = this._revertWithNextConverter(output, converters);
+                result = this._revertWithConverterAtIndex(output, index);
             }
 
             return result;
