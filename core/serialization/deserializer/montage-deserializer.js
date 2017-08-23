@@ -1,14 +1,10 @@
 var Montage = require("../../core").Montage,
-    MontageInterpreter = require("./montage-interpreter").MontageInterpreter,
+    MontageContext = require("./montage-interpreter").MontageContext,
     MontageReviver = require("./montage-reviver").MontageReviver,
     Map = require("collections/map").Map,
     deprecate = require("../../deprecate");
 
 var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
-
-    _interpreter: {
-        value: null
-    },
 
     _serializationString: {
         value: null
@@ -29,9 +25,9 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
     init: {
         value: function (serializationString, _require, objectRequires, locationId, moduleContexts) {
             this._serializationString = serializationString;
+            this._require = _require;
             moduleContexts = moduleContexts || new Map();
-            this._interpreter = new MontageInterpreter().init(_require,
-                new MontageReviver().init(_require, objectRequires, locationId, moduleContexts));
+            this._reviver = new MontageReviver().init(_require, objectRequires, locationId, moduleContexts);
 
             return this;
         }
@@ -40,17 +36,16 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
     initWithObject: {
         value: function (serialization, _require, objectRequires, locationId, moduleContexts) {
             this._serializationString = JSON.stringify(serialization);
+            this._require = require;
             moduleContexts = moduleContexts || new Map();
-            this._interpreter = new MontageInterpreter().init(_require,
-                new MontageReviver().init(_require, objectRequires, locationId, moduleContexts));
+            this._reviver = new MontageReviver().init(_require, objectRequires, locationId, moduleContexts);
 
             return this;
         }
     },
 
-
     initWithObjectAndRequire: {
-         value: deprecate.deprecateMethod(void 0, function (serialization, _require, objectRequires) {
+        value: deprecate.deprecateMethod(void 0, function (serialization, _require, objectRequires) {
             return this.initWithObject(serialization, _require, objectRequires);
         }, "initWithObjectAndRequire", "initWithObject")
     },
@@ -59,7 +54,9 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
         value: function (instances, element) {
             try {
                 var serialization = JSON.parse(this._serializationString);
-                return this._interpreter.instantiate(serialization, instances, element);
+                return new MontageContext()
+                    .init(serialization, this._reviver, instances, element, this._require)
+                    .getObjects();
             } catch (ex) {
                 return this._formatSerializationSyntaxError(this._serializationString);
             }
@@ -76,9 +73,39 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
 
     preloadModules: {
         value: function () {
-            var serialization = JSON.parse(this._serializationString);
+            var serialization = JSON.parse(this._serializationString),
+                reviver = this._reviver,
+                moduleLoader = reviver.moduleLoader,
+                object,
+                locationId,
+                locationDesc,
+                module,
+                promises = [];
 
-            return this._interpreter.preloadModules(serialization);
+            for (var label in serialization) {
+                if (serialization.hasOwnProperty(label)) {
+                    object = serialization[label];
+                    locationId = object.prototype || object.object;
+
+                    if (locationId) {
+                        if (typeof locationId !== "string") {
+                            throw new Error(
+                                "Property 'object' of the object with the label '" +
+                                label + "' must be a module id"
+                            );
+                        }
+                        locationDesc = MontageReviver.parseObjectLocationId(locationId);
+                        module = moduleLoader.getModule(locationDesc.moduleId, label);
+                        if (Promise.is(module)) {
+                            promises.push(module);
+                        }
+                    }
+                }
+            }
+
+            if (promises.length > 0) {
+                return Promise.all(promises);
+            }
         }
     },
 
