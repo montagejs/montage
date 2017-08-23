@@ -251,8 +251,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
 /**
     Specifies whether the button should receive focus or not.
     @type {boolean}
-    @default false
-    @event longpress @benoit: no events here?
+    @event longpress 
 */
     preventFocus: {
         get: function () {
@@ -268,11 +267,6 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         value: false
     },
 
-    /**
-     * Description TODO
-     * @function
-     * @param {Event Handler} event TODO
-     */
     handleFocus: {
         enumerable: false,
         value: function (event) {

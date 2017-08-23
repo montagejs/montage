@@ -186,6 +186,16 @@ module.exports = function(config) {
                 '--allow-insecure-localhost',
                 '--allow-running-insecure-content'
             ]
+        },
+        Chrome_travis_ci: {
+            base: 'Chrome',
+            flags: [
+                '--no-sandbox',
+                '--ignore-certificate-errors=true',
+                '--user-data-dir=./tmp',
+                '--allow-insecure-localhost',
+                '--allow-running-insecure-content'
+            ]
         }
     },
 
