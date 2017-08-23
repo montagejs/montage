@@ -18,20 +18,24 @@ require("../../shim/string");
 var PROXY_ELEMENT_MAP = new WeakMap();
 var DATA_ATTRIBUTES_MAP = new Map();
 
-var ModuleLoader = Montage.specialize( {
-    _require: {value: null},
-    _objectRequires: {value: null},
+var ModuleLoader = Montage.specialize({
+
+    _require: {
+        value: null
+    },
+
+    _objectRequires: {
+        value: null
+    },
 
     init: {
         value: function (_require, objectRequires) {
             if (typeof _require !== "function") {
                 throw new Error("Function 'require' missing.");
             }
-
             if (typeof _require.location !== "string") {
                 throw new Error("Function 'require' location is missing");
             }
-
             if (typeof objectRequires !== "object" &&
                 typeof objectRequires !== "undefined") {
                 throw new Error("Parameter 'objectRequires' should be an object.");
@@ -91,7 +95,10 @@ var ModuleLoader = Montage.specialize( {
  * @class MontageReviver
  */
 var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends MontageReviver# */ {
-    moduleLoader: {value: null},
+
+    moduleLoader: {
+        value: null
+    },
 
     /**
      * @param {Require} _require The require object to load modules
@@ -105,8 +112,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
      */
     init: {
         value: function (_require, objectRequires, locationId, moduleContexts) {
-            this.moduleLoader = new ModuleLoader()
-                                 .init(_require, objectRequires);
+            this.moduleLoader = new ModuleLoader().init(_require, objectRequires);
             this._require = _require;
             this._locationId = locationId;
             this._moduleContexts = moduleContexts;
@@ -158,7 +164,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 var datasetAttributes = Object.keys(originalDataset),
                     targetObject = Object.create(null), self = this,
                     datasetAttribute, propertyNames;
-                
+
                 if (Proxy.prototype) { // The native Proxy has no prototype property.
                     // Workaround for Proxy polyfill https://github.com/GoogleChrome/proxy-polyfill
                     // the properties of a proxy must be known at creation time.
@@ -185,7 +191,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                             targetObject[datasetAttribute.replace(/^dataset\./, '')] = void 0;
                         }
                     }
-                }                
+                }
 
                 Object.defineProperty(element, "dataset", {
                     value: new Proxy(targetObject, {
@@ -216,8 +222,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (element, montageObjectDesc) {
             if (!PROXY_ELEMENT_MAP.has(element)) {
                 var targetObject = Object.create(null);
-                
-                if (Proxy.prototype) { // The native Proxy has no prototype property. 
+
+                if (Proxy.prototype) { // The native Proxy has no prototype property.
                     // Workaround for Proxy polyfill https://github.com/GoogleChrome/proxy-polyfill
                     // the properties of a proxy must be known at creation time.
                     // TODO: remove when we drop the support of IE11.
@@ -243,10 +249,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                         }
                     }
                 }
-                
+
                 PROXY_ELEMENT_MAP.set(element, new Proxy(targetObject, {
                     set: function (target, propertyName, value) {
-                        if (!(propertyName in Object.getPrototypeOf(element))) {                
+                        if (!(propertyName in Object.getPrototypeOf(element))) {
                             if (Object.getOwnPropertyDescriptor(element, propertyName) === void 0) {
                                 Object.defineProperty(element, propertyName, {
                                     set: function (value) {
@@ -276,7 +282,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     }
                 }));
             }
-            
+
             return PROXY_ELEMENT_MAP.get(element);
         }
     },
@@ -285,7 +291,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (element) {
             if (element.setAttribute === element.nativeSetAttribute) {
                 var proxyElement = PROXY_ELEMENT_MAP.get(element),
-                    self = this;    
+                    self = this;
 
                 element.setAttribute = function (key, value) {
                     var propertyName;
@@ -305,23 +311,20 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     reviveRootObject: {
         value: function (value, context, label) {
             var error,
+                object,
                 isAlias = "alias" in value;
 
             // Only aliases are allowed as template values, everything else
             // should be rejected as an error.
             error = this._checkLabel(label, isAlias);
-
             if (error) {
                 return Promise.reject(error);
             }
-
-            var object;
 
             // Check if the optional "debugger" unit is set for this object
             // and stop the execution. This is intended to provide a certain
             // level of debugging in the serialization.
             if (value.debugger) {
-                console.log("enable debugger statement here");
                 debugger; // jshint ignore:line
             }
 
@@ -369,9 +372,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 }
 
                 return this.reviveExternalObject(value, context, label);
+            } else if ("alias" in value) {
+                return this.reviveAlias(value, context, label);
+            } else {
+                return this.reviveMontageObject(value, context, label);
             }
-
-            return this.reviveCustomObject(value, context, label);
         }
     },
 
@@ -400,16 +405,6 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             var module = _require.getModuleDescriptor(moduleId);
 
             return new ModuleReference().initWithIdAndRequire(module.id, module.require);
-        }
-    },
-
-    reviveCustomObject: {
-        value: function (value, context, label) {
-            if ("alias" in value) {
-                return this.reviveAlias(value, context, label);
-            } else {
-                return this.reviveMontageObject(value, context, label);
-            }
         }
     },
 
@@ -707,7 +702,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             /* jshint forin: true */
             for (var label in objects) {
             /* jshint forin: false */
-            
+
                 object = objects[label];
 
                 if (object !== null && object !== void 0) {
@@ -845,7 +840,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                         );
                     } else {
                         value[propertyName] = item;
-                    }   
+                    }
                 }
             }
 
