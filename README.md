@@ -1,6 +1,8 @@
 
 # MontageJS
 
+[![npm version](https://img.shields.io/npm/v/montage.svg?style=flat)](https://www.npmjs.com/package/montage)
+
 [![Build Status](https://travis-ci.org/montagejs/montage.svg?branch=master)](http://travis-ci.org/montagejs/montage)
 
 [![Analytics](https://ga-beacon.appspot.com/UA-35717912-2/montagejs/montage)](https://github.com/montagejs/montage)
