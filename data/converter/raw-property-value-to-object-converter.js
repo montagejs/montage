@@ -188,16 +188,28 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
     /**
      * The descriptor of the source object. It will be used only if it is provided and
      * .foreignDescriptor is not provided.
-     * @type {?ObjectDescriptor}
+     * @type {?ObjectDescriptorReference}
      **/
     objectDescriptor: {
         get: function () {
-            return  this._objectDescriptor                    ? this._objectDescriptor :
-                    this.owner && this.owner.objectDescriptor ? this.owner.objectDescriptor  :
-                    undefined;
+            return  this._objectDescriptor                      ?   Promise.resolve(this._objectDescriptor) :
+                    this.owner && this.owner.objectDescriptor   ?   Promise.resolve(this.owner.objectDescriptor) :
+                    this.owner && this.owner instanceof Promise ?   this._objectDescriptorReference :
+                                                                    undefined;
         },
         set: function (value) {
             this._objectDescriptor = value;
+        }
+    },
+
+    _objectDescriptorReference: {
+        get: function () {
+            var self = this;
+            return this.owner.then(function (object) {
+                var objectDescriptor = object.objectDescriptor;
+                self.objectDescriptor = objectDescriptor;
+                return objectDescriptor;
+            });
         }
     },
 
@@ -223,8 +235,6 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
             return this.__scope || (this.__scope = new Scope(this));
         }
     },
-
-
 
     /**
      * The service to use to make requests.
@@ -262,7 +272,7 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
         value: function (v) {
             var self = this,
                 criteria = new Criteria().initWithSyntax(self.convertSyntax, v),
-                descriptorPromise = this.foreignDescriptor || Promise.resolve(this.objectDescriptor),
+                descriptorPromise = this.foreignDescriptor || this.objectDescriptor,
                 query;
 
             return descriptorPromise.then(function (typeToFetch) {
@@ -275,8 +285,8 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
                 query = DataQuery.withTypeAndCriteria(type, criteria);
 
                 return self.service ? self.service.then(function (service) {
-                        return service.rootService.fetchData(query)
-                    }) : null;
+                    return service.rootService.fetchData(query)
+                }) : null;
             });
         }
     },
