@@ -7,6 +7,8 @@ var Montage = require("../../core").Montage,
     Alias = require("../alias").Alias, Bindings = require("../bindings"),
     Promise = require("../../promise").Promise,
     deprecate = require("../../deprecate"),
+    camelCase = require('lodash/fp/camelCase'),
+    kebabCase = require('lodash/fp/kebabCase'),
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
     TWO_WAY = "<->";
@@ -147,18 +149,6 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         }
     },
 
-    lowerCamelCaseToDashCase: {
-        value: function (string) {
-            return string.replace(/([A-Z])/g, function (g) { return '-' + g[0].toLowerCase();});
-        }
-    },
-
-    dashCaseTolowerCamelCase: {
-        value: function (string) {
-            return string.replace(/(-[a-z])/g, function (g, t, y) { return g[1].toUpperCase();});
-        }
-    },
-
     setProxyForDatasetOnElement: {
         value: function (element, montageObjectDesc) {
             var originalDataset = element.dataset;
@@ -200,7 +190,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     value: new Proxy(targetObject, {
                         set: function (target, propertyName, value) {
                             element.nativeSetAttribute('data-' +
-                                self.lowerCamelCaseToDashCase(propertyName),
+                                kebabCase(propertyName),
                                 value
                             );
                             target[propertyName] = value;
@@ -294,10 +284,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 element.setAttribute = function (key, value) {
                     var propertyName;
                     if (key.startsWith('data-')) {
-                        propertyName = self.dashCaseTolowerCamelCase(key.replace('data-', ''));
+                        propertyName = camelCase(key.replace('data-', ''));
                         proxyElement.dataset[propertyName] = value;
                     } else {
-                        propertyName = self.dashCaseTolowerCamelCase(key);
+                        propertyName = camelCase(key);
                         proxyElement[propertyName] = value;
                     }
                     element.nativeSetAttribute(key, value);
