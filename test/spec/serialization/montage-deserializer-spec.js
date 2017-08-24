@@ -1361,4 +1361,22 @@ describe("serialization/montage-deserializer-spec", function () {
             })
         });
     });
+
+    it("handles circular references", function (done) {
+        var serialization = {
+            "root": {
+                "object": "spec/serialization/circular/a.mjson"
+            }
+        };
+        var deserializer = new Deserializer().init(JSON.stringify(serialization), require);
+        deserializer.deserializeObject()
+            .then(function (result) {
+                expect(result.bRef.myBProp).toBe("bar");
+                expect(result.bRef.aRef).toBe(result);
+            }).catch(function (err) {
+                fail(err);
+            }).finally(function () {
+                done();
+            });
+    });
 });

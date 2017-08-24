@@ -93,12 +93,18 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
      * @param {Object} objectRequires A dictionary indexed by object label with
      *        the require object to use for a specific object of the
      *        serialization.
+     * @param {?Map} moduleContexts A map indexed by module ID with the
+     *        MontageContext to use for a specific external object
+     *        reference. Used to prevent circular references from creating
+     *        an infinite loop.
      */
     init: {
-        value: function (_require, objectRequires) {
+        value: function (_require, objectRequires, locationId, moduleContexts) {
             this.moduleLoader = new ModuleLoader()
                                  .init(_require, objectRequires);
             this._require = _require;
+            this._locationId = locationId;
+            this._moduleContexts = moduleContexts;
             return this;
         }
     },
@@ -288,8 +294,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 moduleId = value.prototype || value.object,
                 object;
 
-            if (moduleId && moduleId.endsWith(".mjson")) {
-                return this.getMjsonObject(value, module, moduleId)
+            if (moduleId && (moduleId.endsWith(".mjson") || moduleId.endsWith(".meta"))) {
+                return this.getMjsonObject(value, module, moduleId, context)
                     .then(function (object) {
                         context.setObjectLabel(object, label);
                         return self.instantiateMjsonObject(value, object, objectName, context, label);
@@ -303,17 +309,29 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     },
 
     getMjsonObject: {
-        value: function (serialization, json, moduleId) {
-            var self = this;
-            return MontageReviver.getMontageDeserializer().then(function (MontageDeserializer) {
-                // TODO: MontageDeserializer needs an API to pass in an object
-                // instead of the stringified version of the object
-                var deserializer = new MontageDeserializer().init(
-                    JSON.stringify(json),
-                    MontageDeserializer.getModuleRequire(self._require, moduleId)
-                );
-                return deserializer.deserializeObject();
-            }).then(function (object) {
+        value: function (serialization, json, moduleId, context) {
+            var self = this,
+                mjsonObjectPromise;
+            if (moduleId && this._moduleContexts.has(moduleId)) {
+                // We have a circular reference. If we wanted to forbid circular
+                // references this is where we would throw an error.
+                mjsonObjectPromise = Promise.resolve(this._moduleContexts.get(moduleId)._objects.root);
+            } else {
+                if (this._locationId && !this._moduleContexts.has(this._locationId)) {
+                    this._moduleContexts.set(this._locationId, context);
+                }
+                mjsonObjectPromise = MontageReviver.getMontageDeserializer().then(function (MontageDeserializer) {
+                    var deserializer = new MontageDeserializer().initWithObject(
+                        json,
+                        MontageDeserializer.getModuleRequire(self._require, moduleId),
+                        void 0,
+                        moduleId,
+                        self._moduleContexts
+                    );
+                    return deserializer.deserializeObject();
+                });
+            }
+            return mjsonObjectPromise.then(function (object) {
                 if ("prototype" in serialization) {
                     return Object.create(object);
                 } else {
