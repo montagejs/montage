@@ -324,238 +324,294 @@
                 deepLoadPromises.push(montageRequire.deepLoad(iDependency));
             }
 
-            return Promise.all(deepLoadPromises)
-                .then(function () {
-
-                    for (var i = 0, iDependency; (iDependency = dependencies[i]); i++) {
-                        montageRequire(iDependency);
-                    }
+            return Promise.all(deepLoadPromises).then(function () {
+                for (var i = 0, iDependency; (iDependency = dependencies[i]); i++) {
+                    montageRequire(iDependency);
+                }
 
                 var Montage = montageRequire("core/core").Montage;
                 var EventManager = montageRequire("core/event/event-manager").EventManager;
                 var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
                 var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                 var logger = montageRequire("core/logger").logger;
+                var application;
 
-                    // montageWillLoad is mostly for testing purposes
-                    if (typeof global.montageWillLoad === "function") {
-                        global.montageWillLoad();
-                    }
+                // montageWillLoad is mostly for testing purposes
+                if (typeof global.montageWillLoad === "function") {
+                    global.montageWillLoad();
+                }
 
-                    // Load the application
+                // Load the application
 
-                    var appProto = applicationRequire.packageDescription.applicationPrototype,
-                        applicationLocation, appModulePromise;
-                
-                    if (appProto) {
-                        applicationLocation = MontageReviver.parseObjectLocationId(appProto);
-                        appModulePromise = applicationRequire.async(applicationLocation.moduleId);
-                    } else {
-                        appModulePromise = montageRequire.async("core/application");
-                    }
+                var appProto = applicationRequire.packageDescription.applicationPrototype,
+                    applicationLocation, appModulePromise;
+            
+                if (appProto) {
+                    applicationLocation = MontageReviver.parseObjectLocationId(appProto);
+                    appModulePromise = applicationRequire.async(applicationLocation.moduleId);
+                } else {
+                    appModulePromise = montageRequire.async("core/application");
+                }
 
-                    return appModulePromise.then(function (exports) {
-                        var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
-                        application = new Application();
-                        defaultEventManager.application = application;
-                        application.eventManager = defaultEventManager;
-                        self.initMontageCustomElement(applicationRequire, montageRequire, application);
+                return appModulePromise.then(function (exports) {
+                    var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
+                    application = new Application();
+                    defaultEventManager.application = application;
+                    application.eventManager = defaultEventManager;
 
-                        return application._load(applicationRequire, function () {
-                            if (params.module) {
-                                // If a module was specified in the config then we initialize it now
-                                applicationRequire.async(params.module);
-                            }
-                            if (typeof global.montageDidLoad === "function") {
-                                global.montageDidLoad();
-                            }
-                        });
+                    return application._load(applicationRequire, function () {
+                        if (params.module) {
+                            // If a module was specified in the config then we initialize it now
+                            applicationRequire.async(params.module);
+                        }
+                        if (typeof global.montageDidLoad === "function") {
+                            global.montageDidLoad();
+                        }
+
+                        MontageElement.init(applicationRequire, application);
                     });
-
                 });
+            });
+        }
+    };
+    
+    exports.initMontageCustomElement = function () {
+        if (typeof window.customElements === 'undefined' || typeof window.Reflect === 'undefined') {
+            return void 0;
+        }
 
-        },
-        
-        initMontageCustomElement: function (applicationRequire, montageRequire, application) {
-            if (typeof window.customElements === "undefined") {
-                return void 0;
-            }
+        var MontageElement = makeCustomElementConstructor();
 
-            var MontageElement = window.MontageElement = function () {
+        function makeCustomElementConstructor(superConstructor) {
+            var constructor = function () {
                 return Reflect.construct(
-                    HTMLElement, [], MontageElement
+                    HTMLElement, [], constructor
                 );
             };
+            Object.setPrototypeOf(
+                constructor.prototype, (superConstructor || HTMLElement).prototype
+            );
+            Object.setPrototypeOf(constructor, superConstructor || HTMLElement);
+            return constructor;
+        }
 
-            MontageElement.prototype.__proto__ = HTMLElement.prototype;
-            MontageElement.__proto__ = HTMLElement;
+        function defineMontageElement(name, module) {
+            if (!customElements.get(name)) {
+                var customElementConstructor = makeCustomElementConstructor(MontageElement);
+                customElementConstructor.prototype.module = module;
+                customElements.define(name, customElementConstructor);
+            }
+        }
 
-            MontageElement.prototype.connectedCallback = function () {
-                if (!this.__montageComponent__) {
-                    var self = this;
-                    this.startListenToAttibuteChanges();
+        MontageElement.pendingCustomElements = new Map();
 
-                    return this.getRootComponent().then(function (rootComponent) {
-                        return self.instantiateComponent().then(function (component) {
-                            self.__montageComponent__ = component;
-                            rootComponent.addChildComponent(component);
-                            component._canDrawOutsideDocument = true;
-                            component.needsDraw = true;
-                        });
-                    });
-                } else {
-                    this.listenToAttibuteChanges();
+
+        MontageElement.define = function (name, MontageComponent) {
+            if (this.require) {
+                defineMontageElement(name, MontageComponent);
+            } else {
+                this.pendingCustomElements.set(name, MontageComponent);
+            }
+        }
+
+        MontageElement.init = function (require, application) {
+            this.require = require;
+            this.application = application;
+
+            customElements.define("montage-element", MontageElement);
+
+            this.pendingCustomElements.forEach(function (constructor, name) {
+                defineMontageElement(name, constructor);
+            });
+
+            this.pendingCustomElements.clear();
+        }
+
+        Object.defineProperties(MontageElement.prototype, {
+            require: {
+                get: function () {
+                    return MontageElement.require;
                 }
-            };
+            },
 
-            MontageElement.prototype.disconnectedCallback = function () {
-                this._attributesObserver.disconnect();
-            };
-
-            MontageElement.prototype.getRootComponent = function () {
-                if (!MontageElement.rootComponentPromise) {
-                    MontageElement.rootComponentPromise = montageRequire.async("ui/component")
-                        .then(function (exports) {
-                            return exports.__root__;
-                        });
+            application: {
+                get: function () {
+                    return MontageElement.application;
                 }
+            }
+        })
 
-                return MontageElement.rootComponentPromise;
-            };
+        MontageElement.prototype.connectedCallback = function () {
+            if (!this.__montageComponent__) {
+                var self = this;
+                return Promise.all([
+                    this.findParentComponent(),
+                    this.instantiateComponent()
+                ]).then(function (components) {
+                    var parentComponent = components[0],
+                        component = components[1];
+                    
+                    //FIXME: Probably not needed with the PR #1845
+                    self.__montageComponent__ = component;
 
-            MontageElement.prototype.startListenToAttibuteChanges = function () {
-                if (!this._attributesObserver) {
-                    var self = this;
-                    this._attributesObserver = new MutationObserver(function (mutations) {
-                        mutations.forEach(function (mutation) {
-                            var attributeName = mutation.attributeName;
+                    parentComponent.addChildComponent(component);
+                    component._canDrawOutsideDocument = true;
+                    component.needsDraw = true;
 
-                            if (attributeName.startsWith('data-') &&
-                                attributeName !== "data-module-id") {
-                                
-                                attributeName = attributeName.replace(/^data-/, "");
-                                this.handleAttributeChanged(
-                                    attributeName,
-                                    this.dataset[attributeName]
-                                );
-                            }
-                        }, self);
-                    });
-                }
-
-                this._attributesObserver.observe(this, {
-                    attributes: true
+                    //FIXME: Probably not needed with the PR #1845
+                    self.startListenToAttibuteChanges();
                 });
-            };
+            }
+        };
 
-            MontageElement.prototype.instantiateComponent = function () {
-                var moduleId = this.getAttribute('data-module-id'),
-                    self = this;
+        MontageElement.prototype.disconnectedCallback = function () {
+            if (this._attributesObserver) {
+                this._attributesObserver.disconnect();
+            }
+        };
+
+        MontageElement.prototype.findParentComponent = function () {
+            var eventManager = this.application.eventManager,
+                anElement = this,
+                parentComponent,
+                aParentNode,
+                candidate;
+
+            while ((aParentNode = anElement.parentNode) !== null &&
+                !(candidate = eventManager.eventHandlerForElement(aParentNode))) {
+                anElement = aParentNode;
+            }
+
+            return candidate || this.getRootComponent();
+        };
+
+        MontageElement.prototype.getRootComponent = function () {
+            if (!MontageElement.rootComponentPromise) {
+                MontageElement.rootComponentPromise = MontageElement.require.async("montage/ui/component")
+                    .then(function (exports) {
+                        return exports.__root__;
+                    });
+            }
+
+            return MontageElement.rootComponentPromise;
+        };
+
+        MontageElement.prototype.instantiateComponent = function () {
+            var promise;
+
+            if (this.module) {
+                promise = Promise.resolve(new this.module());
+            }
+
+            if (!promise) {
+                var moduleId = this.moduleId || this.getAttribute('module-id');
 
                 if (!moduleId) {
                     throw new Error(
-                        "data-module-id attribute missing on montage-element"
+                        "module-id attribute is missing on montage-element"
                     );
                 }
 
-                return applicationRequire.async(moduleId).then(function (exports) {
-                    var component = new exports[Object.keys(exports)[0]]();
-                    self.bootstrapComponent(component);
-                    component.element = document.createElement("div");
-                    return component;
+                promise = this.require.async(moduleId).then(function (exports) {
+                    return new exports[Object.keys(exports)[0]]();
                 });
-            };
+            }
 
-            MontageElement.prototype.bootstrapComponent = function (component) {
-                var shadowRoot = this.attachShadow({ mode: 'open' }),
-                    mainEnterDocument = component.enterDocument,
-                    mainTemplateDidLoad = component.templateDidLoad,
-                    keys = Object.keys(this.dataset),
-                    self = this,
-                    key;
+            var self = this;
 
-                for (var i = 0, length = keys.length; i < length; i++) {
-                    key = keys[i];
+            promise.then(function (component) {
+                self.bootstrapComponent(component);
+                component.element = document.createElement("div");
+                return component;
+            });
 
-                    if (key !== "moduleId") {
-                        component[key] = this.dataset[key];
-                        component.addPathChangeListener(key, this, "handleValueChange");
-                    }
-                }
+            return promise;
+        };
 
-                application.eventManager.registerTargetForActivation(shadowRoot);
+        MontageElement.prototype.bootstrapComponent = function (component) {
+            var shadowRoot = this.attachShadow({ mode: 'open' }),
+                mainEnterDocument = component.enterDocument,
+                mainTemplateDidLoad = component.templateDidLoad,
+                keys = Object.keys(this.dataset),
+                self = this,
+                key;
 
-                component.templateDidLoad = function () {
-                    var resources = component.getResources();
+            for (var i = 0, length = keys.length; i < length; i++) {
+                key = keys[i];
 
-                    if (resources) {
-                        self.injectResourcesWithinCustomElement(
-                            resources.styles,
-                            shadowRoot
-                        );
-
-                        self.injectResourcesWithinCustomElement(
-                            resources.scripts,
-                            shadowRoot
-                        );
-                    }
-
-                    this.templateDidLoad = mainTemplateDidLoad;
-
-                    if (typeof this.templateDidLoad === "function") {
-                        this.templateDidLoad(firstTime);
-                    }
-                };
-
-                component.enterDocument = function (firstTime) {
-                    shadowRoot.appendChild(this.element);
-                    this.enterDocument = mainEnterDocument;
-
-                    if (typeof this.enterDocument === "function") {
-                        this.enterDocument(firstTime);
-                    }
-                };
-            };
-
-            MontageElement.prototype.injectResourcesWithinCustomElement = function (resources, shadowRoot) {
-                if (resources && resources.length) {
-                    for (var i = 0, length = resources.length; i < length; i++) {
-                        shadowRoot.appendChild(resources[i]);
-                    }
-                }
-            };
-
-            MontageElement.prototype.handleAttributeChanged = function (attributeName, newValue) {
-                if (this.dataset[attributeName] && this.__montageComponent__ &&
-                    this.__montageComponent__[attributeName] != newValue) {
-                    this.__montageComponent__[attributeName] = newValue;
-                }
-            };
-
-
-            MontageElement.prototype.handleValueChange = function (newValue, attributeName) {
-                if (this.dataset[attributeName] != newValue) {
-                    var oldValue = this.dataset[attributeName];
-                    this.dataset[attributeName] = newValue;
-
-                    this.dispatchEvent(new CustomEvent(
-                        'dataAttributeChange',
-                        {
-                            cancelable: true,
-                            bubbles: true,
-                            detail: {
-                                attribute: "data-" + attributeName,
-                                oldValue: oldValue,
-                                newValue: this.dataset[attributeName]
-                            }
-                        }
-                    ))
+                if (key !== "moduleId") {
+                    component[key] = this.dataset[key];
+                    component.defineBinding(key, { "<->": "dataset." + key, source: this });
                 }
             }
 
-            customElements.define("montage-element", MontageElement);
-        }
-    };
+            this.application.eventManager.registerTargetForActivation(shadowRoot);
+
+            component.templateDidLoad = function () {
+                var resources = component.getResources();
+
+                if (resources) {
+                    self.injectResourcesWithinCustomElement(
+                        resources.styles,
+                        shadowRoot
+                    );
+
+                    self.injectResourcesWithinCustomElement(
+                        resources.scripts,
+                        shadowRoot
+                    );
+                }
+
+                this.templateDidLoad = mainTemplateDidLoad;
+
+                if (typeof this.templateDidLoad === "function") {
+                    this.templateDidLoad(firstTime);
+                }
+            };
+
+            component.enterDocument = function (firstTime) {
+                shadowRoot.appendChild(this.element);
+                this.enterDocument = mainEnterDocument;
+
+                if (typeof this.enterDocument === "function") {
+                    this.enterDocument(firstTime);
+                }
+            };
+        };
+
+        MontageElement.prototype.injectResourcesWithinCustomElement = function (resources, shadowRoot) {
+            if (resources && resources.length) {
+                for (var i = 0, length = resources.length; i < length; i++) {
+                    shadowRoot.appendChild(resources[i]);
+                }
+            }
+        };
+
+        MontageElement.prototype.startListenToAttibuteChanges = function () {
+            if (!this._attributesObserver) {
+                var self = this;
+
+                this._attributesObserver = new MutationObserver(function (mutations) {
+                    mutations.forEach(function (mutation) {
+                        var attributeName = mutation.attributeName,
+                            propertyName;
+
+                        if (attributeName.startsWith('data-') &&
+                            attributeName !== "data-module-id") {
+                            propertyName = attributeName.replace(/^data-/, "");
+                            this.__montageComponent__[propertyName] = this.getAttribute(attributeName);
+                        }
+                    }, self);
+                });
+            }
+
+            this._attributesObserver.observe(this, {
+                attributes: true
+            });
+        };
+
+        global.MontageElement = MontageElement;
+    }    
 
     /**
      * Initializes Montage and creates the application singleton if
@@ -817,6 +873,7 @@
         } else {
             global.__MONTAGE_LOADED__ = true;
             exports.initMontage();
+            exports.initMontageCustomElement();
         }
     } else {
         // may cause additional exports to be injected:
