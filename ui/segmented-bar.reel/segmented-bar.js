@@ -22,7 +22,7 @@ var AbstractButton = require("ui/base/abstract-button").AbstractButton,
  *
  * @extends AbstractButton
  */
-exports.SegmentedBar = AbstractButton.specialize( /** @lends SegmentedBar.prototype */ {
+var SegmentedBar = exports.SegmentedBar = AbstractButton.specialize( /** @lends SegmentedBar.prototype */ {
     /**
      * Dispatches by default based on the `enabled` property.
      *
@@ -232,3 +232,7 @@ exports.SegmentedBar = AbstractButton.specialize( /** @lends SegmentedBar.protot
         }
     }
 });
+
+if (window.MontageElement) {
+    MontageElement.define("montage-segmented-bar", SegmentedBar);
+}

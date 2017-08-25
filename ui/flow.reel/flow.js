@@ -2186,3 +2186,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
         }
     }
 });
+
+if (window.MontageElement) {
+    MontageElement.define("montage-flow", Flow);
+}

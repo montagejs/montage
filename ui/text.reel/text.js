@@ -15,7 +15,7 @@ var Component = require("../component").Component;
  * @classdesc A component that displays a string of plain text.
  * @extends Component
  */
-exports.Text = Component.specialize( /** @lends Text.prototype # */ {
+var Text = exports.Text = Component.specialize( /** @lends Text.prototype # */ {
 
     hasTemplate: {
         value: false
@@ -94,3 +94,7 @@ exports.Text = Component.specialize( /** @lends Text.prototype # */ {
     }
 
 });
+
+if (window.MontageElement) {
+    MontageElement.define("montage-text", Text);
+}

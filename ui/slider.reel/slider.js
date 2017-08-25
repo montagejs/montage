@@ -884,3 +884,7 @@ Slider.addAttributes( /** @lends module:"montage/ui/native/input-range.reel".Inp
     }
 
 });
+
+if (window.MontageElement) {
+    MontageElement.define("montage-slider", Slider);
+}

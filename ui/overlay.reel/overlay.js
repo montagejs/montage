@@ -16,7 +16,7 @@ var CLASS_PREFIX = "montage-Overlay",
  * @class Overlay
  * @extends Component
  */
-exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
+var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
 
     /**
      * Dispatched when the user dismiss the overlay by clicking outside of it.
@@ -425,3 +425,6 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
 
 });
 
+if (window.MontageElement) {
+    MontageElement.define("montage-overlay", Overlay);
+}
