@@ -39,6 +39,7 @@ DateConverter = require("montage/core/converter/date-converter").DateConverter,
 ExpressionConverter = require("montage/core/converter/expression-converter").ExpressionConverter,
 CamelCaseConverter = require("montage/core/converter/camel-case-converter").CamelCaseConverter,
 SnakeCaseConverter = require("montage/core/converter/snake-case-converter").SnakeCaseConverter,
+KebabCaseConverter = require("montage/core/converter/kebab-case-converter").KebabCaseConverter,
 CurrencyConverter = require("montage/core/converter/currency-converter").CurrencyConverter;
 
 describe("converter-spec", function () {
@@ -67,6 +68,7 @@ describe("converter-spec", function () {
 
         camelCaseConverter = new CamelCaseConverter();
         snakeCaseConverter = new SnakeCaseConverter();
+        kebabCaseConverter = new KebabCaseConverter();
     });
 
     describe("test string formatters", function () {
@@ -98,6 +100,12 @@ describe("converter-spec", function () {
             expect(snakeCaseConverter.convert('hello world')).toBe('hello_world');
             expect(snakeCaseConverter.convert('HELLO WORLD')).toBe('hello_world');
             expect(snakeCaseConverter.convert('hello-world')).toBe('hello_world');
+        });
+
+        it("should converts string to kebab case", function () {
+            expect(kebabCaseConverter.convert('hello world')).toBe('hello-world');
+            expect(kebabCaseConverter.convert('HELLO WORLD')).toBe('hello-world');
+            expect(kebabCaseConverter.convert('hello_world')).toBe('hello-world');
         });
 
     });
