@@ -37,6 +37,7 @@ NumberConverter = require("montage/core/converter/number-converter").NumberConve
 BytesConverter = require("montage/core/converter/bytes-converter").BytesConverter,
 DateConverter = require("montage/core/converter/date-converter").DateConverter,
 ExpressionConverter = require("montage/core/converter/expression-converter").ExpressionConverter,
+CamelCaseConverter = require("montage/core/converter/camel-case-converter").CamelCaseConverter,
 CurrencyConverter = require("montage/core/converter/currency-converter").CurrencyConverter;
 
 describe("converter-spec", function () {
@@ -62,39 +63,34 @@ describe("converter-spec", function () {
         expressionConverter = new ExpressionConverter();
         expressionConverter.convertExpression = "map{foo}";
         expressionConverter.revertExpression = "map{{foo:this}}";
-        //dateConverter.pattern = 'YYYY-MM-DD';
+
+        camelCaseConverter = new CamelCaseConverter();
     });
 
     describe("test string formatters", function () {
         it("should format a string to uppercase", function () {
             var value = "hello world";
-            //stringConverter.fn = "uppercase";
             var result = ucaseConverter.convert(value);
             expect(result).toBe('HELLO WORLD');
         });
 
         it("should format a string to lowercase", function () {
             var value = "HELLO World";
-            //stringConverter.fn = "lowercase";
             var result = lcaseConverter.convert(value);
             expect(result).toBe('hello world');
         });
 
         it("should format a string by trimming it", function () {
             var value = "   hello world    ";
-            //stringConverter.fn = "trim";
             var result = trimConverter.convert(value);
             expect(result).toBe('hello world');
         });
 
-        /*
-        it("should format a string by converting newline characters to <BR>", function () {
-            var value = "   hello \r\n world    ";
-            stringConverter.fn = "trim";
-            var result = stringConverter.convert(value);
-            expect(result).toBe('hello <br /> world');
+        it("should format a string by trimming it", function () {
+            expect(camelCaseConverter.convert('hello world')).toBe('helloWorld');
+            expect(camelCaseConverter.convert('HELLO WORLD*')).toBe('helloWorld');
+            expect(camelCaseConverter.convert('hello-world')).toBe('helloWorld');
         });
-        */
 
     });
 
