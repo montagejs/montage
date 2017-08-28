@@ -38,6 +38,7 @@ BytesConverter = require("montage/core/converter/bytes-converter").BytesConverte
 DateConverter = require("montage/core/converter/date-converter").DateConverter,
 ExpressionConverter = require("montage/core/converter/expression-converter").ExpressionConverter,
 CamelCaseConverter = require("montage/core/converter/camel-case-converter").CamelCaseConverter,
+SnakeCaseConverter = require("montage/core/converter/snake-case-converter").SnakeCaseConverter,
 CurrencyConverter = require("montage/core/converter/currency-converter").CurrencyConverter;
 
 describe("converter-spec", function () {
@@ -65,6 +66,7 @@ describe("converter-spec", function () {
         expressionConverter.revertExpression = "map{{foo:this}}";
 
         camelCaseConverter = new CamelCaseConverter();
+        snakeCaseConverter = new SnakeCaseConverter();
     });
 
     describe("test string formatters", function () {
@@ -86,10 +88,16 @@ describe("converter-spec", function () {
             expect(result).toBe('hello world');
         });
 
-        it("should format a string by trimming it", function () {
+        it("should converts string to camel case", function () {
             expect(camelCaseConverter.convert('hello world')).toBe('helloWorld');
-            expect(camelCaseConverter.convert('HELLO WORLD*')).toBe('helloWorld');
+            expect(camelCaseConverter.convert('HELLO WORLD')).toBe('helloWorld');
             expect(camelCaseConverter.convert('hello-world')).toBe('helloWorld');
+        });
+
+        it("should converts string to snake case", function () {
+            expect(snakeCaseConverter.convert('hello world')).toBe('hello_world');
+            expect(snakeCaseConverter.convert('HELLO WORLD')).toBe('hello_world');
+            expect(snakeCaseConverter.convert('hello-world')).toBe('hello_world');
         });
 
     });

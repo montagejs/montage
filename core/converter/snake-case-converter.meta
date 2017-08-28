@@ -1,0 +1,34 @@
+{
+    "converter_blueprint_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "values": {
+            "valueReference": {
+                "blueprintName": "Converter",
+                "prototypeName": "Converter",
+                "blueprintModule": {
+                    "%": "core/converter/converter.meta"
+                }
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "values": {
+            "name": "SnakeCaseConverter",
+            "customPrototype": false,
+            "parent": {
+                "@": "converter_blueprint_reference"
+            },
+            "propertyDescriptors": [],
+            "propertyDescriptorGroups": {},
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "core/converter/snake-case-converter.meta"
+            },
+            "exportName": "SnakeCaseConverter",
+            "module": {
+                "%": "core/converter/snake-case-converter"
+            }
+        }
+    }
+}
