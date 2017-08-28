@@ -2,13 +2,14 @@
  * @module montage/core/converter/upper-case-converter
  * @requires montage/core/converter/converter
  */
-var Converter = require("./converter").Converter;
+var Converter = require("./converter").Converter,
+    singleton;    
 
 /**
  * @class UpperCaseConverter
  * @classdesc Converts a string to upper-case.
  */
-exports.UpperCaseConverter = Converter.specialize( /** @lends UpperCaseConverter# */ {
+var UpperCaseConverter = exports.UpperCaseConverter = Converter.specialize( /** @lends UpperCaseConverter# */ {
 
     _convert: {
         value: function (v) {
@@ -41,3 +42,10 @@ exports.UpperCaseConverter = Converter.specialize( /** @lends UpperCaseConverter
 
 });
 
+Object.defineProperty(exports, 'defaultUpperCaseConverter', {
+
+    get: function () {
+        return singleton || (singleton = new UpperCaseConverter());
+    }
+
+});

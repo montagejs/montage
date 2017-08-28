@@ -2,13 +2,14 @@
  * @module montage/core/converter/lower-case-converter
  * @requires montage/core/converter/converter
  */
-var Converter = require("./converter").Converter;
+var Converter = require("./converter").Converter,
+    singleton;
 
 /**
  * @class LowerCaseConverter
  * @classdesc Converts a string to lowercase.
  */
-exports.LowerCaseConverter = Converter.specialize( /** @lends LowerCaseConverter# */{
+var LowerCaseConverter = exports.LowerCaseConverter = Converter.specialize( /** @lends LowerCaseConverter# */{
 
     _convert: {
         value: function (v) {
@@ -39,3 +40,10 @@ exports.LowerCaseConverter = Converter.specialize( /** @lends LowerCaseConverter
 
 });
 
+Object.defineProperty(exports, 'defaultLowerCaseConverter', {
+
+    get: function () {
+        return singleton || (singleton = new LowerCaseConverter());
+    }
+
+});

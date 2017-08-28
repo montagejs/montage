@@ -2,7 +2,8 @@
  * @module montage/core/converter/new-line-to-br-converter
  * @requires montage/core/converter/converter
  */
-var Converter = require("./converter").Converter;
+var Converter = require("./converter").Converter,
+    singleton;
 
 /**
  * Replaces all new line characters with a HTML &lt;br&gt;
@@ -19,7 +20,7 @@ var newLineToBr = function (str) {
  * @class NewLineToBrConverter
  * @classdesc Converts a newline to a &lt;br&gt; tag.
  */
-exports.NewLineToBrConverter = Converter.specialize( /** @lends NewLineToBrConverter# */{
+var NewLineToBrConverter = exports.NewLineToBrConverter = Converter.specialize( /** @lends NewLineToBrConverter# */{
 
     _convert: {
         value: function (v) {
@@ -50,3 +51,10 @@ exports.NewLineToBrConverter = Converter.specialize( /** @lends NewLineToBrConve
 
 });
 
+Object.defineProperty(exports, 'defaultNewLineToBrConverter', {
+
+    get: function () {
+        return singleton || (singleton = new NewLineToBrConverter());
+    }
+
+});
