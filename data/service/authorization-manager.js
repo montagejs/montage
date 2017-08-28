@@ -160,7 +160,7 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
                 provider;
             return this._providerWithModuleID(moduleID, require).then(function (instance) {
                 provider = instance;
-                return provider.authorization;
+                return provider.authorize();
             }).then(function (authorization) {
                 return authorization || self._authorizeProviderWithManagerPanel(provider);
 
@@ -261,9 +261,10 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
 
 
     authorizeService: {
-        value: function (dataService) {
+        value: function (dataService, didFailAuthorization) {
             var self = this,
                 authorizationPromises = [];
+
 
             if (dataService.authorizationPolicy === DataService.AuthorizationPolicy.NONE) {
                 return Promise.resolve(null);
@@ -274,8 +275,8 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
 
                 if (authorizationPromises.length) {
                     return Promise.all(authorizationPromises);
-                // } else if (dataService.authorizationPolicy === DataService.AuthorizationPolicy.ON_DEMAND && !didFailAuthorization) {
-                //     return Promise.resolve(null);
+                } else if (dataService.authorizationPolicy === DataService.AuthorizationPolicy.ON_DEMAND && !didFailAuthorization) {
+                    return Promise.resolve(null);
                 } else {
 
                     authorizationPromises = this._authorizationsForDataService(dataService, true);
@@ -300,7 +301,6 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
             var promises = [],
                 dataServiceInfo = Montage.getInfoForObject(dataService),
                 promise, moduleID, i, n;
-
             for (i = 0, n = dataService.authorizationServices.length; i < n; i++) {
                 moduleID = dataService.authorizationServices[i];
                 promise = this._authorizationForServiceFromProvider(moduleID, dataServiceInfo.require, requestIfAbsent);
