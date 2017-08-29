@@ -1,9 +1,9 @@
 {
     "converter_allowPartialConversion": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "allowPartialConversion",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "readOnly": true,
@@ -12,7 +12,7 @@
         }
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "Converter",
             "customPrototype": false,
@@ -29,8 +29,8 @@
                 ]
             },
             "propertyValidationRules": {},
-            "blueprintModule": {
-                "%": "core/converter/converter.meta"
+            "objectDescriptorModule": {
+                "%": "core/converter/converter.mjson"
             },
             "exportName": "Converter",
             "module": {

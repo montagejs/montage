@@ -1,20 +1,20 @@
 {
-    "converter_blueprint_reference": {
-        "object": "core/converter/converter.meta"
+    "converter_descriptor_reference": {
+        "object": "core/converter/converter.mjson"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "NewLineToBrConverter",
             "customPrototype": false,
             "parent": {
-                "@": "converter_blueprint_reference"
+                "@": "converter_descriptor_reference"
             },
             "propertyDescriptors": [],
             "propertyDescriptorGroups": {},
             "propertyValidationRules": {},
-            "blueprintModule": {
-                "%": "core/converter/new-line-to-br-converter.meta"
+            "objectDescriptorModule": {
+                "%": "core/converter/new-line-to-br-converter.mjson"
             },
             "exportName": "NewLineToBrConverter",
             "module": {

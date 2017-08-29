@@ -1,0 +1,25 @@
+{
+    "converter_descriptor_reference": {
+        "object": "core/converter/converter.mjson"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "KebabCaseConverter",
+            "customPrototype": false,
+            "parent": {
+                "@": "converter_descriptor_reference"
+            },
+            "propertyDescriptors": [],
+            "propertyDescriptorGroups": {},
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/converter/kebab-case-converter.mjson"
+            },
+            "exportName": "KebabCaseConverter",
+            "module": {
+                "%": "core/converter/kebab-case-converter"
+            }
+        }
+    }
+}
