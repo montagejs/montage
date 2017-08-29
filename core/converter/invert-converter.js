@@ -11,7 +11,18 @@ var Converter = require("./converter").Converter,
  * @class InvertConverter
  * @extends Converter
  */
-var InvertConverter = exports.InvertConverter = Converter.specialize( {
+exports.InvertConverter = Converter.specialize({
+    
+    constructor: {
+        value: function () {
+            if (!singleton) {
+                singleton = this;
+            }
+
+            return singleton;
+        }
+    },
+
     convert: {
         value: function (v) {
             return !v;
@@ -23,12 +34,4 @@ var InvertConverter = exports.InvertConverter = Converter.specialize( {
             return !v;
         }
     }
-});
-
-Object.defineProperty(exports, 'defaultInvertConverter', {
-
-    get: function () {
-        return singleton || (singleton = new InvertConverter());
-    }
-
 });

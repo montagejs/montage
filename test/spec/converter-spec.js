@@ -35,6 +35,7 @@ LowerCaseConverter = require("montage/core/converter/lower-case-converter").Lowe
 TrimConverter = require("montage/core/converter/trim-converter").TrimConverter,
 NumberConverter = require("montage/core/converter/number-converter").NumberConverter,
 BytesConverter = require("montage/core/converter/bytes-converter").BytesConverter,
+InvertConverter = require("montage/core/converter/invert-converter").InvertConverter,
 DateConverter = require("montage/core/converter/date-converter").DateConverter,
 ExpressionConverter = require("montage/core/converter/expression-converter").ExpressionConverter,
 CamelCaseConverter = require("montage/core/converter/camel-case-converter").CamelCaseConverter,
@@ -53,7 +54,7 @@ describe("converter-spec", function () {
         ucaseConverter = new UpperCaseConverter();
         lcaseConverter = new LowerCaseConverter();
         trimConverter = new TrimConverter();
-
+        invertConverter = new InvertConverter();
         numberConverter = new NumberConverter();
         numberConverter.shorten = true;
         bytesConverter = new BytesConverter();
@@ -90,6 +91,11 @@ describe("converter-spec", function () {
             expect(result).toBe('hello world');
         });
 
+        it("should inverts value", function () {
+            expect(invertConverter.convert(true)).toBe(false);
+            expect(invertConverter.convert(0)).toBe(true);
+        });
+
         it("should converts string to camel case", function () {
             expect(camelCaseConverter.convert('hello world')).toBe('helloWorld');
             expect(camelCaseConverter.convert('HELLO WORLD')).toBe('helloWorld');
@@ -106,6 +112,16 @@ describe("converter-spec", function () {
             expect(kebabCaseConverter.convert('hello world')).toBe('hello-world');
             expect(kebabCaseConverter.convert('HELLO WORLD')).toBe('hello-world');
             expect(kebabCaseConverter.convert('hello_world')).toBe('hello-world');
+        });
+
+        it("should be a singleton", function () {
+            expect(invertConverter === new InvertConverter()).toBe(true);
+            expect(ucaseConverter === new UpperCaseConverter()).toBe(true);
+            expect(trimConverter === new TrimConverter()).toBe(true);
+            expect(lcaseConverter === new LowerCaseConverter()).toBe(true);
+            expect(kebabCaseConverter === new KebabCaseConverter()).toBe(true);
+            expect(snakeCaseConverter === new SnakeCaseConverter()).toBe(true);
+            expect(camelCaseConverter === new CamelCaseConverter()).toBe(true);
         });
 
     });

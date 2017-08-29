@@ -9,7 +9,17 @@ var Converter = require("./converter").Converter,
  * @class UpperCaseConverter
  * @classdesc Converts a string to upper-case.
  */
-var UpperCaseConverter = exports.UpperCaseConverter = Converter.specialize( /** @lends UpperCaseConverter# */ {
+exports.UpperCaseConverter = Converter.specialize( /** @lends UpperCaseConverter# */ {
+
+    constructor: {
+        value: function () {
+            if (!singleton) {
+                singleton = this;
+            }
+
+            return singleton;
+        }
+    },
 
     _convert: {
         value: function (v) {
@@ -39,13 +49,5 @@ var UpperCaseConverter = exports.UpperCaseConverter = Converter.specialize( /** 
     revert: {value: function (v) {
         return this._convert(v);
     }}
-
-});
-
-Object.defineProperty(exports, 'defaultUpperCaseConverter', {
-
-    get: function () {
-        return singleton || (singleton = new UpperCaseConverter());
-    }
 
 });

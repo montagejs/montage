@@ -9,7 +9,17 @@ var Converter = require("./converter").Converter,
  * @class LowerCaseConverter
  * @classdesc Converts a string to lowercase.
  */
-var LowerCaseConverter = exports.LowerCaseConverter = Converter.specialize( /** @lends LowerCaseConverter# */{
+exports.LowerCaseConverter = Converter.specialize( /** @lends LowerCaseConverter# */{
+
+    constructor: {
+        value: function () {
+            if (!singleton) {
+                singleton = this;
+            }
+
+            return singleton;
+        }
+    },
 
     _convert: {
         value: function (v) {
@@ -37,13 +47,5 @@ var LowerCaseConverter = exports.LowerCaseConverter = Converter.specialize( /** 
     revert: {value: function (v) {
         return this._convert(v);
     }}
-
-});
-
-Object.defineProperty(exports, 'defaultLowerCaseConverter', {
-
-    get: function () {
-        return singleton || (singleton = new LowerCaseConverter());
-    }
 
 });

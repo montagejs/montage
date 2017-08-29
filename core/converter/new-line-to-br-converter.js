@@ -20,7 +20,17 @@ var newLineToBr = function (str) {
  * @class NewLineToBrConverter
  * @classdesc Converts a newline to a &lt;br&gt; tag.
  */
-var NewLineToBrConverter = exports.NewLineToBrConverter = Converter.specialize( /** @lends NewLineToBrConverter# */{
+exports.NewLineToBrConverter = Converter.specialize( /** @lends NewLineToBrConverter# */{
+
+    constructor: {
+        value: function () {
+            if (!singleton) {
+                singleton = this;
+            }
+
+            return singleton;
+        }
+    },
 
     _convert: {
         value: function (v) {
@@ -48,13 +58,5 @@ var NewLineToBrConverter = exports.NewLineToBrConverter = Converter.specialize( 
     revert: {value: function (v) {
         return this._convert(v);
     }}
-
-});
-
-Object.defineProperty(exports, 'defaultNewLineToBrConverter', {
-
-    get: function () {
-        return singleton || (singleton = new NewLineToBrConverter());
-    }
 
 });

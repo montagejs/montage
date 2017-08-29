@@ -18,7 +18,17 @@ var Converter = require("./converter").Converter,
  * console.log("After trim: " + trimConverter.convert(str));
  * // After trim: Hello World
  */
-var TrimConverter = exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
+exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
+
+    constructor: {
+        value: function () {
+            if (!singleton) {
+                singleton = this;
+            }
+
+            return singleton;
+        }
+    },
 
     _convert: {
         value: function (v) {
@@ -47,13 +57,5 @@ var TrimConverter = exports.TrimConverter = Converter.specialize( /** @lends Tri
     revert: {value: function (v) {
         return this._convert(v);
     }}
-
-});
-
-Object.defineProperty(exports, 'defaultTrimConverter', {
-
-    get: function () {
-        return singleton || (singleton = new TrimConverter());
-    }
 
 });

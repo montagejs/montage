@@ -12,18 +12,21 @@ var Converter = require("./converter").Converter,
  * @class CamelCaseConverter
  * @extends Converter
  */
-var CamelCaseConverter = exports.CamelCaseConverter = Converter.specialize({
+exports.CamelCaseConverter = Converter.specialize({
+
+    constructor: {
+        value: function () {
+            if (!singleton) {
+                singleton = this;
+            }
+
+            return singleton;
+        }
+    },
+
     convert: {
         value: function (v) {
             return camelCase(v);
         }
     }
-});
-
-Object.defineProperty(exports, 'defaultCamelCaseConverter', {
-
-    get: function () {
-        return singleton || (singleton = new CamelCaseConverter());
-    }
-
 });

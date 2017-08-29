@@ -12,18 +12,21 @@ var Converter = require("./converter").Converter,
  * @class KebabCaseConverter
  * @extends Converter
  */
-var KebabCaseConverter = exports.KebabCaseConverter = Converter.specialize({
+exports.KebabCaseConverter = Converter.specialize({
+
+    constructor: {
+        value: function () {
+            if (!singleton) {
+                singleton = this;
+            }
+
+            return singleton;
+        }
+    },
+
     convert: {
         value: function (v) {
             return kebabCase(v);
         }
     }
-});
-
-Object.defineProperty(exports, 'defaultKebabCaseConverter', {
-
-    get: function () {
-        return singleton || (singleton = new KebabCaseConverter());
-    }
-
 });

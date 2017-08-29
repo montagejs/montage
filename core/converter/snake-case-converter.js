@@ -12,18 +12,21 @@ var Converter = require("./converter").Converter,
  * @class SnakeCaseConverter
  * @extends Converter
  */
-var SnakeCaseConverter = exports.SnakeCaseConverter = Converter.specialize({
+exports.SnakeCaseConverter = Converter.specialize({
+
+    constructor: {
+        value: function () {
+            if (!singleton) {
+                singleton = this;
+            }
+
+            return singleton;
+        }
+    },
+
     convert: {
         value: function (v) {
             return snakeCase(v);
         }
     }
-});
-
-Object.defineProperty(exports, 'defaultSnakeCaseConverter', {
-
-    get: function () {
-        return singleton || (singleton = new SnakeCaseConverter());
-    }
-
 });
