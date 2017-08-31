@@ -1,5 +1,3 @@
-var Set = require("montage/collections/set");
-
 var MockEvent = exports.MockEvent = function MockEvent() {};
 
 exports.event = function (type, canBubble, cancelable, detail) {

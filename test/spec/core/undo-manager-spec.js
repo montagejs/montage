@@ -1,5 +1,4 @@
 var Montage = require("montage").Montage,
-    Set = require("montage/collections/set"),
     UndoManager = require("montage/core/undo-manager").UndoManager,
     Promise = require("montage/core/promise").Promise,
     WAITS_FOR_TIMEOUT = 2500;

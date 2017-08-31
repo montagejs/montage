@@ -3,8 +3,7 @@
 */
 
 var Component = require("ui/component").Component,
-    deprecate = require("core/deprecate"),
-    Map = require("collections/map");
+    deprecate = require("core/deprecate");
 
 /**
     Base component for all native components, such as RadioButton and Checkbox.

@@ -1,5 +1,4 @@
-var Set = require("montage/collections/set"),
-    defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager,
+var defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager,
     Event = require("mocks/event"),
     Component = require("mocks/component");
 

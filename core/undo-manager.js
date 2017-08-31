@@ -6,7 +6,6 @@
 var Montage = require("./core").Montage,
     Target = require("./target").Target,
     Promise = require("./promise").Promise,
-    Map = require("collections/map"),
     List = require("collections/list");
 
 var UNDO_OPERATION = 0,

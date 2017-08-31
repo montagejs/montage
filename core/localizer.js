@@ -20,7 +20,6 @@ var Montage = require("./core").Montage,
     FrbBindings = require("frb/bindings"),
     stringify = require("frb/stringify"),
     expand = require("frb/expand"),
-    Map = require("collections/map"),
     Scope = require("frb/scope");
 
 // Add all locales to MessageFormat object

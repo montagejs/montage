@@ -1,8 +1,6 @@
 /*jshint node:true, browser:false */
 var jasmineRequire = require('jasmine-core/lib/jasmine-core/jasmine.js');
 var JasmineConsoleReporter = require('jasmine-console-reporter');
-var Montage = require('../montage');
-var PATH = require("path");
 
 // Init
 var jasmine = jasmineRequire.core(jasmineRequire);
@@ -38,6 +36,9 @@ jasmineEnv.addReporter({
         exitCode = exitCode || result.status === 'failed' ? 1 : 0;
     }
 });
+
+var Montage = require('montage');
+var PATH = require("path");
 
 // Load package
 Montage.loadPackage(PATH.join(__dirname, "."), {
