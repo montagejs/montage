@@ -3,6 +3,8 @@
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter,
+    deprecate = require("../deprecate"),    
+    shouldMuteWarning = false,
     singleton;
 
 /**
@@ -11,15 +13,26 @@ var Converter = require("./converter").Converter,
  * @class InvertConverter
  * @extends Converter
  */
-exports.InvertConverter = Converter.specialize({
+var InvertConverter = exports.InvertConverter = Converter.specialize({
     
     constructor: {
         value: function () {
-            if (!singleton) {
-                singleton = this;
+            if (this.constructor === InvertConverter) {
+                if (!singleton) {
+                    singleton = this;
+                }
+
+                if (!shouldMuteWarning) {
+                    deprecate.deprecationWarning(
+                        "Instantiating InvertConverter is deprecated," +
+                        " use its Singleton instead"
+                    );
+                }
+
+                return singleton;
             }
 
-            return singleton;
+            return this;
         }
     },
 
@@ -33,5 +46,17 @@ exports.InvertConverter = Converter.specialize({
         value: function (v) {
             return !v;
         }
+    }
+});
+
+Object.defineProperty(exports, 'Singleton', {
+    get: function () {
+        if (!singleton) {
+            shouldMuteWarning = true;
+            singleton = new InvertConverter();
+            shouldMuteWarning = false;
+        }
+
+        return singleton;
     }
 });

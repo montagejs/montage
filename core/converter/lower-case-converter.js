@@ -3,21 +3,34 @@
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter,
+    deprecate = require("../deprecate"),
+    shouldMuteWarning = false,    
     singleton;
 
 /**
  * @class LowerCaseConverter
  * @classdesc Converts a string to lowercase.
  */
-exports.LowerCaseConverter = Converter.specialize( /** @lends LowerCaseConverter# */{
+var LowerCaseConverter = exports.LowerCaseConverter = Converter.specialize({
 
     constructor: {
         value: function () {
-            if (!singleton) {
-                singleton = this;
+            if (this.constructor === LowerCaseConverter) {
+                if (!singleton) {
+                    singleton = this;
+                }
+
+                if (!shouldMuteWarning) {
+                    deprecate.deprecationWarning(
+                        "Instantiating LowerCaseConverter is deprecated," +
+                        " use its Singleton instead"
+                    );
+                }
+
+                return singleton;
             }
 
-            return singleton;
+            return this;
         }
     },
 
@@ -48,4 +61,16 @@ exports.LowerCaseConverter = Converter.specialize( /** @lends LowerCaseConverter
         return this._convert(v);
     }}
 
+});
+
+Object.defineProperty(exports, 'Singleton', {
+    get: function () {
+        if (!singleton) {
+            shouldMuteWarning = true;
+            singleton = new LowerCaseConverter();
+            shouldMuteWarning = false;
+        }
+
+        return singleton;
+    }
 });

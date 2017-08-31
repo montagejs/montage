@@ -4,6 +4,8 @@
  */
 var Converter = require("./converter").Converter,
     trim = require('lodash/fp/trim'),
+    deprecate = require("../deprecate"),
+    shouldMuteWarning = false,
     singleton;
 
 /**
@@ -18,15 +20,26 @@ var Converter = require("./converter").Converter,
  * console.log("After trim: " + trimConverter.convert(str));
  * // After trim: Hello World
  */
-exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
+var TrimConverter = exports.TrimConverter = Converter.specialize({
 
     constructor: {
         value: function () {
-            if (!singleton) {
-                singleton = this;
+            if (this.constructor === TrimConverter) {
+                if (!singleton) {
+                    singleton = this;
+                }
+
+                if (!shouldMuteWarning) {
+                    deprecate.deprecationWarning(
+                        "Instantiating TrimConverter is deprecated," +
+                        " use its Singleton instead"
+                    );
+                }
+
+                return singleton;
             }
 
-            return singleton;
+            return this;
         }
     },
 
@@ -58,4 +71,16 @@ exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
         return this._convert(v);
     }}
 
+});
+
+Object.defineProperty(exports, 'Singleton', {
+    get: function () {
+        if (!singleton) {
+            shouldMuteWarning = true;
+            singleton = new TrimConverter();
+            shouldMuteWarning = false;
+        }
+
+        return singleton;
+    }
 });

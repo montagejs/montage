@@ -30,17 +30,19 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 var Converter= require("montage/core/converter/converter").Converter,
-UpperCaseConverter = require("montage/core/converter/upper-case-converter").UpperCaseConverter,
-LowerCaseConverter = require("montage/core/converter/lower-case-converter").LowerCaseConverter,
-TrimConverter = require("montage/core/converter/trim-converter").TrimConverter,
+UpperCaseConverter = require("montage/core/converter/upper-case-converter").Singleton,
+LowerCaseConverter = require("montage/core/converter/lower-case-converter").Singleton,
+TrimConverter = require("montage/core/converter/trim-converter").Singleton,
 NumberConverter = require("montage/core/converter/number-converter").NumberConverter,
 BytesConverter = require("montage/core/converter/bytes-converter").BytesConverter,
-InvertConverter = require("montage/core/converter/invert-converter").InvertConverter,
+InvertConverterModule = require("montage/core/converter/invert-converter"),
+InvertConverter = InvertConverterModule.InvertConverter,
+InvertConverterSingleton = InvertConverterModule.Singleton,
 DateConverter = require("montage/core/converter/date-converter").DateConverter,
 ExpressionConverter = require("montage/core/converter/expression-converter").ExpressionConverter,
-CamelCaseConverter = require("montage/core/converter/camel-case-converter").CamelCaseConverter,
-SnakeCaseConverter = require("montage/core/converter/snake-case-converter").SnakeCaseConverter,
-KebabCaseConverter = require("montage/core/converter/kebab-case-converter").KebabCaseConverter,
+CamelCaseConverter = require("montage/core/converter/camel-case-converter").Singleton,
+SnakeCaseConverter = require("montage/core/converter/snake-case-converter").Singleton,
+KebabCaseConverter = require("montage/core/converter/kebab-case-converter").Singleton,
 CurrencyConverter = require("montage/core/converter/currency-converter").CurrencyConverter;
 
 describe("converter-spec", function () {
@@ -50,11 +52,10 @@ describe("converter-spec", function () {
         date = new Date('25 Aug 2011 12:00:00 PM');
 
     beforeEach(function () {
-        //stringConverter = new StringConverter();
-        ucaseConverter = new UpperCaseConverter();
-        lcaseConverter = new LowerCaseConverter();
-        trimConverter = new TrimConverter();
-        invertConverter = new InvertConverter();
+        ucaseConverter = UpperCaseConverter;
+        lcaseConverter = LowerCaseConverter;
+        trimConverter = TrimConverter;
+        invertConverter = InvertConverterSingleton;
         numberConverter = new NumberConverter();
         numberConverter.shorten = true;
         bytesConverter = new BytesConverter();
@@ -67,9 +68,9 @@ describe("converter-spec", function () {
         expressionConverter.convertExpression = "map{foo}";
         expressionConverter.revertExpression = "map{{foo:this}}";
 
-        camelCaseConverter = new CamelCaseConverter();
-        snakeCaseConverter = new SnakeCaseConverter();
-        kebabCaseConverter = new KebabCaseConverter();
+        camelCaseConverter = CamelCaseConverter;
+        snakeCaseConverter = SnakeCaseConverter;
+        kebabCaseConverter = KebabCaseConverter;
     });
 
     describe("test string formatters", function () {
@@ -116,12 +117,6 @@ describe("converter-spec", function () {
 
         it("should be a singleton", function () {
             expect(invertConverter === new InvertConverter()).toBe(true);
-            expect(ucaseConverter === new UpperCaseConverter()).toBe(true);
-            expect(trimConverter === new TrimConverter()).toBe(true);
-            expect(lcaseConverter === new LowerCaseConverter()).toBe(true);
-            expect(kebabCaseConverter === new KebabCaseConverter()).toBe(true);
-            expect(snakeCaseConverter === new SnakeCaseConverter()).toBe(true);
-            expect(camelCaseConverter === new CamelCaseConverter()).toBe(true);
         });
 
     });

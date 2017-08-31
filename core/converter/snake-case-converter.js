@@ -4,6 +4,8 @@
  */
 var Converter = require("./converter").Converter,
     snakeCase = require('lodash/fp/snakeCase'),
+    deprecate = require("../deprecate"),
+    shouldMuteWarning = false,
     singleton;
 
 /**
@@ -12,15 +14,26 @@ var Converter = require("./converter").Converter,
  * @class SnakeCaseConverter
  * @extends Converter
  */
-exports.SnakeCaseConverter = Converter.specialize({
+var SnakeCaseConverter = exports.SnakeCaseConverter = Converter.specialize({
 
     constructor: {
         value: function () {
-            if (!singleton) {
-                singleton = this;
+            if (this.constructor === SnakeCaseConverter) {
+                if (!singleton) {
+                    singleton = this;
+                }
+
+                if (!shouldMuteWarning) {
+                    deprecate.deprecationWarning(
+                        "Instantiating SnakeCaseConverter is deprecated," +
+                        " use its Singleton instead"
+                    );
+                }
+
+                return singleton;
             }
 
-            return singleton;
+            return this;
         }
     },
 
@@ -28,5 +41,17 @@ exports.SnakeCaseConverter = Converter.specialize({
         value: function (v) {
             return snakeCase(v);
         }
+    }
+});
+
+Object.defineProperty(exports, 'Singleton', {
+    get: function () {
+        if (!singleton) {
+            shouldMuteWarning = true;
+            singleton = new SnakeCaseConverter();
+            shouldMuteWarning = false;
+        }
+
+        return singleton;
     }
 });

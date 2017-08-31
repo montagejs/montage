@@ -4,6 +4,8 @@
  */
 var Converter = require("./converter").Converter,
     kebabCase = require('lodash/fp/kebabCase'),
+    deprecate = require("../deprecate"),
+    shouldMuteWarning = false,
     singleton;
 
 /**
@@ -12,15 +14,26 @@ var Converter = require("./converter").Converter,
  * @class KebabCaseConverter
  * @extends Converter
  */
-exports.KebabCaseConverter = Converter.specialize({
+var KebabCaseConverter = exports.KebabCaseConverter = Converter.specialize({
 
     constructor: {
         value: function () {
-            if (!singleton) {
-                singleton = this;
+            if (this.constructor === KebabCaseConverter) {
+                if (!singleton) {
+                    singleton = this;
+                }
+
+                if (!shouldMuteWarning) {
+                    deprecate.deprecationWarning(
+                        "Instantiating KebabCaseConverter is deprecated," +
+                        " use its Singleton instead"
+                    );
+                }
+
+                return singleton;
             }
 
-            return singleton;
+            return this;
         }
     },
 
@@ -28,5 +41,17 @@ exports.KebabCaseConverter = Converter.specialize({
         value: function (v) {
             return kebabCase(v);
         }
+    }
+});
+
+Object.defineProperty(exports, 'Singleton', {
+    get: function () {
+        if (!singleton) {
+            shouldMuteWarning = true;
+            singleton = new KebabCaseConverter();
+            shouldMuteWarning = false;
+        }
+
+        return singleton;
     }
 });

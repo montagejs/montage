@@ -3,21 +3,34 @@
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter,
+    deprecate = require("../deprecate"),
+    shouldMuteWarning = false,    
     singleton;    
 
 /**
  * @class UpperCaseConverter
  * @classdesc Converts a string to upper-case.
  */
-exports.UpperCaseConverter = Converter.specialize( /** @lends UpperCaseConverter# */ {
+var UpperCaseConverter = exports.UpperCaseConverter = Converter.specialize({
 
     constructor: {
         value: function () {
-            if (!singleton) {
-                singleton = this;
+            if (this.constructor === UpperCaseConverter) {
+                if (!singleton) {
+                    singleton = this;
+                }
+
+                if (!shouldMuteWarning) {
+                    deprecate.deprecationWarning(
+                        "Instantiating UpperCaseConverter is deprecated," +
+                        " use its Singleton instead"
+                    );
+                }
+
+                return singleton;
             }
 
-            return singleton;
+            return this;
         }
     },
 
@@ -50,4 +63,16 @@ exports.UpperCaseConverter = Converter.specialize( /** @lends UpperCaseConverter
         return this._convert(v);
     }}
 
+});
+
+Object.defineProperty(exports, 'Singleton', {
+    get: function () {
+        if (!singleton) {
+            shouldMuteWarning = true;
+            singleton = new UpperCaseConverter();
+            shouldMuteWarning = false;
+        }
+
+        return singleton;
+    }
 });

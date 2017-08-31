@@ -3,6 +3,8 @@
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter,
+    deprecate = require("../deprecate"),
+    shouldMuteWarning = false,    
     singleton;
 
 /**
@@ -20,15 +22,26 @@ var newLineToBr = function (str) {
  * @class NewLineToBrConverter
  * @classdesc Converts a newline to a &lt;br&gt; tag.
  */
-exports.NewLineToBrConverter = Converter.specialize( /** @lends NewLineToBrConverter# */{
+var NewLineToBrConverter = exports.NewLineToBrConverter = Converter.specialize({
 
     constructor: {
         value: function () {
-            if (!singleton) {
-                singleton = this;
+            if (this.constructor === NewLineToBrConverter) {
+                if (!singleton) {
+                    singleton = this;
+                }
+
+                if (!shouldMuteWarning) {
+                    deprecate.deprecationWarning(
+                        "Instantiating NewLineToBrConverter is deprecated," +
+                        " use its Singleton instead"
+                    );
+                }
+
+                return singleton;
             }
 
-            return singleton;
+            return this;
         }
     },
 
@@ -59,4 +72,16 @@ exports.NewLineToBrConverter = Converter.specialize( /** @lends NewLineToBrConve
         return this._convert(v);
     }}
 
+});
+
+Object.defineProperty(exports, 'Singleton', {
+    get: function () {
+        if (!singleton) {
+            shouldMuteWarning = true;
+            singleton = new NewLineToBrConverter();
+            shouldMuteWarning = false;
+        }
+
+        return singleton;
+    }
 });
