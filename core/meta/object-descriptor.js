@@ -2,7 +2,6 @@ var Montage = require("../core").Montage,
     DerivedDescriptor = require("./derived-descriptor").DerivedDescriptor,
     EventDescriptor = require("./event-descriptor").EventDescriptor,
     ModelModule = require("./model"),
-    ObjectDescriptorReference = require("./object-descriptor-reference").ObjectDescriptorReference,
     Promise = require("../promise").Promise,
     PropertyDescriptor = require("./property-descriptor").PropertyDescriptor,
     PropertyValidationRule = require("./validation-rule").PropertyValidationRule,
@@ -59,8 +58,8 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             if (this.objectDescriptorInstanceModule) {
                 serializer.setProperty("objectDescriptorModule", this.objectDescriptorInstanceModule);
             }
-            if (this._parentReference) {
-                serializer.setProperty("parent", this._parentReference);
+            if (this._parent) {
+                serializer.setProperty("parent", this._parent);
             }
 
             this._setPropertyWithDefaults(serializer, "customPrototype", this.customPrototype);
@@ -85,14 +84,20 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
 
     deserializeSelf: {
         value:function (deserializer) {
-            var value, model;
+            var value, model, parentReference;
             this._name = deserializer.getProperty("name");
             value = deserializer.getProperty("model") || deserializer.getProperty("binder");
             if (value) {
                 this._model = value;
             }
             this.objectDescriptorInstanceModule = deserializer.getProperty("objectDescriptorModule") || deserializer.getProperty("blueprintModule");
-            this._parentReference = deserializer.getProperty("parent");
+            parentReference = deserializer.getProperty("parent");
+            if (parentReference && parentReference.promise && parentReference.valueFromReference) {
+                deprecate.deprecationWarningOnce("parent reference via ObjectDescriptorReference", "direct reference with object syntax");
+                this._parentReference = parentReference;
+            } else {
+                this._parent = parentReference;
+            }
 
             this.customPrototype = this._getPropertyWithDefaults(deserializer, "customPrototype");
             //
@@ -317,7 +322,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
 
     /**
      * Blueprint parent
-     * @returns {?ObjectDescriptorReference}
+     * @type {?ObjectDescriptor}
      */
     parent: {
         serializable: false,
@@ -325,13 +330,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             return this._parent;
         },
         set: function (objectDescriptor) {
-            if (objectDescriptor) {
-                this._parentReference = new ObjectDescriptorReference().initWithValue(objectDescriptor);
-                this._parent = objectDescriptor;
-            } else {
-                this._parentReference = null;
-                this._parent = null;
-            }
+            this._parent = objectDescriptor;
         }
     },
 
@@ -573,7 +572,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                 name;
             for (name in this._propertyDescriptorGroups) {
                 if (this._propertyDescriptorGroups.hasOwnProperty(name)) {
-                    groups.push(name);   
+                    groups.push(name);
                 }
             }
             if (this.parent) {
@@ -782,7 +781,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                 }
                 this._eventPropertyDescriptorsTable[name] = eventDescriptor;
             }
-            
+
             // TODO: Come back after creating event property descriptor
             if (eventDescriptor === exports.UnknownEventDescriptor) {
                 eventDescriptor = null;
@@ -812,7 +811,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                 propertyValidationRules = [];
             for (propertyName in this._propertyValidationRules) {
                 if (this._propertyValidationRules.hasOwnProperty(propertyName)) {
-                    propertyValidationRules.push(this._propertyValidationRules[propertyName]);   
+                    propertyValidationRules.push(this._propertyValidationRules[propertyName]);
                 }
             }
             if (this.parent) {
@@ -886,7 +885,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                     rule = this._propertyValidationRules[name];
                     if (rule.evaluateRule(objectInstance)) {
                         messages.push(rule.messageKey);
-                    }   
+                    }
                 }
             }
             return messages;

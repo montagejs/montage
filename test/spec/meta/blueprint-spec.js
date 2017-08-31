@@ -19,8 +19,6 @@ var logger = require("montage/core/logger").logger("./blueprint-spec.js");
 // Require to deserialize
 // TODO add proper deps to montage modules
 require('montage/core/meta/object-descriptor');
-require('montage/core/meta/object-descriptor-reference');
-require('montage/core/meta/blueprint-reference');
 require('montage/core/meta/property-blueprint');
 require('montage/core/meta/module-blueprint');
 

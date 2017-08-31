@@ -1,15 +1,6 @@
 {
     "converter_object-descriptor_reference": {
-        "prototype": "core/meta/object-descriptor-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "Converter",
-                "prototypeName": "Converter",
-                "blueprintModule": {
-                    "%": "core/converter/converter.meta"
-                }
-            }
-        }
+        "object": "core/converter/converter.meta"
     },
     "convertExpression": {
         "prototype": "core/meta/property-descriptor",

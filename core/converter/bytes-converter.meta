@@ -11,16 +11,7 @@
         }
     },
     "converter_blueprint_reference": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "Converter",
-                "prototypeName": "Converter",
-                "blueprintModule": {
-                    "%": "core/converter/converter.meta"
-                }
-            }
-        }
+        "object": "core/converter/converter.meta"
     },
     "root": {
         "prototype": "core/meta/module-blueprint",
