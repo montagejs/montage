@@ -32,7 +32,7 @@ var TrimConverter = exports.TrimConverter = Converter.specialize({
                 if (!shouldMuteWarning) {
                     deprecate.deprecationWarning(
                         "Instantiating TrimConverter is deprecated," +
-                        " use its Singleton instead"
+                        " use its singleton instead"
                     );
                 }
 
@@ -73,7 +73,7 @@ var TrimConverter = exports.TrimConverter = Converter.specialize({
 
 });
 
-Object.defineProperty(exports, 'Singleton', {
+Object.defineProperty(exports, 'singleton', {
     get: function () {
         if (!singleton) {
             shouldMuteWarning = true;

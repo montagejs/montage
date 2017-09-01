@@ -30,19 +30,19 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 var Converter= require("montage/core/converter/converter").Converter,
-UpperCaseConverter = require("montage/core/converter/upper-case-converter").Singleton,
-LowerCaseConverter = require("montage/core/converter/lower-case-converter").Singleton,
-TrimConverter = require("montage/core/converter/trim-converter").Singleton,
+UpperCaseConverter = require("montage/core/converter/upper-case-converter").singleton,
+LowerCaseConverter = require("montage/core/converter/lower-case-converter").singleton,
+TrimConverter = require("montage/core/converter/trim-converter").singleton,
 NumberConverter = require("montage/core/converter/number-converter").NumberConverter,
 BytesConverter = require("montage/core/converter/bytes-converter").BytesConverter,
 InvertConverterModule = require("montage/core/converter/invert-converter"),
 InvertConverter = InvertConverterModule.InvertConverter,
-InvertConverterSingleton = InvertConverterModule.Singleton,
+InvertConverterSingleton = InvertConverterModule.singleton,
 DateConverter = require("montage/core/converter/date-converter").DateConverter,
 ExpressionConverter = require("montage/core/converter/expression-converter").ExpressionConverter,
-CamelCaseConverter = require("montage/core/converter/camel-case-converter").Singleton,
-SnakeCaseConverter = require("montage/core/converter/snake-case-converter").Singleton,
-KebabCaseConverter = require("montage/core/converter/kebab-case-converter").Singleton,
+CamelCaseConverter = require("montage/core/converter/camel-case-converter").singleton,
+SnakeCaseConverter = require("montage/core/converter/snake-case-converter").singleton,
+KebabCaseConverter = require("montage/core/converter/kebab-case-converter").singleton,
 CurrencyConverter = require("montage/core/converter/currency-converter").CurrencyConverter;
 
 describe("converter-spec", function () {

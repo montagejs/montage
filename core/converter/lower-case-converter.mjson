@@ -1,5 +1,5 @@
 {
-    "converter_descriptor_reference": {
+    "converter_descriptor": {
         "object": "core/converter/converter.mjson"
     },
     "root": {
@@ -8,7 +8,7 @@
             "name": "LowerCaseConverter",
             "customPrototype": false,
             "parent": {
-                "@": "converter_descriptor_reference"
+                "@": "converter_descriptor"
             },
             "propertyDescriptors": [],
             "propertyDescriptorGroups": {},

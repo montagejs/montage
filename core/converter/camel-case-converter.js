@@ -4,8 +4,6 @@
  */
 var Converter = require("./converter").Converter,
     camelCase = require('lodash/fp/camelCase'),
-    deprecate = require("../deprecate"),
-    shouldMuteWarning = false,
     singleton;
 
 /**
@@ -23,13 +21,6 @@ var CamelCaseConverter = exports.CamelCaseConverter = Converter.specialize({
                     singleton = this;
                 }
 
-                if (!shouldMuteWarning) {
-                    deprecate.deprecationWarning(
-                        "Instantiating CamelCaseConverter is deprecated," +
-                        " use its Singleton instead"
-                    );
-                }
-
                 return singleton;
             }
 
@@ -38,19 +29,15 @@ var CamelCaseConverter = exports.CamelCaseConverter = Converter.specialize({
     },
 
     convert: {
-        value: function (v) {
-            return camelCase(v);
-        }
+        value: camelCase
     }
     
 });
 
-Object.defineProperty(exports, 'Singleton', {
+Object.defineProperty(exports, 'singleton', {
     get: function () {
         if (!singleton) {
-            shouldMuteWarning = true;
             singleton = new CamelCaseConverter();
-            shouldMuteWarning = false;
         }
 
         return singleton;

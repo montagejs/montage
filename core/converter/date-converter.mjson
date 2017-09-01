@@ -21,7 +21,7 @@
             "helpKey": ""
         }
     },
-    "converter_descriptor_reference": {
+    "converter_descriptor": {
         "object": "core/converter/converter.mjson"
     },
     "root": {
@@ -30,7 +30,7 @@
             "name": "DateConverter",
             "customPrototype": false,
             "parent": {
-                "@": "converter_descriptor_reference"
+                "@": "converter_descriptor"
             },
             "propertyDescriptors": [
                 {

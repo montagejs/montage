@@ -10,7 +10,7 @@
             "helpKey": ""
         }
     },
-    "number_converter_descriptor_reference": {
+    "number_converter_descriptor": {
         "object": "core/converter/number-converter.mjson"
     },
     "currencyConverter_showCurrencyBeforeNumber": {
@@ -30,7 +30,7 @@
             "name": "CurrencyConverter",
             "customPrototype": false,
             "parent": {
-                "@": "number_converter_descriptor_reference"
+                "@": "number_converter_descriptor"
             },
             "propertyDescriptors": [
                 {

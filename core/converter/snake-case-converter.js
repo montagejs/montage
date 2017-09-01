@@ -4,8 +4,6 @@
  */
 var Converter = require("./converter").Converter,
     snakeCase = require('lodash/fp/snakeCase'),
-    deprecate = require("../deprecate"),
-    shouldMuteWarning = false,
     singleton;
 
 /**
@@ -23,13 +21,6 @@ var SnakeCaseConverter = exports.SnakeCaseConverter = Converter.specialize({
                     singleton = this;
                 }
 
-                if (!shouldMuteWarning) {
-                    deprecate.deprecationWarning(
-                        "Instantiating SnakeCaseConverter is deprecated," +
-                        " use its Singleton instead"
-                    );
-                }
-
                 return singleton;
             }
 
@@ -38,18 +29,14 @@ var SnakeCaseConverter = exports.SnakeCaseConverter = Converter.specialize({
     },
 
     convert: {
-        value: function (v) {
-            return snakeCase(v);
-        }
+        value: snakeCase
     }
 });
 
-Object.defineProperty(exports, 'Singleton', {
+Object.defineProperty(exports, 'singleton', {
     get: function () {
         if (!singleton) {
-            shouldMuteWarning = true;
             singleton = new SnakeCaseConverter();
-            shouldMuteWarning = false;
         }
 
         return singleton;
