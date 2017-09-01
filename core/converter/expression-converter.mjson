@@ -1,6 +1,6 @@
 {
-    "converter_object-descriptor_reference": {
-        "object": "core/converter/converter.meta"
+    "converter_descriptor": {
+        "object": "core/converter/converter.mjson"
     },
     "convertExpression": {
         "prototype": "core/meta/property-descriptor",
@@ -30,7 +30,7 @@
             "name": "ExpressionConverter",
             "customPrototype": false,
             "parent": {
-                "@": "converter_object-descriptor_reference"
+                "@": "converter_descriptor"
             },
             "propertyDescriptors": [
                 {
@@ -43,7 +43,7 @@
             "propertyDescriptorGroups": {},
             "propertyValidationRules": {},
             "objectDescriptorModule": {
-                "%": "core/converter/expression-converter.meta"
+                "%": "core/converter/expression-converter.mjson"
             },
             "exportName": "ExpressionConverter",
             "module": {

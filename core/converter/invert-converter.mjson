@@ -1,20 +1,20 @@
 {
-    "converter_blueprint_reference": {
-        "object": "core/converter/converter.meta"
+    "converter_descriptor": {
+        "object": "core/converter/converter.mjson"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "InvertConverter",
             "customPrototype": false,
             "parent": {
-                "@": "converter_blueprint_reference"
+                "@": "converter_descriptor"
             },
             "propertyDescriptors": [],
             "propertyDescriptorGroups": {},
             "propertyValidationRules": {},
-            "blueprintModule": {
-                "%": "core/converter/inverter-converter.meta"
+            "objectDescriptorModule": {
+                "%": "core/converter/inverter-converter.mjson"
             },
             "exportName": "InvertConverter",
             "module": {

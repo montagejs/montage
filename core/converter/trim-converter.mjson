@@ -1,20 +1,20 @@
 {
-    "converter_blueprint_reference": {
-        "object": "core/converter/converter.meta"
+    "converter_descriptor": {
+        "object": "core/converter/converter.mjson"    
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "TrimConverter",
             "customPrototype": false,
             "parent": {
-                "@": "converter_blueprint_reference"
+                "@": "converter_descriptor"
             },
             "propertyDescriptors": [],
-            "propertyBlueprintGroups": {},
+            "propertyDescriptorGroups": {},
             "propertyValidationRules": {},
-            "blueprintModule": {
-                "%": "core/converter/trim-converter.meta"
+            "objectDescriptorModule": {
+                "%": "core/converter/trim-converter.mjson"
             },
             "exportName": "TrimConverter",
             "module": {

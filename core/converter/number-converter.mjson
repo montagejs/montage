@@ -1,9 +1,9 @@
 {
     "numberConverter_shorten": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "shorten",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -11,10 +11,10 @@
         }
     },
     "numberConverter_decimals": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "decimals",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "number",
@@ -22,10 +22,10 @@
         }
     },
     "numberConverter_round": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "round",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -33,10 +33,10 @@
         }
     },
     "numberConverter_forceDecimals": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "forceDecimals",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -44,10 +44,10 @@
         }
     },
     "numberConverter_allowFloat": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "allowFloat",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -55,26 +55,26 @@
         }
     },
     "numberConverter_allowNegative": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "allowNegative",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
             "helpKey": ""
         }
     },
-    "converter_blueprint_reference": {
-        "object": "core/converter/converter.meta"
+    "converter_descriptor": {
+        "object": "core/converter/converter.mjson"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "NumberConverter",
             "customPrototype": false,
             "parent": {
-                "@": "converter_blueprint_reference"
+                "@": "converter_descriptor"
             },
             "propertyDescriptors": [
                 {
@@ -96,7 +96,7 @@
                     "@": "numberConverter_allowNegative"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "numberConverter": [
                     {
                         "@": "numberConverter_shorten"
@@ -119,8 +119,8 @@
                 ]
             },
             "propertyValidationRules": {},
-            "blueprintModule": {
-                "%": "core/converter/number-converter.meta"
+            "objectDescriptorModule": {
+                "%": "core/converter/number-converter.mjson"
             },
             "exportName": "NumberConverter",
             "module": {

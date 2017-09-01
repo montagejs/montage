@@ -1,23 +1,23 @@
 {
     "currenyConverter_currency": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "currency",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "string",
             "helpKey": ""
         }
     },
-    "number_converter_blueprint_reference": {
-        "object": "core/converter/number-converter.meta"
+    "number_converter_descriptor": {
+        "object": "core/converter/number-converter.mjson"
     },
     "currencyConverter_showCurrencyBeforeNumber": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "showCurrencyBeforeNumber",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -25,12 +25,12 @@
         }
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "CurrencyConverter",
             "customPrototype": false,
             "parent": {
-                "@": "number_converter_blueprint_reference"
+                "@": "number_converter_descriptor"
             },
             "propertyDescriptors": [
                 {
@@ -51,8 +51,8 @@
                 ]
             },
             "propertyValidationRules": {},
-            "blueprintModule": {
-                "%": "core/converter/currency-converter.meta"
+            "objectDescriptorModule": {
+                "%": "core/converter/currency-converter.mjson"
             },
             "exportName": "CurrencyConverter",
             "module": {

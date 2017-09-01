@@ -105,9 +105,9 @@ var Converter = exports.Converter = Montage.specialize( /** @lends Converter# */
 
 }, {
 
-    blueprintModuleId: require("../core")._blueprintModuleIdDescriptor,
+    objectDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
 
-    blueprint: require("../core")._blueprintDescriptor
+    objectDescriptor: require("../core")._objectDescriptorDescriptor
 
 });
 

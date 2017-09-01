@@ -1,25 +1,25 @@
 {
     "bytesConverter_decimals": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "decimals",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "number",
             "helpKey": ""
         }
     },
-    "converter_blueprint_reference": {
-        "object": "core/converter/converter.meta"
+    "converter_descriptor": {
+        "object": "core/converter/converter.mjson"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "BytesConverter",
             "customPrototype": false,
             "parent": {
-                "@": "converter_blueprint_reference"
+                "@": "converter_descriptor"
             },
             "propertyDescriptors": [
                 {
@@ -34,8 +34,8 @@
                 ]
             },
             "propertyValidationRules": {},
-            "blueprintModule": {
-                "%": "core/converter/bytes-converter.meta"
+            "objectDescriptorModule": {
+                "%": "core/converter/bytes-converter.mjson"
             },
             "exportName": "BytesConverter",
             "module": {
