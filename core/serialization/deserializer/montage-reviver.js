@@ -7,8 +7,8 @@ var Montage = require("../../core").Montage,
     Alias = require("../alias").Alias, Bindings = require("../bindings"),
     Promise = require("../../promise").Promise,
     deprecate = require("../../deprecate"),
-    camelCase = require('lodash/fp/camelCase'),
-    kebabCase = require('lodash/fp/kebabCase'),
+    camelCaseConverter = require('../../converter/camel-case-converter').singleton,
+    kebabCaseConverter = require('../../converter/kebab-case-converter').singleton,
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
     TWO_WAY = "<->";
@@ -190,7 +190,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     value: new Proxy(targetObject, {
                         set: function (target, propertyName, value) {
                             element.nativeSetAttribute('data-' +
-                                kebabCase(propertyName),
+                                kebabCaseConverter.convert(propertyName),
                                 value
                             );
                             target[propertyName] = value;
@@ -284,10 +284,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 element.setAttribute = function (key, value) {
                     var propertyName;
                     if (key.startsWith('data-')) {
-                        propertyName = camelCase(key.replace('data-', ''));
+                        propertyName = camelCaseConverter.convert(key.replace('data-', ''));
                         proxyElement.dataset[propertyName] = value;
                     } else {
-                        propertyName = camelCase(key);
+                        propertyName = camelCaseConverter.convert(key);
                         proxyElement[propertyName] = value;
                     }
                     element.nativeSetAttribute(key, value);
