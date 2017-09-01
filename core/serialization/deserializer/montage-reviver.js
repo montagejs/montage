@@ -503,13 +503,9 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 }
                 // TODO: For now we need this because we need to set
                 // isDeserilizing before calling didCreate.
-                object = Object.create(module[objectName].prototype);
+                object = module[objectName];
+                object = (typeof object === "function") ? new object() : Object.create(object);
                 object.isDeserializing = true;
-                if (typeof object.didCreate === "function") {
-                    object.didCreate();
-                } else if (typeof object.constructor === "function") {
-                    object.constructor();
-                }
                 return object;
             } else if ("object" in value) {
                 if (value.object.endsWith(".json")) {
