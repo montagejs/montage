@@ -23,31 +23,18 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
     },
 
     init: {
-        value: function (serializationString, _require, objectRequires, locationId, moduleContexts) {
-            this._serializationString = serializationString;
+        value: function (serialization, _require, objectRequires, locationId, moduleContexts) {
+            if (typeof serialization === "string") {
+                this._serializationString = serialization;
+            } else {
+                this._serializationString = JSON.stringify(serialization);
+            }
             this._require = _require;
             moduleContexts = moduleContexts || new Map();
             this._reviver = new MontageReviver().init(_require, objectRequires, locationId, moduleContexts);
 
             return this;
         }
-    },
-
-    initWithObject: {
-        value: function (serialization, _require, objectRequires, locationId, moduleContexts) {
-            this._serializationString = JSON.stringify(serialization);
-            this._require = require;
-            moduleContexts = moduleContexts || new Map();
-            this._reviver = new MontageReviver().init(_require, objectRequires, locationId, moduleContexts);
-
-            return this;
-        }
-    },
-
-    initWithObjectAndRequire: {
-        value: deprecate.deprecateMethod(void 0, function (serialization, _require, objectRequires) {
-            return this.initWithObject(serialization, _require, objectRequires);
-        }, "initWithObjectAndRequire", "initWithObject")
     },
 
     deserialize: {
@@ -156,6 +143,20 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                 throw new Error(message);
             });
         }
+    },
+
+    // Deprecated methods
+
+    initWithObject: {
+        value: deprecate.deprecateMethod(void 0, function (serialization, _require, objectRequires, locationId, moduleContexts) {
+            return this.init(serialization, _require, objectRequires, locationId, moduleContexts);
+        }, "initWithObject", "init")
+    },
+
+    initWithObjectAndRequire: {
+        value: deprecate.deprecateMethod(void 0, function (serialization, _require, objectRequires) {
+            return this.init(serialization, _require, objectRequires);
+        }, "initWithObjectAndRequire", "init")
     }
 
 }, {

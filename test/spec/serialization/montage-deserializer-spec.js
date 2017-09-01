@@ -393,7 +393,7 @@ describe("serialization/montage-deserializer-spec", function () {
            var instances = {root: null};
            var exports;
 
-           deserializer.initWithObject({
+           deserializer.init({
                root: {
                    module: "serialization/testobjects-v2",
                    name: "OneProp",
@@ -842,7 +842,7 @@ describe("serialization/montage-deserializer-spec", function () {
         it("should deserialize using instance after compilation", function (done) {
            var latch, objects;
 
-            deserializer.initWithObject({
+            deserializer.init({
                root: {
                    prototype: "montage",
                    values: {
@@ -871,7 +871,7 @@ describe("serialization/montage-deserializer-spec", function () {
         it("should deserialize using type after compilation", function (done) {
            var latch, objects;
 
-           deserializer.initWithObject({
+           deserializer.init({
                root: {
                    object: "montage",
                    values: {
