@@ -105,20 +105,14 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
      * @param {Object} objectRequires A dictionary indexed by object label with
      *        the require object to use for a specific object of the
      *        serialization.
-     * @param {?Map} moduleContexts A map indexed by module ID with the
-     *        MontageContext to use for a specific external object
-     *        reference. Used to prevent circular references from creating
-     *        an infinite loop.
      * @param {Function} deserializerConstructor Function to create a new
      *        deserializer. Useful for linking to an external module
      *        that also needs to be deserialized.
      */
     init: {
-        value: function (_require, objectRequires, locationId, moduleContexts, deserializerConstructor) {
+        value: function (_require, objectRequires, deserializerConstructor) {
             this.moduleLoader = new ModuleLoader().init(_require, objectRequires);
             this._require = _require;
-            this._locationId = locationId;
-            this._moduleContexts = moduleContexts;
             this._deserializerConstructor = deserializerConstructor;
             return this;
         }
@@ -476,28 +470,18 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     getMjsonObject: {
         value: function (serialization, json, moduleId, context) {
-            var self = this,
-                mjsonObjectPromise;
-            if (moduleId && this._moduleContexts.has(moduleId)) {
-                // We have a circular reference. If we wanted to forbid circular
-                // references this is where we would throw an error.
-                mjsonObjectPromise = Promise.resolve(this._moduleContexts.get(moduleId)._objects.root);
-            } else {
-                if (this._locationId && !this._moduleContexts.has(this._locationId)) {
-                    this._moduleContexts.set(this._locationId, context);
-                }
-                mjsonObjectPromise = Promise.resolve(this._deserializerConstructor(json, moduleId))
-                    .then(function (deserializer) {
-                        return deserializer.deserializeObject();
-                    });
-            }
-            return mjsonObjectPromise.then(function (object) {
-                if ("prototype" in serialization) {
-                    return Object.create(object);
-                } else {
-                    return object;
-                }
-            });
+            var self = this;
+            return Promise.resolve(this._deserializerConstructor(json, moduleId))
+                .then(function (deserializer) {
+                    return deserializer.deserializeObject();
+                })
+                .then(function (object) {
+                    if ("prototype" in serialization) {
+                        return Object.create(object);
+                    } else {
+                        return object;
+                    }
+                });
         }
     },
 

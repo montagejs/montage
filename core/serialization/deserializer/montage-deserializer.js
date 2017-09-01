@@ -23,16 +23,16 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
     },
 
     init: {
-        value: function (serialization, _require, objectRequires, locationId, moduleContexts) {
+        value: function (serialization, _require, objectRequires, locationId) {
             if (typeof serialization === "string") {
                 this._serializationString = serialization;
             } else {
                 this._serializationString = JSON.stringify(serialization);
             }
             this._require = _require;
-            this._moduleContexts = moduleContexts || new Map();
+            this._locationId = locationId;
             this._reviver = new MontageReviver().init(_require, objectRequires,
-                locationId, this._moduleContexts, this._childConstructor.bind(this));
+                this._childConstructor.bind(this));
 
             return this;
         }
@@ -44,8 +44,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                 module,
                 this.constructor.getModuleRequire(this._require, moduleId),
                 void 0,
-                moduleId,
-                this._moduleContexts
+                moduleId
             );
         }
     },
@@ -59,11 +58,27 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
      */
     deserialize: {
         value: function (instances, element) {
+            var context = this._locationId && MontageDeserializer.moduleContexts.get(this._locationId);
+            if (context) {
+                if (context._objects.root) {
+                    return Promise.resolve(context._objects);
+                } else {
+                    return Promise.reject(new Error(
+                        "Unable to deserialize because a circular dependency was detected. " +
+                        "Module \"" + this._locationId + "\" has already been loaded but " +
+                        "its root could not be resolved."
+                    ));
+                }
+            }
+
             try {
                 var serialization = JSON.parse(this._serializationString);
-                return new MontageContext()
-                    .init(serialization, this._reviver, instances, element, this._require)
-                    .getObjects();
+                context = new MontageContext()
+                    .init(serialization, this._reviver, instances, element, this._require);
+                if (this._locationId) {
+                    MontageDeserializer.moduleContexts.set(this._locationId, context);
+                }
+                return context.getObjects();
             } catch (ex) {
                 return this._formatSerializationSyntaxError(this._serializationString);
             }
@@ -197,6 +212,19 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
             }
 
             return module.require;
+        }
+    },
+
+    _cache: {
+        value: null
+    },
+
+    moduleContexts: {
+        get: function () {
+            if (!this._cache) {
+                this._cache = new Map();
+            }
+            return this._cache;
         }
     }
 });
