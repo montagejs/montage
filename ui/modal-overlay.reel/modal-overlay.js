@@ -1,3 +1,5 @@
+/*global require, exports, console, MontageElement */
+
 /**
  * @module "ui/modal-overlay.reel"
  */

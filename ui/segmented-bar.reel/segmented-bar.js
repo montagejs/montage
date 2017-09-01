@@ -1,3 +1,4 @@
+/*global require, exports, console, MontageElement */
 "use strict";
 
 /**

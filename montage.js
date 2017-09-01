@@ -1,4 +1,4 @@
-/*global define, module, console */
+/*global define, module, console, MontageElement, Reflect, customElements */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
@@ -380,8 +380,6 @@
             return void 0;
         }
 
-        var MontageElement = makeCustomElementConstructor();
-
         function makeCustomElementConstructor(superConstructor) {
             var constructor = function () {
                 return Reflect.construct(
@@ -395,6 +393,8 @@
             return constructor;
         }
 
+        var MontageElement = makeCustomElementConstructor();
+
         function defineMontageElement(name, module) {
             if (!customElements.get(name)) {
                 var customElementConstructor = makeCustomElementConstructor(MontageElement);
@@ -405,14 +405,13 @@
 
         MontageElement.pendingCustomElements = new Map();
 
-
         MontageElement.define = function (name, MontageComponent) {
             if (this.require) {
                 defineMontageElement(name, MontageComponent);
             } else {
                 this.pendingCustomElements.set(name, MontageComponent);
             }
-        }
+        };
 
         MontageElement.init = function (require, application) {
             this.require = require;
@@ -425,7 +424,7 @@
             });
 
             this.pendingCustomElements.clear();
-        }
+        };
 
         Object.defineProperties(MontageElement.prototype, {
             require: {
@@ -439,7 +438,7 @@
                     return MontageElement.application;
                 }
             }
-        })
+        });
 
         MontageElement.prototype.connectedCallback = function () {
             if (!this.__montageComponent__) {
@@ -565,7 +564,7 @@
                 this.templateDidLoad = mainTemplateDidLoad;
 
                 if (typeof this.templateDidLoad === "function") {
-                    this.templateDidLoad(firstTime);
+                    this.templateDidLoad();
                 }
             };
 
@@ -611,7 +610,7 @@
         };
 
         global.MontageElement = MontageElement;
-    }    
+    };
 
     /**
      * Initializes Montage and creates the application singleton if

@@ -1,3 +1,5 @@
+/*global require, exports, console, MontageElement */
+
 /**
  * @module "montage/ui/flow.reel"
  */

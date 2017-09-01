@@ -1,3 +1,5 @@
+/*global require, exports, console, MontageElement */
+
 var Component = require("ui/component").Component;
 
 /**

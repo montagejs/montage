@@ -1,4 +1,4 @@
-/*global require,exports */
+/*global require, exports, console, MontageElement */
 
 /**
     @module "montage/ui/native/input-range.reel"

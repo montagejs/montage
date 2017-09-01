@@ -1,4 +1,4 @@
-/*global Window, Document, Element, Event, Components, Touch */
+/*global Window, Document, Element, Event, Components, Touch, MontageElement */
 
 /**
  * @author Lea Verou

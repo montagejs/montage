@@ -1,4 +1,4 @@
-/* global console */
+/*global require, exports, console, MontageElement */
 
 /**
  * @module "ui/overlay.reel"
