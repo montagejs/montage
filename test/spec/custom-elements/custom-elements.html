@@ -1,0 +1,43 @@
+<html>
+<head>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "prototype": "spec/custom-elements/custom-elements-test[CustomElementTest]",
+            "values": {
+                "element": {"#": "owner"},
+                "textLabel1Component": {"@": "textLabel1"},
+                "textLabel2Component": {"@": "textLabel2"}
+            }
+        },
+        "textLabel1": {
+            "value": {"#": "textLabel1"},
+            "values": {
+                "value": "textLabel1"
+            }
+        },
+        "textLabel2": {
+            "value": {"#": "textLabel2"},
+            "values": {
+                "value": {"<-": "@owner.textLabel2" },
+                "owner": {"=": "@owner" }
+            }
+        },
+        "myButton": {
+            "value": {"#": "myButton"},
+            "values": {
+                "label": "click"
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class"owner">
+        <montage-text data-montage-id="textLabel1" class="textLabel1"></montage-text>
+        <montage-text data-montage-id="textLabel2" class="textLabel2"></montage-text>
+        <my-button data-montage-id="myButton" class="myButton"></my-button>
+    </div>
+</body>
+</html>
