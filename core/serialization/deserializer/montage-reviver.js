@@ -1,4 +1,4 @@
-/* global console */
+/*global console, Proxy */
 var Montage = require("../../core").Montage,
     ValuesDeserializer = require("./values-deserializer").ValuesDeserializer,
     SelfDeserializer = require("./self-deserializer").SelfDeserializer,
@@ -7,11 +7,15 @@ var Montage = require("../../core").Montage,
     Alias = require("../alias").Alias, Bindings = require("../bindings"),
     Promise = require("../../promise").Promise,
     deprecate = require("../../deprecate"),
+    camelCaseConverter = require('../../converter/camel-case-converter').singleton,
+    kebabCaseConverter = require('../../converter/kebab-case-converter').singleton,
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
     TWO_WAY = "<->";
 
 require("../../shim/string");
+
+var PROXY_ELEMENT_MAP = new WeakMap();
 
 var ModuleLoader = Montage.specialize( {
     _require: {value: null},
@@ -145,6 +149,153 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         }
     },
 
+    setProxyForDatasetOnElement: {
+        value: function (element, montageObjectDesc) {
+            var originalDataset = element.dataset;
+
+            if (Object.getPrototypeOf(originalDataset) !== null) {
+                var datasetAttributes = Object.keys(originalDataset),
+                    targetObject = Object.create(null), self = this,
+                    datasetAttribute, propertyNames;
+                
+                if (Proxy.prototype) { // The native Proxy has no prototype property.
+                    // Workaround for Proxy polyfill https://github.com/GoogleChrome/proxy-polyfill
+                    // the properties of a proxy must be known at creation time.
+                    // TODO: remove when we drop the support of IE11.
+                    if (montageObjectDesc.values) {
+                        propertyNames = Object.keys(montageObjectDesc.values);
+                    } else { // deprecated
+                        propertyNames = Object.keys(montageObjectDesc.properties)
+                            .concat(Object.keys(montageObjectDesc.bindings));
+                    }
+
+                    datasetAttributes = datasetAttributes.concat(
+                        propertyNames.filter(function (propertyName) {
+                            return propertyName.startsWith("dataset.");
+                        })
+                    );
+
+                    for (var i = 0, length = datasetAttributes.length; i < length; i++) {
+                        datasetAttribute = datasetAttributes[i];
+                        if (originalDataset[datasetAttribute]) {
+                            targetObject[datasetAttribute] =
+                                originalDataset[datasetAttribute];
+                        } else {
+                            targetObject[datasetAttribute.replace(/^dataset\./, '')] = void 0;
+                        }
+                    }
+                }                
+
+                Object.defineProperty(element, "dataset", {
+                    value: new Proxy(targetObject, {
+                        set: function (target, propertyName, value) {
+                            element.nativeSetAttribute('data-' +
+                                kebabCaseConverter.convert(propertyName),
+                                value
+                            );
+                            target[propertyName] = value;
+                            originalDataset[propertyName] = value;
+                            return true;
+                        },
+                        get: function (target, propertyName) {
+                            return target[propertyName];
+                        }
+                    })
+                });
+            }
+        }
+    },
+
+    setProxyOnElement: {
+        value: function (element, montageObjectDesc) {
+            if (!PROXY_ELEMENT_MAP.has(element)) {
+                var targetObject = Object.create(null);
+                
+                if (Proxy.prototype) { // The native Proxy has no prototype property. 
+                    // Workaround for Proxy polyfill https://github.com/GoogleChrome/proxy-polyfill
+                    // the properties of a proxy must be known at creation time.
+                    // TODO: remove when we drop the support of IE11.
+                    var propertyNames, propertyName;
+
+                    for (propertyName in element) {
+                        if (element.hasOwnProperty(propertyName)) {
+                            targetObject[propertyName] = void 0;
+                        }
+                    }
+
+                    if (montageObjectDesc.values) {
+                        propertyNames = Object.keys(montageObjectDesc.values);
+                    } else { // deprecated
+                        propertyNames = Object.keys(montageObjectDesc.properties)
+                            .concat(Object.keys(montageObjectDesc.bindings));
+                    }
+
+                    for (var i = 0, length = propertyNames.length; i < length; i++) {
+                        propertyName = propertyNames[i];
+                        if (!(propertyName in element) && propertyName.indexOf('.') === -1) {
+                            targetObject[propertyName] = void 0;
+                        }
+                    }
+                }
+                
+                PROXY_ELEMENT_MAP.set(element, new Proxy(targetObject, {
+                    set: function (target, propertyName, value) {
+                        if (!(propertyName in Object.getPrototypeOf(element))) {                
+                            if (Object.getOwnPropertyDescriptor(element, propertyName) === void 0) {
+                                Object.defineProperty(element, propertyName, {
+                                    set: function (value) {
+                                        if (value === null || value === void 0) {
+                                            element.removeAttribute(propertyName);
+                                        } else {
+                                            element.nativeSetAttribute(propertyName, value);
+                                        }
+
+                                        target[propertyName] = value;
+                                    },
+                                    get: function () {
+                                        return target[propertyName];
+                                    }
+                                });
+                            }
+                        }
+
+                        if (target[propertyName] !== value) {
+                            element[propertyName] = value;
+                        }
+
+                        return true;
+                    },
+                    get: function (target, propertyName) {
+                        return target[propertyName] || element[propertyName];
+                    }
+                }));
+            }
+            
+            return PROXY_ELEMENT_MAP.get(element);
+        }
+    },
+
+    wrapSetAttributeForElement: {
+        value: function (element) {
+            if (element.setAttribute === element.nativeSetAttribute) {
+                var proxyElement = PROXY_ELEMENT_MAP.get(element),
+                    self = this;    
+
+                element.setAttribute = function (key, value) {
+                    var propertyName;
+                    if (key.startsWith('data-')) {
+                        propertyName = camelCaseConverter.convert(key.replace('data-', ''));
+                        proxyElement.dataset[propertyName] = value;
+                    } else {
+                        propertyName = camelCaseConverter.convert(key);
+                        proxyElement[propertyName] = value;
+                    }
+                    element.nativeSetAttribute(key, value);
+                };
+            }
+        }
+    },
+
     reviveRootObject: {
         value: function (value, context, label) {
             var error,
@@ -176,19 +327,29 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     return object;
                 }
 
-                var revivedValue = this.reviveValue(value.value, context, label);
+                var revivedValue = this.reviveValue(value.value, context, label),
+                    valueType = this.getTypeOf(value.value);
 
-                if (this.getTypeOf(value.value) === "Element") {
+                if (valueType === "Element") {
                     if (!Promise.is(revivedValue)) {
-                        var montageObjectDesc = this.reviveObjectLiteral(value, context);
-                        context.setBindingsToDeserialize(revivedValue, montageObjectDesc);
+                        var proxyElement = this.setProxyOnElement(revivedValue, value);
+                        this.setProxyForDatasetOnElement(revivedValue, value);
+                        this.wrapSetAttributeForElement(revivedValue);
+                        context.setBindingsToDeserialize(proxyElement, value);
                         this.deserializeMontageObjectValues(
-                            revivedValue,
-                            montageObjectDesc.values || montageObjectDesc.properties, //deprecated
+                            proxyElement,
+                            value.values || value.properties, //deprecated
                             context
                         );
-                        context.setUnitsToDeserialize(revivedValue, montageObjectDesc, MontageReviver._unitNames);
                     }
+                } else if (valueType === "object") {
+                    context.setBindingsToDeserialize(revivedValue, value);
+                    this.deserializeMontageObjectValues(
+                        revivedValue,
+                        value.values || value.properties, //deprecated
+                        context
+                    );
+                    context.setUnitsToDeserialize(revivedValue, value, MontageReviver._unitNames);
                 }
 
                 return revivedValue;
@@ -663,6 +824,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
             for (var propertyName in value) {
                 if (value.hasOwnProperty(propertyName)) {
+                    if (value[propertyName] === value) {
+                        // catch object property that point to its parent
+                        return value;
+                    }
+
                     item = this.reviveValue(value[propertyName], context);
 
                     if (Promise.is(item)) {

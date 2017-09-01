@@ -238,6 +238,27 @@ describe("serialization/montage-deserializer-spec", function () {
                 done();
             });
         });
+        
+        it("should deserialize a complex key assignment", function (done) {
+            var serialization = {
+                "root": {
+                    "value": {
+                        "bar": {}
+                    },
+                    "values": {
+                        "foo": 10,
+                        "bar.quz": 42
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+            deserialize(serializationString, require).then(function (object) {
+                expect(object.foo).toBe(10);
+                expect(object.bar.quz).toBe(42);
+            }).finally(function () {
+                done();
+            });
+        });
 
         it("should deserialize a simple one-time assignment in normal form", function (done) {
             var serialization = {

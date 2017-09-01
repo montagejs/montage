@@ -1,7 +1,6 @@
 /*global describe, it, expect */
 var Montage = require("montage").Montage;
 var Slider = require("montage/ui/slider.reel").Slider;
-var MockDOM = require("mocks/dom");
 var MockEvent = require("mocks/event");
 
 describe("test/ui/slider-spec", function () {
@@ -20,7 +19,7 @@ describe("test/ui/slider-spec", function () {
             aSlider;
         beforeEach(function () {
             aSlider = new SpecializedSlider();
-            aSlider.element = MockDOM.element();
+            aSlider.element = document.createElement('div');
         });
 
         // Inspired by

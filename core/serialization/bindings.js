@@ -87,8 +87,14 @@ var deserializeObjectBindings = exports.deserializeObjectBindings = function (de
         descriptor = bindings[targetPath];
 
         if (typeof descriptor !== "object") {
-            throw new Error("Binding descriptor must be an object, not " + typeof descriptor);
-            // TODO isolate the source document and produce a more useful error
+            if (targetPath.indexOf('.') === -1) {
+                throw new Error("Binding descriptor must be an object, not " + typeof descriptor);
+                // TODO isolate the source document and produce a more useful error
+            } else {
+                descriptor = {
+                    "=" : "" + descriptor
+                };
+            }
         }
 
         if (ONE_ASSIGNMENT in descriptor) {
