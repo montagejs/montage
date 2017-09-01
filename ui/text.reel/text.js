@@ -98,5 +98,7 @@ var MontageText = exports.Text = Component.specialize( /**  @lends module:montag
 });
 
 if (window.MontageElement) {
-    MontageElement.define("montage-text", MontageText);
+    MontageElement.define("montage-text", MontageText, {
+        observedAttributes: ['value']
+    });
 }

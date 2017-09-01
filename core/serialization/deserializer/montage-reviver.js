@@ -1065,6 +1065,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
 });
 
+MontageReviver.findProxyForElement = function (element) {
+    return PROXY_ELEMENT_MAP.get(element);
+}
+
 if (typeof exports !== "undefined") {
+    
     exports.MontageReviver = MontageReviver;
 }
