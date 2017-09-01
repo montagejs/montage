@@ -5,7 +5,10 @@
  * @module montage/core/converter/converter
  * @requires montage/core/core
  */
-var Montage = require("../core").Montage;
+var MontageModule = require("../core"),
+    Montage = MontageModule.Montage,
+    objectDescriptorModuleIdDescriptor = MontageModule._objectDescriptorModuleIdDescriptor,
+    objectDescriptorDescriptor = MontageModule._objectDescriptorDescriptor;
 
 /**
  * @const {string}
@@ -105,9 +108,9 @@ var Converter = exports.Converter = Montage.specialize( /** @lends Converter# */
 
 }, {
 
-    objectDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
+    objectDescriptorModuleId: objectDescriptorModuleIdDescriptor,
 
-    objectDescriptor: require("../core")._objectDescriptorDescriptor
+    objectDescriptor: objectDescriptorDescriptor
 
 });
 
