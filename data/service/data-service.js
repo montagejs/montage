@@ -1663,7 +1663,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 return this._createdDataObjects;
             }
             else {
-                return this.rootService.createdDataObjects();
+                return this.rootService.createdDataObjects;
             }
         }
     },
