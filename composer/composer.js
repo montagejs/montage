@@ -77,7 +77,7 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
     shawdowRoot: {
         get: function () {
             if (!this._shawdowRoot) {
-                this._shawdowRoot = defaultEventManager.getShawdowRootFromNode(this.element);
+                this._shawdowRoot = defaultEventManager.shawdowRootFromNode(this.element);
             }
             return this._shawdowRoot;
         }

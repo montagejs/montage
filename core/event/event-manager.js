@@ -1187,7 +1187,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     // TODO why on the document and not the window?
                     var shadowRoot;
                     return /* isWindow*/target.screen ? target.document :
-                        (shadowRoot = this.getShawdowRootFromNode(target)) ?
+                        (shadowRoot = this.shawdowRootFromNode(target)) ?
                             shadowRoot : target.ownerDocument;
                 } else {
                     return target;
@@ -1196,7 +1196,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
         }
     },
 
-    getShawdowRootFromNode: {
+    shawdowRootFromNode: {
         value: function isInShadow(node) {
             if (window.ShadowRoot) {
                 while (node) {
