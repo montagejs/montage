@@ -23,7 +23,7 @@ function getModuleRequire(parentRequire, moduleId) {
 
     return module.require;
 }
-    
+
 // Cache all loaded object descriptors
 var OBJECT_DESCRIPTOR_CACHE = Object.create(null);
 
@@ -66,8 +66,15 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
     deserializeSelf: {
         value: function (deserializer) {
             this.super(deserializer);
-            this.module = deserializer.getProperty("module");
-            this.exportName = deserializer.getProperty("exportName");
+            var value;
+            value = deserializer.getProperty("module");
+            if (value !== void 0) {
+                this.module = value;
+            }
+            value = deserializer.getProperty("exportName") || this.exportName;
+            if (value !== void 0) {
+                this.exportName = value;
+            }
 
             if (!this.module) {
                 throw new Error("Cannot deserialize object descriptor without a module reference");
@@ -130,7 +137,7 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
                     targetRequire = Deserializer.getModuleRequire(_require, moduleId);
                     return new Deserializer().init(JSON.stringify(object), targetRequire).deserializeObject();
                 }).then(function (objectDescriptor) {
-                    
+
                     // TODO: May want to relax this to being just an Object Descriptor
                     if (!ModuleObjectDescriptor.prototype.isPrototypeOf(objectDescriptor)) {
                         throw new Error("Object in " + moduleId + " is not a module-object-descriptor");
