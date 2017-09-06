@@ -844,11 +844,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     objectDescriptorModuleId:require("./core")._objectDescriptorModuleIdDescriptor,
 
-    objectDescriptor:require("./core")._objectDescriptorDescriptor,
-
-    blueprintModuleId:require("./core")._blueprintModuleIdDescriptor,
-
-    blueprint:require("./core")._blueprintDescriptor
+    objectDescriptor:require("./core")._objectDescriptorDescriptor
 
 });
 

@@ -160,29 +160,6 @@ exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidati
     },
 
     objectDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
-    objectDescriptor: require("../core")._objectDescriptorDescriptor,
-
-    /*********************************************************************
-     * Deprecated methods
-     */
-
-    /**
-     * @deprecated
-     * Initialize a newly allocated validation rule.
-     * @deprecated
-     * @function
-     * @param {string} rule name
-     * @param {ObjectDescriptor} objectDescriptor
-     * @returns itself
-     */
-    initWithNameAndBlueprint: {
-        value: deprecate.deprecateMethod(void 0, function (name, blueprint) {
-            return this.initWithNameAndObjectDescriptor(name, blueprint);
-        }, "initWithNameAndBlueprint", "initWithNameAndObjectDescriptor")
-    },
-
-
-    blueprintModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
-    blueprint: require("../core")._objectDescriptorDescriptor
+    objectDescriptor: require("../core")._objectDescriptorDescriptor
 
 });

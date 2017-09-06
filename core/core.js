@@ -220,16 +220,8 @@ valuePropertyDescriptor.value = function specialize(prototypeProperties, constru
             Montage.defineProperty(constructor, "objectDescriptor", prototypeProperties.objectDescriptor);
         }
 
-        if ("blueprint" in prototypeProperties) {
-            Montage.defineProperty(constructor, "blueprint", prototypeProperties.blueprint);
-        }
-
         if ("objectDescriptorModuleId" in prototypeProperties) {
             Montage.defineProperty(constructor, "objectDescriptorModuleId", prototypeProperties.objectDescriptorModuleId);
-        }
-
-        if ("blueprintModuleId" in prototypeProperties) {
-            Montage.defineProperty(constructor, "blueprintModuleId", prototypeProperties.blueprintModuleId);
         }
 
         Montage.defineProperties(prototype, prototypeProperties, true);
@@ -1638,32 +1630,6 @@ exports._objectDescriptorModuleIdDescriptor = {
     }
 };
 
-/***
- * @deprecated use exports._objectDescriptorModuleIdDescriptor
- */
-exports._blueprintModuleIdDescriptor = {
-    serializable:false,
-    enumerable: false,
-    get:function () {
-        var info = Montage.getInfoForObject(this);
-        var self = (info && !info.isInstance) ? this : this.constructor;
-        if ((!Object.getOwnPropertyDescriptor(self, "_objectDescriptorModuleId")) || (!self._objectDescriptorModuleId)) {
-            info = Montage.getInfoForObject(self);
-            var moduleId = info.moduleId,
-                slashIndex = moduleId.lastIndexOf("/"),
-                dotIndex = moduleId.lastIndexOf(".");
-            slashIndex = ( slashIndex === -1 ? 0 : slashIndex + 1 );
-            dotIndex = ( dotIndex === -1 ? moduleId.length : dotIndex );
-            dotIndex = ( dotIndex < slashIndex ? moduleId.length : dotIndex );
-            Montage.defineProperty(self, "_objectDescriptorModuleId", {
-                enumerable: false,
-                value: moduleId.slice(0, dotIndex) + ".meta"
-            });
-        }
-        return self._objectDescriptorModuleId;
-    }
-};
-
 exports._objectDescriptorDescriptor = {
     serializable:false,
     enumerable: false,
@@ -1719,11 +1685,6 @@ exports._objectDescriptorDescriptor = {
         });
     }
 };
-
-/**
- * @deprecated use exports._objectDescriptorDescriptor
- */
-exports._blueprintDescriptor = exports._objectDescriptorDescriptor;
 
 // has to come last since serializer and deserializer depend on logger, which
 // in turn depends on montage running to completion

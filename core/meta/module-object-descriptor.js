@@ -168,31 +168,6 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
                     return objectDescriptor;
                 });
         }
-    },
-
-    /***************************************************************
-     * Deprecated methods.
-     */
-
-    /**
-     * Gets an object descriptor from a serialized file at the given module id.
-     * @deprecated
-     * @function
-     * @param {string} object descriptor module id
-     * @param {function} require function
-     */
-    getBlueprintWithModuleId: {
-        value: deprecate.deprecateMethod(void 0, function (moduleId, _require) {
-            return ModuleObjectDescriptor.getObjectDescriptorWithModuleId(moduleId, _require);
-        }, "ModuleBlueprint.getBlueprintWithModuleId", "ModuleObjectDescriptor.getObjectDescriptorWithModuleId")
-    },
-
-    /**
-     * @deprecated
-     */
-    createDefaultBlueprintForObject: {
-        value: deprecate.deprecateMethod(void 0, function (object) {
-            return ModuleObjectDescriptor.createDefaultObjectDescriptorForObject(object);
-        }, "ModuleBlueprint.createDefaultBlueprintForObject", "ModuleObjectDescriptor.createDefaultObjectDescriptorForObject")
     }
+
 });

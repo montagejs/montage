@@ -58,21 +58,6 @@ exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
         }
     },
 
-    /**
-     * Add all the properties defined in the blueprint to the target prototype.
-     *
-     * **Note:** This method will explore the blueprint hierarchy recursively.
-     *
-     * @function
-     * @param {Object} prototype
-     * @param {Blueprint} blueprint
-     */
-    applyWithBlueprint: {
-        value: deprecate.deprecateMethod(void 0, function (prototype, objectDescriptor) {
-            return this.applyWithObjectDescriptor(prototype, objectDescriptor);
-        }, "applyWithBlueprint", "applyWithObjectDescriptor")
-    },
-
     applyWithObjectDescriptor: {
         value: function (prototype, objectDescriptor) {
             if (objectDescriptor !== null) {
@@ -106,19 +91,10 @@ exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
                 }
             }
 
-            // For backwards compatibility.
-            Montage.defineProperty(prototype, "blueprint", { enumerable: false, serializable: false, get: function () {
-                return this._objectDescriptor;
-            }});
             Montage.defineProperty(prototype, "_objectDescriptor", { serializable: false, enumerable: false, value: objectDescriptor });
             Montage.defineProperty(prototype, "objectDescriptor", { enumerable: false, serializable: false, get: function () {
                 return this._objectDescriptor;
             }});
-            // TODO: Determine if it is safe to remove blueprintGet && blueprintSet?
-            // Enable access to the 'inherited' get method for easy override.
-            Montage.defineProperty(prototype, "blueprintGet", { serializable: false, enumerable: false, value: this.objectDescriptorGet});
-            // Enable access to the 'inherited' set method for easy override.
-            Montage.defineProperty(prototype, "blueprintSet", { serializable: false, enumerable: false, value: this.objectDescriptorSet});
             // Enable access to the 'inherited' get method for easy override.
             Montage.defineProperty(prototype, "objectDescriptorGet", { serializable: false, enumerable: false, value: this.objectDescriptorGet});
             // Enable access to the 'inherited' set method for easy override.
@@ -220,44 +196,12 @@ exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
      * @param {string} propertyName
      * @returns {PropertyDescriptor}
      */
-    blueprintGet: {
-        value: deprecate.deprecateMethod(void 0, function (propertyName) {
-            return this.objectDescriptorGet(propertyName);
-        }, "blueprintGet", "objectDescriptorGet"),
-        enumerable: false,
-        serializable: false
-    },
-
-    /**
-     * This is the get function called on the target object to access
-     * properties.
-     *
-     * @function
-     * @param {string} propertyName
-     * @returns {PropertyDescriptor}
-     */
     objectDescriptorGet: {
         value: function (propertyName) {
             var propertyDescriptor = this.objectDescriptor.propertyDescriptorForName(propertyName),
                 storageKey = "_" + propertyDescriptor.name;
             return this[storageKey];
         },
-        enumerable: false,
-        serializable: false
-    },
-
-    /**
-     * This is the get function called on the target object to set
-     * properties.
-     *
-     * @function
-     * @param {string} propertyName
-     * @param {PropertyBlueprint} value
-     */
-    blueprintSet: {
-        value: deprecate.deprecateMethod(void 0, function (propertyName, value) {
-            return this.objectDescriptorSet(propertyName, value);
-        }, "blueprintSet", "objectDescriptorSet"),
         enumerable: false,
         serializable: false
     },

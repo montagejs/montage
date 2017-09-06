@@ -34,20 +34,6 @@ exports.EventDescriptor = Montage.specialize( /** @lends EventDescriptor# */ {
         }
     },
 
-    /**
-     * Initialize a newly allocated event descriptor.
-     * @deprecated
-     * @function
-     * @param {string} name name of the event descriptor to create
-     * @param {ObjectDescriptor} objectDescriptor
-     * @returns itself
-     */
-    initWithNameAndBlueprint: {
-        value: deprecate.deprecateMethod(void 0, function (name, blueprint) {
-            return this.initWithNameAndObjectDescriptor(name, blueprint);
-        }, "new EventBlueprint().initWithNameAndBlueprint", "new EventDescriptor().initWithNameAndObjectDescriptor")
-    },
-
     serializeSelf: {
         value:function (serializer) {
             serializer.setProperty("name", this.name);
@@ -155,13 +141,5 @@ exports.EventDescriptor = Montage.specialize( /** @lends EventDescriptor# */ {
     },
 
     objectDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
-    objectDescriptor: require("../core")._objectDescriptorDescriptor,
-
-    /******************************************************************************
-     * Deprecated Methods
-     */
-
-    blueprintModuleId: require("../core")._blueprintModuleIdDescriptor,
-    blueprint: require("../core")._blueprintDescriptor
-
+    objectDescriptor: require("../core")._objectDescriptorDescriptor
 });
