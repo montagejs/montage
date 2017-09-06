@@ -44,7 +44,7 @@ exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidati
     deserializeSelf: {
         value: function (deserializer) {
             this._name = deserializer.getProperty("name");
-            this._owner = deserializer.getProperty("objectDescriptor") || deserializer.getProperty("blueprint");
+            this._owner = deserializer.getProperty("objectDescriptor");
             //            this._validationSelector = deserializer.getProperty("validationSelector");
             this._messageKey = deserializer.getProperty("messageKey");
             // FIXME [PJYF Jan 8 2013] There is an API issue in the deserialization
@@ -152,7 +152,7 @@ exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidati
     evaluateRule: {
         value: function (objectInstance) {
             if (this._propertyValidationEvaluator === null) {
-                var propertyValidationSemantics = new PropertyValidationSemantics().initWithBlueprint(this.objectDescriptor);
+                var propertyValidationSemantics = new PropertyValidationSemantics().initWithObjectDescriptor(this.objectDescriptor);
                 this._propertyValidationEvaluator = propertyValidationSemantics.compile(this.selector.syntax);
             }
             return this._propertyValidationEvaluator(objectInstance);
@@ -160,29 +160,6 @@ exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidati
     },
 
     objectDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
-    objectDescriptor: require("../core")._objectDescriptorDescriptor,
-
-    /*********************************************************************
-     * Deprecated methods
-     */
-
-    /**
-     * @deprecated
-     * Initialize a newly allocated validation rule.
-     * @deprecated
-     * @function
-     * @param {string} rule name
-     * @param {ObjectDescriptor} objectDescriptor
-     * @returns itself
-     */
-    initWithNameAndBlueprint: {
-        value: deprecate.deprecateMethod(void 0, function (name, blueprint) {
-            return this.initWithNameAndObjectDescriptor(name, blueprint);
-        }, "initWithNameAndBlueprint", "initWithNameAndObjectDescriptor")
-    },
-
-
-    blueprintModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
-    blueprint: require("../core")._objectDescriptorDescriptor
+    objectDescriptor: require("../core")._objectDescriptorDescriptor
 
 });

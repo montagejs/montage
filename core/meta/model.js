@@ -70,11 +70,11 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
 
             this._name = deserializer.getProperty("name");
             //copy contents into the objectDescriptors array
-            value = deserializer.getProperty("objectDescriptors") || deserializer.getProperty("blueprints");
+            value = deserializer.getProperty("objectDescriptors");
             if (value) {
                 this._objectDescriptors = value;
             }
-            this.modelInstanceModuleId = deserializer.getProperty("objectModelModuleId") || deserializer.getProperty("binderModuleId");
+            this.modelInstanceModuleId = deserializer.getProperty("objectModelModuleId");
         }
     },
 
@@ -276,89 +276,6 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
 
     objectDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
     objectDescriptor: require("../core")._objectDescriptorDescriptor,
-
-    /******************************************************************************
-     * Deprecated Methods
-     */
-
-
-    /**
-     * The list of object descriptors in this model.
-     * @deprecated
-     * @readonly
-     * @returns {Array.<ObjectDescriptor>}
-     */
-    blueprints: {
-        get: deprecate.deprecateMethod(void 0, function () {
-            return this.objectDescriptors;
-        }, "blueprints", "objectDescriptors")
-    },
-
-    /**
-     * @deprecated
-     * @function
-     * @param {?ObjectDescriptor} objectDescriptor
-     * @returns objectDescriptor
-     */
-    addBlueprint: {
-        value: deprecate.deprecateMethod(void 0, function (blueprint) {
-            return this.addObjectDescriptor(blueprint);
-        }, "addBlueprint", "addObjectDescriptor")
-    },
-
-    /**
-     * @deprecated
-     * @function
-     * @param {ObjectDescriptor} objectDescriptor
-     * @returns objectDescriptor
-     */
-    removeBlueprint: {
-        value: deprecate.deprecateMethod(void 0, function (blueprint) {
-            return this.removeObjectDescriptor(blueprint);
-        }, "removeBlueprint", "removeObjectDescriptor")
-    },
-
-    /**
-     * @deprecated
-     * @function
-     * @param {string} name
-     * @param {string} moduleID
-     * @returns {ObjectDescriptor} The new objectDescriptor
-     */
-    addBlueprintNamed: {
-        value: deprecate.deprecateMethod(void 0, function (name) {
-            return this.addObjectDescriptorNamed(name);
-        }, "addBlueprintNamed", "addObjectDescriptorNamed")
-    },
-
-    /**
-     * @deprecated
-     * Return the objectDescriptor associated with this prototype.
-     * @function
-     * @param {string} prototypeName
-     * @param {string} moduleId
-     * @returns {?ObjectDescriptor} objectDescriptor
-     */
-    blueprintForPrototype: {
-        value: deprecate.deprecateMethod(void 0, function (prototypeName) {
-            return this.blueprintForName(prototypeName);
-        }, "blueprintForPrototype", "blueprintForName")
-    },
-
-    /**
-     * @deprecated
-     * @param {string} name
-     * @returns {?ObjectDescriptor}
-     */
-    blueprintForName: {
-        value: deprecate.deprecateMethod(void 0, function (name) {
-            return this.objectDescriptorForName(name);
-        }, "blueprintForName", "objectDescriptorForName")
-    },
-
-    blueprintModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
-    blueprint: require("../core")._objectDescriptorDescriptor
-
 }, {
 
     /**
@@ -373,21 +290,6 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
             }
             return _group;
         }
-    },
-
-    /******************************************************************************
-     * Deprecated Methods
-     */
-
-    /**
-     * @deprecated
-     * Returns the model group.
-     * @returns {ModelGroup}
-     */
-    manager: {
-        get: deprecate.deprecateMethod(void 0, function () {
-            return exports.Model.group;
-        }, "Binder.manager", "Model.group")
     }
 
 });

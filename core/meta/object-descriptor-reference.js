@@ -25,7 +25,7 @@ exports.ObjectDescriptorReference = RemoteReference.specialize( {
             }
             return [
                 "objectDescriptor",
-                (this._reference.objectDescriptorName || this._reference.blueprintName || "unnamed").toLowerCase(),
+                (this._reference.objectDescriptorName || "unnamed").toLowerCase(),
                 "reference"
             ].join("_");
         }
@@ -34,9 +34,8 @@ exports.ObjectDescriptorReference = RemoteReference.specialize( {
     valueFromReference: {
         value: function (references) {
 
-            // TODO: references.blueprintModule && references.binderReference are deprecated.
-            var objectDescriptorModule = references.objectDescriptorModule || references.blueprintModule,
-                modelReference = references.modelReference || references.binderReference,
+            var objectDescriptorModule = references.objectDescriptorModule,
+                modelReference = references.modelReference,
                 modelPromise = Promise.resolve(ModelModule.Model.group.defaultModel);
             if (modelReference) {
                 modelPromise = ModelReference.prototype.valueFromReference(modelReference, require);

@@ -1,19 +1,19 @@
 {
-    "blueprint_condition_condition": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_condition_condition": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "condition",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valyeType": "boolean"
         }
     },
-    "blueprint_condition_removalStrategy": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_condition_removalStrategy": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "removalStrategy",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "enum",
@@ -24,35 +24,35 @@
             "defaultValue": "hide"
         }
     },
-    "blueprint_component_reference": {
+    "objectDescriptor_component_reference": {
         "object": "ui/component.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "Condition",
             "parent": {
-                "@": "blueprint_component_reference"
+                "@": "objectDescriptor_component_reference"
             },
             "propertyDescriptors": [
                 {
-                    "@": "blueprint_condition_condition"
+                    "@": "objectDescriptor_condition_condition"
                 },
                 {
-                    "@": "blueprint_condition_removalStrategy"
+                    "@": "objectDescriptor_condition_removalStrategy"
                 }
             ],
             "propertyDescriptorGroups": {
                 "Condition": [
                     {
-                        "@": "blueprint_condition_condition"
+                        "@": "objectDescriptor_condition_condition"
                     },
                     {
-                        "@": "blueprint_condition_removalStrategy"
+                        "@": "objectDescriptor_condition_removalStrategy"
                     }
                 ]
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/condition.reel/condition.meta"
             },
             "exportName": "Condition",

@@ -69,33 +69,6 @@ var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantic
                 };
             }
         }
-    },
-
-    /*****************************************************************
-     * Deprecated Methods
-     */
-
-    /**
-     * @deprecated
-     * Create a new semantic evaluator with the object descriptor.
-     * @function
-     * @param {ObjectDescriptor} objectDescriptor
-     * @returns itself
-     */
-    initWithBlueprint: {
-        value: deprecate.deprecateMethod(void 0, function (blueprint) {
-            return this.initWithObjectDescriptor(blueprint);
-        }, "initWithBlueprint", "initWithObjectDescriptor")
-    },
-
-    /**
-     * @deprecated
-     * Component description attached to this validation rule.
-     */
-    blueprint: {
-        get: deprecate.deprecateMethod(void 0, function () {
-            return this._blueprint;
-        }, "blueprint", "objectDescriptor")
     }
 
 });

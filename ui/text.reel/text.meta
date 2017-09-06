@@ -1,63 +1,63 @@
 {
-    "blueprint_text_value": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_text_value": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "value",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "string",
             "helpKey": ""
         }
     },
-    "blueprint_text_converter": {
-        "prototype": "core/meta/association-blueprint",
+    "objectDescriptor_text_converter": {
+        "prototype": "core/meta/association-objectDescriptor",
         "values": {
             "name": "converter",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object",
-            "targetBlueprint": {
-                "@": "blueprint_converter_reference"
+            "targetObjectDescriptor": {
+                "@": "objectDescriptor_converter_reference"
             },
             "helpKey": ""
         }
     },
-    "blueprint_converter_reference": {
+    "objectDescriptor_converter_reference": {
         "object": "core/converter/converter.meta"
     },
-    "blueprint_component_reference": {
+    "objectDescriptor_component_reference": {
         "object": "ui/component.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "Text",
             "customPrototype": false,
             "parent": {
-                "@": "blueprint_component_reference"
+                "@": "objectDescriptor_component_reference"
             },
             "propertyDescriptors": [
                 {
-                    "@": "blueprint_text_value"
+                    "@": "objectDescriptor_text_value"
                 },
                 {
-                    "@": "blueprint_text_converter"
+                    "@": "objectDescriptor_text_converter"
                 }
             ],
             "propertyDescriptorGroups": {
                 "text": [
                     {
-                        "@": "blueprint_text_value"
+                        "@": "objectDescriptor_text_value"
                     },
                     {
-                        "@": "blueprint_text_converter"
+                        "@": "objectDescriptor_text_converter"
                     }
                 ]
             },
             "propertyValidationRules": {},
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/text.reel/text.meta"
             },
             "exportName": "Text",

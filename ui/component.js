@@ -1917,15 +1917,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
-    blueprintModuleId: {
-        serializable: false,
-        enumerable: false,
-        get: function () {
-            return this.objectDescriptorModuleId;
-        }
-    },
-
-    blueprint: require("../core/core")._objectDescriptorDescriptor,
     objectDescriptor: require("../core/core")._objectDescriptorDescriptor,
 
     objectDescriptorModuleId: {

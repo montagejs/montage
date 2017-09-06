@@ -1,13 +1,13 @@
 {
 	"root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "TextInput",
             "customPrototype": false,
             "propertyDescriptors": [],
-            "propertyBlueprintGroups": {},
+            "propertyDescriptorGroups": {},
             "propertyValidationRules": {},
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/text-input.meta"
             },
             "exportName": "TextInput",

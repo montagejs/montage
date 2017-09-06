@@ -72,21 +72,6 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
         }
     },
 
-    /**
-     * Initialize a newly allocated property descriptor.
-     * @deprecated
-     * @function
-     * @param {string} name name of the property descriptor to create
-     * @param {ObjectDescriptor} objectDescriptor
-     * @param {number} cardinality name of the property descriptor to create
-     * @returns itself
-     */
-    initWithNameBlueprintAndCardinality: {
-        value: deprecate.deprecateMethod(void 0, function (name, blueprint, cardinality) {
-            return this.initWithNameObjectDescriptorAndCardinality(name, blueprint, cardinality);
-        }, "new PropertyBlueprint().initWithNameBlueprintAndCardinality", "new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality")
-    },
-
     serializeSelf: {
         value:function (serializer) {
             serializer.setProperty("name", this.name);
@@ -117,7 +102,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     deserializeSelf: {
         value:function (deserializer) {
             this._name = deserializer.getProperty("name");
-            this._owner = deserializer.getProperty("objectDescriptor") || deserializer.getProperty("blueprint");
+            this._owner = deserializer.getProperty("objectDescriptor");
             this.cardinality = this._getPropertyWithDefaults(deserializer, "cardinality");
             if (this.cardinality === -1) {
                 this.cardinality = Infinity;
@@ -129,7 +114,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this.collectionValueType = this._getPropertyWithDefaults(deserializer, "collectionValueType");
             this.valueObjectPrototypeName = this._getPropertyWithDefaults(deserializer, "valueObjectPrototypeName");
             this.valueObjectModuleId = this._getPropertyWithDefaults(deserializer, "valueObjectModuleId");
-            this._valueDescriptorReference = this._getPropertyWithDefaults(deserializer, "valueDescriptor", "targetBlueprint");
+            this._valueDescriptorReference = this._getPropertyWithDefaults(deserializer, "valueDescriptor");
             this.enumValues = this._getPropertyWithDefaults(deserializer, "enumValues");
             this.defaultValue = this._getPropertyWithDefaults(deserializer, "defaultValue");
             this.helpKey = this._getPropertyWithDefaults(deserializer, "helpKey");
@@ -379,35 +364,6 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      */
     serializable: {
         value: true
-    },
-
-    /********************************************************
-     * Deprecated functions
-     */
-
-    /**
-     * @deprecated
-     * @readonly
-     * @type {boolean}
-     * @default false
-     */
-    // TODO: How to handle these case?
-    isAssociationBlueprint: {
-        get: deprecate.deprecateMethod(void 0, function () {
-            return !!this._valueDescriptorReference;
-        }, "isAssociationBlueprint", "No analog")
-    },
-
-    targetBlueprint: {
-        get: deprecate.deprecateMethod(void 0, function () {
-            return this.valueDescriptor;
-        }, "targetBlueprint.get", "valueDescriptor.get"),
-        set: deprecate.deprecateMethod(void 0, function (value) {
-            this.valueDescriptor = value;
-        }, "targetBlueprint.get", "valueDescriptor.set")
-    },
-
-    blueprintDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
-    blueprint: require("../core")._objectDescriptorDescriptor
+    }
 
 });

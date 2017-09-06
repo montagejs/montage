@@ -1,28 +1,28 @@
 {
     "title_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "title",
             "valueType": "string",
-            "blueprint": {"@": "root"}
+            "objectDescriptor": {"@": "root"}
         }
     },
     "message_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "message",
             "valueType": "string",
-            "blueprint": {"@": "root"}
+            "objectDescriptor": {"@": "root"}
         }
     },
-    "blueprint_parent": {
+    "objectDescriptor_parent": {
         "object": "ui/component.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "Abstract Alert",
-            "parent": {"@": "blueprint_parent"},
+            "parent": {"@": "objectDescriptor_parent"},
             "propertyDescriptors": [
                 {"@": "title_property"},
                 {"@": "message_property"}
@@ -35,7 +35,7 @@
                     {"@": "title_property"}
                 ]
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/base/abstract-alert.meta"
             },
             "exportName": "AbstractAlert",

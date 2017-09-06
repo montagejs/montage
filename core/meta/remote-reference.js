@@ -91,9 +91,6 @@ exports.RemoteReference = Montage.specialize({
     },
 
     objectDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
-    objectDescriptor: require("../core")._objectDescriptorDescriptor,
-
-    blueprintModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
-    blueprint: require("../core")._objectDescriptorDescriptor
+    objectDescriptor: require("../core")._objectDescriptorDescriptor
 
 });

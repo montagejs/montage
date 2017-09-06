@@ -1,15 +1,15 @@
 {
-    "blueprint_component_reference": {
+    "objectDescriptor_component_reference": {
         "object": "ui/overlay.reel/overlay.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "Modal Overlay",
             "parent": {
-                "@": "blueprint_component_reference"
+                "@": "objectDescriptor_component_reference"
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/modal-overlay.reel/modal-overlay.meta"
             },
             "exportName": "ModalOverlay",

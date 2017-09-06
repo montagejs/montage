@@ -617,8 +617,8 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
 
 }, {
 
-    blueprintModuleId:require("./core")._blueprintModuleIdDescriptor,
+    objectDescriptorModuleId:require("./core")._objectDescriptorModuleIdDescriptor,
 
-    blueprint:require("./core")._blueprintDescriptor
+    objectDescriptor:require("./core")._objectDescriptorDescriptor
 
 });
