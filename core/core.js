@@ -1637,7 +1637,7 @@ exports._objectDescriptorDescriptor = {
         var info = Montage.getInfoForObject(this);
         var self = info && !info.isInstance ? this : this.constructor;
         if (!Object.getOwnPropertyDescriptor(self, "_objectDescriptor") || !self._objectDescriptor) {
-            var objectDescriptorModuleId = self.objectDescriptorModuleId || self.blueprintModuleId;
+            var objectDescriptorModuleId = self.objectDescriptorModuleId;
             if (!objectDescriptorModuleId) {
                 throw new TypeError("ObjectDescriptor moduleId undefined for the module '" + JSON.stringify(self) + "'");
             }

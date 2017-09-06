@@ -70,11 +70,11 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
 
             this._name = deserializer.getProperty("name");
             //copy contents into the objectDescriptors array
-            value = deserializer.getProperty("objectDescriptors") || deserializer.getProperty("blueprints");
+            value = deserializer.getProperty("objectDescriptors");
             if (value) {
                 this._objectDescriptors = value;
             }
-            this.modelInstanceModuleId = deserializer.getProperty("objectModelModuleId") || deserializer.getProperty("binderModuleId");
+            this.modelInstanceModuleId = deserializer.getProperty("objectModelModuleId");
         }
     },
 

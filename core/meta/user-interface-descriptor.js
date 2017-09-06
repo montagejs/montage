@@ -16,7 +16,7 @@ Javier want to be able to define which columns should be used in a table, the ra
 if a user resize a column, where does it get saved?
 The table would ask the object what does it has for a table.
 
-Needs groups of properties, like in blueprint
+Needs groups of properties, like in objectDescriptor
 
 When serializing their states, a table view that is data driven, the user tweaks needs to be  stored by component unique id and by the type they displayed at the time of change
 */
@@ -27,7 +27,7 @@ When serializing their states, a table view that is data driven, the user tweaks
  */
 exports.UserInterfaceDescriptor = Montage.specialize( /** @lends UserInterfaceDescriptor.prototype # */ {
     /**
-     * The object a UserInterfaceDescriptor describes. This is intented be an ObjectDescriptor/blueprint or a PropertyDescriptor/PropertyBlueprint
+     * The object a UserInterfaceDescriptor describes. This is intented be an ObjectDescriptor or a PropertyDescriptor
      *
      * @type {object} descriptor
      */
@@ -102,8 +102,8 @@ exports.UserInterfaceDescriptor = Montage.specialize( /** @lends UserInterfaceDe
     },
 
     /**
-     * An array of UserInterfaceDescriptors that individually describe the PropertyDescriptors/PropertyBlueprints of this object's descriptor's PropertyDescriptors
-     * An ObjectDescriptor/Blueprint has groups of propery descriptors that should be respected in term of organization
+     * An array of UserInterfaceDescriptors that individually describe the PropertyDescriptors of this object's descriptor's PropertyDescriptors
+     * An ObjectDescriptor has groups of propery descriptors that should be respected in term of organization
      *
      * @type {Component} propertyUserInterfaceDescriptors
      */

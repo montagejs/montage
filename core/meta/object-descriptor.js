@@ -90,7 +90,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             if (value) {
                 this._model = value;
             }
-            this.objectDescriptorInstanceModule = deserializer.getProperty("objectDescriptorModule") || deserializer.getProperty("blueprintModule");
+            this.objectDescriptorInstanceModule = deserializer.getProperty("objectDescriptorModule");
             parentReference = deserializer.getProperty("parent");
             if (parentReference && parentReference.promise && parentReference.valueFromReference) {
                 deprecate.deprecationWarningOnce("parent reference via ObjectDescriptorReference", "direct reference with object syntax");
@@ -101,16 +101,16 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
 
             this.customPrototype = this._getPropertyWithDefaults(deserializer, "customPrototype");
             //
-            value = deserializer.getProperty("propertyDescriptors") || deserializer.getProperty("propertyBlueprints");
+            value = deserializer.getProperty("propertyDescriptors");
             if (value) {
                 this._propertyDescriptors = value;
             }
 
-            value = deserializer.getProperty("propertyDescriptorGroups") || deserializer.getProperty("propertyBlueprintGroups");
+            value = deserializer.getProperty("propertyDescriptorGroups");
             if (value) {
                 this._propertyDescriptorGroups = value;
             }
-            value = deserializer.getProperty("eventDescriptors") || deserializer.getProperty("eventBlueprints");
+            value = deserializer.getProperty("eventDescriptors");
             if (value) {
                 this._eventDescriptors = value;
             }
@@ -321,7 +321,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Blueprint parent
+     * ObjectDescriptor parent
      * @type {?ObjectDescriptor}
      */
     parent: {
@@ -526,7 +526,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
 
     /**
      * List of properties descriptor groups names
-     * @returns {Array.<PropertyBlueprint>}
+     * @returns {Array.<PropertyDescriptor>}
      */
     propertyDescriptorGroups: {
         get: function () {
@@ -598,7 +598,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
      * @function
      * @param {string} property to add
      * @param {string} name of the group
-     * @returns {Array.<PropertyBlueprint>} property descriptor group
+     * @returns {Array.<PropertyDescriptor>} property descriptor group
      */
     addPropertyDescriptorToGroupNamed: {
         value: function (propertyDescriptor, groupName) {

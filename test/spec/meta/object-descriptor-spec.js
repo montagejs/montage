@@ -309,13 +309,12 @@ describe("meta/object-descriptor-spec", function () {
                     isInstance: { value: true }
                 });
 
-                expect(sub.objectDescriptorModuleId === "pass.meta" || sub.objectDescriptorModuleId === "pass.mjson").toBeTruthy();
+                expect(sub.objectDescriptorModuleId === "pass.mjson").toBeTruthy();
             });
 
             it("creates an objectDescriptor when the parent has no objectDescriptor", function (done) {
                 ObjectDescriptor.objectDescriptor.then(function (objectDescriptor){
-                    expect( objectDescriptor.objectDescriptorInstanceModule.id === "core/meta/blueprint.meta" ||
-                            objectDescriptor.objectDescriptorInstanceModule.id === "core/meta/object-descriptor.mjson").toBeTruthy();
+                    expect(objectDescriptor.objectDescriptorInstanceModule.id).toEqual("core/meta/object-descriptor.mjson");
                 }, function (err) {
                     fail(err);
                 }).finally(function () {

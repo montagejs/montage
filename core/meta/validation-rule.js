@@ -44,7 +44,7 @@ exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidati
     deserializeSelf: {
         value: function (deserializer) {
             this._name = deserializer.getProperty("name");
-            this._owner = deserializer.getProperty("objectDescriptor") || deserializer.getProperty("blueprint");
+            this._owner = deserializer.getProperty("objectDescriptor");
             //            this._validationSelector = deserializer.getProperty("validationSelector");
             this._messageKey = deserializer.getProperty("messageKey");
             // FIXME [PJYF Jan 8 2013] There is an API issue in the deserialization
@@ -152,7 +152,7 @@ exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidati
     evaluateRule: {
         value: function (objectInstance) {
             if (this._propertyValidationEvaluator === null) {
-                var propertyValidationSemantics = new PropertyValidationSemantics().initWithBlueprint(this.objectDescriptor);
+                var propertyValidationSemantics = new PropertyValidationSemantics().initWithObjectDescriptor(this.objectDescriptor);
                 this._propertyValidationEvaluator = propertyValidationSemantics.compile(this.selector.syntax);
             }
             return this._propertyValidationEvaluator(objectInstance);

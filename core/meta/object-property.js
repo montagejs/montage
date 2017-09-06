@@ -38,7 +38,7 @@ exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
      *
      * @function
      * @param {Object} prototype
-     * @param {Blueprint} blueprint
+     * @param {ObjectDescriptor} objectDescriptor
      */
     apply: {
         value: function (prototype, objectDescriptor) {
@@ -70,11 +70,11 @@ exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
     },
 
     /**
-     * Add all the properties defined in the blueprint to the target prototype.
+     * Add all the properties defined in the objectDescriptor to the target prototype.
      *
      * @function
      * @param {Object} prototype
-     * @param {Blueprint} blueprint
+     * @param {ObjectDescriptor} objectDescriptor
      */
     addProperties: {
         value: function (prototype, objectDescriptor) {

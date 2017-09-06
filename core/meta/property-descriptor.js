@@ -102,7 +102,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     deserializeSelf: {
         value:function (deserializer) {
             this._name = deserializer.getProperty("name");
-            this._owner = deserializer.getProperty("objectDescriptor") || deserializer.getProperty("blueprint");
+            this._owner = deserializer.getProperty("objectDescriptor");
             this.cardinality = this._getPropertyWithDefaults(deserializer, "cardinality");
             if (this.cardinality === -1) {
                 this.cardinality = Infinity;
@@ -114,7 +114,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this.collectionValueType = this._getPropertyWithDefaults(deserializer, "collectionValueType");
             this.valueObjectPrototypeName = this._getPropertyWithDefaults(deserializer, "valueObjectPrototypeName");
             this.valueObjectModuleId = this._getPropertyWithDefaults(deserializer, "valueObjectModuleId");
-            this._valueDescriptorReference = this._getPropertyWithDefaults(deserializer, "valueDescriptor", "targetBlueprint");
+            this._valueDescriptorReference = this._getPropertyWithDefaults(deserializer, "valueDescriptor");
             this.enumValues = this._getPropertyWithDefaults(deserializer, "enumValues");
             this.defaultValue = this._getPropertyWithDefaults(deserializer, "defaultValue");
             this.helpKey = this._getPropertyWithDefaults(deserializer, "helpKey");

@@ -48,7 +48,7 @@ exports.EventDescriptor = Montage.specialize( /** @lends EventDescriptor# */ {
     deserializeSelf: {
         value:function (deserializer) {
             this._name = deserializer.getProperty("name");
-            this._owner = deserializer.getProperty("objectDescriptor") || deserializer.getProperty("blueprint");
+            this._owner = deserializer.getProperty("objectDescriptor");
             this.detailKeys = this._getPropertyWithDefaults(deserializer, "detailKeys");
             this.helpKey = this._getPropertyWithDefaults(deserializer, "helpKey");
         }
