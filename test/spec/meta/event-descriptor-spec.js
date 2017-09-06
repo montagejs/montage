@@ -8,10 +8,10 @@ describe("meta/event-descriptor-spec", function () {
 
     describe("EventDescriptor", function () {
 
-        var blueprint, eventDescriptor;
+        var objectDescriptor, eventDescriptor;
         beforeEach(function () {
-            blueprint = new ObjectDescriptor().initWithName("testObjectDescriptor");
-            eventDescriptor = new EventDescriptor().initWithNameAndObjectDescriptor("event", blueprint);
+            objectDescriptor = new ObjectDescriptor().initWithName("testObjectDescriptor");
+            eventDescriptor = new EventDescriptor().initWithNameAndObjectDescriptor("event", objectDescriptor);
         });
 
         it("has the correct name", function () {
@@ -36,19 +36,9 @@ describe("meta/event-descriptor-spec", function () {
         });
 
         describe("serialization", function () {
-            var serializer, blueprintSerialization, objectDescriptorSerialization;
+            var serializer, objectDescriptorSerialization;
 
             beforeEach(function () {
-                blueprintSerialization = {
-                    "root": {
-                        "prototype": "montage/core/meta/event-blueprint",
-                        "values": {
-                            "name": "event",
-                            "blueprint": {"@": "blueprint_testblueprint"}
-                        }
-                    },
-                    "blueprint_testblueprint": {}
-                };
                 objectDescriptorSerialization = {
                     "root": {
                         "prototype": "montage/core/meta/event-descriptor",
@@ -75,8 +65,8 @@ describe("meta/event-descriptor-spec", function () {
             });
 
             xit("should deserialize correctly", function (done) {
-                var deserializer = new Deserializer().init(JSON.stringify(blueprintSerialization), require);
-                deserializer.deserializeObject({blueprint_testblueprint: blueprint}).then(function (deserialized) {
+                var deserializer = new Deserializer().init(JSON.stringify(objectDescriptorSerialization), require);
+                deserializer.deserializeObject({objectDescriptor_testobjectdescriptor: objectDescriptor}).then(function (deserialized) {
                     expect(deserialized).toEqual(eventDescriptor);
                 }).finally(function () {
                     done();
