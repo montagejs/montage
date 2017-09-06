@@ -21,7 +21,7 @@ console.log(ModelHelper);
 // TODO add proper deps to montage modules
 require('montage/core/meta/object-descriptor');
 require('montage/core/meta/property-descriptor');
-require('montage/core/meta/module-blueprint');
+require('montage/core/meta/module-object-descriptor');
 
 describe("meta/object-descriptor-spec", function () {
     describe("Model", function () {
