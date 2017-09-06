@@ -4,7 +4,7 @@ var EventDescriptor = require("montage/core/meta/event-descriptor").EventDescrip
 var Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer;
 var Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer;
 
-describe("meta/event-blueprint-spec", function () {
+describe("meta/event-descriptor-spec", function () {
 
     describe("EventDescriptor", function () {
 
@@ -54,10 +54,10 @@ describe("meta/event-blueprint-spec", function () {
                         "prototype": "montage/core/meta/event-descriptor",
                         "values": {
                             "name": "event",
-                            "objectDescriptor": {"@": "objectDescriptor_testblueprint"}
+                            "objectDescriptor": {"@": "objectDescriptor_testobjectdescriptor"}
                         }
                     },
-                    "objectDescriptor_testblueprint": {}
+                    "objectDescriptor_testobjectdescriptor": {}
                 };
                 serializer = new Serializer().initWithRequire(require);
                 serializer.setSerializationIndentation(4);
