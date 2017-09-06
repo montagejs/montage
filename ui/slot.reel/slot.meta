@@ -1,53 +1,53 @@
 {
-    "blueprint_slot_delegate": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_slot_delegate": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "delegate",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object"
         }
     },
-    "blueprint_slot_content": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_slot_content": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "content",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object"
         }
     },
-    "blueprint_component_reference": {
+    "objectDescriptor_component_reference": {
         "object": "ui/component.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "Slot",
             "parent": {
-                "@": "blueprint_component_reference"
+                "@": "objectDescriptor_component_reference"
             },
             "propertyDescriptors": [
                 {
-                    "@": "blueprint_slot_delegate"
+                    "@": "objectDescriptor_slot_delegate"
                 },
                 {
-                    "@": "blueprint_slot_content"
+                    "@": "objectDescriptor_slot_content"
                 }
             ],
             "propertyDescriptorGroups": {
                 "Slot": [
                     {
-                        "@": "blueprint_slot_delegate"
+                        "@": "objectDescriptor_slot_delegate"
                     },
                     {
-                        "@": "blueprint_slot_content"
+                        "@": "objectDescriptor_slot_content"
                     }
                 ]
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/slot.reel/slot.meta"
             },
             "exportName": "Slot",

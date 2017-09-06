@@ -1,9 +1,9 @@
 {
-    "blueprint_component_identifier": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_component_identifier": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "identifier",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -11,11 +11,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_component_element": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_component_element": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "element",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -24,11 +24,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_component_classList": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_component_classList": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "classList",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": -1,
@@ -41,11 +41,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_component_accesskey": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_component_accesskey": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "accesskey",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -57,11 +57,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_component_contenteditable": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_component_contenteditable": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "contenteditable",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -78,11 +78,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_component_contextmenu": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_component_contextmenu": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "contextmenu",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -94,11 +94,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_component_dir": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_component_dir": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "dir",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -115,11 +115,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_component_draggable": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_component_draggable": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "draggable",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -136,11 +136,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_component_dropzone": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_component_dropzone": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "dropzone",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -152,11 +152,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_component_hidden": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_component_hidden": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "hidden",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -168,11 +168,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_component_lang": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_component_lang": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "lang",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -184,11 +184,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_component_spellcheck": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_component_spellcheck": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "spellcheck",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -200,11 +200,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_component_style": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_component_style": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "style",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -216,11 +216,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_component_tabindex": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_component_tabindex": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "tabindex",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -232,11 +232,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_component_title": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_component_title": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "title",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -249,108 +249,108 @@
         }
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "Component",
             "customPrototype": false,
             "propertyDescriptors": [
                 {
-                    "@": "blueprint_component_identifier"
+                    "@": "objectDescriptor_component_identifier"
                 },
                 {
-                    "@": "blueprint_component_element"
+                    "@": "objectDescriptor_component_element"
                 },
                 {
-                    "@": "blueprint_component_classList"
+                    "@": "objectDescriptor_component_classList"
                 },
                 {
-                    "@": "blueprint_component_accesskey"
+                    "@": "objectDescriptor_component_accesskey"
                 },
                 {
-                    "@": "blueprint_component_contenteditable"
+                    "@": "objectDescriptor_component_contenteditable"
                 },
                 {
-                    "@": "blueprint_component_contextmenu"
+                    "@": "objectDescriptor_component_contextmenu"
                 },
                 {
-                    "@": "blueprint_component_dir"
+                    "@": "objectDescriptor_component_dir"
                 },
                 {
-                    "@": "blueprint_component_draggable"
+                    "@": "objectDescriptor_component_draggable"
                 },
                 {
-                    "@": "blueprint_component_dropzone"
+                    "@": "objectDescriptor_component_dropzone"
                 },
                 {
-                    "@": "blueprint_component_hidden"
+                    "@": "objectDescriptor_component_hidden"
                 },
                 {
-                    "@": "blueprint_component_lang"
+                    "@": "objectDescriptor_component_lang"
                 },
                 {
-                    "@": "blueprint_component_spellcheck"
+                    "@": "objectDescriptor_component_spellcheck"
                 },
                 {
-                    "@": "blueprint_component_style"
+                    "@": "objectDescriptor_component_style"
                 },
                 {
-                    "@": "blueprint_component_tabindex"
+                    "@": "objectDescriptor_component_tabindex"
                 },
                 {
-                    "@": "blueprint_component_title"
+                    "@": "objectDescriptor_component_title"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "component": [
                     {
-                        "@": "blueprint_component_identifier"
+                        "@": "objectDescriptor_component_identifier"
                     }
                 ],
                 "element": [
                     {
-                        "@": "blueprint_component_classList"
+                        "@": "objectDescriptor_component_classList"
                     },
                     {
-                        "@": "blueprint_component_accesskey"
+                        "@": "objectDescriptor_component_accesskey"
                     },
                     {
-                        "@": "blueprint_component_contenteditable"
+                        "@": "objectDescriptor_component_contenteditable"
                     },
                     {
-                        "@": "blueprint_component_contextmenu"
+                        "@": "objectDescriptor_component_contextmenu"
                     },
                     {
-                        "@": "blueprint_component_dir"
+                        "@": "objectDescriptor_component_dir"
                     },
                     {
-                        "@": "blueprint_component_draggable"
+                        "@": "objectDescriptor_component_draggable"
                     },
                     {
-                        "@": "blueprint_component_dropzone"
+                        "@": "objectDescriptor_component_dropzone"
                     },
                     {
-                        "@": "blueprint_component_hidden"
+                        "@": "objectDescriptor_component_hidden"
                     },
                     {
-                        "@": "blueprint_component_lang"
+                        "@": "objectDescriptor_component_lang"
                     },
                     {
-                        "@": "blueprint_component_spellcheck"
+                        "@": "objectDescriptor_component_spellcheck"
                     },
                     {
-                        "@": "blueprint_component_style"
+                        "@": "objectDescriptor_component_style"
                     },
                     {
-                        "@": "blueprint_component_tabindex"
+                        "@": "objectDescriptor_component_tabindex"
                     },
                     {
-                        "@": "blueprint_component_title"
+                        "@": "objectDescriptor_component_title"
                     }
                 ]
                 
             },
             "propertyValidationRules": {},
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/component.meta"
             },
             "exportName": "Component",

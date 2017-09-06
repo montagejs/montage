@@ -1,9 +1,9 @@
 {
-    "blueprint_button_enabled": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_button_enabled": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "enabled",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -15,11 +15,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_button_formaction": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_button_formaction": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "formaction",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -31,11 +31,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_button_formenctype": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_button_formenctype": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "formenctype",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -52,11 +52,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_button_formmethod": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_button_formmethod": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "formmethod",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -72,11 +72,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_button_formnovalidate": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_button_formnovalidate": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "formnovalidate",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -88,11 +88,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_button_formtarget": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_button_formtarget": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "formtarget",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -104,11 +104,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_button_label": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_button_label": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "label",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -120,11 +120,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_button_type": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_button_type": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "type",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -141,75 +141,75 @@
             "helpKey": ""
         }
     },
-    "blueprint_control_reference": {
+    "objectDescriptor_control_reference": {
         "object": "ui/control.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "button",
             "customPrototype": false,
             "parent": {
-                "@": "blueprint_control_reference"
+                "@": "objectDescriptor_control_reference"
             },
             "propertyDescriptors": [
                 {
-                    "@": "blueprint_button_enabled"
+                    "@": "objectDescriptor_button_enabled"
                 },
                 {
-                    "@": "blueprint_button_formaction"
+                    "@": "objectDescriptor_button_formaction"
                 },
                 {
-                    "@": "blueprint_button_formenctype"
+                    "@": "objectDescriptor_button_formenctype"
                 },
                 {
-                    "@": "blueprint_button_formmethod"
+                    "@": "objectDescriptor_button_formmethod"
                 },
                 {
-                    "@": "blueprint_button_formnovalidate"
+                    "@": "objectDescriptor_button_formnovalidate"
                 },
                 {
-                    "@": "blueprint_button_formtarget"
+                    "@": "objectDescriptor_button_formtarget"
                 },
                 {
-                    "@": "blueprint_button_label"
+                    "@": "objectDescriptor_button_label"
                 },
                 {
-                    "@": "blueprint_button_type"
+                    "@": "objectDescriptor_button_type"
                 }
             ],
             "propertyDescriptorGroups": {
                 "button": [
                     {
-                        "@": "blueprint_button_label"
+                        "@": "objectDescriptor_button_label"
                     },
                     {
-                        "@": "blueprint_button_type"
+                        "@": "objectDescriptor_button_type"
                     },
                     {
-                        "@": "blueprint_button_enabled"
+                        "@": "objectDescriptor_button_enabled"
                     }
                 ],
                 "button-form": [
                     {
-                        "@": "blueprint_button_formaction"
+                        "@": "objectDescriptor_button_formaction"
                     },
                     {
-                        "@": "blueprint_button_formenctype"
+                        "@": "objectDescriptor_button_formenctype"
                     },
                     {
-                        "@": "blueprint_button_formmethod"
+                        "@": "objectDescriptor_button_formmethod"
                     },
                     {
-                        "@": "blueprint_button_formnovalidate"
+                        "@": "objectDescriptor_button_formnovalidate"
                     },
                     {
-                        "@": "blueprint_button_formtarget"
+                        "@": "objectDescriptor_button_formtarget"
                     }
                 ]
             },
             "propertyValidationRules": {},
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/button.reel/button.meta"
             },
             "exportName": "Button",

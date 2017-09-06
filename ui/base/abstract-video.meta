@@ -1,79 +1,79 @@
 {
     "mediaElement_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "mediaElement",
-            "blueprint": {"@": "root"},
+            "objectDescriptor": {"@": "root"},
             "valueType": "object"
         }
     },
     "videoController_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "videoController",
-            "blueprint": {"@": "root"},
+            "objectDescriptor": {"@": "root"},
             "valueType": "object"
         }
     },
     "src_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "src",
-            "blueprint": {"@": "root"},
+            "objectDescriptor": {"@": "root"},
             "valueType": "string"
         }
     },
     "sources_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "sources",
-            "blueprint": {"@": "root"},
+            "objectDescriptor": {"@": "root"},
             "valueType": "object"
         }
     },
     "repeat_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "repeat",
-            "blueprint": {"@": "root"},
+            "objectDescriptor": {"@": "root"},
             "valueType": "boolean"
         }
     },
     "posterSrc_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "posterSrc",
-            "blueprint": {"@": "root"},
+            "objectDescriptor": {"@": "root"},
             "valueType": "string"
         }
     },
     "supportsFullScreen_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "supportsFullScreen",
-            "blueprint": {"@": "root"},
+            "objectDescriptor": {"@": "root"},
             "valueType": "boolean"
         }
     },
     "isFullScreen_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "isFullScreen",
-            "blueprint": {"@": "root"},
+            "objectDescriptor": {"@": "root"},
             "readOnly": true,
             "valueType": "boolean"
         }
     },
-    "blueprint_parent": {
+    "objectDescriptor_parent": {
         "object": "ui/component.meta"
     },
     "root": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/object-descriptor",
         "values": {
             "name": "AbstractVideo",
-            "blueprintModuleId": "ui/base/abstract-video.meta",
+            "objectDescriptorModuleId": "ui/base/abstract-video.meta",
             "prototypeName": "AbstractVideo",
-            "parent": {"@": "blueprint_parent"},
+            "parent": {"@": "objectDescriptor_parent"},
             "propertyDescriptors": [
                 {"@": "mediaElement_property"},
                 {"@": "videoController_property"},
