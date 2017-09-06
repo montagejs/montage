@@ -2,11 +2,11 @@
 </copyright> */
 var Montage = require("montage").Montage;
 
-var BinderHelper = require("spec/meta/blueprint/binderhelper").BinderHelper;
-var binder = BinderHelper.companyBinder();
-var blueprint = binder.objectDescriptorForName("Person");
+var ModelHelper = require("spec/meta/blueprint/model-helper").ModelHelper;
+var model = ModelHelper.companyModel();
+var objectDescriptor = model.objectDescriptorForName("Person");
 
-var Person = exports.Person = blueprint.create(Montage, {
+var Person = exports.Person = objectDescriptor.create(Montage, {
 
     // Token class
 

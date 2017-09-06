@@ -65,11 +65,11 @@ describe("test/base/abstract-toggle-switch-spec", function () {
         });
     });
 
-    describe("blueprint", function () {
+    describe("objectDescriptor", function () {
         it("can be created", function (done) {
-            var blueprintPromise = AbstractToggleSwitch.blueprint;
-            blueprintPromise.then(function (blueprint) {
-                expect(blueprint).not.toBeNull();
+            var objectDescriptorPromise = AbstractToggleSwitch.objectDescriptor;
+            objectDescriptorPromise.then(function (objectDescriptor) {
+                expect(objectDescriptor).not.toBeNull();
             }, function (err) {
                 fail(err);
             }).finally(function () {

@@ -310,11 +310,11 @@ describe("test/ui/text-input-spec", function () {
         });
    });
 
-    describe("blueprint", function () {
+    describe("objectDescriptor", function () {
         it("can be created", function (done) {
-            var blueprintPromise = TextInput.blueprint;
-            blueprintPromise.then(function (blueprint) {
-                expect(blueprint).not.toBeNull();
+            var objectDescriptorPromise = TextInput.objectDescriptor;
+            objectDescriptorPromise.then(function (objectDescriptor) {
+                expect(objectDescriptor).not.toBeNull();
             }).finally(function () {
                 done();
             });

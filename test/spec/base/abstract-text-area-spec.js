@@ -178,11 +178,11 @@ describe("test/base/abstract-text-area-spec", function () {
             expect(aTextArea.element.hasEventListener("change", aTextArea)).toBe(true);
         });
     });
-    describe("blueprint", function () {
+    describe("objectDescriptor", function () {
         it("can be created", function (done) {
-            var blueprintPromise = AbstractTextArea.blueprint;
-            blueprintPromise.then(function (blueprint) {
-                expect(blueprint).not.toBeNull();
+            var objectDescriptorPromise = AbstractTextArea.objectDescriptor;
+            objectDescriptorPromise.then(function (objectDescriptor) {
+                expect(objectDescriptor).not.toBeNull();
             }).finally(function () {
                 done();
             });
