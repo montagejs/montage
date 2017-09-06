@@ -268,11 +268,11 @@ describe("test/base/abstract-radio-button-spec", function () {
             expect(aRadioButton.element.getAttribute("aria-checked")).toBe("false");
         });
     });
-    describe("blueprint", function () {
+    describe("objectDescriptor", function () {
         it("can be created", function (done) {
-            var blueprintPromise = AbstractRadioButton.blueprint;
-            blueprintPromise.then(function (blueprint) {
-                expect(blueprint).not.toBeNull();
+            var objectDescriptorPromise = AbstractRadioButton.objectDescriptor;
+            objectDescriptorPromise.then(function (objectDescriptor) {
+                expect(objectDescriptor).not.toBeNull();
             }, function (err) {
                 fail(err);
             }).finally(function () {
