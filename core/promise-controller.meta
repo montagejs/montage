@@ -1,9 +1,9 @@
 {
     "promiseController_promise": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "promise",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object",
@@ -11,10 +11,10 @@
         }
     },
     "promiseController_value": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "value",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object",
@@ -22,10 +22,10 @@
         }
     },
     "promiseController_error": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "error",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object",
@@ -33,10 +33,10 @@
         }
     },
     "promiseController_pending": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "pending",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -44,10 +44,10 @@
         }
     },
     "promiseController_fulfilled": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "fulfilled",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -55,10 +55,10 @@
         }
     },
     "promiseController_rejected": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "rejected",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -66,7 +66,7 @@
         }
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "PromiseController",
             "customPrototype": false,
@@ -113,7 +113,7 @@
                 ]
             },
             "propertyValidationRules": {},
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "core/promise-controller.meta"
             },
             "exportName": "PromiseController",
