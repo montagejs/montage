@@ -142,6 +142,10 @@ exports.RadioButtonController = Montage.specialize(/** @lends RadioButtonControl
 
 }, /** @lends RadioButtonController. */ {
 
+    objectDescriptorModuleId:require("./core")._objectDescriptorModuleIdDescriptor,
+
+    objectDescriptor:require("./core")._objectDescriptorDescriptor,
+
     blueprintModuleId:require("./core")._blueprintModuleIdDescriptor,
 
     blueprint:require("./core")._blueprintDescriptor
