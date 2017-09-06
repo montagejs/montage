@@ -1,22 +1,22 @@
 {
     "target_property": {
-        "prototype": "core/meta/association-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "target",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object",
-            "targetBlueprint": {
+            "valueDescriptor": {
                 "@": "component_reference"
             }
         }
     },
     "action_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "action",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "string"
@@ -29,7 +29,7 @@
         "object": "ui/text.reel/text.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "Label",
             "customPrototype": false,
@@ -44,7 +44,7 @@
                     "@": "action_property"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Label": [
                     {
                         "@": "target_property"
@@ -55,7 +55,7 @@
                 ]
             },
             "propertyValidationRules": {},
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/label.reel/label.meta"
             },
             "exportName": "Label",
