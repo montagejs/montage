@@ -117,7 +117,7 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/meta/build-in-component-object-descriptor-spec", node: false, karma: false},
     {name: "spec/meta/component-object-descriptor-spec", node: false},
     {name: "spec/meta/controller-object-descriptor-spec", node: false},
-    {name: "spec/meta/event-object-descriptor-spec", node: false},
+    {name: "spec/meta/event-descriptor-spec", node: false},
     {name: "spec/meta/object-descriptor-spec"}
 ]).then(function () {
     console.log('montage-testing', 'End');
