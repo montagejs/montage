@@ -238,6 +238,27 @@ describe("serialization/montage-deserializer-spec", function () {
                 done();
             });
         });
+        
+        it("should deserialize a complex key assignment", function (done) {
+            var serialization = {
+                "root": {
+                    "value": {
+                        "bar": {}
+                    },
+                    "values": {
+                        "foo": 10,
+                        "bar.quz": 42
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+            deserialize(serializationString, require).then(function (object) {
+                expect(object.foo).toBe(10);
+                expect(object.bar.quz).toBe(42);
+            }).finally(function () {
+                done();
+            });
+        });
 
         it("should deserialize a simple one-time assignment in normal form", function (done) {
             var serialization = {
@@ -1360,5 +1381,23 @@ describe("serialization/montage-deserializer-spec", function () {
                 });
             })
         });
+    });
+
+    it("handles circular references", function (done) {
+        var serialization = {
+            "root": {
+                "object": "spec/serialization/circular/a.mjson"
+            }
+        };
+        var deserializer = new Deserializer().init(JSON.stringify(serialization), require);
+        deserializer.deserializeObject()
+            .then(function (result) {
+                expect(result.bRef.myBProp).toBe("bar");
+                expect(result.bRef.aRef).toBe(result);
+            }).catch(function (err) {
+                fail(err);
+            }).finally(function () {
+                done();
+            });
     });
 });

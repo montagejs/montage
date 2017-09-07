@@ -1,15 +1,6 @@
 {
     "blueprint_component_reference": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "Overlay",
-                "prototypeName": "Overlay",
-                "blueprintModule": {
-                    "%": "ui/overlay.reel/overlay.meta"
-                }
-            }
-        }
+        "object": "ui/overlay.reel/overlay.meta"
     },
     "root": {
         "prototype": "core/meta/module-blueprint",

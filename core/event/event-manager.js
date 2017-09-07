@@ -1183,6 +1183,16 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
     // Individual Event Registration
 
+    _scrollBlockingEvents: {
+        value: [
+            'wheel',
+            'mousewheel',
+            'touchstart',
+            'touchmove',
+            'scroll'
+        ]
+    },
+
     /**
      * @private
      */
@@ -1198,7 +1208,12 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 }
                 this._observedTarget_byEventType_[eventType].set(listenerTarget,this);
 
-                listenerTarget.nativeAddEventListener(eventType, this, true);
+                var isScrollBlocking = this._scrollBlockingEvents.indexOf(eventType) !== -1,
+                    eventOpts = isScrollBlocking ? {
+                        passive: true
+                    } : true;
+
+                listenerTarget.nativeAddEventListener(eventType, this, eventOpts);
             }
             // console.log("started listening: ", eventType, listenerTarget)
         }

@@ -30,16 +30,7 @@
         }
     },
     "blueprint_parent": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "AbstractControl",
-                "prototypeName": "AbstractControl",
-                "blueprintModule": {
-                    "%": "ui/base/abstract-control.meta"
-                }
-            }
-        }
+        "object": "ui/base/abstract-control.meta"
     },
     "root": {
         "prototype": "core/meta/module-blueprint",

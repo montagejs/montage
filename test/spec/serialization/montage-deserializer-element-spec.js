@@ -86,7 +86,7 @@ describe("serialization/montage-deserializer-element-spec", function () {
                 }
             },
                 serializationString = JSON.stringify(serialization);
-
+            
             rootEl.innerHTML = '<div data-montage-id="id">content</div>';
             deserializer.init(serializationString, require);
 
@@ -94,6 +94,67 @@ describe("serialization/montage-deserializer-element-spec", function () {
                 expect(objects.rootEl instanceof Element).toBe(true);
                 expect(objects.rootEl.foo).toBe(42);
                 expect(objects.rootEl.bar).toBe(100);
+            }).finally(function () {
+                done();
+            });
+        });
+
+        it("should deserialize an element reference and set its classNames", function (done) {
+            var serialization = {
+                "rootEl": {
+                    "value": { "#": "id" },
+                    "values": {
+                        "foo": true,
+                        "classList.has('foo')": {
+                            "<-": "@rootEl.foo"
+                        }
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+
+            rootEl.innerHTML = '<div data-montage-id="id">content</div>';
+            deserializer.init(serializationString, require);
+
+            deserializer.deserialize(null, rootEl).then(function (objects) {
+                expect(objects.rootEl instanceof Element).toBe(true);
+                expect(objects.rootEl.classList.contains('foo')).toBe(true);
+            }).finally(function () {
+                done();
+            });
+        });
+
+        it("should deserialize an element reference and set properties as attributes", function (done) {
+            var serialization = {
+                "rootEl": {
+                    "value": { "#": "id" },
+                    "values": {
+                        "foo": 42,
+                        "qux": "bar",
+                        "dataset.foo": { "=": "'montage'" },
+                        "quuz": { "<->": "foo" },
+                        "baz": { "<->": "quux" }
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+
+            rootEl.innerHTML = '<div data-montage-id="id">content</div>';
+            deserializer.init(serializationString, require);
+
+            deserializer.deserialize(null, rootEl).then(function (objects) {
+                expect(objects.rootEl instanceof Element).toBe(true);
+                expect(objects.rootEl.getAttribute('foo')).toBe('42');
+                expect(objects.rootEl.getAttribute('qux')).toBe('bar');
+                expect(objects.rootEl.dataset.foo).toBe('montage');
+                expect(objects.rootEl.foo).toBe(42);
+                expect(objects.rootEl.quuz).toBe(42);
+                objects.rootEl.foo = 0;
+                expect(objects.rootEl.foo).toBe(0);
+                expect(objects.rootEl.quuz).toBe(0);
+                expect(objects.rootEl.getAttribute('foo')).toBe('0');
+                expect(objects.rootEl.getAttribute('baz')).toBe(null);
+                expect(objects.rootEl.qux).toBe('bar');
             }).finally(function () {
                 done();
             });

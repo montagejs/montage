@@ -1,9 +1,9 @@
 {
     "dateConverter_validator": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "validator",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object",
@@ -11,35 +11,26 @@
         }
     },
     "dateConverter_pattern": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "pattern",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "string",
             "helpKey": ""
         }
     },
-    "converter_blueprint_reference": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "Converter",
-                "prototypeName": "Converter",
-                "blueprintModule": {
-                    "%": "core/converter/converter.meta"
-                }
-            }
-        }
+    "converter_descriptor": {
+        "object": "core/converter/converter.mjson"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "DateConverter",
             "customPrototype": false,
             "parent": {
-                "@": "converter_blueprint_reference"
+                "@": "converter_descriptor"
             },
             "propertyDescriptors": [
                 {
@@ -60,8 +51,8 @@
                 ]
             },
             "propertyValidationRules": {},
-            "blueprintModule": {
-                "%": "core/converter/date-converter.meta"
+            "objectDescriptorModule": {
+                "%": "core/converter/date-converter.mjson"
             },
             "exportName": "DateConverter",
             "module": {

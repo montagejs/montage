@@ -16,16 +16,7 @@
         }
     },
     "blueprint_parentcontroller_reference": {
-        "prototype": "montage/core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "ParentController",
-                "prototypeName": "ParentController",
-                "blueprintModule": {
-                    "%": "spec/meta/controller-blueprint-test/parent-controller.meta"
-                }
-            }
-        }
+        "object": "spec/meta/controller-blueprint-test/parent-controller.meta"
     },
     "root": {
         "prototype": "montage/core/meta/module-blueprint",

@@ -30,16 +30,7 @@
         }
     },
     "blueprint_parent": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "Component",
-                "prototypeName": "Component",
-                "blueprintModule": {
-                    "%": "ui/component.meta"
-                }
-            }
-        }
+        "object": "ui/component.meta"
     },
     "root": {
         "prototype": "core/meta/module-blueprint",

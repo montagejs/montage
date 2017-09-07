@@ -30,13 +30,19 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 var Converter= require("montage/core/converter/converter").Converter,
-UpperCaseConverter = require("montage/core/converter/upper-case-converter").UpperCaseConverter,
-LowerCaseConverter = require("montage/core/converter/lower-case-converter").LowerCaseConverter,
-TrimConverter = require("montage/core/converter/trim-converter").TrimConverter,
+UpperCaseConverter = require("montage/core/converter/upper-case-converter").singleton,
+LowerCaseConverter = require("montage/core/converter/lower-case-converter").singleton,
+TrimConverter = require("montage/core/converter/trim-converter").singleton,
 NumberConverter = require("montage/core/converter/number-converter").NumberConverter,
 BytesConverter = require("montage/core/converter/bytes-converter").BytesConverter,
+InvertConverterModule = require("montage/core/converter/invert-converter"),
+InvertConverter = InvertConverterModule.InvertConverter,
+InvertConverterSingleton = InvertConverterModule.singleton,
 DateConverter = require("montage/core/converter/date-converter").DateConverter,
 ExpressionConverter = require("montage/core/converter/expression-converter").ExpressionConverter,
+CamelCaseConverter = require("montage/core/converter/camel-case-converter").singleton,
+SnakeCaseConverter = require("montage/core/converter/snake-case-converter").singleton,
+KebabCaseConverter = require("montage/core/converter/kebab-case-converter").singleton,
 CurrencyConverter = require("montage/core/converter/currency-converter").CurrencyConverter;
 
 describe("converter-spec", function () {
@@ -46,11 +52,10 @@ describe("converter-spec", function () {
         date = new Date('25 Aug 2011 12:00:00 PM');
 
     beforeEach(function () {
-        //stringConverter = new StringConverter();
-        ucaseConverter = new UpperCaseConverter();
-        lcaseConverter = new LowerCaseConverter();
-        trimConverter = new TrimConverter();
-
+        ucaseConverter = UpperCaseConverter;
+        lcaseConverter = LowerCaseConverter;
+        trimConverter = TrimConverter;
+        invertConverter = InvertConverterSingleton;
         numberConverter = new NumberConverter();
         numberConverter.shorten = true;
         bytesConverter = new BytesConverter();
@@ -62,39 +67,57 @@ describe("converter-spec", function () {
         expressionConverter = new ExpressionConverter();
         expressionConverter.convertExpression = "map{foo}";
         expressionConverter.revertExpression = "map{{foo:this}}";
-        //dateConverter.pattern = 'YYYY-MM-DD';
+
+        camelCaseConverter = CamelCaseConverter;
+        snakeCaseConverter = SnakeCaseConverter;
+        kebabCaseConverter = KebabCaseConverter;
     });
 
     describe("test string formatters", function () {
         it("should format a string to uppercase", function () {
             var value = "hello world";
-            //stringConverter.fn = "uppercase";
             var result = ucaseConverter.convert(value);
             expect(result).toBe('HELLO WORLD');
         });
 
         it("should format a string to lowercase", function () {
             var value = "HELLO World";
-            //stringConverter.fn = "lowercase";
             var result = lcaseConverter.convert(value);
             expect(result).toBe('hello world');
         });
 
         it("should format a string by trimming it", function () {
             var value = "   hello world    ";
-            //stringConverter.fn = "trim";
             var result = trimConverter.convert(value);
             expect(result).toBe('hello world');
         });
 
-        /*
-        it("should format a string by converting newline characters to <BR>", function () {
-            var value = "   hello \r\n world    ";
-            stringConverter.fn = "trim";
-            var result = stringConverter.convert(value);
-            expect(result).toBe('hello <br /> world');
+        it("should inverts value", function () {
+            expect(invertConverter.convert(true)).toBe(false);
+            expect(invertConverter.convert(0)).toBe(true);
         });
-        */
+
+        it("should converts string to camel case", function () {
+            expect(camelCaseConverter.convert('hello world')).toBe('helloWorld');
+            expect(camelCaseConverter.convert('HELLO WORLD')).toBe('helloWorld');
+            expect(camelCaseConverter.convert('hello-world')).toBe('helloWorld');
+        });
+
+        it("should converts string to snake case", function () {
+            expect(snakeCaseConverter.convert('hello world')).toBe('hello_world');
+            expect(snakeCaseConverter.convert('HELLO WORLD')).toBe('hello_world');
+            expect(snakeCaseConverter.convert('hello-world')).toBe('hello_world');
+        });
+
+        it("should converts string to kebab case", function () {
+            expect(kebabCaseConverter.convert('hello world')).toBe('hello-world');
+            expect(kebabCaseConverter.convert('HELLO WORLD')).toBe('hello-world');
+            expect(kebabCaseConverter.convert('hello_world')).toBe('hello-world');
+        });
+
+        it("should be a singleton", function () {
+            expect(invertConverter === new InvertConverter()).toBe(true);
+        });
 
     });
 

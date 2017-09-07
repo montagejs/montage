@@ -14,16 +14,7 @@
         }
     },
     "property_blueprint_reference": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "PropertyBlueprint",
-                "prototypeName": "PropertyBlueprint",
-                "blueprintModule": {
-                    "%": "core/meta/property-blueprint.meta"
-                }
-            }
-        }
+        "object": "core/meta/property-blueprint.meta"
     },
     "root": {
         "prototype": "core/meta/module-blueprint",

@@ -25,28 +25,10 @@
         }
     },
     "blueprint_converter_reference": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "Converter",
-                "prototypeName": "Converter",
-                "blueprintModule": {
-                    "%": "core/converter/converter.meta"
-                }
-            }
-        }
+        "object": "core/converter/converter.meta"
     },
     "blueprint_component_reference": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "Component",
-                "prototypeName": "Component",
-                "blueprintModule": {
-                    "%": "ui/component.meta"
-                }
-            }
-        }
+        "object": "ui/component.meta"
     },
     "root": {
         "prototype": "core/meta/module-blueprint",

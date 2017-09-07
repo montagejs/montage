@@ -1,0 +1,13 @@
+{
+    "b": {
+        "object": "spec/serialization/circular/b.mjson"
+    },
+
+    "root": {
+        "prototype": "montage",
+        "values": {
+            "bRef": {"@": "b"},
+            "myAProp": "foo"
+        }
+    }
+}

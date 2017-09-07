@@ -1,11 +1,12 @@
-var Interpreter = require("montage/core/serialization/deserializer/montage-interpreter").MontageInterpreter;
+var Interpreter = require("montage/core/serialization/deserializer/montage-interpreter").MontageInterpreter,
+    Reviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver;
 
 
 describe("interpreter", function() {
     var interpreter;
 
     beforeEach(function() {
-        interpreter = new Interpreter().init(require);
+        interpreter = new Interpreter().init(require, new Reviver().init(require));
     });
 
     describe("native values with labels", function() {

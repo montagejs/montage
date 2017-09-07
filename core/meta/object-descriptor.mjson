@@ -1,39 +1,12 @@
 {
     "model_reference": {
-        "prototype": "core/meta/model-reference",
-        "values": {
-            "valueReference": {
-                "objectDescriptorName": "Model",
-                "prototypeName": "Model",
-                "objectDescriptorModule": {
-                    "%": "core/meta/model.mjson"
-                }
-            }
-        }
+        "object": "core/meta/model.mjson"
     },
     "property_descriptor_reference": {
-        "prototype": "core/meta/object-descriptor-reference",
-        "values": {
-            "valueReference": {
-                "objectDescriptorName": "PropertyDescriptor",
-                "prototypeName": "PropertyDescriptor",
-                "objectDescriptorModule": {
-                    "%": "core/meta/property-descriptor.mjson"
-                }
-            }
-        }
+        "object": "core/meta/property-descriptor.mjson"
     },
     "property_validation_rules_reference": {
-        "prototype": "core/meta/object-descriptor-reference",
-        "values": {
-            "valueReference": {
-                "objectDescriptorName": "PropertyValidationRule",
-                "prototypeName": "PropertyValidationRule",
-                "objectDescriptorModule": {
-                    "%": "core/meta/validation-rule.mjson"
-                }
-            }
-        }
+        "object": "core/meta/validation-rule.mjson"
     },
     "name": {
         "prototype": "core/meta/property-descriptor",

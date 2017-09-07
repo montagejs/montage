@@ -130,7 +130,7 @@ describe("reviver", function() {
         var interpreter;
 
         beforeEach(function() {
-            interpreter = new Interpreter().init(require);
+            interpreter = new Interpreter().init(require, new Reviver().init(require));
         });
         afterEach(function() {
             Reviver.resetCustomObjectRevivers();
