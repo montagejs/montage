@@ -2,8 +2,9 @@ var Montage = require("core/core").Montage,
     Promise = require("core/promise").Promise,
     Map = require("collections/map"),
     application = require("core/application").application,
-    DataService = require("data/service/data-service").DataService,
+    AuthorizationPolicy = require("data/service/authorization-policy").AuthorizationPolicy,
     MANAGER_PANEL_MODULE = "ui/authorization-manager-panel.reel";
+
 
 /**
  * Helps coordinates the needs for DataServices to get the authorization they
@@ -20,7 +21,6 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
             this._providersByModuleID = new Map();
             this._panelsByModuleID = new Map();
             this._authorizationsByProviderModuleID = new Map();
-            DataService.authorizationManager = this;
             this.defineBinding("hasPendingServices", {"<-": "_pendingServicesCount != 0"});
             return this;
         }
@@ -266,7 +266,7 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
                 authorizationPromises = [];
 
 
-            if (dataService.authorizationPolicy === DataService.AuthorizationPolicy.NONE) {
+            if (dataService.authorizationPolicy === AuthorizationPolicy.NONE) {
                 return Promise.resolve(null);
             } else {
 
@@ -275,7 +275,7 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
 
                 if (authorizationPromises.length) {
                     return Promise.all(authorizationPromises);
-                } else if (dataService.authorizationPolicy === DataService.AuthorizationPolicy.ON_DEMAND && !didFailAuthorization) {
+                } else if (dataService.authorizationPolicy === AuthorizationPolicy.ON_DEMAND && !didFailAuthorization) {
                     return Promise.resolve(null);
                 } else {
 

@@ -1,4 +1,6 @@
 var Montage = require("core/core").Montage,
+    AuthorizationManager = require("data/service/authorization-manager").AuthorizationManager,
+    AuthorizationPolicy = require("data/service/authorization-policy").AuthorizationPolicy,
     DataObjectDescriptor = require("data/model/data-object-descriptor").DataObjectDescriptor,
     DataQuery = require("data/model/data-query").DataQuery,
     DataStream = require("data/service/data-stream").DataStream,
@@ -9,42 +11,6 @@ var Montage = require("core/core").Montage,
     Set = require("collections/set"),
     WeakMap = require("collections/weak-map");
 
-
-
-
-/**
- * AuthorizationPolicyType
- *
- * UpfrontAuthorizationPolicy
- *     Authorization is asked upfront, immediately after data service is
- *     created / launch of an app.
- *
- * OnDemandAuthorizationPolicy
- *     Authorization is required when a request fails because of lack of
- *     authorization. This is likely to be a good strategy for DataServices
- *     that offer data to both anonymous and authorized users.
- *
- */
-var AuthorizationPolicy = Montage.specialize({
-
-    id: {
-        value: undefined
-    }
-
-}, {
-    withID: {
-        value: function (id) {
-            var policy = new this();
-            policy.id = id;
-            return policy;
-        }
-    }
-});
-
-AuthorizationPolicy.ON_DEMAND = AuthorizationPolicy.withID("ON_DEMAND");
-AuthorizationPolicy.ON_FIRST_FETCH = AuthorizationPolicy.withID("ON_FIRST_FETCH");
-AuthorizationPolicy.NONE = AuthorizationPolicy.withID("NONE");
-AuthorizationPolicy.UP_FRONT = AuthorizationPolicy.withID("UP_FRONT");
 
 var AuthorizationPolicyType = new Montage();
 AuthorizationPolicyType.NoAuthorizationPolicy = AuthorizationPolicy.NONE;
@@ -2552,7 +2518,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     authorizationManager: {
-        value: undefined
+        value: AuthorizationManager
     }
 
 });
