@@ -323,7 +323,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
         get: function () {
             // TODO: Needed for backwards compatibility with ObjectDescriptorReference.
             // Remove eventually, this can become completely sync
-            if (typeof this._valueDescriptorReference.promise === "function") {
+            if (this._valueDescriptorReference && typeof this._valueDescriptorReference.promise === "function") {
                 deprecate.deprecationWarningOnce("valueDescriptor reference via ObjectDescriptorReference", "direct reference via object syntax");
                 return this._valueDescriptorReference.promise(this.require);
             } else {

@@ -4,8 +4,7 @@ var Converter = require("core/converter/converter").Converter,
     ObjectDescriptorReference = require("core/meta/object-descriptor-reference").ObjectDescriptorReference,
     Promise = require("core/promise").Promise,
     Scope = require("frb/scope"),
-    parse = require("frb/parse"),
-    compile = require("frb/compile-evaluator");
+    parse = require("frb/parse");
 
 /**
  * @class RawPropertyValueToObjectConverter
@@ -213,6 +212,26 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
         }
     },
 
+
+    /**
+     * The descriptor for which to perform the fetch.
+     * This returns foreignDescriptor, if it exists, and otherwise
+     * returns objectDescriptor.
+     * @type {?ObjectDescriptorReference}
+     **/
+    _descriptorToFetch: {
+        get: function () {
+            if (!this.__descriptorToFetch) {
+                var self = this;
+                this.__descriptorToFetch = this.foreignDescriptor.then(function (descriptor) {
+                    return descriptor || self.objectDescriptor;
+                })
+            }
+            return this.__descriptorToFetch;
+        }
+    },
+
+
     owner: {
         get: function () {
             return this._owner ? this._owner.then ? this._owner : Promise.resolve(this._owner) : undefined;
@@ -272,10 +291,9 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
         value: function (v) {
             var self = this,
                 criteria = new Criteria().initWithSyntax(self.convertSyntax, v),
-                descriptorPromise = this.foreignDescriptor || this.objectDescriptor,
                 query;
 
-            return descriptorPromise.then(function (typeToFetch) {
+            return this._descriptorToFetch.then(function (typeToFetch) {
                 var type = [typeToFetch.module.id, typeToFetch.name].join("/");
 
                 if (self.serviceIdentifier) {
@@ -290,6 +308,8 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
             });
         }
     },
+
+
 
     /**
      * Reverts the relationship back to raw data.

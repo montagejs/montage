@@ -419,24 +419,39 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      */
     mapObjectToRawDataProperty: {
         value: function(object, data, property) {
-            var rules = this._compiledRawDataMappingRules,
+            var self = this,
+                rules = this._compiledRawDataMappingRules,
                 scope = new Scope(object),
                 rule = rules[property],
                 propertyDescriptor = rule && rule.propertyDescriptor,
                 promise;
 
-
-            if (propertyDescriptor && propertyDescriptor.valueDescriptor && rule.converter) {
-                rule.converter.expression = rule.converter.expression || rule.expression;
-                rule.converter.foreignDescriptor = rule.converter.foreignDescriptor || propertyDescriptor.valueDescriptor;
-                // rule.converter.service = rule.converter.service || this.service.rootService;
-                promise = this._convertRelationshipToRawData(object, propertyDescriptor, rule, scope);
+            if (propertyDescriptor) {
+                promise = propertyDescriptor.valueDescriptor.then(function (descriptor) {
+                    self._prepareObjectToRawDataRule(rule);
+                    return descriptor && rule.converter ? self._convertRelationshipToRawData(object, propertyDescriptor, rule, scope) :
+                                                          self._parse(rule, scope);
+                });
             } else /*if (propertyDescriptor)*/ { //relaxing this for now
                 promise = Promise.resolve(this._parse(rule, scope));
             }
+
+
             return promise && promise.then(function(value){
                 data[property] = value;
             }) || Promise.resolve(null);
+        }
+    },
+
+    _prepareObjectToRawDataRule: {
+        value: function (rule) {
+            var converter = rule.converter,
+                propertyDescriptor = rule.propertyDescriptor;
+
+            if (converter) {
+                converter.expression = converter.expression || rule.expression;
+                converter.foreignDescriptor = converter.foreignDescriptor || propertyDescriptor.valueDescriptor;
+            }
         }
     },
 
@@ -548,7 +563,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     _convertRelationshipToRawData: {
         value: function (object, propertyDescriptor, rule, scope) {
             if (!rule.converter.revert) {
-                debugger;
+                console.log("Converter does not have a revert function for property (" + propertyDescriptor.name + ")");
             }
             return rule.converter.revert(rule.expression(scope));
         }
@@ -583,32 +598,32 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             var rules = this._compiledObjectMappingRules,
                 rule = rules.hasOwnProperty(propertyName) && rules[propertyName],
                 propertyDescriptor = rule && this.objectDescriptor.propertyDescriptorForName(propertyName),
-                isRelationship = !!(propertyDescriptor && propertyDescriptor.valueDescriptor),
                 scope = this._scope,
                 self = this,
                 result;
 
             scope.value = data;
             if (!propertyDescriptor || propertyDescriptor.definition) {
-                result = Promise.resolve();
+                result = Promise.resolve(null);
             } else {
-                self._prepareConverterForRule(rule.converter, rule, propertyDescriptor);
-                result = isRelationship ? self._resolveRelationship(object, propertyDescriptor, rule, scope) :
-                                          self._resolvePrimitive(object, propertyDescriptor, rule, scope);
+                result = propertyDescriptor.valueDescriptor.then(function (descriptor) {
+                    var isRelationship = !!descriptor;
+                    self._prepareRawDataToObjectRule(rule, propertyDescriptor);
+                    return isRelationship ? self._resolveRelationship(object, propertyDescriptor, rule, scope) :
+                                            self._resolvePrimitive(object, propertyDescriptor, rule, scope);
+                })
             }
             return result;
         }
     },
 
 
-    _prepareConverterForRule: {
-        value: function (converter, rule, propertyDescriptor) {
+    _prepareRawDataToObjectRule: {
+        value: function (rule, propertyDescriptor) {
+            var converter = rule.converter;
             if (converter) {
                 converter.expression = converter.expression || rule.expression;
-
-                if (!converter.foreignDescriptor && propertyDescriptor.valueDescriptor) {
-                    converter.foreignDescriptor = propertyDescriptor.valueDescriptor;
-                }
+                converter.foreignDescriptor = converter.foreignDescriptor || propertyDescriptor.valueDescriptor;
                 converter.objectDescriptor = this.objectDescriptor;
                 converter.serviceIdentifier = rule.serviceIdentifier;
             }
@@ -639,6 +654,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         value: function (object, propertyDescriptor, rule, scope) {
             var value = this._parse(rule, scope),
                 self = this;
+
 
             return new Promise(function (resolve, reject) {
                 if (self._isThenable(value)) {

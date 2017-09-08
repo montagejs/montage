@@ -1,5 +1,5 @@
 var DataService = require("data/service/data-service").DataService,
-    BlueprintDataMapping = require("data/service/blueprint-data-mapping").BlueprintDataMapping,
+    DataMapping = require("data/service/data-mapping").DataMapping,
     DataIdentifier = require("data/model/data-identifier").DataIdentifier,
     Deserializer = require("core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     Map = require("collections/map"),
@@ -942,7 +942,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             if (!mapping && objectDescriptor) {
                 mapping = this._objectDescriptorMappings.get(objectDescriptor);
                 if (!mapping) {
-                    mapping = BlueprintDataMapping.withBlueprint(objectDescriptor);
+                    mapping = DataMapping.withObjectDescriptor(objectDescriptor);
                     this._objectDescriptorMappings.set(objectDescriptor, mapping);
                 }
             }
@@ -1007,25 +1007,16 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     _mapRawDataToObject: {
         value: function (record, object, context) {
-            var mapping = this.mappingForObject(object),
+            var self = this,
+                mapping = this.mappingForObject(object),
                 result;
 
             if (mapping) {
-                result = mapping.mapRawDataToObject(record, object, context);
-            }
-
-            // TODO: Remove -- should be part of if/else block above.
-            if (record) {
-                if (result) {
-                    var otherResult = this.mapRawDataToObject(record, object, context);
-                    if (result instanceof Promise && otherResult instanceof Promise) {
-                        result = Promise.all([result, otherResult]);
-                    } else if (otherResult instanceof Promise) {
-                        result = otherResult;
-                    }
-                } else {
-                    result = this.mapRawDataToObject(record, object, context);
-                }
+                result = mapping.mapRawDataToObject(record, object, context).then(function () {
+                    return self.mapRawDataToObject(record, object, context);
+                });
+            } else {
+                result = this.mapRawDataToObject(record, object, context);
             }
 
             return result;
