@@ -306,8 +306,8 @@ Object.defineProperty(Montage.prototype, _serializableAttributeProperties, {
 var ObjectAttributeProperties = new Map();
 function getAttributeProperties(proto, attributeName, privateAttributeName) {
     var attributePropertyName = privateAttributeName || (
-        attributeName === SERIALIZABLE ? 
-            _serializableAttributeProperties : 
+        attributeName === SERIALIZABLE ?
+            _serializableAttributeProperties :
                 (UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES));
 
         if(proto !== Object.prototype) {
@@ -428,48 +428,42 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
             throw new TypeError("Cannot use distinct attribute on non-value property '" + prop + "'");
         }
 
-
-        // reset defaults appropriately for framework.
-        if (PROTO in descriptor) {
-            descriptor.__proto__ = (isValueDescriptor ? (typeof descriptor.value === FUNCTION ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
-        } else {
-            var defaults;
-            if (isValueDescriptor) {
-                if (typeof descriptor.value === FUNCTION) {
-                    defaults = _defaultFunctionValueProperty;
-                } else {
-                    defaults = _defaultObjectValueProperty;
-                }
-            } else {
-                defaults = _defaultAccessorProperty;
-            }
-            for (var key in defaults) {
-                if (hasProperty.call(defaults, key)) {
-                    if (!(key in descriptor)) {
-                        descriptor[key] = defaults[key];
-                    }
-                }
-            }
+        //Enumerable:
+        if(descriptor.enumerable === undefined) {
+            //If value and it's a function, emumerable should be false.
+            descriptor.enumerable = ((isValueDescriptor && typeof descriptor.value === FUNCTION) || prop.charCodeAt(0) === UNDERSCORE_UNICODE)
+                ? false
+                : true;
         }
 
-        if (!hasProperty.call(descriptor, ENUMERABLE) && prop.charCodeAt(0) === UNDERSCORE_UNICODE) {
-            descriptor.enumerable = false;
+        //writable
+        if(isValueDescriptor && descriptor.writable === undefined) {
+            descriptor.writable = true;
         }
 
+        //configurable
+        if(descriptor.configurable === undefined)
+            descriptor.configurable = true;
+
+        //serializable
         if (!hasProperty.call(descriptor, SERIALIZABLE)) {
-            if (! descriptor.enumerable) {
-                descriptor.serializable = false;
-            } else if (descriptor.get && !descriptor.set) {
-                descriptor.serializable = false;
-            } else if (descriptor.writable === false) {
-                descriptor.serializable = false;
-            }
+
+            descriptor.serializable =
+                ((! descriptor.enumerable) ||
+                (descriptor.get && !descriptor.set) ||
+                (descriptor.writable === false))
+                    ? false
+                    : (isValueDescriptor
+                        ? (typeof descriptor.value === FUNCTION
+                            ? false
+                            : "reference")
+                        : true);
         }
 
-        if (SERIALIZABLE in descriptor) {
+        // if (SERIALIZABLE in descriptor) {
             // get the _serializableAttributeProperties property or creates it through the entire chain if missing.
             getAttributeProperties(obj, SERIALIZABLE)[prop] = descriptor.serializable;
-        }
+        // }
 
         // clear the cache for super() for property we're about to redefine.
         // But If we're defining a property as part of a Type/Class construction, we most likely don't need to worry about
@@ -478,7 +472,16 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
             __clearSuperDepencies(obj,prop, descriptor);
         }
 
-        return Object.defineProperty(obj, prop, descriptor);
+        //Optimization to bypass Object.defineProperty() when possible
+        if(isValueDescriptor  && !(prop in obj) && descriptor.writable && descriptor.enumerable && descriptor.configurable ) {
+            obj[prop] = descriptor.value;
+            return obj;
+        }
+        else {
+            return Object.defineProperty(obj, prop, descriptor);
+        }
+
+
     };
 Object.defineProperty(Montage, "defineProperty", valuePropertyDescriptor);
 
@@ -552,8 +555,8 @@ function __findSuperMethodImplementation( method, classFn, isFunctionSuper, meth
             if(!methodPropertyName) {
                 //If methodPropertyNameArg is passed as an argument, we know what to look for,
                 //But it may not be there...
-                propertyNames = methodPropertyNameArg ? 
-                    (_propertyNames[0] = methodPropertyNameArg) && _propertyNames : 
+                propertyNames = methodPropertyNameArg ?
+                    (_propertyNames[0] = methodPropertyNameArg) && _propertyNames :
                         Object.getOwnPropertyNames(context);
 
                 //As we start, we don't really know which property name points to method, we're going to find out:
@@ -679,13 +682,13 @@ function __super(callerFn, methodPropertyName, isValue, isGetter, isSetter) {
  */
 function _super() {
     // Figure out which function called us.
-    var callerFn = ( _super && _super.caller ) ? _super.caller : arguments.callee.caller,        
+    var callerFn = ( _super && _super.caller ) ? _super.caller : arguments.callee.caller,
         superFn = __super.call(this,callerFn);
     return superFn ? superFn.apply(this, arguments) : undefined;
 }
 
 function _superForValue(methodName) {
-    var callerFn = ( _superForValue && _superForValue.caller ) ? _superForValue.caller  : arguments.callee.caller, 
+    var callerFn = ( _superForValue && _superForValue.caller ) ? _superForValue.caller  : arguments.callee.caller,
         superFn = __super.call(this, callerFn, methodName, true, false, false);
 
     //We may need to cache that at some point if it gets called too often
@@ -693,7 +696,7 @@ function _superForValue(methodName) {
 }
 
 function _superForGet(methodName) {
-     var callerFn = ( _superForGet && _superForGet.caller ) ? _superForGet.caller : arguments.callee.caller,       
+     var callerFn = ( _superForGet && _superForGet.caller ) ? _superForGet.caller : arguments.callee.caller,
        superFn = __super.call(this, callerFn, methodName, false, true, false);
 
     //We may need to cache that at some point if it gets called too often
@@ -701,7 +704,7 @@ function _superForGet(methodName) {
 }
 
 function _superForSet(methodName) {
-     var callerFn = ( _superForSet && _superForSet.caller ) ? _superForSet.caller : arguments.callee.caller,     
+     var callerFn = ( _superForSet && _superForSet.caller ) ? _superForSet.caller : arguments.callee.caller,
         superFn = __super.call(this,callerFn,methodName,false,false,true);
 
     //We may need to cache that at some point if it gets called too often
@@ -832,7 +835,7 @@ Montage.defineProperty(Montage, "getPropertyAttributes", {value: function (anObj
     for (var name in attributes) {
         if (hasProperty.call(attributes, name)) {
             attributeValues[name] = attributes[name];
-        // should return the inherited defined attribute values   
+        // should return the inherited defined attribute values
         } else {
             attributeValues[name] = attributes[name];
         }
@@ -983,7 +986,7 @@ Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
 
             var delegateFunctionName = this.identifier + name.toCapitalized();
             if (
-                typeof this.identifier === "string" && 
+                typeof this.identifier === "string" &&
                     typeof delegate[delegateFunctionName] === FUNCTION
             ) {
                 delegateFunction = delegate[delegateFunctionName];
