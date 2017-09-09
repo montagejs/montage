@@ -724,7 +724,6 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     _deserializeUnits: {
         value: function (context) {
             var unitsToDeserialize = context.getUnitsToDeserialize(),
-                units = MontageReviver._unitRevivers,
                 unitDeserializer = new UnitDeserializer(),
                 unitNames;
 
@@ -735,7 +734,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     for (var j = 0, unitName; (unitName = unitNames[j]); j++) {
                         if (unitName in unitsDesc.objectDesc) {
                             unitDeserializer.initWithContext(context);
-                            units[unitName](unitDeserializer, unitsDesc.object, unitsDesc.objectDesc[unitName]);
+                            MontageReviver._unitRevivers.get(unitName)(unitDeserializer, unitsDesc.object, unitsDesc.objectDesc[unitName]);
                         }
                     }
                 }
@@ -901,7 +900,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     }
 
 }, /** @lends MontageReviver. */ {
-    _unitRevivers: {value: Object.create(null)},
+    _unitRevivers: {value: new Map()},
     _unitNames: {value: []},
 
     _findObjectNameRegExp: {
@@ -914,9 +913,9 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (_, g1) { return g1.toUpperCase(); }
     },
     // Cache of location descriptors indexed by locationId
-    _locationDescCache: {value: Object.create(null)},
+    _locationDescCache: {value: new Map()},
 
-    customObjectRevivers: {value: Object.create(null)},
+    customObjectRevivers: {value: new Map()},
 
     // Location Id is in the form of <moduleId>[<objectName>] where
     // [<objectName>] is optional. When objectName is missing it is derived
@@ -939,9 +938,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 moduleId,
                 objectName;
 
-            if (locationId in locationDescCache) {
-                locationDesc = locationDescCache[locationId];
-            } else {
+            locationDesc = locationDescCache.get(locationId);
+            if (!locationDesc) {
                 bracketIndex = locationId.indexOf("[");
 
                 if (bracketIndex > 0) {
@@ -960,7 +958,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     moduleId: moduleId,
                     objectName: objectName
                 };
-                locationDescCache[locationId] = locationDesc;
+                locationDescCache.set(locationId, locationDesc);
             }
 
             return locationDesc;
@@ -969,7 +967,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     defineUnitReviver: {
         value: function (name, funktion) {
-            this._unitRevivers[name] = funktion;
+            this._unitRevivers.set(name, funktion);
             this._unitNames.push(name);
         }
     },
@@ -982,7 +980,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     addCustomObjectReviver: {
         value: function(reviver) {
-            var customObjectRevivers = this.customObjectRevivers;
+            var customObjectReviver;
 
             /* jshint forin: true */
             for (var methodName in reviver) {
@@ -996,8 +994,9 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     typeof reviver[methodName] === "function" &&
                         methodName.substr(0, 5) === "revive"
                 ) {
-                    if (typeof customObjectRevivers[methodName] === "undefined") {
-                        customObjectRevivers[methodName] = reviver[methodName].bind(reviver);
+                    customObjectReviver = this.customObjectRevivers.get(methodName);
+                    if (typeof customObjectReviver === "undefined") {
+                        customObjectReviver = reviver[methodName].bind(reviver);
                     } else {
                         return new Error("Reviver '" + methodName + "' is already registered.");
                     }
@@ -1010,7 +1009,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     resetCustomObjectRevivers: {
         value: function() {
-            this.customObjectRevivers = Object.create(null);
+            this.customObjectRevivers.clear();
             this.prototype.getCustomObjectTypeOf = function() {};
         }
     },
