@@ -223,9 +223,9 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
         get: function () {
             if (!this.__descriptorToFetch) {
                 var self = this;
-                this.__descriptorToFetch = this.foreignDescriptor.then(function (descriptor) {
+                this.__descriptorToFetch = this.foreignDescriptor ? this.foreignDescriptor.then(function (descriptor) {
                     return descriptor || self.objectDescriptor;
-                })
+                }) : Promise.resolve(this.objectDescriptor);
             }
             return this.__descriptorToFetch;
         }
