@@ -9,7 +9,6 @@ var MyButton = exports.MyButton = Button.specialize({
 });
 
 if (window.MontageElement) {
-    console.log('defined')
     MontageElement.define("my-button", MyButton, {
         observedAttributes: ['label']
     });
