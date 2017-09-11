@@ -189,12 +189,12 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 Object.defineProperty(element, "dataset", {
                     value: new Proxy(targetObject, {
                         set: function (target, propertyName, value) {
+                            target[propertyName] = value;
+                            originalDataset[propertyName] = value;
                             element.nativeSetAttribute('data-' +
                                 kebabCaseConverter.convert(propertyName),
                                 value
                             );
-                            target[propertyName] = value;
-                            originalDataset[propertyName] = value;
                             return true;
                         },
                         get: function (target, propertyName) {
@@ -244,13 +244,13 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                             if (Object.getOwnPropertyDescriptor(element, propertyName) === void 0) {
                                 Object.defineProperty(element, propertyName, {
                                     set: function (value) {
+                                        target[propertyName] = value;
+
                                         if (value === null || value === void 0) {
                                             element.removeAttribute(propertyName);
                                         } else {
                                             element.nativeSetAttribute(propertyName, value);
                                         }
-
-                                        target[propertyName] = value;
                                     },
                                     get: function () {
                                         return target[propertyName];

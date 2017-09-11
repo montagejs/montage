@@ -159,6 +159,60 @@ describe("serialization/montage-deserializer-element-spec", function () {
                 done();
             });
         });
+
+        it("should deserialize a custom element reference and set properties", function (done) {
+            if (typeof document.defaultView.Reflect !== 'undefined') {
+                var serialization = {
+                    "rootEl": {
+                        "value": { "#": "id" },
+                        "values": {
+                            "name": "World",
+                            "defaultGreeting": "Hello",
+                            "greeting": { "<-": "defaultGreeting" }
+                        }
+                    }
+                },
+                    serializationString = JSON.stringify(serialization),
+                    constructor = function () {
+                        return Reflect.construct(
+                            HTMLElement, [], constructor
+                        );
+                    };;
+
+                Object.setPrototypeOf(constructor.prototype, HTMLElement.prototype);
+                Object.setPrototypeOf(constructor, HTMLElement);
+                Object.defineProperty(constructor, 'observedAttributes', {
+                    get: function () {
+                        return ['name', 'greeting'];
+                    }
+                });
+
+                constructor.prototype.attributeChangedCallback = function (attr, oldValue, newValue) {
+                    if (attr == 'name' || attr == 'greeting') {
+                        this.textContent = this.greeting + ", " + this.name;
+                    }
+                };
+
+                document.defaultView.customElements.define('hello-element', constructor);
+
+                rootEl.innerHTML = '<hello-element data-montage-id="id"></hello-element>';
+                deserializer.init(serializationString, require);
+
+                deserializer.deserialize(null, rootEl).then(function (objects) {
+                    expect(objects.rootEl instanceof Element).toBe(true);
+                    expect(objects.rootEl.name).toBe('World');
+                    expect(objects.rootEl.getAttribute('name')).toBe('World');
+                    expect(objects.rootEl.textContent).toBe('Hello, World');
+                    objects.rootEl.name = 'Montage';
+                    expect(objects.rootEl.textContent).toBe('Hello, Montage');
+                    expect(objects.rootEl.getAttribute('name')).toBe('Montage');
+                    objects.rootEl.defaultGreeting = 'Bonjour';
+                    expect(objects.rootEl.textContent).toBe('Bonjour, Montage');
+                }).finally(function () {
+                    done();
+                });
+            }
+        });
     });
 
     xdescribe("Object Element Deserialization", function () {
