@@ -16,6 +16,7 @@ var Montage = require("../../core").Montage,
 require("../../shim/string");
 
 var PROXY_ELEMENT_MAP = new WeakMap();
+var DATA_ATTRIBUTES_MAP = new Map();
 
 var ModuleLoader = Montage.specialize( {
     _require: {value: null},
@@ -191,8 +192,13 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                         set: function (target, propertyName, value) {
                             target[propertyName] = value;
                             originalDataset[propertyName] = value;
-                            element.nativeSetAttribute('data-' +
-                                kebabCaseConverter.convert(propertyName),
+                            element.nativeSetAttribute(
+                                DATA_ATTRIBUTES_MAP.get(propertyName) ||
+                                (DATA_ATTRIBUTES_MAP.set(
+                                    propertyName,
+                                    'data-' +
+                                    kebabCaseConverter.convert(propertyName)
+                                )).get(propertyName),
                                 value
                             );
                             return true;
