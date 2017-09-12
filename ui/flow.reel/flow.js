@@ -1,3 +1,5 @@
+/*global require, exports, console, MontageElement */
+
 /**
  * @module "montage/ui/flow.reel"
  */
@@ -2186,3 +2188,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
         }
     }
 });
+
+if (window.MontageElement) {
+    MontageElement.define("montage-flow", Flow);
+}
