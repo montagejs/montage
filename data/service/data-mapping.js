@@ -54,7 +54,6 @@ exports.DataMapping = Montage.specialize(/** @lends DataMapping.prototype */ {
                     object[key] = data[key];
                 }
             }
-            return this.nullPromise;
         }
     },
 
@@ -65,7 +64,6 @@ exports.DataMapping = Montage.specialize(/** @lends DataMapping.prototype */ {
         value: function (object, data) {
             // TO DO: Provide a default mapping based on object.TYPE.
             // For now, subclasses must override this.
-            return this.nullPromise;
         }
     },
 

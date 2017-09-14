@@ -625,9 +625,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     addRawData: {
         value: function (stream, records, context) {
-            var offline, object, i, n,
+            var offline, i, n,
                 streamSelectorType = stream.query.type,
-                iRecord, iDataIdentifier, result;
+                iRecord;
             // Record fetched raw data for offline use if appropriate.
             offline = records && !this.isOffline && this._streamRawData.get(stream);
             if (offline) {
@@ -639,42 +639,35 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             // will be done in place to avoid creating any unnecessary array.
             for (i = 0, n = records && records.length; i < n; i += 1) {
                 iRecord = records[i];
-                object = this.addOneRawData(stream, iRecord, context, streamSelectorType);
-            //     object = this.objectForTypeRawData(streamSelectorType,iRecord,context);
-            // //     iDataIdentifier = this.dataIdentifierForTypeRawData(streamSelectorType,iRecord);
-            // //     //Record snapshot before we may create an object
-            // //     this.recordSnapshot(iDataIdentifier,iRecord);
-            // //    //iDataIdentifier argument should be all we need later on
-            // //     object = this.getDataObject(streamSelectorType, iRecord, context, iDataIdentifier);
-            //     result = this.mapRawDataToObject(iRecord, object, context);
-            //     if (result && result instanceof Promise) {
-            //         this._addMapDataPromiseForStream(result, stream);
-            //     }
-                if(object) {
-                    records[i] = object;
-                    this.callDelegateMethod("rawDataServiceDidAddOneRawData", this,stream,iRecord,object);
-                }
+                this.addOneRawData(stream, iRecord, context, streamSelectorType).then(function (mappedObject) {
+                    stream.addData([mappedObject]);
+                });
             }
 
-            // Add the converted data to the stream.
-            stream.addData(records);
         }
     },
 
+
     addOneRawData: {
-        value: function(stream, rawData, context, _type) {
-            var object = this.objectForTypeRawData((_type || stream.query.type), rawData, context),
+        value: function (stream, rawData, context) {
+            var object = this.objectForTypeRawData(stream.query.type, rawData, context),
                 result;
-            //     iDataIdentifier = this.dataIdentifierForTypeRawData(streamSelectorType,iRecord);
-            //     //Record snapshot before we may create an object
-            //     this.recordSnapshot(iDataIdentifier,iRecord);
-            //    //iDataIdentifier argument should be all we need later on
-            //     object = this.getDataObject(streamSelectorType, iRecord, context, iDataIdentifier);
+
             result = this._mapRawDataToObject(rawData, object, context);
+
             if (result && result instanceof Promise) {
-                this._addMapDataPromiseForStream(result, stream);
+                result = result.then(function () {
+                    return object;
+                })
+            } else {
+                result = Promise.resolve(object);
             }
-            return object;
+            this._addMapDataPromiseForStream(result, stream);
+
+            if (object) {
+                this.callDelegateMethod("rawDataServiceDidAddOneRawData", this, stream, rawData, object);
+            }
+            return result;
         }
     },
 
@@ -848,6 +841,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             }
 
             dataReadyPromise.then(function (results) {
+
                 return dataToPersist ? self.writeOfflineData(dataToPersist, stream.query, context) : null;
             }).then(function () {
                 stream.dataDone();
@@ -1012,9 +1006,14 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 result;
 
             if (mapping) {
-                result = mapping.mapRawDataToObject(record, object, context).then(function () {
-                    return self.mapRawDataToObject(record, object, context);
-                });
+                result = mapping.mapRawDataToObject(record, object, context);
+                if (result) {
+                    result = result.then(function () {
+                        return self.mapRawDataToObject(record, object, context);
+                    });
+                } else {
+                    result = this.mapRawDataToObject(record, object, context);
+                }
             } else {
                 result = this.mapRawDataToObject(record, object, context);
             }
