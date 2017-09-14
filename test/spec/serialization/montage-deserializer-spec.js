@@ -311,15 +311,24 @@ describe("serialization/montage-deserializer-spec", function () {
                         "foo": {
                             "qux": 10
                         },
+                        "a": {
+                            "b": 10,
+                            "c": 20
+                        },
                         "corge": [ 1, 2, 3, 4, 5 ],
                         "bar": { "=": "foo.qux" },
                         "qux": { "=": "foo.qux + 10" },
                         "quuz": { "=": "foo.qux + bar + @root.bar" },
-                        "quux": { "=": "corge.sum()" }
+                        "quux": { "=": "corge.sum()" },
+                        "quuxz": { "=": 75.5 },
+                        "quuxzz": { "=": true },
+                        "a.b": { "=": 1 },
+                        "a.c": 2
                     }
                 }
             },
                 serializationString = JSON.stringify(serialization);
+
             deserialize(serializationString, require).then(function (object) {
                 expect(object.foo.qux).toBe(10);
                 expect(object.bar).toBe(10);
@@ -329,7 +338,11 @@ describe("serialization/montage-deserializer-spec", function () {
                 object.foo.qux = 20;
                 expect(object.bar).toBe(10);
                 expect(object.qux).toBe(20);
-            }).finally(function () {
+                expect(object.quuxz).toBe(75.5);
+                expect(object.quuxzz).toBe(true);
+                expect(object.quuxzz).toBe(true);
+                expect(object.a.b).toBe(1);
+                expect(object.a.c).toBe(2);
                 done();
             });
         });

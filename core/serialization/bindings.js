@@ -98,10 +98,14 @@ var deserializeObjectBindings = exports.deserializeObjectBindings = function (de
         }
 
         if (ONE_ASSIGNMENT in descriptor) {
+            var value = descriptor[ONE_ASSIGNMENT];
+            
             assign(
                 object,
                 targetPath,
-                evaluate(descriptor[ONE_ASSIGNMENT], object, null, null, deserializer),
+                typeof value === 'string' ?
+                    evaluate(value, object, null, null, deserializer) : value
+                ,
                 null,
                 null,
                 deserializer
