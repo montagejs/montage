@@ -1,79 +1,79 @@
 {
-    "blueprint_loader_anchor": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_loader_anchor": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "anchor",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object"
         }
     },
-    "blueprint_loader_position": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_loader_position": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "position",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object"
         }
     },
-    "blueprint_loader_delegate": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_loader_delegate": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "delegate",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object"
         }
     },
-    "blueprint_loader_dismissOnExternalInteraction": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_loader_dismissOnExternalInteraction": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "dismissOnExternalInteraction",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean"
         }
     },
-    "blueprint_component_reference": {
+    "objectDescriptor_component_reference": {
         "object": "ui/component.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "Overlay",
             "parent": {
-                "@": "blueprint_component_reference"
+                "@": "objectDescriptor_component_reference"
             },
             "propertyDescriptors": [
                 {
-                    "@": "blueprint_loader_position"
+                    "@": "objectDescriptor_loader_position"
                 },
                 {
-                    "@": "blueprint_loader_delegate"
+                    "@": "objectDescriptor_loader_delegate"
                 },
                 {
-                    "@": "blueprint_loader_dismissOnExternalInteraction"
+                    "@": "objectDescriptor_loader_dismissOnExternalInteraction"
                 }
             ],
             "propertyDescriptorGroups": {
                 "Overlay": [
                     {
-                        "@": "blueprint_loader_position"
+                        "@": "objectDescriptor_loader_position"
                     },
                     {
-                        "@": "blueprint_loader_delegate"
+                        "@": "objectDescriptor_loader_delegate"
                     },
                     {
-                        "@": "blueprint_loader_dismissOnExternalInteraction"
+                        "@": "objectDescriptor_loader_dismissOnExternalInteraction"
                     }
                 ]
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/overlay.reel/overlay.meta"
             },
             "exportName": "Overlay",

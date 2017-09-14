@@ -1,9 +1,9 @@
 {
-    "blueprint_parentcontroller_customerList": {
-        "prototype": "montage/core/meta/property-blueprint",
+    "objectDescriptor_parentcontroller_customerList": {
+        "prototype": "montage/core/meta/property-descriptor",
         "values": {
             "name": "customerList",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": -1,
@@ -15,11 +15,11 @@
             "helpKey": ""
         }
     },
-    "blueprint_parentcontroller_customerSelectionList": {
-        "prototype": "montage/core/meta/property-blueprint",
+    "objectDescriptor_parentcontroller_customerSelectionList": {
+        "prototype": "montage/core/meta/property-descriptor",
         "values": {
             "name": "customerSelectionList",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": -1,
@@ -32,26 +32,26 @@
         }
     },
     "root": {
-        "prototype": "montage/core/meta/module-blueprint",
+        "prototype": "montage/core/meta/module-object-descriptor",
         "values": {
             "name": "ParentController",
             "customPrototype": false,
             "propertyDescriptors": [
                 {
-                    "@": "blueprint_parentcontroller_customerList"
+                    "@": "objectDescriptor_parentcontroller_customerList"
                 },
                 {
-                    "@": "blueprint_parentcontroller_customerSelectionList"
+                    "@": "objectDescriptor_parentcontroller_customerSelectionList"
                 }
             ],
             "propertyDescriptorGroups": {},
             "propertyValidationRules": {},
-            "blueprintModule": {
-                "%": "spec/meta/controller-blueprint-parent/parent-controller.meta"
+            "objectDescriptorModule": {
+                "%": "spec/meta/controller-object-descriptor-parent/parent-controller.meta"
             },
             "exportName": "ParentController",
             "module": {
-                "%": "spec/meta/controller-blueprint-test/parent-controller"
+                "%": "spec/meta/controller-object-descriptor-test/parent-controller"
             }
         }
     }

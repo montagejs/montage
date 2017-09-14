@@ -1,23 +1,23 @@
 {
     "checked_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "checked",
             "valueType": "boolean",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_parent": {
+    "objectDescriptor_parent": {
         "object": "ui/control.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "AbstractCheckbox",
             "parent": {
-                "@": "blueprint_parent"
+                "@": "objectDescriptor_parent"
             },
             "propertyDescriptors": [
                 {
@@ -39,7 +39,7 @@
                     }
                 ]
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/base/abstract-checkbox.meta"
             },
             "exportName": "AbstractCheckbox",

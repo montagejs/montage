@@ -1,38 +1,38 @@
 {
-    "blueprint_radio_button_controller_value": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_radio_button_controller_value": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "value",
-            "blueprint": { "@": "root" },
+            "objectDescriptor": { "@": "root" },
             "valueType": "object",
             "helpKey": ""
         }
     },
-    "blueprint_radio_button_controller_contentController": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_radio_button_controller_contentController": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "contentController",
-            "blueprint": { "@": "root" },
+            "objectDescriptor": { "@": "root" },
             "valueType": "object",
             "helpKey": ""
         }
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "RadioButtonController",
             "propertyDescriptors": [
-                { "@": "blueprint_radio_button_controller_value" },
-                { "@": "blueprint_radio_button_controller_contentController" }
+                { "@": "objectDescriptor_radio_button_controller_value" },
+                { "@": "objectDescriptor_radio_button_controller_contentController" }
             ],
             "propertyDescriptorGroups": {
                 "Selection": [
-                    { "@": "blueprint_radio_button_controller_value" },
-                    { "@": "blueprint_radio_button_controller_contentController" }
+                    { "@": "objectDescriptor_radio_button_controller_value" },
+                    { "@": "objectDescriptor_radio_button_controller_contentController" }
                 ]
             },
             "propertyValidationRules": {},
-            "blueprintModule": { "%": "core/radio-button-controller.meta" },
+            "objectDescriptorModule": { "%": "core/radio-button-controller.meta" },
             "exportName": "RadioButtonController",
             "module": { "%": "core/radio-button-controller" }
         }

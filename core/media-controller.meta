@@ -1,9 +1,9 @@
 {
     "mediaController_status": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "status",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "number",
@@ -12,10 +12,10 @@
     },
 
     "mediaController_STOPPED": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "STOPPED",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "number",
@@ -24,10 +24,10 @@
     },
 
     "mediaController_PLAYING": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "PLAYING",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "number",
@@ -36,10 +36,10 @@
     },
 
     "mediaController_PAUSED": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "PAUSED",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "number",
@@ -48,10 +48,10 @@
     },
 
     "mediaController_EMPTY": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "EMPTY",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "number",
@@ -60,10 +60,10 @@
     },
 
     "mediaController_mediaController": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "mediaController",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object",
@@ -72,10 +72,10 @@
     },
 
     "mediaController_position": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "position",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "number",
@@ -84,10 +84,10 @@
     },
 
     "mediaController_duration": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "duration",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "number",
@@ -96,10 +96,10 @@
     },
 
     "mediaController_autoplay": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "autoplay",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -108,10 +108,10 @@
     },
 
     "mediaController_playbackRate": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "playbackRate",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "number",
@@ -120,10 +120,10 @@
     },
 
     "mediaController_currentTime": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "currentTime",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "number",
@@ -132,10 +132,10 @@
     },
 
     "mediaController_volume": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "volume",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "number",
@@ -144,10 +144,10 @@
     },
 
     "mediaController_mute": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "mute",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -156,14 +156,14 @@
     },
 
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "MediaController",
             "exportName": "MediaController",
             "module": {
                 "%": "core/media-controller"
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "core/media-controller.meta"
             },
             "prototypeName": "MediaController",

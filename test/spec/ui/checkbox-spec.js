@@ -270,11 +270,11 @@ describe("test/base/abstract-checkbox-spec", function () {
             expect(aCheckbox.element.getAttribute("aria-checked")).toBe("false");
         });
     });
-    describe("blueprint", function () {
+    describe("objectDescriptor", function () {
         it("can be created", function (done) {
-            var blueprintPromise = AbstractCheckbox.blueprint;
-            blueprintPromise.then(function (blueprint) {
-                expect(blueprint).not.toBeNull();
+            var objectDescriptorPromise = AbstractCheckbox.objectDescriptor;
+            objectDescriptorPromise.then(function (objectDescriptor) {
+                expect(objectDescriptor).not.toBeNull();
             }, function (err) {
                 fail(err);
             }).finally(function () {

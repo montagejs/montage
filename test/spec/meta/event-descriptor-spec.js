@@ -1,37 +1,37 @@
-var Blueprint = require("montage/core/meta/blueprint").Blueprint;
+var ObjectDescriptor = require("montage/core/meta/object-descriptor").ObjectDescriptor;
 var EventDescriptor = require("montage/core/meta/event-descriptor").EventDescriptor;
 
 var Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer;
 var Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer;
 
-describe("meta/event-blueprint-spec", function () {
+describe("meta/event-descriptor-spec", function () {
 
-    describe("EventBlueprint", function () {
+    describe("EventDescriptor", function () {
 
-        var blueprint, eventBlueprint;
+        var blueprint, eventDescriptor;
         beforeEach(function () {
-            blueprint = new Blueprint().initWithName("testBlueprint");
-            eventBlueprint = new EventDescriptor().initWithNameAndObjectDescriptor("event", blueprint);
+            blueprint = new ObjectDescriptor().initWithName("testObjectDescriptor");
+            eventDescriptor = new EventDescriptor().initWithNameAndObjectDescriptor("event", blueprint);
         });
 
         it("has the correct name", function () {
-            expect(eventBlueprint.name).toEqual("event");
+            expect(eventDescriptor.name).toEqual("event");
         });
 
         describe("detailKeys", function () {
             it("can be pushed to", function () {
-                eventBlueprint.detailKeys.push("pass");
-                expect(eventBlueprint.detailKeys).toEqual(["pass"]);
+                eventDescriptor.detailKeys.push("pass");
+                expect(eventDescriptor.detailKeys).toEqual(["pass"]);
             });
 
             it("can be set", function () {
-                eventBlueprint.detailKeys = ["pass"];
-                expect(eventBlueprint.detailKeys).toEqual(["pass"]);
+                eventDescriptor.detailKeys = ["pass"];
+                expect(eventDescriptor.detailKeys).toEqual(["pass"]);
             });
 
             it("can not be set to a string", function () {
-                eventBlueprint.detailKeys = "fail";
-                expect(eventBlueprint.detailKeys).toEqual([]);
+                eventDescriptor.detailKeys = "fail";
+                expect(eventDescriptor.detailKeys).toEqual([]);
             });
         });
 
@@ -54,10 +54,10 @@ describe("meta/event-blueprint-spec", function () {
                         "prototype": "montage/core/meta/event-descriptor",
                         "values": {
                             "name": "event",
-                            "objectDescriptor": {"@": "objectDescriptor_testblueprint"}
+                            "objectDescriptor": {"@": "objectDescriptor_testobjectdescriptor"}
                         }
                     },
-                    "objectDescriptor_testblueprint": {}
+                    "objectDescriptor_testobjectdescriptor": {}
                 };
                 serializer = new Serializer().initWithRequire(require);
                 serializer.setSerializationIndentation(4);
@@ -69,7 +69,7 @@ describe("meta/event-blueprint-spec", function () {
 
                 expectedSerialization = objectDescriptorSerialization;
 
-                serialization = serializer.serializeObject(eventBlueprint);
+                serialization = serializer.serializeObject(eventDescriptor);
                 expect(JSON.parse(serialization))
                     .toEqual(expectedSerialization);
             });
@@ -77,7 +77,7 @@ describe("meta/event-blueprint-spec", function () {
             xit("should deserialize correctly", function (done) {
                 var deserializer = new Deserializer().init(JSON.stringify(blueprintSerialization), require);
                 deserializer.deserializeObject({blueprint_testblueprint: blueprint}).then(function (deserialized) {
-                    expect(deserialized).toEqual(eventBlueprint);
+                    expect(deserialized).toEqual(eventDescriptor);
                 }).finally(function () {
                     done();
                 });

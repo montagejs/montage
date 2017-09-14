@@ -223,11 +223,11 @@ describe("test/base/abstract-link-spec", function () {
             });
         });
     });
-    describe("blueprint", function () {
+    describe("objectDescriptor", function () {
         it("can be created", function (done) {
-            var blueprintPromise = AbstractLink.blueprint;
-            blueprintPromise.then(function (blueprint) {
-                expect(blueprint).not.toBeNull();
+            var objectDescriptorPromise = AbstractLink.objectDescriptor;
+            objectDescriptorPromise.then(function (objectDescriptor) {
+                expect(objectDescriptor).not.toBeNull();
             }, function (err) {
                 fail(err);
             }).finally(function () {

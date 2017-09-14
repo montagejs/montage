@@ -1,68 +1,68 @@
 {
-    "blueprint_substitution_switchValue": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_substitution_switchValue": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "switchValue",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_substitution_shouldLoadComponentTree": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_substitution_shouldLoadComponentTree": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "shouldLoadComponentTree",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean"
         }
     },
-    "blueprint_substitution_transition": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_substitution_transition": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "transition",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object"
         }
     },
-    "blueprint_component_reference": {
+    "objectDescriptor_component_reference": {
         "object": "ui/component.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "Substitution",
             "parent": {
-                "@": "blueprint_component_reference"
+                "@": "objectDescriptor_component_reference"
             },
             "propertyDescriptors": [
                 {
-                    "@": "blueprint_substitution_switchValue"
+                    "@": "objectDescriptor_substitution_switchValue"
                 },
                 {
-                    "@": "blueprint_substitution_shouldLoadComponentTree"
+                    "@": "objectDescriptor_substitution_shouldLoadComponentTree"
                 },
                 {
-                    "@": "blueprint_substitution_transition"
+                    "@": "objectDescriptor_substitution_transition"
                 }
             ],
             "propertyDescriptorGroups": {
                 "Substitution": [
                     {
-                        "@": "blueprint_substitution_switchValue"
+                        "@": "objectDescriptor_substitution_switchValue"
                     },
                     {
-                        "@": "blueprint_substitution_shouldLoadComponentTree"
+                        "@": "objectDescriptor_substitution_shouldLoadComponentTree"
                     },
                     {
-                        "@": "blueprint_substitution_transition"
+                        "@": "objectDescriptor_substitution_transition"
                     }
                 ]
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/substitution.reel/substitution.meta"
             },
             "exportName": "Substitution",
