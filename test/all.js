@@ -106,7 +106,7 @@ module.exports = require("montage-testing").run(require, [
     // Reel
     {name: "spec/reel/template-spec", node: false, karma: true},
     // UI - repetition
-    {name: "spec/ui/repetition-spec", node: false},
+    { name: "spec/ui/repetition-spec", node: false, karma: false},
     {name: "spec/ui/repetition-selection-spec", node: false, karma: false},
     {name: "spec/ui/repetition-binding-spec", node: false},
     {name: "spec/core/localizer-spec", node: false, karma: false},
