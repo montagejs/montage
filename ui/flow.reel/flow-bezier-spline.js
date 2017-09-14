@@ -324,9 +324,9 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
     cubicRealRoots: {
         enumerable: false,
         value: function (a, b, c, d) {
-            var epsilon = 1e-10, math = Math;
+            var math = Math;
 
-            if ((a < -epsilon) || (a > epsilon)) {
+            if ((a !== 0)) {
                 var dv = 1 / a,
                     A = b * dv,
                     B = c * dv,
@@ -334,13 +334,13 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
                     R = (4.5 * A * B - 13.5 * d * dv - A * A * A) * (1 / 27),
                     D = Q * Q * Q + R * R;
 
-                if (D > epsilon) {
+                if (D > 0) {
                     var sqD = math.sqrt(D);
 
                     return [this.cubeRoot(R + sqD) + this.cubeRoot(R - sqD) + A * (-1 / 3)];
                 } else {
-                    if (D > -epsilon) {
-                        if ((R < -epsilon) || (R > epsilon)) {
+                    if (D > 0) {
+                        if ((R !== 0)) {
                             var S = this.cubeRoot(R),
                                 r1 = S * 2 + A * (-1 / 3),
                                 r2 = A * (-1 / 3) - S;
@@ -364,7 +364,7 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
                     }
                 }
             } else {
-                if ((b < -epsilon) || (b > epsilon)) {
+                if ((b !== 0)) {
                     var sq = c * c - 4 * b * d;
 
                     if (sq >= 0) {
@@ -374,7 +374,7 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
                         return [];
                     }
                 } else {
-                    if ((c < -epsilon) || (c > epsilon)) {
+                    if ((c !== 0)) {
                         return [-d / c];
                     } else {
                         return [];
