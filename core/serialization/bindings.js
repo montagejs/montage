@@ -103,9 +103,7 @@ var deserializeObjectBindings = exports.deserializeObjectBindings = function (de
             assign(
                 object,
                 targetPath,
-                typeof value === 'string' ?
-                    evaluate(value, object, null, null, deserializer) : value
-                ,
+                typeof value === 'string' ? evaluate(value, object, null, null, deserializer) : value,
                 null,
                 null,
                 deserializer
