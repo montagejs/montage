@@ -3,7 +3,7 @@
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter,
-    trim = require('lodash/fp/trim'),
+    trim = require('lodash.trim'),
     deprecate = require("../deprecate"),
     shouldMuteWarning = false,
     singleton;

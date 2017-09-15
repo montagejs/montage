@@ -3,7 +3,7 @@
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter,
-    camelCase = require('lodash/fp/camelCase'),
+    camelCase = require('lodash.camelcase'),
     singleton;
 
 /**
