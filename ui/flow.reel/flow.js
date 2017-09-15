@@ -1703,6 +1703,14 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
         }
     },
 
+    didDraw: {
+        value: function () {
+            if (!this.viewportHeight || !this.viewportWidth) {
+                this.needsDraw = true;
+            }
+        }
+    },
+
     // TODO doc
     /**
      */

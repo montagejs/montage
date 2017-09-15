@@ -1758,7 +1758,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     draw: {
         value: function () {
-
             var index;
 
             if (!this._initialContentDrawn) {
