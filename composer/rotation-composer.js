@@ -186,5 +186,29 @@ exports.RotationComposer = Composer.specialize(/** @lends RotationComposer# */ {
 
     _translateComposer: {
         value: null
+    },
+
+    animateMomentum: {
+        get: function () {
+            return this._translateComposer.animateMomentum;
+        },
+        set: function (value) {
+            this._translateComposer.animateMomentum = !!value;
+        }
+    },
+
+    /**
+     * Whether to keep translating after the user has releases the cursor.
+     * @type {boolean}
+     * @default true
+     */
+    hasMomentum: {
+        get: function () {
+            return this._translateComposer.hasMomentum;
+        },
+        set: function (value) {
+            this._translateComposer.hasMomentum = !!value;
+        }
     }
+
 });
