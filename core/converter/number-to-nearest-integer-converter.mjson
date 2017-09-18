@@ -1,0 +1,25 @@
+{
+    "converter_descriptor": {
+        "object": "core/converter/converter.mjson"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "NumberToNearestIntegerConverter",
+            "customPrototype": false,
+            "parent": {
+                "@": "converter_descriptor"
+            },
+            "propertyDescriptors": [],
+            "propertyDescriptorGroups": {},
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/converter/number-to-nearest-integer-converter.mjson"
+            },
+            "exportName": "NumberToNearestIntegerConverter",
+            "module": {
+                "%": "core/converter/number-to-nearest-integer-converter"
+            }
+        }
+    }
+}
