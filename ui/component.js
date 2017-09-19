@@ -390,10 +390,17 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                   this._setupTemplateObjects(this._templateDocumentPart.objects);
              }
              return this._templateObjects;
-             // return this._templateObjects || (this._templateDocumentPart ? this._setupTemplateObjects(this._templateDocumentPart.objects) : (this._templateObjects = Object.create(null)));
          },
          set: function(value) {
              this._templateObjects = value;
+         }
+     },
+
+     getResources: {
+         value: function () {
+             if (!this._setupTemplateObjectsCompleted && this._templateDocumentPart) {
+                 return this._templateDocumentPart.template.getResources()._resources;
+             }
          }
      },
 

@@ -370,7 +370,6 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
             if (_group === null) {
                 _group = new ModelGroup();
                 _group.name = application ? application.name : "";
-                //console.log("Default ModelGroup name is ", _group.name);
             }
             return _group;
         }

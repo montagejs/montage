@@ -1,0 +1,25 @@
+{
+    "converter_descriptor": {
+        "object": "core/converter/converter.mjson"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "NewLineToBrConverter",
+            "customPrototype": false,
+            "parent": {
+                "@": "converter_descriptor"
+            },
+            "propertyDescriptors": [],
+            "propertyDescriptorGroups": {},
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/converter/new-line-to-br-converter.mjson"
+            },
+            "exportName": "NewLineToBrConverter",
+            "module": {
+                "%": "core/converter/new-line-to-br-converter"
+            }
+        }
+    }
+}

@@ -10,13 +10,12 @@ var MontageInterpreter = Montage.specialize({
     _reviver: {value: null},
 
     init: {
-        value: function (_require, objectRequires) {
+        value: function (_require, reviver) {
             if (typeof _require !== "function") {
                 throw new Error("Function 'require' missing.");
             }
 
-            this._reviver = new MontageReviver()
-                .init(_require, objectRequires);
+            this._reviver = reviver;
             this._require = _require;
 
             return this;
@@ -248,12 +247,14 @@ var MontageContext = Montage.specialize({
                 if (values.hasOwnProperty(key)) {
                     value = values[key];
 
-                    if (typeof value === "object" && value &&
+                    if ((typeof value === "object" && value &&
                         Object.keys(value).length === 1 &&
-                        (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) {
+                        (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) || 
+                        key.indexOf('.') > -1
+                    ) {
                         bindings[key] = value;
                         delete values[key];
-                    }   
+                    }
                 }
             }
 

@@ -1,72 +1,63 @@
 {
     "enabled_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "enabled",
             "valueType": "boolean",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "pressedLabel_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "pressedLabel",
             "valueType": "string",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "unpressedLabel_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "unpressedLabel",
             "valueType": "string",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "holdThreshold_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "holdThreshold",
             "valueType": "number",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "active_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "active",
             "valueType": "boolean",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_parent": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "AbstractControl",
-                "prototypeName": "AbstractControl",
-                "blueprintModule": {
-                    "%": "ui/base/abstract-control.meta"
-                }
-            }
-        }
+    "objectDescriptor_parent": {
+        "object": "ui/base/abstract-control.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "AbstractToggleButton",
             "parent": {
-                "@": "blueprint_parent"
+                "@": "objectDescriptor_parent"
             },
             "propertyDescriptors": [
                 {
@@ -106,7 +97,7 @@
                     }
                 ]
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/base/abstract-toggle-button.meta"
             },
             "exportName": "AbstractToggleButton",

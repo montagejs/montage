@@ -1,16 +1,9 @@
 {
-    "blueprint_parent": {
-        "prototype": "montage/core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "Thing",
-                "blueprintModule": {"%": "dependency/thing.meta"},
-                "prototypeName": "Thing"
-            }
-        }
+    "objectDescriptor_parent": {
+        "object": "dependency/thing.meta"
     },
     "root": {
-        "prototype": "montage/core/meta/module-blueprint",
+        "prototype": "montage/core/meta/module-object-descriptor",
         "values": {
             "name": "Thing",
             "module": {
@@ -18,9 +11,9 @@
             },
             "exportName": "Thing",
             "parent": {
-                "@": "blueprint_parent"
+                "@": "objectDescriptor_parent"
             },
-            "blueprintModule": {}
+            "objectDescriptorModule": {}
         }
     }
 }

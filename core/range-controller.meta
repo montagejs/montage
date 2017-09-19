@@ -1,9 +1,9 @@
 {
     "rangeController_content": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "content",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": -1,
@@ -12,10 +12,10 @@
         }
     },
     "rangeController_organizedContent": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "organizedContent",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": -1,
@@ -24,10 +24,10 @@
         }
     },
     "rangeController_sortPath": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "sortPath",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "string",
@@ -35,10 +35,10 @@
         }
     },
     "rangeController_reversed": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "reversed",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -46,10 +46,10 @@
         }
     },
     "rangeController_filterPath": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "filterPath",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "string",
@@ -57,10 +57,10 @@
         }
     },
     "rangeController_selectAddedContent": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "selectAddedContent",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -68,10 +68,10 @@
         }
     },
     "rangeController_deselectInvisibleContent": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "deselectInvisibleContent",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -79,10 +79,10 @@
         }
     },
     "rangeController_clearSelectionOnOrderChange": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "clearSelectionOnOrderChange",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -90,10 +90,10 @@
         }
     },
     "rangeController_avoidsEmptySelection": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "avoidsEmptySelection",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -101,10 +101,10 @@
         }
     },
     "rangeController_multiSelect": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "multiSelect",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -112,7 +112,7 @@
         }
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "RangeController",
             "customPrototype": false,
@@ -183,7 +183,7 @@
                 ]
             },
             "propertyValidationRules": {},
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "core/range-controller.meta"
             },
             "exportName": "RangeController",

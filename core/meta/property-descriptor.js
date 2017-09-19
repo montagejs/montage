@@ -1,5 +1,5 @@
 var Montage = require("../core").Montage,
-    ObjectDescriptorReference = require("./object-descriptor-reference").ObjectDescriptorReference,
+    Promise = require("../promise").Promise,
     deprecate = require("../deprecate"),
     logger = require("../logger").logger("objectDescriptor");
 
@@ -321,11 +321,17 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     valueDescriptor: {
         serializable: false,
         get: function () {
-            return this._valueDescriptorReference && this._valueDescriptorReference.promise(this.require);
+            // TODO: Needed for backwards compatibility with ObjectDescriptorReference.
+            // Remove eventually, this can become completely sync
+            if (typeof this._valueDescriptorReference.promise === "function") {
+                deprecate.deprecationWarningOnce("valueDescriptor reference via ObjectDescriptorReference", "direct reference via object syntax");
+                return this._valueDescriptorReference.promise(this.require);
+            } else {
+                return Promise.resolve(this._valueDescriptorReference);
+            }
         },
         set: function (descriptor) {
-
-            this._valueDescriptorReference = new ObjectDescriptorReference().initWithValue(descriptor);
+            this._valueDescriptorReference = descriptor;
         }
     },
 

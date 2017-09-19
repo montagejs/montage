@@ -1,3 +1,5 @@
+/*global require, exports, console, MontageElement */
+
 /**
  * @module "montage/ui/flow.reel"
  */
@@ -1701,6 +1703,14 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
         }
     },
 
+    didDraw: {
+        value: function () {
+            if (!this.viewportHeight || !this.viewportWidth) {
+                this.needsDraw = true;
+            }
+        }
+    },
+
     // TODO doc
     /**
      */
@@ -2186,3 +2196,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
         }
     }
 });
+
+if (window.MontageElement) {
+    MontageElement.define("montage-flow", Flow);
+}

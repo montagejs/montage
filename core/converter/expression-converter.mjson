@@ -1,0 +1,54 @@
+{
+    "converter_descriptor": {
+        "object": "core/converter/converter.mjson"
+    },
+    "convertExpression": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "convertExpression",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+    "revertExpression": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "revertExpression",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "ExpressionConverter",
+            "customPrototype": false,
+            "parent": {
+                "@": "converter_descriptor"
+            },
+            "propertyDescriptors": [
+                {
+                    "@": "convertExpression"
+                },
+                {
+                    "@": "revertExpression"
+                }
+            ],
+            "propertyDescriptorGroups": {},
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/converter/expression-converter.mjson"
+            },
+            "exportName": "ExpressionConverter",
+            "module": {
+                "%": "core/converter/expression-converter"
+            }
+        }
+    }
+}

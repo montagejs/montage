@@ -1,3 +1,5 @@
+/*global require, exports, console, MontageElement */
+
 /**
  * @module "ui/modal-overlay.reel"
  */
@@ -10,7 +12,7 @@ var CLASS_PREFIX = "montage-ModalOverlay";
  * @class ModalOverlay
  * @extends Overlay
  */
-exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay.prototype # */ {
+var ModalOverlay = exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay.prototype # */ {
 
     enterDocument: {
         value: function (firstTime) {
@@ -135,3 +137,6 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay.prototype # */
 
 });
 
+if (window.MontageElement) {
+    MontageElement.define("montage-modal-overlay", ModalOverlay);
+}

@@ -1,92 +1,83 @@
 {
     "enabled_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "enabled",
             "valueType": "boolean",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "contentController_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "contentController",
             "valueType": "object",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "content_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "content",
             "valueType": "object",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "labelPropertyName_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "labelPropertyName",
             "valueType": "string",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "value_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "value",
             "valueType": "object",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "values_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "values",
             "valueType": "object",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "multiSelect_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "multiSelect",
             "valueType": "boolean",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_parent": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "AbstractControl",
-                "prototypeName": "AbstractControl",
-                "blueprintModule": {
-                    "%": "ui/base/abstract-control.meta"
-                }
-            }
-        }
+    "objectDescriptor_parent": {
+        "object": "ui/base/abstract-control.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "AbstractSelect",
             "parent": {
-                "@": "blueprint_parent"
+                "@": "objectDescriptor_parent"
             },
             "propertyDescriptors": [
                 {
@@ -136,7 +127,7 @@
                     }
                 ]
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/base/abstract-select.meta"
             },
             "exportName": "AbstractSelect",

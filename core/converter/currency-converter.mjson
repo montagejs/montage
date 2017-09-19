@@ -1,0 +1,63 @@
+{
+    "currenyConverter_currency": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "currency",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+    "number_converter_descriptor": {
+        "object": "core/converter/number-converter.mjson"
+    },
+    "currencyConverter_showCurrencyBeforeNumber": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "showCurrencyBeforeNumber",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "CurrencyConverter",
+            "customPrototype": false,
+            "parent": {
+                "@": "number_converter_descriptor"
+            },
+            "propertyDescriptors": [
+                {
+                    "@": "currenyConverter_currency"
+                },
+                {
+                    "@": "currencyConverter_showCurrencyBeforeNumber"
+                }
+            ],
+            "propertyDescriptorGroups": {
+                "currencyConverter": [
+                    {
+                        "@": "currenyConverter_currency"
+                    },
+                    {
+                        "@": "currencyConverter_showCurrencyBeforeNumber"
+                    }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/converter/currency-converter.mjson"
+            },
+            "exportName": "CurrencyConverter",
+            "module": {
+                "%": "core/converter/currency-converter"
+            }
+        }
+    }
+}

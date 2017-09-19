@@ -1,26 +1,26 @@
 {
     "actionEventListener_handler": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "handler",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object"
         }
     },
     "actionEventListener_action": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "action",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "string"
         }
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-descriptor",
         "values": {
             "name": "ActionEventListener",
             "customPrototype": false,
@@ -32,7 +32,7 @@
                     "@": "actionEventListener_action"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "actionEventListener": [
                     {
                         "@": "actionEventListener_handler"
@@ -42,7 +42,7 @@
                     }
                 ]
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "core/event/action-event-listener.meta"
             },
             "exportName": "ActionEventListener",

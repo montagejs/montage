@@ -1,32 +1,23 @@
 {
     "checked_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "checked",
             "valueType": "boolean",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_parent": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "AbstractControl",
-                "prototypeName": "AbstractControl",
-                "blueprintModule": {
-                    "%": "ui/base/abstract-control.meta"
-                }
-            }
-        }
+    "objectDescriptor_parent": {
+        "object": "ui/base/abstract-control.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "AbstractToggleSwitch",
             "parent": {
-                "@": "blueprint_parent"
+                "@": "objectDescriptor_parent"
             },
             "propertyDescriptors": [
                 {
@@ -40,7 +31,7 @@
                     }
                 ]
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/base/abstract-toggle-switch.meta"
             },
             "exportName": "AbstractToggleSwitch",

@@ -23,7 +23,7 @@
                     "@": "value_target_object_descriptor"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "associations": [
                     {
                         "@": "value_target_object_descriptor"

@@ -1,9 +1,9 @@
 {
     "treeController_content": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "content",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": -1,
@@ -12,10 +12,10 @@
         }
     },
     "treeController_childrenPath": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "childrenPath",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "string",
@@ -23,10 +23,10 @@
         }
     },
     "treeController_initiallyExpanded": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "initiallyExpanded",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -34,10 +34,10 @@
         }
     },
     "treeController_noneExpanded": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "noneExpanded",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -45,10 +45,10 @@
         }
     },
     "treeController_allExpanded": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "allExpanded",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean",
@@ -56,10 +56,10 @@
         }
     },
     "treeController_root": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "root",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object",
@@ -69,7 +69,7 @@
         }
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "TreeController",
             "customPrototype": false,
@@ -116,7 +116,7 @@
                 ]
             },
             "propertyValidationRules": {},
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "core/tree-controller.meta"
             },
             "exportName": "TreeController",
@@ -126,10 +126,10 @@
         }
     },
     "treeControllerNode_content": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "content",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": -1,
@@ -138,10 +138,10 @@
         }
     },
     "treeControllerNode_expanded": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "expanded",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "treeControllerNode"
             },
             "valueType": "boolean",
@@ -149,10 +149,10 @@
         }
     },
     "treeControllerNode_depth": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "depth",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "treeControllerNode"
             },
             "valueType": "number",
@@ -160,10 +160,10 @@
         }
     },
     "treeControllerNode_index": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "index",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "treeControllerNode"
             },
             "valueType": "number",
@@ -171,10 +171,10 @@
         }
     },
     "treeControllerNode_isFinal": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "isFinal",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "treeControllerNode"
             },
             "valueType": "boolean",
@@ -182,10 +182,10 @@
         }
     },
     "treeControllerNode_parent": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "parent",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "treeControllerNode"
             },
             "valueType": "object",
@@ -195,10 +195,10 @@
         }
     },
     "treeControllerNode_children": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "children",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "treeControllerNode"
             },
             "cardinality": -1,
@@ -209,10 +209,10 @@
         }
     },
     "treeControllerNode_junctions": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "junctions",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "treeControllerNode"
             },
             "valueType": "object",
@@ -220,10 +220,10 @@
         }
     },
     "treeControllerNode": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/object-descriptor",
         "values": {
             "name": "TreeControllerNode",
-            "blueprintModuleId": "core/tree-controller.meta",
+            "objectDescriptorModuleId": "core/tree-controller.meta",
             "prototypeName": "TreeControllerNode",
             "customPrototype": false,
             "propertyDescriptors": [

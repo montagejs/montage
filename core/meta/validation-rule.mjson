@@ -1,15 +1,6 @@
 {
     "owner_reference": {
-        "prototype": "core/meta/object-descriptor-reference",
-        "values": {
-            "valueReference": {
-                "objectDescriptorName": "ObjectDescriptor",
-                "prototypeName": "ObjectDescriptor",
-                "objectDescriptorModule": {
-                    "%": "core/meta/object-descriptor.mjson"
-                }
-            }
-        }
+        "object": "core/meta/object-descriptor.mjson"
     },
     "validation_rule_object_descriptor_name": {
         "prototype": "core/meta/property-descriptor",

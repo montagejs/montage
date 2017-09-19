@@ -1,72 +1,63 @@
 {
     "enabled_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "enabled",
             "valueType": "boolean",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "value_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "value",
             "valueType": "number",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "min_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "min",
             "valueType": "number",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "max_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "max",
             "valueType": "number",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "step_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "step",
             "valueType": "number",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_parent": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "AbstractControl",
-                "prototypeName": "AbstractControl",
-                "blueprintModule": {
-                    "%": "ui/base/abstract-control.meta"
-                }
-            }
-        }
+    "objectDescriptor_parent": {
+        "object": "ui/base/abstract-control.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "AbstractNumberField",
             "parent": {
-                "@": "blueprint_parent"
+                "@": "objectDescriptor_parent"
             },
             "propertyDescriptors": [
                 {
@@ -104,7 +95,7 @@
                     }
                 ]
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/base/abstract-number-field.meta"
             },
             "exportName": "AbstractNumberField",

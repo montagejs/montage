@@ -2,23 +2,11 @@
  * @module montage/core/converter/trim-converter
  * @requires montage/core/converter/converter
  */
-var Converter = require("./converter").Converter;
-
-
-/**
- * Trims a string of any leading or trailing white space.
- * @memberof module:montage/core/converter#
- * @function
- * @param {string} str String to be trimmed.
- * @returns {string} The trimmed string.
- */
-var trim = exports.trim = function (str) {
-    // from Google Closure library
-    // Since IE doesn't include non-breaking-space (0xa0) in their \s character
-    // class (as required by section 7.2 of the ECMAScript spec), we explicitly
-    // include it in the regexp to enforce consistent cross-browser behavior.
-    return str.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
-};
+var Converter = require("./converter").Converter,
+    trim = require('lodash.trim'),
+    deprecate = require("../deprecate"),
+    shouldMuteWarning = false,
+    singleton;
 
 /**
  * @class TrimConverter
@@ -32,7 +20,28 @@ var trim = exports.trim = function (str) {
  * console.log("After trim: " + trimConverter.convert(str));
  * // After trim: Hello World
  */
-exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
+var TrimConverter = exports.TrimConverter = Converter.specialize({
+
+    constructor: {
+        value: function () {
+            if (this.constructor === TrimConverter) {
+                if (!singleton) {
+                    singleton = this;
+                }
+
+                if (!shouldMuteWarning) {
+                    deprecate.deprecationWarning(
+                        "Instantiating TrimConverter is deprecated," +
+                        " use its singleton instead"
+                    );
+                }
+
+                return singleton;
+            }
+
+            return this;
+        }
+    },
 
     _convert: {
         value: function (v) {
@@ -64,3 +73,14 @@ exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
 
 });
 
+Object.defineProperty(exports, 'singleton', {
+    get: function () {
+        if (!singleton) {
+            shouldMuteWarning = true;
+            singleton = new TrimConverter();
+            shouldMuteWarning = false;
+        }
+
+        return singleton;
+    }
+});
