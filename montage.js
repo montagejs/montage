@@ -377,7 +377,7 @@
             });
         },
 
-        requireWillCompileMjsonFile: function (mjson, require, moduleId) {
+        requireWillCompileMJSONFile: function (mjson, require, moduleId) {
             var deserializer = new exports.MontageDeserializer();
             deserializer.init(mjson, require, void 0, moduleId);
             return deserializer.deserializeObject();
