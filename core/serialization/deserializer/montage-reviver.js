@@ -465,7 +465,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             if (moduleId && (moduleId.endsWith(".mjson") || moduleId.endsWith(".meta"))) {
                 object = value && "prototype" in value ? Object.create(module) : module;
                 context.setObjectLabel(object, label);
-                return this.instantiateMjsonObject(value, object, objectName, context, label);
+                return this.instantiateMJSONObject(value, object, objectName, context, label);
             } else {
                 object = this.getMontageObject(value, module, objectName, context, label);
                 context.setObjectLabel(object, label);
@@ -514,7 +514,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         }
     },
 
-    instantiateMjsonObject: {
+    instantiateMJSONObject: {
         value: function (serialization, object, objectName, context, label) {
             var self = this,
                 montageObjectDesc;
