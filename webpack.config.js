@@ -4,12 +4,15 @@ var webpack = require('webpack');
 module.exports = {
   context: __dirname,
   devtool: debug ? "inline-sourcemap" : null,
-  entry: "./montage.js",
+  entry: ["./montage.js"],
   node: {
-    fs: "empty"
+    console: true,
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
   },
   output: {
-    path: __dirname + "/dist",
+    path: __dirname,
     filename: "montage.min.js"
   },
   plugins: debug ? [] : [

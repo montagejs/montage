@@ -7,17 +7,17 @@
             var URL = bootRequire("mini-url");
             factory(exports, Promise, URL, bootRequire);
         });
-    } else if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define(['exports', 'bluebird'], function (exports, bluebird) {
-            factory((root.Montage = exports), bluebird);
-        });
     } else if (typeof exports === 'object' && typeof exports.nodeName !== 'string') {
         // CommonJS
         var Promise = (require)("bluebird");
         var URL = (require)('url');
         var mr = (require)('mr');
         factory(exports, Promise, URL, mr);
+    } else if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['exports', 'bluebird'], function (exports, bluebird) {
+            factory((root.Montage = exports), bluebird);
+        });
     } else {
         // Browser globals
         factory((root.Montage = {}), null, root.URL, root.mr);
@@ -136,7 +136,7 @@
                     // parameters from its attributes.
                     var i, j, match, script, attr, name,
                         paramNamespace = 'montage',
-                        boostrapScript ='montage.js',
+                        boostrapScript ='montage(.*).js',
                         boostrapAttrPattern = /^data-(.*)$/,
                         boostrapPattern = new RegExp('^(.*)' + boostrapScript + '(?:[\?\.]|$)', 'i'),
                         letterAfterDashPattern = /-([a-z])/g,
@@ -221,6 +221,10 @@
                     }
                 };
 
+                function moduleHasExport(module) {
+                    return module.exports !== null && module.exports !== void 0;
+                }
+
                 function bootModule(id) {
                     //console.log('bootModule', id, factory);
 
@@ -232,7 +236,7 @@
 
                     if (
                         module && 
-                            typeof module.exports === "undefined"  && 
+                            moduleHasExport(module) === false && 
                                 typeof module.factory === "function"
                     ) {
                         module.exports = module.factory(bootModule, (module.exports = {})) || module.exports;
@@ -329,13 +333,13 @@
                         module.location = params.hasOwnProperty(paramModuleLocation) ? params[paramModuleLocation] : module.location;
 
                         // Reset bad exports
-                        if (module.exports !== null && module.exports !== void 0) {
+                        if (moduleHasExport(module)) {
                             bootstrapModule(module.id, module.exports);
                         } else if (typeof module.shim !== "undefined") {
                             bootstrapModule(module.id, module.shim);
                         } else {
                             module.strategy = "nested";
-                            module.script = resolveUrl(location, module.location);
+                            module.script = resolveUrl(window.location, module.location);
                             loadScript(module.script, bootstrapModuleScript.bind(null, module));
                         }
                     }
@@ -615,7 +619,7 @@
                     montageRequire.inject("core/promise", {Promise: mrPromise});
 
                     // Expose global require and mr
-                    global.require = global.mr = applicationRequire;
+                    global.mr = applicationRequire;
 
                     var dependencies = [
                         "core/core",
