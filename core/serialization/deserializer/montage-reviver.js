@@ -50,11 +50,7 @@ var ModuleLoader = Montage.specialize({
 
     getExports: {
         value: function (_require, moduleId) {
-            var module;
-
-            // Transforms relative module ids into absolute module ids
-            moduleId = _require.resolve(moduleId);
-            module = _require.getModuleDescriptor(moduleId);
+            var module = _require.getModuleDescriptor(_require.resolve(moduleId));
 
             while (module.redirect !== void 0) {
                 module = _require.getModuleDescriptor(module.redirect);
@@ -917,50 +913,50 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     customObjectRevivers: {value: new Map()},
 
-    // Location Id is in the form of <moduleId>[<objectName>] where
-    // [<objectName>] is optional. When objectName is missing it is derived
-    // from the last path component of moduleId transformed into CamelCase.
-    //
-    // Example: "event/event-manager" has a default objectName of EventManager.
-    //
-    // When the last path component ends with ".reel" it is removed before
-    // creating the default objectName.
-    //
-    // Example: "matte/ui/input-range.reel" has a default objectName of
-    //          InputRange.
-    //
-    // @returns {moduleId, objectName}
+    /**
+     * Location Id is in the form of <moduleId>[<objectName>] where
+     * [<objectName>] is optional. When objectName is missing it is derived
+     * from the last path component of moduleId transformed into CamelCase.
+     *
+     * @example "event/event-manager" has a default objectName of EventManager.
+     *
+     * When the last path component ends with ".reel" it is removed before
+     * creating the default objectName.
+     *
+     * @example "matte/ui/input-range.reel" has a default objectName of
+     *          InputRange.
+     *
+     * @returns {moduleId, objectName}
+     */
     parseObjectLocationId: {
         value: function (locationId) {
-            var locationDescCache = this._locationDescCache,
-                locationDesc,
-                bracketIndex,
-                moduleId,
-                objectName;
+            return this._locationDescCache.get(locationId) || this.createObjectLocationDesc(locationId);
+        }
+    },
 
-            locationDesc = locationDescCache.get(locationId);
-            if (!locationDesc) {
+    createObjectLocationDesc: {
+        value: function (locationId) {
+            var moduleId,
+                objectName,
                 bracketIndex = locationId.indexOf("[");
 
-                if (bracketIndex > 0) {
-                    moduleId = locationId.substr(0, bracketIndex);
-                    objectName = locationId.slice(bracketIndex + 1, -1);
-                } else {
-                    moduleId = locationId;
-                    this._findObjectNameRegExp.test(locationId);
-                    objectName = RegExp.$1.replace(
-                        this._toCamelCaseRegExp,
-                        this._replaceToCamelCase
-                    );
-                }
-
-                locationDesc = {
-                    moduleId: moduleId,
-                    objectName: objectName
-                };
-                locationDescCache.set(locationId, locationDesc);
+            if (bracketIndex > 0) {
+                moduleId = locationId.substr(0, bracketIndex);
+                objectName = locationId.slice(bracketIndex + 1, -1);
+            } else {
+                moduleId = locationId;
+                this._findObjectNameRegExp.test(locationId);
+                objectName = RegExp.$1.replace(
+                    this._toCamelCaseRegExp,
+                    this._replaceToCamelCase
+                );
             }
 
+            var locationDesc = {
+                moduleId: moduleId,
+                objectName: objectName
+            };
+            this._locationDescCache.set(locationId, locationDesc);
             return locationDesc;
         }
     },
