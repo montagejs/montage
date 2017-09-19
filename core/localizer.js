@@ -263,7 +263,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
     },
 
     _require: {
-        value: global.require
+        value: global.mr
     },
 
     /**
