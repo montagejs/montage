@@ -195,29 +195,28 @@
 
                 var self = this,
                     params = self.getParams(),
-                    location = params.location,
                     resolveUrl = this.resolveUrl;
 
                 // determine which scripts to load
                 var dependencies = {
                     "mini-url": {
                         // Preloaded
-                        shim: function (bootRequire, exports) {
+                        "shim": function (bootRequire, exports) {
                             return {
                                 resolve: resolveUrl
                             };
                         }
                     },
                     "promise": {
-                        exports: Promise,
-                        global: "Promise",
-                        export: "Promise",
-                        location: "node_modules/bluebird/js/browser/bluebird.min.js",
+                        "exports": Promise,
+                        "global": "Promise",
+                        "export": "Promise",
+                        "location": "node_modules/bluebird/js/browser/bluebird.min.js",
                     },
                     "require": {
-                        exports: mr, // Preloaded
+                        "exports": mr, // Preloaded
                         //location: "./require.js"
-                        location: "node_modules/mr/require.js",
+                        "location": "node_modules/mr/require.js",
                     }
                 };
 
@@ -339,7 +338,7 @@
                             bootstrapModule(module.id, module.shim);
                         } else {
                             module.strategy = "nested";
-                            module.script = resolveUrl(window.location, module.location);
+                            module.script = resolveUrl(params.location, module.location);
                             loadScript(module.script, bootstrapModuleScript.bind(null, module));
                         }
                     }
