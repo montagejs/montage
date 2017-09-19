@@ -443,7 +443,11 @@
     };
 
     exports.initMontageCustomElement = function () {
-        if (typeof window.customElements === 'undefined' || typeof window.Reflect === 'undefined') {
+
+        if (
+            typeof customElements === 'undefined' || 
+                typeof Reflect === 'undefined'
+        ) {
             return void 0;
         }
 
