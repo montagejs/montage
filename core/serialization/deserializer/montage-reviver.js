@@ -17,6 +17,7 @@ require("../../shim/string");
 
 var PROXY_ELEMENT_MAP = new WeakMap();
 var DATA_ATTRIBUTES_MAP = new Map();
+var MJSON_OBJECTS_MAP = new Map();
 
 var ModuleLoader = Montage.specialize({
 
@@ -60,7 +61,7 @@ var ModuleLoader = Montage.specialize({
                 return this.getExports(module.mappingRequire, module.mappingRedirect);
             }
 
-            return module.exports;
+            return module.exports || module.text;
         }
     },
 
@@ -422,11 +423,23 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
             if (locationId) {
                 locationDesc = MontageReviver.parseObjectLocationId(locationId);
-                module = this.moduleLoader.getModule(locationDesc.moduleId,
-                    label);
+                module = this.moduleLoader.getModule(locationDesc.moduleId, label);
                 objectName = locationDesc.objectName;
             }
 
+            if (this._locationId &&
+                (this._locationId.endsWith(".mjson") || this._locationId.endsWith(".meta")) &&
+                !MJSON_OBJECTS_MAP.has(this._locationId, context)) {
+                
+                MJSON_OBJECTS_MAP.set(this._locationId, context);
+            }
+
+            if (typeof module === "string" && (locationId.endsWith(".mjson") || locationId.endsWith(".meta"))) {
+                // We have a circular reference. If we wanted to forbid circular
+                // references this is where we would throw an error.
+                return Promise.resolve(MJSON_OBJECTS_MAP.get(locationId)._objects.root);
+            }
+            
             if (Promise.is(module)) {
                 return module.then(function (exports) {
                     return self.instantiateObject(exports, locationDesc, value, objectName, context, label);
@@ -446,44 +459,18 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     instantiateObject: {
         value: function (module, locationDesc, value, objectName, context, label) {
-            var self = this,
-                moduleId = value.prototype || value.object,
+            var moduleId = value.prototype || value.object,
                 object;
 
             if (moduleId && (moduleId.endsWith(".mjson") || moduleId.endsWith(".meta"))) {
-                return this.getMjsonObject(value, module, moduleId, context)
-                    .then(function (object) {
-                        context.setObjectLabel(object, label);
-                        return self.instantiateMjsonObject(value, object, objectName, context, label);
-                    });
+                object = value && "prototype" in value ? Object.create(module) : module;
+                context.setObjectLabel(object, label);
+                return this.instantiateMjsonObject(value, object, objectName, context, label);
             } else {
                 object = this.getMontageObject(value, module, objectName, context, label);
                 context.setObjectLabel(object, label);
                 return this.instantiateMontageObject(value, object, objectName, context, label);
             }
-        }
-    },
-
-    getMjsonObject: {
-        value: function (serialization, json, moduleId, context) {
-            var self = this,
-                deserializer = new this._deserializerConstructor().init(
-                    json,
-                    this._deserializerConstructor.getModuleRequire(this._require, moduleId),
-                    void 0,
-                    moduleId
-                );
-            return Promise.resolve(deserializer)
-                .then(function (deserializer) {
-                    return deserializer.deserializeObject();
-                })
-                .then(function (object) {
-                    if ("prototype" in serialization) {
-                        return Object.create(object);
-                    } else {
-                        return object;
-                    }
-                });
         }
     },
 
