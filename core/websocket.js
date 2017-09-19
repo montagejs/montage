@@ -22,7 +22,6 @@ exports.WebSocket = Target.specialize({
             this._protocols = protocols;
             this._messageQueue = [];
             this._webSocket = null;
-            this._isMessagePending = false;
             this._isReconnecting = false;
             this._connect();
             return this;
@@ -41,47 +40,48 @@ exports.WebSocket = Target.specialize({
     _webSocket: {
         value: undefined
     },
-    _isMessagePending: {
-        value: undefined
-    },
     reconnectionInterval: {
         value: 100
     },
+
     _connect: {
         value: function () {
-        this._webSocket = new _WebSocket(this._url,this._protocols);
-        this._webSocket.addEventListener("error", this, false);
-        this._webSocket.addEventListener("open", this, false);
+            this._webSocket = new _WebSocket(this._url, this._protocols);
+            this._webSocket.addEventListener("error", this, false);
+            this._webSocket.addEventListener("open", this, false);
         }
     },
+
     send: {
         value: function send(data) {
             this._messageQueue.push(data);
             this._sendNextMessage();
         }
     },
+
     _sendNextMessage: {
         value: function () {
-            if (!this._isMessagePending && this._messageQueue.length) {
-                if (this._webSocket) {
-                    this._isMessagePending = true;
-                    if ((this._webSocket.readyState !== exports.WebSocket.CLOSING) && (this._webSocket.readyState !== exports.WebSocket.CLOSED)) {
+            if (this._messageQueue.length) {
+                switch (this.readyState) {
+                    case WebSocket.CONNECTING:
+                        break;
+                    case WebSocket.CLOSING:
+                    case WebSocket.CLOSED:
+                        this._reconnect();
+                        break;
+                    case WebSocket.OPEN:
                         try {
                             this._webSocket.send(this._messageQueue[0]);
+                            this._messageQueue.shift();
                         } catch (e) {
-                            this._isMessagePending = false;
                             this._reconnect();
                         }
-                    } else {
-                        this._isMessagePending = false;
-                        this._reconnect();
-                    }
-                } else {
-                    this._reconnect();
+                        break;
                 }
             }
         }
     },
+
     _reconnect: {
         value: function () {
             var self;
@@ -90,7 +90,6 @@ exports.WebSocket = Target.specialize({
             if (!this._isReconnecting) {
                 self = this;
                 this._webSocket = null;
-                this._isMessagePending = false;
                 this._isReconnecting = true;
                 setTimeout(function () {
                     self._connect();
@@ -117,8 +116,6 @@ exports.WebSocket = Target.specialize({
                     this._sendNextMessage();
                 break;
                 case "message":
-                    this._isMessagePending = false;
-                    this._messageQueue.shift();
                     this.dispatchEvent(event);
                     this._sendNextMessage();
                 break;
@@ -161,7 +158,7 @@ exports.WebSocket = Target.specialize({
     },
     readyState: {
         get: function () {
-            return this._webSocket.readyState;
+            return this._webSocket ? this._webSocket.readyState : WebSocket.CLOSED;
         }
     },
 

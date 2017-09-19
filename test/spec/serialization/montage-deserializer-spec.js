@@ -239,6 +239,27 @@ describe("serialization/montage-deserializer-spec", function () {
             });
         });
 
+        it("should deserialize a complex key assignment", function (done) {
+            var serialization = {
+                "root": {
+                    "value": {
+                        "bar": {}
+                    },
+                    "values": {
+                        "foo": 10,
+                        "bar.quz": 42
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+            deserialize(serializationString, require).then(function (object) {
+                expect(object.foo).toBe(10);
+                expect(object.bar.quz).toBe(42);
+            }).finally(function () {
+                done();
+            });
+        });
+
         it("should deserialize a simple one-time assignment in normal form", function (done) {
             var serialization = {
                 "root": {
@@ -333,7 +354,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 done();
             });
         });
-        
+
 
         it("should call deserializedFromSerialization function on the instantiated objects", function (done) {
             var serialization = {
@@ -371,7 +392,7 @@ describe("serialization/montage-deserializer-spec", function () {
            var latch;
            var instances = {root: null};
            var exports;
-        
+
            deserializer.initWithObject({
                root: {
                    module: "serialization/testobjects-v2",
@@ -724,7 +745,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(info.moduleId).toBe("core/meta/object-descriptor");
                 expect(info.isInstance).toBe(true);
                 expect(root.type).toBeUndefined();
-                expect(root.name).toBe("RootBlueprint");
+                expect(root.name).toBe("RootObjectDescriptor");
                 expect(root.number).toBe(42);
                 expect(root.string).toBe("a string");
             }).catch(function (reason) {
@@ -733,7 +754,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 done();
             });
         });
-        
+
         it("should deserialize instances using prototype: module.mjson", function (done) {
             var serialization = {
                     "root": {
@@ -780,7 +801,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(info.moduleId).toBe("core/meta/object-descriptor");
                 expect(info.isInstance).toBe(true);
                 expect(root.type).toBeUndefined();
-                expect(root.name).toBe("RootBlueprint");
+                expect(root.name).toBe("RootObjectDescriptor");
                 expect(root.number).toBe(42);
                 expect(root.string).toBe("a string");
             }).catch(function (reason) {
@@ -820,7 +841,7 @@ describe("serialization/montage-deserializer-spec", function () {
 
         it("should deserialize using instance after compilation", function (done) {
            var latch, objects;
-        
+
             deserializer.initWithObject({
                root: {
                    prototype: "montage",
@@ -835,7 +856,7 @@ describe("serialization/montage-deserializer-spec", function () {
 
                var root = objects.root,
                    info = Montage.getInfoForObject(root);
-        
+
                expect(Montage.isPrototypeOf(root));
                expect(info.moduleId).toBe("core/core");
                expect(info.objectName).toBe("Montage");
@@ -849,7 +870,7 @@ describe("serialization/montage-deserializer-spec", function () {
 
         it("should deserialize using type after compilation", function (done) {
            var latch, objects;
-        
+
            deserializer.initWithObject({
                root: {
                    object: "montage",
@@ -864,7 +885,7 @@ describe("serialization/montage-deserializer-spec", function () {
 
                var root = objects.root,
                    info = Montage.getInfoForObject(root);
-        
+
                expect(root).toBe(Montage);
                expect(info.moduleId).toBe("core/core");
                expect(info.objectName).toBe("Montage");
@@ -901,7 +922,7 @@ describe("serialization/montage-deserializer-spec", function () {
         });
 
         it("should use the require of the package the deserializer is using", function (done) {
-            
+
             require.loadPackage("spec/package-a").then(function (pkg1) {
                 var serialization = {
                         "root": {
@@ -1360,5 +1381,23 @@ describe("serialization/montage-deserializer-spec", function () {
                 });
             })
         });
+    });
+
+    it("handles circular references", function (done) {
+        var serialization = {
+            "root": {
+                "object": "spec/serialization/circular/a.mjson"
+            }
+        };
+        var deserializer = new Deserializer().init(JSON.stringify(serialization), require);
+        deserializer.deserializeObject()
+            .then(function (result) {
+                expect(result.bRef.myBProp).toBe("bar");
+                expect(result.bRef.aRef).toBe(result);
+            }).catch(function (err) {
+                fail(err);
+            }).finally(function () {
+                done();
+            });
     });
 });

@@ -1,0 +1,41 @@
+{
+    "converter_allowPartialConversion": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "allowPartialConversion",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "readOnly": true,
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "Converter",
+            "customPrototype": false,
+            "propertyDescriptors": [
+                {
+                    "@": "converter_allowPartialConversion"
+                }
+            ],
+            "propertyDescriptorGroups": {
+                "converter": [
+                    {
+                        "@": "converter_allowPartialConversion"
+                    }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/converter/converter.mjson"
+            },
+            "exportName": "Converter",
+            "module": {
+                "%": "core/converter/converter"
+            }
+        }
+    }
+}

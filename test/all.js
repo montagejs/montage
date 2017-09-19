@@ -18,7 +18,8 @@ module.exports = require("montage-testing").run(require, [
     "spec/bindings/converter-spec",
     "spec/bindings/self-spec",
     {name: "spec/document-resources-spec", node: false},
-    {name: "spec/claimed-pointer-spec", node: false}, 
+    { name: "spec/claimed-pointer-spec", node: false }, 
+    { name: "spec/montage-custom-element-spec", node: false }, 
     // Core
     "spec/core/browser-spec",
     "spec/core/core-spec",
@@ -81,7 +82,7 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/serialization/montage-serializer-spec"},
     {name: "spec/serialization/montage-serializer-element-spec", node: false},
     {name: "spec/serialization/montage-deserializer-spec"},
-    {name: "spec/serialization/montage-deserializer-element-spec", node: false},
+    { name: "spec/serialization/montage-deserializer-element-spec", node: false, karma: false},
     // Trigger
     {name: "spec/trigger/trigger-spec", node: false},
     // UI
@@ -94,7 +95,7 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/ui/modal-overlay-spec", node: false},
     {name: "spec/ui/overlay-spec", node: false},
     {name: "spec/ui/slot-spec", node: false},
-    {name: "spec/ui/substitution-spec", node: false},  
+    {name: "spec/ui/substitution-spec", node: false},
     {name: "spec/ui/text-input-spec", node: false},
     {name: "spec/ui/slider-spec", node: false},
     {name: "spec/ui/text/text-spec", node: false},
@@ -105,19 +106,19 @@ module.exports = require("montage-testing").run(require, [
     // Reel
     {name: "spec/reel/template-spec", node: false, karma: true},
     // UI - repetition
-    {name: "spec/ui/repetition-spec", node: false},
+    { name: "spec/ui/repetition-spec", node: false, karma: false},
     {name: "spec/ui/repetition-selection-spec", node: false, karma: false},
     {name: "spec/ui/repetition-binding-spec", node: false},
     {name: "spec/core/localizer-spec", node: false, karma: false},
     {name: "spec/core/localizer/serialization-spec", node: false, karma: false},
-    // Bluerint
-    {name: "spec/meta/converter-blueprint-spec", karma: false},
-    {name: "spec/meta/module-blueprint-spec", karma: false},
-    {name: "spec/meta/build-in-component-blueprint-spec", node: false, karma: false},
-    {name: "spec/meta/component-blueprint-spec", node: false},
-    {name: "spec/meta/controller-blueprint-spec", node: false},
-    {name: "spec/meta/event-blueprint-spec", node: false},
-    {name: "spec/meta/blueprint-spec"}
+    // Meta
+    {name: "spec/meta/converter-object-descriptor-spec", karma: false},
+    {name: "spec/meta/module-object-descriptor-spec", karma: false},
+    {name: "spec/meta/build-in-component-object-descriptor-spec", node: false, karma: false},
+    {name: "spec/meta/component-object-descriptor-spec", node: false},
+    {name: "spec/meta/controller-object-descriptor-spec", node: false},
+    {name: "spec/meta/event-descriptor-spec", node: false},
+    {name: "spec/meta/object-descriptor-spec"}
 ]).then(function () {
     console.log('montage-testing', 'End');
 }, function (err) {

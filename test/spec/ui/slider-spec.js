@@ -1,7 +1,6 @@
 /*global describe, it, expect */
 var Montage = require("montage").Montage;
 var Slider = require("montage/ui/slider.reel").Slider;
-var MockDOM = require("mocks/dom");
 var MockEvent = require("mocks/event");
 
 describe("test/ui/slider-spec", function () {
@@ -20,7 +19,7 @@ describe("test/ui/slider-spec", function () {
             aSlider;
         beforeEach(function () {
             aSlider = new SpecializedSlider();
-            aSlider.element = MockDOM.element();
+            aSlider.element = document.createElement('div');
         });
 
         // Inspired by
@@ -377,11 +376,11 @@ describe("test/ui/slider-spec", function () {
         });
         */
     });
-    describe("blueprint", function () {
+    describe("objectDescriptor", function () {
         it("can be created", function (done) {
-            var blueprintPromise = Slider.blueprint;
-            blueprintPromise.then(function (blueprint) {
-                expect(blueprint).not.toBeNull();
+            var objectDescriptorPromise = Slider.objectDescriptor;
+            objectDescriptorPromise.then(function (objectDescriptor) {
+                expect(objectDescriptor).not.toBeNull();
             }, function (err) {
                 fail(err);
             }).finally(function () {

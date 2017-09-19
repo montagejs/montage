@@ -1,0 +1,131 @@
+{
+    "numberConverter_shorten": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "shorten",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+    "numberConverter_decimals": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "decimals",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+    "numberConverter_round": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "round",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+    "numberConverter_forceDecimals": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "forceDecimals",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+    "numberConverter_allowFloat": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "allowFloat",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+    "numberConverter_allowNegative": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "allowNegative",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+    "converter_descriptor": {
+        "object": "core/converter/converter.mjson"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "NumberConverter",
+            "customPrototype": false,
+            "parent": {
+                "@": "converter_descriptor"
+            },
+            "propertyDescriptors": [
+                {
+                    "@": "numberConverter_shorten"
+                },
+                {
+                    "@": "numberConverter_decimals"
+                },
+                {
+                    "@": "numberConverter_forceDecimals"
+                },
+                {
+                    "@": "numberConverter_round"
+                },
+                {
+                    "@": "numberConverter_allowFloat"
+                },
+                {
+                    "@": "numberConverter_allowNegative"
+                }
+            ],
+            "propertyDescriptorGroups": {
+                "numberConverter": [
+                    {
+                        "@": "numberConverter_shorten"
+                    },
+                    {
+                        "@": "numberConverter_decimals"
+                    },
+                    {
+                        "@": "numberConverter_forceDecimals"
+                    },
+                    {
+                        "@": "numberConverter_round"
+                    },
+                    {
+                        "@": "numberConverter_allowFloat"
+                    },
+                    {
+                        "@": "numberConverter_allowNegative"
+                    }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/converter/number-converter.mjson"
+            },
+            "exportName": "NumberConverter",
+            "module": {
+                "%": "core/converter/number-converter"
+            }
+        }
+    }
+}

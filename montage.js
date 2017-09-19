@@ -1,4 +1,4 @@
-/* global define, exports, require, process, window, document, bootstrap*/
+/* global define, exports, require, process, window, document, bootstrap, Reflect, customElements*/
 (function (root, factory) {
     if (typeof bootstrap === 'function') {
         // Montage. Register module.
@@ -442,6 +442,212 @@
         return platform.loadPackage(dependency, config, packageDescription);
     };
 
+    exports.initMontageCustomElement = function () {
+        if (typeof window.customElements === 'undefined' || typeof window.Reflect === 'undefined') {
+            return void 0;
+        }
+
+        function makeCustomElementConstructor(superConstructor) {
+            var constructor = function () {
+                return Reflect.construct(
+                    HTMLElement, [], constructor
+                );
+            };
+            Object.setPrototypeOf(
+                constructor.prototype, (superConstructor || HTMLElement).prototype
+            );
+            Object.setPrototypeOf(constructor, superConstructor || HTMLElement);
+            return constructor;
+        }
+
+        var MontageElement = makeCustomElementConstructor();
+
+        function defineMontageElement(name, options) {
+            if (!customElements.get(name)) {
+                var customElementConstructor = makeCustomElementConstructor(MontageElement);
+                customElementConstructor.componentConstructor = options.constructor;
+                customElementConstructor.observedAttributes = options.observedAttributes;
+                customElements.define(name, customElementConstructor);
+            }
+        }
+
+        MontageElement.pendingCustomElements = new Map();
+
+        MontageElement.define = function (name, constructor, options) {
+            if (options && typeof options === 'object') {
+                options.constructor = constructor;
+            } else {
+                options = { constructor: constructor };
+            }
+
+            if (this.require) {
+                defineMontageElement(name, options);
+            } else {
+                this.pendingCustomElements.set(name, options);
+            }
+        };
+
+        MontageElement.ready = function (require, application, reviver) {
+            MontageElement.prototype.findProxyForElement = reviver.findProxyForElement;
+            this.application = application;
+            this.require = require;
+
+            this.pendingCustomElements.forEach(function (constructor, name) {
+                defineMontageElement(name, constructor);
+            });
+
+            this.pendingCustomElements.clear();
+        };
+
+        Object.defineProperties(MontageElement.prototype, {
+
+            require: {
+                get: function () {
+                    return MontageElement.require;
+                },
+                configurable: false
+            },
+
+            application: {
+                get: function () {
+                    return MontageElement.application;
+                },
+                configurable: false
+            },
+
+            componentConstructor: {
+                get: function () {
+                    return this.constructor.componentConstructor;
+                },
+                configurable: false
+            },
+
+            observedAttributes: {
+                get: function () {
+                    return this.constructor.observedAttributes;
+                },
+                configurable: false
+            }
+        });
+
+        MontageElement.prototype.connectedCallback = function () {
+            if (!this._instance) {
+                var self = this,
+                    component = this.instantiateComponent();
+                
+                return this.findParentComponent().then(function (parentComponent) {
+                    self._instance = component;
+                    parentComponent.addChildComponent(component);
+                    component._canDrawOutsideDocument = true;
+                    component.needsDraw = true;
+                });
+            }
+        };
+
+        MontageElement.prototype.disconnectedCallback = function () {
+            //TODO
+        };
+
+        MontageElement.prototype.findParentComponent = function () {
+            var eventManager = this.application.eventManager,
+                anElement = this,
+                parentComponent,
+                aParentNode,
+                candidate;
+
+            while ((aParentNode = anElement.parentNode) !== null &&
+                !(candidate = eventManager.eventHandlerForElement(aParentNode))) {
+                anElement = aParentNode;
+            }
+
+            return Promise.resolve(candidate) || this.getRootComponent();
+        };
+
+        MontageElement.prototype.getRootComponent = function () {
+            if (!MontageElement.rootComponentPromise) {
+                MontageElement.rootComponentPromise = this.require.async("montage/ui/component")
+                    .then(function (exports) {
+                        return exports.__root__;
+                    });
+            }
+
+            return MontageElement.rootComponentPromise;
+        };
+
+        MontageElement.prototype.instantiateComponent = function () {
+            var component = new this.componentConstructor();
+            this.bootstrapComponent(component);
+            component.element = document.createElement("div");
+            return component;
+        };
+
+        MontageElement.prototype.bootstrapComponent = function (component) {
+            var shadowRoot = this.attachShadow({ mode: 'open' }),
+                mainEnterDocument = component.enterDocument,
+                mainTemplateDidLoad = component.templateDidLoad,
+                proxyElement = this.findProxyForElement(this);
+            
+            if (proxyElement) {
+                var observedAttributes = this.observedAttributes,
+                    observedAttribute,
+                    self = this,
+                    length;
+
+                if (observedAttributes && (length = observedAttributes.length)) {
+                    for (var i = 0; i < length; i++) {
+                        observedAttribute = observedAttributes[i];
+                        component.defineBinding(observedAttribute, {
+                            "<->": "" + observedAttribute, source: proxyElement
+                        });
+                    }
+                }
+            }
+                
+            this.application.eventManager.registerTargetForActivation(shadowRoot);
+
+            component.templateDidLoad = function () {
+                var resources = component.getResources();
+
+                if (resources) {
+                    self.injectResourcesWithinCustomElement(
+                        resources.styles,
+                        shadowRoot
+                    );
+
+                    self.injectResourcesWithinCustomElement(
+                        resources.scripts,
+                        shadowRoot
+                    );
+                }
+
+                this.templateDidLoad = mainTemplateDidLoad;
+
+                if (typeof this.templateDidLoad === "function") {
+                    this.templateDidLoad();
+                }
+            };
+
+            component.enterDocument = function (firstTime) {
+                shadowRoot.appendChild(this.element);
+                this.enterDocument = mainEnterDocument;
+
+                if (typeof this.enterDocument === "function") {
+                    this.enterDocument(firstTime);
+                }
+            };
+        };
+
+        MontageElement.prototype.injectResourcesWithinCustomElement = function (resources, shadowRoot) {
+            if (resources && resources.length) {
+                for (var i = 0, length = resources.length; i < length; i++) {
+                    shadowRoot.appendChild(resources[i]);
+                }
+            }
+        };
+
+        global.MontageElement = MontageElement;
+    };
+
     /**
      * Initializes Montage and creates the application singleton if
      * necessary.
@@ -690,6 +896,7 @@
         } else {
             global.__MONTAGE_LOADED__ = true;
             exports.initMontage();
+            exports.initMontageCustomElement();
         }
     } else {
         // may cause additional exports to be injected:

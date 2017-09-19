@@ -11,6 +11,7 @@ require("./extras/element");
 require("./extras/function");
 require("./extras/regexp");
 require("./extras/string");
+require("proxy-polyfill/proxy.min");
 
 
 var Map = require("collections/map");
@@ -1610,10 +1611,6 @@ var pathPropertyDescriptors = {
 Montage.defineProperties(Montage, pathPropertyDescriptors);
 Montage.defineProperties(Montage.prototype, pathPropertyDescriptors);
 
-// has to come last since serializer and deserializer depend on logger, which
-// in turn depends on montage running to completion
-require("./serialization/bindings");
-
 /*
  * Defines the module Id for object descriptors. This is externalized so that it can be subclassed.
  * <b>Note</b> This is a class method beware...
@@ -1727,3 +1724,7 @@ exports._objectDescriptorDescriptor = {
  * @deprecated use exports._objectDescriptorDescriptor
  */
 exports._blueprintDescriptor = exports._objectDescriptorDescriptor;
+
+// has to come last since serializer and deserializer depend on logger, which
+// in turn depends on montage running to completion
+require("./serialization/bindings");

@@ -1,9 +1,9 @@
 {
-    "blueprint_textfield_updateOnInput": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_textfield_updateOnInput": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "updateOnInput",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": 1,
@@ -16,38 +16,29 @@
         }
     },
     "maxlength_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "maxlength",
             "valueType": "number",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_control_reference": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "Control",
-                "prototypeName": "Control",
-                "blueprintModule": {
-                    "%": "ui/control.meta"
-                }
-            }
-        }
+    "objectDescriptor_control_reference": {
+        "object": "ui/control.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "text-field",
             "customPrototype": false,
             "parent": {
-                "@": "blueprint_control_reference"
+                "@": "objectDescriptor_control_reference"
             },
             "propertyDescriptors": [
                 {
-                    "@": "blueprint_textfield_updateOnInput"
+                    "@": "objectDescriptor_textfield_updateOnInput"
                 },
                 {
                     "@": "maxlength_property"
@@ -56,7 +47,7 @@
             "propertyDescriptorGroups": {
                 "text-field": [
                     {
-                        "@": "blueprint_textfield_updateOnInput"
+                        "@": "objectDescriptor_textfield_updateOnInput"
                     },
                     {
                         "@": "maxlength_property"
@@ -64,7 +55,7 @@
                 ]
             },
             "propertyValidationRules": {},
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/text-field.reel/text-field.meta"
             },
             "exportName": "TextField",

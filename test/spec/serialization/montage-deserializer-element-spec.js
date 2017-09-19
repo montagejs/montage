@@ -86,7 +86,7 @@ describe("serialization/montage-deserializer-element-spec", function () {
                 }
             },
                 serializationString = JSON.stringify(serialization);
-
+            
             rootEl.innerHTML = '<div data-montage-id="id">content</div>';
             deserializer.init(serializationString, require);
 
@@ -97,6 +97,121 @@ describe("serialization/montage-deserializer-element-spec", function () {
             }).finally(function () {
                 done();
             });
+        });
+
+        it("should deserialize an element reference and set its classNames", function (done) {
+            var serialization = {
+                "rootEl": {
+                    "value": { "#": "id" },
+                    "values": {
+                        "foo": true,
+                        "classList.has('foo')": {
+                            "<-": "@rootEl.foo"
+                        }
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+
+            rootEl.innerHTML = '<div data-montage-id="id">content</div>';
+            deserializer.init(serializationString, require);
+
+            deserializer.deserialize(null, rootEl).then(function (objects) {
+                expect(objects.rootEl instanceof Element).toBe(true);
+                expect(objects.rootEl.classList.contains('foo')).toBe(true);
+            }).finally(function () {
+                done();
+            });
+        });
+
+        it("should deserialize an element reference and set properties as attributes", function (done) {
+            var serialization = {
+                "rootEl": {
+                    "value": { "#": "id" },
+                    "values": {
+                        "foo": 42,
+                        "qux": "bar",
+                        "dataset.foo": { "=": "'montage'" },
+                        "quuz": { "<->": "foo" },
+                        "baz": { "<->": "quux" }
+                    }
+                }
+            },
+                serializationString = JSON.stringify(serialization);
+
+            rootEl.innerHTML = '<div data-montage-id="id">content</div>';
+            deserializer.init(serializationString, require);
+
+            deserializer.deserialize(null, rootEl).then(function (objects) {
+                expect(objects.rootEl instanceof Element).toBe(true);
+                expect(objects.rootEl.getAttribute('foo')).toBe('42');
+                expect(objects.rootEl.getAttribute('qux')).toBe('bar');
+                expect(objects.rootEl.dataset.foo).toBe('montage');
+                expect(objects.rootEl.foo).toBe(42);
+                expect(objects.rootEl.quuz).toBe(42);
+                objects.rootEl.foo = 0;
+                expect(objects.rootEl.foo).toBe(0);
+                expect(objects.rootEl.quuz).toBe(0);
+                expect(objects.rootEl.getAttribute('foo')).toBe('0');
+                expect(objects.rootEl.getAttribute('baz')).toBe(null);
+                expect(objects.rootEl.qux).toBe('bar');
+            }).finally(function () {
+                done();
+            });
+        });
+
+        it("should deserialize a custom element reference and set properties", function (done) {
+            if (typeof document.defaultView.Reflect !== 'undefined') {
+                var serialization = {
+                    "rootEl": {
+                        "value": { "#": "id" },
+                        "values": {
+                            "name": "World",
+                            "defaultGreeting": "Hello",
+                            "greeting": { "<-": "defaultGreeting" }
+                        }
+                    }
+                },
+                    serializationString = JSON.stringify(serialization),
+                    constructor = function () {
+                        return Reflect.construct(
+                            HTMLElement, [], constructor
+                        );
+                    };;
+
+                Object.setPrototypeOf(constructor.prototype, HTMLElement.prototype);
+                Object.setPrototypeOf(constructor, HTMLElement);
+                Object.defineProperty(constructor, 'observedAttributes', {
+                    get: function () {
+                        return ['name', 'greeting'];
+                    }
+                });
+
+                constructor.prototype.attributeChangedCallback = function (attr, oldValue, newValue) {
+                    if (attr == 'name' || attr == 'greeting') {
+                        this.textContent = this.greeting + ", " + this.name;
+                    }
+                };
+
+                document.defaultView.customElements.define('hello-element', constructor);
+
+                rootEl.innerHTML = '<hello-element data-montage-id="id"></hello-element>';
+                deserializer.init(serializationString, require);
+
+                deserializer.deserialize(null, rootEl).then(function (objects) {
+                    expect(objects.rootEl instanceof Element).toBe(true);
+                    expect(objects.rootEl.name).toBe('World');
+                    expect(objects.rootEl.getAttribute('name')).toBe('World');
+                    expect(objects.rootEl.textContent).toBe('Hello, World');
+                    objects.rootEl.name = 'Montage';
+                    expect(objects.rootEl.textContent).toBe('Hello, Montage');
+                    expect(objects.rootEl.getAttribute('name')).toBe('Montage');
+                    objects.rootEl.defaultGreeting = 'Bonjour';
+                    expect(objects.rootEl.textContent).toBe('Bonjour, Montage');
+                }).finally(function () {
+                    done();
+                });
+            }
         });
     });
 

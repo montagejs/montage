@@ -2,7 +2,8 @@
  * @module montage/composer/composer
  * @requires montage/core/target
  */
-var Target = require("../core/target").Target;
+var Target = require("../core/target").Target,
+    defaultEventManager = require("../core/event/event-manager").defaultEventManager;    
 
 /**
  * The `Composer` helps to keep event normalization and calculation out of
@@ -66,6 +67,19 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
         },
         set: function (element) {
             this._element = element;
+        }
+    },
+
+    _shawdowRoot: {
+        value: null
+    },
+
+    shawdowRoot: {
+        get: function () {
+            if (!this._shawdowRoot) {
+                this._shawdowRoot = defaultEventManager.shawdowRootFromNode(this.element);
+            }
+            return this._shawdowRoot;
         }
     },
 

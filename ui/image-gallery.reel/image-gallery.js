@@ -1,3 +1,5 @@
+/*global require, exports, console, MontageElement */
+
 var Component = require("ui/component").Component;
 
 /**
@@ -10,7 +12,7 @@ var Component = require("ui/component").Component;
  * @class ImageGallery
  * @extends Component
  */
-exports.ImageGallery = Component.specialize(/** @lends ImageGallery# */ {
+var ImageGallery = exports.ImageGallery = Component.specialize(/** @lends ImageGallery# */ {
 
     images: {
         get: function () {
@@ -87,3 +89,7 @@ exports.ImageGallery = Component.specialize(/** @lends ImageGallery# */ {
     }
 
 });
+
+if (window.MontageElement) {
+    MontageElement.define("montage-image-gallery", ImageGallery);
+}

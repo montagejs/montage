@@ -7,4 +7,10 @@ if (typeof Element !== "undefined" && !Element.isElement) {
         writable: true,
         configurable: true
     });
+
+    Object.defineProperty(Element.prototype, "nativeSetAttribute", {
+        value: Element.prototype.setAttribute,
+        writable: true,
+        configurable: true
+    });
 }

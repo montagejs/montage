@@ -54,7 +54,12 @@
     "htmlparser2": "~3.0.5",
     "jshint": "^2.9.5",
     "mr": "montagejs/mr#commonjs",
-    "q-io": "^1.13.3"
+    "q-io": "^1.13.3",
+    "lodash.kebabcase": "^4.1.1",
+    "lodash.camelcase": "^4.3.0",
+    "lodash.trim": "^4.5.1",
+    "lodash.snakecase": "^4.1.1",
+    "proxy-polyfill": "~0.1.7"
   },
   "devDependencies": {
     "concurrently": "^3.4.0",
@@ -86,7 +91,7 @@
     "test:karma-chrome": "karma start --no-auto-watch --single-run --browsers=Chrome",
     "test:karma-debug": "karma start --auto-watch --no-single-run --browsers=PhantomJS_debug",
     "test:karma-dev": "karma start --auto-watch --no-single-run --capture",
-    "test:jasmine": "concurrently \"http-server -a localhost -p 8085\" \"open http://localhost:8085/test/run.html\""
+    "test:jasmine": "concurrently \"http-server -p 8085\" \"open http://localhost:8085/test/run.html\""
   },
   "exclude": [
     "report",

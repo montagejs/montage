@@ -1,37 +1,28 @@
 {
     "okLabel_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "okLabel",
             "valueType": "string",
-            "blueprint": {"@": "root"}
+            "objectDescriptor": {"@": "root"}
         }
     },
     "cancelLabel_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "cancelLabel",
             "valueType": "string",
-            "blueprint": {"@": "root"}
+            "objectDescriptor": {"@": "root"}
         }
     },
-    "blueprint_parent": {
-        "prototype": "core/meta/blueprint-reference",
-        "values": {
-            "valueReference": {
-                "blueprintName": "AbstractAlert",
-                "prototypeName": "AbstractAlert",
-                "blueprintModule": {
-                    "%": "ui/base/abstract-alert.meta"
-                }
-            }
-        }
+    "objectDescriptor_parent": {
+        "object": "ui/base/abstract-alert.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "Abstract Confirm",
-            "parent": {"@": "blueprint_parent"},
+            "parent": {"@": "objectDescriptor_parent"},
             "propertyDescriptors": [
                 {"@": "okLabel_property"},
                 {"@": "cancelLabel_property"}
@@ -42,7 +33,7 @@
                     {"@": "cancelLabel_property"}
                 ]
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/base/abstract-confirm.meta"
             },
             "exportName": "AbstractConfirm",

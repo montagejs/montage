@@ -390,10 +390,17 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                   this._setupTemplateObjects(this._templateDocumentPart.objects);
              }
              return this._templateObjects;
-             // return this._templateObjects || (this._templateDocumentPart ? this._setupTemplateObjects(this._templateDocumentPart.objects) : (this._templateObjects = Object.create(null)));
          },
          set: function(value) {
              this._templateObjects = value;
+         }
+     },
+
+     getResources: {
+         value: function () {
+             if (!this._setupTemplateObjectsCompleted && this._templateDocumentPart) {
+                 return this._templateDocumentPart.template.getResources()._resources;
+             }
          }
      },
 
@@ -3281,7 +3288,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         if (this._elementAttributeDescriptors.hasOwnProperty(attributeName)) {
                             descriptor = this._elementAttributeDescriptors[attributeName];
                             var _name = "_"+attributeName;
-                            if ((this[name] === null || this[name] === undefined) && descriptor !== null && "value" in descriptor) {
+                            if ((this[_name] === null) && descriptor !== null && "value" in descriptor) {
                                 this[_name] = descriptor.value;
                             }   
                         }

@@ -13,7 +13,7 @@ log.txt
 
 ## Build
 /dist
-montage.dist.js
+montage.min.js
 
 ## jsdoc
 /doc
