@@ -1,39 +1,39 @@
 {
     "src_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "src",
             "valueType": "string",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "width_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "width",
             "valueType": "number",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "height_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "height",
             "valueType": "number",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
     "crossOrigin_property": {
-        "prototype": "core/meta/property-blueprint",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "crossOrigin",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "enum",
@@ -45,15 +45,15 @@
             "defaultValue": null
         }
     },
-    "blueprint_parent": {
+    "objectDescriptor_parent": {
         "object": "ui/component.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "AbstractImage",
             "parent": {
-                "@": "blueprint_parent"
+                "@": "objectDescriptor_parent"
             },
             "propertyDescriptors": [
                 {
@@ -87,7 +87,7 @@
                     }
                 ]
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/base/abstract-image.meta"
             },
             "exportName": "AbstractImage",

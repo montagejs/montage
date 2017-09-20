@@ -1,171 +1,171 @@
 {
-    "blueprint_loader_mainModule": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_loader_mainModule": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "mainModule",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_loader_mainName": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_loader_mainName": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "mainName",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_loader_includeFrameworkModules": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_loader_includeFrameworkModules": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "includeFrameworkModules",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_loader_minimumBootstrappingDuration": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_loader_minimumBootstrappingDuration": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "minimumBootstrappingDuration",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_loader_minimumLoadingDuration": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_loader_minimumLoadingDuration": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "minimumLoadingDuration",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_loader_currentStage": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_loader_currentStage": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "currentStage",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_loader_isLoadingMainComponent": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_loader_isLoadingMainComponent": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "isLoadingMainComponent",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_loader_readyToShowLoader": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_loader_readyToShowLoader": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "readyToShowLoader",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_loader_readyToShowMainComponent": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_loader_readyToShowMainComponent": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "readyToShowMainComponent",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_loader_removeContentOnLoad": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_loader_removeContentOnLoad": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "removeContentOnLoad",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             }
         }
     },
-    "blueprint_component_reference": {
+    "objectDescriptor_component_reference": {
         "object": "ui/component.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "Loader",
             "parent": {
-                "@": "blueprint_component_reference"
+                "@": "objectDescriptor_component_reference"
             },
             "propertyDescriptors": [
                 {
-                    "@": "blueprint_loader_mainModule"
+                    "@": "objectDescriptor_loader_mainModule"
                 },
                 {
-                    "@": "blueprint_loader_mainName"
+                    "@": "objectDescriptor_loader_mainName"
                 },
                 {
-                    "@": "blueprint_loader_includeFrameworkModules"
+                    "@": "objectDescriptor_loader_includeFrameworkModules"
                 },
                 {
-                    "@": "blueprint_loader_minimumBootstrappingDuration"
+                    "@": "objectDescriptor_loader_minimumBootstrappingDuration"
                 },
                 {
-                    "@": "blueprint_loader_minimumLoadingDuration"
+                    "@": "objectDescriptor_loader_minimumLoadingDuration"
                 },
                 {
-                    "@": "blueprint_loader_currentStage"
+                    "@": "objectDescriptor_loader_currentStage"
                 },
                 {
-                    "@": "blueprint_loader_isLoadingMainComponent"
+                    "@": "objectDescriptor_loader_isLoadingMainComponent"
                 },
                 {
-                    "@": "blueprint_loader_readyToShowLoader"
+                    "@": "objectDescriptor_loader_readyToShowLoader"
                 },
                 {
-                    "@": "blueprint_loader_readyToShowMainComponent"
+                    "@": "objectDescriptor_loader_readyToShowMainComponent"
                 },
                 {
-                    "@": "blueprint_loader_removeContentOnLoad"
+                    "@": "objectDescriptor_loader_removeContentOnLoad"
                 }
             ],
-            "propertyBlueprintGroups": {
+            "propertyDescriptorGroups": {
                 "Loader": [
                     {
-                        "@": "blueprint_loader_mainModule"
+                        "@": "objectDescriptor_loader_mainModule"
                     },
                     {
-                        "@": "blueprint_loader_mainName"
+                        "@": "objectDescriptor_loader_mainName"
                     },
                     {
-                        "@": "blueprint_loader_includeFrameworkModules"
+                        "@": "objectDescriptor_loader_includeFrameworkModules"
                     },
                     {
-                        "@": "blueprint_loader_minimumBootstrappingDuration"
+                        "@": "objectDescriptor_loader_minimumBootstrappingDuration"
                     },
                     {
-                        "@": "blueprint_loader_minimumLoadingDuration"
+                        "@": "objectDescriptor_loader_minimumLoadingDuration"
                     },
                     {
-                        "@": "blueprint_loader_currentStage"
+                        "@": "objectDescriptor_loader_currentStage"
                     },
                     {
-                        "@": "blueprint_loader_isLoadingMainComponent"
+                        "@": "objectDescriptor_loader_isLoadingMainComponent"
                     },
                     {
-                        "@": "blueprint_loader_readyToShowLoader"
+                        "@": "objectDescriptor_loader_readyToShowLoader"
                     },
                     {
-                        "@": "blueprint_loader_readyToShowMainComponent"
+                        "@": "objectDescriptor_loader_readyToShowMainComponent"
                     },
                     {
-                        "@": "blueprint_loader_removeContentOnLoad"
+                        "@": "objectDescriptor_loader_removeContentOnLoad"
                     }
                 ]
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/loader.reel/loader.meta"
             },
             "exportName": "Loader",

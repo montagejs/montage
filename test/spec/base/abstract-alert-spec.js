@@ -229,11 +229,11 @@ describe("test/base/abstract-alert-spec", function () {
         });
     });
 
-    describe("blueprint", function () {
+    describe("objectDescriptor", function () {
         it("can be created", function (done) {
-            var blueprintPromise = AbstractAlert.blueprint || AbstractAlert.objectDescriptor;
-            blueprintPromise.then(function (blueprint) {
-                expect(blueprint).not.toBeNull();
+            var objectDescriptorPromise = AbstractAlert.objectDescriptor || AbstractAlert.objectDescriptor;
+            objectDescriptorPromise.then(function (objectDescriptor) {
+                expect(objectDescriptor).not.toBeNull();
             }, function (err) {
                 fail(err);
             }).finally(function () {

@@ -4,24 +4,24 @@ var ModuleReference = require("montage/core/module-reference").ModuleReference;
 var Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer;
 var Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer;
 
-describe("meta/module-blueprint-spec", function () {
+describe("meta/module-object-descriptor-spec", function () {
 
-    var blueprintSerialization = {
-        "blueprint_one_a": {
-            "prototype": "montage/core/meta/property-blueprint",
+    var objectDescriptorSerialization = {
+        "objectDescriptor_one_a": {
+            "prototype": "montage/core/meta/property-descriptor",
             "values": {
                 "name": "a",
-                "blueprint": {"@": "root"}
+                "objectDescriptor": {"@": "root"}
             }
         },
         "root": {
-            "prototype": "montage/core/meta/module-blueprint",
+            "prototype": "montage/core/meta/module-object-descriptor",
             "values": {
                 "name": "One",
                 "propertyDescriptors": [
-                    {"@": "blueprint_one_a"}
+                    {"@": "objectDescriptor_one_a"}
                 ],
-                "module": {"%": "spec/meta/module-blueprint-spec"},
+                "module": {"%": "spec/meta/module-object-descriptor-spec"},
                 "exportName": "One"
             }
         }
@@ -43,7 +43,7 @@ describe("meta/module-blueprint-spec", function () {
                     {"@": "objectDescriptor_one_a"}
                 ],
                 "maxAge": 240,
-                "module": {"%": "spec/meta/module-blueprint-spec"},
+                "module": {"%": "spec/meta/module-object-descriptor-spec"},
                 "exportName": "One"
             }
         }
@@ -51,11 +51,11 @@ describe("meta/module-blueprint-spec", function () {
 
     describe("ModuleObjectDescriptor", function () {
 
-        var blueprintOne;
+        var objectDescriptorOne;
         beforeEach(function () {
-            var ref = new ModuleReference().initWithIdAndRequire("spec/meta/module-blueprint-spec", require);
-            blueprintOne = new ModuleObjectDescriptor().initWithModuleAndExportName(ref, "One");
-            blueprintOne.addPropertyDescriptor(blueprintOne.newPropertyDescriptor("a", 1));
+            var ref = new ModuleReference().initWithIdAndRequire("spec/meta/module-object-descriptor-spec", require);
+            objectDescriptorOne = new ModuleObjectDescriptor().initWithModuleAndExportName(ref, "One");
+            objectDescriptorOne.addPropertyDescriptor(objectDescriptorOne.newPropertyDescriptor("a", 1));
         });
 
         describe("serialization", function () {
@@ -72,33 +72,33 @@ describe("meta/module-blueprint-spec", function () {
 
                 expectedSerialization = objectDescriptorSerialization;
 
-                serialization = serializer.serializeObject(blueprintOne);
+                serialization = serializer.serializeObject(objectDescriptorOne);
                 expect(JSON.parse(serialization))
                     .toEqual(expectedSerialization);
             });
 
             it("should not serialize without a module property", function () {
-                blueprintOne.module = null;
+                objectDescriptorOne.module = null;
                 expect(function () {
-                    serializer.serializeObject(blueprintOne);
+                    serializer.serializeObject(objectDescriptorOne);
                 }).toThrow();
             });
 
             it("should not serialize without a exportName property", function () {
-                blueprintOne.exportName = null;
+                objectDescriptorOne.exportName = null;
                 expect(function () {
-                    serializer.serializeObject(blueprintOne);
+                    serializer.serializeObject(objectDescriptorOne);
                 }).toThrow();
             });
         });
 
         describe("getObjectDescriptorWithModuleId", function () {
-            it("caches the blueprints", function (done) {
-                require.loadPackage({location: "spec/meta/blueprint/package"}).then(function (require) {                
-                    return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.meta", require).then(function (blueprint1) {
+            it("caches the objectDescriptors", function (done) {
+                require.loadPackage({location: "spec/meta/blueprint/package"}).then(function (require) {
+                    return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.meta", require).then(function (objectDescriptor1) {
                         return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.meta", require)
-                        .then(function (blueprint2) {
-                            expect(blueprint1).toBe(blueprint2);
+                        .then(function (objectDescriptor2) {
+                            expect(objectDescriptor1).toBe(objectDescriptor2);
                         });
                     }, function (err) {
                         fail(err);
@@ -108,11 +108,11 @@ describe("meta/module-blueprint-spec", function () {
                 });
             });
 
-            it("correctly loads blueprints with the same internal module ID cross package", function (done) {
+            it("correctly loads objectDescriptors with the same internal module ID cross package", function (done) {
                 require.loadPackage({location: "spec/meta/blueprint/package"}).then(function (require) {
                     return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.meta", require)
-                    .then(function (blueprint) {
-                        expect(blueprint.parent).not.toBe(blueprint);
+                    .then(function (objectDescriptor) {
+                        expect(objectDescriptor.parent).not.toBe(objectDescriptor);
                     }, function (err) {
                         fail(err);
                     }).finally(function () {

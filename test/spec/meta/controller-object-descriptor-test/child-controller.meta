@@ -1,9 +1,9 @@
 {
-    "blueprint_childcontroller_purchaseList": {
-        "prototype": "montage/core/meta/property-blueprint",
+    "objectDescriptor_childcontroller_purchaseList": {
+        "prototype": "montage/core/meta/property-descriptor",
         "values": {
             "name": "purchaseList",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "cardinality": -1,
@@ -15,30 +15,30 @@
             "helpKey": ""
         }
     },
-    "blueprint_parentcontroller_reference": {
-        "object": "spec/meta/controller-blueprint-test/parent-controller.meta"
+    "objectDescriptor_parentcontroller_reference": {
+        "object": "spec/meta/controller-object-descriptor-test/parent-controller.meta"
     },
     "root": {
-        "prototype": "montage/core/meta/module-blueprint",
+        "prototype": "montage/core/meta/module-objectDescriptor",
         "values": {
             "name": "ChildController",
             "customPrototype": false,
             "parent": {
-                "@": "blueprint_parentcontroller_reference"
+                "@": "objectDescriptor_parentcontroller_reference"
             },
             "propertyDescriptors": [
                 {
-                    "@": "blueprint_childcontroller_purchaseList"
+                    "@": "objectDescriptor_childcontroller_purchaseList"
                 }
             ],
             "propertyDescriptorGroups": {},
             "propertyValidationRules": {},
-            "blueprintModule": {
-                "%": "spec/meta/controller-blueprint-test/child-controller.meta"
+            "objectDescriptorModule": {
+                "%": "spec/meta/controller-object-descriptor-test/child-controller.meta"
             },
             "exportName": "ChildController",
             "module": {
-                "%": "spec/meta/controller-blueprint-test/child-controller"
+                "%": "spec/meta/controller-object-descriptor-test/child-controller"
             }
         }
     }

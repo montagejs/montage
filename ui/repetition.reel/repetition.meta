@@ -1,119 +1,119 @@
 {
-    "blueprint_repetition_content": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_repetition_content": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "content",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object",
             "cardinality": -1
         }
     },
-    "blueprint_repetition_contentController": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_repetition_contentController": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "contentController",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object"
         }
     },
-    "blueprint_repetition_isSelectionEnabled": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_repetition_isSelectionEnabled": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "isSelectionEnabled",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean"
         }
     },
-    "blueprint_repetition_selection": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_repetition_selection": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "selection",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "object"
         }
     },
-    "blueprint_repetition_selectedIndexes": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_repetition_selectedIndexes": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "selectedIndexes",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "number",
             "cardinality": -1
         }
     },
-    "blueprint_repetition_clonesChildComponents": {
-        "prototype": "core/meta/property-blueprint",
+    "objectDescriptor_repetition_clonesChildComponents": {
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "clonesChildComponents",
-            "blueprint": {
+            "objectDescriptor": {
                 "@": "root"
             },
             "valueType": "boolean"
         }
     },
-    "blueprint_component_reference": {
+    "objectDescriptor_component_reference": {
         "object": "ui/component.meta"
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "Repetition",
             "parent": {
-                "@": "blueprint_component_reference"
+                "@": "objectDescriptor_component_reference"
             },
             "propertyDescriptors": [
                 {
-                    "@": "blueprint_repetition_content"
+                    "@": "objectDescriptor_repetition_content"
                 },
                 {
-                    "@": "blueprint_repetition_contentController"
+                    "@": "objectDescriptor_repetition_contentController"
                 },
                 {
-                    "@": "blueprint_repetition_isSelectionEnabled"
+                    "@": "objectDescriptor_repetition_isSelectionEnabled"
                 },
                 {
-                    "@": "blueprint_repetition_selection"
+                    "@": "objectDescriptor_repetition_selection"
                 },
                 {
-                    "@": "blueprint_repetition_selectedIndexes"
+                    "@": "objectDescriptor_repetition_selectedIndexes"
                 },
                 {
-                    "@": "blueprint_repetition_clonesChildComponents"
+                    "@": "objectDescriptor_repetition_clonesChildComponents"
                 }
             ],
             "propertyDescriptorGroups": {
                 "Repetition": [
                     {
-                        "@": "blueprint_repetition_content"
+                        "@": "objectDescriptor_repetition_content"
                     },
                     {
-                        "@": "blueprint_repetition_contentController"
+                        "@": "objectDescriptor_repetition_contentController"
                     },
                     {
-                        "@": "blueprint_repetition_isSelectionEnabled"
+                        "@": "objectDescriptor_repetition_isSelectionEnabled"
                     },
                     {
-                        "@": "blueprint_repetition_selection"
+                        "@": "objectDescriptor_repetition_selection"
                     },
                     {
-                        "@": "blueprint_repetition_selectedIndexes"
+                        "@": "objectDescriptor_repetition_selectedIndexes"
                     },
                     {
-                        "@": "blueprint_repetition_clonesChildComponents"
+                        "@": "objectDescriptor_repetition_clonesChildComponents"
                     }
                 ]
             },
-            "blueprintModule": {
+            "objectDescriptorModule": {
                 "%": "ui/repetition.reel/repetition.meta"
             },
             "exportName": "Repetition",

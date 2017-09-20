@@ -18,7 +18,8 @@ module.exports = require("montage-testing").run(require, [
     "spec/bindings/converter-spec",
     "spec/bindings/self-spec",
     {name: "spec/document-resources-spec", node: false},
-    {name: "spec/claimed-pointer-spec", node: false},
+    {name: "spec/claimed-pointer-spec", node: false}, 
+    {name: "spec/montage-custom-element-spec", node: false}, 
     // Core
     "spec/core/browser-spec",
     "spec/core/core-spec",
@@ -105,11 +106,12 @@ module.exports = require("montage-testing").run(require, [
     // Reel
     {name: "spec/reel/template-spec", node: false, karma: true},
     // UI - repetition
-    {name: "spec/ui/repetition-spec", node: false},
+    { name: "spec/ui/repetition-spec", node: false, karma: false},
     {name: "spec/ui/repetition-selection-spec", node: false, karma: false},
     {name: "spec/ui/repetition-binding-spec", node: false},
     {name: "spec/core/localizer-spec", node: false, karma: false},
     {name: "spec/core/localizer/serialization-spec", node: false, karma: false},
+  
     // Blueprint
     {name: "spec/meta/converter-blueprint-spec", karma: false},
     {name: "spec/meta/module-blueprint-spec", karma: false},
@@ -119,21 +121,31 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/meta/event-blueprint-spec", node: false},
     {name: "spec/meta/blueprint-spec"},
 
-    //Montage Data
-    "spec/data/data-selector",
-    "spec/data/data-mapping",
-    "spec/data/data-object-descriptor",
-    "spec/data/data-property-descriptor",
-    "spec/data/data-provider",
-    "spec/data/data-selector",
-    "spec/data/data-service",
-    "spec/data/data-stream",
-    "spec/data/enumeration",
-    "spec/data/http-service",
-    "spec/data/object-descriptor",
-    "spec/data/offline-service",
-    "spec/data/property-descriptor",
-    "spec/data/raw-data-service"
+    // Data
+    {name: "spec/data/data-selector"},
+    {name: "spec/data/data-mapping"},
+    {name: "spec/data/data-object-descriptor"},
+    {name: "spec/data/data-property-descriptor"},
+    {name: "spec/data/data-provider"},
+    {name: "spec/data/data-selector"},
+    {name: "spec/data/data-service"},
+    {name: "spec/data/data-stream"},
+    {name: "spec/data/enumeration"},
+    {name: "spec/data/http-service"},
+    {name: "spec/data/object-descriptor"},
+    {name: "spec/data/offline-service"},
+    {name: "spec/data/property-descriptor"},
+    {name: "spec/data/raw-data-service"},
+  
+    // Meta
+    {name: "spec/meta/converter-object-descriptor-spec", karma: false},
+    {name: "spec/meta/module-object-descriptor-spec", karma: false},
+    {name: "spec/meta/build-in-component-object-descriptor-spec", node: false, karma: false},
+    {name: "spec/meta/component-object-descriptor-spec", node: false},
+    {name: "spec/meta/controller-object-descriptor-spec", node: false},
+    {name: "spec/meta/event-descriptor-spec", node: false},
+    {name: "spec/meta/object-descriptor-spec"}
+  
 ]).then(function () {
     console.log('montage-testing', 'End');
 }, function (err) {

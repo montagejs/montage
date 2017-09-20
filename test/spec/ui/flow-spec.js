@@ -12,9 +12,39 @@ TestPageLoader.queueTest("flow/flow", function (testPage) {
             var flow,
                 flowRepetition,
                 rangeController;
+            
+            function waitForFlowRepetition() {
+                var component = flow._repetition || flow;
+
+                return testPage.waitForComponentDraw(flow).then(function () {
+                    return flow._repetition;
+                });
+            }
 
             beforeEach(function () {
                 flow = testPage.querySelector(".flow").component;
+                flow.cameraPosition = [0, 0, 250];
+                flow.cameraTargetPoint = [0, 0, 0];
+                flow.cameraFov = 90;
+                flow.paths = [{
+                    "knots": [
+                        {
+                            "knotPosition": [-5000, 0, 0],
+                            "nextHandlerPosition": [-5000 / 3, 0, 0],
+                            "previousDensity": 100,
+                            "nextDensity": 100
+                        },
+                        {
+                            "knotPosition": [5000, 0, 0],
+                            "previousHandlerPosition": [5000 / 3, 0, 0],
+                            "previousDensity": 100,
+                            "nextDensity": 100
+                        }
+                    ],
+                    "headOffset": 50,
+                    "tailOffset": 50
+                }];
+                flow.content = [];
             });
 
             it("can be created", function () {
@@ -29,34 +59,11 @@ TestPageLoader.queueTest("flow/flow", function (testPage) {
                     for (i = 0; i < 100; i++) {
                         content.push(i);
                     }
-                    flow.cameraPosition = [0, 0, 250];
-                    flow.cameraTargetPoint = [0, 0, 0];
-                    flow.cameraFov = 90;
+
                     flow.content = content;
-                    flow.paths = [{
-                        "knots": [
-                            {
-                                "knotPosition": [-5000, 0, 0],
-                                "nextHandlerPosition": [-5000 / 3, 0, 0],
-                                "previousDensity": 100,
-                                "nextDensity": 100
-                            },
-                            {
-                                "knotPosition": [5000, 0, 0],
-                                "previousHandlerPosition": [5000 / 3, 0, 0],
-                                "previousDensity": 100,
-                                "nextDensity": 100
-                            }
-                        ],
-                        "headOffset": 50,
-                        "tailOffset": 50
-                    }];
-                    testPage.waitForComponentDraw(flow).then(function () {
-                        flowRepetition = flow.element.children[0].children[0].component;
-                        testPage.waitForComponentDraw(flow).then(function () {
-                            expect(cleanTextContent(flowRepetition.element)).toBe("0 1 2");
-                            done();
-                        });
+                    waitForFlowRepetition().then(function (flowRepetition) {
+                        expect(cleanTextContent(flowRepetition.element)).toBe("0 1 2");
+                        done();
                     });
                 });
             });
@@ -69,8 +76,10 @@ TestPageLoader.queueTest("flow/flow", function (testPage) {
                     for (i = 0; i < 2; i++) {
                         content.push("(" + i + ")");
                     }
+
                     flow.content = content;
-                    testPage.waitForComponentDraw(flowRepetition).then(function () {
+
+                    waitForFlowRepetition().then(function (flowRepetition) {
                         expect(cleanTextContent(flowRepetition.element)).toBe("(0) (1)");
                         expect(flowRepetition.element.children.length).toBe(3);
                         done();
@@ -86,9 +95,10 @@ TestPageLoader.queueTest("flow/flow", function (testPage) {
                     for (i = 0; i < 100; i++) {
                         content.push(i);
                     }
-                    flow.content = content;
                     flow.scroll = 0;
-                    testPage.waitForComponentDraw(flowRepetition).then(function () {
+                    flow.content = content;
+
+                    waitForFlowRepetition().then(function (flowRepetition) {
                         expect(cleanTextContent(flowRepetition.element)).toBe("0 1 2");
                         flow.scroll = 3;
                         testPage.waitForComponentDraw(flowRepetition).then(function () {
@@ -109,9 +119,20 @@ TestPageLoader.queueTest("flow/flow", function (testPage) {
             });
 
             describe("handling resize", function () {
+                beforeEach(function () {
+                    var content = [],
+                        i;
+
+                    for (i = 0; i < 100; i++) {
+                        content.push(i);
+                    }
+                    flow.scroll = 0;
+                    flow.content = content;
+                });
+
                 it("should regenerate iterations and trim the excess", function (done) {
                     flow.handleResize();
-                    testPage.waitForComponentDraw(flowRepetition).then(function () {
+                    waitForFlowRepetition().then(function (flowRepetition) {
                         expect(cleanTextContent(flowRepetition.element)).toBe("0 1 2");
                         expect(flowRepetition.element.children.length).toBe(3);
                         done();
@@ -120,7 +141,8 @@ TestPageLoader.queueTest("flow/flow", function (testPage) {
                 it("after flow changes in size should update frustum culling and iterations", function (done) {
                     flow.element.style.width = "300px";
                     flow.handleResize();
-                    testPage.waitForComponentDraw(flowRepetition).then(function () {
+
+                    waitForFlowRepetition().then(function (flowRepetition) {
                         expect(cleanTextContent(flowRepetition.element)).toBe("0 1");
                         expect(flowRepetition.element.children.length).toBe(2);
                         flow.element.style.width = "500px";
@@ -135,7 +157,7 @@ TestPageLoader.queueTest("flow/flow", function (testPage) {
             });
 
             describe("updating contentController", function () {
-                it("should update the visible iterations", function (done) {
+                beforeEach(function () {
                     var content = [],
                         i;
 
@@ -145,7 +167,9 @@ TestPageLoader.queueTest("flow/flow", function (testPage) {
                     }
                     flow.contentController = rangeController;
                     rangeController.content = content;
-                    testPage.waitForComponentDraw(flowRepetition).then(function () {
+                });
+                it("should update the visible iterations", function (done) {
+                    waitForFlowRepetition().then(function (flowRepetition) {
                         expect(cleanTextContent(flowRepetition.element)).toBe("(0) (1) (2)");
                         expect(flowRepetition.element.children.length).toBe(3);
                         done();
@@ -154,31 +178,50 @@ TestPageLoader.queueTest("flow/flow", function (testPage) {
             });
 
             describe("selection", function () {
-                it("modifying controller's selection should update iterations", function () {
+                beforeEach(function () {
+                    var content = [],
+                        i;
+
+                    rangeController = new RangeController();
+                    for (i = 0; i < 100; i++) {
+                        content.push("(" + i + ")");
+                    }
+                    flow.contentController = rangeController;
+                    rangeController.content = content;
+                });
+
+                it("modifying controller's selection should update iterations", function (done) {
                     rangeController.selection = ["(1)"];
-                    expect(cleanTextContent(flowRepetition.element)).toBe("(0) (1) (2)");
-                    expect(flowRepetition.element.children[0].children[0].component.iteration.selected).toBeFalsy();
-                    expect(flowRepetition.element.children[1].children[0].component.iteration.selected).toBeTruthy();
-                    expect(flowRepetition.element.children[2].children[0].component.iteration.selected).toBeFalsy();
-                    rangeController.selection = ["(2)"];
-                    expect(flowRepetition.element.children[0].children[0].component.iteration.selected).toBeFalsy();
-                    expect(flowRepetition.element.children[1].children[0].component.iteration.selected).toBeFalsy();
-                    expect(flowRepetition.element.children[2].children[0].component.iteration.selected).toBeTruthy();
+                    waitForFlowRepetition().then(function (flowRepetition) {
+                        expect(cleanTextContent(flowRepetition.element)).toBe("(0) (1) (2)");
+                        expect(flowRepetition.element.children[0].children[0].component.iteration.selected).toBeFalsy();
+                        expect(flowRepetition.element.children[1].children[0].component.iteration.selected).toBeTruthy();
+                        expect(flowRepetition.element.children[2].children[0].component.iteration.selected).toBeFalsy();
+                        rangeController.selection = ["(2)"];
+                        expect(flowRepetition.element.children[0].children[0].component.iteration.selected).toBeFalsy();
+                        expect(flowRepetition.element.children[1].children[0].component.iteration.selected).toBeFalsy();
+                        expect(flowRepetition.element.children[2].children[0].component.iteration.selected).toBeTruthy();
+                        done();
+                    });
                 });
-                it("modifying iterations's selected should update controller's selection", function () {
-                    flowRepetition.element.children[0].children[0].component.iteration.selected = true;
-                    expect(rangeController.selection.toString()).toBe("(0)");
+                it("modifying iterations's selected should update controller's selection", function (done) {
+                    waitForFlowRepetition().then(function (flowRepetition) {
+                        flowRepetition.element.children[0].children[0].component.iteration.selected = true;
+                        expect(rangeController.selection.toString()).toBe("(0)");
+                        expect(flow.selection.toString()).toBe("(0)");
+                        done();
+                    });    
                 });
-                it("changes in controller's selection should be reflected in flow's selection", function () {
-                    expect(flow.selection.toString()).toBe("(0)");
-                });
+                // it("changes in controller's selection should be reflected in flow's selection", function () {
+                // });
                 it("changes in flow's selection should be reflected in controller's selection", function () {
                     flow.selection = ["(1)"];
                     expect(rangeController.selection.toString()).toBe("(1)");
                 });
                 it("after scrolling enough to hide selected iteration, no iteration should be selected", function (done) {
+                    flow.selection = ["(1)"];
                     flow.scroll = 50;
-                    testPage.waitForComponentDraw(flowRepetition).then(function () {
+                    waitForFlowRepetition().then(function (flowRepetition) {
                         expect(cleanTextContent(flowRepetition.element)).toBe("(48) (49) (50) (51) (52)");
                         expect(flowRepetition.element.children[0].children[0].component.iteration.selected).toBeFalsy();
                         expect(flowRepetition.element.children[1].children[0].component.iteration.selected).toBeFalsy();
@@ -189,15 +232,22 @@ TestPageLoader.queueTest("flow/flow", function (testPage) {
                     });
                 });
                 it("iterations in selection should be selected after they enter in the frustum area", function (done) {
-                    flow.scroll = 0;
-                    testPage.waitForComponentDraw(flowRepetition).then(function () {
-                        expect(cleanTextContent(flowRepetition.element)).toBe("(0) (1) (2) (51) (52)");
-                        expect(flowRepetition.element.children[0].children[0].component.iteration.selected).toBeFalsy();
-                        expect(flowRepetition.element.children[1].children[0].component.iteration.selected).toBeTruthy();
-                        expect(flowRepetition.element.children[2].children[0].component.iteration.selected).toBeFalsy();
-                        expect(flowRepetition.element.children[3].children[0].component.iteration.selected).toBeFalsy();
-                        expect(flowRepetition.element.children[4].children[0].component.iteration.selected).toBeFalsy();
-                        done();
+                    flow.selection = ["(1)"];
+                    flow.scroll = 50;
+
+                    waitForFlowRepetition().then(function (flowRepetition) {
+                        expect(cleanTextContent(flowRepetition.element)).toBe("(48) (49) (50) (51) (52)");
+
+                        flow.scroll = 0;
+                        waitForFlowRepetition().then(function (flowRepetition) {
+                            expect(cleanTextContent(flowRepetition.element)).toBe("(0) (1) (2) (51) (52)");
+                            expect(flowRepetition.element.children[0].children[0].component.iteration.selected).toBeFalsy();
+                            expect(flowRepetition.element.children[1].children[0].component.iteration.selected).toBeTruthy();
+                            expect(flowRepetition.element.children[2].children[0].component.iteration.selected).toBeFalsy();
+                            expect(flowRepetition.element.children[3].children[0].component.iteration.selected).toBeFalsy();
+                            expect(flowRepetition.element.children[4].children[0].component.iteration.selected).toBeFalsy();
+                            done();
+                        });
                     });
                 });
             });
