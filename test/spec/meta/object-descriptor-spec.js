@@ -15,8 +15,6 @@ var Person = require("./blueprint/person").Person;
 var Company = require("./blueprint/company").Company;
 var logger = require("montage/core/logger").logger("./object-descriptor-spec.js");
 
-console.log(ModelHelper);
-
 // Require to deserialize
 // TODO add proper deps to montage modules
 require('montage/core/meta/object-descriptor');
