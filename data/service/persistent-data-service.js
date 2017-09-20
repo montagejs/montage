@@ -9,6 +9,8 @@ var RawDataService = require("data/service/raw-data-service").RawDataService,
     Map = require("collections/map"),
     PersistentDataService, OfflineService;
 
+/* global Dexie */
+
 /**
  * TODO: Document
  *
@@ -77,7 +79,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
 
     // createObjectStoreFromSample: {
     //     value: function (objectStoreName, primaryKey, sampleData) {
-    //         if(!sampleData) return;
+    //         if (!sampleData) return;
 
     //         var sampleDataKeys = Object.keys(sampleData),
     //             storage = this._storage,
@@ -88,8 +90,8 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
     //         });
 
     //         var schemaDefinition = primaryKey;
-    //         for(var i=0, iKey;(iKey = sampleDataKeys[i]);i++) {
-    //             if(iKey !== primaryKey) {
+    //         for (var i=0, iKey;(iKey = sampleDataKeys[i]);i++) {
+    //             if (iKey !== primaryKey) {
     //                 schemaDefinition += ",";
     //                 schemaDefinition +=  iKey;
     //             }
@@ -243,16 +245,16 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
     tableNamed: {
         value: function(tableName) {
             var table;
-            if(!this._tableByName) {
+            if (!this._tableByName) {
                 this._tableByName = new Map();
             }
             table = this._tableByName.get(tableName);
-            if(!table) {
+            if (!table) {
                 table = this._storage[tableName];
-                if(!table) {
+                if (!table) {
                     var tables = this._storage.tables;
-                    for(var i=0, iTable; (iTable = tables[i]); i++) {
-                        if(iTable.name === tableName) {
+                    for (var i=0, iTable; (iTable = tables[i]); i++) {
+                        if (iTable.name === tableName) {
                             this._tableByName.set(tableName,(table = iTable));
                             break;
                         }
@@ -268,7 +270,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
     },
     operationTable: {
         get:function() {
-            if(!this._operationTable) {
+            if (!this._operationTable) {
                 this._operationTable = this.tableNamed(this.operationTableName);
             }
             return this._operationTable;
@@ -401,12 +403,12 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
      */
     databaseForModel: {
         value: function(model) {
-            if(this.persistsModel(model)) {
+            if (this.persistsModel(model)) {
                 var database = this._databaseByModel.get(model);
-                if(!database) {
+                if (!database) {
                     database = this.provideDatabaseForModel(model) || Promise.reject(null);
                     this.registerDatabaseForModel(database,model);
-                };
+                }
                 return database;
             }
             return Promise.reject(null);
@@ -461,12 +463,12 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
         value: function(objectDescriptor) {
             return this.databaseForObjectDescriptor(objectDescriptor)
                 .then(function(database) {
-                    if(this.persistsObjectDescriptor(objectDescriptor)) {
+                    if (this.persistsObjectDescriptor(objectDescriptor)) {
                         var storage = this._storageByObjectDescriptor.get(objectDescriptor);
-                        if(!storage) {
+                        if (!storage) {
                             storage = this.provideStorageForObjectDescriptor(objectDescriptor) || Promise.reject(null);
                             this.registerStorageForObjectDescriptor(storage,objectDescriptor);
-                        };
+                        }
                         return storage;
                     }
                     return Promise.reject(null);
@@ -502,7 +504,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
     childServiceForType: {
         value: function (type) {
             var service = this.super(type);
-            if(service && this.persistsObjectDescriptor(type)) {
+            if (service && this.persistsObjectDescriptor(type)) {
                 service.delegate = this;
             }
             return service;
@@ -518,7 +520,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                 rawPromise,
                 self = this;
 
-            if(this.persistsObjectDescriptor(dataStream.query.type)) {
+            if (this.persistsObjectDescriptor(dataStream.query.type)) {
 
                 promise = promise.then(function(data) {
                     var rawDataStream = new DataStream();
@@ -541,7 +543,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
    objectsByPrimaryKeyForDataStream: {
         value: function(dataStream) {
             var value = this._dataStreamObjectsByPrimaryKey.get(dataStream);
-            if(!value) {
+            if (!value) {
                 value = new Map();
                 this._dataStreamObjectsByPrimaryKey.set(dataStream,value);
             }
@@ -588,19 +590,21 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                         //Creates an infinite loop, we don't need what's there
                         //self.addRawData(stream, results);
                         //self.rawDataDone(stream);
-                        if(orderings) {
+                        if (orderings) {
                             var expression = "";
                             //Build combined expression
-                            for(var i=0,iDataOrdering,iExpression;(iDataOrdering = orderings[i]);i++) {
+                            for (var i=0,iDataOrdering,iExpression;(iDataOrdering = orderings[i]);i++) {
                                 iExpression = iDataOrdering.expression;
 
-                                if(expression.length)
+                                if (expression.length) {
                                     expression += ".";
+                                }
 
                                 expression += "sorted{";
                                 expression += iExpression;
                                 expression += "}";
-                                if(iDataOrdering.order === DESCENDING) {
+
+                                if (iDataOrdering.order === DESCENDING) {
                                     expression += ".reversed()";
                                 }
                             }
@@ -654,7 +658,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
     updateOperationsForDataStream: {
         value: function(dataStream) {
             var operations = this._updateOperationsByDataStream.get(dataStream);
-            if(!operations) {
+            if (!operations) {
                 this._updateOperationsByDataStream.set(dataStream,(operations = []));
             }
             return operations;
@@ -667,7 +671,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
     objectsToUpdatesForDataStream: {
         value: function(dataStream) {
             var objects = this._objectsToUpdatesForDataStream.get(dataStream);
-            if(!objects) {
+            if (!objects) {
                 this._objectsToUpdatesForDataStream.set(dataStream,(objects = []));
             }
             return objects;
@@ -686,7 +690,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
      */
     rawDataServiceDidAddOneRawData: {
         value: function(dataService,dataStream,rawData,object) {
-            if(this.persistsObject(object)) {
+            if (this.persistsObject(object)) {
                 var dataIdentifier = this.dataIdentifierForObject(object),
                     dataStreamPrimaryKeyMap = this.objectsByPrimaryKeyForDataStream(dataStream),
                     dataOperation;
@@ -720,12 +724,12 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
 
     addOneRawData: {
         value: function(stream, rawData, context, _type) {
-            var dataIdentifier = this.dataIdentifierForTypeRawData(stream.query.type,rawData);
+            var dataIdentifier = this.dataIdentifierForTypeRawData(stream.query.type,rawData),
                 primaryKey = dataIdentifier.primaryKey,
                 dataStream = this._dataStreamForRawDataStream(stream),
                 dataStreamPrimaryKeyMap = this.objectsByPrimaryKeyForDataStream(dataStream),
                 object = null,
-                dataOperation;
+                dataOperation, dataStreamValue;
 
             //Register the object by primarykey, which we'll need later
             dataStreamValue = dataStreamPrimaryKeyMap.get(primaryKey);
@@ -733,12 +737,12 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
             //it means that this obect doesn't match stream's query criteria as it used to.
             //We were removing it from storage in general, which could cause that object to disapear for other queries that it still matches. It should be done eventually
             //for a per query cache
-            if(dataStream.data && dataStream.length > 0 && !dataStreamValue) {
+            if (dataStream.data && dataStream.length > 0 && !dataStreamValue) {
                 this.deletesForDataStream(dataStream).push(primaryKey);
             }
 
             //If no data was returned, we go on and create the object
-            if(!dataStream.data || dataStream.length === 0) {
+            if (!dataStream.data || dataStream.length === 0) {
                 object = this.super(stream, rawData, context, _type);
             }
 
@@ -758,7 +762,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
             .then(function() {
                 self.openTransaction()
                 .then(function() {
-                    var dataStream = self._dataStreamForRawDataStream(stream);
+                    var dataStream = self._dataStreamForRawDataStream(stream),
                         updateOperations = self.objectsToUpdatesForDataStream(dataStream),
                         deleteOperations = self.deletesForDataStream(dataStream),
                         updates = stream.data;
@@ -819,8 +823,8 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                 rawDataStream.query = query;
 
             //Make a clone of the array and create the record to track the online Last Updated date
-            for(i=0, countI = dataArray.length; i<countI; i++) {
-                if((iRawData = dataArray[i])) {
+            for (i=0, countI = dataArray.length; i<countI; i++) {
+                if ((iRawData = dataArray[i])) {
                     clonedArray.push(iRawData);
 
                     //Create the record to track the online Last Updated date
@@ -838,16 +842,16 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                 //    2.0) Remove the non-matching record so it doesn't show up in results
                 //         if that query were immediately done next as offline.
                 // Not ideal as we're going to do at worse a full lookup of dataArray, every iteration
-                for(var i=0, countI = fetchedRawRecords.length, iRecord, iRecordPrimaryKey;(iRecord = fetchedRawRecords[i]);i++) {
+                for (var i=0, countI = fetchedRawRecords.length, iRecord, iRecordPrimaryKey;(iRecord = fetchedRawRecords[i]);i++) {
                     iRecordPrimaryKey = iRecord[self.dataIDPropertyName];
                     // move above loop? remove conditional? saves case where countI = 0?
-                    if(!rawDataMapByPrimaryKey) {
+                    if (!rawDataMapByPrimaryKey) {
                         rawDataMapByPrimaryKey = new Map();
-                        for(j=0;(jRawData = dataArray[j]);j++) {
+                        for (j=0;(jRawData = dataArray[j]);j++) {
                             rawDataMapByPrimaryKey.set(jRawData[primaryKey],jRawData);
                         }
                     }
-                    if(!rawDataMapByPrimaryKey.has(iRecord[primaryKey])) {
+                    if (!rawDataMapByPrimaryKey.has(iRecord[primaryKey])) {
                         offlineObjectsToClear.push(primaryKey);
                     }
                 }
@@ -876,7 +880,6 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                     self.operationTable.where("operation").anyOf("create", "update", "delete").toArray(function (offlineOperations) {
                         resolve(offlineOperations);
                     }).catch(function (e) {
-                        console.log(query.type + ": performOfflineSelectorChanges failed", e);
                         console.error(e);
                         reject(e);
                     });
@@ -929,7 +932,9 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
     registerOfflinePrimaryKeyDependenciesForData: {
         value: function(data, tableName, primaryKeyPropertyName) {
 
-            if(data.length === 0) return;
+            if (data.length === 0) {
+                return;
+            }
 
             return PersistentDataService.registerOfflinePrimaryKeyDependenciesForData(data, tableName, primaryKeyPropertyName, this);
         }
@@ -938,7 +943,9 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
     //TODO
     deleteOfflinePrimaryKeyDependenciesForData: {
         value: function(data, tableName, primaryKeyPropertyName) {
-                        if(data.length === 0) return;
+            if (data.length === 0) {
+                return;
+            }
 
             var tableSchema = this.schema[tableName],
                 //if we don't have a known list of foreign keys, we'll consider all potential candidate
@@ -984,11 +991,13 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                         function () {
 
                             //Assign primary keys and build operations
-                            for(var i=0, countI = objects.length, iRawData, iPrimaryKey;i<countI;i++) {
-                                if((iRawData = objects[i])) {
+                            for (var i=0, countI = objects.length, iRawData, iOperation, iPrimaryKey;i<countI;i++) {
+                                if ((iRawData = objects[i])) {
 
-                                    if(typeof iRawData[primaryKey] === "undefined"
-                                        || iRawData[primaryKey] === "") {
+                                    if (
+                                        typeof iRawData[primaryKey] === "undefined" || 
+                                            iRawData[primaryKey] === ""
+                                    ) {
                                         //Set offline uuid based primary key
                                         iRawData[primaryKey] = iPrimaryKey = uuid.generate();
 
@@ -1051,10 +1060,10 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
         value: function (currentPrimaryKey, newPrimaryKey, type) {
 
             var myDB = this._storage,
-            table = this.tableNamed(type),
-            primaryKeyProperty = table.schema.primKey.name,
-            record,
-            updateRecord = {};
+                table = this.tableNamed(type),
+                primaryKeyProperty = table.schema.primKey.name,
+                record,
+                updateRecord = {};
 
             //because it's a primary key, we need to delete the record and re-create it...
             //We fetch it first
@@ -1088,7 +1097,9 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
     updateData: {
         value: function (objects, type, context) {
             var self = this;
-            if(!objects || objects.length === 0) return Dexie.Promise.resolve();
+            if (!objects || objects.length === 0) {
+                return Dexie.Promise.resolve();
+            }
 
             return new Promise(function (resolve, reject) {
                 var myDB = self._storage,
@@ -1110,8 +1121,8 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                     storage.transaction('rw', table, operationTable,
                         function () {
                             //Make a clone of the array and create the record to track the online Last Updated date
-                            for(var i=0, countI = objects.length, iRawData,iPrimaryKey;i<countI;i++) {
-                                if((iRawData = objects[i])) {
+                            for (var i=0, countI = objects.length, iRawData, iOperation, iPrimaryKey;i<countI;i++) {
+                                if ((iRawData = objects[i])) {
                                     iPrimaryKey = iRawData[primaryKey];
                                     console.log("updateData ",iPrimaryKey,iRawData);
                                     updateDataPromises.push(table.update(iPrimaryKey, iRawData));
@@ -1163,7 +1174,9 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
         value: function (objects, type, context) {
             var self = this;
 
-            if(!objects || objects.length === 0) return Dexie.Promise.resolve();
+            if (!objects || objects.length === 0) {
+                return Dexie.Promise.resolve();
+            }
 
             return new Promise(function (resolve, reject) {
                 var myDB = self._storage,
@@ -1226,20 +1239,22 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
         value: function (operations) {
             var self = this;
 
-            if(!operations || operations.length === 0) return Promise.resolve();
+            if (!operations || operations.length === 0) {
+                return Promise.resolve();
+            }
 
             return new Promise(function (resolve, reject) {
                 var myDB = self._storage,
-                operationTable = self.operationTable,
-                primaryKey = operationTable.schema.primKey.name,
-                deleteOperationPromises = [];
+                    operationTable = self.operationTable,
+                    primaryKey = operationTable.schema.primKey.name,
+                    deleteOperationPromises = [];
 
                 myDB.open().then(function (storage) {
                     storage.transaction('rw', operationTable,
                         function () {
                             //Make a clone of the array and create the record to track the online Last Updated date
-                            for(var i=0, countI = operations.length, iOperation;i<countI;i++) {
-                                if((iOperation = operations[i])) {
+                            for (var i=0, countI = operations.length, iOperation;i<countI;i++) {
+                                if ((iOperation = operations[i])) {
                                     deleteOperationPromises.push(operationTable.delete(iOperation[primaryKey], iOperation));
                                 }
                             }
@@ -1251,7 +1266,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                     }).catch(function(e) {
                         reject(e);
                         // console.log("tableName:failed to add Offline Data",e)
-                        console.error(table.name,": failed to updateData for ",objects.length," objects with error",e);
+                        //console.error(operationTable.name,": failed to updateData for ",objects.length," objects with error",e);
                     });
                 });
 
@@ -1288,11 +1303,11 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
         },
         _offlinePrimaryKeyDB: {
             get: function() {
-                if(!this.__offlinePrimaryKeyDB) {
+                if (!this.__offlinePrimaryKeyDB) {
                     var storage = this.__offlinePrimaryKeyDB = new Dexie("OfflinePrimaryKeys"),
                         primaryKeysTable = storage["PrimaryKeys"];
 
-                    if(!primaryKeysTable) {
+                    if (!primaryKeysTable) {
                         /*   PrimaryKeys has offlinePrimaryKey and a property "dependencies" that contains an array of
                             {
                                 offlinePrimaryKey:"uuid-1111-4444-5555",
@@ -1341,7 +1356,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                     primaryKeysRecords = [],
                     self = this;
 
-                for(var i=0, countI = primaryKeys.length, iRawData, iPrimaryKey;i<countI;i++) {
+                for (var i=0, countI = primaryKeys.length, iRawData, iPrimaryKey;i<countI;i++) {
                     primaryKeysRecords.push({
                         offlinePrimaryKey: primaryKeys[i]
                     });
@@ -1356,7 +1371,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                         .then(function(offlinePrimaryKeys) {
 
                             //Update local cache:
-                            for(i=0;(iPrimaryKey = primaryKeys[i]);i++) {
+                            for (i=0;(iPrimaryKey = primaryKeys[i]);i++) {
                                 offlinePrimaryKeys.add(iPrimaryKey.offlinePrimaryKey,primaryKeysRecords[i]);
                             }
                             resolve(lastKey);
@@ -1374,7 +1389,9 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
         registerOfflinePrimaryKeyDependenciesForData: {
             value: function(data, tableName, primaryKeyPropertyName, service) {
 
-                if(data.length === 0) return;
+                if (data.length === 0) {
+                    return;
+                }
 
                 var keys = Object.keys(data[0]),
                     i, iData, countI, iPrimaryKey,
@@ -1386,23 +1403,23 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                     updatedRecord, updatedRecords,
                     self = this;
 
-                if(!foreignKeys) {
-                    foreignKeys = tableSchema._computedForeignKeys
-                                    || (tableSchema._computedForeignKeys = keys);
+                if (!foreignKeys) {
+                    foreignKeys = tableSchema._computedForeignKeys || 
+                        (tableSchema._computedForeignKeys = keys);
                 }
 
                 //We need the cache populated from storage before we can do this:
                 return this.fetchOfflinePrimaryKeys()
                     .then(function(offlinePrimaryKeys) {
 
-                        for(i=0, countI = data.length;(i<countI);i++) {
+                        for (i=0, countI = data.length;(i<countI);i++) {
                             iData = data[i];
                             iPrimaryKey = iData[primaryKeyPropertyName];
-                            for(j=0;(jForeignKey = foreignKeys[j]);j++) {
+                            for (j=0;(jForeignKey = foreignKeys[j]);j++) {
                                 jForeignKeyValue = iData[jForeignKey];
                                 //if we have a value in this foreignKey:
-                                if(jForeignKeyValue) {
-                                    if(updatedRecord = self.addPrimaryKeyDependency(jForeignKeyValue, tableName,iPrimaryKey,jForeignKey, service.name)) {
+                                if (jForeignKeyValue) {
+                                    if (updatedRecord = self.addPrimaryKeyDependency(jForeignKeyValue, tableName,iPrimaryKey,jForeignKey, service.name)) {
                                         updatedRecords = updatedRecords || [];
                                         updatedRecords.push(updatedRecord);
                                     }
@@ -1411,7 +1428,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                         }
 
 
-                        if(updatedRecords && updatedRecords.length) {
+                        if (updatedRecords && updatedRecords.length) {
                             //We need to save:
                             self.primaryKeysTable.bulkPut(updatedRecords)
                             .then(function(lastKey) {
@@ -1440,7 +1457,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
         addPrimaryKeyDependency: {
             value: function(aPrimaryKey, tableName, tablePrimaryKey, tableForeignKey, serviceName) {
 
-                if(this._offlinePrimaryKeys.has(aPrimaryKey)) {
+                if (this._offlinePrimaryKeys.has(aPrimaryKey)) {
                     var aPrimaryKeyRecord = this._offlinePrimaryKeys.get(aPrimaryKey),
                         dependencies = aPrimaryKeyRecord.dependencies,
                         i, iDependency, found = false,
@@ -1448,25 +1465,27 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
 
                     //Now we search for a match... whish we could use an in-memory
                     //compound-index...
-                    if(dependencies) {
-                        for(i=0;(iDependency = dependencies[i]);i++) {
-                            if( iDependency.tableName === tableName
-                                && iDependency.primaryKey === tablePrimaryKey
-                                && iDependency.foreignKeyName === tableForeignKey) {
-                                    found = true;
-                                    break;
-                                }
+                    if (dependencies) {
+                        for (i=0;(iDependency = dependencies[i]);i++) {
+                            if (
+                                iDependency.tableName === tableName && 
+                                    iDependency.primaryKey === tablePrimaryKey && 
+                                        iDependency.foreignKeyName === tableForeignKey
+                            ) {
+                                found = true;
+                                break;
+                            }
                         }
                     }
 
-                    if(!found) {
+                    if (!found) {
                         primaryKeysRecord = {
                             serviceName: serviceName,
                             tableName: tableName,
                             primaryKey: tablePrimaryKey,
                             foreignKeyName: tableForeignKey
                         };
-                        if(!dependencies) {
+                        if (!dependencies) {
                             dependencies = aPrimaryKeyRecord.dependencies = [];
                         }
                         dependencies.push(primaryKeysRecord);
@@ -1499,22 +1518,21 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                 this._offlinePrimaryKeyToOnlinePrimaryKey.set(offlinePrimaryKey,onlinePrimaryKey);
 
                 //Update the stored primaryKey
-                return service.offlineService.updatePrimaryKey(offlinePrimaryKey, onlinePrimaryKey, type)
-                .then(function() {
+                return service.offlineService.updatePrimaryKey(offlinePrimaryKey, onlinePrimaryKey, type).then(function() {
                     //Now we need to update stored data as well and we need the cache populated from storage before we can do this:
                     //We shouldn't just rely on the fact that the app will immediately refetch everything and things would be broken
                     //if somehow the App would get offline again before a full refetch is done across every kind of data.
                     return self.fetchOfflinePrimaryKeys()
                         .then(function(offlinePrimaryKeys) {
 
-                            if(offlinePrimaryKeys.has(offlinePrimaryKey)) {
+                            if (offlinePrimaryKeys.has(offlinePrimaryKey)) {
                                 var aPrimaryKeyRecord = offlinePrimaryKeys.get(offlinePrimaryKey),
                                     dependencies = aPrimaryKeyRecord.dependencies;
 
-                                if(dependencies) {
+                                if (dependencies) {
                                     var i, iDependency, iOfflineService, iTableName, iPrimaryKey, iForeignKeyName, iUpdateRecord, updateArray = [];
 
-                                    for(i=0;(iDependency = dependencies[i]);i++) {
+                                    for (i=0;(iDependency = dependencies[i]);i++) {
                                         //The service that handles iTableName
                                         iOfflineService = PersistentDataService.registeredPersistentDataServiceNamed(iDependency.serviceName);
                                         iTableName = iDependency.tableName;
@@ -1542,11 +1560,8 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                 })
                 .catch(function(e){
                     console.error("updatePrimaryKey failed",e);
-                    reject(e);
+                    throw e;
                 });
-
-
-
             }
         },
         /**
@@ -1561,7 +1576,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
         },
         fetchOfflinePrimaryKeys: {
             value: function() {
-                if(!this._offlinePrimaryKeys) {
+                if (!this._offlinePrimaryKeys) {
                     var _offlinePrimaryKeys = this._offlinePrimaryKeys = new Map(),
                         self = this;
                     return new Promise(function (resolve, reject) {
@@ -1576,9 +1591,8 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                              reject(e);
                          });
                     });
-                }
-                else {
-                    if(!this._offlinePrimaryKeysPromise) {
+                } else {
+                    if (!this._offlinePrimaryKeysPromise) {
                         this._offlinePrimaryKeysPromise = Promise.resolve(this._offlinePrimaryKeys);
                     }
                     return this._offlinePrimaryKeysPromise;
@@ -1590,13 +1604,15 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                 var self = this,
                     _offlinePrimaryKeys = this._offlinePrimaryKeys;
 
-                if(!primaryKeys || primaryKeys.length === 0) return Promise.resolve();
+                if (!primaryKeys || primaryKeys.length === 0) {
+                    return Promise.resolve();
+                }
 
                 return new Promise(function (resolve, reject) {
                     self._offlinePrimaryKeyDB.PrimaryKeys.bulkDelete(primaryKeys)
                     .then(function() {
                         //Update local cache:
-                        for(var i=0, iPrimaryKey;(iPrimaryKey = primaryKeys[i]);i++) {
+                        for (var i=0, iPrimaryKey;(iPrimaryKey = primaryKeys[i]);i++) {
                             _offlinePrimaryKeys.delete(iPrimaryKey.offlinePrimaryKey);
                         }
                         resolve();

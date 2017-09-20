@@ -611,7 +611,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                     self._prepareRawDataToObjectRule(rule, propertyDescriptor);
                     return isRelationship ? self._resolveRelationship(object, propertyDescriptor, rule, scope) :
                                             self._resolvePrimitive(object, propertyDescriptor, rule, scope);
-                })
+                });
             }
             return result;
         }

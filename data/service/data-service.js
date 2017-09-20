@@ -18,9 +18,6 @@ AuthorizationPolicyType.UpfrontAuthorizationPolicy = AuthorizationPolicy.UP_FRON
 AuthorizationPolicyType.OnDemandAuthorizationPolicy = AuthorizationPolicy.ON_DEMAND;
 AuthorizationPolicyType.OnFirstFetchAuthorizationPolicy = AuthorizationPolicy.ON_FIRST_FETCH;
 
-
-
-
 /**
  * Provides data objects and manages changes to them.
  *
@@ -340,6 +337,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     registerChildService: {
         value: function (child, types) {
             var self = this,
+                mappings = child.mappings || [];
             // possible types
             // -- types is passed in as an array or a single type.
             // -- a model is set on the child.
@@ -350,8 +348,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                         child.model && child.model.objectDescriptors ||
                         child.types && Array.isArray(child.types) && child.types ||
                         child.types && [child.types] ||
-                        [],
-                mappings = child.mappings || [];
+                        [];
 
             return child._childServiceRegistrationPromise.then(function () {
                 return self._registerChildServiceTypesAndMappings(child, types, mappings);
@@ -1067,7 +1064,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     decacheObjectProperties: {
         value: function (object, propertyNames) {
-            if(this.isRootService) {
+            if (this.isRootService) {
                 var names = Array.isArray(propertyNames) ? propertyNames : arguments,
                     start = names === propertyNames ? 0 : 1,
                     triggers = this._getTriggersForObject(object),
@@ -1226,7 +1223,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     updateObjectProperties: {
         value: function (object, propertyNames) {
-              if(this.isRootService) {
+              if (this.isRootService) {
                 // Get the data, accepting property names as an array or as a list
                 // of string arguments while avoiding the creation of any new array.
                 var names = Array.isArray(propertyNames) ? propertyNames : arguments,
@@ -1396,13 +1393,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     getDataObject: {
         value: function (type, data, context, dataIdentifier) {
-            if(this.isRootService) {
+            if (this.isRootService) {
                 var dataObject;
                 // TODO [Charles]: Object uniquing.
-                if(this.isUniquing && dataIdentifier) {
+                if (this.isUniquing && dataIdentifier) {
                     dataObject = this.objectForDataIdentifier(dataIdentifier);
                 }
-                if(!dataObject) {
+                if (!dataObject) {
                     dataObject = this._createDataObject(type, dataIdentifier);
                 }
 
@@ -1543,13 +1540,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     //TODO add the creation of a temporary identifier to pass to _createDataObject
     createDataObject: {
         value: function (type) {
-            if(this.isRootService) {
+            if (this.isRootService) {
                 var object = this._createDataObject(type);
                 this.createdDataObjects.add(object);
                 return object;
+            } else {
+                this.rootService.createDataObject(type);
             }
-            else this.rootService.createDataObject(type);
-
         }
     },
 
@@ -1572,7 +1569,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 //causing a trigger to fire, not knowing about the match between identifier
                 //and object... If that's feels like a real situation, it is.
                 this.registerUniqueObjectWithDataIdentifier(object, dataIdentifier);
-                // if(dataIdentifier && this.isUniquing) {
+                // if (dataIdentifier && this.isUniquing) {
                 //     this.recordDataIdentifierForObject(dataIdentifier, object);
                 //     this.recordObjectForDataIdentifier(object, dataIdentifier);
                 // }
@@ -1597,7 +1594,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
    registerUniqueObjectWithDataIdentifier: {
         value: function(object, dataIdentifier) {
-            if(object && dataIdentifier && this.isRootService && this.isUniquing) {
+            if (object && dataIdentifier && this.isRootService && this.isUniquing) {
                 this.recordDataIdentifierForObject(dataIdentifier, object);
                 this.recordObjectForDataIdentifier(object, dataIdentifier);
             }
@@ -1622,7 +1619,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     createdDataObjects: {
         get: function () {
-            if(this.isRootService) {
+            if (this.isRootService) {
                 if (!this._createdDataObjects) {
                     this._createdDataObjects = new Set();
                 }
@@ -1648,7 +1645,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     changedDataObjects: {
         get: function () {
-            if(this.isRootService) {
+            if (this.isRootService) {
                 this._changedDataObjects = this._changedDataObjects || new Set();
                 return this._changedDataObjects;
             }
@@ -1752,7 +1749,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                             stream = service.fetchData(query, stream) || stream;
                             self._dataServiceByDataStream.set(stream, service);
                         } else {
-                            debugger;
                             throw new Error("Can't fetch data of unknown type - " + (query.type.typeName || query.type.name) + "/" + query.type.uuid);
                         }
                     } catch (e) {
@@ -1853,11 +1849,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     cancelDataStream: {
         value: function (dataStream, reason) {
-            if(dataStream) {
+            if (dataStream) {
               var  rawDataService = this._dataServiceByDataStream.get(dataStream),
                 self = this;
 
-              if(Promise.is(rawDataService)) {
+              if (Promise.is(rawDataService)) {
                     rawDataService.then(function(service) {
                         self._cancelServiceDataStream(service, dataStream, reason);
                     });
@@ -1916,7 +1912,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (this.parentService && this.parentService._getChildServiceForObject(object) === this) {
                 var record = {};
                 mappingPromise =  this._mapObjectToRawData(object, record);
-                if(!mappingPromise) {
+                if (!mappingPromise) {
                     mappingPromise = this.nullPromise;
                 }
                 return mappingPromise.then(function () {
@@ -1929,7 +1925,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             }
             else {
                 service = this._getChildServiceForObject(object);
-                if(service) {
+                if (service) {
                     return service.saveDataObject(object);
                 }
                 else {
@@ -1951,7 +1947,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             }
             else {
                 service = action && this._getChildServiceForObject(object);
-                if(service) {
+                if (service) {
                     return service._updateDataObject(object, action);
                 }
             }
@@ -2233,9 +2229,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function(promise, child, operations, start, end) {
             var self = this;
             return promise.then(function () {
-                return child ?
-                       child.performOfflineOperations(operations.slice(start, end)) :
-                       self._performAndDeleteOfflineOperation(operations[start]);
+                return child ? 
+                    child.performOfflineOperations(operations.slice(start, end)) : 
+                        self._performAndDeleteOfflineOperation(operations[start]);
             });
         }
     },
@@ -2249,21 +2245,21 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 tableSchema, foreignKeys,
                 k, countK, kOnlinePrimaryKey, kForeignKey;
 
-            if(this.offlineService) {
+            if (this.offlineService) {
                 tableSchema = this.offlineService.schema[operationType];
                 foreignKeys = tableSchema.foreignKeys;
             }
 
-            if(!foreignKeys) {
-                foreignKeys = tableSchema._computedForeignKeys
-                                || (tableSchema._computedForeignKeys = Object.keys(operation.changes));
+            if (!foreignKeys) {
+                foreignKeys = tableSchema._computedForeignKeys || 
+                    (tableSchema._computedForeignKeys = Object.keys(operation.changes));
             }
 
-            for(k=0, countK = foreignKeys.length;k<countK;k++) {
+            for (k=0, countK = foreignKeys.length;k<countK;k++) {
                 kForeignKey = foreignKeys[k];
                 //If a previous operation resulted in an online primaryKey replacing an offline one,
                 //we update the operation's changes accordingly
-                if((kOnlinePrimaryKey = this.onlinePrimaryKeyForOfflinePrimaryKey(operation.changes[kForeignKey]))) {
+                if ((kOnlinePrimaryKey = this.onlinePrimaryKeyForOfflinePrimaryKey(operation.changes[kForeignKey]))) {
                     operation.changes[kForeignKey] = kOnlinePrimaryKey;
                 }
             }
@@ -2334,9 +2330,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     // To be overridden by subclasses as necessary
     onlinePrimaryKeyForOfflinePrimaryKey: {
         value: function(offlinePrimaryKey) {
-            return this.offlineService
-                        ? this.offlineService.onlinePrimaryKeyForOfflinePrimaryKey(offlinePrimaryKey)
-                        : null;
+            return this.offlineService ? 
+                this.offlineService.onlinePrimaryKeyForOfflinePrimaryKey(offlinePrimaryKey) : null;
         }
     },
 

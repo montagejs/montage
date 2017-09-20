@@ -114,7 +114,7 @@ exports.SnapshotService = Montage.specialize(/** @lends SnapshotService# */ {
                 if (typeof a === "object" && typeof b === "object") {
                     
                     // TODO WTF
-                    result = !!a === !!b;
+                    result = (!!a === !!b);
 
                     if (result) {
                         var aKeys = Object.keys(a).sort(), aValue,

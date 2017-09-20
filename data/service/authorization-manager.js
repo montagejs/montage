@@ -125,7 +125,7 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
 
     _canNotifyDataService: {
         value: function (dataService) {
-            return dataService.authorizationManagerWillAuthorizeWithService && typeof dataService.authorizationManagerWillAuthorizeWithService == "function";
+            return dataService.authorizationManagerWillAuthorizeWithService && typeof dataService.authorizationManagerWillAuthorizeWithService === "function";
         }
     },
 
