@@ -111,16 +111,6 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/ui/repetition-binding-spec", node: false},
     {name: "spec/core/localizer-spec", node: false, karma: false},
     {name: "spec/core/localizer/serialization-spec", node: false, karma: false},
-  
-    // Blueprint
-    {name: "spec/meta/converter-blueprint-spec", karma: false},
-    {name: "spec/meta/module-blueprint-spec", karma: false},
-    {name: "spec/meta/build-in-component-blueprint-spec", node: false, karma: false},
-    {name: "spec/meta/component-blueprint-spec", node: false},
-    {name: "spec/meta/controller-blueprint-spec", node: false},
-    {name: "spec/meta/event-blueprint-spec", node: false},
-    {name: "spec/meta/blueprint-spec"},
-
     // Data
     {name: "spec/data/data-selector"},
     {name: "spec/data/data-mapping"},
@@ -133,7 +123,6 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/data/enumeration"},
     {name: "spec/data/http-service"},
     {name: "spec/data/object-descriptor"},
-    {name: "spec/data/offline-service"},
     {name: "spec/data/property-descriptor"},
     {name: "spec/data/raw-data-service"},
   
