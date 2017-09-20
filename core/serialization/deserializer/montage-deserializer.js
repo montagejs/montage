@@ -30,13 +30,33 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                 this._serializationString = JSON.stringify(serialization);
             }
             this._require = _require;
-            moduleContexts = moduleContexts || new Map();
-            this._reviver = new MontageReviver().init(_require, objectRequires, locationId, moduleContexts);
+            this._moduleContexts = moduleContexts || new Map();
+            this._reviver = new MontageReviver().init(_require, objectRequires,
+                locationId, this._moduleContexts, this._childConstructor.bind(this));
 
             return this;
         }
     },
 
+    _childConstructor: {
+        value: function (module, moduleId) {
+            return new this.constructor().init(
+                module,
+                this.constructor.getModuleRequire(this._require, moduleId),
+                void 0,
+                moduleId,
+                this._moduleContexts
+            );
+        }
+    },
+
+    /**
+     * @param {Object} instances Map-like object of external user objects to
+     * link against the serialization.
+     * @param {Element} element The root element to resolve element references
+     * against.
+     * @return {Promise}
+     */
     deserialize: {
         value: function (instances, element) {
             try {

@@ -109,13 +109,17 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
      *        MontageContext to use for a specific external object
      *        reference. Used to prevent circular references from creating
      *        an infinite loop.
+     * @param {Function} deserializerConstructor Function to create a new
+     *        deserializer. Useful for linking to an external module
+     *        that also needs to be deserialized.
      */
     init: {
-        value: function (_require, objectRequires, locationId, moduleContexts) {
+        value: function (_require, objectRequires, locationId, moduleContexts, deserializerConstructor) {
             this.moduleLoader = new ModuleLoader().init(_require, objectRequires);
             this._require = _require;
             this._locationId = locationId;
             this._moduleContexts = moduleContexts;
+            this._deserializerConstructor = deserializerConstructor;
             return this;
         }
     },
@@ -482,16 +486,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 if (this._locationId && !this._moduleContexts.has(this._locationId)) {
                     this._moduleContexts.set(this._locationId, context);
                 }
-                mjsonObjectPromise = MontageReviver.getMontageDeserializer().then(function (MontageDeserializer) {
-                    var deserializer = new MontageDeserializer().initWithObject(
-                        json,
-                        MontageDeserializer.getModuleRequire(self._require, moduleId),
-                        void 0,
-                        moduleId,
-                        self._moduleContexts
-                    );
-                    return deserializer.deserializeObject();
-                });
+                mjsonObjectPromise = Promise.resolve(this._deserializerConstructor(json, moduleId))
+                    .then(function (deserializer) {
+                        return deserializer.deserializeObject();
+                    });
             }
             return mjsonObjectPromise.then(function (object) {
                 if ("prototype" in serialization) {
@@ -1044,23 +1042,6 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             return function(value) {
                 return getCustomObjectTypeOf(value) || previousGetCustomObjectTypeOf(value);
             };
-        }
-    },
-
-    //FIXME
-    getMontageDeserializer: {
-        value: function () {
-            if (!this._montageDeserializerPromise) {
-                // Need to require deserializer asynchronously because it depends on montage-interpreter, which
-                // depends on this module, montage-reviver. A synchronous require would create a circular dependency.
-                // TODO: Maybe this could be passed in from above instead of required here.
-                this._montageDeserializerPromise = require.async("core/serialization/deserializer/montage-deserializer")
-                    .then(function (deserializerModule) {
-                        return deserializerModule.MontageDeserializer;
-                    });
-            }
-
-            return this._montageDeserializerPromise;
         }
     }
 
