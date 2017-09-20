@@ -106,6 +106,9 @@ var _webKitPoint = null;
 
 var webkitImplementation = function () {
     Point.convertPointFromNodeToPage = function (element, point) {
+        if (!element || typeof element.x !== "undefined") {
+            return null;
+        }   
         if(point) {
             _webKitPoint.x = point.x;
             _webKitPoint.y = point.y;
@@ -119,6 +122,10 @@ var webkitImplementation = function () {
     };
 
     Point.convertPointFromPageToNode = function (element, point) {
+        if (!element || typeof element.x !== "undefined") {
+            return null;
+        }
+
         if(point) {
             _webKitPoint.x = point.x;
             _webKitPoint.y = point.y;

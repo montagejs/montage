@@ -11,7 +11,7 @@
         }
     },
     "objectDescriptor_text_converter": {
-        "prototype": "core/meta/association-objectDescriptor",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "converter",
             "objectDescriptor": {
