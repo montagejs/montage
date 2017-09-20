@@ -1253,9 +1253,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 this._observedTarget_byEventType_[eventType].set(listenerTarget,this);
 
                 var isPassiveEventType = this.isPassiveEventType(eventType),
-                    eventOpts = {
-                        passive: isPassiveEventType
-                    };
+                    eventOpts = isPassiveEventType ? {
+                        passive: true
+                    } : true;
 
                 listenerTarget.nativeAddEventListener(eventType, this, eventOpts);
             }
