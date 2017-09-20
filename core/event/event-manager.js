@@ -1223,9 +1223,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             // Disabled for flow
             'wheel',
             'mousewheel',
-            */
             'touchstart',
             'touchmove',
+            */
             'scroll'
         ]
     },
@@ -1253,9 +1253,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 this._observedTarget_byEventType_[eventType].set(listenerTarget,this);
 
                 var isPassiveEventType = this.isPassiveEventType(eventType),
-                    eventOpts = isPassiveEventType ? {
-                        passive: true
-                    } : true;
+                    eventOpts = {
+                        passive: isPassiveEventType
+                    };
 
                 listenerTarget.nativeAddEventListener(eventType, this, eventOpts);
             }
