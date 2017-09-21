@@ -483,17 +483,16 @@
                 options = { constructor: constructor };
             }
 
-            if (this.require) {
+            if (this.isApplicationReady) {
                 defineMontageElement(name, options);
             } else {
                 this.pendingCustomElements.set(name, options);
             }
         };
 
-        MontageElement.ready = function (require, application, reviver) {
+        MontageElement.applicationReady = function (application, reviver) {
             MontageElement.prototype.findProxyForElement = reviver.findProxyForElement;
             this.application = application;
-            this.require = require;
 
             this.pendingCustomElements.forEach(function (constructor, name) {
                 defineMontageElement(name, constructor);
@@ -504,9 +503,9 @@
 
         Object.defineProperties(MontageElement.prototype, {
 
-            require: {
+            isApplicationReady: {
                 get: function () {
-                    return MontageElement.require;
+                    return !!this.application;
                 },
                 configurable: false
             },
@@ -535,11 +534,10 @@
 
         MontageElement.prototype.connectedCallback = function () {
             if (!this._instance) {
-                var self = this,
-                    component = this.instantiateComponent();
-                
+                var component = this.instantiateComponent();
+                this._instance = component;
+
                 return this.findParentComponent().then(function (parentComponent) {
-                    self._instance = component;
                     parentComponent.addChildComponent(component);
                     component._canDrawOutsideDocument = true;
                     component.needsDraw = true;
@@ -563,12 +561,12 @@
                 anElement = aParentNode;
             }
 
-            return Promise.resolve(candidate) || this.getRootComponent();
+            return global.Promise.resolve(candidate) || this.getRootComponent();
         };
 
         MontageElement.prototype.getRootComponent = function () {
             if (!MontageElement.rootComponentPromise) {
-                MontageElement.rootComponentPromise = this.require.async("montage/ui/component")
+                MontageElement.rootComponentPromise = global.mr.async("montage/ui/component")
                     .then(function (exports) {
                         return exports.__root__;
                     });
@@ -880,6 +878,10 @@
 
                                 if (typeof global.montageDidLoad === "function") {
                                     global.montageDidLoad();
+                                }
+
+                                if (window.MontageElement) {
+                                    MontageElement.applicationReady(application, MontageReviver);
                                 }
                             });
                         });
