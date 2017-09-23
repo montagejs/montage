@@ -87,14 +87,19 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
             var serialization = JSON.parse(this._serializationString),
                 reviver = this._reviver,
                 moduleLoader = reviver.moduleLoader,
+                i, ii,
+                labels,
+                label,
                 object,
                 locationId,
                 locationDesc,
                 module,
                 promises = [];
 
-            for (var label in serialization) {
-                if (serialization.hasOwnProperty(label)) {
+            if (serialization !== null) {
+                labels = Object.keys(serialization);
+                for (i = 0, ii = labels.length; i < ii; ++i) {
+                    label = labels[i];
                     object = serialization[label];
                     locationId = object.prototype || object.object;
 
