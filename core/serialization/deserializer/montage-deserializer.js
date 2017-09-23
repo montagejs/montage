@@ -31,23 +31,12 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
             }
             this._require = _require;
             this._locationId = locationId;
-            this._reviver = new MontageReviver().init(_require, objectRequires,
-                this._childConstructor.bind(this));
+            this._reviver = new MontageReviver().init(_require, objectRequires, this.constructor);
 
             return this;
         }
     },
 
-    _childConstructor: {
-        value: function (module, moduleId) {
-            return new this.constructor().init(
-                module,
-                this.constructor.getModuleRequire(this._require, moduleId),
-                void 0,
-                moduleId
-            );
-        }
-    },
 
     /**
      * @param {Object} instances Map-like object of external user objects to

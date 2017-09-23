@@ -466,8 +466,14 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     getMjsonObject: {
         value: function (serialization, json, moduleId, context) {
-            var self = this;
-            return Promise.resolve(this._deserializerConstructor(json, moduleId))
+            var self = this,
+                deserializer = new this._deserializerConstructor().init(
+                    json,
+                    this._deserializerConstructor.getModuleRequire(this._require, moduleId),
+                    void 0,
+                    moduleId
+                );
+            return Promise.resolve(deserializer)
                 .then(function (deserializer) {
                     return deserializer.deserializeObject();
                 })
@@ -1027,6 +1033,6 @@ MontageReviver.findProxyForElement = function (element) {
 };
 
 if (typeof exports !== "undefined") {
-    
+
     exports.MontageReviver = MontageReviver;
 }
