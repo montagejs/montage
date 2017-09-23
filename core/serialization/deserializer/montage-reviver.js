@@ -982,7 +982,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     addCustomObjectReviver: {
         value: function(reviver) {
-            var customObjectReviver;
+            var customObjectRevivers = this.customObjectRevivers;
 
             /* jshint forin: true */
             for (var methodName in reviver) {
@@ -996,9 +996,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     typeof reviver[methodName] === "function" &&
                         methodName.substr(0, 5) === "revive"
                 ) {
-                    customObjectReviver = this.customObjectRevivers.get(methodName);
-                    if (typeof customObjectReviver === "undefined") {
-                        customObjectReviver = reviver[methodName].bind(reviver);
+                    if (typeof (customObjectRevivers.get(methodName)) === "undefined") {
+                        customObjectRevivers.set(methodName, reviver[methodName].bind(reviver));
                     } else {
                         return new Error("Reviver '" + methodName + "' is already registered.");
                     }
