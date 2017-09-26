@@ -103,7 +103,33 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      * active iteration.
      * @type {boolean}
      */
-    active: {value: null},
+    _active: {
+        value: false
+    },
+
+    active: {
+        set: function (active) {
+            active = !!active;
+
+            if (this.active !== active) {
+                this._active = active;
+
+                if (this.repetition) {
+                    if (active) {
+                        this.repetition.activeIterations.add(this);
+                    } else {
+                        this.repetition.activeIterations.delete(this);
+                    }
+
+                    this._updateRepetitionDirtyClassIteration();
+                }
+            }
+
+        },
+        get: function () {
+            return this._active;
+        }
+    },
 
     /**
      * A flag that indicates that the "no-transition" CSS class should be added
@@ -124,7 +150,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
     isDirty: {value: false},
 
     _selected: {
-        value: null
+        value: false
     },
 
     selected: {
@@ -142,8 +168,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             }
             if (this._selected !== value) {
                 this._selected = value;
-                this.repetition._addDirtyClassListIteration(this);
-                this.repetition.needsDraw = true;
+                this._updateRepetitionDirtyClassIteration();
             }
         }
     },
@@ -182,20 +207,15 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             // of drawn iterations.
             this._drawnIndex = null;
 
-            // Describes whether a user gesture is touching this iteration.
-            this.active = false;
             // Changes to whether a user is touching the iteration are
             // reflected by the "active" CSS class on each element in the
             // iteration.  This gets updated in the draw cycle, in response to
             // operations that handlePropertyChange adds to the repetition draw
             // cycle.
-            // Dispatches handlePropertyChange with the "active" key:
-            this.defineBinding("active", {"<->": "repetition.activeIterations.has(())"});
-
+            //Fixme: Need to find the purpose of this property, probably dead code.
             this._noTransition = false;
 
             // dispatch handlePropertyChange:
-            this.addOwnPropertyChangeListener("active", this);
             this.addOwnPropertyChangeListener("_noTransition", this);
 
             this.addPathChangeListener(
@@ -397,18 +417,20 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      */
     handleComponentModelChange: {
         value: function (onComponentModel) {
+            var childComponents = this._childComponents,
+                repetition = this.repetition,
+                i, length;
+
             if (onComponentModel) {
-                this._childComponents.forEach(
-                    this.repetition.addChildComponent,
-                    this.repetition
-                );
+                for (i = 0, length = childComponents.length; i < length; i++) {
+                    repetition.addChildComponent(childComponents[i]);
+                }
             // the second condition protects against removing before adding in
             // the initial state.
             } else if (this._childComponents) {
-                this._childComponents.forEach(
-                    this.repetition.removeChildComponent,
-                    this.repetition
-                );
+                for (i = 0, length = childComponents.length; i < length; i++) {
+                    repetition.removeChildComponent(childComponents[i]);
+                }
             }
         }
     },
@@ -419,7 +441,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      * lists updated.
      * @private
      */
-    handlePropertyChange: {
+    _updateRepetitionDirtyClassIteration: {
         value: function () {
             if (!this.repetition) {
                 return;
@@ -507,6 +529,10 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
     }
 
 });
+
+
+Iteration.prototype.handlePropertyChange = Iteration.prototype._updateRepetitionDirtyClassIteration;
+
 
 // Here it is, what we have all been waiting for, the prototype of the hour.
 // Give it up for the Repetition...
@@ -1942,6 +1968,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         value: function () {
             if (this._currentActiveIteration) {
                 this._currentActiveIteration.shouldBecomeActive = false;
+                this._currentActiveIteration.active = false;
                 this._currentActiveIteration = null;
             }
 
