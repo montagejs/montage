@@ -32,7 +32,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
             this._require = _require;
             this._locationId = locationId;
             this._reviver = new MontageReviver().init(
-                _require, objectRequires, this.constructor, locationId
+                _require, objectRequires, this.constructor
             );
 
             return this;
