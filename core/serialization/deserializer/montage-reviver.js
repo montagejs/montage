@@ -107,9 +107,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
      *        that also needs to be deserialized.
      */
     init: {
-        value: function (_require, objectRequires, deserializerConstructor) {
+        value: function (_require, objectRequires, deserializerConstructor, locationId) {
             this.moduleLoader = new ModuleLoader().init(_require, objectRequires);
             this._require = _require;
+            this._locationId = locationId;
             this._deserializerConstructor = deserializerConstructor;
             return this;
         }
@@ -416,10 +417,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     reviveMontageObject: {
         value: function (value, context, label) {
             var self = this,
-                module,
-                locationDesc,
                 locationId = value.prototype || value.object,
-                objectName;
+                module, locationDesc, location, objectName;
 
             if (locationId) {
                 locationDesc = MontageReviver.parseObjectLocationId(locationId);
@@ -427,17 +426,17 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 objectName = locationDesc.objectName;
             }
 
-            if (this._locationId &&
-                (this._locationId.endsWith(".mjson") || this._locationId.endsWith(".meta")) &&
-                !MJSON_OBJECTS_MAP.has(this._locationId, context)) {
-                
+            if (this._locationId && !MJSON_OBJECTS_MAP.has(this._locationId) &&
+                (this._locationId.endsWith(".mjson") || this._locationId.endsWith(".meta"))) {
                 MJSON_OBJECTS_MAP.set(this._locationId, context);
             }
 
-            if (typeof module === "string" && (locationId.endsWith(".mjson") || locationId.endsWith(".meta"))) {
+            if (typeof module === "string" &&
+                (locationId.endsWith(".mjson") || locationId.endsWith(".meta")) &&
+                MJSON_OBJECTS_MAP.has((location = context._require.location + locationId))) {
                 // We have a circular reference. If we wanted to forbid circular
                 // references this is where we would throw an error.
-                return Promise.resolve(MJSON_OBJECTS_MAP.get(locationId)._objects.root);
+                return Promise.resolve(MJSON_OBJECTS_MAP.get(location)._objects.root);
             }
             
             if (Promise.is(module)) {

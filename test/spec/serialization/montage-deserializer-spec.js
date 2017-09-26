@@ -851,11 +851,10 @@ describe("serialization/montage-deserializer-spec", function () {
             });
         });
 
-        it("should deserialize singleton using: require('module.mjson')", function (done) {
-            require.async('spec/serialization/testmjson.mjson').then(function (exports) {
-                expect(exports).toBeDefined();
-                expect(exports.objectDescriptorModuleId).toBe("core/meta/object-descriptor.mjson");
-                expect(exports.name).toBe("RootObjectDescriptor");
+        it("should deserialize singleton using the folowing syntaxt: require('[path].mjson')", function (done) {
+            require.async('spec/serialization/testmjson.mjson').then(function (object) {
+                expect(object).toBeDefined();
+                expect(object.name).toBe("RootObjectDescriptor");
                 done();
             });
         });
