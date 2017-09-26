@@ -222,14 +222,14 @@ describe("serialization/montage-deserializer-element-spec", function () {
            rootEl.innerHTML = '<div id="id">content1</div>' +
                             '<div data-montage-id="id">content2</div>';
 
-           deserializer.initWithObject({
+           deserializer.init({
                rootEl: {
                    value: {
                        "element": {"#": "id"}
                    }
                }
            });
-        
+
            for (var i = 0; i < 3; i++) {
                deserializer.deserializeObjectWithElement(rootEl, function (object) {
                    expect(object.element instanceof Element).toBe(true);
@@ -240,14 +240,14 @@ describe("serialization/montage-deserializer-element-spec", function () {
 
         it("should deserialize an element with id and data-montage-id", function () {
            rootEl.innerHTML = '<div id="realId" data-montage-id="id">content</div>';
-           deserializer.initWithObject({
+           deserializer.init({
                rootEl: {
                    value: {
                        "element": {"#": "id"}
                    }
                }
            });
-        
+
            for (var i = 0; i < 3; i++) {
                deserializer.deserializeObjectWithElement(rootEl, function (object) {
                    expect(object.element instanceof Element).toBe(true);
@@ -258,14 +258,14 @@ describe("serialization/montage-deserializer-element-spec", function () {
 
         it("should deserialize an element with the same id and data-montage-id", function () {
            rootEl.innerHTML = '<div id="id" data-montage-id="id">content</div>';
-           deserializer.initWithObject({
+           deserializer.init({
                rootEl: {
                    value: {
                        "element": {"#": "id"}
                    }
                }
            });
-        
+
            for (var i = 0; i < 3; i++) {
                deserializer.deserializeObjectWithElement(rootEl, function (object) {
                    expect(object.element instanceof Element).toBe(true);
@@ -276,7 +276,7 @@ describe("serialization/montage-deserializer-element-spec", function () {
 
         it("should deserialize an element reference through id w/ optimization", function () {
            rootEl.innerHTML = '<div id="id">content</div>';
-           deserializer.initWithObject({
+           deserializer.init({
                rootEl: {
                    value: {
                        "element": {"#": "id"}
@@ -284,7 +284,7 @@ describe("serialization/montage-deserializer-element-spec", function () {
                }
            });
            deserializer.optimizeForDocument(rootEl);
-        
+
            for (var i = 0; i < 3; i++) {
                deserializer.deserializeObjectWithElement(rootEl, function (object) {
                    expect(object.element instanceof Element).toBe(true);
@@ -296,7 +296,7 @@ describe("serialization/montage-deserializer-element-spec", function () {
 
         it("should deserialize an element reference through data-montage-id w/ optimization", function () {
            rootEl.innerHTML = '<div data-montage-id="id">content</div>';
-           deserializer.initWithObject({
+           deserializer.init({
                rootEl: {
                    value: {
                        "element": {"#": "id"}
@@ -304,7 +304,7 @@ describe("serialization/montage-deserializer-element-spec", function () {
                }
            });
            deserializer.optimizeForDocument(rootEl);
-        
+
            for (var i = 0; i < 3; i++) {
                deserializer.deserializeObjectWithElement(rootEl, function (object) {
                    expect(object.element instanceof Element).toBe(true);
@@ -317,7 +317,7 @@ describe("serialization/montage-deserializer-element-spec", function () {
         it("should deserialize an element reference through data-montage-id over id w/ optimization", function () {
            rootEl.innerHTML = '<div id="id">content1</div>' +
                             '<div data-montage-id="id">content2</div>';
-           deserializer.initWithObject({
+           deserializer.init({
                rootEl: {
                    value: {
                        "element": {"#": "id"}
@@ -325,7 +325,7 @@ describe("serialization/montage-deserializer-element-spec", function () {
                }
            });
            deserializer.optimizeForDocument(rootEl);
-        
+
            for (var i = 0; i < 3; i++) {
                deserializer.deserializeObjectWithElement(rootEl, function (object) {
                    expect(object.element instanceof Element).toBe(true);
@@ -337,7 +337,7 @@ describe("serialization/montage-deserializer-element-spec", function () {
 
         it("should deserialize an element with id and data-montage-id w/ optimization", function () {
            rootEl.innerHTML = '<div id="realId" data-montage-id="id">content</div>';
-           deserializer.initWithObject({
+           deserializer.init({
                rootEl: {
                    value: {
                        "element": {"#": "id"}
@@ -345,7 +345,7 @@ describe("serialization/montage-deserializer-element-spec", function () {
                }
            });
            deserializer.optimizeForDocument(rootEl);
-        
+
            for (var i = 0; i < 3; i++) {
                deserializer.deserializeObjectWithElement(rootEl, function (object) {
                    expect(object.element instanceof Element).toBe(true);
@@ -357,7 +357,7 @@ describe("serialization/montage-deserializer-element-spec", function () {
 
         it("should deserialize an element with the same id and data-montage-id w/ optimization", function () {
            rootEl.innerHTML = '<div id="id" data-montage-id="id">content</div>';
-           deserializer.initWithObject({
+           deserializer.init({
                rootEl: {
                    value: {
                        "element": {"#": "id"}
@@ -365,7 +365,7 @@ describe("serialization/montage-deserializer-element-spec", function () {
                }
            });
            deserializer.optimizeForDocument(rootEl);
-        
+
            for (var i = 0; i < 3; i++) {
                deserializer.deserializeObjectWithElement(rootEl, function (object) {
                    expect(object.element instanceof Element).toBe(true);
