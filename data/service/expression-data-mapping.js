@@ -42,8 +42,13 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
     deserializeSelf: {
         value: function (deserializer) {
-            var value;
-            this.objectDescriptorReference = deserializer.getProperty("objectDescriptor");
+            var value = deserializer.getProperty("objectDescriptor");
+            if (value instanceof ObjectDescriptorReference) {
+                this.objectDescriptorReference = value;
+            } else {
+                this.objectDescriptor = value;
+            }
+            
             this.schemaReference = deserializer.getProperty("schema");
 
             value = deserializer.getProperty("objectMapping");
