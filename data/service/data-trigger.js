@@ -389,8 +389,9 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
     _addTriggersForMontageDataType: {
         value: function (service, type, prototype) {
             var triggers = {},
-                trigger, name;
-            for (name in type.propertyDescriptors) {
+                names = Object.keys(type.propertyDescriptors),
+                trigger, name, i;
+            for (i = 0; (name = names[i]); ++i) {
                 trigger = this.addTrigger(service, type, prototype, name);
                 if (trigger) {
                     triggers[name] = trigger;
@@ -564,8 +565,9 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
      */
     removeTriggers: {
         value: function (triggers, prototype) {
-            var name;
-            for (name in triggers) {
+            var triggerNames = Object.keys(triggers),
+                name, i;
+            for (i = 0; (name = triggerNames[i]); ++i) {
                 this.removeTrigger(triggers[name], prototype, name);
             }
         }

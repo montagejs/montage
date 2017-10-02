@@ -189,8 +189,9 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
         value: function (moduleID, require) {
             var self = this;
             return require.async(moduleID).then(function (exports) {
-                var provider, providerName;
-                for (providerName in exports) {
+                var provider, i, providerName,
+                    providerNames = Object.keys(exports);
+                for (i = 0; (providerName = providerNames[i]); ++i) {
                     provider = provider || new exports[providerName]();
                 }
                 self.registerAuthorizationService(provider);

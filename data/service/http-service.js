@@ -298,7 +298,7 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
             }
 
             return new Promise(function (resolve, reject) {
-                var i,
+                var i, keys, key,
                     startTime = new Date().getTime();
 
                 // Report errors or fetch the requested raw data.
@@ -321,8 +321,9 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
 
                     self.setHeadersForQuery(parsed.headers, parsed.query, parsed.url);
 
-                    for (i in parsed.headers) {
-                        request.setRequestHeader(i, parsed.headers[i]);
+                    keys = Object.keys(parsed.headers);
+                    for (i = 0; (key = keys[i]); ++i) {
+                        request.setRequestHeader(key, parsed.headers[key]);
                     }
                     request.withCredentials = parsed.credentials;
                     request.send(parsed.body);
