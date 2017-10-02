@@ -2232,8 +2232,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function(promise, child, operations, start, end) {
             var self = this;
             return promise.then(function () {
-                return child ? 
-                    child.performOfflineOperations(operations.slice(start, end)) : 
+                return child ?
+                    child.performOfflineOperations(operations.slice(start, end)) :
                         self._performAndDeleteOfflineOperation(operations[start]);
             });
         }
@@ -2254,7 +2254,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             }
 
             if (!foreignKeys) {
-                foreignKeys = tableSchema._computedForeignKeys || 
+                foreignKeys = tableSchema._computedForeignKeys ||
                     (tableSchema._computedForeignKeys = Object.keys(operation.changes));
             }
 
@@ -2333,7 +2333,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     // To be overridden by subclasses as necessary
     onlinePrimaryKeyForOfflinePrimaryKey: {
         value: function(offlinePrimaryKey) {
-            return this.offlineService ? 
+            return this.offlineService ?
                 this.offlineService.onlinePrimaryKeyForOfflinePrimaryKey(offlinePrimaryKey) : null;
         }
     },

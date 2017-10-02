@@ -48,7 +48,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             } else {
                 this.objectDescriptor = value;
             }
-            
+
             this.schemaReference = deserializer.getProperty("schema");
 
             value = deserializer.getProperty("objectMapping");

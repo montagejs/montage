@@ -995,7 +995,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                                 if ((iRawData = objects[i])) {
 
                                     if (
-                                        typeof iRawData[primaryKey] === "undefined" || 
+                                        typeof iRawData[primaryKey] === "undefined" ||
                                             iRawData[primaryKey] === ""
                                     ) {
                                         //Set offline uuid based primary key
@@ -1404,7 +1404,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                     self = this;
 
                 if (!foreignKeys) {
-                    foreignKeys = tableSchema._computedForeignKeys || 
+                    foreignKeys = tableSchema._computedForeignKeys ||
                         (tableSchema._computedForeignKeys = keys);
                 }
 
@@ -1468,8 +1468,8 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                     if (dependencies) {
                         for (i=0;(iDependency = dependencies[i]);i++) {
                             if (
-                                iDependency.tableName === tableName && 
-                                    iDependency.primaryKey === tablePrimaryKey && 
+                                iDependency.tableName === tableName &&
+                                    iDependency.primaryKey === tablePrimaryKey &&
                                         iDependency.foreignKeyName === tableForeignKey
                             ) {
                                 found = true;

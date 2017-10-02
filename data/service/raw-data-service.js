@@ -643,7 +643,6 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     stream.addData([mappedObject]);
                 });
             }
-
         }
     },
 
