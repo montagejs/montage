@@ -420,7 +420,11 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
             } else if (last < 4 || !(arguments[3] instanceof exports.HttpService.DataType)) {
                 parsed.types = [exports.HttpService.DataType.JSON];
             } else {
-                for (i = 3, n = last; i < n && arguments[i] instanceof exports.HttpService.DataType; i += 1) {}
+                i = 3;
+                n = last;
+                while (i < n && arguments[i] instanceof exports.HttpService.DataType) {
+                    ++i;
+                }
                 parsed.types = Array.prototype.slice.call(arguments, 3, i);
                 if (i < n) {
                     console.warn(new Error("Invalid types for fetchHttpRawData()"));

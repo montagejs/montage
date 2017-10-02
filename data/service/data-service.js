@@ -2214,7 +2214,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 // Find the service responsible for this operation.
                 child = services.get(operations[i]);
                 // Find the end of a batch of operations for this service.
-                for (j = i + 1; j < n && child && (jService = services.get((jOperation = operations[j]))) === child; j += 1) {}
+                j = i + 1;
+                while (j < n && child && (jService = services.get((jOperation = operations[j]))) === child) {
+                    ++j;
+                }
                 // Add the promise to perform this batch of operations to the
                 // end of the chain of promises to fulfill all operations.
                 promise =
