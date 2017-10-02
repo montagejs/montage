@@ -63,16 +63,16 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
      * @returns {Promise}
      */
 
-    _storage : {
+    _storage: {
         value: undefined
     },
-    storage : {
+    storage: {
         get: function() {
             return this._storage || (this._storage = Promise.reject(new Error('Needs to be implemented by sub classes')));
         }
     },
 
-   name : {
+    name: {
         value: void 0
     },
 
