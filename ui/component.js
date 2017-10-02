@@ -3400,7 +3400,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     }
                 }
 
-                this._classList.addEach(element.classList);
+                var classList = element.classList;
+
+                for (var i = 0, length = classList.length; i < length; i++) {
+                    this._classList.add(classList[i]);
+                }
 
                 this._subscribeToToClassListChanges();
             }

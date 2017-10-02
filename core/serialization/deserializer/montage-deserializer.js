@@ -1,14 +1,10 @@
 var Montage = require("../../core").Montage,
-    MontageInterpreter = require("./montage-interpreter").MontageInterpreter,
+    MontageContext = require("./montage-interpreter").MontageContext,
     MontageReviver = require("./montage-reviver").MontageReviver,
     Map = require("collections/map").Map,
     deprecate = require("../../deprecate");
 
 var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
-
-    _interpreter: {
-        value: null
-    },
 
     _serializationString: {
         value: null
@@ -27,39 +23,51 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
     },
 
     init: {
-        value: function (serializationString, _require, objectRequires, locationId, moduleContexts) {
-            this._serializationString = serializationString;
-            moduleContexts = moduleContexts || new Map();
-            this._interpreter = new MontageInterpreter().init(_require,
-                new MontageReviver().init(_require, objectRequires, locationId, moduleContexts));
-
-            return this;
-        }
-    },
-
-    initWithObject: {
-        value: function (serialization, _require, objectRequires, locationId, moduleContexts) {
-            this._serializationString = JSON.stringify(serialization);
-            moduleContexts = moduleContexts || new Map();
-            this._interpreter = new MontageInterpreter().init(_require,
-                new MontageReviver().init(_require, objectRequires, locationId, moduleContexts));
+        value: function (serialization, _require, objectRequires, locationId) {
+            if (typeof serialization === "string") {
+                this._serializationString = serialization;
+            } else {
+                this._serializationString = JSON.stringify(serialization);
+            }
+            this._require = _require;
+            this._locationId = locationId;
+            this._reviver = new MontageReviver().init(_require, objectRequires, this.constructor);
 
             return this;
         }
     },
 
 
-    initWithObjectAndRequire: {
-         value: deprecate.deprecateMethod(void 0, function (serialization, _require, objectRequires) {
-            return this.initWithObject(serialization, _require, objectRequires);
-        }, "initWithObjectAndRequire", "initWithObject")
-    },
-
+    /**
+     * @param {Object} instances Map-like object of external user objects to
+     * link against the serialization.
+     * @param {Element} element The root element to resolve element references
+     * against.
+     * @return {Promise}
+     */
     deserialize: {
         value: function (instances, element) {
+            var context = this._locationId && MontageDeserializer.moduleContexts.get(this._locationId);
+            if (context) {
+                if (context._objects.root) {
+                    return Promise.resolve(context._objects);
+                } else {
+                    return Promise.reject(new Error(
+                        "Unable to deserialize because a circular dependency was detected. " +
+                        "Module \"" + this._locationId + "\" has already been loaded but " +
+                        "its root could not be resolved."
+                    ));
+                }
+            }
+
             try {
                 var serialization = JSON.parse(this._serializationString);
-                return this._interpreter.instantiate(serialization, instances, element);
+                context = new MontageContext()
+                    .init(serialization, this._reviver, instances, element, this._require);
+                if (this._locationId) {
+                    MontageDeserializer.moduleContexts.set(this._locationId, context);
+                }
+                return context.getObjects();
             } catch (ex) {
                 return this._formatSerializationSyntaxError(this._serializationString);
             }
@@ -76,9 +84,43 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
 
     preloadModules: {
         value: function () {
-            var serialization = JSON.parse(this._serializationString);
+            var serialization = JSON.parse(this._serializationString),
+                reviver = this._reviver,
+                moduleLoader = reviver.moduleLoader,
+                i,
+                labels,
+                label,
+                object,
+                locationId,
+                locationDesc,
+                module,
+                promises = [];
 
-            return this._interpreter.preloadModules(serialization);
+            if (serialization !== null) {
+                labels = Object.keys(serialization);
+                for (i = 0; (label = labels[i]); ++i) {
+                    object = serialization[label];
+                    locationId = object.prototype || object.object;
+
+                    if (locationId) {
+                        if (typeof locationId !== "string") {
+                            throw new Error(
+                                "Property 'object' of the object with the label '" +
+                                label + "' must be a module id"
+                            );
+                        }
+                        locationDesc = MontageReviver.parseObjectLocationId(locationId);
+                        module = moduleLoader.getModule(locationDesc.moduleId, label);
+                        if (Promise.is(module)) {
+                            promises.push(module);
+                        }
+                    }
+                }
+            }
+
+            if (promises.length > 0) {
+                return Promise.all(promises);
+            }
         }
     },
 
@@ -129,6 +171,20 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                 throw new Error(message);
             });
         }
+    },
+
+    // Deprecated methods
+
+    initWithObject: {
+        value: deprecate.deprecateMethod(void 0, function (serialization, _require, objectRequires, locationId, moduleContexts) {
+            return this.init(serialization, _require, objectRequires, locationId, moduleContexts);
+        }, "initWithObject", "init")
+    },
+
+    initWithObjectAndRequire: {
+        value: deprecate.deprecateMethod(void 0, function (serialization, _require, objectRequires) {
+            return this.init(serialization, _require, objectRequires);
+        }, "initWithObjectAndRequire", "init")
     }
 
 }, {
@@ -149,6 +205,19 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
             }
 
             return module.require;
+        }
+    },
+
+    _cache: {
+        value: null
+    },
+
+    moduleContexts: {
+        get: function () {
+            if (!this._cache) {
+                this._cache = new Map();
+            }
+            return this._cache;
         }
     }
 });

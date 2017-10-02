@@ -64,17 +64,23 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
     deserializeSelf: {
         value: function (deserializer) {
             var value = deserializer.getProperty("version");
-            if (value !== undefined) {
+            if (value !== void 0) {
                 this.version = value;
             }
 
-            this._name = deserializer.getProperty("name");
+            value = deserializer.getProperty("name");
+            if (value !== void 0) {
+                this._name = value;
+            }
             //copy contents into the objectDescriptors array
             value = deserializer.getProperty("objectDescriptors") || deserializer.getProperty("blueprints");
             if (value) {
                 this._objectDescriptors = value;
             }
-            this.modelInstanceModuleId = deserializer.getProperty("objectModelModuleId") || deserializer.getProperty("binderModuleId");
+            value = deserializer.getProperty("objectModelModuleId") || deserializer.getProperty("binderModuleId");
+            if (value !== void 0) {
+                this.modelInstanceModuleId = value;
+            }
         }
     },
 

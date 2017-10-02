@@ -38,7 +38,7 @@ TestPageLoader.queueTest("custom-elements/custom-elements", function (testPage) 
                 expect(textLabel1.getAttribute('value')).toBe('textLabel1');
             });
 
-            it("should update the property/attribute value", function () {
+            it("should update the property/attribute value", function (done) {
                 var textLabel1 = querySelector(".textLabel1");
                 expect(textLabel1.value).toBe('textLabel1');
                 textLabel1.value = 'quz';

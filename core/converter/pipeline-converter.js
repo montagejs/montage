@@ -17,7 +17,11 @@ exports.PipelineConverter = Converter.specialize({
 
     deserializeSelf: {
         value: function (deserializer) {
-            this.converters = deserializer.getProperty("converters");
+            var value;
+            value = deserializer.getProperty("converters");
+            if (value !== void 0) {
+                this.converters = value;
+            }
         }
     },
 

@@ -128,8 +128,15 @@ var Criteria = exports.Criteria = Montage.specialize({
 
     deserializeSelf: {
         value: function (deserializer) {
-            this._expression = deserializer.getProperty("expression") || deserializer.getProperty("path");
-            this.parameters = deserializer.getProperty("parameters");
+            var value;
+            value = deserializer.getProperty("expression") || deserializer.getProperty("path");
+            if (value !== void 0) {
+                this._expression = value;
+            }
+            value = deserializer.getProperty("parameters");
+            if (value !== void 0) {
+                this.parameters = value;
+            }
         }
     },
     __scope: {

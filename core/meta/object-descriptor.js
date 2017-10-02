@@ -85,18 +85,26 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     deserializeSelf: {
         value:function (deserializer) {
             var value, model, parentReference;
-            this._name = deserializer.getProperty("name");
+            value = deserializer.getProperty("name");
+            if (value !== void 0) {
+                this._name = value;
+            }
             value = deserializer.getProperty("model") || deserializer.getProperty("binder");
             if (value) {
                 this._model = value;
             }
-            this.objectDescriptorInstanceModule = deserializer.getProperty("objectDescriptorModule") || deserializer.getProperty("blueprintModule");
+            value = deserializer.getProperty("objectDescriptorModule") || deserializer.getProperty("blueprintModule");
+            if (value !== void 0) {
+                this.objectDescriptorInstanceModule = value;
+            }
             parentReference = deserializer.getProperty("parent");
-            if (parentReference && parentReference.promise && parentReference.valueFromReference) {
-                deprecate.deprecationWarningOnce("parent reference via ObjectDescriptorReference", "direct reference with object syntax");
-                this._parentReference = parentReference;
-            } else {
-                this._parent = parentReference;
+            if (parentReference) {
+                if (parentReference.promise && parentReference.valueFromReference) {
+                    deprecate.deprecationWarningOnce("parent reference via ObjectDescriptorReference", "direct reference with object syntax");
+                    this._parentReference = parentReference;
+                } else {
+                    this._parent = parentReference;
+                }
             }
 
             this.customPrototype = this._getPropertyWithDefaults(deserializer, "customPrototype");
@@ -136,7 +144,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     _getPropertyWithDefaults: {
         value:function (deserializer, propertyName) {
             var value = deserializer.getProperty(propertyName);
-            return value ? value : Defaults[propertyName];
+            return value || this[propertyName] || Defaults[propertyName];
         }
     },
 
