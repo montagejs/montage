@@ -1419,7 +1419,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                                 jForeignKeyValue = iData[jForeignKey];
                                 //if we have a value in this foreignKey:
                                 if (jForeignKeyValue) {
-                                    if (updatedRecord = self.addPrimaryKeyDependency(jForeignKeyValue, tableName,iPrimaryKey,jForeignKey, service.name)) {
+                                    if ((updatedRecord = self.addPrimaryKeyDependency(jForeignKeyValue, tableName,iPrimaryKey,jForeignKey, service.name))) {
                                         updatedRecords = updatedRecords || [];
                                         updatedRecords.push(updatedRecord);
                                     }

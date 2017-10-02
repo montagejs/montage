@@ -301,7 +301,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
             if (requisitePropertyNames.size) {
                 promises = [];
-                while (propertyName = iterator.next().value) {
+                while ((propertyName = iterator.next().value)) {
                     promises.push(this.mapRawDataToObjectProperty(data, object, propertyName));
                 }
                 result = Promise.all(promises);
