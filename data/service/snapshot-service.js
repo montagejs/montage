@@ -111,30 +111,25 @@ exports.SnapshotService = Montage.specialize(/** @lends SnapshotService# */ {
         value: function(a, b) {
             var result = a === b;
             if (!result) {
-                if (typeof a === "object" && typeof b === "object") {
-                    
-                    // TODO WTF
-                    result = (!!a === !!b);
+                if (typeof a === "object" && typeof b === "object" &&
+                    a !== null && b !== null) {
+                    var aKeys = Object.keys(a).sort(), aValue,
+                        bKeys = Object.keys(b).sort(), bValue,
+                        key;
+
+                    var aResult = aKeys.filter(function(x) { return a[x] !== null; }).length,
+                        bResult = bKeys.filter(function(x) { return b[x] !== null;  }).length;
+
+                    result = aResult === bResult;
 
                     if (result) {
-                        var aKeys = Object.keys(a).sort(), aValue,
-                            bKeys = Object.keys(b).sort(), bValue,
-                            key;
-
-                        var aResult = aKeys.filter(function(x) { return a[x] !== null; }).length,
-                            bResult = bKeys.filter(function(x) { return b[x] !== null;  }).length;
-
-                        result = aResult === bResult;
-
-                        if (result) {
-                            for (var i = 0, length = bKeys.length; i < length; i++) {
-                                key = bKeys[i];
-                                aValue = a[key];
-                                bValue = b[key];
-                                if (!this._areSameValues(aValue, bValue)) {
-                                    result = false;
-                                    break;
-                                }
+                        for (var i = 0, length = bKeys.length; i < length; i++) {
+                            key = bKeys[i];
+                            aValue = a[key];
+                            bValue = b[key];
+                            if (!this._areSameValues(aValue, bValue)) {
+                                result = false;
+                                break;
                             }
                         }
                     }
