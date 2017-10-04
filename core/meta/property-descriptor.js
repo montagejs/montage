@@ -116,24 +116,32 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
 
     deserializeSelf: {
         value:function (deserializer) {
-            this._name = deserializer.getProperty("name");
-            this._owner = this._owner || deserializer.getProperty("objectDescriptor") || deserializer.getProperty("blueprint");
-            this.cardinality = this._getPropertyWithDefaults(deserializer, "cardinality");
+            var value;
+            value = deserializer.getProperty("name");
+            if (value !== void 0) {
+                this._name = value;
+            }
+            value = deserializer.getProperty("objectDescriptor") || deserializer.getProperty("blueprint");
+            if (value !== void 0) {
+                this._owner = value;
+            }
+            this._overridePropertyWithDefaults(deserializer, "cardinality");
+          
             if (this.cardinality === -1) {
                 this.cardinality = Infinity;
             }
-            this.mandatory = this._getPropertyWithDefaults(deserializer, "mandatory");
-            this.readOnly = this._getPropertyWithDefaults(deserializer, "readOnly");
-            this.denyDelete = this._getPropertyWithDefaults(deserializer, "denyDelete");
-            this.valueType = this._getPropertyWithDefaults(deserializer, "valueType");
-            this.collectionValueType = this._getPropertyWithDefaults(deserializer, "collectionValueType");
-            this.valueObjectPrototypeName = this._getPropertyWithDefaults(deserializer, "valueObjectPrototypeName");
-            this.valueObjectModuleId = this._getPropertyWithDefaults(deserializer, "valueObjectModuleId");
-            this._valueDescriptorReference = this._getPropertyWithDefaults(deserializer, "valueDescriptor", "targetBlueprint");
-            this.enumValues = this._getPropertyWithDefaults(deserializer, "enumValues");
-            this.defaultValue = this._getPropertyWithDefaults(deserializer, "defaultValue");
-            this.helpKey = this._getPropertyWithDefaults(deserializer, "helpKey");
-            this.definition = this._getPropertyWithDefaults(deserializer, "definition");
+            this._overridePropertyWithDefaults(deserializer, "mandatory", "mandatory");
+            this._overridePropertyWithDefaults(deserializer, "readOnly", "readOnly");
+            this._overridePropertyWithDefaults(deserializer, "denyDelete", "denyDelete");
+            this._overridePropertyWithDefaults(deserializer, "valueType", "valueType");
+            this._overridePropertyWithDefaults(deserializer, "collectionValueType", "collectionValueType");
+            this._overridePropertyWithDefaults(deserializer, "valueObjectPrototypeName", "valueObjectPrototypeName");
+            this._overridePropertyWithDefaults(deserializer, "valueObjectModuleId", "valueObjectModuleId");
+            this._overridePropertyWithDefaults(deserializer, "_valueDescriptorReference", "valueDescriptor", "targetBlueprint");
+            this._overridePropertyWithDefaults(deserializer, "enumValues", "enumValues");
+            this._overridePropertyWithDefaults(deserializer, "defaultValue", "defaultValue");
+            this._overridePropertyWithDefaults(deserializer, "helpKey", "helpKey");
+            this._overridePropertyWithDefaults(deserializer, "definition", "definition");
 
         }
     },
@@ -154,6 +162,33 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
                 value = deserializer.getProperty(propertyNames[i]);
             }
             return value || Defaults[propertyNames[0]];
+        }
+    },
+
+    /**
+     * Applies a property from the deserializer to the object. If no such
+     * property is defined on the deserializer, then the current value
+     * of the property on this object will be used. If neither are available,
+     * the default value will be used. The property assignment is done in-place,
+     * so there is no return value.
+     *
+     * @private
+     * @param {SelfDeserializer} deserializer
+     * @param {String} objectKey The key of the property on this object
+     * @param {String} deserializerKeys Rest parameters used as keys of the
+     * property on the deserializer. Each key will be used sequentially until
+     * a defined property value is found.
+     */
+    _overridePropertyWithDefaults: {
+        value: function (deserializer, objectKey /*, deserializerKeys... */) {
+            var propertyNames = Array.prototype.slice.call(arguments).slice(2, Infinity),
+                value, i, n;
+            for (i = 0, n = propertyNames.length; i < n && !value; i++) {
+                this[objectKey] = deserializer.getProperty(propertyNames[i]);
+            }
+            if (this[objectKey] === void 0) {
+                this[objectKey] = Defaults[propertyNames[0]];
+            }
         }
     },
 

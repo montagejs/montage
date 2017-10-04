@@ -43,10 +43,20 @@ exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidati
 
     deserializeSelf: {
         value: function (deserializer) {
-            this._name = deserializer.getProperty("name");
-            this._owner = deserializer.getProperty("objectDescriptor") || deserializer.getProperty("blueprint");
+            var value;
+            value = deserializer.getProperty("name");
+            if (value !== void 0) {
+                this._name = value;
+            }
+            value = deserializer.getProperty("objectDescriptor") || deserializer.getProperty("blueprint");
+            if (value !== void 0) {
+                this._owner = value;
+            }
             //            this._validationSelector = deserializer.getProperty("validationSelector");
-            this._messageKey = deserializer.getProperty("messageKey");
+            value = deserializer.getProperty("messageKey");
+            if (value !== void 0) {
+                this._messageKey = value;
+            }
             // FIXME [PJYF Jan 8 2013] There is an API issue in the deserialization
             // We should be able to write deserializer.getProperties sight!!!
             var propertyNames = Montage.getSerializablePropertyNames(this);

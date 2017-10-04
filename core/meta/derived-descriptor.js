@@ -41,7 +41,7 @@ exports.DerivedDescriptor = PropertyDescriptor.specialize( /** @lends DerivedDes
     _getPropertyWithDefaults:{
         value:function (deserializer, propertyName) {
             var value = deserializer.getProperty(propertyName);
-            return value ? value : Defaults[propertyName];
+            return value || this[propertyName] || Defaults[propertyName];
         }
     },
 

@@ -32,7 +32,8 @@ var Montage = require("montage").Montage,
     Bindings = require("montage/core/core").Bindings,
     Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer,
     Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer,
-    MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver;
+    MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver,
+    Promise = require("montage/core/promise").Promise;
 
 var Alpha = Montage.specialize( {
 
@@ -334,7 +335,7 @@ describe("bindings/spec", function () {
                 Bindings.defineBinding(target, "foo", {
                     source: source,
                     "<-": "baz"
-                })  
+                })
             }).toThrow(new Error("Can't bind to already bound target, \"foo\""));
         });
 
@@ -1123,7 +1124,7 @@ describe("bindings/spec", function () {
                 source = new Omega(),
                 serializer = new Serializer(true).initWithRequire(require),
                 deserializer = new Deserializer();
-            
+
             Bindings.defineBinding(target, "foo", {
                 source: source,
                 "<-": "bar"
@@ -1135,11 +1136,17 @@ describe("bindings/spec", function () {
             labels["root"] = source;
             labels.montage = {};
             deserializer.init(serialization, require);
-            spyOn(MontageReviver._unitRevivers, "bindings").and.callThrough();
-            
+
+            var bindingsUnit = MontageReviver._unitRevivers.get("bindings"),
+                bindingsUnitCalled = false;
+            MontageReviver._unitRevivers.set("bindings", function () {
+                MontageReviver._unitRevivers.set("bindings", bindingsUnit);
+                bindingsUnitCalled = true;
+            });
+
             deserializer.deserialize(labels).then(function (objects) {
                 object = objects.root;
-                expect(MontageReviver._unitRevivers.bindings).toHaveBeenCalled();
+                expect(bindingsUnitCalled).toBe(true);
                 done();
             });
         });
