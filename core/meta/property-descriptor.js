@@ -126,6 +126,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
                 this._owner = value;
             }
             this._overridePropertyWithDefaults(deserializer, "cardinality");
+          
             if (this.cardinality === -1) {
                 this.cardinality = Infinity;
             }

@@ -18,8 +18,8 @@ module.exports = require("montage-testing").run(require, [
     "spec/bindings/converter-spec",
     "spec/bindings/self-spec",
     {name: "spec/document-resources-spec", node: false},
-    {name: "spec/claimed-pointer-spec", node: false},
-    {name: "spec/montage-custom-element-spec", node: false},
+    {name: "spec/claimed-pointer-spec", node: false },
+    {name: "spec/montage-custom-element-spec", node: false },
     // Core
     "spec/core/browser-spec",
     "spec/core/core-spec",
