@@ -639,11 +639,16 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             // will be done in place to avoid creating any unnecessary array.
             for (i = 0, n = records && records.length; i < n; i += 1) {
                 iRecord = records[i];
+                /*jshint -W083*/
+                // Turning off jshint's function within loop warning because the
+                // only "outer scoped variable" we're accessing here is stream,
+                // which is a constant reference and won't cause unexpected
+                // behavior due to iteration.
                 this.addOneRawData(stream, iRecord, context, streamSelectorType).then(function (mappedObject) {
                     stream.addData([mappedObject]);
                 });
+                /*jshint +W083*/
             }
-
         }
     },
 

@@ -97,10 +97,11 @@ exports.ObjectDescriptor = Montage.specialize(/** @lends ObjectDescriptor.protot
      */
     _setPropertyDescriptorsFromTypes: {
         value: function (types) {
-            var i, descriptor;
-            for (i in types) {
+            var i, descriptor, key,
+                keys = Object.keys(types);
+            for (i = 0; (key = keys[i]); ++i) {
                 descriptor = this.makePropertyDescriptor();
-                this.setPropertyDescriptor(i, descriptor);
+                this.setPropertyDescriptor(key, descriptor);
             }
         }
     },

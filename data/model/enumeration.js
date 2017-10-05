@@ -182,7 +182,7 @@ exports.Enumeration = Montage.specialize({}, /** @lends Enumeration */ {
                 prototype = parsed.prototypeDescriptor,
                 constructor = parsed.constructorDescriptor,
                 constants = parsed.constantDescriptors,
-                enumeration, create, i;
+                enumeration, create, i, keys, key;
             // Create the desired enumeration, including a constructor taking
             // only unique property values (like `withId()`), and if there are
             // other property values a constructor taking values for those too
@@ -196,8 +196,9 @@ exports.Enumeration = Montage.specialize({}, /** @lends Enumeration */ {
             enumeration = Montage.specialize.call(exports.Enumeration, prototype, constructor);
             // Add the requested constants.
             create = this._makeCreateFunction(unique, other);
-            for (i in constants) {
-                enumeration[i] = create.apply(enumeration, constants[i]);
+            keys = Object.keys(constants);
+            for (i = 0; (key = keys[i]); ++i) {
+                enumeration[key] = create.apply(enumeration, constants[key]);
             }
             // Return the created enumeration.
             return enumeration;

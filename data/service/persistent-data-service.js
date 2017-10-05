@@ -63,16 +63,16 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
      * @returns {Promise}
      */
 
-    _storage : {
+    _storage: {
         value: undefined
     },
-    storage : {
+    storage: {
         get: function() {
             return this._storage || (this._storage = Promise.reject(new Error('Needs to be implemented by sub classes')));
         }
     },
 
-   name : {
+    name: {
         value: void 0
     },
 
@@ -473,20 +473,6 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                     }
                     return Promise.reject(null);
                 });
-        }
-    },
-
-
-     /**
-     * Returns a Promise for the storage used to store objects
-     * described by all objectDescriptors in the service's model.
-     *
-     * @argument {Model} stream
-     * @returns {Promise}
-     */
-   storage: {
-        value: function(model) {
-            return Promise.reject();
         }
     },
 
@@ -995,7 +981,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                                 if ((iRawData = objects[i])) {
 
                                     if (
-                                        typeof iRawData[primaryKey] === "undefined" || 
+                                        typeof iRawData[primaryKey] === "undefined" ||
                                             iRawData[primaryKey] === ""
                                     ) {
                                         //Set offline uuid based primary key
@@ -1404,7 +1390,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                     self = this;
 
                 if (!foreignKeys) {
-                    foreignKeys = tableSchema._computedForeignKeys || 
+                    foreignKeys = tableSchema._computedForeignKeys ||
                         (tableSchema._computedForeignKeys = keys);
                 }
 
@@ -1419,7 +1405,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                                 jForeignKeyValue = iData[jForeignKey];
                                 //if we have a value in this foreignKey:
                                 if (jForeignKeyValue) {
-                                    if (updatedRecord = self.addPrimaryKeyDependency(jForeignKeyValue, tableName,iPrimaryKey,jForeignKey, service.name)) {
+                                    if ((updatedRecord = self.addPrimaryKeyDependency(jForeignKeyValue, tableName,iPrimaryKey,jForeignKey, service.name))) {
                                         updatedRecords = updatedRecords || [];
                                         updatedRecords.push(updatedRecord);
                                     }
@@ -1468,8 +1454,8 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                     if (dependencies) {
                         for (i=0;(iDependency = dependencies[i]);i++) {
                             if (
-                                iDependency.tableName === tableName && 
-                                    iDependency.primaryKey === tablePrimaryKey && 
+                                iDependency.tableName === tableName &&
+                                    iDependency.primaryKey === tablePrimaryKey &&
                                         iDependency.foreignKeyName === tableForeignKey
                             ) {
                                 found = true;

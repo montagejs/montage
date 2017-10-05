@@ -125,7 +125,7 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/data/object-descriptor"},
     {name: "spec/data/property-descriptor"},
     {name: "spec/data/raw-data-service"},
-  
+
     // Meta
     {name: "spec/meta/converter-object-descriptor-spec"},
     {name: "spec/meta/module-object-descriptor-spec"},
@@ -134,7 +134,7 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/meta/controller-object-descriptor-spec", node: false},
     {name: "spec/meta/event-descriptor-spec", node: false},
     {name: "spec/meta/object-descriptor-spec"}
-  
+
 ]).then(function () {
     console.log('montage-testing', 'End');
 }, function (err) {

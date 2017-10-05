@@ -48,7 +48,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             } else {
                 this.objectDescriptor = value;
             }
-            
+
             this.schemaReference = deserializer.getProperty("schema");
 
             value = deserializer.getProperty("objectMapping");
@@ -301,7 +301,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
             if (requisitePropertyNames.size) {
                 promises = [];
-                while (propertyName = iterator.next().value) {
+                while ((propertyName = iterator.next().value)) {
                     promises.push(this.mapRawDataToObjectProperty(data, object, propertyName));
                 }
                 result = Promise.all(promises);
@@ -339,9 +339,10 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         value: function (object, data) {
             var rules = this._compiledRawDataMappingRules,
                 promises = [],
-                key;
+                keys = Object.keys(rules),
+                key, i;
 
-            for (key in rules) {
+            for (i = 0; (key = keys[i]); ++i) {
                 promises.push(this.mapObjectToRawDataProperty(object, data, key));
             }
             return promises && promises.length && Promise.all(promises) || Promise.resolve(null);
@@ -517,9 +518,10 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     _mapObjectMappingRules: {
         value: function (rawRules, addOneWayBindings) {
             var rules = this._compiledObjectMappingRules,
-                propertyName, rawRule, rule;
+                propertyNames = Object.keys(rawRules),
+                propertyName, rawRule, rule, i;
 
-            for (propertyName in rawRules) {
+            for (i = 0; (propertyName = propertyNames[i]); ++i) {
                 rawRule = rawRules[propertyName];
                 if (this._shouldMapRule(rawRule, addOneWayBindings)) {
                     rule = this._makeRuleFromRawRule(rawRule, propertyName, addOneWayBindings);
@@ -532,8 +534,9 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     _mapRawDataMappingRules: {
         value: function (rawRules, addOneWayBindings) {
             var rules = this._compiledRawDataMappingRules,
-                propertyName, rawRule, rule;
-            for (propertyName in rawRules) {
+                propertyNames = Object.keys(rawRules),
+                propertyName, rawRule, rule, i;
+            for (i = 0; (propertyName = propertyNames[i]); ++i) {
                 rawRule = rawRules[propertyName];
                 if (this._shouldMapRule(rawRule, addOneWayBindings)) {
                     rule = this._makeRuleFromRawRule(rawRule, propertyName, addOneWayBindings);
