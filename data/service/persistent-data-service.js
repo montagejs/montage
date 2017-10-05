@@ -476,20 +476,6 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
         }
     },
 
-
-     /**
-     * Returns a Promise for the storage used to store objects
-     * described by all objectDescriptors in the service's model.
-     *
-     * @argument {Model} stream
-     * @returns {Promise}
-     */
-   storage: {
-        value: function(model) {
-            return Promise.reject();
-        }
-    },
-
     /**
      * Get the first child service that can handle data of the specified type,
      * or `null` if no such child service exists.
