@@ -518,7 +518,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     _mapObjectMappingRules: {
         value: function (rawRules, addOneWayBindings) {
             var rules = this._compiledObjectMappingRules,
-                propertyNames = Object.keys(rawRules),
+                propertyNames = rawRules ? Object.keys(rawRules) : [],
                 propertyName, rawRule, rule, i;
 
             for (i = 0; (propertyName = propertyNames[i]); ++i) {
@@ -534,7 +534,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     _mapRawDataMappingRules: {
         value: function (rawRules, addOneWayBindings) {
             var rules = this._compiledRawDataMappingRules,
-                propertyNames = Object.keys(rawRules),
+                propertyNames = rawRules ? Object.keys(rawRules) : [],
                 propertyName, rawRule, rule, i;
             for (i = 0; (propertyName = propertyNames[i]); ++i) {
                 rawRule = rawRules[propertyName];
@@ -700,7 +700,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                     object[propertyName] = data;
                 } else if (hasData) {
                     //Cardinality is 1, if data contains more than 1 item, we throw
-                    if (data.length && data.length>1) {
+                    if (data.length && data.length > 1) {
                             throw new Error("ExpressionDataMapping for property \""+ this.objectDescriptor.name + "." + propertyName+"\" expects a cardinality of 1 but data to map doesn't match: "+data);
                     }
                     object[propertyName] = data[0];
