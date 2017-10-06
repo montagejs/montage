@@ -125,10 +125,12 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             if (value !== void 0) {
                 this._owner = value;
             }
-            this._overridePropertyWithDefaults(deserializer, "cardinality");
+            this._overridePropertyWithDefaults(deserializer, "cardinality", "cardinality");
+          
             if (this.cardinality === -1) {
                 this.cardinality = Infinity;
             }
+
             this._overridePropertyWithDefaults(deserializer, "mandatory", "mandatory");
             this._overridePropertyWithDefaults(deserializer, "readOnly", "readOnly");
             this._overridePropertyWithDefaults(deserializer, "denyDelete", "denyDelete");
@@ -182,12 +184,17 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
         value: function (deserializer, objectKey /*, deserializerKeys... */) {
             var propertyNames = Array.prototype.slice.call(arguments).slice(2, Infinity),
                 value, i, n;
+            
+            // [TJ] Prospective code
+            // if (propertyNames.length === 0) {
+            //     propertyNames = [objectKey];
+            // }
+
             for (i = 0, n = propertyNames.length; i < n && !value; i++) {
-                this[objectKey] = deserializer.getProperty(propertyNames[i]);
+                value = deserializer.getProperty(propertyNames[i]);
             }
-            if (this[objectKey] === void 0) {
-                this[objectKey] = Defaults[propertyNames[0]];
-            }
+
+            this[objectKey] = value === undefined ? Defaults[propertyNames[0]] : value;
         }
     },
 
