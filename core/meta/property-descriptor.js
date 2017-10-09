@@ -125,25 +125,25 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             if (value !== void 0) {
                 this._owner = value;
             }
-            this._overridePropertyWithDefaults(deserializer, "cardinality", "cardinality");
           
+            this._overridePropertyWithDefaults(deserializer, "cardinality");
+
             if (this.cardinality === -1) {
                 this.cardinality = Infinity;
             }
 
-            this._overridePropertyWithDefaults(deserializer, "mandatory", "mandatory");
-            this._overridePropertyWithDefaults(deserializer, "readOnly", "readOnly");
-            this._overridePropertyWithDefaults(deserializer, "denyDelete", "denyDelete");
-            this._overridePropertyWithDefaults(deserializer, "valueType", "valueType");
-            this._overridePropertyWithDefaults(deserializer, "collectionValueType", "collectionValueType");
-            this._overridePropertyWithDefaults(deserializer, "valueObjectPrototypeName", "valueObjectPrototypeName");
-            this._overridePropertyWithDefaults(deserializer, "valueObjectModuleId", "valueObjectModuleId");
+            this._overridePropertyWithDefaults(deserializer, "mandatory");
+            this._overridePropertyWithDefaults(deserializer, "readOnly");
+            this._overridePropertyWithDefaults(deserializer, "denyDelete");
+            this._overridePropertyWithDefaults(deserializer, "valueType");
+            this._overridePropertyWithDefaults(deserializer, "collectionValueType");
+            this._overridePropertyWithDefaults(deserializer, "valueObjectPrototypeName");
+            this._overridePropertyWithDefaults(deserializer, "valueObjectModuleId");
             this._overridePropertyWithDefaults(deserializer, "_valueDescriptorReference", "valueDescriptor", "targetBlueprint");
-            this._overridePropertyWithDefaults(deserializer, "enumValues", "enumValues");
-            this._overridePropertyWithDefaults(deserializer, "defaultValue", "defaultValue");
-            this._overridePropertyWithDefaults(deserializer, "helpKey", "helpKey");
-            this._overridePropertyWithDefaults(deserializer, "definition", "definition");
-
+            this._overridePropertyWithDefaults(deserializer, "enumValues");
+            this._overridePropertyWithDefaults(deserializer, "defaultValue");
+            this._overridePropertyWithDefaults(deserializer, "helpKey");
+            this._overridePropertyWithDefaults(deserializer, "definition");
         }
     },
 
@@ -173,6 +173,8 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * the default value will be used. The property assignment is done in-place,
      * so there is no return value.
      *
+     * If no deserializerKeys are specified, the objectKey will be used instead.
+     *
      * @private
      * @param {SelfDeserializer} deserializer
      * @param {String} objectKey The key of the property on this object
@@ -182,13 +184,13 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      */
     _overridePropertyWithDefaults: {
         value: function (deserializer, objectKey /*, deserializerKeys... */) {
-            var propertyNames = Array.prototype.slice.call(arguments).slice(2, Infinity),
-                value, i, n;
-            
-            // [TJ] Prospective code
-            // if (propertyNames.length === 0) {
-            //     propertyNames = [objectKey];
-            // }
+            var propertyNames, value, i, n;
+
+            if (arguments.length > 2) {
+                propertyNames = Array.prototype.slice.call(arguments, 2, Infinity);
+            } else {
+                propertyNames = [objectKey];
+            }
 
             for (i = 0, n = propertyNames.length; i < n && !value; i++) {
                 value = deserializer.getProperty(propertyNames[i]);
