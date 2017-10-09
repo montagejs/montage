@@ -1448,12 +1448,12 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
     methodNameForBubblePhaseOfEventType: {
         enumerable: false,
         value: function methodNameForBubblePhaseOfEventType(eventType, identifier, capitalizedEventType, capitalizedIdentifier) {
-            var eventTypeBucket;
+            var eventTypeBucket, eventTypeString = String(eventType);
             if (identifier) {
-                eventTypeBucket = this._bubbleMethodNameByEventTypeIdentifier_.get(eventType) || (this._bubbleMethodNameByEventTypeIdentifier_.set(eventType, new Map())).get(eventType);
-                return eventTypeBucket.get(identifier) || (eventTypeBucket.set(identifier, ("handle" + (capitalizedIdentifier || identifier.toCapitalized()) + (capitalizedEventType || eventType.toCapitalized())))).get(identifier);
+                eventTypeBucket = this._bubbleMethodNameByEventTypeIdentifier_.get(eventTypeString) || (this._bubbleMethodNameByEventTypeIdentifier_.set(eventTypeString, new Map())).get(eventTypeString);
+                return eventTypeBucket.get(identifier) || (eventTypeBucket.set(identifier, ("handle" + (capitalizedIdentifier || identifier.toCapitalized()) + (capitalizedEventType || eventTypeString.toCapitalized())))).get(identifier);
             } else {
-                return this._bubbleMethodNameByEventType_.get(eventType) || (this._bubbleMethodNameByEventType_.set(eventType, ("handle" + (capitalizedEventType || eventType.toCapitalized())))).get(eventType);
+                return this._bubbleMethodNameByEventType_.get(eventTypeString) || (this._bubbleMethodNameByEventType_.set(eventTypeString, ("handle" + (capitalizedEventType || eventTypeString.toCapitalized())))).get(eventTypeString);
             }
         }
     },
@@ -1471,13 +1471,13 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
     methodNameForCapturePhaseOfEventType: {
         enumerable: false,
         value: function methodNameForCapturePhaseOfEventType(eventType, identifier, capitalizedEventType, capitalizedIdentifier) {
-            var eventTypeBucket;
+            var eventTypeBucket, eventTypeString = String(eventType);
             if (identifier) {
-                eventTypeBucket = this._catptureMethodNameByEventTypeIdentifier_.get(eventType) || (this._catptureMethodNameByEventTypeIdentifier_.set(eventType,new Map())).get(eventType);
-                return eventTypeBucket.get(identifier) || (eventTypeBucket.set(identifier,("capture" + (capitalizedIdentifier || identifier.toCapitalized()) + (capitalizedEventType || eventType.toCapitalized())))).get(identifier);
+                eventTypeBucket = this._catptureMethodNameByEventTypeIdentifier_.get(eventTypeString) || (this._catptureMethodNameByEventTypeIdentifier_.set(eventTypeString,new Map())).get(eventTypeString);
+                return eventTypeBucket.get(identifier) || (eventTypeBucket.set(identifier,("capture" + (capitalizedIdentifier || identifier.toCapitalized()) + (capitalizedEventType || eventTypeString.toCapitalized())))).get(identifier);
             } else {
-                return this._captureMethodNameByEventType_.get(eventType) || 
-                    (this._captureMethodNameByEventType_.set(eventType, ("capture" + (capitalizedEventType || eventType.toCapitalized())))).get(eventType);
+                return this._captureMethodNameByEventType_.get(eventTypeString) ||
+                    (this._captureMethodNameByEventType_.set(eventTypeString, ("capture" + (capitalizedEventType || eventTypeString.toCapitalized())))).get(eventTypeString);
             }
         }
     },
