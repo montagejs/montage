@@ -2785,7 +2785,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
             var targetCandidate = target,
                 application = this.application,
-                eventPath = [],
+                eventPath,
                 discoveredTargets = this._eventPathForTargetMap;
 
             discoveredTargets.clear();
@@ -2795,7 +2795,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
             do {
                 if (!discoveredTargets.has(targetCandidate)) {
-                    eventPath.push(targetCandidate);
+                    (eventPath || (eventPath = [])).push(targetCandidate);
                     discoveredTargets.set(targetCandidate,true);
                 }
 
