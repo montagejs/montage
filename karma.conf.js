@@ -38,6 +38,10 @@ module.exports = function(config) {
             included: false
         },
         {
+            pattern: 'data/**/*.js',
+            included: false
+        },
+        {
             pattern: 'ui/**/*.js',
             included: false
         },
@@ -103,6 +107,7 @@ module.exports = function(config) {
     preprocessors: {
         'montage.js': 'coverage',
         'core/**/*.js': 'coverage',
+        'data/**/*.js': 'coverage',
         'ui/**/*.js': 'coverage',
         'composer/**/*.js': 'coverage',
         'window-loader/**/*.js': 'coverage'

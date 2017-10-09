@@ -18,8 +18,8 @@ module.exports = require("montage-testing").run(require, [
     "spec/bindings/converter-spec",
     "spec/bindings/self-spec",
     {name: "spec/document-resources-spec", node: false},
-    { name: "spec/claimed-pointer-spec", node: false },
-    { name: "spec/montage-custom-element-spec", node: false },
+    {name: "spec/claimed-pointer-spec", node: false },
+    {name: "spec/montage-custom-element-spec", node: false },
     // Core
     "spec/core/browser-spec",
     "spec/core/core-spec",
@@ -111,6 +111,21 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/ui/repetition-binding-spec", node: false},
     {name: "spec/core/localizer-spec", node: false, karma: false},
     {name: "spec/core/localizer/serialization-spec", node: false, karma: false},
+    // Data
+    {name: "spec/data/data-selector"},
+    {name: "spec/data/data-mapping"},
+    {name: "spec/data/data-object-descriptor"},
+    {name: "spec/data/data-property-descriptor"},
+    {name: "spec/data/data-provider"},
+    {name: "spec/data/data-selector"},
+    {name: "spec/data/data-service"},
+    {name: "spec/data/data-stream"},
+    {name: "spec/data/enumeration"},
+    {name: "spec/data/http-service"},
+    {name: "spec/data/object-descriptor"},
+    {name: "spec/data/property-descriptor"},
+    {name: "spec/data/raw-data-service"},
+
     // Meta
     {name: "spec/meta/converter-object-descriptor-spec"},
     {name: "spec/meta/module-object-descriptor-spec"},
@@ -119,6 +134,7 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/meta/controller-object-descriptor-spec", node: false},
     {name: "spec/meta/event-descriptor-spec", node: false},
     {name: "spec/meta/object-descriptor-spec"}
+
 ]).then(function () {
     console.log('montage-testing', 'End');
 }, function (err) {

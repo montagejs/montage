@@ -49,7 +49,7 @@ if (
 if (
     typeof document !== "undefined" &&
         typeof window !== "undefined" &&
-            typeof Touch === "undefined" && 
+            typeof Touch === "undefined" &&
                 "ontouchstart" in window
 ) {
     Touch = function Touch() {}; // jshint ignore:line
@@ -299,13 +299,13 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
     spliceOne: {
         value: function spliceOne(arr, index) {
             var len = arr.length;
-            if (len) { 
+            if (len) {
                 while (index < len) {
                     arr[index] = arr[index + 1];
                     index++;
                 }
                 arr.length--;
-            }   
+            }
         }
     },
     /**
@@ -1073,8 +1073,8 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
          value: function unregisterEventListener(target, eventType, listener, useCapture) {
              //console.log("EventManager.unregisterEventListener", target, eventType, listener, useCapture);
 
-             return useCapture ? 
-                this._unregisterEventListener(target, eventType, listener, this._registeredCaptureEventListeners, this._registeredBubbleEventListeners) : 
+             return useCapture ?
+                this._unregisterEventListener(target, eventType, listener, this._registeredCaptureEventListeners, this._registeredBubbleEventListeners) :
                     this._unregisterEventListener(target, eventType, listener, this._registeredBubbleEventListeners, this._registeredCaptureEventListeners);
         }
     },
@@ -1476,7 +1476,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 eventTypeBucket = this._catptureMethodNameByEventTypeIdentifier_.get(eventType) || (this._catptureMethodNameByEventTypeIdentifier_.set(eventType,new Map())).get(eventType);
                 return eventTypeBucket.get(identifier) || (eventTypeBucket.set(identifier,("capture" + (capitalizedIdentifier || identifier.toCapitalized()) + (capitalizedEventType || eventType.toCapitalized())))).get(identifier);
             } else {
-                return this._captureMethodNameByEventType_.get(eventType) || 
+                return this._captureMethodNameByEventType_.get(eventType) ||
                     (this._captureMethodNameByEventType_.set(eventType, ("capture" + (capitalizedEventType || eventType.toCapitalized())))).get(eventType);
             }
         }
@@ -2431,7 +2431,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
     // Event Handling
     /**
-     * @property
+     * @property {Array}
      * @description the pointer to the current candidate event listeners.
      *
      * @private
