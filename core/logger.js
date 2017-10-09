@@ -28,6 +28,7 @@ function consoleLog() {
     console.log(arguments);
 }
 
+var NOOP = Function.noop;
 var loggers = exports.loggers = {};
 
 var SOLARIZED_COLORS = {
@@ -76,10 +77,10 @@ var Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
     constructor: {
         value: function Logger() {
 
-            // Set Function.noop on construcot 
+            // Set Function.NOOP on construcot
             // to avoid issue with Object.create
-            this.debug = Function.noop; 
-            this.error = Function.noop;
+            this.debug = NOOP;
+            this.error = NOOP;
 
             addColorProperty(this);
         }
@@ -167,13 +168,13 @@ var Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
      */
     isDebug: {
         get: function () {
-            return this.debug !== Function.noop;
+            return this.debug !== NOOP;
         },
         set: function (value) {
             if (value) {
                 this.debug = this._consoleLogMontage;
             } else {
-                this.debug = Function.noop;
+                this.debug = NOOP;
             }
         }
 
@@ -184,13 +185,13 @@ var Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
      */
     isError: {
         get: function () {
-            return this.error !== Function.noop;
+            return this.error !== NOOP;
         },
         set: function (value) {
             if (value) {
                 this.error = this._consoleLogMontage;
             } else {
-                this.error = Function.noop;
+                this.error = NOOP;
             }
         }
     },
