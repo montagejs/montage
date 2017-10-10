@@ -48,7 +48,7 @@
   },
   "production": true,
   "dependencies": {
-    "bluebird": "~3.4.7",
+    "bluebird": "~3.5.0",
     "collections": "~5.0.x",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
