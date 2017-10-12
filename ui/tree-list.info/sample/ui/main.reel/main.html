@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"}
+                }
+            },
+            "treeList": {
+                "prototype": "montage/ui/tree-list.reel",
+                "values": {
+                    "element": {"#": "treeList"},
+                    "isRootVisible": false,
+                    "isRootExpanded": true,
+                    "rowHeight": 28,
+                    "controller": {"<-": "@treeController"}
+                }
+            },
+            "treeController": {
+                "prototype": "montage/core/tree-controller",
+                "values": {
+                    "data": {"<-": "@owner.root"}
+                }
+            },
+            "treeListItem": {
+                "prototype": "montage/ui/text.reel",
+                "values": {
+                    "element": {"#": "treeListItem"},
+                    "node": {"<-": "@treeList:iteration.object"},
+                    "value": {"<-": "@treeList:iteration.object.data.filename"}
+                }
+            },
+
+            "expand": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "expand"},
+                    "checked": {"<->": "@treeList:iteration.object.isExpanded"},
+                    "classList.has('hide')": {"<-": "!@treeList:iteration.object.data.isDirectory"}
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>Tree List Sample</header>
+        <section class="tree-list-container">
+            <div data-montage-id="treeList" class="tree-list">
+                <input type="checkbox" data-montage-id="expand" />
+                <span data-montage-id="treeListItem"></span>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

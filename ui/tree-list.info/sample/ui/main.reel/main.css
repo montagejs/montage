@@ -1,0 +1,48 @@
+html, body, .Main {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+}
+
+.Main {
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    padding: 20px 0;
+    font-size: 32px;
+    text-align: center;
+}
+
+.tree-list-container {
+    margin: 50px auto;
+    height: 300px;
+    width: 200px;
+    padding: 12px;
+    border: 1px solid;
+}
+
+.tree-list {
+    /* FIXME: SHOULD BE DEFAULT VALUE!!! */
+    height: 100%;
+}
+
+.tree-list input[type=checkbox] {
+	visibility: hidden;
+}
+
+.tree-list input[type=checkbox]::before {
+    content: "\25BA";
+    visibility: visible;
+}
+
+.tree-list input[type=checkbox][checked=checked]::before {
+    content: "\25BC";
+}
+
+.hide {
+    display: none;
+}
