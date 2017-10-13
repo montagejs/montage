@@ -4,6 +4,11 @@ html, body, .Main {
     height: 100%;
     width: 100%;
     font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+     -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .Main {
@@ -28,10 +33,6 @@ header {
 .tree-list {
     /* FIXME: SHOULD BE DEFAULT VALUE!!! */
     height: 100%;
-}
-
-.montage-TreeList-nodeWrapper:first-of-type {
-    height: 100% !important;
 }
 
 input[type=checkbox].expand {

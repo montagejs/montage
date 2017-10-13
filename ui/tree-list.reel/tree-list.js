@@ -55,12 +55,17 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 this.__translateComposer.hasMomentum = false;
                 this.__translateComposer.translateX = 0;
                 this.__translateComposer.translateY = 0;
+                this.__translateComposer.preventScroll = false;
 
                 this.addComposer(this.__translateComposer);
             }
 
             return this.__translateComposer;
         }
+    },
+
+    _scrollThreshold: {
+        value: 10
     },
 
     _controller: {
@@ -356,7 +361,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
         value: function () {
             this._translateComposer.addEventListener('translate', this, false);
             this._translateComposer.addEventListener('translateEnd', this, false);
-            this._translateComposer.removeEventListener('translateCancel', this, false);
+            this._translateComposer.addEventListener('translateCancel', this, false);
         }
     },
 
@@ -645,6 +650,8 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
     willDraw: {
         value: function () {
+            this._treeListBoundingClientRect = this.element.getBoundingClientRect();
+            
             if (this._isDragging && this._ghostElement && !this._ghostElementBoundingRect) {
                 this._ghostElementBoundingRect = this._draggingTreeNode.element.getBoundingClientRect();
             }
@@ -653,7 +660,8 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
     draw: {
         value: function () {
-            var iteration,
+            var treeListHeight = this._treeListBoundingClientRect.height,
+                iteration,
                 element,
                 rowHeight,
                 i, length;
@@ -665,7 +673,8 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     if (!this.isRootVisible && iteration.object.data === this.controller.data) {
                         rowHeight = 0;
                         element.style.marginTop = 0;
-                        element.style.height = this._totalHeight + "px";
+                        element.style.height = (treeListHeight > this._totalHeight ?
+                            treeListHeight : this._totalHeight) + "px";
                         element.style.visibility = "hidden";
                     } else {
                         rowHeight = this._rowTopMargins[iteration.object.row + 1] - this._rowTopMargins[iteration.object.row];
@@ -676,7 +685,9 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 } else {
                     element.style.marginTop = this._rowHeight * iteration.object.row + "px";
                     if (!this.isRootVisible && iteration.object.data === this.controller.data) {
-                        element.style.height = this._rowHeight * (iteration.object.height - 1) + "px";
+                        var height = this._rowHeight * (iteration.object.height - 1);
+                        element.style.height = (treeListHeight > height ?
+                            treeListHeight : height) + "px";
                         element.style.visibility = "hidden";
                     } else {
                         element.style.height = this._rowHeight * iteration.object.height + "px";
@@ -720,6 +731,31 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
                 this._ghostElement.style[TreeList.cssTransform] = "translate3d(" +
                     this._translateX + "px," + this._translateY + "px,0)";
+                
+                // Update scroll view if needed
+                var treeListScrollHeight = this.element.scrollHeight;
+
+                if (treeListScrollHeight > treeListHeight) {
+                    var multiplierY = 0, scrollThreshold = this._scrollThreshold,
+                        pointerPositionY = this._startPositionY + this._translateY,
+                        treeListPositionTopY = this._treeListBoundingClientRect.y,
+                        treeListPositionBottomY = this._treeListBoundingClientRect.bottom,
+                        multiplier;
+
+                    if ((pointerPositionY - scrollThreshold) <= treeListPositionTopY) { // up
+                        if (this.element.scrollTop !== 0) {
+                            multiplier = pointerPositionY - treeListPositionTopY;
+                            multiplierY = (scrollThreshold / (multiplier >= 1 ? multiplier : 1)) * 2;
+                            this.element.scrollTop = this.element.scrollTop - multiplierY;
+                        }
+                    } else if ((pointerPositionY + scrollThreshold) >= treeListPositionBottomY) { // down
+                        if ((this.element.scrollTop + treeListHeight) < treeListScrollHeight) {
+                            multiplier = treeListPositionBottomY - pointerPositionY;
+                            multiplierY = (scrollThreshold / (multiplier >= 1 ? multiplier : 1)) * 2;
+                            this.element.scrollTop = this.element.scrollTop + multiplierY;
+                        }
+                    }
+                }
             } else {
                 if (this._ghostElement) {
                     document.body.removeChild(this._ghostElement);
