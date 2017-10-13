@@ -105,6 +105,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: null
     },
 
+    preventScroll: {
+        value: true
+    },
+
     _shouldDispatchTranslate: {
         value: false
     },
@@ -840,6 +844,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 }
             }
 
+            if (this.preventScroll) {
+                document.addEventListener("scroll", this, true);
+            }
+
             if (this.isAnimating) {
                 this.isAnimating = false;
                 this._dispatchTranslateEnd();
@@ -1138,6 +1146,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 }
             }
 
+            if (this.preventScroll) {
+                document.removeEventListener("scroll", this, true);
+            }
 
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 this.eventManager.forfeitPointer(this._observedPointer, this);
