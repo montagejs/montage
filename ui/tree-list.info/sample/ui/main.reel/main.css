@@ -30,19 +30,35 @@ header {
     height: 100%;
 }
 
-.tree-list input[type=checkbox] {
+.montage-TreeList-nodeWrapper:first-of-type {
+    height: 100% !important;
+}
+
+input[type=checkbox].expand {
 	visibility: hidden;
 }
 
-.tree-list input[type=checkbox]::before {
+input[type=checkbox].expand::before {
     content: "\25BA";
     visibility: visible;
 }
 
-.tree-list input[type=checkbox][checked=checked]::before {
+input[type=checkbox][checked=checked].expand::before {
     content: "\25BC";
 }
 
 .hide {
     display: none;
+}
+
+.willDrop::before {
+    visibility: visible;
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: green;
+    opacity: 0.85;
 }

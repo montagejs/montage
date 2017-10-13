@@ -16,7 +16,8 @@
                     "isRootVisible": false,
                     "isRootExpanded": true,
                     "rowHeight": 28,
-                    "controller": {"<-": "@treeController"}
+                    "controller": {"<-": "@treeController"},
+                    "isEditable": true
                 }
             },
             "treeController": {
@@ -50,7 +51,7 @@
         <header>Tree List Sample</header>
         <section class="tree-list-container">
             <div data-montage-id="treeList" class="tree-list">
-                <input type="checkbox" data-montage-id="expand" />
+                <input type="checkbox" data-montage-id="expand" class="expand"/>
                 <span data-montage-id="treeListItem"></span>
             </div>
         </section>
