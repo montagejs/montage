@@ -1,4 +1,4 @@
-/* global define, exports, require, process, window, document, bootstrap, Reflect, customElements*/
+/* global define, exports, require, process, window, document, bootstrap, Reflect, customElements, MontageElement*/
 (function (root, factory) {
     if (typeof bootstrap === 'function') {
         // Montage. Register module.
