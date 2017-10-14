@@ -184,7 +184,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-
     /**
      * Convenience method to assess if a dataService is the rootService
      *
@@ -779,8 +778,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-
-
     /**
      * Returns the AuthorizationPolicyType used by this DataService.
      *
@@ -835,7 +832,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     providesAuthorization: {
         value: false
     },
-
 
     /**
      *
@@ -1190,7 +1186,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-
     /**
      * Request possibly asynchronous values of a data object's properties,
      * forcing asynchronous values to be re-fetched and updated even if they
@@ -1431,9 +1426,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     _dataIdentifierByObject: {
-        get: function() {
-            return this.__objectsByDataIdentifier || (this.__objectsByDataIdentifier = new WeakMap());
-        }
+        // This property is shared with all child services.
+        // If created lazily the wrong data identifier will be returned when
+        // accessed by a child service.
+        value: new WeakMap()
     },
 
     /**
@@ -1448,7 +1444,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * @returns {DataIdentifier}        - An object's DataIdentifier
      */
      dataIdentifierForObject: {
-        value: function(object) {
+        value: function (object) {
             return this._dataIdentifierByObject.get(object);
         }
     },
