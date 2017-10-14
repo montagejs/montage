@@ -9,7 +9,7 @@
   },
   "main": "montage",
   "engines": {
-    "node": "4.8.0",
+    "node": "4.8.4",
     "npm": "2.15.11"
   },
   "overlay": {
@@ -48,18 +48,24 @@
   },
   "production": true,
   "dependencies": {
-    "bluebird": "~3.4.7",
+    "bluebird": "~3.5.0",
     "collections": "~5.0.x",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
     "jshint": "^2.9.5",
-    "lodash.camelcase": "^4.3.0",
+    "moment-timezone": "^0.5.11",
+    "mr": "^17.0.8",
+    "q-io": "^1.13.3",
+    "weak-map": "^1.0.5",
+    "xhr2": "^0.1.4",
     "lodash.kebabcase": "^4.1.1",
-    "lodash.snakecase": "^4.1.1",
+    "lodash.camelcase": "^4.3.0",
     "lodash.trim": "^4.5.1",
     "mr": "montagejs/mr#commonjs",
     "proxy-polyfill": "~0.1.7",
-    "q-io": "^1.13.3"
+    "q-io": "^1.13.3",
+    "lodash.snakecase": "^4.1.1",
+    "proxy-polyfill": "~0.1.7"
   },
   "devDependencies": {
     "concurrently": "^3.4.0",

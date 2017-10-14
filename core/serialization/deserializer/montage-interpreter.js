@@ -1,16 +1,21 @@
 var Montage = require("../../core").Montage,
     MontageReviver = require("./montage-reviver").MontageReviver,
     Promise = require("../../promise").Promise,
+    deprecate = require("../../deprecate"),
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
     TWO_WAY = "<->";
 
+/**
+ * @deprecated
+ */
 var MontageInterpreter = Montage.specialize({
     _require: {value: null},
     _reviver: {value: null},
 
     init: {
         value: function (_require, reviver) {
+            deprecate.deprecationWarningOnce("MontageInterpreter", "MontageDeserializer");
             if (typeof _require !== "function") {
                 throw new Error("Function 'require' missing.");
             }
@@ -124,6 +129,8 @@ var MontageContext = Montage.specialize({
                 reviver = this._reviver,
                 objects = this._objects,
                 object;
+
+
 
             if (label in objects) {
                 return objects[label];
@@ -249,7 +256,7 @@ var MontageContext = Montage.specialize({
 
                     if ((typeof value === "object" && value &&
                         Object.keys(value).length === 1 &&
-                        (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) || 
+                        (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) ||
                         key.indexOf('.') > -1
                     ) {
                         bindings[key] = value;

@@ -1,6 +1,6 @@
 {
     "root": {
-        "prototype": "montage/core/meta/object-descriptor",
+        "prototype": "montage/core/core[Montage]",
         "values": {
             "name": "RootObjectDescriptor"
         }

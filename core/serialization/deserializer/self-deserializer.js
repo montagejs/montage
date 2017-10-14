@@ -53,6 +53,8 @@ var SelfDeserializer = Montage.specialize( {
 
     getObjectByLabel: {
         value: function (label) {
+
+
             return this._context.getObject(label);
         }
     },
