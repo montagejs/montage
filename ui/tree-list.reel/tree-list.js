@@ -288,9 +288,14 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
     templateDidLoad: {
         value: function() {
-            var self = this;
+            var self = this,
+                oldWillDraw = this.repetition.willDraw;
 
             this.repetition.willDraw = function () {
+                if (typeof oldWillDraw === "function") {
+                    oldWillDraw.call(self.repetition);
+                }
+                
                 self.needsDraw = true;
             };
         }
