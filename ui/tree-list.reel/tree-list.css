@@ -23,3 +23,29 @@
     right: 0;
     overflow: hidden;
 }
+
+.montage-TreeList-placeholder,
+.montage-TreeList-ghostImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0px !important;
+    padding: 0px;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0;
+}
+
+.montage-TreeList-placeholder {
+    width: 100%;
+    border: 1px solid;
+}
+
+.montage-TreeList-ghostImage {
+    z-index: 999999;
+}
+
+.montage-TreeList-addNode {
+    display: none;
+}

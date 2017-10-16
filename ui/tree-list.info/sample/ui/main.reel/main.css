@@ -60,6 +60,14 @@ input[type=checkbox][checked=checked].expand::before {
     bottom: 0;
     left: 0;
     right: 0;
-    background: green;
+    background: greenyellow;
+    opacity: 0.5;
+}
+
+.willDrop:hover::before {
     opacity: 0.85;
+}
+
+.montage-TreeList {
+    color: green;
 }
