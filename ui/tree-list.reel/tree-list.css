@@ -36,9 +36,6 @@
 }
 
 .montage-TreeList-placeholder {
-    width: 50px;
-    height: 10px;
-    border: 1px solid;
     z-index: -2;
 }
 

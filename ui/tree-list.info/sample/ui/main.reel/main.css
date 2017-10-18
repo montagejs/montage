@@ -27,7 +27,7 @@ header {
     height: 300px;
     width: 200px;
     padding: 12px;
-    border: 1px solid;
+    border: 1px solid #aaaaaa;
 }
 
 .tree-list {
@@ -52,7 +52,7 @@ input[type=checkbox][checked=checked].expand::before {
     display: none;
 }
 
-.willDrop::before {
+.willDrop:hover::before {
     visibility: visible;
     content: "";
     position: absolute;
@@ -60,14 +60,31 @@ input[type=checkbox][checked=checked].expand::before {
     bottom: 0;
     left: 0;
     right: 0;
-    background: greenyellow;
+    background: #7BB0A6;
     opacity: 0.5;
 }
 
-.willDrop:hover::before {
-    opacity: 0.85;
+.willDrop:hover::after {
+    box-sizing: border-box;
+    visibility: visible;
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: transparent;
+    border: 2px solid #249991; 
 }
 
-.montage-TreeList {
-    color: green;
+.montage-TreeList-placeholder {
+    width: 100px;
+    border: 2px solid #249991;
+}
+
+.tree-list-row {
+    height: 26px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
