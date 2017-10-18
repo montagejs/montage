@@ -29,8 +29,6 @@
     position: absolute;
     top: 0;
     left: 0;
-    margin: 0px !important;
-    padding: 0px;
     visibility: hidden;
     pointer-events: none;
     z-index: -1;
@@ -38,14 +36,13 @@
 }
 
 .montage-TreeList-placeholder {
-    width: 100%;
+    width: 50px;
+    height: 10px;
     border: 1px solid;
+    z-index: -2;
 }
 
 .montage-TreeList-ghostImage {
     z-index: 999999;
-}
-
-.montage-TreeList-addNode {
-    display: none;
+    margin: 0px !important;
 }
