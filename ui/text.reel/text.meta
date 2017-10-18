@@ -25,7 +25,7 @@
         }
     },
     "objectDescriptor_converter_reference": {
-        "object": "core/converter/converter.meta"
+        "object": "core/converter/converter.mjson"
     },
     "objectDescriptor_component_reference": {
         "object": "ui/component.meta"

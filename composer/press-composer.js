@@ -867,7 +867,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 var self = this;
 
                 this._longPressTimeout = setTimeout(function () {
-                    self._dispatchLongPress();
+                    self._dispatchLongPress(event.target);
                 }, this._longPressThreshold);
             }
         }
@@ -941,9 +941,12 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     _dispatchLongPress: {
         enumerable: false,
-        value: function (event) {
+        value: function (targetElement) {
+            var event, target;
             if (this._shouldDispatchLongPress) {
-                this.dispatchEvent(this._createPressEvent("longPress", event));
+                event = this._createPressEvent("longPress");
+                event.targetElement = targetElement;
+                this.dispatchEvent(event);
                 this._longPressTimeout = null;
             }
         }
