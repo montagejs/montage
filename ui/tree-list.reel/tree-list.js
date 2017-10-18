@@ -926,6 +926,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     this._ghostElement = null;
                     this._previousTreeNodeWillAcceptDrop = null;
                     this._treeNodeWillAcceptDrop = null;
+                    this._placeHolder.style.opacity = 0;
                 }
             }    
         } 
