@@ -73,7 +73,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
     },
 
     _dragOverThreshold: {
-        value: 3
+        value: 4
     },
 
     _controller: {
