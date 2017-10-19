@@ -805,6 +805,20 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
         }
     },
 
+    _isNodeParentOf: {
+        value: function (node, parent) {
+            if (node) {
+                if (node === parent) {
+                    return true;
+                }
+
+                return this._isNodeParentOf(node.parent, parent);
+            }
+
+            return false;
+        }
+    },
+
     _pathToParentNode: {
         value: function (node) {
             var path = [];
@@ -856,7 +870,13 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     rowHeight += placeholderHeight;
                 }
 
-                if (addPlaceholderPaddingTop) {
+                if (this._treeNodeOver && addPlaceholderPaddingTop &&
+                    (this._placerHolderPosition === 0 ||
+                        (this._placerHolderPosition === 1 &&
+                            !this._isNodeParentOf(object, this._treeNodeOver.object)
+                        )
+                    )
+                ) {
                     marginTop += placeholderHeight;
                 }
 
