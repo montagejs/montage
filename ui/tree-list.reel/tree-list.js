@@ -72,10 +72,6 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
         value: null
     },
 
-    _dragOverThreshold: {
-        value: 4
-    },
-
     _controller: {
         value: null
     },
@@ -461,13 +457,18 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
         value: function (treeNode) {
             if (treeNode && treeNode.element) {
                 var treeNodeRect = treeNode.element.getBoundingClientRect(),
+                    row = treeNode.object.row,
+                    rowHeight = typeof this.rowHeight === 'function' ?
+                        this._rowTopMargins[row + 1] - this._rowTopMargins[row] : 
+                        this.rowHeight,    
                     placeholderHeight = this._placeHolderBoundingRect.height,
-                    overThresholdTop = this._dragOverThreshold,
-                    overThresholdBottom = this._dragOverThreshold,
+                    dragOverThreshold = rowHeight * 0.2,
+                    overThresholdTop = dragOverThreshold,
+                    overThresholdBottom = dragOverThreshold,
                     positionY = this._startPositionY + this._translateY,
                     positionBottomY = (treeNodeRect.y + treeNodeRect.height) - positionY,
                     positionTopY = positionY - treeNodeRect.y;
-
+                
                 if (this._placerHolderPosition === 0) {
                     overThresholdTop += placeholderHeight;
                 } else if (this._placerHolderPosition === 1) {
