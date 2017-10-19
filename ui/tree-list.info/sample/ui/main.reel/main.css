@@ -52,7 +52,7 @@ input[type=checkbox][checked=checked].expand::before {
     content: "\25BC";
 }
 
-.montage-TreeList-nodeWrapper {
+.montage-TreeList.isEditing .montage-TreeList-nodeWrapper {
     transition: padding .2s linear, margin-top .2s linear;
 }
 

@@ -880,6 +880,8 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             }
 
             if (this._isDragging) {
+                this.element.classList.add('isEditing');
+
                 if (this._placeHolder) {
                     var placeholderStyle = this._placeHolder.style;
 
@@ -964,6 +966,8 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     }
                 }
             } else {
+                this.element.classList.remove('isEditing');
+
                 if (this._ghostElement) {
                     document.body.removeChild(this._ghostElement);
 
