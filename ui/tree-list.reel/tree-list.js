@@ -773,45 +773,34 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 object = iteration.object;
                 rootCondition = !this.isRootVisible && object.data === this.controller.data;
                 element = iteration.cachedFirstElement || iteration.firstElement;
-                rowHeight = 0;
+                marginTop = 0;
 
                 if (typeof this.rowHeight === "function") {
                     if (rootCondition) {
-                        element.style.marginTop = 0;
-                        element.style.height = (treeListHeight > this._totalHeight ?
-                            treeListHeight : this._totalHeight) + "px";
+                        rowHeight = (treeListHeight > this._totalHeight ?
+                            treeListHeight : this._totalHeight);
                     } else {
                         rowHeight = this._rowTopMargins[object.row + 1] - this._rowTopMargins[object.row];
-                        element.style.height = rowHeight + "px";
-                        element.style.marginTop = this._rowTopMargins[object.row] + "px";
+                        marginTop = this._rowTopMargins[object.row];
                     }
                 } else {
-                    marginTop = this._rowHeight * object.row;
+                    rowHeight = this._rowHeight * (object.height - (rootCondition ? 1 : 0));
+                    marginTop = this._rowHeight * object.row;                    
+                }
 
-                    if (rootCondition) {
-                        rowHeight = this._rowHeight * (object.height - 1);
+                if (pathToParentNode && pathToParentNode.indexOf(object) > -1) {
+                    rowHeight += placeholderHeight;
+                }
 
-                        element.style.marginTop = marginTop + "px";
-                        element.style.height = (treeListHeight > rowHeight ?
-                            treeListHeight : rowHeight) + "px";
-                    } else {
-                        rowHeight = this._rowHeight * object.height;
-
-                        if (pathToParentNode && pathToParentNode.indexOf(object) > -1) {
-                            rowHeight += placeholderHeight;
-                        }
-
-                        if (addPlaceholderPaddingTop) {
-                            marginTop += placeholderHeight;
-                        }
-
-                        element.style.marginTop = marginTop + "px";
-                        element.style.height = rowHeight + "px";
-                    }
+                if (addPlaceholderPaddingTop) {
+                    marginTop += placeholderHeight;
                 }
 
                 element.style.paddingTop = '0px';
                 element.style.paddingBottom = '0px';
+                element.style.marginTop = marginTop + "px";
+                element.style.height = (rootCondition && treeListHeight > rowHeight ?
+                    treeListHeight : rowHeight) + "px";
 
                 if (placeholderHeight && object === this._treeNodeOver.object) {
                     if (this._placerHolderPosition === 0) {
