@@ -692,12 +692,13 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 if (this._placeHolder) {
                     this._placeHolderBoundingRect = this._placeHolder.getBoundingClientRect();
                 }
+                
+                var treeNode;
 
                 if (this._placeHolderBoundingRect) {
                     var positionX = this._startPositionX + this._translateX,
                         positionY = this._startPositionY + this._translateY,
-                        target = document.elementFromPoint(positionX, positionY),
-                        treeNode;
+                        target = document.elementFromPoint(positionX, positionY);
                     
                     this._treeNodeOver = treeNode = this._findTreeNodeWithElement(target);
 
@@ -757,7 +758,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
     draw: {
         value: function () {
             var treeListHeight = this._treeListBoundingClientRect.height,
-                drawnIterations = this.repetition._drawnIterations, isRoot,
+                drawnIterations = this.repetition._drawnIterations, rootCondition,
                 placeholderHeight = 0, pathToParentNode, marginTop, object,
                 addPlaceholderPaddingTop, iteration, element, rowHeight, i, length;
             
