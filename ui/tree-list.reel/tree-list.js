@@ -551,9 +551,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 sourceObject = sourceNode.data,
                 cursor = targetNode;
             
-            if (sourceObject === targetObject ||
-                targetObject === sourceNode.parent.data
-            ) {
+            if (sourceObject === targetObject) {
                 return false;
             }
 
@@ -600,12 +598,15 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 var draggingObject = this._draggingTreeNode.object,
                     sourceChildren = draggingObject.parent.data.children,
                     targetChildren = this._treeNodeWillAcceptDrop.object.data.children,
-                    index = this._placerHolderPosition > -1 ?
-                        targetChildren.indexOf(this._treeNodeOver.object.data) +
-                        this._placerHolderPosition : targetChildren.length;
+                    sourceIndex = sourceChildren.indexOf(draggingObject.data);
 
-                targetChildren.splice(index, 0, draggingObject.data);
                 sourceChildren.splice(sourceChildren.indexOf(draggingObject.data), 1);
+
+                index = this._placerHolderPosition > -1 ?
+                    targetChildren.indexOf(this._treeNodeOver.object.data) +
+                    this._placerHolderPosition : targetChildren.length;
+                
+                targetChildren.splice(index, 0, draggingObject.data);
             }
 
             this._resetTranslateContext();
