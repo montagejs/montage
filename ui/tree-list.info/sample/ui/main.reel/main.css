@@ -52,6 +52,10 @@ input[type=checkbox][checked=checked].expand::before {
     content: "\25BC";
 }
 
+.montage-TreeList-nodeWrapper {
+    transition: padding .2s linear, margin-top .2s linear;
+}
+
 .hide {
     display: none;
 }
@@ -84,6 +88,7 @@ input[type=checkbox][checked=checked].expand::before {
 .montage-TreeList-placeholder {
     width: 100px;
     border: 2px solid #249991;
+    border-radius: 50px; 
 }
 
 .tree-list-row {
