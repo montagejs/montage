@@ -760,8 +760,10 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     
                     this._treeNodeOver = treeNode = this._findTreeNodeWithElement(target);
 
-                    if (treeNode) {
-                        this._treeNodeOver = treeNode = this._findClosestTreeNode(treeNode);
+                    if (treeNode && treeNode.object) {
+                        if (treeNode.object.data !== this.controller.data) {
+                            this._treeNodeOver = treeNode = this._findClosestTreeNode(treeNode);
+                        }
 
                         var nodeCandidate = this._findClosestParentWhoAcceptChild(treeNode),
                             sourceNode = this._draggingTreeNode.object;
