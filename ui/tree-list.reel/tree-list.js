@@ -623,6 +623,11 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     sourceChildren = draggingObject.parent.data.children,
                     targetChildren = this._treeNodeWillAcceptDrop.object.data.children,
                     sourceIndex = sourceChildren.indexOf(draggingObject.data);
+                
+                if (sourceChildren === targetChildren && this._placerHolderPosition === -1) {
+                    this._resetTranslateContext();
+                    return void 0;
+                }
 
                 sourceChildren.splice(sourceChildren.indexOf(draggingObject.data), 1);
 
