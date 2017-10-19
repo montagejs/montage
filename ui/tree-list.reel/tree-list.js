@@ -475,21 +475,45 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     positionBottomY -= placeholderHeight;
                 }
 
+                var parentChildren, targetNodeIndex, draggingNodeIndex;
+                this._placerHolderPosition = -1;
+
                 if (positionTopY <= overThresholdTop) {
-                    this._placerHolderPosition = 0;
+                    if (treeNode.object.data !== this._draggingTreeNode.object.data) {
+                        parentChildren = treeNode.object.parent.data.children;
+                        draggingNodeIndex = parentChildren.indexOf(this._draggingTreeNode.object.data);
+                        this._placerHolderPosition = 0;
+
+                        if (draggingNodeIndex > -1) {
+                            targetNodeIndex = parentChildren.indexOf(treeNode.object.data);
+                            this._placerHolderPosition =
+                                (targetNodeIndex - 1) === draggingNodeIndex ? -1 : 0;
+                        }
+                    }
                 } else if (positionBottomY <= overThresholdBottom) {
                     var parentChildren = treeNode.object.parent.data.children,
-                        index = parentChildren.indexOf(treeNode.object.data);
+                        targetNodeIndex = parentChildren.indexOf(treeNode.object.data);
 
-                    if (index + 1 < parentChildren.length) {
+                    if (targetNodeIndex + 1 < parentChildren.length &&
+                        treeNode.object.data !== this._draggingTreeNode.object.data
+                    ) {
+                        draggingNodeIndex = parentChildren.indexOf(this._draggingTreeNode.object.data);
                         this._placerHolderPosition = 0;
-                        iteration = this._findIterationWithObject(parentChildren[index + 1]);
-                        treeNode = this._wrapIterationIntoTreeNode(iteration);
+
+                        if (draggingNodeIndex > -1) {
+                            this._placerHolderPosition =
+                                (draggingNodeIndex - 1) === targetNodeIndex ? -1 : 0;
+                        }
+
+                        if (this._placerHolderPosition === 0) {
+                            iteration = this._findIterationWithObject(parentChildren[targetNodeIndex + 1]);
+                            treeNode = this._wrapIterationIntoTreeNode(iteration);
+                        }
                     } else {
-                        this._placerHolderPosition = 1;
+                        if (treeNode.object.data !== this._draggingTreeNode.object.data) {
+                            this._placerHolderPosition = 1;
+                        }    
                     }
-                } else {
-                    this._placerHolderPosition = -1;
                 }
 
                 return treeNode;
