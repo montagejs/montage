@@ -476,7 +476,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     positionBottomY -= placeholderHeight;
                 }
 
-                var parentChildren, targetNodeIndex, draggingNodeIndex;
+                var parentChildren, targetNodeIndex, draggingNodeIndex, iteration;
                 this._placerHolderPosition = -1;
 
                 if (positionTopY <= overThresholdTop) {
@@ -492,8 +492,8 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                         }
                     }
                 } else if (positionBottomY <= overThresholdBottom) {
-                    var parentChildren = treeNode.object.parent.data.children,
-                        targetNodeIndex = parentChildren.indexOf(treeNode.object.data);
+                    parentChildren = treeNode.object.parent.data.children;
+                    targetNodeIndex = parentChildren.indexOf(treeNode.object.data);
 
                     if (targetNodeIndex + 1 < parentChildren.length &&
                         treeNode.object.data !== this._draggingTreeNode.object.data
@@ -632,7 +632,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
                 sourceChildren.splice(sourceChildren.indexOf(draggingObject.data), 1);
 
-                index = this._placerHolderPosition > -1 ?
+                var index = this._placerHolderPosition > -1 ?
                     targetChildren.indexOf(this._treeNodeOver.object.data) +
                     this._placerHolderPosition : targetChildren.length;
                 
