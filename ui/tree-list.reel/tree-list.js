@@ -441,7 +441,8 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 // TODO: [Improvements] use a pool object?
                 return {
                     element: iteration.cachedFirstElement || iteration.firstElement,
-                    object: iteration.object
+                    object: iteration.object,
+                    index: iteration.index
                 };
             }
         }
@@ -486,9 +487,27 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                         this._placerHolderPosition = 0;
 
                         if (draggingNodeIndex > -1) {
+                            // Checks if the dragging node is a direct child of the parent.
                             targetNodeIndex = parentChildren.indexOf(treeNode.object.data);
                             this._placerHolderPosition =
                                 (targetNodeIndex - 1) === draggingNodeIndex ? -1 : 0;
+                        }
+
+                        if (this._placerHolderPosition === 0) {
+                            var previousDrawnIndex = treeNode.index - 1,
+                                minIndex = this.isRootVisible ? 0 : 1;
+
+                            if (previousDrawnIndex > minIndex) {
+                                var previousIteration = this.repetition._drawnIterations[previousDrawnIndex],
+                                    previousNodeElement = previousIteration.cachedFirstElement || previousIteration.firstElement,
+                                    previousNodeElementRect = previousNodeElement.getBoundingClientRect(),
+                                    positionX = this._startPositionX + this._translateX;
+
+                                if (positionX > previousNodeElementRect.x) {
+                                    treeNode = this._wrapIterationIntoTreeNode(previousIteration);
+                                    this._placerHolderPosition = 1;
+                                }
+                            }
                         }
                     }
                 } else if (positionBottomY <= overThresholdBottom) {
