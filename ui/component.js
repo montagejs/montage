@@ -2384,7 +2384,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         for (i = 0; (component = components[i]); i++) {
                             component.attachToParentComponent();
                         }
-                    }    
+                    }
                 }
             }
         }
@@ -3300,7 +3300,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                             var _name = "_"+attributeName;
                             if ((this[_name] === null) && descriptor !== null && "value" in descriptor) {
                                 this[_name] = descriptor.value;
-                            }   
+                            }
                         }
                     }
                 }
@@ -3537,7 +3537,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         if (setter) {
                             setter.call(this, value);
                         } else {
-                            this[attributeName] = value;                            
+                            this[attributeName] = value;
                         }
 
                         this._elementAttributeValues[name] = value;
@@ -3865,7 +3865,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      * @function
      */
     requestAnimationFrame: {
-        value: (global.requestAnimationFrame || global.webkitRequestAnimationFrame || 
+        value: (global.requestAnimationFrame || global.webkitRequestAnimationFrame ||
                     global.mozRequestAnimationFrame ||  global.msRequestAnimationFrame || setTimeout),
         enumerable: false
     },
@@ -3875,7 +3875,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      * @function
      */
     cancelAnimationFrame: {
-        value: (global.cancelAnimationFrame ||  global.webkitCancelAnimationFrame || 
+        value: (global.cancelAnimationFrame ||  global.webkitCancelAnimationFrame ||
                     global.mozCancelAnimationFrame || global.msCancelAnimationFrame || clearTimeout),
         enumerable: false
     },
@@ -3901,7 +3901,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         // Written by John Resig. Used under the Creative Commons Attribution 2.5 License.
         // http://ejohn.org/projects/javascript-diff-algorithm/
         value: function ( o, n ) {
-            var ns = {}, 
+            var ns = {},
                 os = {};
 
             function isNullOrUndefined(o) {
@@ -3910,9 +3910,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
             for (var i = 0; i < n.length; i++ ) {
                 if (isNullOrUndefined(ns[n[i]])) {
-                    ns[n[i]] = { 
-                        rows: [], 
-                        o: null 
+                    ns[n[i]] = {
+                        rows: [],
+                        o: null
                     };
                 }
                 ns[n[i]].rows.push( i );
@@ -3920,9 +3920,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
             for (i = 0; i < o.length; i++ ) {
                 if (isNullOrUndefined(os[o[i]])) {
-                    os[o[i]] = { 
-                        rows: [], 
-                        n: null 
+                    os[o[i]] = {
+                        rows: [],
+                        n: null
                     };
                 }
                 os[o[i]].rows.push(i);
@@ -3930,17 +3930,17 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
             for (i in ns ) {
                 if (
-                    ns[i].rows.length === 1 && 
-                        !isNullOrUndefined(os[i]) && 
+                    ns[i].rows.length === 1 &&
+                        !isNullOrUndefined(os[i]) &&
                             os[i].rows.length === 1
                 ) {
-                    n[ns[i].rows[0]] = { 
-                        text: n[ns[i].rows[0]], 
-                        row: os[i].rows[0] 
+                    n[ns[i].rows[0]] = {
+                        text: n[ns[i].rows[0]],
+                        row: os[i].rows[0]
                     };
-                    o[ os[i].rows[0] ] = { 
-                        text: o[ os[i].rows[0] ], 
-                        row: ns[i].rows[0]  
+                    o[ os[i].rows[0] ] = {
+                        text: o[ os[i].rows[0] ],
+                        row: ns[i].rows[0]
                     };
                 }
             }
@@ -3962,20 +3962,20 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                         n[i].row > 0 && isNullOrUndefined(o[ n[i].row - 1].text) &&
                             n[i - 1] === o[ n[i].row - 1 ]
                 ) {
-                    n[i - 1] = { 
-                        text: n[i - 1], 
-                        row: n[i].row - 1 
+                    n[i - 1] = {
+                        text: n[i - 1],
+                        row: n[i].row - 1
                     };
-                    o[n[i].row-1] = { 
-                        text: o[n[i].row-1], 
-                        row: i - 1 
+                    o[n[i].row-1] = {
+                        text: o[n[i].row-1],
+                        row: i - 1
                     };
                 }
             }
 
-            return { 
-                o: o, 
-                n: n 
+            return {
+                o: o,
+                n: n
             };
         }
     },
@@ -4024,8 +4024,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     addStyleSheetsFromTemplate: {
         value: function(template) {
             if(!this._addedStyleSheetsByTemplate.has(template)) {
-                var resources = template.getResources(), 
-                    ownerDocument = this.element.ownerDocument, 
+                var resources = template.getResources(),
+                    ownerDocument = this.element.ownerDocument,
                     styles = resources.createStylesForDocument(ownerDocument);
 
                 for (var i = 0, style; (style = styles[i]); i++) {
@@ -4071,20 +4071,20 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         value: function drawTree() {
             if (this.requestedAnimationFrame === null) { // 0 is a valid requestedAnimationFrame value
                 // var requestAnimationFrame = this.requestAnimationFrame;
-                // if (requestAnimationFrame) {
+                if (requestAnimationFrame) {
                     this.requestedAnimationFrame = window.requestAnimationFrame(this._drawTree);
-                    // } else {
-                //     // Shim based in Erik Möller's code at
-                //     // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
-                //     var currentDate = Date.now(),
-                //         miliseconds = 17 - currentDate + this._previousDrawDate;
+                } else {
+                    // Shim based in Erik Möller's code at
+                    // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+                    var currentDate = Date.now(),
+                        miliseconds = 17 - currentDate + this._previousDrawDate;
 
-                //     if (miliseconds < 0) {
-                //         miliseconds = 0;
-                //     }
-                //     this.requestedAnimationFrame = setTimeout(this._drawTree, miliseconds);
-                //     this._previousDrawDate = currentDate + miliseconds;
-                // }
+                    if (miliseconds < 0) {
+                        miliseconds = 0;
+                    }
+                    this.requestedAnimationFrame = setTimeout(this._drawTree, miliseconds);
+                    this._previousDrawDate = currentDate + miliseconds;
+                }
                 this._scheduleComposerRequest = false;
             }
         },
