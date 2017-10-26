@@ -38,7 +38,7 @@ jasmineEnv.addReporter({
 });
 
 // Execute
-global.XMLHttpRequest = require('xhr2');
+global.XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 
 var mrRequire = require('../montage');
 //var mrRequire = require('mr');

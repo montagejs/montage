@@ -53,16 +53,15 @@
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
     "jshint": "^2.9.5",
-    "moment-timezone": "^0.5.11",
-    "q-io": "^1.13.3",
-    "weak-map": "^1.0.5",
-    "xhr2": "^0.1.4",
-    "lodash.kebabcase": "^4.1.1",
     "lodash.camelcase": "^4.3.0",
+    "lodash.kebabcase": "^4.1.1",
+    "lodash.snakecase": "^4.1.1",
     "lodash.trim": "^4.5.1",
+    "moment-timezone": "^0.5.11",
     "mr": "montagejs/mr#commonjs",
     "proxy-polyfill": "~0.1.7",
-    "lodash.snakecase": "^4.1.1"
+    "q-io": "^1.13.3",
+    "weak-map": "^1.0.5"
   },
   "devDependencies": {
     "concurrently": "^3.4.0",
@@ -80,7 +79,8 @@
     "montage-testing": "git://github.com/montagejs/montage-testing.git#master",
     "mop-integration": "git://github.com/montagejs/mop-integration.git#master",
     "open": "0.0.5",
-    "webpack": "^3.5.3"
+    "webpack": "^3.5.3",
+    "xmlhttprequest": "^1.8.0"
   },
   "scripts": {
     "test": "node test/run-node.js",
