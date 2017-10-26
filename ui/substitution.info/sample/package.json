@@ -2,6 +2,9 @@
 	"name": "substitution.info",
 	"private": true,
 	"dependencies": {
-		"montage": "../.."
+		"montage": "*"
+	},
+	"mappings": {
+		"montage": "../../../"
 	}
 }
