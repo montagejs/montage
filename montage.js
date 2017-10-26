@@ -880,7 +880,7 @@
                                     global.montageDidLoad();
                                 }
 
-                                if (window.MontageElement) {
+                                if (typeof window !== "undefined" && window && window.MontageElement) {
                                     MontageElement.applicationReady(application, MontageReviver);
                                 }
                             });
