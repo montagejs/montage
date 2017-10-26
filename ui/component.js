@@ -4290,8 +4290,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             }
             // Sort the needsDraw list so that any newly added items are drawn in the correct order re: parent-child
             //No need to sort if there's only one childComponent
-            if(needsDrawList.length>1)
+            if(needsDrawList.length>1) {
                 needsDrawList.sort(this._sortByLevel);
+            }
 
             for (i = 0; i < j; i++) {
                 component = needsDrawList[i];
