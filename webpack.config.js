@@ -5,7 +5,10 @@ var webpack = require('webpack');
 module.exports = {
   context: __dirname,
   devtool: debug ? "inline-sourcemap" : null,
-  entry: ["./montage.js"],
+  entry: [
+    "./montage.js",
+    "./core/promise"
+  ],
   node: {
     console: true,
     fs: 'empty',
