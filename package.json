@@ -94,7 +94,8 @@
     "test:karma-chrome": "karma start --no-auto-watch --single-run --browsers=Chrome",
     "test:karma-debug": "karma start --auto-watch --no-single-run --browsers=PhantomJS_debug",
     "test:karma-dev": "karma start --auto-watch --no-single-run --capture",
-    "test:jasmine": "concurrently \"http-server -p 8085\" \"open http://localhost:8085/test/run.html\""
+    "test:jasmine": "concurrently \"http-server -p 8085\" \"open http://localhost:8085/test/run.html\"",
+    "test:jasmine-webpack": "concurrently \"http-server -p 8086\" \"open http://localhost:8086/test/run-webpack.html\""
   },
   "exclude": [
     "report",
