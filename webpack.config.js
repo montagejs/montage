@@ -6,8 +6,7 @@ module.exports = {
   context: __dirname,
   devtool: debug ? "inline-sourcemap" : null,
   entry: [
-    "./montage.js",
-    "./core/promise"
+    "./montage.js"
   ],
   node: {
     console: true,
