@@ -45,17 +45,66 @@ describe("meta/object-descriptor-spec", function () {
         describe("propertyDescriptors", function () {
             var objectDescriptor = new ObjectDescriptor().initWithName("Person");
             var propertyDescriptor = objectDescriptor.newPropertyDescriptor("foo", 1);
-            it("should be able to add", function () {
-                objectDescriptor.addPropertyDescriptor(propertyDescriptor);
-                expect(propertyDescriptor.owner).toBe(objectDescriptor);
-                expect(objectDescriptor.propertyDescriptorForName("foo")).toBe(propertyDescriptor);
-            });
+            // it("can add", function () {
+            //     objectDescriptor.addPropertyDescriptor(propertyDescriptor);
+            //     expect(propertyDescriptor.owner).toBe(objectDescriptor);
+            //     expect(objectDescriptor.propertyDescriptorForName("foo")).toBe(propertyDescriptor);
+            //     expect(objectDescriptor._ownPropertyDescriptors[0]).toBe(propertyDescriptor);
+            //     expect(objectDescriptor.propertyDescriptors[0]).toBe(propertyDescriptor);
+            // });
 
-            it("should be able to remove", function () {
-                objectDescriptor.removePropertyDescriptor(propertyDescriptor);
-                expect(propertyDescriptor.owner).toBe(null);
-                expect(objectDescriptor.propertyDescriptorForName("foo")).toBeNull();
-            });
+            // it("can remove", function () {
+            //     objectDescriptor.removePropertyDescriptor(propertyDescriptor);
+            //     expect(propertyDescriptor.owner).toBe(null);
+            //     expect(objectDescriptor.propertyDescriptorForName("foo")).toBeNull();
+            //     expect(objectDescriptor._ownPropertyDescriptors.length).toBe(0);
+            //     expect(objectDescriptor.propertyDescriptors.length).toBe(0);
+            // });
+
+
+
+            describe("parent propertyDescriptors", function () {
+                var parent, parentProperty, 
+                    child, childProperty;
+
+                beforeEach(function () {
+                    parent = new ObjectDescriptor().initWithName("Person");
+                    parentProperty = parent.newPropertyDescriptor("foo", 1);
+                    child = new ObjectDescriptor().initWithName("Customer");
+                    childProperty = child.newPropertyDescriptor("bar", 1);
+                });
+
+                it("can get propertyDescriptor added to parent", function () {
+                    child.parent = parent;                    
+                    child.addPropertyDescriptor(childProperty);
+                    parent.addPropertyDescriptor(parentProperty);
+                    expect(child.propertyDescriptorForName("bar")).toBe(childProperty);
+                    expect(child.propertyDescriptorForName("foo")).toBe(parentProperty);
+                    expect(child._ownPropertyDescriptors.length).toBe(1);
+                    expect(child._ownPropertyDescriptors[0]).toBe(childProperty);
+                    expect(child.propertyDescriptors.length).toBe(2);
+                    expect(child.propertyDescriptors[0]).toBe(childProperty);
+                    expect(child.propertyDescriptors[1]).toBe(parentProperty);
+                });
+
+                it("can get propertyDescriptor when parent is assigned", function () {
+                    child.addPropertyDescriptor(childProperty);
+                    parent.addPropertyDescriptor(parentProperty);
+
+                    expect(child.propertyDescriptors.length).toBe(1);
+                    
+                    child.parent = parent;  
+
+                    expect(child.propertyDescriptorForName("bar")).toBe(childProperty);
+                    expect(child.propertyDescriptorForName("foo")).toBe(parentProperty);
+                    expect(child._ownPropertyDescriptors.length).toBe(1);
+                    expect(child._ownPropertyDescriptors[0]).toBe(childProperty);
+                    expect(child.propertyDescriptors.length).toBe(2);
+                    expect(child.propertyDescriptors[0]).toBe(childProperty);
+                    expect(child.propertyDescriptors[1]).toBe(parentProperty);
+                });
+            })
+            
         });
         describe("associations", function () {
 

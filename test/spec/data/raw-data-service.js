@@ -1,7 +1,11 @@
 var RawDataService = require("montage/data/service/raw-data-service").RawDataService,
+    Criteria = require("montage/core/criteria").Criteria,
+    DataMapping = require("montage/data/service/data-mapping").DataMapping,
     DataService = require("montage/data/service/data-service").DataService,
     DataStream = require("montage/data/service/data-stream").DataStream,
-    DataObjectDescriptor = require("montage/data/model/data-object-descriptor").DataObjectDescriptor;
+    DataObjectDescriptor = require("montage/data/model/data-object-descriptor").DataObjectDescriptor,
+    ObjectDescriptor = require("montage/core/meta/object-descriptor").ObjectDescriptor,
+    RawDataTypeMapping = require("montage/data/service/raw-data-type-mapping").RawDataTypeMapping;
 
 describe("A RawDataService", function() {
 
@@ -311,6 +315,186 @@ describe("A RawDataService", function() {
         expect(parent._getChildServiceForObject(objects[2])).toBeNull();
         expect(parent._getChildServiceForObject(objects[3])).toBeNull();
     });
+
+
+
+    // it("manages type mappings correcty", function () {
+    //     var service = new RawDataService(),
+    //         parentDescriptor = new ObjectDescriptor(),
+    //         subDescriptorA = new ObjectDescriptor(),
+    //         subDescriptorB = new ObjectDescriptor(),
+    //         criteriaA = new Criteria().initWithExpression("type == $paramType", {
+    //             paramType: "type_a"
+    //         }),
+    //         criteriaB = new Criteria().initWithExpression("type == $paramType", {
+    //             paramType: "type_b"
+    //         }),
+    //         mappingA = RawDataTypeMapping.withTypeAndCriteria(subDescriptorA, criteriaA),
+    //         mappingB = RawDataTypeMapping.withTypeAndCriteria(subDescriptorB, criteriaB),
+    //         rawA = {type: "type_a"},
+    //         rawB = {type: "type_b"},
+    //         rawC = {type: "type_c"};
+
+    //         subDescriptorB.parent = parentDescriptor;
+    //         subDescriptorA.parent = parentDescriptor;
+        
+        
+    //     service._registerRawDataTypeMappings([mappingA, mappingB]);
+    //     expect(service._descriptorForParentAndRawData(parentDescriptor, rawA)).toBe(subDescriptorA);
+    //     expect(service._descriptorForParentAndRawData(parentDescriptor, rawB)).toBe(subDescriptorB);
+    //     expect(service._descriptorForParentAndRawData(parentDescriptor, rawC)).toBe(parentDescriptor);
+
+    // });
+
+
+    it("traverses inheritance chain with type mappings", function () {
+        var service = new RawDataService(),
+            root = new ObjectDescriptor(),
+            parentA = new ObjectDescriptor(),
+            parentB = new ObjectDescriptor(),
+            childA = new ObjectDescriptor(),
+            childB = new ObjectDescriptor(),
+            grandChild = new ObjectDescriptor(),
+            mappingA = RawDataTypeMapping.withTypeAndExpression(parentA, "type == 'type_a'"),
+            mappingB = RawDataTypeMapping.withTypeAndExpression(parentB, "type == 'type_b'"),
+            childMappingA = RawDataTypeMapping.withTypeAndExpression(childA, "name.indexOf('A CHILD') != -1"),
+            childMappingB = RawDataTypeMapping.withTypeAndExpression(childB, "name.defined() && name.indexOf('B CHILD') != -1"),
+            grandChildMapping = RawDataTypeMapping.withTypeAndExpression(grandChild, "generation == 3"),
+            allMappings = [mappingA, mappingB, childMappingA, childMappingB, grandChildMapping],
+            rawA = {
+                type: "type_a", //mappingA
+                name: "A PARENT",
+                generation: 1
+            },
+            rawChildA = {
+                type: "type_a", //mappingA
+                name: "A CHILD", //childMappingA
+                generation: 2
+            },
+            rawChildB = {
+                type: "type_b", //mappingB
+                name: "B CHILD", //childMappingB
+                generation: 2
+            },
+            rawGrandChild = {
+                type: "type_b", //mappingB
+                name: "B CHILD 2", //childMappingB
+                generation: 3 //grandChildMapping
+            };;
+
+            root._name = "root";
+            parentA._name = "parentA";
+            childA._name = "childA";
+            parentA.parent = root;
+            childA.parent = parentA;
+
+            parentB._name = "parentB";
+            childB._name = "childB";
+            grandChild._name = "grandChild";
+            parentB.parent = root;
+            childB.parent = parentB;
+            grandChild.parent = childB;
+
+        
+        
+        service._registerRawDataTypeMappings(allMappings);
+        expect(service._descriptorForParentAndRawData(root, rawA)).toBe(parentA);
+        expect(service._descriptorForParentAndRawData(root, rawChildA)).toBe(childA);
+        expect(service._descriptorForParentAndRawData(root, rawChildB)).toBe(childB);
+        expect(service._descriptorForParentAndRawData(root, rawGrandChild)).toBe(grandChild);
+    });
+
+
+
+    it("can retrieve all mappings for a type with continuous inheritance", function () {
+        var service = new RawDataService(),
+            parentMapping = new DataMapping(),
+            childMapping = new DataMapping(),
+            grandChildMapping = new DataMapping(),
+            parent = new ObjectDescriptor(),
+            child = new ObjectDescriptor(),
+            grandChild = new ObjectDescriptor(),
+            result;
+
+        child.parent = parent;
+        grandChild.parent = child;
+
+        service.addMappingForType(parentMapping, parent);
+        service.addMappingForType(childMapping, child);
+        service.addMappingForType(grandChildMapping, grandChild);
+
+        result = service.mappingsWithType(parent);
+        expect(result.length).toBe(1);
+        expect(result[0]).toBe(parentMapping);
+
+        result = service.mappingsWithType(child);
+        expect(result.length).toBe(2);
+        expect(result[0]).toBe(parentMapping);
+        expect(result[1]).toBe(childMapping);
+
+        result = service.mappingsWithType(grandChild);
+        expect(result.length).toBe(3);
+        expect(result[0]).toBe(parentMapping);
+        expect(result[1]).toBe(childMapping);
+        expect(result[2]).toBe(grandChildMapping);
+    });
+
+    it("can retrieve all mappings for a type without it's own", function () {
+        var service = new RawDataService(),
+            parentMapping = new DataMapping(),
+            childMapping = new DataMapping(),
+            parent = new ObjectDescriptor(),
+            child = new ObjectDescriptor(),
+            grandChild = new ObjectDescriptor(),
+            result;
+
+        child.parent = parent;
+        grandChild.parent = child;
+
+        service.addMappingForType(parentMapping, parent);
+        service.addMappingForType(childMapping, child);
+
+        result = service.mappingsWithType(grandChild);
+        expect(result.length).toBe(2);
+        expect(result[0]).toBe(parentMapping);
+        expect(result[1]).toBe(childMapping);
+
+    });
+
+    it("can retrieve all mappings for a type whose ancestors don't have mappings", function () {
+        var service = new RawDataService(),
+            parentMapping = new DataMapping(),
+            grandChildMapping = new DataMapping(),
+            grandChildMapping2 = new DataMapping(),
+            parent = new ObjectDescriptor(),
+            parent2 = new ObjectDescriptor(),
+            child = new ObjectDescriptor(),
+            child2 = new ObjectDescriptor(),
+            grandChild = new ObjectDescriptor(),
+            grandChild2 = new ObjectDescriptor(),
+            result;
+
+        child.parent = parent;
+        grandChild.parent = child;
+
+        child2.parent = parent2;
+        grandChild2.parent = child2;
+
+        service.addMappingForType(parentMapping, parent);
+        service.addMappingForType(grandChildMapping, grandChild);
+
+        service.addMappingForType(grandChildMapping2, grandChild2);
+
+        result = service.mappingsWithType(grandChild);
+        expect(result.length).toBe(2);
+        expect(result[0]).toBe(parentMapping);
+        expect(result[1]).toBe(grandChildMapping);
+
+        result = service.mappingsWithType(grandChild2);
+        expect(result.length).toBe(1);
+        expect(result[0]).toBe(grandChildMapping2);
+    });
+
 
     it("has a fetchData() method", function () {
         expect(new RawDataService().fetchData).toEqual(jasmine.any(Function));

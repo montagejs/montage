@@ -289,7 +289,7 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
     _fetchHttpRawDataWithParsedArguments: {
         value: function (parsed) {
             var self = this,
-                error, request;
+                error, method, request;
 
             if (!parsed) {
                 error = new Error("Invalid arguments to fetchHttpRawData()");
@@ -317,7 +317,8 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
                         error = HttpError.withRequestAndURL(request, parsed.url);
                         reject(error);
                     };
-                    request.open(parsed.body ? "POST" : "GET", parsed.url, true);
+                    method = self.methodForParsedArguments(parsed);
+                    request.open(method, parsed.url, true);
 
                     self.setHeadersForQuery(parsed.headers, parsed.query, parsed.url);
 
@@ -367,6 +368,12 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
             // Create and return a promise for the fetch results.
             return this._fetchHttpRawDataWithParsedArguments(parsed);
 
+        }
+    },
+
+    methodForParsedArguments: {
+        value: function (parsed) {
+            return parsed.body ? "POST" : "GET";
         }
     },
 
