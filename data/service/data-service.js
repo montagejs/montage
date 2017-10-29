@@ -383,7 +383,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 self._registerTypesByModuleId(objectDescriptors);
                 return self._registerChildServiceMappings(child, mappings);
             }).then(function () {
-                return self._makePrototypesForTypes(objectDescriptors);
+                return self._makePrototypesForTypes(child, objectDescriptors);
             }).then(function () {
                 self.addChildService(child, types);
                 return null;
@@ -429,22 +429,22 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     _makePrototypesForTypes: {
-        value: function (types) {
+        value: function (childService, types) {
             var self = this;
             return Promise.all(types.map(function (objectDescriptor) {
-                return self._makePrototypeForType(objectDescriptor);
+                return self._makePrototypeForType(childService, objectDescriptor);
             }));
         }
     },
 
     _makePrototypeForType: {
-        value: function (objectDescriptor) {
+        value: function (childService, objectDescriptor) {
             var self = this,
                 module = objectDescriptor.module;
             return module.require.async(module.id).then(function (exports) {
                 var constructor = exports[objectDescriptor.exportName],
                     prototype = Object.create(constructor.prototype),
-                    mapping = self.mappingWithType(objectDescriptor),
+                    mapping = childService.mappingWithType(objectDescriptor),
                     requisitePropertyNames = mapping && mapping.requisitePropertyNames || new Set(),
                     dataTriggers = DataTrigger.addTriggers(self, objectDescriptor, prototype, requisitePropertyNames);
                 self._dataObjectPrototypes.set(constructor, prototype);

@@ -1,7 +1,10 @@
 var RawDataService = require("montage/data/service/raw-data-service").RawDataService,
+    Criteria = require("montage/core/criteria").Criteria,
     DataService = require("montage/data/service/data-service").DataService,
     DataStream = require("montage/data/service/data-stream").DataStream,
-    DataObjectDescriptor = require("montage/data/model/data-object-descriptor").DataObjectDescriptor;
+    DataObjectDescriptor = require("montage/data/model/data-object-descriptor").DataObjectDescriptor,
+    ObjectDescriptor = require("montage/core/meta/object-descriptor").ObjectDescriptor,
+    RawDataTypeMapping = require("montage/data/service/raw-data-type-mapping").RawDataTypeMapping;
 
 describe("A RawDataService", function() {
 
@@ -310,6 +313,36 @@ describe("A RawDataService", function() {
         expect(parent._getChildServiceForObject(objects[1])).toBeNull();
         expect(parent._getChildServiceForObject(objects[2])).toBeNull();
         expect(parent._getChildServiceForObject(objects[3])).toBeNull();
+    });
+
+
+
+    it("manages type mappings correcty", function () {
+        var service = new RawDataService(),
+            parentDescriptor = new ObjectDescriptor(),
+            subDescriptorA = new ObjectDescriptor(),
+            subDescriptorB = new ObjectDescriptor(),
+            criteriaA = new Criteria().initWithExpression("type == $paramType", {
+                paramType: "type_a"
+            }),
+            criteriaB = new Criteria().initWithExpression("type == $paramType", {
+                paramType: "type_b"
+            }),
+            mappingA = RawDataTypeMapping.withTypeAndCriteria(subDescriptorA, criteriaA),
+            mappingB = RawDataTypeMapping.withTypeAndCriteria(subDescriptorB, criteriaB),
+            rawA = {type: "type_a"},
+            rawB = {type: "type_b"},
+            rawC = {type: "type_c"};
+
+            subDescriptorB.parent = parentDescriptor;
+            subDescriptorA.parent = parentDescriptor;
+        
+        
+        service._registerRawDataTypeMappings([mappingA, mappingB]);
+        expect(service._descriptorForParentAndRawData(parentDescriptor, rawA)).toBe(subDescriptorA);
+        expect(service._descriptorForParentAndRawData(parentDescriptor, rawB)).toBe(subDescriptorB);
+        expect(service._descriptorForParentAndRawData(parentDescriptor, rawC)).toBe(parentDescriptor);
+
     });
 
     it("has a fetchData() method", function () {
