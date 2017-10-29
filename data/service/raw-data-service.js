@@ -67,8 +67,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     deserializeSelf: {
         value:function (deserializer) {
             this.super(deserializer);
-
-            value = deserializer.getProperty("rawDataTypeMappings");
+            var value = deserializer.getProperty("rawDataTypeMappings");
             this._registerRawDataTypeMappings(value || []);
         }
     },
@@ -835,9 +834,6 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     _mapObjectToRawData: {
         value: function (object, record, context) {
-            if (object.isFigureFolder) {
-                debugger;
-            }
             var mapping = this.mappingForObject(object),
                 result;
 
