@@ -364,14 +364,12 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     _handlePropertyDescriptorsRangeChange: {
         value: function (plus, minus, index) {
             var descriptor, i, n;
-            for (i = 0, n = minus.length; i < n; ++i) {
-                descriptor = minus[i];
+            for (i = 0; (descriptor = minus[i]); ++i) {
                 descriptor._owner = null;
                 delete this._propertyDescriptorsTable[descriptor.name];
             }
 
-            for (i = 0, n = plus.length; i < n; ++i) {
-                descriptor = plus[i];
+            for (i = 0, n; (descriptor = plus[i]); ++i) {
                 descriptor._owner = descriptor._owner || this;
                 this._propertyDescriptorsTable[descriptor.name] = descriptor;
             }
@@ -395,11 +393,11 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
 
     _validParentPropertyDescriptors: {
         value: function () {
-            var descriptors = [],
-                descriptor, i, n;
+            var parentPropertyDescriptors = this.parent.propertyDescriptors.slice(), 
+                descriptors = [],
+                descriptor, i;
 
-            for (i = 0, n = this.parent.propertyDescriptors.length; i < n; ++i) {
-                descriptor = this.parent.propertyDescriptors[i];
+            for (i = 0; (descriptor = parentPropertyDescriptors[i]); ++i) {
                 if (!this._propertyDescriptorsTable[descriptor.name]) {
                     descriptors.push(descriptor);
                 }

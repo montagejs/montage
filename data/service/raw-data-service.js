@@ -917,16 +917,16 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     _registerRawDataTypeMappings: {
         value: function (mappings) {
-            var mapping, type, 
+            var mapping, parentType, 
                 i, n;
 
             for (i = 0, n = mappings ? mappings.length : 0; i < n; i++) {
                 mapping = mappings[i];
-                type = mapping.type;
-                if (!this._descriptorToRawDataTypeMappings.has(type.parent)) {
-                    this._descriptorToRawDataTypeMappings.set(type.parent, []);
+                parentType = mapping.type.parent;
+                if (!this._descriptorToRawDataTypeMappings.has(parentType)) {
+                    this._descriptorToRawDataTypeMappings.set(parentType, []);
                 }
-                this._descriptorToRawDataTypeMappings.get(type.parent).push(mapping);
+                this._descriptorToRawDataTypeMappings.get(parentType).push(mapping);
             }
         }
     },
