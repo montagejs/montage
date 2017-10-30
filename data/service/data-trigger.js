@@ -406,7 +406,7 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
             var triggers = {}, 
                 propertyDesciptors = objectDescriptor.propertyDescriptors,
                 propertyDescriptor, trigger, name, i, n;
-            for (i = 0, n = propertyDesciptors.length; i < n; i += 1) {
+            for (i = 0, n = propertyDescriptors.length; i < n; i += 1) {
                 propertyDescriptor = propertyDesciptors[i];
                 if (!requisitePropertyNames.has(propertyDescriptor.name)) {
                     name = propertyDescriptor.name;
