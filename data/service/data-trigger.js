@@ -404,10 +404,10 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
     _addTriggers: {
         value: function (service, objectDescriptor, prototype, requisitePropertyNames) {
             var triggers = {}, 
-                propertyDesciptors = objectDescriptor.propertyDescriptors,
+                propertyDescriptors = objectDescriptor.propertyDescriptors,
                 propertyDescriptor, trigger, name, i;
 
-            for (i = 0; (propertyDescriptor = propertyDescriptor[i]); i += 1) {
+            for (i = 0; (propertyDescriptor = propertyDescriptors[i]); i += 1) {
                 propertyDescriptor = propertyDesciptors[i];
                 if (!requisitePropertyNames.has(propertyDescriptor.name)) {
                     name = propertyDescriptor.name;

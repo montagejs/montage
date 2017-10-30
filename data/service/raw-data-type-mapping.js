@@ -18,12 +18,19 @@ exports.RawDataTypeMapping = Montage.specialize({
             var value;
             this.type = deserializer.getProperty("type");
             value = deserializer.getProperty("criteria");
-            if (value && !(value instanceof Criteria)) {
+            if (!value) {
+                value = deserializer.getProperty("expression");
+                if (value) {
+                    value = new Criteria().initWithExpression(value);
+                }
+            } else if (!(value instanceof Criteria)) {
                 value = new Criteria().initWithExpression(value.expression, value.parameters);
-            }
+            } 
+            
             this.criteria = value;
         }
     },
+    
 
     serializeSelf: {
         value: function (serializer) {
@@ -49,7 +56,19 @@ exports.RawDataTypeMapping = Montage.specialize({
      */
     type: {
         value: undefined
-    }
+    },
+
+
+    /**
+     * Return whether a rawDataObject matches this.criteria
+     * @method
+     * @param {Object} rawData 
+     */
+    match: {
+        value: function (rawData) {
+            return !!this.criteria.evaluate(rawData);
+        }  
+    },
 
 }, {
 
@@ -58,6 +77,15 @@ exports.RawDataTypeMapping = Montage.specialize({
             var mapping = new this();
             mapping.type = type;
             mapping.criteria = criteria;
+            return mapping;
+        }
+    },
+
+    withTypeAndExpression: {
+        value: function (type, expression) {
+            var mapping = new this();
+            mapping.type = type;
+            mapping.criteria = new Criteria().initWithExpression(expression);
             return mapping;
         }
     }
