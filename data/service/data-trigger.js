@@ -408,7 +408,6 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
                 propertyDescriptor, trigger, name, i;
 
             for (i = 0; (propertyDescriptor = propertyDescriptors[i]); i += 1) {
-                propertyDescriptor = propertyDesciptors[i];
                 if (!requisitePropertyNames.has(propertyDescriptor.name)) {
                     name = propertyDescriptor.name;
                     trigger = this.addTrigger(service, objectDescriptor, prototype, name);
