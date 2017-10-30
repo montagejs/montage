@@ -18,16 +18,13 @@ exports.RawDataTypeMapping = Montage.specialize({
             var value;
             this.type = deserializer.getProperty("type");
             value = deserializer.getProperty("criteria");
-            if (!value) {
+            if (value) {
+                this.criteria = value instanceof Criteria ? value : new Criteria().initWithExpression(value.expression, value.parameters);
+            } else {
                 value = deserializer.getProperty("expression");
-                if (value) {
-                    value = new Criteria().initWithExpression(value);
-                }
-            } else if (!(value instanceof Criteria)) {
-                value = new Criteria().initWithExpression(value.expression, value.parameters);
-            } 
+                this.expression = value;
+            }            
             
-            this.criteria = value;
         }
     },
     
@@ -46,6 +43,26 @@ exports.RawDataTypeMapping = Montage.specialize({
      */
     criteria: {
         value: undefined
+    },
+
+
+    /**
+     * Expression to evaluate against the rawData object to determine 
+     * if it represents an instance of the class defined by the 
+     * object descriptor assigned to RawDataTypeMapping.type.
+     * @type {string}
+     */
+    expression: {
+        get: function () {
+            return this.criteria ? this.criteria.expression : null;
+        },
+        set: function (value) {
+            if (!this.criteria) {
+                this.criteria = new Criteria().initWithExpression(value);
+            } else {
+                this.criteria.initWithExpression(value);
+            }
+        }
     },
 
 
@@ -85,7 +102,7 @@ exports.RawDataTypeMapping = Montage.specialize({
         value: function (type, expression) {
             var mapping = new this();
             mapping.type = type;
-            mapping.criteria = new Criteria().initWithExpression(expression);
+            mapping.expression = expression;
             return mapping;
         }
     }
