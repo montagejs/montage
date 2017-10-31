@@ -1,11 +1,13 @@
 var Montage = require("../core").Montage,
     DerivedDescriptor = require("./derived-descriptor").DerivedDescriptor,
     EventDescriptor = require("./event-descriptor").EventDescriptor,
+    Map = require("collections/map"),
     ModelModule = require("./model"),
     Promise = require("../promise").Promise,
     PropertyDescriptor = require("./property-descriptor").PropertyDescriptor,
     PropertyValidationRule = require("./validation-rule").PropertyValidationRule,
     deprecate = require("../deprecate");
+    
 
 var Defaults = {
     name: "default",
@@ -26,10 +28,13 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         value: function ObjectDescriptor() {
             this._eventDescriptors = [];
             this._propertyDescriptors = [];
-            this.addRangeAtPathChangeListener("_propertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
+            this._ownPropertyDescriptors = [];
+            this.addRangeAtPathChangeListener("_ownPropertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
+            this.addRangeAtPathChangeListener("parent.propertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
+
             this._propertyDescriptorGroups = {};
-            Object.defineProperty(this,"_propertyDescriptorsTable",{ value:{}, writable: false});
-            Object.defineProperty(this,"_eventPropertyDescriptorsTable",{ value:{}, writable: false});
+            this._propertyDescriptorsTable = new Map();
+            this._eventPropertyDescriptorsTable = new Map();
             this.defineBinding("eventDescriptors", {"<-": "_eventDescriptors.concat(parent.eventDescriptors)"});
         }
     },
@@ -64,8 +69,8 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
 
             this._setPropertyWithDefaults(serializer, "customPrototype", this.customPrototype);
             //
-            if (this._propertyDescriptors.length > 0) {
-                serializer.setProperty("propertyDescriptors", this._propertyDescriptors);
+            if (this._ownPropertyDescriptors.length > 0) {
+                serializer.setProperty("propertyDescriptors", this._ownPropertyDescriptors);
             }
             if (Object.getOwnPropertyNames(this._propertyDescriptorGroups).length > 0) {
                 serializer.setProperty("propertyDescriptorGroups", this._propertyDescriptorGroups);
@@ -108,10 +113,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             }
 
             this.customPrototype = this._getPropertyWithDefaults(deserializer, "customPrototype");
-            //
+            
             value = deserializer.getProperty("propertyDescriptors") || deserializer.getProperty("propertyBlueprints");
             if (value) {
-                this._propertyDescriptors = value;
+                this._ownPropertyDescriptors = value;
             }
 
             value = deserializer.getProperty("propertyDescriptorGroups") || deserializer.getProperty("propertyBlueprintGroups");
@@ -357,37 +362,78 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
 
-    _propertyDescriptors: {
-        value: null
-    },
+    _arrayToSet: {
+        value: function (array) {
+            var set = new Set(),
+                i, item;
+            array = array || [];
 
+            for (i = 0; (item = array[i]); ++i) {
+                set.add(item);
+            }
+            return set;
+        }
+    },
+    /**
+     * Range change listener on this._ownPropertyDescriptors and 
+     * this.parent.propertyDescriptors
+     */
     _handlePropertyDescriptorsRangeChange: {
         value: function (plus, minus, index) {
-            var descriptor, i, n;
+            var all = this._arrayToSet(this._propertyDescriptors),
+                plusSet = this._arrayToSet(plus),
+                minusSet = this._arrayToSet(minus),
+                descriptor, i, index;
+
+
             for (i = 0; (descriptor = minus[i]); ++i) {
-                descriptor._owner = null;
-                delete this._propertyDescriptorsTable[descriptor.name];
+                if (!plusSet.has(descriptor) && all.has(descriptor)) {
+                    index = this._propertyDescriptors.indexOf(descriptor);
+                    this._propertyDescriptors.splice(index, 1);
+                    delete this._propertyDescriptorsTable.delete(descriptor.name);
+                    descriptor._owner = null;
+                }
             }
 
-            for (i = 0, n; (descriptor = plus[i]); ++i) {
-                descriptor._owner = descriptor._owner || this;
-                this._propertyDescriptorsTable[descriptor.name] = descriptor;
+            for (i = 0; (descriptor = plus[i]); ++i) {
+                if (!minusSet.has(descriptor) && !all.has(descriptor)) {
+                    this._propertyDescriptors.push(descriptor);
+                    this._propertyDescriptorsTable.set(descriptor.name,  descriptor);
+                    descriptor._owner = descriptor._owner || this;
+                }
             }
-
         }
     },
 
     /**
-     * @returns {Array.<PropertyDescriptor>}
+     * PropertyDescriptors for this object descriptor, not including those 
+     * provided by this.parent
+     *
+     * @property {Array<PropertyDescriptor>} value
+     */
+    _ownPropertyDescriptors: {
+        value: null
+    },
+
+    _propertyDescriptors: {
+        value: null
+    },
+
+    /**
+     * PropertyDescriptors associated to this object descriptor, including those 
+     * provided by this.parent.
+     *
+     * @property {Array<PropertyDescriptor>} value
      */
     propertyDescriptors: {
         get: function () {
-            var propertyDescriptors = this._propertyDescriptors.slice();
-
-            if (this.parent) {
-                propertyDescriptors = propertyDescriptors.concat(this._validParentPropertyDescriptors());
+            if (!this._propertyDescriptors) {
+                this._propertyDescriptors = this._ownPropertyDescriptors.slice();
+                if (!this.parent) {
+                    this._propertyDescriptors.push.apply(this._propertyDescriptors, this._validParentPropertyDescriptors());
+                }
             }
-            return propertyDescriptors;
+            return this._propertyDescriptors;
         }
     },
 
@@ -398,7 +444,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                 descriptor, i;
 
             for (i = 0; (descriptor = parentPropertyDescriptors[i]); ++i) {
-                if (!this._propertyDescriptorsTable[descriptor.name]) {
+                if (!this._propertyDescriptorsTable.get(descriptor.name)) {
                     descriptors.push(descriptor);
                 }
             }
@@ -439,14 +485,15 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
      */
     addPropertyDescriptor: {
         value: function (propertyDescriptor) {
+
             if (propertyDescriptor !== null && propertyDescriptor.name !== null) {
-                var index = this._propertyDescriptors.indexOf(propertyDescriptor);
+                var index = this._ownPropertyDescriptors.indexOf(propertyDescriptor);
                 if (index < 0) {
                     if ((propertyDescriptor.owner !== null) && (propertyDescriptor.owner !== this)) {
                         propertyDescriptor.owner.removePropertyDescriptor(propertyDescriptor);
                     }
-                    this._propertyDescriptors.push(propertyDescriptor);
-                    this._propertyDescriptorsTable[propertyDescriptor.name] = propertyDescriptor;
+                    this._ownPropertyDescriptors.push(propertyDescriptor);
+                    // this._propertyDescriptorsTable.set(propertyDescriptor.name) = propertyDescriptor; Handled in _handlePropertyDescriptorsRangeChange
                     propertyDescriptor._owner = this;
                 }
             }
@@ -465,10 +512,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     removePropertyDescriptor: {
         value: function (propertyDescriptor) {
             if (propertyDescriptor !== null && propertyDescriptor.name !== null) {
-                var index = this._propertyDescriptors.indexOf(propertyDescriptor);
+                var index = this._ownPropertyDescriptors.indexOf(propertyDescriptor);
                 if (index >= 0) {
-                    this._propertyDescriptors.splice(index, 1);
-                    delete this._propertyDescriptorsTable[propertyDescriptor.name];
+                    this._ownPropertyDescriptors.splice(index, 1);
+                    // delete this._propertyDescriptorsTable[propertyDescriptor.name]; Handled in _handlePropertyDescriptorsRangeChange
                     propertyDescriptor._owner = null;
                 }
             }
@@ -560,25 +607,20 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
      */
     propertyDescriptorForName: {
         value: function (name) {
-            var propertyDescriptor = this._propertyDescriptorsTable[name];
+            // console.log("propertyDescriptorForName", name);
+            // debugger;
+            var propertyDescriptor = this._propertyDescriptorsTable.get(name);
             if (propertyDescriptor === undefined) {
-                propertyDescriptor = exports.UnknownPropertyDescriptor;
-                var aPropertyDescriptor, index;
-                for (index = 0; typeof (aPropertyDescriptor = this._propertyDescriptors[index]) !== "undefined"; index++) {
-                    if (aPropertyDescriptor.name === name) {
-                        propertyDescriptor = aPropertyDescriptor;
-                        break;
-                    }
-                }
-                this._propertyDescriptorsTable[name] = propertyDescriptor;
-            }
-            if (propertyDescriptor === exports.UnknownPropertyDescriptor) {
+                this._propertyDescriptorsTable.set(name, exports.UnknownPropertyDescriptor);
+            } else if (propertyDescriptor === exports.UnknownPropertyDescriptor) {
                 propertyDescriptor = null;
             }
+            
             if (!propertyDescriptor && this.parent) {
                 propertyDescriptor = this.parent.propertyDescriptorForName(name);
             }
-            return propertyDescriptor;
+
+            return propertyDescriptor || null;
         }
 
     },
@@ -733,7 +775,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                         eventDescriptor.owner.removeEventDescriptor(eventDescriptor);
                     }
                     this._eventDescriptors.push(eventDescriptor);
-                    this._eventPropertyDescriptorsTable[eventDescriptor.name] = eventDescriptor;
+                    this._eventPropertyDescriptorsTable.set(eventDescriptor.name, eventDescriptor);
                     eventDescriptor._owner = this;
                 }
             }
@@ -754,7 +796,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                 var index = this._eventDescriptors.indexOf(eventDescriptor);
                 if (index >= 0) {
                     this._eventDescriptors.splice(index, 1);
-                    delete this._eventPropertyDescriptorsTable[eventDescriptor.name];
+                    delete this._eventPropertyDescriptorsTable.delete(eventDescriptor.name);
                     eventDescriptor._owner = null;
                 }
             }
@@ -794,7 +836,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
      */
     eventDescriptorForName: {
         value: function (name) {
-            var eventDescriptor = this._eventPropertyDescriptorsTable[name];
+            var eventDescriptor = this._eventPropertyDescriptorsTable.get(name);
             if (typeof eventDescriptor === "undefined") {
                 eventDescriptor = exports.UnknownEventDescriptor;
                 var anEventPropertyDescriptor, index;
@@ -804,7 +846,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                         break;
                     }
                 }
-                this._eventPropertyDescriptorsTable[name] = eventDescriptor;
+                this._eventPropertyDescriptorsTable.set(name, eventDescriptor);
             }
 
             // TODO: Come back after creating event property descriptor

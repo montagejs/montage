@@ -1,0 +1,26 @@
+{
+    "root": {
+        "prototype": "montage/core/meta/module-object-descriptor",
+        "properties": {
+            "name": "Category",
+            "propertyDescriptors": [
+                {"@": "name"}
+            ],
+            "objectDescriptorModule": {
+                "%": "spec/data/logic/model/category.mjson"
+            },
+            "exportName": "Category",
+            "module": {
+                "%": "spec/data/logic/model/category"
+            }
+        }
+    },
+
+    "name": {
+        "prototype": "montage/core/meta/property-descriptor",
+        "properties": {
+            "name": "name",
+            "valueType": "string"
+        }
+    }
+}

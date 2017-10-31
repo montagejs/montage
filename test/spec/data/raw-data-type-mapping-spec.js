@@ -4,9 +4,6 @@ var RawDataTypeMapping = require("montage/data/service/raw-data-type-mapping").R
     Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     serialization = require("./logic/service/raw-data-type-mapping-spec.mjson");
 
-
-    console.log("RawDataTypeMappingSpec", serialization);
-
 describe("A RawDataTypeMapping", function() {
 
     it("can be created", function () {

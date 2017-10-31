@@ -686,6 +686,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     addMappingForType: {
         value: function (mapping, type) {
+            mapping.service = mapping.service || this;
             this._mappingByType.set(type, mapping);
         }
     },
@@ -702,6 +703,39 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             type = this._objectDescriptorForType(type);
             mapping = this._mappingByType.has(type) && this._mappingByType.get(type);
             return mapping || null;
+        }
+    },
+    
+
+    /**
+     * Return the mapping associated with each type on the 
+     * provided type's inheritance tree, starting at the root.
+     * @param {ObjectDescriptor} type.
+     * @returns {Array<DataMapping>|null} returns the specified mappings or null
+     * if no mappings are defined for the specified type.
+     */
+    mappingsWithType: {
+        value: function (type) {
+            var mappings = null,
+                mapping;
+            
+            type = this._objectDescriptorForType(type);
+            mapping = this._mappingByType.has(type) && this._mappingByType.get(type);
+
+            if (mapping) {
+                mappings = [mapping];
+            }
+
+            while (type.parent) {
+                type = type.parent;
+                mapping = this._mappingByType.has(type) && this._mappingByType.get(type);
+                mappings = mappings || [];
+                if (mapping) {
+                    mappings.unshift(mapping);
+                }
+            }
+            
+            return mappings;
         }
     },
 

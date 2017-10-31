@@ -1,0 +1,21 @@
+{
+    "root": {
+        "prototype": "montage/data/service/data-service",
+        "properties": {
+            "name": "DataService",
+            "childServices": [
+                {"@": "categoryService"},
+                {"@": "movieService"}
+            ]
+        }
+    },
+
+
+    "categoryService": {
+        "object": "spec/data/logic/service/category-service.mjson"
+    },
+
+    "movieService": {
+        "object": "spec/data/logic/service/movie-service.mjson"
+    }
+}
