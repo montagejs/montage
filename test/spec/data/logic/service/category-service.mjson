@@ -1,0 +1,16 @@
+{
+    
+    "category": {
+        "object": "spec/data/logic/model/category.mjson"
+    },
+
+    "root": {
+        "prototype": "spec/data/logic/service/category-service",
+        "properties": {
+            "name": "CategoryService",
+            "types": [
+                 {"@": "category"}
+             ]
+        }
+    }
+}

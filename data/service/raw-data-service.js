@@ -693,26 +693,47 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     /**
-     * Convert raw data to data objects of an appropriate type.
-     *
-     *
-     * @todo Make this method overridable by type name with methods like
-     * `mapRawDataToHazard()` and `mapRawDataToProduct()`.
+     * Retrieve DataMappings for this object. 
+     * 
+     * Return the mapping associated with each type on the 
+     * object's inheritance tree, starting at the root.
      *
      * @method
-     * @argument {Object} record - An object whose properties' values hold
-     *                             the raw data.
-     * @argument {Object} object - An object whose properties must be set or
-     *                             modified to represent the raw data.
-     * @argument {?} context     - The value that was passed in to the
-     *                             [addRawData()]{@link RawDataService#addRawData}
-     *                             call that invoked this method.
+     * @argument {Object} object - An object whose object descriptor may have 
+     *                             DataMappings on it's inheritance tree
+     * @returns {Array<DataMapping>} 
+     */
+    mappingsForObject: {
+        value: function (object) {
+            var objectDescriptor = this.objectDescriptorForObject(object),
+                mappings = objectDescriptor && this.mappingsWithType(objectDescriptor),
+                mapping;
+                
+            if (!mappings && objectDescriptor) {
+                mapping = this._objectDescriptorMappings.get(objectDescriptor);
+                if (!mapping) {
+                    mapping = DataMapping.withObjectDescriptor(objectDescriptor);
+                    this._objectDescriptorMappings.set(objectDescriptor, mapping);
+                }
+                mappings = [mapping];
+            }
+
+            return mappings;
+        }
+    },
+
+    /**
+     * Retrieve DataMapping for this object.
+     *
+     * @method
+     * @argument {Object} object - An object whose object descriptor has a DataMapping
      */
     mappingForObject: {
         value: function (object) {
             var objectDescriptor = this.objectDescriptorForObject(object),
                 mapping = objectDescriptor && this.mappingWithType(objectDescriptor);
 
+            
             if (!mapping && objectDescriptor) {
                 mapping = this._objectDescriptorMappings.get(objectDescriptor);
                 if (!mapping) {
@@ -952,7 +973,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     subType = mapping.criteria.evaluate(rawData) && mapping.type;
                 }
             }
-            return subType || parent;
+            
+            return subType ? this._descriptorForParentAndRawData(subType, rawData) : parent;
         }
     },
 

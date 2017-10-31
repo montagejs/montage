@@ -4,7 +4,8 @@ var Converter = require("core/converter/converter").Converter,
     ObjectDescriptorReference = require("core/meta/object-descriptor-reference").ObjectDescriptorReference,
     Promise = require("core/promise").Promise,
     Scope = require("frb/scope"),
-    parse = require("frb/parse");
+    parse = require("frb/parse"),
+    compile = require("frb/compile-evaluator");
 
 /**
  * @class RawPropertyValueToObjectConverter
@@ -166,6 +167,16 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
         }
     },
 
+    _compiledRevertSyntax: {
+        value: undefined
+    },
+
+    compiledRevertSyntax: {
+        get: function () {
+            return this._compiledRevertSyntax || (this._compiledRevertSyntax = compile(this.revertSyntax));
+        }
+    },
+
 
     /**
      * The descriptor of the destination object. If one is not provided,
@@ -320,13 +331,17 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
     revert: {
         value: function (v) {
             if (v) {
-                if (!this._revertSyntax) {
+                if (!this.compiledRevertSyntax) {
                     return Promise.resolve(v);
                 } else {
                     var scope = this.scope;
                     //Parameter is what is accessed as $ in expressions
-                    scope.parameters = v;
-                    return Promise.resolve(this._revertSyntax(scope));
+                    scope.value = v;
+                    debugger;
+                    return Promise.resolve(this.compiledRevertSyntax(scope)).then(function (result) {
+                        console.log("Revert", result);
+                        return result;
+                    });
                 }
 
             }
