@@ -1133,13 +1133,18 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                 var labels = {};
                 labels.actioneventlistener = handlerObject;
 
-                deserializer.init(
-                    serialization, require);
-                spyOn(MontageReviver._unitRevivers, "listeners").and.callThrough();
+                deserializer.init(serialization, require);
+
+                var listenersUnit = MontageReviver._unitRevivers.get("listeners"),
+                    listenersUnitCalled = false;
+                MontageReviver._unitRevivers.set("listeners", function () {
+                    MontageReviver._unitRevivers.set("listeners", listenersUnit);
+                    listenersUnitCalled = true;
+                });
 
                 deserializer.deserialize(labels).then(function (objects) {
                     object = objects.root;
-                    expect(MontageReviver._unitRevivers.listeners).toHaveBeenCalled();
+                    expect(listenersUnitCalled).toBe(true);
                     done();
                 });
              });

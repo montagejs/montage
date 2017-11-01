@@ -172,11 +172,9 @@ describe("meta/build-in-component-object-descriptor-spec", function () {
                 var propertyDescriptor = objectDescriptor.propertyDescriptorForName("converter");
                 expect(propertyDescriptor).toBeTruthy();
                 // TODO: isAssociationBlueprint is deprecated but has no equivalent
-                expect(propertyDescriptor.isAssociationBlueprint).toBe(true);
+                // expect(propertyDescriptor.isAssociationBlueprint).toBe(true);
                 expect(propertyDescriptor.valueDescriptor).toBeTruthy();
-            }).finally(function () {
-                done();
-            });
+            }).catch(fail).finally(done);
         });
     });
 

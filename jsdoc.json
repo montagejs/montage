@@ -4,14 +4,16 @@
   },
   "opts": {
     "readme": "README.md",
-    "destination": "./doc"
+    "destination": "./doc",
+    "recurse": true
   },
   "source": {
     "include": [
       "montage.js",
       "composer/",
       "core/",
-      "ui/"
+      "ui/",
+      "data/"
     ],
     "includePattern": ".+\\.js(doc)?$",
     "excludePattern": "(^|\\/|\\\\)_"

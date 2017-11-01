@@ -116,25 +116,34 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
 
     deserializeSelf: {
         value:function (deserializer) {
-            this._name = deserializer.getProperty("name");
-            this._owner = deserializer.getProperty("objectDescriptor") || deserializer.getProperty("blueprint");
-            this.cardinality = this._getPropertyWithDefaults(deserializer, "cardinality");
+            var value;
+            value = deserializer.getProperty("name");
+            if (value !== void 0) {
+                this._name = value;
+            }
+            value = deserializer.getProperty("objectDescriptor") || deserializer.getProperty("blueprint");
+            if (value !== void 0) {
+                this._owner = value;
+            }
+          
+            this._overridePropertyWithDefaults(deserializer, "cardinality");
+
             if (this.cardinality === -1) {
                 this.cardinality = Infinity;
             }
-            this.mandatory = this._getPropertyWithDefaults(deserializer, "mandatory");
-            this.readOnly = this._getPropertyWithDefaults(deserializer, "readOnly");
-            this.denyDelete = this._getPropertyWithDefaults(deserializer, "denyDelete");
-            this.valueType = this._getPropertyWithDefaults(deserializer, "valueType");
-            this.collectionValueType = this._getPropertyWithDefaults(deserializer, "collectionValueType");
-            this.valueObjectPrototypeName = this._getPropertyWithDefaults(deserializer, "valueObjectPrototypeName");
-            this.valueObjectModuleId = this._getPropertyWithDefaults(deserializer, "valueObjectModuleId");
-            this._valueDescriptorReference = this._getPropertyWithDefaults(deserializer, "valueDescriptor", "targetBlueprint");
-            this.enumValues = this._getPropertyWithDefaults(deserializer, "enumValues");
-            this.defaultValue = this._getPropertyWithDefaults(deserializer, "defaultValue");
-            this.helpKey = this._getPropertyWithDefaults(deserializer, "helpKey");
-            this.definition = this._getPropertyWithDefaults(deserializer, "definition");
 
+            this._overridePropertyWithDefaults(deserializer, "mandatory");
+            this._overridePropertyWithDefaults(deserializer, "readOnly");
+            this._overridePropertyWithDefaults(deserializer, "denyDelete");
+            this._overridePropertyWithDefaults(deserializer, "valueType");
+            this._overridePropertyWithDefaults(deserializer, "collectionValueType");
+            this._overridePropertyWithDefaults(deserializer, "valueObjectPrototypeName");
+            this._overridePropertyWithDefaults(deserializer, "valueObjectModuleId");
+            this._overridePropertyWithDefaults(deserializer, "_valueDescriptorReference", "valueDescriptor", "targetBlueprint");
+            this._overridePropertyWithDefaults(deserializer, "enumValues");
+            this._overridePropertyWithDefaults(deserializer, "defaultValue");
+            this._overridePropertyWithDefaults(deserializer, "helpKey");
+            this._overridePropertyWithDefaults(deserializer, "definition");
         }
     },
 
@@ -157,8 +166,42 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
         }
     },
 
+    /**
+     * Applies a property from the deserializer to the object. If no such
+     * property is defined on the deserializer, then the current value
+     * of the property on this object will be used. If neither are available,
+     * the default value will be used. The property assignment is done in-place,
+     * so there is no return value.
+     *
+     * If no deserializerKeys are specified, the objectKey will be used instead.
+     *
+     * @private
+     * @param {SelfDeserializer} deserializer
+     * @param {String} objectKey The key of the property on this object
+     * @param {String} deserializerKeys Rest parameters used as keys of the
+     * property on the deserializer. Each key will be used sequentially until
+     * a defined property value is found.
+     */
+    _overridePropertyWithDefaults: {
+        value: function (deserializer, objectKey /*, deserializerKeys... */) {
+            var propertyNames, value, i, n;
+
+            if (arguments.length > 2) {
+                propertyNames = Array.prototype.slice.call(arguments, 2, Infinity);
+            } else {
+                propertyNames = [objectKey];
+            }
+
+            for (i = 0, n = propertyNames.length; i < n && !value; i++) {
+                value = deserializer.getProperty(propertyNames[i]);
+            }
+
+            this[objectKey] = value === undefined ? Defaults[propertyNames[0]] : value;
+        }
+    },
+
     _owner: {
-        value:null
+        value: null
     },
 
     /**
@@ -171,7 +214,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     },
 
     _name: {
-        value:null
+        value: null
     },
 
     /**
@@ -268,7 +311,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @type {string}
      * Definition can be used to express a property as the result of evaluating an expression
      * An example would be to flatten/traverse two properties across two objects to make its
-     * content accessible as a new property name. For example, in a many to many relaational
+     * content accessible as a new property name. For example, in a many to many relational
      * style, a Movie would have a toDirector property to a "DirectorRole" which itself would
      * point through a toTalent property to the actual Person. A "director" property definition
      * would then be "toDirector.toTalent"
@@ -323,7 +366,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
         get: function () {
             // TODO: Needed for backwards compatibility with ObjectDescriptorReference.
             // Remove eventually, this can become completely sync
-            if (typeof this._valueDescriptorReference.promise === "function") {
+            if (this._valueDescriptorReference && typeof this._valueDescriptorReference.promise === "function") {
                 deprecate.deprecationWarningOnce("valueDescriptor reference via ObjectDescriptorReference", "direct reference via object syntax");
                 return this._valueDescriptorReference.promise(this.require);
             } else {

@@ -18,20 +18,24 @@ require("../../shim/string");
 var PROXY_ELEMENT_MAP = new WeakMap();
 var DATA_ATTRIBUTES_MAP = new Map();
 
-var ModuleLoader = Montage.specialize( {
-    _require: {value: null},
-    _objectRequires: {value: null},
+var ModuleLoader = Montage.specialize({
+
+    _require: {
+        value: null
+    },
+
+    _objectRequires: {
+        value: null
+    },
 
     init: {
         value: function (_require, objectRequires) {
             if (typeof _require !== "function") {
                 throw new Error("Function 'require' missing.");
             }
-
             if (typeof _require.location !== "string") {
                 throw new Error("Function 'require' location is missing");
             }
-
             if (typeof objectRequires !== "object" &&
                 typeof objectRequires !== "undefined") {
                 throw new Error("Parameter 'objectRequires' should be an object.");
@@ -46,11 +50,7 @@ var ModuleLoader = Montage.specialize( {
 
     getExports: {
         value: function (_require, moduleId) {
-            var module;
-
-            // Transforms relative module ids into absolute module ids
-            moduleId = _require.resolve(moduleId);
-            module = _require.getModuleDescriptor(moduleId);
+            var module = _require.getModuleDescriptor(_require.resolve(moduleId));
 
             while (module.redirect !== void 0) {
                 module = _require.getModuleDescriptor(module.redirect);
@@ -91,25 +91,25 @@ var ModuleLoader = Montage.specialize( {
  * @class MontageReviver
  */
 var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends MontageReviver# */ {
-    moduleLoader: {value: null},
+
+    moduleLoader: {
+        value: null
+    },
 
     /**
      * @param {Require} _require The require object to load modules
      * @param {Object} objectRequires A dictionary indexed by object label with
      *        the require object to use for a specific object of the
      *        serialization.
-     * @param {?Map} moduleContexts A map indexed by module ID with the
-     *        MontageContext to use for a specific external object
-     *        reference. Used to prevent circular references from creating
-     *        an infinite loop.
+     * @param {Function} deserializerConstructor Function to create a new
+     *        deserializer. Useful for linking to an external module
+     *        that also needs to be deserialized.
      */
     init: {
-        value: function (_require, objectRequires, locationId, moduleContexts) {
-            this.moduleLoader = new ModuleLoader()
-                                 .init(_require, objectRequires);
+        value: function (_require, objectRequires, deserializerConstructor) {
+            this.moduleLoader = new ModuleLoader().init(_require, objectRequires);
             this._require = _require;
-            this._locationId = locationId;
-            this._moduleContexts = moduleContexts;
+            this._deserializerConstructor = deserializerConstructor;
             return this;
         }
     },
@@ -158,7 +158,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 var datasetAttributes = Object.keys(originalDataset),
                     targetObject = Object.create(null), self = this,
                     datasetAttribute, propertyNames;
-                
+
                 if (Proxy.prototype) { // The native Proxy has no prototype property.
                     // Workaround for Proxy polyfill https://github.com/GoogleChrome/proxy-polyfill
                     // the properties of a proxy must be known at creation time.
@@ -185,7 +185,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                             targetObject[datasetAttribute.replace(/^dataset\./, '')] = void 0;
                         }
                     }
-                }                
+                }
 
                 Object.defineProperty(element, "dataset", {
                     value: new Proxy(targetObject, {
@@ -216,8 +216,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (element, montageObjectDesc) {
             if (!PROXY_ELEMENT_MAP.has(element)) {
                 var targetObject = Object.create(null);
-                
-                if (Proxy.prototype) { // The native Proxy has no prototype property. 
+
+                if (Proxy.prototype) { // The native Proxy has no prototype property.
                     // Workaround for Proxy polyfill https://github.com/GoogleChrome/proxy-polyfill
                     // the properties of a proxy must be known at creation time.
                     // TODO: remove when we drop the support of IE11.
@@ -243,10 +243,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                         }
                     }
                 }
-                
+
                 PROXY_ELEMENT_MAP.set(element, new Proxy(targetObject, {
                     set: function (target, propertyName, value) {
-                        if (!(propertyName in Object.getPrototypeOf(element))) {                
+                        if (!(propertyName in Object.getPrototypeOf(element))) {
                             if (Object.getOwnPropertyDescriptor(element, propertyName) === void 0) {
                                 Object.defineProperty(element, propertyName, {
                                     set: function (value) {
@@ -276,7 +276,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     }
                 }));
             }
-            
+
             return PROXY_ELEMENT_MAP.get(element);
         }
     },
@@ -285,7 +285,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (element) {
             if (element.setAttribute === element.nativeSetAttribute) {
                 var proxyElement = PROXY_ELEMENT_MAP.get(element),
-                    self = this;    
+                    self = this;
 
                 element.setAttribute = function (key, value) {
                     var propertyName;
@@ -305,23 +305,20 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     reviveRootObject: {
         value: function (value, context, label) {
             var error,
+                object,
                 isAlias = "alias" in value;
 
             // Only aliases are allowed as template values, everything else
             // should be rejected as an error.
             error = this._checkLabel(label, isAlias);
-
             if (error) {
                 return Promise.reject(error);
             }
-
-            var object;
 
             // Check if the optional "debugger" unit is set for this object
             // and stop the execution. This is intended to provide a certain
             // level of debugging in the serialization.
             if (value.debugger) {
-                console.log("enable debugger statement here");
                 debugger; // jshint ignore:line
             }
 
@@ -369,9 +366,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 }
 
                 return this.reviveExternalObject(value, context, label);
+            } else if ("alias" in value) {
+                return this.reviveAlias(value, context, label);
+            } else {
+                return this.reviveMontageObject(value, context, label);
             }
-
-            return this.reviveCustomObject(value, context, label);
         }
     },
 
@@ -400,16 +399,6 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             var module = _require.getModuleDescriptor(moduleId);
 
             return new ModuleReference().initWithIdAndRequire(module.id, module.require);
-        }
-    },
-
-    reviveCustomObject: {
-        value: function (value, context, label) {
-            if ("alias" in value) {
-                return this.reviveAlias(value, context, label);
-            } else {
-                return this.reviveMontageObject(value, context, label);
-            }
         }
     },
 
@@ -478,33 +467,23 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     getMjsonObject: {
         value: function (serialization, json, moduleId, context) {
             var self = this,
-                mjsonObjectPromise;
-            if (moduleId && this._moduleContexts.has(moduleId)) {
-                // We have a circular reference. If we wanted to forbid circular
-                // references this is where we would throw an error.
-                mjsonObjectPromise = Promise.resolve(this._moduleContexts.get(moduleId)._objects.root);
-            } else {
-                if (this._locationId && !this._moduleContexts.has(this._locationId)) {
-                    this._moduleContexts.set(this._locationId, context);
-                }
-                mjsonObjectPromise = MontageReviver.getMontageDeserializer().then(function (MontageDeserializer) {
-                    var deserializer = new MontageDeserializer().initWithObject(
-                        json,
-                        MontageDeserializer.getModuleRequire(self._require, moduleId),
-                        void 0,
-                        moduleId,
-                        self._moduleContexts
-                    );
+                deserializer = new this._deserializerConstructor().init(
+                    json,
+                    this._deserializerConstructor.getModuleRequire(this._require, moduleId),
+                    void 0,
+                    moduleId
+                );
+            return Promise.resolve(deserializer)
+                .then(function (deserializer) {
                     return deserializer.deserializeObject();
+                })
+                .then(function (object) {
+                    if ("prototype" in serialization) {
+                        return Object.create(object);
+                    } else {
+                        return object;
+                    }
                 });
-            }
-            return mjsonObjectPromise.then(function (object) {
-                if ("prototype" in serialization) {
-                    return Object.create(object);
-                } else {
-                    return object;
-                }
-            });
         }
     },
 
@@ -526,13 +505,9 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 }
                 // TODO: For now we need this because we need to set
                 // isDeserilizing before calling didCreate.
-                object = Object.create(module[objectName].prototype);
+                object = module[objectName];
+                object = (typeof object === "function") ? new object() : Object.create(object);
                 object.isDeserializing = true;
-                if (typeof object.didCreate === "function") {
-                    object.didCreate();
-                } else if (typeof object.constructor === "function") {
-                    object.constructor();
-                }
                 return object;
             } else if ("object" in value) {
                 if (value.object.endsWith(".json")) {
@@ -707,7 +682,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             /* jshint forin: true */
             for (var label in objects) {
             /* jshint forin: false */
-            
+
                 object = objects[label];
 
                 if (object !== null && object !== void 0) {
@@ -751,7 +726,6 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     _deserializeUnits: {
         value: function (context) {
             var unitsToDeserialize = context.getUnitsToDeserialize(),
-                units = MontageReviver._unitRevivers,
                 unitDeserializer = new UnitDeserializer(),
                 unitNames;
 
@@ -762,7 +736,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     for (var j = 0, unitName; (unitName = unitNames[j]); j++) {
                         if (unitName in unitsDesc.objectDesc) {
                             unitDeserializer.initWithContext(context);
-                            units[unitName](unitDeserializer, unitsDesc.object, unitsDesc.objectDesc[unitName]);
+                            MontageReviver._unitRevivers.get(unitName)(unitDeserializer, unitsDesc.object, unitsDesc.objectDesc[unitName]);
                         }
                     }
                 }
@@ -845,7 +819,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                         );
                     } else {
                         value[propertyName] = item;
-                    }   
+                    }
                 }
             }
 
@@ -928,7 +902,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     }
 
 }, /** @lends MontageReviver. */ {
-    _unitRevivers: {value: Object.create(null)},
+    _unitRevivers: {value: new Map()},
     _unitNames: {value: []},
 
     _findObjectNameRegExp: {
@@ -941,62 +915,61 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (_, g1) { return g1.toUpperCase(); }
     },
     // Cache of location descriptors indexed by locationId
-    _locationDescCache: {value: Object.create(null)},
+    _locationDescCache: {value: new Map()},
 
-    customObjectRevivers: {value: Object.create(null)},
+    customObjectRevivers: {value: new Map()},
 
-    // Location Id is in the form of <moduleId>[<objectName>] where
-    // [<objectName>] is optional. When objectName is missing it is derived
-    // from the last path component of moduleId transformed into CamelCase.
-    //
-    // Example: "event/event-manager" has a default objectName of EventManager.
-    //
-    // When the last path component ends with ".reel" it is removed before
-    // creating the default objectName.
-    //
-    // Example: "matte/ui/input-range.reel" has a default objectName of
-    //          InputRange.
-    //
-    // @returns {moduleId, objectName}
+    /**
+     * Location Id is in the form of <moduleId>[<objectName>] where
+     * [<objectName>] is optional. When objectName is missing it is derived
+     * from the last path component of moduleId transformed into CamelCase.
+     *
+     * @example "event/event-manager" has a default objectName of EventManager.
+     *
+     * When the last path component ends with ".reel" it is removed before
+     * creating the default objectName.
+     *
+     * @example "matte/ui/input-range.reel" has a default objectName of
+     *          InputRange.
+     *
+     * @returns {moduleId, objectName}
+     */
     parseObjectLocationId: {
         value: function (locationId) {
-            var locationDescCache = this._locationDescCache,
-                locationDesc,
-                bracketIndex,
-                moduleId,
-                objectName;
+            return this._locationDescCache.get(locationId) || this.createObjectLocationDesc(locationId);
+        }
+    },
 
-            if (locationId in locationDescCache) {
-                locationDesc = locationDescCache[locationId];
-            } else {
+    createObjectLocationDesc: {
+        value: function (locationId) {
+            var moduleId,
+                objectName,
                 bracketIndex = locationId.indexOf("[");
 
-                if (bracketIndex > 0) {
-                    moduleId = locationId.substr(0, bracketIndex);
-                    objectName = locationId.slice(bracketIndex + 1, -1);
-                } else {
-                    moduleId = locationId;
-                    this._findObjectNameRegExp.test(locationId);
-                    objectName = RegExp.$1.replace(
-                        this._toCamelCaseRegExp,
-                        this._replaceToCamelCase
-                    );
-                }
-
-                locationDesc = {
-                    moduleId: moduleId,
-                    objectName: objectName
-                };
-                locationDescCache[locationId] = locationDesc;
+            if (bracketIndex > 0) {
+                moduleId = locationId.substr(0, bracketIndex);
+                objectName = locationId.slice(bracketIndex + 1, -1);
+            } else {
+                moduleId = locationId;
+                this._findObjectNameRegExp.test(locationId);
+                objectName = RegExp.$1.replace(
+                    this._toCamelCaseRegExp,
+                    this._replaceToCamelCase
+                );
             }
 
+            var locationDesc = {
+                moduleId: moduleId,
+                objectName: objectName
+            };
+            this._locationDescCache.set(locationId, locationDesc);
             return locationDesc;
         }
     },
 
     defineUnitReviver: {
         value: function (name, funktion) {
-            this._unitRevivers[name] = funktion;
+            this._unitRevivers.set(name, funktion);
             this._unitNames.push(name);
         }
     },
@@ -1023,8 +996,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     typeof reviver[methodName] === "function" &&
                         methodName.substr(0, 5) === "revive"
                 ) {
-                    if (typeof customObjectRevivers[methodName] === "undefined") {
-                        customObjectRevivers[methodName] = reviver[methodName].bind(reviver);
+                    if (typeof (customObjectRevivers.get(methodName)) === "undefined") {
+                        customObjectRevivers.set(methodName, reviver[methodName].bind(reviver));
                     } else {
                         return new Error("Reviver '" + methodName + "' is already registered.");
                     }
@@ -1037,7 +1010,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     resetCustomObjectRevivers: {
         value: function() {
-            this.customObjectRevivers = Object.create(null);
+            this.customObjectRevivers.clear();
             this.prototype.getCustomObjectTypeOf = function() {};
         }
     },
@@ -1050,23 +1023,6 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 return getCustomObjectTypeOf(value) || previousGetCustomObjectTypeOf(value);
             };
         }
-    },
-
-    //FIXME
-    getMontageDeserializer: {
-        value: function () {
-            if (!this._montageDeserializerPromise) {
-                // Need to require deserializer asynchronously because it depends on montage-interpreter, which
-                // depends on this module, montage-reviver. A synchronous require would create a circular dependency.
-                // TODO: Maybe this could be passed in from above instead of required here.
-                this._montageDeserializerPromise = require.async("core/serialization/deserializer/montage-deserializer")
-                    .then(function (deserializerModule) {
-                        return deserializerModule.MontageDeserializer;
-                    });
-            }
-
-            return this._montageDeserializerPromise;
-        }
     }
 
 });
@@ -1076,6 +1032,6 @@ MontageReviver.findProxyForElement = function (element) {
 };
 
 if (typeof exports !== "undefined") {
-    
+
     exports.MontageReviver = MontageReviver;
 }
