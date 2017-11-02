@@ -1,4 +1,10 @@
+/**
+    @module "montage/ui/number-field.reel"
+    @requires montage/ui/text-input
+*/
 
+var TextInput = require("ui/text-input").TextInput;
+   
 /**
  * Wraps the a &lt;input type="date"> element with binding support for the element's standard attributes.
    @class module:"montage/ui/native/input-number.reel".InputNumber
