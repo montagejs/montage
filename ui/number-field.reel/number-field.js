@@ -4,7 +4,7 @@
 */
 
 var TextInput = require("ui/text-input").TextInput,
-    RangeEnforcer = require("core/converter/min-max-converter.js").RangeEnforcer;
+    RangeEnforcer = require("core/converter/range-enforcer").RangeEnforcer;
     
 
 /**
