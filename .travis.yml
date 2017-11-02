@@ -1,7 +1,7 @@
 language: node_js
 node_js:
   - "4"
-  - "8"
+#  - "8"
 script: npm run $COMMAND
 env:
   - COMMAND=lint
