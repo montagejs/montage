@@ -15,7 +15,8 @@ var TextInput = require("ui/text-input").TextInput,
 var NumberField = exports.NumberField = TextInput.specialize({
 
     enterDocument:{
-        value: function() {
+        value: function(firstTime) {
+            this.super(firstTime);
             this.converter = new RangeEnforcer();
             this.converter.min = this.min;
             this.converter.max = this.max;
