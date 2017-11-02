@@ -1,5 +1,5 @@
 /**
- * @module montage/core/converter/min-max-converter
+ * @module montage/core/converter/range-enforcer
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter;
@@ -12,10 +12,10 @@ function _clamp(value) {
 
 /**
  * Converts a number to an integer
- * @class MinMaxConverter
+ * @class RangeEnforcer
  * @extends Converter
  */
-var MinMaxConverter = exports.MinMaxConverter = Converter.specialize({
+var RangeEnforcer = exports.RangeEnforcer = Converter.specialize({
 
     min: {
         value: null

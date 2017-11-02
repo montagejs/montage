@@ -4,7 +4,7 @@
 */
 
 var TextInput = require("ui/text-input").TextInput,
-    MinMaxConverter = require("core/converter/min-max-converter.js").MinMaxConverter;
+    RangeEnforcer = require("core/converter/min-max-converter.js").RangeEnforcer;
     
 
 /**
@@ -16,7 +16,7 @@ var NumberField = exports.NumberField = TextInput.specialize({
 
     enterDocument:{
         value: function() {
-            this.converter = new MinMaxConverter();
+            this.converter = new RangeEnforcer();
             this.converter.min = this.min || -Infinity;
             this.converter.max = this.max || Infinity;
         }
