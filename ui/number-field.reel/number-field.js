@@ -17,8 +17,8 @@ var NumberField = exports.NumberField = TextInput.specialize({
     enterDocument:{
         value: function() {
             this.converter = new RangeEnforcer();
-            this.converter.min = this.min || -Infinity;
-            this.converter.max = this.max || Infinity;
+            this.converter.min = this.min;
+            this.converter.max = this.max;
         }
     },
 
