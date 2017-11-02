@@ -3,7 +3,8 @@
     @requires montage/ui/text-input
 */
 
-var TextInput = require("ui/text-input").TextInput;
+var TextInput = require("ui/text-input").TextInput,
+    MinMaxConverter = require("core/converter/min-max-converter.js").MinMaxConverter;
    
 /**
  * Wraps the a &lt;input type="date"> element with binding support for the element's standard attributes.
