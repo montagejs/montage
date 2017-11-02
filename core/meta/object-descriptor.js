@@ -27,11 +27,8 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     constructor: {
         value: function ObjectDescriptor() {
             this._eventDescriptors = [];
-            this._propertyDescriptors = [];
             this._ownPropertyDescriptors = [];
-            this.addRangeAtPathChangeListener("_ownPropertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
-            this.addRangeAtPathChangeListener("parent.propertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
-
+            
             this._propertyDescriptorGroups = {};
             this._propertyDescriptorsTable = new Map();
             this._eventPropertyDescriptorsTable = new Map();
@@ -383,8 +380,11 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             var all = this._arrayToSet(this._propertyDescriptors),
                 plusSet = this._arrayToSet(plus),
                 minusSet = this._arrayToSet(minus),
-                descriptor, i, index;
+                descriptor, i;
 
+            // if (this.name === "FigureFolder") {
+            //     debugger;
+            // }
 
             for (i = 0; (descriptor = minus[i]); ++i) {
                 if (!plusSet.has(descriptor) && all.has(descriptor)) {
@@ -397,9 +397,45 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
 
             for (i = 0; (descriptor = plus[i]); ++i) {
                 if (!minusSet.has(descriptor) && !all.has(descriptor)) {
-                    this._propertyDescriptors.push(descriptor);
-                    this._propertyDescriptorsTable.set(descriptor.name,  descriptor);
+                    if (descriptor.owner === this) {
+                        this._propertyDescriptors.push(descriptor);
+                        this._propertyDescriptorsTable.set(descriptor.name,  descriptor);
+                    } else if (!this._propertyDescriptorsTable.has(descriptor.name)) {
+                        this._propertyDescriptors.push(descriptor);
+                        this._propertyDescriptorsTable.set(descriptor.name,  descriptor);
+                    }
                     descriptor._owner = descriptor._owner || this;
+                }
+            }
+        }
+    },
+
+    _preparePropertyDescriptorsCache: {
+        value: function () {
+            var ownDescriptors = this._ownPropertyDescriptors,
+                isReady = true,
+                descriptor, i, n;
+            
+            if (!this._propertyDescriptors)  {
+                
+                for (i = 0, n = ownDescriptors.length; i < n && isReady; ++i) {
+                    descriptor = ownDescriptors[i];
+                    isReady = !!(descriptor && descriptor.name);
+                }
+    
+                if (isReady) {
+                    this._propertyDescriptors = [];
+                    for (i = 0, n = ownDescriptors.length; i < n && isReady; ++i) {
+                        descriptor = ownDescriptors[i];
+                        descriptor._owner = this;
+                        this._propertyDescriptors.push(descriptor);
+                        this._propertyDescriptorsTable.set(descriptor.name,  descriptor);
+                    }
+                    // if (this.name === "FigureFolder") {
+                    //     debugger;
+                    // }
+                    this.addRangeAtPathChangeListener("_ownPropertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
+                    this.addRangeAtPathChangeListener("parent.propertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
                 }
             }
         }
@@ -427,13 +463,8 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
      */
     propertyDescriptors: {
         get: function () {
-            if (!this._propertyDescriptors) {
-                this._propertyDescriptors = this._ownPropertyDescriptors.slice();
-                if (!this.parent) {
-                    this._propertyDescriptors.push.apply(this._propertyDescriptors, this._validParentPropertyDescriptors());
-                }
-            }
-            return this._propertyDescriptors;
+            this._preparePropertyDescriptorsCache();
+            return this._propertyDescriptors || [];
         }
     },
 

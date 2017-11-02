@@ -337,11 +337,7 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
                     var scope = this.scope;
                     //Parameter is what is accessed as $ in expressions
                     scope.value = v;
-                    debugger;
-                    return Promise.resolve(this.compiledRevertSyntax(scope)).then(function (result) {
-                        console.log("Revert", result);
-                        return result;
-                    });
+                    return Promise.resolve(this.compiledRevertSyntax(scope));
                 }
 
             }

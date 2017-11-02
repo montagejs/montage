@@ -312,7 +312,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             var iterator = this.requisitePropertyNames.values(),
                 parentMapping, promises, propertyName, result;
 
-            console.log(this, object, this.requisitePropertyNames);
 
             if (this.requisitePropertyNames.size) {
                 promises = [];
@@ -590,9 +589,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         value: function (object, propertyDescriptor, rule, scope) {
             if (!rule.converter.revert) {
                 console.log("Converter does not have a revert function for property (" + propertyDescriptor.name + ")");
-            }
-            if (propertyDescriptor.name === "category") {
-                debugger;
             }
             return rule.converter.revert(rule.expression(scope));
         }
