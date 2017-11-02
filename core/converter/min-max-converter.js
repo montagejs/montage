@@ -17,24 +17,6 @@ function _clamp(value) {
  */
 var MinMaxConverter = exports.MinMaxConverter = Converter.specialize({
 
-    constructor: {
-        value: function MinMaxConverter (min, max) {
-
-            this.min = min;
-            this.max = max;
-
-            // if (this.constructor === MinMaxConverter) {
-            //     if (!singleton) {
-            //         singleton = this;
-            //     }
-
-            //     return singleton;
-            // }
-
-            // return this;
-        }
-    },
-
     min: {
         value: null
     },
@@ -51,16 +33,4 @@ var MinMaxConverter = exports.MinMaxConverter = Converter.specialize({
         value: _clamp
     }
     
-
-
 });
-
-// Object.defineProperty(exports, 'singleton', {
-//     get: function () {
-//         if (!singleton) {
-//             singleton = new MinMaxConverter();
-//         }
-
-//         return singleton;
-//     }
-// });
