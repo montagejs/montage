@@ -5,6 +5,7 @@
 */
 
 var TextInput = require("ui/text-input").TextInput;
+    
 
 /**
  * Wraps the a &lt;input type="date"> element with binding support for the element's standard attributes.
@@ -12,6 +13,15 @@ var TextInput = require("ui/text-input").TextInput;
    @extends module:montage/ui/text-input.TextInput
  */
 var NumberField = exports.NumberField = TextInput.specialize({
+
+    enterDocument:{
+        value: function() {
+            if(this.min || this.max) {
+                MinMaxConverter = require("core/converter/MinMaxConverter").MinMaxConverter;
+            }
+        }
+    },
+
 	hasTemplate: {value: false }
 });
 
