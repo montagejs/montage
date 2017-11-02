@@ -2,7 +2,7 @@
  * @module montage/core/converter/min-max-converter
  * @requires montage/core/converter/converter
  */
-var Converter = require("montage/core/converter/converter").Converter;
+var Converter = require("./converter").Converter;
 
 function _clamp(value) {
 
@@ -18,7 +18,11 @@ function _clamp(value) {
 var MinMaxConverter = exports.MinMaxConverter = Converter.specialize({
 
     constructor: {
-        value: function () {
+        value: function MinMaxConverter (min, max) {
+
+            this.min = min;
+            this.max = max;
+
             // if (this.constructor === MinMaxConverter) {
             //     if (!singleton) {
             //         singleton = this;
