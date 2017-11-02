@@ -417,6 +417,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 // only "outer scoped variable" we're accessing here is stream,
                 // which is a constant reference and won't cause unexpected
                 // behavior due to iteration.
+                // if (streamSelectorType.name && streamSelectorType.name.toUpperCase().indexOf("BSP") !== -1) {
+                //     debugger;
+                // }
                 this.addOneRawData(stream, iRecord, context, streamSelectorType).then(function (mappedObject) {
                     stream.addData([mappedObject]);
                 });

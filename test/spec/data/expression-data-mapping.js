@@ -83,7 +83,7 @@ describe("An Expression Data Mapping", function() {
     movieObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(movieModuleReference, "Movie");
     movieObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("title", movieObjectDescriptor, 1));
     movieSchemaModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/schema/logic/movie", require);
-    movieSchema = new ModuleObjectDescriptor().initWithModuleAndExportName(movieSchemaModuleReference, "Movie");
+    movieSchema = new ModuleObjectDescriptor().initWithModuleAndExportName(movieSchemaModuleReference, "MovieSchema");
 
     actionMovieModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/action-movie", require);
     actionMovieObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(actionMovieModuleReference, "ActionMovie");
@@ -186,63 +186,62 @@ describe("An Expression Data Mapping", function() {
         });
     });
 
-    // it("can map raw data to object properties", function (done) {
-    //     var movie = {},
-    //         data = {
-    //             name: "Star Wars",
-    //             category_id: 1,
-    //             budget: "14000000.00",
-    //             is_featured: "true",
-    //             release_date: "05/25/1977"
-    //         };
-    //     return movieMapping.mapRawDataToObject(data, movie).then(function () {
-    //         expect(movie.title).toBe("Star Wars");
-    //         expect(movie.category).toBeDefined();
-    //         expect(movie.category && movie.category.name === "Action").toBeTruthy();
-    //         expect(typeof movie.releaseDate === "object").toBeTruthy();
-    //         expect(movie.releaseDate.getDate()).toBe(25);
-    //         expect(movie.releaseDate.getMonth()).toBe(4);
-    //         expect(movie.releaseDate.getFullYear()).toBe(1977);
-    //         done();
-    //     });
-    // });
+    it("can map raw data to object properties", function (done) {
+        var movie = {},
+            data = {
+                name: "Star Wars",
+                category_id: 1,
+                budget: "14000000.00",
+                is_featured: "true",
+                release_date: "05/25/1977"
+            };
+        return movieMapping.mapRawDataToObject(data, movie).then(function () {
+            expect(movie.title).toBe("Star Wars");
+            expect(movie.category).toBeDefined();
+            expect(movie.category && movie.category.name === "Action").toBeTruthy();
+            expect(typeof movie.releaseDate === "object").toBeTruthy();
+            expect(movie.releaseDate.getDate()).toBe(25);
+            expect(movie.releaseDate.getMonth()).toBe(4);
+            expect(movie.releaseDate.getFullYear()).toBe(1977);
+            done();
+        });
+    });
 
-    // it("can map raw data to object properties with inheritance", function (done) {
-    //     var movie = new ActionMovie(),
-    //         data = {
-    //             name: "Star Wars",
-    //             category_id: 1,
-    //             budget: "14000000.00",
-    //             is_featured: "true",
-    //             release_date: "05/25/1977",
-    //             fcc_rating: "pg",
-    //             country_id: 1
-    //         };
+    it("can map raw data to object properties with inheritance", function (done) {
+        var movie = new ActionMovie(),
+            data = {
+                name: "Star Wars",
+                category_id: 1,
+                budget: "14000000.00",
+                is_featured: "true",
+                release_date: "05/25/1977",
+                fcc_rating: "pg",
+                country_id: 1
+            };
         
-    //     return actionMovieMapping.mapRawDataToObject(data, movie).then(function () {
-    //         expect(movie.title).toBe("Star Wars");
-    //         console.log("ActionMovie", movie);
-    //         done();
-    //     });
-    // });
+        return actionMovieMapping.mapRawDataToObject(data, movie).then(function () {
+            expect(movie.title).toBe("Star Wars");
+            done();
+        });
+    });
 
-    // it("can automatically convert raw data to the correct type", function (done) {
-    //     var movie = {},
-    //         data = {
-    //             name: "Star Wars",
-    //             category_id: 1,
-    //             budget: "14000000.00",
-    //             is_featured: "true",
-    //             release_date: "05/25/1977"                
-    //         };
-    //     return movieMapping.mapRawDataToObject(data, movie).then(function () {
-    //         expect(typeof movie.budget === "number").toBeTruthy();
-    //         expect(typeof movie.category === "object").toBeTruthy();
-    //         expect(typeof movie.isFeatured === "boolean").toBeTruthy();
-    //         expect(typeof movie.title === "string").toBeTruthy();
-    //         done();
-    //     });
-    // });
+    it("can automatically convert raw data to the correct type", function (done) {
+        var movie = {},
+            data = {
+                name: "Star Wars",
+                category_id: 1,
+                budget: "14000000.00",
+                is_featured: "true",
+                release_date: "05/25/1977"                
+            };
+        return movieMapping.mapRawDataToObject(data, movie).then(function () {
+            expect(typeof movie.budget === "number").toBeTruthy();
+            expect(typeof movie.category === "object").toBeTruthy();
+            expect(typeof movie.isFeatured === "boolean").toBeTruthy();
+            expect(typeof movie.title === "string").toBeTruthy();
+            done();
+        });
+    });
 
     it("can map objects to raw data", function (done) {
         var category = new Category(),
@@ -265,37 +264,37 @@ describe("An Expression Data Mapping", function() {
         });
     });
 
-    // it("can map objects to raw data with inheritance", function (done) {
-    //     var movie = {
-    //             title: "Star Wars",
-    //             budget: 14000000.00,
-    //             isFeatured: true,
-    //             releaseDate: new Date(1977, 4, 25)
-    //         },
-    //         data = {};
-    //     movieMapping.mapObjectToRawData(movie, data).then(function () {
-    //         expect(data.name).toBe("Star Wars");
-    //         expect(data.budget).toBe("14000000");
-    //         expect(data.is_featured).toBe("true");
-    //         expect(data.release_date).toBe("05/25/1977");
-    //         done();
-    //     });
-    // });
+    it("can map objects to raw data with inheritance", function (done) {
+        var movie = {
+                title: "Star Wars",
+                budget: 14000000.00,
+                isFeatured: true,
+                releaseDate: new Date(1977, 4, 25)
+            },
+            data = {};
+        movieMapping.mapObjectToRawData(movie, data).then(function () {
+            expect(data.name).toBe("Star Wars");
+            expect(data.budget).toBe("14000000");
+            expect(data.is_featured).toBe("true");
+            expect(data.release_date).toBe("05/25/1977");
+            done();
+        });
+    });
 
-    // it("can automatically revert objects to raw data of the correct type", function (done) {
-    //     var movie = {
-    //             title: "Star Wars",
-    //             budget: 14000000.00,
-    //             isFeatured: true
-    //         },
-    //         data = {};
-    //     movieMapping.mapObjectToRawData(movie, data).then(function () {
-    //         expect(typeof data.budget === "string").toBeTruthy();
-    //         expect(typeof data.is_featured === "string").toBeTruthy();
-    //         expect(typeof data.name === "string").toBeTruthy();
-    //         done();
-    //     });
-    // });
+    it("can automatically revert objects to raw data of the correct type", function (done) {
+        var movie = {
+                title: "Star Wars",
+                budget: 14000000.00,
+                isFeatured: true
+            },
+            data = {};
+        movieMapping.mapObjectToRawData(movie, data).then(function () {
+            expect(typeof data.budget === "string").toBeTruthy();
+            expect(typeof data.is_featured === "string").toBeTruthy();
+            expect(typeof data.name === "string").toBeTruthy();
+            done();
+        });
+    });
 
 
 });

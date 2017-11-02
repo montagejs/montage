@@ -123,11 +123,11 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/data/expression-data-mapping"},
     // {name: "spec/data/enumeration"},
     // {name: "spec/data/http-service"},
-    {name: "spec/data/object-descriptor"},
-    {name: "spec/data/property-descriptor"},
-    {name: "spec/data/raw-data-service"},
-    {name: "spec/data/raw-data-type-mapping-spec"},
-    {name: "spec/data/integration"},
+    // {name: "spec/data/object-descriptor"},
+    // {name: "spec/data/property-descriptor"},
+    // {name: "spec/data/raw-data-service"},
+    // {name: "spec/data/raw-data-type-mapping-spec"},
+    // {name: "spec/data/integration"},
 
     // // Meta
     // {name: "spec/meta/converter-object-descriptor-spec"},
@@ -136,7 +136,7 @@ module.exports = require("montage-testing").run(require, [
     // {name: "spec/meta/component-object-descriptor-spec", node: false},
     // {name: "spec/meta/controller-object-descriptor-spec", node: false},
     // {name: "spec/meta/event-descriptor-spec", node: false},
-    {name: "spec/meta/object-descriptor-spec"}
+    // {name: "spec/meta/object-descriptor-spec"}
 
 ]).then(function () {
     console.log('montage-testing', 'End');
