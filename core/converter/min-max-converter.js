@@ -8,7 +8,7 @@ function _clamp(value) {
 
     return value <= this.min ? this.min : value >= this.max ? this.max : value;
     
-};
+}
 
 /**
  * Converts a number to an integer
