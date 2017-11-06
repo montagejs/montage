@@ -506,6 +506,19 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         value: undefined
     },
 
+    rawDataPrimaryKeyExpressions: {
+        get: function () {
+            if (!this._rawDataPrimaryKeyExpressions && this.rawDataPrimaryKeys) {
+                this._rawDataPrimaryKeyExpressions = this.rawDataPrimaryKeys.map(
+                    function (key) {
+                        return compile(parse(key));
+                    }
+                );
+            }
+            return this._rawDataPrimaryKeyExpressions;
+        }
+    },
+
     _requisitePropertyNames: {
         get: function () {
             if (!this.__requisitePropertyNames) {
