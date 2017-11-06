@@ -1,9 +1,12 @@
 var DataService = require("data/service/data-service").DataService,
+    compile = require("frb/compile-evaluator"),
     DataMapping = require("data/service/data-mapping").DataMapping,
     DataIdentifier = require("data/model/data-identifier").DataIdentifier,
     Deserializer = require("core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     Map = require("collections/map"),
     Montage = require("montage").Montage,
+    parse = require("frb/parse"),
+    Scope = require("frb/scope"),
     WeakMap = require("collections/weak-map"),
     deprecate = require("core/deprecate");
 
@@ -715,7 +718,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: function (type, rawData) {
 
             var mapping = this.mappingWithType(type),
-                rawDataPrimaryKeys = mapping ? mapping.rawDataPrimaryKeys : null,
+                rawDataPrimaryKeys = mapping ? mapping.rawDataPrimaryKeyExpressions : null,
+                scope = new Scope(rawData),
                 rawDataPrimaryKeysValues,
                 dataIdentifier, dataIdentifierMap, primaryKey;
             if(rawDataPrimaryKeys && rawDataPrimaryKeys.length) {
@@ -726,9 +730,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     this._typeIdentifierMap.set(type,(dataIdentifierMap = new Map()));
                 }
 
-                for(var i=0, iKey;(iKey = rawDataPrimaryKeys[i]);i++) {
+                for(var i=0, expression; (expression = rawDataPrimaryKeys[i]); i++) {
                     rawDataPrimaryKeysValues = rawDataPrimaryKeysValues || [];
-                    rawDataPrimaryKeysValues[i] = rawData[iKey];
+                    rawDataPrimaryKeysValues[i] = expression(scope);
                 }
                 if(rawDataPrimaryKeysValues) {
                     primaryKey = rawDataPrimaryKeysValues.join("/");
