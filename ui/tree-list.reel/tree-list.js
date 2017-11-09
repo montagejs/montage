@@ -785,44 +785,44 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     this._placeHolderBoundingRect = this._placeHolder.getBoundingClientRect();
                 }
 
-                var treeNode;
+                var treeNodeOver;
 
                 if (this._placeHolderBoundingRect) {
                     var positionX = this._startPositionX + this._translateX,
                         positionY = this._startPositionY + this._translateY,
                         target = document.elementFromPoint(positionX, positionY);
 
-                    this._treeNodeOver = treeNode = this._findTreeNodeWithElement(target);
+                    this._treeNodeOver = treeNodeOver = this._findTreeNodeWithElement(target);
 
-                    if (treeNode && treeNode.object) {
-                        if (treeNode.object.data !== this.controller.data) {
-                            this._treeNodeOver = treeNode = this._findClosestTreeNode(treeNode);
+                    if (treeNodeOver && treeNodeOver.object) {
+                        if (treeNodeOver.object.data !== this.controller.data) {
+                            this._treeNodeOver = treeNodeOver = this._findClosestTreeNode(treeNodeOver);
 
-                            if (treeNode.object.data === this._draggingTreeNode.object.data) {
-                                this._treeNodeOver = treeNode = null;
+                            if (treeNodeOver.object.data === this._draggingTreeNode.object.data) {
+                                this._treeNodeOver = treeNodeOver = null;
                             }
                         }
 
-                        if (treeNode) {
-                            var nodeCandidate = this._findClosestParentWhoAcceptChild(treeNode),
+                        if (treeNodeOver) {
+                            var parentNodeCandidate = this._findClosestParentWhoAcceptChild(treeNodeOver),
                                 sourceNode = this._draggingTreeNode.object;
 
-                            if (nodeCandidate && this._shouldNodeAcceptDrop(nodeCandidate, sourceNode)) {
+                            if (parentNodeCandidate && this._shouldNodeAcceptDrop(parentNodeCandidate, sourceNode)) {
                                 //Delegate Method when Dragging over another node?
                                 var previousTreeNodeWillAcceptDrop = this._previousTreeNodeWillAcceptDrop;
 
                                 if (!previousTreeNodeWillAcceptDrop ||
                                     (previousTreeNodeWillAcceptDrop &&
-                                        previousTreeNodeWillAcceptDrop.object.data !== nodeCandidate.data)
+                                        previousTreeNodeWillAcceptDrop.object.data !== parentNodeCandidate.data)
                                 ) {
                                     this._previousTreeNodeWillAcceptDrop = this._treeNodeWillAcceptDrop;
-                                    this._treeNodeWillAcceptDrop = this._findTreeNodeWithNode(nodeCandidate);
+                                    this._treeNodeWillAcceptDrop = this._findTreeNodeWithNode(parentNodeCandidate);
 
                                     if (
-                                        !nodeCandidate.isExpanded &&
+                                        !parentNodeCandidate.isExpanded &&
                                         this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE
                                     ) {
-                                        this._scheduleToExpandNode(nodeCandidate);
+                                        this._scheduleToExpandNode(parentNodeCandidate);
                                     } else {
                                         this._cancelExpandingNodeIfNeeded();
                                     }
@@ -830,11 +830,11 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                             }
                         }
                     } else {
-                        treeNode = null;
+                        treeNodeOver = null;
                     }
                 }
 
-                if (!treeNode) {
+                if (!treeNodeOver) {
                     // set previous tree node to remove class.
                     this._previousTreeNodeWillAcceptDrop = this._treeNodeWillAcceptDrop;
                     this._treeNodeWillAcceptDrop = null;
@@ -997,7 +997,9 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     this._previousTreeNodeWillAcceptDrop.element.classList.remove('willDrop');
                 }
 
-                if (this._treeNodeWillAcceptDrop) {
+                if (this._treeNodeWillAcceptDrop &&
+                    this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE
+                ) {
                     this._treeNodeWillAcceptDrop.element.classList.add('willDrop');
                 }
 
