@@ -7,7 +7,10 @@ var DataMapping = require("./data-mapping").DataMapping,
     MappingRule = require("data/service/mapping-rule").MappingRule,
     Promise = require("core/promise").Promise,
     Scope = require("frb/scope"),
-    Set = require("collections/set");
+    Set = require("collections/set"),
+    deprecate = require("core/deprecate");
+
+var Montage = require("montage").Montage;
 
 
 
@@ -43,7 +46,8 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
     deserializeSelf: {
         value: function (deserializer) {
-            var value = deserializer.getProperty("objectDescriptor");
+            var value = deserializer.getProperty("objectDescriptor"),
+                self = this;
             if (value instanceof ObjectDescriptorReference) {
                 this.objectDescriptorReference = value;
             } else {
@@ -199,13 +203,13 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      * @type {ObjectDescriptorReference}
      */
     objectDescriptorReference: {
-        get: function () {
-            return  this._objectDescriptorReference ?   this._objectDescriptorReference.promise(require) :
-                                                        Promise.resolve(null);
-        },
-        set: function (value) {
+        get: deprecate.deprecateMethod(void 0, function () {
+            return this._objectDescriptorReference ? this._objectDescriptorReference.promise(require) :
+                                                     Promise.resolve(null);
+        }, "objectDescriptorReference", "objectDescriptor", true),
+        set: deprecate.deprecateMethod(void 0, function (value) {
             this._objectDescriptorReference = value;
-        }
+        }, "objectDescriptorReference", "objectDescriptor", true)
     },
 
 
@@ -738,77 +742,65 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      *                                           names and whose values are raw rules
      * @param {Boolean} addOneWayBindings      - Whether or not to add one way bindings. 
      */
-    _mapObjectMappingRulesLegacy: {
-        value: function (rawRules, addOneWayBindings) {
-            var propertyNames = rawRules ? Object.keys(rawRules) : [],
-                propertyName, rawRule, rule, i;
-
-            for (i = 0; (propertyName = propertyNames[i]); ++i) {
-                rawRule = rawRules[propertyName];
-                if (this._shouldMapRule(rawRule, addOneWayBindings)) {
-                    rule = this._makeRuleFromRawRule(rawRule, propertyName, addOneWayBindings, true);
-                    this._ownObjectMappingRules.set(rule.targetPath, rule);
-                }
-            }
-        }
-    },
-
     _mapObjectMappingRules: {
         value: function (rawRules) {
             var propertyNames = rawRules ? Object.keys(rawRules) : [],
                 propertyName, rawRule, rule, i;
 
-            for (i = 0; (propertyName = propertyNames[i]); ++i) {
-                rawRule = rawRules[propertyName];
-                if (this._shouldMapRule(rawRule, true)) {
-                    rule = this._makeRuleFromRawRule(rawRule, propertyName, true, true);
-                    if (!rule.targetPath) {
-                        debugger;
+            //TODO Add path change listener for objectDescriptor to 
+            //account for chance that objectDescriptor is added after the rules
+            if (this.objectDescriptor) {
+                for (i = 0; (propertyName = propertyNames[i]); ++i) {
+                    rawRule = rawRules[propertyName];
+                    if (this._shouldMapRule(rawRule, true)) {
+                        rule = this._makeRuleFromRawRule(rawRule, propertyName, true, true);
+                        if (!rule.targetPath) {
+                            debugger;
+                        }
+                        this._ownObjectMappingRules.set(rule.targetPath, rule);
                     }
-                    this._ownObjectMappingRules.set(rule.targetPath, rule);
-                }
-                
-                if (this._shouldMapRule(rawRule, false)) {
-                    rule = this._makeRuleFromRawRule(rawRule, propertyName, false, true);
-                    this._ownRawDataMappingRules.set(rule.targetPath, rule);
+                    
+                    if (this._shouldMapRule(rawRule, false)) {
+                        rule = this._makeRuleFromRawRule(rawRule, propertyName, false, true);
+                        this._ownRawDataMappingRules.set(rule.targetPath, rule);
+                    }
                 }
             }
         }
     },
 
+    
+    /**
+     * Maps raw object to rawData rules to MappingRule objects
+     * @param {Object<string:Object>} rawRules - Object whose keys are raw property 
+     *                                           names and whose values are object rules
+     * @param {Boolean} addOneWayBindings      - Whether or not to add one way bindings. 
+     */
     _mapRawDataMappingRules: {
         value: function (rawRules) {
             var propertyNames = rawRules ? Object.keys(rawRules) : [],
                 propertyName, rawRule, rule, i;
 
-            for (i = 0; (propertyName = propertyNames[i]); ++i) {
-                rawRule = rawRules[propertyName];
-                if (this._shouldMapRule(rawRule, false)) {
-                    rule = this._makeRuleFromRawRule(rawRule, propertyName, false, false);
-                    if (!rule.targetPath) {
-                        debugger;
-                    }
-                    this._ownObjectMappingRules.set(rule.targetPath, rule);
-                }
-                if (this._shouldMapRule(rawRule, true)) {
-                    rule = this._makeRuleFromRawRule(rawRule, propertyName, true, false);
-                    this._ownRawDataMappingRules.set(rule.targetPath, rule);
-                }
-            }
-        }
-    },
 
-    _mapRawDataMappingRulesLegacy: {
-        value: function (rawRules, addOneWayBindings) {
-            var propertyNames = rawRules ? Object.keys(rawRules) : [],
-                propertyName, rawRule, rule, i;
-            for (i = 0; (propertyName = propertyNames[i]); ++i) {
-                rawRule = rawRules[propertyName];
-                if (this._shouldMapRule(rawRule, addOneWayBindings)) {
-                    rule = this._makeRuleFromRawRule(rawRule, propertyName, addOneWayBindings, false);
-                    this._ownRawDataMappingRules.set(rule.targetPath, rule);
+            //TODO Add path change listener for objectDescriptor to 
+            //account for chance that objectDescriptor is added after the rules
+            if (this.objectDescriptor) { 
+                for (i = 0; (propertyName = propertyNames[i]); ++i) {
+                    rawRule = rawRules[propertyName];
+                    if (this._shouldMapRule(rawRule, false)) {
+                        rule = this._makeRuleFromRawRule(rawRule, propertyName, false, false);
+                        if (!rule.targetPath) {
+                            debugger;
+                        }
+                        this._ownObjectMappingRules.set(rule.targetPath, rule);
+                    }
+                    if (this._shouldMapRule(rawRule, true)) {
+                        rule = this._makeRuleFromRawRule(rawRule, propertyName, true, false);
+                        this._ownRawDataMappingRules.set(rule.targetPath, rule);
+                    }
                 }
             }
+            
         }
     },
 
@@ -857,7 +849,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             return converters[sourceType] && converters[sourceType][destinationType] || null;
         }
     },
-
 
 
     /***************************************************************************

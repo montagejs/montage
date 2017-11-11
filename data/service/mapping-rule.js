@@ -132,6 +132,14 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
 
 
     /**
+     * Path of the property to which the value of the expression should be retrieved
+     * @type {string}
+     */
+    sourcePath: {
+        value: undefined
+    },
+
+    /**
      * Object created by parsing .sourcePath using frb/grammar.js that will
      * be used to evaluate the data
      * @type {Object}
@@ -143,14 +151,6 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
             }
             return this._sourcePathSyntax;
         }
-    },
-
-    /**
-     * Path of the property to which the value of the expression should be retrieved
-     * @type {string}
-     */
-    sourcePath: {
-        value: undefined
     },
 
     /**
