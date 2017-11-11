@@ -54,13 +54,11 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
             value = deserializer.getProperty("objectMapping");
             if (value) {
-                this._mapRawDataMappingRules(value.rules);
-                this._mapObjectMappingRules(value.rules, true);
+                this._mapObjectMappingRules(value.rules);
             }
             value = deserializer.getProperty("rawDataMapping");
             if (value) {
-                this._mapObjectMappingRules(value.rules);
-                this._mapRawDataMappingRules(value.rules, true);
+                this._mapRawDataMappingRules(value.rules);
             }
             value = deserializer.getProperty("requisitePropertyNames");
             if (value) {
@@ -365,14 +363,14 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      */
     mapObjectToRawData: {
         value: function (object, data) {
-            var rules = this.rawDataMappingRules,
+            var keys = this.rawDataMappingRules.keys(),
                 promises = [],
-                keys = Object.keys(rules),
-                key, i;
+                key;
 
-            for (i = 0; (key = keys[i]); ++i) {
+            while ((key = keys.next().value)) {
                 promises.push(this.mapObjectToRawDataProperty(object, data, key));
             }
+
             return promises && promises.length && Promise.all(promises) || Promise.resolve(null);
         }
     },
@@ -391,18 +389,20 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      */
     mapObjectToCriteriaSourceForProperty: {
         value: function (object, data, propertyName) {
-            var rules = this.rawDataMappingRules,
-                rule = this.objectMappingRules[propertyName],
+            var keys = this.rawDataMappingRules.keys(),
+                rule = this.objectMappingRules.get(propertyName),
                 requiredRawProperties = rule ? rule.requirements : [],
                 rawRequirementsToMap = new Set(requiredRawProperties),
-                promises = [], key;
+                promises = [], 
+                key;
 
-
-            for (key in rules) {
-                if (rules.hasOwnProperty(key) && rawRequirementsToMap.has(key)) {
-                    promises.push(this._getAndMapObjectProperty(object, data, key, true));
+            while ((key = keys.next().value)) {
+                if (rawRequirementsToMap.has(key)) {
+                    promises.push(this.mapObjectToRawDataProperty(object, data, key));
                 }
+               
             }
+
             return promises && promises.length && Promise.all(promises) || Promise.resolve(null);
         }
     },
@@ -422,9 +422,8 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     mapObjectToRawDataProperty: {
         value: function(object, data, property, prefetchRequirements) {
             var self = this,
-                rules = this.rawDataMappingRules,
+                rule = this.rawDataMappingRules.get(property),
                 scope = new Scope(object),
-                rule = rules[property],
                 propertyDescriptor = rule && rule.propertyDescriptor,
                 requiredObjectProperties = rule ? rule.requirements : [],
                 promise;
@@ -485,7 +484,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      */
     serviceIdentifierForProperty: {
         value: function (propertyName) {
-            var rule = this.objectMappingRules[propertyName];
+            var rule = this.objectMappingRules.get(propertyName);
             return rule && rule.serviceIdentifier;
         }
     },
@@ -519,17 +518,12 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
     mapRawDataToObjectProperty: {
         value: function (data, object, propertyName) {
-            //We should probably shift rules to be a Map rather than an anonymous object.
-            var rules = this.objectMappingRules,
-                rule = rules[propertyName],
+            var rule = this.objectMappingRules.get(propertyName),
                 propertyDescriptor = rule && this.objectDescriptor.propertyDescriptorForName(propertyName),
                 scope = this._scope,
                 self = this,
                 result;
-                
-            if (propertyName === "budget") {
-                debugger;
-            }
+
 
             scope.value = data;
             if (!propertyDescriptor || propertyDescriptor.definition) {
@@ -575,7 +569,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      */
     resolvePrerequisitesForProperty: {
         value: function (object, propertyName) {
-            var rule = this.objectMappingRules[propertyName],
+            var rule = this.objectMappingRules.get(propertyName),
                 prerequisites = rule && rule.prerequisitePropertyNames || null;
             if (!rule) {
                 console.log("No Rule For:", propertyName);
@@ -684,8 +678,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             var rawRule = {};
             rawRule[targetPath] = rule;
 
-            this._mapObjectMappingRules(rawRule, true);
-            this._mapRawDataMappingRules(rawRule);
+            this._mapObjectMappingRules(rawRule);
             this._objectMappingRules = null; //To ensure all arguments are added to this.objectMappingRules
             this._rawDataMappingRules = null; //To ensure all arguments are added to this.rawDataMappingRules
         }
@@ -704,17 +697,24 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         value: function (targetPath, rule) {
             var rawRule = {};
             rawRule[targetPath] = rule;
-            this._mapRawDataMappingRules(rawRule, true);
-            this._mapObjectMappingRules(rawRule);
+            this._mapRawDataMappingRules(rawRule);
             this._objectMappingRules = null; //To ensure all arguments are added to this.objectMappingRules
             this._rawDataMappingRules = null; //To ensure all arguments are added to this.rawDataMappingRules
+        }
+    },
+
+    _assignAllEntriesTo: {
+        value: function (source, target) {
+            source.forEach(function (value, key) {
+                target.set(key, value);
+            });
         }
     },
 
     _ownObjectMappingRules: {
         get: function () {
             if (!this.__ownObjectMappingRules) {
-                this.__ownObjectMappingRules = {};
+                this.__ownObjectMappingRules = new Map();
             }
             return this.__ownObjectMappingRules;
         }
@@ -723,11 +723,11 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     objectMappingRules: {
         get: function () {
             if (!this._objectMappingRules) {
-                this._objectMappingRules = {};
+                this._objectMappingRules = new Map();
                 if (this.parent) {
-                    Object.assign(this._objectMappingRules, this.parent.objectMappingRules);
+                    this._assignAllEntriesTo(this.parent.objectMappingRules, this._objectMappingRules);
                 }
-                Object.assign(this._objectMappingRules, this._ownObjectMappingRules);
+                this._assignAllEntriesTo(this._ownObjectMappingRules, this._objectMappingRules);
             }
             return this._objectMappingRules;
         }
@@ -737,7 +737,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     _ownRawDataMappingRules: {
         get: function () {
             if (!this.__ownRawDataMappingRules) {
-                this.__ownRawDataMappingRules = {};
+                this.__ownRawDataMappingRules = new Map();
             }
             return this.__ownRawDataMappingRules;
         }
@@ -746,42 +746,84 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     rawDataMappingRules: {
         get: function () {
             if (!this._rawDataMappingRules) {
-                this._rawDataMappingRules = {};
+                this._rawDataMappingRules = new Map();
                 if (this.parent) {
-                    Object.assign(this._rawDataMappingRules, this.parent.rawDataMappingRules);
+                    this._assignAllEntriesTo(this.parent.rawDataMappingRules, this._rawDataMappingRules);
                 }
-                Object.assign(this._rawDataMappingRules, this._ownRawDataMappingRules);
+                this._assignAllEntriesTo(this._ownRawDataMappingRules, this._rawDataMappingRules);
             }
             return this._rawDataMappingRules;
         }
     },
 
-    _mapObjectMappingRules: {
+    /**
+     * Maps raw rawData to object rules to MappingRule objects
+     * @param {Object<string:Object>} rawRules - Object whose keys are object property 
+     *                                           names and whose values are raw rules
+     * @param {Boolean} addOneWayBindings      - Whether or not to add one way bindings. 
+     */
+    _mapObjectMappingRulesLegacy: {
         value: function (rawRules, addOneWayBindings) {
-            var rules = this._ownObjectMappingRules,
-                propertyNames = rawRules ? Object.keys(rawRules) : [],
+            var propertyNames = rawRules ? Object.keys(rawRules) : [],
                 propertyName, rawRule, rule, i;
 
             for (i = 0; (propertyName = propertyNames[i]); ++i) {
                 rawRule = rawRules[propertyName];
                 if (this._shouldMapRule(rawRule, addOneWayBindings)) {
                     rule = this._makeRuleFromRawRule(rawRule, propertyName, addOneWayBindings, true);
-                    rules[rule.targetPath] = rule;
+                    this._ownObjectMappingRules.set(rule.targetPath, rule);
+                }
+            }
+        }
+    },
+
+    _mapObjectMappingRules: {
+        value: function (rawRules) {
+            var propertyNames = rawRules ? Object.keys(rawRules) : [],
+                propertyName, rawRule, rule, i;
+
+            for (i = 0; (propertyName = propertyNames[i]); ++i) {
+                rawRule = rawRules[propertyName];
+                if (this._shouldMapRule(rawRule, true)) {
+                    rule = this._makeRuleFromRawRule(rawRule, propertyName, true, true);
+                    this._ownObjectMappingRules.set(rule.targetPath, rule);
+                }
+                if (this._shouldMapRule(rawRule, false)) {
+                    rule = this._makeRuleFromRawRule(rawRule, propertyName, false, true);
+                    this._ownRawDataMappingRules.set(rule.targetPath, rule);
                 }
             }
         }
     },
 
     _mapRawDataMappingRules: {
+        value: function (rawRules) {
+            var propertyNames = rawRules ? Object.keys(rawRules) : [],
+                propertyName, rawRule, rule, i;
+
+            for (i = 0; (propertyName = propertyNames[i]); ++i) {
+                rawRule = rawRules[propertyName];
+                if (this._shouldMapRule(rawRule, false)) {
+                    rule = this._makeRuleFromRawRule(rawRule, propertyName, false);
+                    this._ownObjectMappingRules.set(rule.targetPath, rule);
+                }
+                if (this._shouldMapRule(rawRule, true)) {
+                    rule = this._makeRuleFromRawRule(rawRule, propertyName, true);
+                    this._ownRawDataMappingRules.set(rule.targetPath, rule);
+                }
+            }
+        }
+    },
+
+    _mapRawDataMappingRulesLegacy: {
         value: function (rawRules, addOneWayBindings) {
-            var rules = this._ownRawDataMappingRules,
-                propertyNames = rawRules ? Object.keys(rawRules) : [],
+            var propertyNames = rawRules ? Object.keys(rawRules) : [],
                 propertyName, rawRule, rule, i;
             for (i = 0; (propertyName = propertyNames[i]); ++i) {
                 rawRule = rawRules[propertyName];
                 if (this._shouldMapRule(rawRule, addOneWayBindings)) {
                     rule = this._makeRuleFromRawRule(rawRule, propertyName, addOneWayBindings, false);
-                    rules[rule.targetPath] = rule;
+                    this._ownRawDataMappingRules.set(rule.targetPath, rule);
                 }
             }
         }
@@ -789,9 +831,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
     _makeRuleFromRawRule: {
         value: function (rawRule, propertyName, addOneWayBindings, isObjectMappingRule) {
-            if (propertyName === "budget") {
-                debugger;
-            }
             var propertyDescriptorName = !isObjectMappingRule && addOneWayBindings ? rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING] : propertyName,
                 propertyDescriptor = this.objectDescriptor.propertyDescriptorForName(propertyDescriptorName),
                 sourcePath = addOneWayBindings ? rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING] : propertyName,
