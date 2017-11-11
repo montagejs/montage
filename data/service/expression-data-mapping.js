@@ -443,11 +443,10 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 if (propertyDescriptor) {
                     return propertyDescriptor.valueDescriptor.then(function (descriptor) {
                         self._prepareObjectToRawPropertyRule(rule);
-                        return descriptor && rule.converter ? self._convertRelationshipToRawData(object, propertyDescriptor, rule, scope) :
-                                                              self._parse(rule, scope);
+                        return rule.evaluate(scope);
                     });
                 } else {
-                    return self._parse(rule, scope);
+                    return rule.evaluate(scope);
                 }
             }).then(function(value) {
                 data[property] = value;
@@ -497,7 +496,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             if (!rule.converter.revert) {
                 console.log("Converter does not have a revert function for property (" + propertyDescriptor.name + ")");
             }
-            return rule.converter.revert(rule.expression(scope));
+            return rule.evaluate(scope);
         }
     },
 
@@ -522,18 +521,30 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 propertyDescriptor = rule && this.objectDescriptor.propertyDescriptorForName(propertyName),
                 scope = this._scope,
                 self = this,
-                result;
-
+                isRelationship, inverse,
+                result, value;
 
             scope.value = data;
             if (!propertyDescriptor || propertyDescriptor.definition) {
                 result = Promise.resolve(null);
             } else {
                 result = propertyDescriptor.valueDescriptor.then(function (descriptor) {
-                    var isRelationship = !!descriptor;
+                    isRelationship = !!descriptor;
+                    inverse = rule.inversePropertyName;
                     self._prepareRawDataToObjectPropertyRule(rule, propertyDescriptor);
-                    return isRelationship ? self._resolveRelationship(object, propertyDescriptor, rule, scope) :
-                                            self._resolvePrimitive(object, propertyDescriptor, rule, scope);
+                    value = rule.evaluate(scope);
+                    if (self._isThenable(value)) {
+                        value = value.then(function (data) {
+                            self._assignDataToObjectProperty(object, propertyDescriptor, data);
+                            if (inverse) {
+                                self._assignObjectAsInverseProperty(object, propertyDescriptor, data, inverse)
+                            }
+                            return null;
+                        });
+                    } else {
+                        object[propertyDescriptor.name] = value;
+                    }
+                    return value;
                 });
             }
             return result;
@@ -579,26 +590,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         }
     },
 
-    _resolvePrimitive: {
-        value: function (object, propertyDescriptor, rule, scope) {
-            var value = this._parse(rule, scope),
-                self = this;
-
-
-            return new Promise(function (resolve, reject) {
-                if (self._isThenable(value)) {
-                    value.then(function (data) {
-                        self._assignDataToObjectProperty(object, propertyDescriptor, data);
-                        resolve(null);
-                    });
-                } else {
-                    object[propertyDescriptor.name] = value;
-                    resolve(null);
-                }
-            });
-        }
-    },
-
     _isThenable: {
         value: function (object) {
             return object && object.then && typeof object.then === "function";
@@ -632,33 +623,18 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         }
     },
 
-    _assignObjectToDataInverseProperty: {
-        value: function (object, propertyDescriptor, data, inversePropertyName) {
-            return propertyDescriptor.valueDescriptor.then(function (valueDescriptor) {
-                var inversePropertyDescriptor = valueDescriptor.propertyDescriptorForName(inversePropertyName);
-                if (inversePropertyDescriptor.cardinality === 1) {
-                    data.forEach(function (item) {
-                        item[inversePropertyName] = object;
-                    });
+    _assignObjectAsInverseProperty: {
+        value: function (object, valueDescriptor, data, inversePropertyName) {
+            var inversePropertyDescriptor = valueDescriptor.propertyDescriptorForName(inversePropertyName),
+                i, n;
+
+            if (inversePropertyDescriptor.cardinality === 1) {
+                for (i = 0, n = data ? data.length : 0; i < n; ++i) {
+                    data[i][inversePropertyName] = object;
                 }
-                return null;
-            });
+            }
         }
     },
-
-    _resolveRelationship: {
-        value: function (object, propertyDescriptor, rule, scope) {
-            var self = this;
-            return rule.converter.convert(rule.expression(scope)).then(function (data) {
-                self._assignDataToObjectProperty(object, propertyDescriptor, data);
-                return rule.inversePropertyName && data && data.length ? self._assignObjectToDataInverseProperty(object, propertyDescriptor, data, rule.inversePropertyName) :
-                                                                         null;
-
-            });
-        }
-    },
-
-
 
     /***************************************************************************
      * Rules
@@ -786,8 +762,12 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 rawRule = rawRules[propertyName];
                 if (this._shouldMapRule(rawRule, true)) {
                     rule = this._makeRuleFromRawRule(rawRule, propertyName, true, true);
+                    if (!rule.targetPath) {
+                        debugger;
+                    }
                     this._ownObjectMappingRules.set(rule.targetPath, rule);
                 }
+                
                 if (this._shouldMapRule(rawRule, false)) {
                     rule = this._makeRuleFromRawRule(rawRule, propertyName, false, true);
                     this._ownRawDataMappingRules.set(rule.targetPath, rule);
@@ -804,11 +784,14 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             for (i = 0; (propertyName = propertyNames[i]); ++i) {
                 rawRule = rawRules[propertyName];
                 if (this._shouldMapRule(rawRule, false)) {
-                    rule = this._makeRuleFromRawRule(rawRule, propertyName, false);
+                    rule = this._makeRuleFromRawRule(rawRule, propertyName, false, false);
+                    if (!rule.targetPath) {
+                        debugger;
+                    }
                     this._ownObjectMappingRules.set(rule.targetPath, rule);
                 }
                 if (this._shouldMapRule(rawRule, true)) {
-                    rule = this._makeRuleFromRawRule(rawRule, propertyName, true);
+                    rule = this._makeRuleFromRawRule(rawRule, propertyName, true, false);
                     this._ownRawDataMappingRules.set(rule.targetPath, rule);
                 }
             }
@@ -833,87 +816,13 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         value: function (rawRule, propertyName, addOneWayBindings, isObjectMappingRule) {
             var propertyDescriptorName = !isObjectMappingRule && addOneWayBindings ? rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING] : propertyName,
                 propertyDescriptor = this.objectDescriptor.propertyDescriptorForName(propertyDescriptorName),
-                sourcePath = addOneWayBindings ? rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING] : propertyName,
-                targetPath = addOneWayBindings && propertyName || rawRule[TWO_WAY_BINDING],
-                compiled = this._compileRuleExpression(sourcePath),
-                rule = new MappingRule();
+                rule = MappingRule.withRawRuleAndPropertyName(rawRule, propertyName, addOneWayBindings);
 
-            
-
-            rule.converter = rawRule.converter || this._defaultConverter(sourcePath, targetPath, isObjectMappingRule);
-            rule.expression = compiled.expression;
-            rule.inversePropertyName = rawRule.inversePropertyName;
-            rule.isReverter = rawRule.converter && !addOneWayBindings;
             rule.propertyDescriptor = propertyDescriptor;
-            rule.requirements = this._parseRequirementsFromParsedExpression(compiled.parsed);
-            rule.serviceIdentifier = rawRule.serviceIdentifier;
-            rule.targetPath = targetPath;
+            rule.converter = rawRule.converter || this._defaultConverter(rule.sourcePath, rule.targetPath, isObjectMappingRule);
+            rule.isReverter = rawRule.converter && !addOneWayBindings;
 
             return rule;
-        }
-    },
-
-    _compileRuleExpression: {
-        value: function (rule) {
-            var parsed = parse(rule),
-                expression = compile(parsed);
-
-
-            return {
-                parsed: parsed,
-                expression: expression
-            };
-        }
-    },
-
-    _parseRequirementsFromParsedExpression: {
-        value: function (parsedExpression, requirements) {
-            var args = parsedExpression.args,
-                type = parsedExpression.type;
-
-            requirements = requirements || [];
-
-            if (type === "property" && args[0].type === "value") {
-                requirements.push(args[1].value);
-            } else if (type === "property" && args[0].type === "property") {
-                var subProperty = [args[1].value];
-                this._parseRequirementsFromParsedExpression(args[0], subProperty);
-                requirements.push(subProperty.reverse().join("."));
-            } else if (type === "record") {
-                this._parseRequirementsFromParsedRecord(parsedExpression, requirements);
-            }
-
-            return requirements;
-        }
-    },
-
-
-    _parseRequirementsFromParsedRecord: {
-        value: function (parsedExpression, requirements) {
-            var self = this,
-                args = parsedExpression.args,
-                keys = Object.keys(args);
-
-            keys.forEach(function (key) {
-                self._parseRequirementsFromParsedExpression(args[key], requirements);
-            });
-        }
-    },
-
-    _parse: {
-        value: function (rule, scope) {
-            var value = rule.expression(scope);
-            return rule.converter ? rule.isReverter ?
-                                    rule.converter.revert(value) :
-                                    rule.converter.convert(value) :
-                                    value;
-        }
-    },
-
-    _parseObject: {
-        value: function (rule, scope) {
-            var value = rule.expression(scope);
-            return rule.converter && rule.converter.revert(value) || value;
         }
     },
 

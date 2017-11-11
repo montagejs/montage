@@ -1,4 +1,10 @@
-var Montage = require("montage").Montage;
+var Montage = require("montage").Montage,
+    compile = require("frb/compile-evaluator"),
+    parse = require("frb/parse");
+
+
+var ONE_WAY_BINDING = "<-";
+var TWO_WAY_BINDING = "<->";
 
 /**
  * Instructions to map raw data to model objects or model objects to model objects
@@ -23,7 +29,12 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
      * @type {string}
      */
     expression: {
-        value: undefined
+        get: function () {
+            if (!this._expression && this.sourcePathSyntax) {
+                this._expression = compile(this.sourcePathSyntax);
+            }
+            return this._expression;
+        }
     },
 
     /**
@@ -69,7 +80,45 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
      * @type {string[]}
      */
     requirements: {
-        value: undefined
+        get: function () {
+            if (!this._requirements && this.sourcePathSyntax) {
+                this._requirements = this._parseRequirementsFromSyntax(this.sourcePathSyntax);
+            }
+            return this._requirements;
+        }
+    },
+
+    _parseRequirementsFromSyntax: {
+        value: function (syntax, requirements) {
+            var args = syntax.args,
+                type = syntax.type;
+
+            requirements = requirements || [];
+
+            if (type === "property" && args[0].type === "value") {
+                requirements.push(args[1].value);
+            } else if (type === "property" && args[0].type === "property") {
+                var subProperty = [args[1].value];
+                this._parseRequirementsFromSyntax(args[0], subProperty);
+                requirements.push(subProperty.reverse().join("."));
+            } else if (type === "record") {
+                this._parseRequirementsFromRecord(syntax, requirements);
+            }
+
+            return requirements;
+        }
+    },
+
+    _parseRequirementsFromRecord: {
+        value: function (syntax, requirements) {
+            var self = this,
+                args = syntax.args,
+                keys = Object.keys(args);
+
+            keys.forEach(function (key) {
+                self._parseRequirementsFromSyntax(args[key], requirements);
+            });
+        }
     },
 
     /**
@@ -81,11 +130,70 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
         value: undefined
     },
 
+
+    /**
+     * Object created by parsing .sourcePath using frb/grammar.js that will
+     * be used to evaluate the data
+     * @type {Object}
+     * */
+    sourcePathSyntax: {
+        get: function () {
+            if (!this._sourcePathSyntax && this.sourcePath) {
+                this._sourcePathSyntax = parse(this.sourcePath);
+            }
+            return this._sourcePathSyntax;
+        }
+    },
+
+    /**
+     * Path of the property to which the value of the expression should be retrieved
+     * @type {string}
+     */
+    sourcePath: {
+        value: undefined
+    },
+
     /**
      * Path of the property to which the value of the expression should be assigned.
      * @type {string}
      */
     targetPath: {
         value: undefined
-    }
+    },
+
+
+    /**
+     * Return the value of the property for this rule
+     * @type {Scope}
+     */
+    evaluate: {
+        value: function (scope) {
+            var value = this.expression(scope);
+            return this.converter ? this.isReverter ?
+                                    this.converter.revert(value) :
+                                    this.converter.convert(value) :
+                                    value;
+        }
+    },
+
+
+}, {
+
+    withRawRuleAndPropertyName: {
+        value: function (rawRule, propertyName, addOneWayBindings) {
+            var rule = new this(),
+                sourcePath = addOneWayBindings ? rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING] : propertyName,
+                targetPath = addOneWayBindings && propertyName || rawRule[TWO_WAY_BINDING];
+                
+                rule.inversePropertyName = rawRule.inversePropertyName;
+                rule.serviceIdentifier = rawRule.serviceIdentifier;
+                rule.sourcePath = sourcePath;
+                rule.targetPath = targetPath;
+            
+                return rule;
+        }
+    },
+
+    
+
 });
