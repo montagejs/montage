@@ -53,7 +53,7 @@ input[type=checkbox][checked=checked].expand::before {
 }
 
 .montage-TreeList.isEditing .montage-TreeList-nodeWrapper {
-    transition: padding .2s linear, margin-top .2s linear;
+    transition: margin-top .2s linear;
 }
 
 .hide {
@@ -87,7 +87,7 @@ input[type=checkbox][checked=checked].expand::before {
 
 .montage-TreeList-placeholder {
     width: 100px;
-    border: 2px solid #249991;
+    border: 8px solid #249991;
     border-radius: 50px; 
 }
 
