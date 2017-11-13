@@ -1464,9 +1464,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     _dataIdentifierByObject: {
-        get: function() {
-            return this.__objectsByDataIdentifier || (this.__objectsByDataIdentifier = new WeakMap());
-        }
+        value: new WeakMap()
     },
 
     /**

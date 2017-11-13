@@ -229,6 +229,27 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
+    createRawData: {
+        value: function (object) {
+            return this.nullPromise;
+        }
+    },
+
+    //deleteRawData already exists..
+
+    readRawData: {
+        value: function (stream) {
+            return this.fetchRawData(stream);
+        }
+    },
+
+    updateRawData: {
+        value: function (stream) {
+            return this.fetchRawData(stream);
+        }
+    },
+
+
     /**
      * Called through MainService when consumer has indicated that he has lost interest in the passed DataStream.
      * This will allow the RawDataService feeding the stream to take appropriate measures.
@@ -262,9 +283,20 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     deleteDataObject: {
         value: function (object) {
-            var record = {};
-            this._mapObjectToRawData(object, record);
-            return this.deleteRawData(record, object);
+            var self = this, 
+                record = {},
+                mapResult = this._mapObjectToRawData(object, record),
+                result;
+
+            if (mapResult instanceof Promise) {
+                result = mapResult.then(function () {
+                    return self.deleteRawData(record, object);
+                });
+            } else {
+                result = this.deleteRawData(record, object);
+            }
+            
+            return result;
         }
     },
 

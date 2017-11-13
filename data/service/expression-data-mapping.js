@@ -432,10 +432,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 requiredObjectProperties = rule ? rule.requirements : [],
                 promise;
 
-                if (property === "position" || property === "childPosition") {
-                    console.log(object, rule);
-                    debugger;
-                }
             
             if (prefetchRequirements) {
                 promise = this.service.rootService.getObjectPropertyExpressions(object, requiredObjectProperties);
@@ -541,7 +537,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                         value = value.then(function (data) {
                             self._assignDataToObjectProperty(object, propertyDescriptor, data);
                             if (inverse) {
-                                self._assignObjectAsInverseProperty(object, propertyDescriptor, data, inverse)
+                                self._assignObjectAsInverseProperty(object, descriptor, data, inverse)
                             }
                             return null;
                         });
@@ -754,9 +750,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                     rawRule = rawRules[propertyName];
                     if (this._shouldMapRule(rawRule, true)) {
                         rule = this._makeRuleFromRawRule(rawRule, propertyName, true, true);
-                        if (!rule.targetPath) {
-                            debugger;
-                        }
                         this._ownObjectMappingRules.set(rule.targetPath, rule);
                     }
                     
@@ -789,9 +782,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                     rawRule = rawRules[propertyName];
                     if (this._shouldMapRule(rawRule, false)) {
                         rule = this._makeRuleFromRawRule(rawRule, propertyName, false, false);
-                        if (!rule.targetPath) {
-                            debugger;
-                        }
                         this._ownObjectMappingRules.set(rule.targetPath, rule);
                     }
                     if (this._shouldMapRule(rawRule, true)) {

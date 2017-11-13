@@ -49,8 +49,10 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
             }
 
             value = deserializer.getProperty("foreignDescriptor");
-            if (value) {
+            if (value instanceof ObjectDescriptorReference) {
                 this._foreignDescriptorReference = value;
+            } else if (value) {
+                this.foreignDescriptor = value;
             }
 
             value = deserializer.getProperty("service");
@@ -188,10 +190,13 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
     foreignDescriptor: {
         serializable: false,
         get: function () {
-            return this._foreignDescriptorReference && this._foreignDescriptorReference.promise(require);
+            var isReference = this._foreignDescriptor instanceof ObjectDescriptorReference;
+            return isReference             ? this._foreignDescriptor :
+                   this._foreignDescriptor ? Promise.resolve(this._foreignDescriptor) :
+                   this._foreignDescriptorReference && this._foreignDescriptorReference.promise(require);
         },
         set: function (descriptor) {
-            this._foreignDescriptorReference = new ObjectDescriptorReference().initWithValue(descriptor);
+            this._foreignDescriptor = descriptor;
         }
     },
 
