@@ -123,15 +123,14 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
                 throw new Error("Require needed to get object descriptor " + moduleId);
             }
 
-            var targetRequire;
-
             var key = _require.location + "#" + moduleId;
             if (key in OBJECT_DESCRIPTOR_CACHE) {
                 return OBJECT_DESCRIPTOR_CACHE[key];
             }
 
-            return (OBJECT_DESCRIPTOR_CACHE[key] = _require.async(moduleId).then(function (objectDescriptor) {
-                targetRequire = Deserializer.getModuleRequire(_require, moduleId);
+            return (OBJECT_DESCRIPTOR_CACHE[key] = _require.async(moduleId).then(function (module) {
+                var objectDescriptor = module.montageObject,
+                    targetRequire = Deserializer.getModuleRequire(_require, moduleId);
                 // TODO: May want to relax this to being just an Object Descriptor
                 if (!ModuleObjectDescriptor.prototype.isPrototypeOf(objectDescriptor)) {
                     throw new Error("Object in " + moduleId + " is not a module-object-descriptor");

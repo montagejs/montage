@@ -457,7 +457,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 object;
 
             if (moduleId && (moduleId.endsWith(".mjson") || moduleId.endsWith(".meta"))) {
-                object = value && "prototype" in value ? Object.create(module) : module;
+                object = value && "prototype" in value ?
+                    Object.create(module.montageObject) : module.montageObject;
                 context.setObjectLabel(object, label);
                 return this.instantiateMJSONObject(value, object, objectName, context, label);
             } else {
