@@ -537,7 +537,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                         value = value.then(function (data) {
                             self._assignDataToObjectProperty(object, propertyDescriptor, data);
                             if (inverse) {
-                                self._assignObjectAsInverseProperty(object, descriptor, data, inverse)
+                                self._assignObjectAsInverseProperty(object, descriptor, data, inverse);
                             }
                             return null;
                         });

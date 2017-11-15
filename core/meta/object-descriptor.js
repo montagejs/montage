@@ -385,7 +385,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                 if (!plusSet.has(descriptor) && all.has(descriptor)) {
                     index = this._propertyDescriptors.indexOf(descriptor);
                     this._propertyDescriptors.splice(index, 1);
-                    delete this._propertyDescriptorsTable.delete(descriptor.name);
+                    this._propertyDescriptorsTable.delete(descriptor.name);
                     descriptor._owner = null;
                 }
             }
@@ -822,7 +822,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                 var index = this._eventDescriptors.indexOf(eventDescriptor);
                 if (index >= 0) {
                     this._eventDescriptors.splice(index, 1);
-                    delete this._eventPropertyDescriptorsTable.delete(eventDescriptor.name);
+                    this._eventPropertyDescriptorsTable.delete(eventDescriptor.name);
                     eventDescriptor._owner = null;
                 }
             }
