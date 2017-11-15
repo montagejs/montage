@@ -229,27 +229,6 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
-    createRawData: {
-        value: function (object) {
-            return this.nullPromise;
-        }
-    },
-
-    //deleteRawData already exists..
-
-    readRawData: {
-        value: function (stream) {
-            return this.fetchRawData(stream);
-        }
-    },
-
-    updateRawData: {
-        value: function (stream) {
-            return this.fetchRawData(stream);
-        }
-    },
-
-
     /**
      * Called through MainService when consumer has indicated that he has lost interest in the passed DataStream.
      * This will allow the RawDataService feeding the stream to take appropriate measures.
@@ -725,36 +704,6 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: deprecate.deprecateMethod(void 0, function (selector) {
             return this.mapSelectorToRawDataQuery(selector);
         }, "mapSelectorToRawDataSelector", "mapSelectorToRawDataQuery"),
-    },
-
-    /**
-     * Retrieve DataMappings for this object. 
-     * 
-     * Return the mapping associated with each type on the 
-     * object's inheritance tree, starting at the root.
-     *
-     * @method
-     * @argument {Object} object - An object whose object descriptor may have 
-     *                             DataMappings on it's inheritance tree
-     * @returns {Array<DataMapping>} 
-     */
-    mappingsForObject: {
-        value: function (object) {
-            var objectDescriptor = this.objectDescriptorForObject(object),
-                mappings = objectDescriptor && this.mappingsWithType(objectDescriptor),
-                mapping;
-                
-            if (!mappings && objectDescriptor) {
-                mapping = this._objectDescriptorMappings.get(objectDescriptor);
-                if (!mapping) {
-                    mapping = DataMapping.withObjectDescriptor(objectDescriptor);
-                    this._objectDescriptorMappings.set(objectDescriptor, mapping);
-                }
-                mappings = [mapping];
-            }
-
-            return mappings;
-        }
     },
 
     /**

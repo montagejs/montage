@@ -289,7 +289,7 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
     _fetchHttpRawDataWithParsedArguments: {
         value: function (parsed) {
             var self = this,
-                error, method, request;
+                error, request;
 
             if (!parsed) {
                 error = new Error("Invalid arguments to fetchHttpRawData()");
@@ -370,26 +370,20 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
         }
     },
 
-
-    
-
     /**
      * @private
      * @method
      */
     _parseFetchHttpRawDataArguments: {
-        value: function (/* url [, headers [, body [, types [, query [, method]]]]][, sendCredentials] */) {
+        value: function (/* url [, headers [, body [, types]]][, sendCredentials] */) {
             var parsed, last, i, n;
             // Parse the url argument, setting the "last" argument index to -1
             // if the URL is invalid.
-            
             parsed = {url: arguments[0]};
             last = typeof parsed.url === "string" ? arguments.length - 1 : -1;
             if (last < 0) {
                 console.warn(new Error("Invalid URL for fetchHttpRawData()"));
             }
-
-
             // Parse the sendCredentials argument, which must be the last
             // argument if it is provided, and set the "last" argument index to
             // point just past the last non-sendCredentials argument.
@@ -438,44 +432,14 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
                 }
             }
 
+
             if (last === 5 && arguments[4] instanceof DataQuery) {
                 parsed.query = arguments[4];
-            } else if (last === 5 && typeof arguments[4] === "string") {
-                parsed.method = arguments[4];
             } else if (last === 4 && arguments[3] instanceof DataQuery) {
                 parsed.query = arguments[3];
-            } else if (last === 4 && typeof arguments[3] === "string") {
-                parsed.method = arguments[3];
-            } else if (last === 3 && typeof arguments[2] === "string") {
-                parsed.method = arguments[2];
             }
-
             // Return the parsed arguments.
             return last >= 0 ? parsed : undefined;
-        }
-    },
-
-    createHttpRawData: {
-        value: function () {
-
-        }
-    },
-    
-    deleteHttpRawData: {
-        value: function () {
-
-        }
-    },
-
-    readHttpRawData: {
-        value: function () {
-            return this.fetchHttpRawData.apply(this, arguments);
-        }
-    },
-
-    updateHttpRawData: {
-        value: function () {
-
         }
     },
 
