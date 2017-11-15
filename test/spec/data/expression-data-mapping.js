@@ -14,6 +14,7 @@ var ExpressionDataMapping = require("montage/data/service/expression-data-mappin
 
 var Movie = require("spec/data/logic/model/movie").Movie,
     Category = require("spec/data/logic/model/category").Category,
+    Country = require("spec/data/logic/model/country").Country,
     ActionMovie = require("spec/data/logic/model/action-movie").ActionMovie;
 
 describe("An Expression Data Mapping", function() {
@@ -157,6 +158,7 @@ describe("An Expression Data Mapping", function() {
 
     actionMovieMapping = new ExpressionDataMapping().initWithServiceObjectDescriptorAndSchema(movieService, actionMovieObjectDescriptor);
     actionMovieMapping.addObjectMappingRule("rating", {"<-": "fcc_rating.toUpperCase()"});
+    actionMovieMapping.addRawDataMappingRule("fcc_rating", {"<-": "rating.toLowerCase()"});
     actionMovieMapping.addRequisitePropertyName("country", "rating");
     countryConverter = new RawPropertyValueToObjectConverter().initWithConvertExpression("category_id");
     countryConverter.revertExpression = "id";
@@ -165,6 +167,7 @@ describe("An Expression Data Mapping", function() {
         "<->": "country_id",
         converter: countryConverter
     });
+    actionMovieMapping.addRawDataMappingRule("country_id", {"<-": "country.id"});
     movieService.addMappingForType(actionMovieMapping, actionMovieObjectDescriptor);
 
 
@@ -220,7 +223,12 @@ describe("An Expression Data Mapping", function() {
             };
         
         return actionMovieMapping.mapRawDataToObject(data, movie).then(function () {
-            expect(movie.title).toBe("Star Wars");
+            //Properties defined in parent descriptor
+            expect(movie.title).toBe("Star Wars"); 
+            expect(movie.budget).toEqual(14000000);
+
+            //Properties defined in own descriptor
+            expect(movie.country).toBeDefined(); 
             done();
         });
     });
@@ -265,18 +273,27 @@ describe("An Expression Data Mapping", function() {
     });
 
     it("can map objects to raw data with inheritance", function (done) {
-        var movie = {
+        var country = new Country(),
+            movie = {
                 title: "Star Wars",
                 budget: 14000000.00,
                 isFeatured: true,
-                releaseDate: new Date(1977, 4, 25)
+                releaseDate: new Date(1977, 4, 25),
+                country: country,
+                rating: "PG"
             },
             data = {};
-        movieMapping.mapObjectToRawData(movie, data).then(function () {
-            expect(data.name).toBe("Star Wars");
-            expect(data.budget).toBe("14000000");
-            expect(data.is_featured).toBe("true");
-            expect(data.release_date).toBe("05/25/1977");
+
+            country.id = 1;
+        actionMovieMapping.mapObjectToRawData(movie, data).then(function () {
+            //Properties defined in parent descriptor
+            expect(data.name).toBe("Star Wars"); 
+            expect(data.budget).toBe("14000000"); 
+            expect(data.is_featured).toBe("true"); 
+            expect(data.release_date).toBe("05/25/1977"); 
+            //Properties defined in own descriptor
+            expect(data.fcc_rating).toBe("pg"); 
+            expect(data.country_id).toEqual(1);
             done();
         });
     });

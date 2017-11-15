@@ -11,7 +11,7 @@ exports.CountryService = RawDataService.specialize(/** @lends CategoryService.pr
             this.addRawData(stream, [{
                 name: countryName
             }]);
-            stream.dataDone();
+            this.rawDataDone(stream);
         }
     }
 
