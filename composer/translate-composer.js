@@ -520,6 +520,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function () {
             if (window.PointerEvent) {
                 this._element.addEventListener("pointerdown", this, true);
+                // Quick Fix: Should be removed when the eventmanger 
+                // will handle the options parameter of the 
+                // addEventListener function.
+                this._element.style.touchAction = 'none';
 
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 this._element.addEventListener("MSPointerDown", this, true);
@@ -541,6 +545,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function () {
             if (window.PointerEvent) {
                 this._element.removeEventListener("pointerdown", this, true);
+                this._element.style.touchAction = 'auto';
 
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 this._element.removeEventListener("MSPointerDown", this, true);

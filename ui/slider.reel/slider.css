@@ -1,6 +1,7 @@
 
 .montage-Slider {
     position: relative;
+    touch-action: none;
 }
 
 .montage-Slider[aria-orientation="horizontal"] .montage-Slider--track {
