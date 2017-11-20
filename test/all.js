@@ -121,8 +121,7 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/data/data-service"},
     {name: "spec/data/data-stream"},
     { name: "spec/data/enumeration" },
-    // disable broken specs https://github.com/montagejs/montage/issues/1898
-    // { name: "spec/data/http-service" },
+    { name: "spec/data/http-service" },
     {name: "spec/data/object-descriptor"},
     {name: "spec/data/property-descriptor"},
     {name: "spec/data/raw-data-service"},
