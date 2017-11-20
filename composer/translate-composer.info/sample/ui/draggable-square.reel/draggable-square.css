@@ -16,7 +16,7 @@
     user-select: none;
     color: white;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
-    /* touch-action: none; */
+    touch-action: none;
 }
 
 .DraggableSquare:hover {
