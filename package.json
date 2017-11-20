@@ -69,6 +69,8 @@
     "http-server": "^0.10.0",
     "jasmine-console-reporter": "^1.2.7",
     "jasmine-core": "^2.5.2",
+    "jsdoc": "^3.5.5",
+    "jsdoc-oblivion": "0.0.9",
     "karma": "^1.5.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",
@@ -84,6 +86,7 @@
   },
   "scripts": {
     "test": "node test/run-node.js",
+    "start:doc": "concurrently \"http-server -p 8083\" \"open http://localhost:8083/doc/\"",
     "jsdoc": "jsdoc -c jsdoc.json",
     "integration": "MONTAGE_VERSION=${MONTAGE_VERSION:=./} MOP_VERSION=${MOP_VERSION:=#master} node node_modules/mop-integration/integration",
     "lint": "jshint .",
