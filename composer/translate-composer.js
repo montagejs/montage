@@ -763,7 +763,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      **/
     _shouldPreventDefault: {
         value: function (event) {
-            return !!event.target.tagName && this._NATIVE_ELEMENTS.indexOf(event.target.tagName) === -1 && !event.target.isContentEditable;
+            return !defaultEventManager.isPassiveEventType(event.type) && !!event.target.tagName && this._NATIVE_ELEMENTS.indexOf(event.target.tagName) === -1 && !event.target.isContentEditable;
         }
     },
 
