@@ -33,11 +33,6 @@ header {
     color: #2C82C9;
 }
 
-.tree-list {
-    /* FIXME: SHOULD BE DEFAULT VALUE!!! */
-    height: 100%;
-}
-
 input[type=checkbox].expand {
 	visibility: hidden;
 }
@@ -52,43 +47,8 @@ input[type=checkbox][checked=checked].expand::before {
     content: "\25BC";
 }
 
-.montage-TreeList.isEditing .montage-TreeList-nodeWrapper {
-    transition: margin-top .2s linear;
-}
-
 .hide {
     display: none;
-}
-
-.willDrop:hover::before {
-    visibility: visible;
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #7BB0A6;
-    opacity: 0.5;
-}
-
-.willDrop:hover::after {
-    box-sizing: border-box;
-    visibility: visible;
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: transparent;
-    border: 2px solid #249991; 
-}
-
-.montage-TreeList-placeholder {
-    width: 100px;
-    border: 8px solid #249991;
-    border-radius: 50px; 
 }
 
 .tree-list-row {

@@ -5,10 +5,15 @@
     display: -ms-flexbox;
     display: flex;
     z-index: 1;
+    height: 100%;
     /* TODO: in IE 11, this z-index causes the action menu not to work
        in Social, Identify, and Area Brief panels. Had to add z-idex to those
        panels to make it work in IE 11.
     */
+}
+
+.montage-TreeList.isSorting .montage-TreeList-nodeWrapper {
+    /* transition: margin-top .2s linear; */
 }
 
 .montage-TreeList-repetition {
@@ -22,6 +27,32 @@
     left: 0;
     right: 0;
     overflow: hidden;
+    box-sizing: border-box;
+}
+
+.montage-TreeList-nodeWrapper.willDrop:hover::before {
+    visibility: visible;
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: currentColor;
+    opacity: 0.5;
+}
+
+.montage-TreeList-nodeWrapper.willDrop:hover::after {
+    box-sizing: border-box;
+    visibility: visible;
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: transparent;
+    border: 2px solid currentColor; 
 }
 
 .montage-TreeList-placeholder,
@@ -35,7 +66,10 @@
     opacity: 0;
 }
 
-.montage-TreeList-placeholder {
+.montage-TreeList-placeholder.over {
+    width: 100px;
+    border: 2px solid;
+    border-radius: 2px;
     z-index: -2;
 }
 

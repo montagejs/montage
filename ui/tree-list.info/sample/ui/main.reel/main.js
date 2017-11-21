@@ -83,6 +83,25 @@ exports.Main = Component.specialize(/** @lends Main# */{
                                         isDirectory: false
                                     }
                                 ]
+                            },
+                            {
+                                filename: 'b.3',
+                                isDirectory: true,
+                                children: [
+                                    {
+                                        filename: 'b.3.1',
+                                        isDirectory: false
+                                    },
+                                    {
+                                        filename: 'b.3.2',
+                                        isDirectory: true,
+                                        children: []
+                                    },
+                                    {
+                                        filename: 'b.3.3',
+                                        isDirectory: false
+                                    }
+                                ]
                             }
                         ]
                     },
