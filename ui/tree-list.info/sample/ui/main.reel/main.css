@@ -38,6 +38,8 @@ header {
     padding: 12px;
     border-radius: 4px;
     border: 1px solid;
+    display: flex;
+    flex-direction: column;
 }
 
 .container h5 {
@@ -64,6 +66,10 @@ header {
     padding: 0 12px;
     background-color: #fff;
     z-index: 1;
+}
+
+.tree-list-wrapper {
+    flex: 1;
 }
 
 .debug-container .debug-value {
