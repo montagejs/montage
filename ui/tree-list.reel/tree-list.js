@@ -181,20 +181,22 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             }
 
             this._heights = new WeakMap();
+            var children;
 
             if (this.repetition) {
                 this.repetitionController.content = this.getIterations();
             }
 
             if (this.controller && this.controller.data &&
-                this.controller.data.children && typeof this.rowHeight === "function"
+                typeof this.rowHeight === "function" &&
+                (children = this.controller.childrenFromNode(this.controller.data))
             ) {
                 this._totalHeight = 0;
                 this._rowTopMargins.length = 0;
                 this._rowTopMargins.push(0);
 
-                for (var i = 0, n = this.controller.data.children.length; i < n; i += 1) {
-                    this._totalHeight += this.rowHeight(this.controller.data.children[i]);
+                for (var i = 0, n = children.length; i < n; i += 1) {
+                    this._totalHeight += this.rowHeight(children[i]);
                     this._rowTopMargins.push(this._totalHeight);
                 }
             }
@@ -482,7 +484,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
     _doesNodeAcceptChild: {
         value: function (node) {
-            return node && node.data && Array.isArray(node.data.children);
+            return node && node.data && Array.isArray(this.controller.childrenFromNode(node.data));
         }
     },
 
@@ -585,8 +587,12 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             if (this._treeNodeWillAcceptDrop) {
                 //Delegate Method when Dragging end over another node?
                 var draggingObject = this._draggingTreeNode.object,
-                    sourceChildren = draggingObject.parent.data.children,
-                    targetChildren = this._treeNodeWillAcceptDrop.object.data.children,
+                    sourceChildren = this.controller.childrenFromNode(
+                        draggingObject.parent.data
+                    ),
+                    targetChildren = this.controller.childrenFromNode(
+                        this._treeNodeWillAcceptDrop.object.data
+                    ),
                     sourceIndex = sourceChildren.indexOf(draggingObject.data);
 
                 if (
@@ -805,10 +811,12 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     if (treeNodeOver) {
                         var directParentNode = this._draggingTreeNode.object.parent.data,
                             draggingNodeObjectData = this._draggingTreeNode.object.data,
-                            directParentNodeChildren = directParentNode.children,
+                            directParentNodeChildren = this.controller.childrenFromNode(
+                                directParentNode
+                            ),
                             overNodeObjectData = treeNodeOver.object.data,
                             overNodeIndex = -1;
-                        
+                                                
                         this._definePlaceholderPositionOnTreeNode(treeNodeOver, positionY);
 
                         if (
