@@ -60,7 +60,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             if (!this.__translateComposer) {
                 this.__translateComposer = new TranslateComposer();
                 this.__translateComposer.hasMomentum = false;
-                this.__translateComposer.preventScroll = false;
+                this.__translateComposer.shouldCancelOnSroll = false;
                 this.__translateComposer.translateX = 0;
                 this.__translateComposer.translateY = 0;
                 this.addComposer(this.__translateComposer);
