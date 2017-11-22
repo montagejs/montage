@@ -819,16 +819,18 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                             (this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE &&
                                 (overNodeIndex = directParentNodeChildren.indexOf(overNodeObjectData)) > -1)
                         ) {
-                            if (overNodeIndex > 0) {
-                                if ((this._placerHolderPosition === PLACEHOLDER_POSITION.BEFORE_NODE &&
-                                    directParentNodeChildren[overNodeIndex - 1] === draggingNodeObjectData) ||
-                                    (overNodeIndex + 1 < directParentNodeChildren.length ?
-                                    this._placerHolderPosition === PLACEHOLDER_POSITION.AFTER_NODE &&
-                                    directParentNodeChildren[overNodeIndex] === draggingNodeObjectData : false)
-                                ) { // next sibling
+
+                            if (overNodeIndex > -1) {
+                                var draggingNodeIndex = directParentNodeChildren.indexOf(draggingNodeObjectData);
+
+                                if ((overNodeIndex + 1 === draggingNodeIndex &&
+                                    this._placerHolderPosition !== PLACEHOLDER_POSITION.BEFORE_NODE) ||
+                                    (overNodeIndex - 1 === draggingNodeIndex &&
+                                        this._placerHolderPosition !== PLACEHOLDER_POSITION.AFTER_NODE)
+                                ) {  // next/previous sibling
                                     treeNodeOver = null;
                                 }
-                            } else if (overNodeIndex === -1) {
+                            } else {
                                 treeNodeOver = null;
                             }
                         }
