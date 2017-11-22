@@ -360,7 +360,9 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
     prepareForActivationEvents: {
         value: function () {
-            this._stopListeningToTranslateIfNeeded();
+            if (this.isSortable) {
+                this._startListeningToTranslate();
+            }
         }
     },
 
