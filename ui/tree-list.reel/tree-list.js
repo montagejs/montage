@@ -351,6 +351,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             window.addEventListener("resize", this, false);
             this._element.addEventListener("scroll", this, false);
             this._startListeningToTranslateIfNeeded();
+            
 
             this.handleScroll();
             this.handleTreeChange();
@@ -359,7 +360,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
     prepareForActivationEvents: {
         value: function () {
-            this._startListeningToTranslate();
+            this._stopListeningToTranslateIfNeeded();
         }
     },
 

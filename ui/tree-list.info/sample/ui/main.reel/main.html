@@ -17,7 +17,7 @@
                     "isRootExpanded": true,
                     "rowHeight": 26,
                     "controller": {"<-": "@treeController"},
-                    "isEditable": true
+                    "isSortable": true
                 }
             },
             "treeController": {
@@ -66,6 +66,14 @@
                     "element": {"#": "debugPlaceholderPosition"},
                     "value": {"<-": "@treeList._placerHolderPosition == 0 ? 'before' : @treeList._placerHolderPosition == 1 ? 'after' : ''"}
                 }
+            },
+
+            "isSortable": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "isSortable"},
+                    "checked": {"<->": "!!@treeList.isSortable"}
+                }
             }
         }
     </script>
@@ -78,6 +86,10 @@
                 <h5>
                     <span>Options</span>
                 </h5>
+                <p>
+                    <label>Is Sortable: </label>
+                    <input type="checkbox" data-montage-id="isSortable"></span>
+                </p>
             </div>
             <div class="tree-list-container container">
                 <h5>
