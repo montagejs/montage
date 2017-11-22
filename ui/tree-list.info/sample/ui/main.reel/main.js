@@ -32,6 +32,7 @@ exports.Main = Component.specialize(/** @lends Main# */{
                                     {
                                         filename: 'a.2.1',
                                         isDirectory: true,
+                                        locked: true,
                                         children: []
                                     },
                                     {
@@ -68,6 +69,7 @@ exports.Main = Component.specialize(/** @lends Main# */{
                             {
                                 filename: 'b.2',
                                 isDirectory: true,
+                                locked: true,
                                 children: [
                                     {
                                         filename: 'b.2.1',
@@ -139,7 +141,8 @@ exports.Main = Component.specialize(/** @lends Main# */{
                                     },
                                     {
                                         filename: 'c.2.3',
-                                        isDirectory: false
+                                        isDirectory: false,
+                                        locked: true
                                     }
                                 ]
                             }
@@ -147,6 +150,18 @@ exports.Main = Component.specialize(/** @lends Main# */{
                     }
                 ]
             };
+        }
+    },
+
+    treeListCanDragNode: {
+        value: function (treeList, node, defaultValue) {
+            return !node.locked;
+        }
+    },
+
+    treeListCanDropNode: {
+        value: function (treeList, draggingNode, dropNode, defaultValue) {
+            return !dropNode.locked;
         }
     }
   

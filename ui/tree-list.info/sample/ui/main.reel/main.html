@@ -16,6 +16,7 @@
                     "isRootVisible": false,
                     "isRootExpanded": true,
                     "rowHeight": 26,
+                    "delegate": {"<-": "@owner"},
                     "controller": {"<-": "@treeController"},
                     "isSortable": true
                 }
@@ -31,7 +32,8 @@
                 "values": {
                     "element": {"#": "treeListItem"},
                     "node": {"<-": "@treeList:iteration.object"},
-                    "value": {"<-": "@treeList:iteration.object.data.filename"}
+                    "value": {"<-": "@treeList:iteration.object.data.filename"},
+                    "classList.has('locked')": {"<-": "@treeList:iteration.object.data.locked"}
                 }
             },
 
@@ -88,7 +90,12 @@
                 </h5>
                 <p>
                     <label>Is Sortable: </label>
-                    <input type="checkbox" data-montage-id="isSortable"></span>
+                    <input type="checkbox" data-montage-id="isSortable" />
+                </p>
+                <p>
+                    <label>Placehold strategy: </label><br /><br />
+                    <input type="radio" value="over" checked disabled /> Over
+                    <input type="radio" value="move" disabled /> Move
                 </p>
             </div>
             <div class="tree-list-container container">

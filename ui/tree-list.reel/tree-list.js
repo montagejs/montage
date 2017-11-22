@@ -562,14 +562,20 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 treeNode = this._findTreeNodeWithElement(startPosition.target);
 
             if (treeNode) {
-                //Delegate Method for allowing Dragging?
-                this._startPositionX = startPosition.pageX;
-                this._startPositionY = startPosition.pageY;
-                this._draggingTreeNode = treeNode;
-                this._isDragging = true;
-                // TODO: automatically close tree nodes
-                // that have not been altered after translate ended?
-                this._addDragEventListeners();
+                var delegateResponse = this.callDelegateMethod(
+                        'treeListCanDragNode', this, treeNode.object.data, true
+                    ),
+                    canDrag = delegateResponse === void 0 ? true : delegateResponse;
+
+                if (canDrag) {
+                    this._startPositionX = startPosition.pageX;
+                    this._startPositionY = startPosition.pageY;
+                    this._draggingTreeNode = treeNode;
+                    this._isDragging = true;
+                    // TODO: automatically close tree nodes
+                    // that have not been altered after translate ended?
+                    this._addDragEventListeners();
+                }
             }
         }
     },
@@ -853,25 +859,38 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                                 sourceNode = this._draggingTreeNode.object;
 
                             if (nodeCandidate && this._shouldNodeAcceptDrop(nodeCandidate, sourceNode)) {
-                                //Delegate Method when Dragging over another node?
-                                var previousTreeNodeWillAcceptDrop = this._previousTreeNodeWillAcceptDrop;
+                                var delegateResponse = this.callDelegateMethod(
+                                        'treeListCanDropNode',
+                                        this,
+                                        this._draggingTreeNode.object.data,
+                                        nodeCandidate.data,
+                                        true
+                                    ),
+                                    canDrop = delegateResponse === void 0 ?
+                                        true : delegateResponse;
 
-                                if (!previousTreeNodeWillAcceptDrop ||
-                                    (previousTreeNodeWillAcceptDrop &&
-                                        previousTreeNodeWillAcceptDrop.object.data !== nodeCandidate.data)
-                                ) {
-                                    this._previousTreeNodeWillAcceptDrop = this._treeNodeWillAcceptDrop;
-                                    this._treeNodeWillAcceptDrop = this._findTreeNodeWithNode(nodeCandidate);
+                                if (canDrop) {
+                                    var previousTreeNodeWillAcceptDrop = this._previousTreeNodeWillAcceptDrop;
 
-                                    if (
-                                        !nodeCandidate.isExpanded &&
-                                        this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE
+                                    if (!previousTreeNodeWillAcceptDrop ||
+                                        (previousTreeNodeWillAcceptDrop &&
+                                            previousTreeNodeWillAcceptDrop.object.data !== nodeCandidate.data)
                                     ) {
-                                        this._scheduleToExpandNode(nodeCandidate);
-                                    } else {
-                                        this._cancelExpandingNodeIfNeeded();
-                                    }
-                                }              
+                                        this._previousTreeNodeWillAcceptDrop = this._treeNodeWillAcceptDrop;
+                                        this._treeNodeWillAcceptDrop = this._findTreeNodeWithNode(nodeCandidate);
+
+                                        if (
+                                            !nodeCandidate.isExpanded &&
+                                            this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE
+                                        ) {
+                                            this._scheduleToExpandNode(nodeCandidate);
+                                        } else {
+                                            this._cancelExpandingNodeIfNeeded();
+                                        }
+                                    } 
+                                } else {
+                                    treeNodeOver = null;
+                                }
                             } else {
                                 treeNodeOver = null;
                             }

@@ -45,7 +45,7 @@ header {
 .container h5 {
     position: relative;
     text-align: center;
-    margin: 5px;
+    margin: 5px 0 15px 0;
     font-size: 1rem;
     color: #33495d;
 }
@@ -66,6 +66,10 @@ header {
     padding: 0 12px;
     background-color: #fff;
     z-index: 1;
+}
+
+.container p {
+    margin: 6px 0;
 }
 
 .tree-list-wrapper {
@@ -99,6 +103,12 @@ input[type=checkbox][checked=checked].expand::before {
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+.tree-list-row .locked::after {
+    font-family: FontAwesome;
+    content: "\f023";
+    margin-left: 12px;
 }
 
 .montage-TreeList-ghostImage {
