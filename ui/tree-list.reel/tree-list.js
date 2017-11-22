@@ -711,37 +711,40 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             
             for (var i = 0, length = drawnIterations.length; i < length; i++) {
                 iteration = drawnIterations[i];
-                element = iteration.cachedFirstElement || iteration.firstElement;
-                marginLeft = parseInt(element.style.marginLeft);
-                rowRect.top = treeListRectTop + parseInt(element.style.marginTop);
-                rowRect.left = treeListRect.x + marginLeft;
-                rowRect.width = treeListRect.width - marginLeft;
-                rowRect.height = iteration.object.height * this._rowHeight;
-                rowRect.bottom = rowRect.top + rowRect.height;
-                rowRect.right = rowRect.left + rowRect.width;
-                heightThreshold = rowRect.height * this._placeholderThresholdMultiplier;
 
-                if (
-                    pointerPositionX >= rowRect.left && pointerPositionX <= rowRect.right &&
-                    pointerPositionY >= rowRect.top - heightThreshold &&
-                    pointerPositionY <= rowRect.bottom + heightThreshold
-                ) {
-                    dX = pointerPositionX;
-                    dY = (rowRect.top + this.rowHeight / 2) - pointerPositionY;
+                if (iteration.object) {
+                    element = iteration.cachedFirstElement || iteration.firstElement;
+                    marginLeft = parseInt(element.style.marginLeft);
+                    rowRect.top = treeListRectTop + parseInt(element.style.marginTop);
+                    rowRect.left = treeListRect.x + marginLeft;
+                    rowRect.width = treeListRect.width - marginLeft;
+                    rowRect.height = iteration.object.height * this._rowHeight;
+                    rowRect.bottom = rowRect.top + rowRect.height;
+                    rowRect.right = rowRect.left + rowRect.width;
+                    heightThreshold = rowRect.height * this._placeholderThresholdMultiplier;
 
-                    if (pointerPositionY > rowRect.top + this.rowHeight) {
-                        if (pointerPositionX <= rowRect.left + this.indentationWidth) {
-                            dX = (rowRect.left + this.indentationWidth / 2) - pointerPositionY;
-                        }
-                    } 
-
-                    dist = dX * dX + dY * dY;
-
-                    if (dist <= minDist || minDist === 0 ||
-                        (candidate && candidate.object.data === this.controller.data)
+                    if (
+                        pointerPositionX >= rowRect.left && pointerPositionX <= rowRect.right &&
+                        pointerPositionY >= rowRect.top - heightThreshold &&
+                        pointerPositionY <= rowRect.bottom + heightThreshold
                     ) {
-                        minDist = dist;
-                        candidate = this._wrapIterationIntoTreeNode(iteration);
+                        dX = pointerPositionX;
+                        dY = (rowRect.top + this.rowHeight / 2) - pointerPositionY;
+
+                        if (pointerPositionY > rowRect.top + this.rowHeight) {
+                            if (pointerPositionX <= rowRect.left + this.indentationWidth) {
+                                dX = (rowRect.left + this.indentationWidth / 2) - pointerPositionY;
+                            }
+                        }
+
+                        dist = dX * dX + dY * dY;
+
+                        if (dist <= minDist || minDist === 0 ||
+                            (candidate && candidate.object.data === this.controller.data)
+                        ) {
+                            minDist = dist;
+                            candidate = this._wrapIterationIntoTreeNode(iteration);
+                        }
                     }
                 }
             }
