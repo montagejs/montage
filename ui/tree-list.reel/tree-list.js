@@ -12,7 +12,7 @@ var PLACEHOLDER_POSITION = {
     BEFORE_NODE: 0,
     OVER_NODE: -1,
     AFTER_NODE: 1
-}
+};
 
 /**
  * @class TreeList
@@ -155,7 +155,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
     },
 
     placeholderStrategy: {
-        set: function () {
+        set: function (placeholderStrategy) {
             if (placeholderStrategy === TreeList.PLACEHOLDER_MOVE ||
                 placeholderStrategy === TreeList.PLACEHOLDER_OVER
             ) {
@@ -707,7 +707,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 drawnIterations = this.repetition._drawnIterations,
                 treeListRectTop = treeListRect.y - this.element.scrollTop,
                 minDist = 0, rowRect = {}, dist, iteration, marginLeft,
-                dY, dX, candidate, element;
+                dY, dX, candidate, element, heightThreshold;
             
             for (var i = 0, length = drawnIterations.length; i < length; i++) {
                 iteration = drawnIterations[i];
@@ -719,7 +719,6 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 rowRect.height = iteration.object.height * this._rowHeight;
                 rowRect.bottom = rowRect.top + rowRect.height;
                 rowRect.right = rowRect.left + rowRect.width;
-                filename = iteration.object.data.filename;
                 heightThreshold = rowRect.height * this._placeholderThresholdMultiplier;
 
                 if (
