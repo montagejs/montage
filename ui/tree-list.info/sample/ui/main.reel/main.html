@@ -42,6 +42,30 @@
                     "checked": {"<->": "@treeList:iteration.object.isExpanded"},
                     "classList.has('hide')": {"<-": "!@treeList:iteration.object.data.isDirectory"}
                 }
+            },
+
+            "debugDraggingNode": {
+                "prototype": "montage/ui/text.reel",
+                "values": {
+                    "element": {"#": "debugDraggingNode"},
+                    "value": {"<-": "@treeList._draggingTreeNode.object.data.filename"}
+                }
+            },
+
+            "debugOverNode": {
+                "prototype": "montage/ui/text.reel",
+                "values": {
+                    "element": {"#": "debugOverNode"},
+                    "value": {"<-": "@treeList._treeNodeOver.object.data.filename"}
+                }
+            },
+
+            "debugPlaceholderPosition": {
+                "prototype": "montage/ui/text.reel",
+                "values": {
+                    "element": {"#": "debugPlaceholderPosition"},
+                    "value": {"<-": "@treeList._placerHolderPosition == 0 ? 'before' : @treeList._placerHolderPosition == 1 ? 'after' : ''"}
+                }
             }
         }
     </script>
@@ -49,12 +73,39 @@
 <body>
     <div data-montage-id="main" class="Main">
         <header>Tree List Sample</header>
-        <section class="tree-list-container">
-            <div data-montage-id="treeList" class="tree-list">
-                <div class="tree-list-row">
-                    <input type="checkbox" data-montage-id="expand" class="expand" />
-                    <span data-montage-id="treeListItem"></span>
+        <section class="containers">
+            <div class="options-container container">
+                <h5>
+                    <span>Options</span>
+                </h5>
+            </div>
+            <div class="tree-list-container container">
+                <h5>
+                    <span>Tree</span>
+                </h5>
+                <div data-montage-id="treeList" class="tree-list">
+                    <div class="tree-list-row">
+                        <input type="checkbox" data-montage-id="expand" class="expand" />
+                        <span data-montage-id="treeListItem"></span>
+                    </div>
                 </div>
+            </div>
+            <div class="debug-container container">
+                <h5>
+                    <span>Debug</span>
+                </h5>
+                <p>
+                    <span>Dragging node: </span>
+                    <span data-montage-id="debugDraggingNode" class="debug-value"></span>
+                </p>
+                <p>
+                    <span>Over node: </span>
+                    <span data-montage-id="debugOverNode" class="debug-value"></span>
+                </p>
+                <p>
+                    <span>Placeholder position: </span>
+                    <span data-montage-id="debugPlaceholderPosition" class="debug-value"></span>
+                </p>
             </div>
         </section>
     </div>
