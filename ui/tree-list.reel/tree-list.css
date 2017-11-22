@@ -30,7 +30,7 @@
     box-sizing: border-box;
 }
 
-.montage-TreeList-nodeWrapper.willDrop:hover::before {
+.montage-TreeList-nodeWrapper.willDrop::before {
     visibility: visible;
     content: "";
     position: absolute;
@@ -42,7 +42,7 @@
     opacity: 0.5;
 }
 
-.montage-TreeList-nodeWrapper.willDrop:hover::after {
+.montage-TreeList-nodeWrapper.willDrop::after {
     box-sizing: border-box;
     visibility: visible;
     content: "";
