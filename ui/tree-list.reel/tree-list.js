@@ -969,6 +969,8 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
                         placeholderStyle.marginTop = placeholderMarginTop + "px";
                         placeholderStyle.marginLeft = nodeOverStyle.marginLeft;
+                        placeholderStyle.width = this._treeListBoundingClientRect.width -
+                            parseInt(nodeOverStyle.marginLeft) - 4 + "px"; // 4px -> border width
                         placeholderStyle.opacity = 1;
                     } else {
                         placeholderStyle.opacity = 0;

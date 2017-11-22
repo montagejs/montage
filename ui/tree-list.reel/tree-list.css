@@ -67,7 +67,6 @@
 }
 
 .montage-TreeList-placeholder.over {
-    width: 100px;
     border: 2px solid;
     border-radius: 2px;
     z-index: -2;
