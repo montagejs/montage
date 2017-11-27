@@ -802,6 +802,10 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     this._ghostElementBoundingRect = this._draggingTreeNode.element.getBoundingClientRect();
                 }
 
+                if (!this._placeholder) {
+                    return void 0;
+                }
+
                 var positionX = this._startPositionX + this._translateX,
                     positionY = this._startPositionY + this._translateY,
                     treeNodeOver = this._findClosestTreeNode(positionX, positionY);
@@ -905,8 +909,10 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
     draw: {
         value: function () {
             var treeListHeight = this._treeListBoundingClientRect.height,
-                drawnIterations = this.repetition._drawnIterations, rootCondition,
-                marginTop, object, iteration, element, rowHeight, i, length;
+                drawnIterations = this.repetition._drawnIterations,
+                shouldAddPlaceholderHeight = false,
+                rootCondition, marginTop, object, iteration, element,
+                rowHeight, i, length;
 
             for (i = 0, length = drawnIterations.length; i < length; i++) {
                 iteration = drawnIterations[i];
@@ -928,27 +934,38 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     marginTop = this._rowHeight * object.row;
                 }
 
-                element.style.marginTop = marginTop + "px";
+                element.style.marginTop = (shouldAddPlaceholderHeight ?
+                    marginTop + this.rowHeight : marginTop) + "px";
                 element.style.height = (rootCondition && treeListHeight > rowHeight ?
                     treeListHeight : rowHeight) + "px";
                 element.style.marginLeft = this._indentationWidth * object.depth + "px";
                 element.style.visibility = rootCondition ? "hidden" : 'visible';
+
+                if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE && 
+                    this._treeNodeOver && object.data === this._treeNodeOver.object.data
+                ) {
+                    if (this._placerHolderPosition === PLACEHOLDER_POSITION.BEFORE_NODE) {
+                        element.style.marginTop = marginTop + this.rowHeight + "px";
+                    }
+
+                    shouldAddPlaceholderHeight = true;
+                }
             }
 
             if (this._isDragging) {
                 this.element.classList.add('isSorting');
 
-                if (this._placeHolder) {
-                    this._placeHolder.classList.add(this.placeholderStrategy);
-                    this._placeHolder.classList.remove(
+                if (this._placeholder) {
+                    this._placeholder.classList.add(this.placeholderStrategy);
+                    this._placeholder.classList.remove(
                         this.placeholderStrategy === TreeList.PLACEHOLDER_OVER ? 
                             TreeList.PLACEHOLDER_MOVE : TreeList.PLACEHOLDER_OVER
                     );
 
-                    var placeholderStyle = this._placeHolder.style;
+                    var placeholderStyle = this._placeholder.style;
 
                     if (
-                        this._placeHolder && this._treeNodeOver &&
+                        this._placeholder && this._treeNodeOver &&
                         this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE
                     ) {
                         var nodeOverStyle = this._treeNodeOver.element.style,
@@ -956,6 +973,10 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
                         if (this._placerHolderPosition === PLACEHOLDER_POSITION.AFTER_NODE) {
                             placeholderMarginTop += parseInt(this._treeNodeOver.element.style.height);
+                        }
+
+                        if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE) {
+                            this._placeholder.style.height = this.rowHeight + "px";
                         }
 
                         placeholderStyle.marginTop = placeholderMarginTop + "px";
@@ -973,10 +994,10 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     this._ghostElement = this._draggingTreeNode.element.cloneNode(true);
                     this._ghostElement.classList.add("montage-TreeList-ghostImage");
 
-                    if (!this._placeHolder) {
-                        this._placeHolder = document.createElement('div');
-                        this._placeHolder.classList.add("montage-TreeList-placeholder");
-                        this.element.appendChild(this._placeHolder);
+                    if (!this._placeholder) {
+                        this._placeholder = document.createElement('div');
+                        this._placeholder.classList.add("montage-TreeList-placeholder");
+                        this.element.appendChild(this._placeholder);
                     }
 
                     document.body.appendChild(this._ghostElement);
@@ -992,7 +1013,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     this._ghostElement.style.left = this._ghostElementBoundingRect.left + "px";
                     this._ghostElement.style.visibility = "visible";
                     this._ghostElement.style.opacity = 1;
-                    this._placeHolder.style.visibility = "visible";
+                    this._placeholder.style.visibility = "visible";
                     this._needsToWaitforGhostElementBoundaries = false;
                 }
 
@@ -1050,7 +1071,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     this._ghostElement = null;
                     this._previousTreeNodeWillAcceptDrop = null;
                     this._treeNodeWillAcceptDrop = null;
-                    this._placeHolder.style.opacity = 0;
+                    this._placeholder.style.opacity = 0;
                 }
             }
         }
