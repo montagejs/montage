@@ -72,9 +72,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         }
     },
 
-
-
-
     /**
      * @param   {ObjectDescriptor} objectDescriptor       - the definition of the objects
      *                                   mapped by this mapping.
@@ -396,11 +393,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 requiredObjectProperties = rule ? rule.requirements : [],
                 result;
 
-
-
             result = this.service.rootService.getObjectPropertyExpressions(object, requiredObjectProperties);
-
-
 
             if (result && typeof result.then === "function") {
                 return result.then(function () {
@@ -537,7 +530,8 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             for (i = 0; (propertyName = propertyNames[i]); ++i) {
                 rawRule = rawRules[propertyName];
                 if (this._shouldMapRule(rawRule, addOneWayBindings)) {
-                    rule = this._makeRuleFromRawRule(rawRule, propertyName, addOneWayBindings);
+                    rule = addOneWayBindings ?  this._objectMappingRuleWithPropertyNameAndObjectMappingRule(propertyName, rawRule) :
+                                                this._objectMappingRuleWithPropertyNameAndRawDataMappingRule(propertyName, rawRule);
                     rules[rule.targetPath] = rule;
                 }
             }
@@ -552,12 +546,91 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             for (i = 0; (propertyName = propertyNames[i]); ++i) {
                 rawRule = rawRules[propertyName];
                 if (this._shouldMapRule(rawRule, addOneWayBindings)) {
-                    rule = this._makeRuleFromRawRule(rawRule, propertyName, addOneWayBindings);
+                    rule = addOneWayBindings ?  this._rawDataMappingRuleWithPropertyNameAndRawDataMappingRule(propertyName, rawRule) :
+                                                this._rawDataMappingRuleWithPropertyNameAndObjectMappingRule(propertyName, rawRule);
                     rules[rule.targetPath] = rule;
                 }
             }
         }
     },
+
+    // example: foo: {"<-": "bar"}
+    _objectMappingRuleWithPropertyNameAndObjectMappingRule: {
+        value: function (propertyName, rawRule) {
+            var propertyDescriptor = this.objectDescriptor.propertyDescriptorForName[propertyName],
+                sourcePath = rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING],
+                rule = this._makeRule(sourcePath, propertyName);
+
+            rule.converter = rawRule.converter || this._defaultConverter(sourcePath, propertyName, true);
+            rule.inversePropertyName = rawRule.inversePropertyName;
+            rule.isReverter = false;
+            rule.propertyDescriptor = propertyDescriptor;
+            rule.serviceIdentifier = rawRule.serviceIdentifier;
+
+            return rule;
+        }
+    },
+
+    _rawDataMappingRuleWithPropertyNameAndRawDataMappingRule: {
+        value: function (propertyName, rawRule) {
+            var schemaDescriptor = this.schemaDescriptor,
+                propertyDescriptor = this.schemaDescriptor && schemaDescriptor.propertyDescriptorForName[propertyName],
+                sourcePath = rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING],
+                rule = this._makeRule(sourcePath, propertyName);
+
+            rule.converter = rawRule.converter || this._defaultConverter(sourcePath, propertyName, false);
+            rule.inversePropertyName = rawRule.inversePropertyName;
+            rule.isReverter = false;
+            rule.propertyDescriptor = propertyDescriptor;
+            rule.serviceIdentifier = rawRule.serviceIdentifier;
+
+            return rule;
+
+        }
+    },
+
+    _objectMappingRuleWithPropertyNameAndRawDataMappingRule: {
+        value: function (propertyName, rawRule) {
+            var targetPath = rawRule[TWO_WAY_BINDING],
+                propertyDescriptor = this.objectDescriptor.propertyDescriptorForName[targetPath],
+                rule = this._makeRule(propertyName, targetPath);
+
+            rule.converter = rawRule.converter || this._defaultConverter(propertyName, targetPath, true);
+            rule.inversePropertyName = rawRule.inversePropertyName;
+            rule.isReverter = true;
+            rule.propertyDescriptor = propertyDescriptor;
+            rule.serviceIdentifier = rawRule.serviceIdentifier;
+            return rule;
+        }
+    },
+
+    _rawDataMappingRuleWithPropertyNameAndObjectMappingRule: {
+        value: function (propertyName, rawRule) {
+            var targetPath = rawRule[TWO_WAY_BINDING],
+                schemaDescriptor = this.schemaDescriptor,
+                propertyDescriptor = this.schemaDescriptor && schemaDescriptor.propertyDescriptorForName[propertyName],
+                rule = this._makeRule(propertyName, targetPath);
+
+            rule.converter = rawRule.converter || this._defaultConverter(propertyName, targetPath, false);
+            rule.inversePropertyName = rawRule.inversePropertyName;
+            rule.isReverter = true;
+            rule.propertyDescriptor = propertyDescriptor;
+            rule.serviceIdentifier = rawRule.serviceIdentifier;
+            return rule;
+        }
+    },
+
+    _makeRule: {
+        value: function (source, target) {
+            var compiled = this._compileRuleExpression(source),
+                rule = new MappingRule();
+            rule.expression = compiled.expression;
+            rule.requirements = this._parseRequirementsFromParsedExpression(compiled.parsed);
+            rule.targetPath = target;
+            return rule;
+        }
+    },
+
 
     _makeRuleFromRawRule: {
         value: function (rawRule, propertyName, addOneWayBindings) {

@@ -483,21 +483,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     _constructorToObjectDescriptorMap: {
-        get: function () {
-            if (!this.__constructorToObjectDescriptorMap) {
-                this.__constructorToObjectDescriptorMap = new Map();
-            }
-            return this.__constructorToObjectDescriptorMap;
-        }
+        value: new Map()
     },
 
     _moduleIdToObjectDescriptorMap: {
-        get: function () {
-            if (!this.__moduleIdToObjectDescriptorMap) {
-                this.__moduleIdToObjectDescriptorMap = {};
-            }
-            return this.__moduleIdToObjectDescriptorMap;
-        }
+        value: {}
     },
 
     /**
