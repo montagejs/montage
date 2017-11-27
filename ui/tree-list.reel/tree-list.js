@@ -901,7 +901,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 this._treeNodeOver = treeNodeOver;
 
                 if (!treeNodeOver) {
-                    // set previous tree node to remove class.
+                    // set previous tree node in order to remove the class name `willDrop`.
                     this._previousTreeNodeWillAcceptDrop = this._treeNodeWillAcceptDrop;
                     this._treeNodeWillAcceptDrop = null;
                     this._placerHolderPosition = PLACEHOLDER_POSITION.OVER_NODE;
