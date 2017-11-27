@@ -18,6 +18,7 @@
                     "rowHeight": 26,
                     "delegate": {"<-": "@owner"},
                     "controller": {"<-": "@treeController"},
+                    "placeholderStrategy": {"<->": "@placeholderStrategyController.value"},
                     "isSortable": true
                 }
             },
@@ -76,6 +77,31 @@
                     "element": {"#": "isSortable"},
                     "checked": {"<->": "!!@treeList.isSortable"}
                 }
+            },
+
+            "placeholderStrategyController": {
+                "prototype": "montage/core/radio-button-controller",
+                "values": {
+                    "content": ["over", "move"]
+                }
+            },
+
+            "overStrategy": {
+                "prototype": "montage/ui/radio.reel",
+                "values": {
+                    "element": {"#": "overStrategy"},
+                    "value": "over",
+                    "radioButtonController": {"@": "placeholderStrategyController"}
+                }
+            },
+
+            "moveStrategy": {
+                "prototype": "montage/ui/radio.reel",
+                "values": {
+                    "element": {"#": "moveStrategy"},
+                    "value": "move",
+                    "radioButtonController": {"@": "placeholderStrategyController"}
+                }
             }
         }
     </script>
@@ -94,8 +120,8 @@
                 </p>
                 <p>
                     <label>Placeholder strategy: </label><br /><br />
-                    <input type="radio" value="over" checked disabled /> Over
-                    <input type="radio" value="move" disabled /> Move
+                    <input data-montage-id="overStrategy" type="radio" value="over" /> Over
+                    <input data-montage-id="moveStrategy" type="radio" value="move" /> Move
                 </p>
             </div>
             <div class="tree-list-container container">
