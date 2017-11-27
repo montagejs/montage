@@ -977,6 +977,8 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
                         if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE) {
                             this._placeholder.style.height = this.rowHeight + "px";
+                        } else {
+                            this._placeholder.style.height = "0px";
                         }
 
                         placeholderStyle.marginTop = placeholderMarginTop + "px";
