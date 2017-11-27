@@ -55,7 +55,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     deserializeSelf: {
         value:function (deserializer) {
-            var value;
+            var self = this,
+                value;
             value = deserializer.getProperty("childServices");
             if (value) {
                 this.registerChildServices(value);
@@ -80,7 +81,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (value) {
                 this.delegate = value;
             }
-
+            return this._childServiceRegistrationPromise ? this._childServiceRegistrationPromise.then(function () {
+                return self;
+            }) : null;
         }
     },
 
