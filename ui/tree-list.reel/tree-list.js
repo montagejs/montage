@@ -802,101 +802,92 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     this._ghostElementBoundingRect = this._draggingTreeNode.element.getBoundingClientRect();
                 }
 
-                if (this._placeHolder) {
-                    this._placeHolderBoundingRect = this._placeHolder.getBoundingClientRect();
-                }
-
-                var treeNodeOver;
-
-                if (this._placeHolderBoundingRect) {
-                    var positionX = this._startPositionX + this._translateX,
-                        positionY = this._startPositionY + this._translateY;
-                    
+                var positionX = this._startPositionX + this._translateX,
+                    positionY = this._startPositionY + this._translateY,
                     treeNodeOver = this._findClosestTreeNode(positionX, positionY);
 
+                if (treeNodeOver) {
+                    var directParentNode = this._draggingTreeNode.object.parent.data,
+                        draggingNodeObjectData = this._draggingTreeNode.object.data,
+                        directParentNodeChildren = this.controller.childrenFromNode(
+                            directParentNode
+                        ),
+                        overNodeObjectData = treeNodeOver.object.data,
+                        overNodeIndex = -1;
+
+                    this._definePlaceholderPositionOnTreeNode(treeNodeOver, positionY);
+
+                    if (
+                        /**
+                         * cancel drop in some cases:
+                         * - the over node is the dragging one.
+                         * - the over node is the direct parent node from the dragging node.
+                         * - the over node is the next sibling of the dragging node.
+                         */
+                        overNodeObjectData === draggingNodeObjectData ||
+                        (overNodeObjectData === directParentNode &&
+                            this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE) ||
+                        (this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE &&
+                            (overNodeIndex = directParentNodeChildren.indexOf(overNodeObjectData)) > -1)
+                    ) {
+
+                        if (overNodeIndex > -1) {
+                            var draggingNodeIndex = directParentNodeChildren.indexOf(draggingNodeObjectData);
+
+                            if ((overNodeIndex + 1 === draggingNodeIndex &&
+                                this._placerHolderPosition !== PLACEHOLDER_POSITION.BEFORE_NODE) ||
+                                (overNodeIndex - 1 === draggingNodeIndex &&
+                                    this._placerHolderPosition !== PLACEHOLDER_POSITION.AFTER_NODE)
+                            ) {  // next/previous sibling
+                                treeNodeOver = null;
+                            }
+                        } else {
+                            treeNodeOver = null;
+                        }
+                    }
+
                     if (treeNodeOver) {
-                        var directParentNode = this._draggingTreeNode.object.parent.data,
-                            draggingNodeObjectData = this._draggingTreeNode.object.data,
-                            directParentNodeChildren = this.controller.childrenFromNode(
-                                directParentNode
+                        var nodeCandidate = this._findClosestNodeWillAcceptDrop(treeNodeOver),
+                            sourceNode = this._draggingTreeNode.object;
+
+                        if (nodeCandidate && this._shouldNodeAcceptDrop(nodeCandidate, sourceNode)) {
+                            var delegateResponse = this.callDelegateMethod(
+                                'treeListCanDropNode',
+                                this,
+                                this._draggingTreeNode.object.data,
+                                nodeCandidate.data,
+                                true
                             ),
-                            overNodeObjectData = treeNodeOver.object.data,
-                            overNodeIndex = -1;
-                                                
-                        this._definePlaceholderPositionOnTreeNode(treeNodeOver, positionY);
+                                canDrop = delegateResponse === void 0 ?
+                                    true : delegateResponse;
 
-                        if (
-                            /**
-                             * cancel drop in some cases:
-                             * - the over node is the dragging one.
-                             * - the over node is the direct parent node from the dragging node.
-                             * - the over node is the next sibling of the dragging node.
-                             */
-                            overNodeObjectData === draggingNodeObjectData ||
-                            (overNodeObjectData === directParentNode &&
-                                this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE) ||
-                            (this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE &&
-                                (overNodeIndex = directParentNodeChildren.indexOf(overNodeObjectData)) > -1)
-                        ) {
+                            if (canDrop) {
+                                var previousTreeNodeWillAcceptDrop = this._previousTreeNodeWillAcceptDrop;
 
-                            if (overNodeIndex > -1) {
-                                var draggingNodeIndex = directParentNodeChildren.indexOf(draggingNodeObjectData);
+                                if (!previousTreeNodeWillAcceptDrop ||
+                                    (previousTreeNodeWillAcceptDrop &&
+                                        previousTreeNodeWillAcceptDrop.object.data !== nodeCandidate.data)
+                                ) {
+                                    this._previousTreeNodeWillAcceptDrop = this._treeNodeWillAcceptDrop;
+                                    this._treeNodeWillAcceptDrop = this._findTreeNodeWithNode(nodeCandidate);
 
-                                if ((overNodeIndex + 1 === draggingNodeIndex &&
-                                    this._placerHolderPosition !== PLACEHOLDER_POSITION.BEFORE_NODE) ||
-                                    (overNodeIndex - 1 === draggingNodeIndex &&
-                                        this._placerHolderPosition !== PLACEHOLDER_POSITION.AFTER_NODE)
-                                ) {  // next/previous sibling
-                                    treeNodeOver = null;
-                                }
-                            } else {
-                                treeNodeOver = null;
-                            }
-                        }
-                        
-                        if (treeNodeOver) {
-                            var nodeCandidate = this._findClosestNodeWillAcceptDrop(treeNodeOver),
-                                sourceNode = this._draggingTreeNode.object;
-
-                            if (nodeCandidate && this._shouldNodeAcceptDrop(nodeCandidate, sourceNode)) {
-                                var delegateResponse = this.callDelegateMethod(
-                                        'treeListCanDropNode',
-                                        this,
-                                        this._draggingTreeNode.object.data,
-                                        nodeCandidate.data,
-                                        true
-                                    ),
-                                    canDrop = delegateResponse === void 0 ?
-                                        true : delegateResponse;
-
-                                if (canDrop) {
-                                    var previousTreeNodeWillAcceptDrop = this._previousTreeNodeWillAcceptDrop;
-
-                                    if (!previousTreeNodeWillAcceptDrop ||
-                                        (previousTreeNodeWillAcceptDrop &&
-                                            previousTreeNodeWillAcceptDrop.object.data !== nodeCandidate.data)
+                                    if (
+                                        !nodeCandidate.isExpanded &&
+                                        this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE
                                     ) {
-                                        this._previousTreeNodeWillAcceptDrop = this._treeNodeWillAcceptDrop;
-                                        this._treeNodeWillAcceptDrop = this._findTreeNodeWithNode(nodeCandidate);
-
-                                        if (
-                                            !nodeCandidate.isExpanded &&
-                                            this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE
-                                        ) {
-                                            this._scheduleToExpandNode(nodeCandidate);
-                                        } else {
-                                            this._cancelExpandingNodeIfNeeded();
-                                        }
-                                    } 
-                                } else {
-                                    treeNodeOver = null;
+                                        this._scheduleToExpandNode(nodeCandidate);
+                                    } else {
+                                        this._cancelExpandingNodeIfNeeded();
+                                    }
                                 }
                             } else {
                                 treeNodeOver = null;
                             }
+                        } else {
+                            treeNodeOver = null;
                         }
-                    }         
-                }
+                    }
+                }   
 
                 this._treeNodeOver = treeNodeOver;
 
