@@ -81,9 +81,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (value) {
                 this.delegate = value;
             }
-            return this._childServiceRegistrationPromise ? this._childServiceRegistrationPromise.then(function () {
-                return self;
-            }) : null;
+            return this._childServiceRegistrationPromise;
         }
     },
 
