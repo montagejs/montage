@@ -11,7 +11,7 @@ exports.CategoryService = RawDataService.specialize(/** @lends CategoryService.p
             this.addRawData(stream, [{
                 name: categoryName
             }]);
-            stream.dataDone();
+            this.rawDataDone(stream);
         }
     }
 
