@@ -102,6 +102,14 @@
                     "value": "move",
                     "radioButtonController": {"@": "placeholderStrategyController"}
                 }
+            },
+
+             "lastActionReport": {
+                "prototype": "montage/ui/text.reel",
+                "values": {
+                    "element": {"#": "lastActionReport"},
+                    "value": {"<-": "@owner.lastActionReport"}
+                }
             }
         }
     </script>
@@ -152,6 +160,10 @@
                 <p>
                     <span>Placeholder position: </span>
                     <span data-montage-id="debugPlaceholderPosition" class="debug-value"></span>
+                </p>
+                <p>
+                    <span>Last Action Report: </span>
+                    <pre data-montage-id="lastActionReport" class="debug-value"></pre>
                 </p>
             </div>
         </section>

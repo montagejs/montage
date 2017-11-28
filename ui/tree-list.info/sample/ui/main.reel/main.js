@@ -153,6 +153,28 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
+    enterDocument: {
+        value: function () {
+            this.addEventListener('orderchange', this);
+        }
+    },
+
+    handleOrderchange: {
+        value: function (event) {
+            console.log(event.detail);
+
+            var report = event.detail;
+
+            this.lastActionReport = JSON.stringify({
+                node: report.object.filename,
+                index: report.index,
+                parent: report.parent.filename,
+                previousIndex: report.previousIndex,
+                previousParent: report.previousParent.filename,
+            }, null, 4);
+        }
+    },
+
     treeListCanDragNode: {
         value: function (treeList, node, defaultValue) {
             return !node.locked;
