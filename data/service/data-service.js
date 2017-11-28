@@ -62,7 +62,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             value = deserializer.getProperty("childServices");
             if (value) {
                 this.registerChildServices(value);
-                result = this._childServiceRegistrationPromise;
+                result = this._childServiceRegistrationPromise.then(function () {
+                    return self;
+                });
             }
 
             value = deserializer.getProperty("model") || deserializer.getProperty("binder");
