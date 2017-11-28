@@ -591,15 +591,17 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
     handleTranslateEnd: {
         value: function () {
             if (this._treeNodeWillAcceptDrop) {
-                //Delegate Method when Dragging end over another node?
-                var draggingObject = this._draggingTreeNode.object,
+                var draggingNode = this._draggingTreeNode.object,
+                    draggingObject = draggingNode.data,
+                    previousParentObject = draggingNode.parent.data,    
+                    parentObject = this._treeNodeWillAcceptDrop.object.data,  
                     sourceChildren = this.controller.childrenFromNode(
-                        draggingObject.parent.data
+                        previousParentObject
                     ),
                     targetChildren = this.controller.childrenFromNode(
-                        this._treeNodeWillAcceptDrop.object.data
+                        parentObject
                     ),
-                    sourceIndex = sourceChildren.indexOf(draggingObject.data);
+                    sourceIndex = sourceChildren.indexOf(draggingObject);
 
                 if (
                     sourceChildren === targetChildren &&
@@ -609,13 +611,21 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     return void 0;
                 }
 
-                sourceChildren.splice(sourceChildren.indexOf(draggingObject.data), 1);
+                sourceChildren.splice(sourceChildren.indexOf(draggingObject), 1);
 
                 var index = this._placerHolderPosition > PLACEHOLDER_POSITION.OVER_NODE ?
                     targetChildren.indexOf(this._treeNodeOver.object.data) +
                     this._placerHolderPosition : targetChildren.length;
 
-                targetChildren.splice(index, 0, draggingObject.data);
+                targetChildren.splice(index, 0, draggingObject)
+
+                this.dispatchEventNamed('orderchange', true, true, {
+                    object: draggingObject,
+                    previousParent: previousParentObject,
+                    previousIndex: sourceIndex,
+                    parent: parentObject,
+                    index: index
+                });
             }
 
             this._resetTranslateContext();
