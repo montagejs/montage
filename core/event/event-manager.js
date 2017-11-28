@@ -552,6 +552,13 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             // Note I think it may be implementation specific how these are implemented
             // so I'd rather preserve any native optimizations a browser has for
             // adding listeners to the document versus and element etc.
+
+            aWindow.EventTarget.prototype.nativeAddEventListener = aWindow.EventTarget.prototype.addEventListener;
+            Object.defineProperty(aWindow.EventTarget, "nativeAddEventListener", {
+                configurable: true,
+                value: aWindow.EventTarget.nativeAddEventListener
+            });
+
             aWindow.Element.prototype.nativeAddEventListener = aWindow.Element.prototype.addEventListener;
             Object.defineProperty(aWindow, "nativeAddEventListener", {
                 configurable: true,
@@ -575,6 +582,14 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             if (aWindow.MediaController) {
                 aWindow.MediaController.prototype.nativeAddEventListener = aWindow.MediaController.prototype.addEventListener;
             }
+
+
+            aWindow.EventTarget.prototype.nativeRemoveEventListener = aWindow.EventTarget.prototype.removeEventListener;
+            Object.defineProperty(aWindow.EventTarget.prototype, "nativeRemoveEventListener", {
+                configurable: true,
+                value: aWindow.EventTarget.removeEventListener
+            });
+
 
             aWindow.Element.prototype.nativeRemoveEventListener = aWindow.Element.prototype.removeEventListener;
             Object.defineProperty(aWindow, "nativeRemoveEventListener", {
@@ -604,7 +619,8 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
             Object.defineProperty(aWindow, "addEventListener", {
                 configurable: true,
-                value: (aWindow.XMLHttpRequest.prototype.addEventListener =
+                value: (aWindow.EventTarget.prototype.addEventListener =
+                aWindow.XMLHttpRequest.prototype.addEventListener =
                     aWindow.Element.prototype.addEventListener =
                         aWindow.document.addEventListener =
                             function addEventListener(eventType, listener, useCapture) {
@@ -621,7 +637,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
             Object.defineProperty(aWindow, "removeEventListener", {
                 configurable: true,
-                value: (aWindow.XMLHttpRequest.prototype.removeEventListener =
+                value: (
+                    aWindow.EventTarget.prototype.removeEventListener =
+                    aWindow.XMLHttpRequest.prototype.removeEventListener =
                     aWindow.Element.prototype.removeEventListener =
                         aWindow.document.removeEventListener =
                             function removeEventListener(eventType, listener, useCapture) {
