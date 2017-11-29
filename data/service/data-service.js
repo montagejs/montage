@@ -959,14 +959,20 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     _getPrototypeForType: {
         value: function (type) {
-            var prototype;
+            var info, triggers, prototype;
             type = this._objectDescriptorForType(type);
             prototype = this._dataObjectPrototypes.get(type);
             if (type && !prototype) {
                 prototype = Object.create(type.objectPrototype || Montage.prototype);
                 this._dataObjectPrototypes.set(type, prototype);
-                this._dataObjectTriggers.set(type, DataTrigger.addTriggers(this, type, prototype));
-
+                if (type instanceof ObjectDescriptor || type instanceof DataObjectDescriptor) {
+                    triggers = DataTrigger.addTriggers(this, type, prototype);
+                } else {
+                    info = Montage.getInfoForObject(type.prototype);
+                    console.warn("Data Triggers cannot be created for this type. (" + (info && info.objectName) + ") is not an ObjectDescriptor");
+                    triggers = [];
+                }
+                this._dataObjectTriggers.set(type, triggers);
                 //We add a property that returns an object's snapshot
                 //We add a property that returns an object's primaryKey
                 //Let's postponed this for now and revisit when we need
