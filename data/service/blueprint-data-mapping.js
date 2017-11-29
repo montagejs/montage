@@ -1,5 +1,4 @@
-var DataMapping = require("data/service/data-mapping").DataMapping,
-    moment = require("moment-timezone");
+var DataMapping = require("data/service/data-mapping").DataMapping;
 
 /**
  * Maps raw data to data objects of a specific type by using a blueprint.
@@ -56,17 +55,28 @@ exports.BlueprintDataMapping = DataMapping.specialize(/** @lends BlueprintDataMa
                 propertyKey = property.synonym || property.name;
                 if (attributes && propertyKey in attributes) {
                     value = attributes[propertyKey];
-                    object[property.name] = property.valueType === "date" ? new moment(Number(value)) :
-                                            property.valueType === "duration" ? moment.duration(Number(value)) :
-                                                                                value;
-                    //console.log(iProperty.name +" found in attributes");
+
+                    /*
+                    var moment = require("moment-timezone");
+                    if (typeof moment !== 'undefined') {
+                        if (property.valueType === "date") {
+                            value = new moment(Number(value));
+                        } else if (property.valueType === "duration") {
+                            value = moment.duration(Number(value));
+                        }
+                    }
+                    */
+
+                    object[property.name] = value;
+
+                    //console.log(property.name +" found in attributes");
                 // }
                 // else if(relationships && property.name in relationships) {
-                //     //object[iProperty.name] = attributes[iProperty.name];
-                //     //console.log(iProperty.name +" found in relationshios");
+                //     //object[property.name] = attributes[property.name];
+                //     //console.log(property.name +" found in relationshios");
                 // }
                 // else {
-                //     //console.log(iProperty.name +" NOT found in data");
+                //     //console.log(property.name +" NOT found in data");
                 }
 
             }
