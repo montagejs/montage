@@ -9,8 +9,8 @@
   },
   "main": "montage",
   "engines": {
-    "node": "4.8.4",
-    "npm": "2.15.11"
+    "node": "=>4.8.4",
+    "npm": "=>2.15.11"
   },
   "overlay": {
     "browser": {
