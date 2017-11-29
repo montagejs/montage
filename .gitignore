@@ -11,6 +11,10 @@ tmp/
 log.txt
 *.log
 
+## Build
+/dist
+montage.min.js
+
 ## jsdoc
 /doc
  

@@ -3,3 +3,6 @@
 **/test/spec/**
 **/report/**
 **/tools/**
+montage.min.js
+montage2.js
+webpack.config.js

@@ -1,12 +1,10 @@
 {
     "name": "sample",
     "version": "0.1.0",
-    "scripts": {
-        "postinstall": "npm link ../../.."
-    },
     "dependencies": {
-        "montage": "../../.."
+        "montage": "*"
     },
-    "private": true,
-    "bundle": [ "ui/main.reel" ]
+    "mappings": {
+        "montage": "../../../"
+    }
 }
