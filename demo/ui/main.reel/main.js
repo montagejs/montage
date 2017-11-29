@@ -1,7 +1,8 @@
 /**
  * @module "ui/main.reel"
  */
-var Component = require("montage/ui/component").Component;
+var Component = require("montage/ui/component").Component,
+    data = require('core/data');
 
 /**
  * @class Main
@@ -14,9 +15,9 @@ exports.Main = Component.specialize(/** @lends Main.prototype */{
         }
     },
 
-    packageDescription: {
+    myData: {
         get: function() {
-            return ( typeof montageRequire !== "undefined" ? montageRequire : mr).packageDescription;
+            return data;
         }
     }
 });

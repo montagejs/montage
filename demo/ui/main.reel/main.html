@@ -10,11 +10,11 @@
                 "element": {"#": "owner"}
             }
         },
-        "montageVersion": {
+        "myData": {
             "prototype": "montage/ui/text.reel",
             "values": {
-                "element": {"#": "montageVersion"},
-                "value": {"<-": "@owner.packageDescription.version"}
+                "element": {"#": "myData"},
+                "value": {"<-": "@owner.myData"}
             }
         }
     }
@@ -22,7 +22,7 @@
 </head>
 <body>
     <div data-montage-id="owner" class="Main">
-        <span data-montage-id="version" class="Version">App version: <span data-montage-id="montageVersion"></span></span>
+        <span data-montage-id="myData"></span>
     </div>
 </body>
 </html>
