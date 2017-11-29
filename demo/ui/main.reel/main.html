@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Montage Hello</title>
+    <link rel="stylesheet" href="main.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "owner"}
+            }
+        },
+        "montageVersion": {
+            "prototype": "montage/ui/text.reel",
+            "values": {
+                "element": {"#": "montageVersion"},
+                "value": {"<-": "@owner.packageDescription.version"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="Main">
+        <span data-montage-id="version" class="Version">App version: <span data-montage-id="montageVersion"></span></span>
+    </div>
+</body>
+</html>
