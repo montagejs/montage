@@ -823,10 +823,30 @@
                 })
                 .then(function (montageRequire) {
                     montageRequire.inject("core/mini-url", miniURL);
-                    montageRequire.inject("core/promise", {Promise: mrPromise});
+                    montageRequire.inject("core/promise", {
+                        Promise: mrPromise
+                    });
 
                     // Expose global require and mr
                     global.mr = applicationRequire;
+
+                    // install the linter, which loads on the first error
+                    config.lint = function (module) {
+                        montageRequire.async("core/jshint")
+                        .then(function (JSHINT) {
+                            if (!JSHINT.JSHINT(module.text)) {
+                                console.warn("JSHint Error: "+module.location);
+                                JSHINT.JSHINT.errors.forEach(function (error) {
+                                    if (error) {
+                                        console.warn("Problem at line "+error.line+" character "+error.character+": "+error.reason);
+                                        if (error.evidence) {
+                                            console.warn("    " + error.evidence);
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    };
 
                     var dependencies = [
                         "core/core",

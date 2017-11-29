@@ -1216,14 +1216,25 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
     // Individual Event Registration
 
-    _scrollBlockingEvents: {
+    _passiveEvents: {
+        enumerable: false,
         value: [
+            /*
+            // Disabled for flow
             'wheel',
             'mousewheel',
             'touchstart',
             'touchmove',
+            */
             'scroll'
         ]
+    },
+
+    isPassiveEventType: {
+        enumerable: false,
+        value: function (eventType) {
+            return this._passiveEvents.indexOf(eventType) !== -1;
+        }
     },
 
     /**
@@ -1241,8 +1252,8 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 }
                 this._observedTarget_byEventType_[eventType].set(listenerTarget,this);
 
-                var isScrollBlocking = this._scrollBlockingEvents.indexOf(eventType) !== -1,
-                    eventOpts = isScrollBlocking ? {
+                var isPassiveEventType = this.isPassiveEventType(eventType),
+                    eventOpts = isPassiveEventType ? {
                         passive: true
                     } : true;
 

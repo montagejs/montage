@@ -404,7 +404,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             //     childService._fetchRawData(stream);
             // } else
             if (childService) {
-                childService.fetchRawData(stream);
+                childService._fetchRawData(stream);
             } else if (query.authorization) {
                 stream.query = self.mapSelectorToRawDataQuery(query);
                 self.fetchRawData(stream);
