@@ -1,5 +1,5 @@
 var ExpressionDataMapping = require("montage/data/service/expression-data-mapping").ExpressionDataMapping,
-    CategoryService = require("spec/data/service/category-service").CategoryService,
+    CategoryService = require("spec/data/logic/service/category-service").CategoryService,
     DataService = require("montage/data/service/data-service").DataService,
     DateConverter = require("montage/core/converter/date-converter").DateConverter,
     ModuleObjectDescriptor = require("montage/core/meta/module-object-descriptor").ModuleObjectDescriptor,
@@ -11,7 +11,8 @@ var ExpressionDataMapping = require("montage/data/service/expression-data-mappin
 
 describe("An Expression Data Mapping", function() {
 
-    var categoryMapping,
+    var categoryConverter,
+        categoryMapping,
         categoryModuleReference,
         categoryObjectDescriptor,
         categoryPropertyDescriptor,
@@ -45,7 +46,7 @@ describe("An Expression Data Mapping", function() {
         },
         convert: {
             value: function (rawValue) {
-                return new Date(Date.parse(rawValue));
+                return new Date(rawValue);
             }
         },
         revert: {
@@ -60,21 +61,21 @@ describe("An Expression Data Mapping", function() {
     mainService = new DataService();
     mainService.NAME = "Movies";
     movieService = new RawDataService();
-    movieModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/model/logic/movie", require);
+    movieModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/movie", require);
     movieObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(movieModuleReference, "Movie");
     movieObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("title", movieObjectDescriptor, 1));
     movieSchemaModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/schema/logic/movie", require);
     movieSchema = new ModuleObjectDescriptor().initWithModuleAndExportName(movieSchemaModuleReference, "Movie");
     categoryService = new CategoryService();
 
-    categoryModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/model/logic/category", require);
+    categoryModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category", require);
     categoryObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(categoryModuleReference, "Category");
     categoryObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("name", categoryObjectDescriptor, 1));
     categoryPropertyDescriptor = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("category", movieObjectDescriptor, 1);
     categoryPropertyDescriptor.valueDescriptor = categoryObjectDescriptor;
     movieObjectDescriptor.addPropertyDescriptor(categoryPropertyDescriptor);
 
-    plotSummaryModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/model/logic/plot-summary", require);
+    plotSummaryModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/plot-summary", require);
     plotSummaryObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(plotSummaryModuleReference, "PlotSummary");
     plotSummaryObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("summary", plotSummaryObjectDescriptor, 1));
     plotSummaryPropertyDescriptor = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("plotSummary", movieObjectDescriptor, 1);
@@ -100,9 +101,12 @@ describe("An Expression Data Mapping", function() {
     movieMapping = new ExpressionDataMapping().initWithServiceObjectDescriptorAndSchema(movieService, movieObjectDescriptor, movieSchema);
     movieMapping.addRequisitePropertyName("title", "category", "budget", "isFeatured", "releaseDate");
     movieMapping.addObjectMappingRule("title", {"<->": "name"});
+
+    categoryConverter = new RawPropertyValueToObjectConverter().initWithConvertExpression("category_id == $");
+    categoryConverter.service = categoryService;
     movieMapping.addObjectMappingRule("category", {
-        "<-": "category_id",
-        converter: new RawPropertyValueToObjectConverter().initWithConvertExpression("category_id")
+        "<-": "{categoryID: category_id}",
+        converter: categoryConverter
     });
     movieMapping.addObjectMappingRule("releaseDate", {
         "<->": "release_date",
@@ -135,42 +139,51 @@ describe("An Expression Data Mapping", function() {
         });
     });
 
+    it("can create the correct number of mapping rules", function () {
+        expect(Object.keys(movieMapping._compiledObjectMappingRules).length).toBe(5);
+        expect(Object.keys(movieMapping._compiledRawDataMappingRules).length).toBe(4);
+    });
+
     it("can map raw data to object properties", function (done) {
-        var movie = {},
-            data = {
-                name: "Star Wars",
-                category_id: 1,
-                budget: "14000000.00",
-                is_featured: "true",
-                release_date: "05/25/1977"
-            };
-        return movieMapping.mapRawDataToObject(data, movie).then(function () {
-            expect(movie.title).toBe("Star Wars");
-            expect(movie.category).toBeDefined();
-            expect(movie.category && movie.category.name === "Action").toBeTruthy();
-            expect(typeof movie.releaseDate === "object").toBeTruthy();
-            expect(movie.releaseDate.getDate()).toBe(25);
-            expect(movie.releaseDate.getMonth()).toBe(4);
-            expect(movie.releaseDate.getFullYear()).toBe(1977);
-            done();
+        return registrationPromise.then(function () {
+            var movie = {},
+                data = {
+                    name: "Star Wars",
+                    category_id: 1,
+                    budget: "14000000.00",
+                    is_featured: "true",
+                    release_date: "05/25/1977"
+                };
+            return movieMapping.mapRawDataToObject(data, movie).then(function () {
+                expect(movie.title).toBe("Star Wars");
+                expect(movie.category).toBeDefined();
+                expect(movie.category && movie.category.name === "Action").toBeTruthy();
+                expect(typeof movie.releaseDate === "object").toBeTruthy();
+                expect(movie.releaseDate.getDate()).toBe(25);
+                expect(movie.releaseDate.getMonth()).toBe(4);
+                expect(movie.releaseDate.getFullYear()).toBe(1977);
+                done();
+            });
         });
     });
 
     it("can automatically convert raw data to the correct type", function (done) {
-        var movie = {},
-            data = {
-                name: "Star Wars",
-                category_id: 1,
-                budget: "14000000.00",
-                is_featured: "true"
+        return registrationPromise.then(function () {
+            var movie = {},
+                data = {
+                    name: "Star Wars",
+                    category_id: 1,
+                    budget: "14000000.00",
+                    is_featured: "true"
 
-            };
-        return movieMapping.mapRawDataToObject(data, movie).then(function () {
-            expect(typeof movie.budget === "number").toBeTruthy();
-            expect(typeof movie.category === "object").toBeTruthy();
-            expect(typeof movie.isFeatured === "boolean").toBeTruthy();
-            expect(typeof movie.title === "string").toBeTruthy();
-            done();
+                };
+            return movieMapping.mapRawDataToObject(data, movie).then(function () {
+                expect(typeof movie.budget === "number").toBeTruthy();
+                expect(typeof movie.category === "object").toBeTruthy();
+                expect(typeof movie.isFeatured === "boolean").toBeTruthy();
+                expect(typeof movie.title === "string").toBeTruthy();
+                done();
+            });
         });
     });
 
