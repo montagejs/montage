@@ -723,14 +723,16 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
     },
 
     _placeholderThresholdMultiplier: {
-        value: 0.2
+        value: 0.25
     },
 
     _findClosestTreeNode: {
         value: function (pointerPositionX, pointerPositionY) {
             var treeListRect = this._treeListBoundingClientRect,
+                heightThreshold = this._rowHeight * this._placeholderThresholdMultiplier,
+                treeListScrollTop =  this.element.scrollTop,
                 drawnIterations = this.repetition._drawnIterations,
-                treeListRectTop = treeListRect.y - this.element.scrollTop,
+                treeListRectTop = treeListRect.top,
                 minDist = 0, rowRect = {}, dist, iteration, marginLeft,
                 dY, dX, candidate, element, heightThreshold;
             
@@ -738,15 +740,15 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 iteration = drawnIterations[i];
 
                 if (iteration.object) {
-                    element = iteration.cachedFirstElement || iteration.firstElement;
+                    element = iteration.firstElement;
                     marginLeft = parseInt(element.style.marginLeft);
-                    rowRect.top = treeListRectTop + parseInt(element.style.marginTop);
+                    rowRect.top = treeListRectTop +
+                        parseInt(element.style.marginTop) - treeListScrollTop;
                     rowRect.left = treeListRect.x + marginLeft;
                     rowRect.width = treeListRect.width - marginLeft;
                     rowRect.height = iteration.object.height * this._rowHeight;
                     rowRect.bottom = rowRect.top + rowRect.height;
                     rowRect.right = rowRect.left + rowRect.width;
-                    heightThreshold = rowRect.height * this._placeholderThresholdMultiplier;
 
                     if (
                         pointerPositionX >= rowRect.left && pointerPositionX <= rowRect.right &&
@@ -758,7 +760,8 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
                         if (pointerPositionY > rowRect.top + this.rowHeight) {
                             if (pointerPositionX <= rowRect.left + this.indentationWidth) {
-                                dX = (rowRect.left + this.indentationWidth / 2) - pointerPositionY;
+                                dX = (rowRect.left + this.indentationWidth / 2) - pointerPositionX;
+                                dY = pointerPositionY;
                             }
                         }
 
