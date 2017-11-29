@@ -1037,6 +1037,8 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE
                 ) {
                     this._treeNodeWillAcceptDrop.element.classList.add('willDrop');
+                } else if (this._treeNodeWillAcceptDrop) {
+                    this._treeNodeWillAcceptDrop.element.classList.remove('willDrop');
                 }
 
                 this._ghostElement.style[TreeList.cssTransform] = "translate3d(" +
