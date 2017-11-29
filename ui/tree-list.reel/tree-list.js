@@ -755,7 +755,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                         pointerPositionY >= rowRect.top - heightThreshold &&
                         pointerPositionY <= rowRect.bottom + heightThreshold
                     ) {
-                        dX = pointerPositionX;
+                        dX = pointerPositionX - marginLeft;
                         dY = (rowRect.top + this.rowHeight / 2) - pointerPositionY;
 
                         if (pointerPositionY > rowRect.top + this.rowHeight) {
