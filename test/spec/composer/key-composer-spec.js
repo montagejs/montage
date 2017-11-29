@@ -23,7 +23,7 @@ TestPageLoader.queueTest("key-composer-test/key-composer-test", function (testPa
 
     describe("composer/key-composer-spec", function () {
         describe("KeyComposer", function (){
-            xit("should fire keyPress, longKeyPress and keyRelease when pressing,  holding and releasing a composerKey", function (done) {
+            it("should fire keyPress, longKeyPress and keyRelease when pressing,  holding and releasing a composerKey", function (done) {
                 var target = test.example.element,
                     listener1 = testPage.addListener(test.key_composer1, null, "keyPress"),
                     listener2 = testPage.addListener(test.key_composer1, null, "longKeyPress"),
@@ -40,7 +40,7 @@ TestPageLoader.queueTest("key-composer-test/key-composer-test", function (testPa
             });
 
             it("should not fire keyComposer's event when pressing a composerKey which is not in the target path", function (done) {
-                var target = test.example.element.parentNode,
+                var target = test.example.element2.element,
                     keyPressCalled = false,
                     keyReleaseCalled = false;
 
@@ -56,8 +56,25 @@ TestPageLoader.queueTest("key-composer-test/key-composer-test", function (testPa
                 }, 50);
             });
 
-            xit("should fire keyPress and KeyRelease on pressing a global key whatever of the target", function (done) {
-                var target = test.example.element.parentNode;
+            it("should fire keyComposer's event when nothing is being focused", function(done) {
+                var target = test.example.element.parentNode,   // == <body>...</body>
+                    keyPressCalled = false;
+                    keyReleaseCalled = false;
+
+                test.key_composer1.addEventListener("keyPress", function (){keyPressCalled = true});
+                test.key_composer1.addEventListener("keyRelease", function (){keyReleaseCalled = true});
+
+                testPage.keyEvent({target: target, modifiers: command, charCode: 0, keyCode: "J".charCodeAt(0)}, "keydown");
+                setTimeout(function (){
+                    testPage.keyEvent({target: target, modifiers: command, charCode: 0, keyCode:"J".charCodeAt(0)}, "keyup");
+                    expect(keyPressCalled).toBeTruthy();
+                    expect(keyPressCalled).toBeTruthy();
+                    done();
+                });
+            });
+
+            it("should fire keyPress and KeyRelease on pressing a global key whatever of the target", function (done) {
+                var target = test.example.element2.element;
 
                 test.keyPressCalled = false;
                 test.keyReleaseCalled = false;
@@ -78,7 +95,6 @@ TestPageLoader.queueTest("key-composer-test/key-composer-test", function (testPa
                 test.keyReleaseCalled = false;
 
                 testPage.keyEvent({target: target, modifiers: "shift", charCode: 0, keyCode: "K".charCodeAt(0)}, "keydown");
-                
                 setTimeout(function (){
                     testPage.keyEvent({target: target, modifiers: "shift control", charCode: 0, keyCode: "K".charCodeAt(0)}, "keyup");
                     expect(test.keyPressCalled).toBeFalsy();
@@ -88,7 +104,7 @@ TestPageLoader.queueTest("key-composer-test/key-composer-test", function (testPa
             });
 
             describe("interacting with activeTarget", function () {
-                xit("should fire window key events on composers of the activeTarget", function (done) {
+                it("should fire window key events on composers of the activeTarget", function (done) {
                     var target = test.example.element,
                         listener1 = testPage.addListener(test.key_composer1, null, "keyPress"),
                         listener2 = testPage.addListener(test.key_composer1, null, "longKeyPress"),
