@@ -9,8 +9,8 @@
   },
   "main": "montage",
   "engines": {
-    "node": "4.8.4",
-    "npm": "2.15.11"
+    "node": "=>4.8.4",
+    "npm": "=>2.15.11"
   },
   "overlay": {
     "browser": {
@@ -52,17 +52,17 @@
     "collections": "~5.0.x",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
-    "q-io": "^1.13.3",
-    "moment-timezone": "^0.5.11",
-    "mr": "^17.0.8",
-    "q-io": "^1.13.3",
-    "weak-map": "^1.0.5",
+    "jshint": "^2.9.5",
     "xhr2": "^0.1.4",
-    "lodash.kebabcase": "^4.1.1",
     "lodash.camelcase": "^4.3.0",
-    "lodash.trim": "^4.5.1",
+    "lodash.kebabcase": "^4.1.1",
     "lodash.snakecase": "^4.1.1",
-    "proxy-polyfill": "~0.1.7"
+    "lodash.trim": "^4.5.1",
+    "moment-timezone": "^0.5.11",
+    "mr": "montagejs/mr#commonjs",
+    "proxy-polyfill": "~0.1.7",
+    "q-io": "^1.13.3",
+    "weak-map": "^1.0.5"
   },
   "devDependencies": {
     "concurrently": "^3.4.0",
@@ -80,21 +80,24 @@
     "karma-safari-launcher": "^1.0.0",
     "montage-testing": "git://github.com/montagejs/montage-testing.git#master",
     "mop-integration": "git://github.com/montagejs/mop-integration.git#master",
-    "mr": "git://github.com/montagejs/mr.git#master",
-    "open": "0.0.5"
+    "open": "0.0.5",
+    "webpack": "^3.5.3",
+    "xmlhttprequest": "^1.8.0"
   },
   "scripts": {
     "test": "node test/run-node.js",
     "jsdoc": "jsdoc -c jsdoc.json",
     "integration": "MONTAGE_VERSION=${MONTAGE_VERSION:=./} MOP_VERSION=${MOP_VERSION:=#master} node node_modules/mop-integration/integration",
     "lint": "jshint .",
+    "build": "webpack",
     "test:karma": "karma start --no-auto-watch --single-run",
     "test:karma-travis": "karma start --no-auto-watch --single-run --browsers=Chrome_travis_ci",
     "test:karma-firefox": "karma start --no-auto-watch --single-run --browsers=Firefox",
     "test:karma-chrome": "karma start --no-auto-watch --single-run --browsers=Chrome",
     "test:karma-debug": "karma start --auto-watch --no-single-run --browsers=PhantomJS_debug",
     "test:karma-dev": "karma start --auto-watch --no-single-run --capture",
-    "test:jasmine": "concurrently \"http-server -p 8085\" \"open http://localhost:8085/test/run.html\""
+    "test:jasmine": "concurrently \"http-server -p 8085\" \"open http://localhost:8085/test/run.html\"",
+    "test:jasmine-webpack": "concurrently \"http-server -p 8086\" \"open http://localhost:8086/test/run-webpack.html\""
   },
   "exclude": [
     "report",

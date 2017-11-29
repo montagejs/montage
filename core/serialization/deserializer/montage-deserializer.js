@@ -1,6 +1,7 @@
 var Montage = require("../../core").Montage,
     MontageContext = require("./montage-interpreter").MontageContext,
     MontageReviver = require("./montage-reviver").MontageReviver,
+    Promise = require("../../promise").Promise,
     Map = require("collections/map").Map,
     deprecate = require("../../deprecate");
 
