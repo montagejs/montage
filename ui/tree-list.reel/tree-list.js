@@ -739,8 +739,8 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             
             if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE && 
                 this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE &&
-                pointerPositionY >= placeholderRect.top &&
-                pointerPositionY <= placeholderRect.bottom &&
+                pointerPositionY >= placeholderRect.top - heightThreshold &&
+                pointerPositionY <= placeholderRect.bottom + heightThreshold &&
                 pointerPositionX >= placeholderRect.left &&
                 pointerPositionX <= placeholderRect.right
             ) {
