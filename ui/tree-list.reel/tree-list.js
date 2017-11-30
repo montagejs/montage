@@ -729,12 +729,23 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
     _findClosestTreeNode: {
         value: function (pointerPositionX, pointerPositionY) {
             var treeListRect = this._treeListBoundingClientRect,
+                placeholderRect = this._placeholderBoundingClientRect,    
                 heightThreshold = this._placeholderThreshold,
                 treeListScrollTop =  this.element.scrollTop,
                 drawnIterations = this.repetition._drawnIterations,
                 treeListRectTop = treeListRect.top,
                 minDist = 0, rowRect = {}, dist, iteration, marginLeft,
                 dY, dX, candidate, element, heightThreshold;
+            
+            if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE && 
+                this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE &&
+                pointerPositionY >= placeholderRect.top &&
+                pointerPositionY <= placeholderRect.bottom &&
+                pointerPositionX >= placeholderRect.left &&
+                pointerPositionX <= placeholderRect.right
+            ) {
+                return this._placeholder;
+            }
             
             for (var i = 0, length = drawnIterations.length; i < length; i++) {
                 iteration = drawnIterations[i];
@@ -815,13 +826,19 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     this._ghostElementBoundingRect = this._draggingTreeNode.element.getBoundingClientRect();
                 }
 
-                if (!this._placeholder) {
+                if (this._placeholder) {
+                    this._placeholderBoundingClientRect = this._placeholder.getBoundingClientRect();
+                } else {
                     return void 0;
                 }
 
                 var positionX = this._startPositionX + this._translateX,
                     positionY = this._startPositionY + this._translateY,
                     treeNodeOver = this._findClosestTreeNode(positionX, positionY);
+                
+                if (treeNodeOver === this._placeholder) {
+                    return void 0;
+                }
 
                 if (treeNodeOver) {
                     var directParentNode = this._draggingTreeNode.object.parent.data,
@@ -919,6 +936,20 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
         }
     },
 
+    _isNodeParentOf: {
+        value: function (node, parent) {
+            if (node) {
+                if (node.data === parent.data) {
+                    return true;
+                }
+
+                return this._isNodeParentOf(node.parent, parent);
+            }
+            
+            return false;
+        }
+    },
+
     draw: {
         value: function () {
             var treeListHeight = this._treeListBoundingClientRect.height,
@@ -947,15 +978,25 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     marginTop = this._rowHeight * object.row;
                 }
 
-                element.style.marginTop = (shouldAddPlaceholderHeight ?
-                    marginTop + this.rowHeight : marginTop) + "px";
-                element.style.height = (rootCondition && treeListHeight > rowHeight ?
-                    treeListHeight : rowHeight) + "px";
+                if (shouldAddPlaceholderHeight &&
+                    (this._placerHolderPosition !== PLACEHOLDER_POSITION.AFTER_NODE ||
+                    (this._placerHolderPosition === PLACEHOLDER_POSITION.AFTER_NODE &&
+                        !this._isNodeParentOf(object.parent, this._treeNodeOver.object)))
+                ) {    
+                    marginTop += this.rowHeight;
+                }
+
+                rowHeight = rootCondition && treeListHeight > rowHeight ?
+                    treeListHeight : rowHeight;
+
+                element.style.marginTop = marginTop + "px";
+                element.style.height = rowHeight + "px";
                 element.style.marginLeft = this._indentationWidth * object.depth + "px";
                 element.style.visibility = rootCondition ? "hidden" : 'visible';
 
                 if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE && 
-                    this._treeNodeOver && object.data === this._treeNodeOver.object.data
+                    this._treeNodeOver && object.data === this._treeNodeOver.object.data &&
+                    this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE
                 ) {
                     if (this._placerHolderPosition === PLACEHOLDER_POSITION.BEFORE_NODE) {
                         element.style.marginTop = marginTop + this.rowHeight + "px";
@@ -989,9 +1030,13 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                         }
 
                         if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE) {
-                            this._placeholder.style.height = this.rowHeight + "px";
+                            placeholderStyle.height = this.rowHeight + "px";
+
+                            if (this._placerHolderPosition === PLACEHOLDER_POSITION.BEFORE_NODE) {
+                                placeholderMarginTop -= this._rowHeight;
+                            }
                         } else {
-                            this._placeholder.style.height = "0px";
+                            placeholderStyle.height = "0px";
                         }
 
                         placeholderStyle.marginTop = placeholderMarginTop + "px";
