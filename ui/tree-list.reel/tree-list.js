@@ -994,6 +994,12 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 element.style.marginLeft = this._indentationWidth * object.depth + "px";
                 element.style.visibility = rootCondition ? "hidden" : 'visible';
 
+                if (object.isExpanded) {
+                    element.classList.add('is-expanded');
+                } else {
+                    element.classList.remove('is-expanded');
+                }
+
                 if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE && 
                     this._treeNodeOver && object.data === this._treeNodeOver.object.data &&
                     this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE
