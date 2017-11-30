@@ -722,14 +722,14 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
         }
     },
 
-    _placeholderThresholdMultiplier: {
-        value: 0.25
+    _placeholderThreshold: {
+        value: 6 //px
     },
 
     _findClosestTreeNode: {
         value: function (pointerPositionX, pointerPositionY) {
             var treeListRect = this._treeListBoundingClientRect,
-                heightThreshold = this._rowHeight * this._placeholderThresholdMultiplier,
+                heightThreshold = this._placeholderThreshold,
                 treeListScrollTop =  this.element.scrollTop,
                 drawnIterations = this.repetition._drawnIterations,
                 treeListRectTop = treeListRect.top,
@@ -784,7 +784,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
     _definePlaceholderPositionOnTreeNode: {
         value: function (treeNode, pointerPositionY) {
             var rowRect = treeNode.element.getBoundingClientRect(),
-                thresholdHeight = this._rowHeight * this._placeholderThresholdMultiplier,
+                thresholdHeight = this._placeholderThreshold,
                 minBottom = rowRect.bottom - thresholdHeight,
                 maxBottom = rowRect.bottom + thresholdHeight,
                 minTop = rowRect.top - thresholdHeight,
