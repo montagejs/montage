@@ -1115,7 +1115,9 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                             multiplierY = (scrollThreshold / (multiplier >= 1 ? multiplier : 1)) * 2;
                             this.element.scrollTop = this.element.scrollTop - multiplierY;
                         }
-                    } else if ((pointerPositionY + scrollThreshold) >= treeListPositionBottomY) { // down
+                    } else if ((pointerPositionY + scrollThreshold) >= treeListPositionBottomY &&
+                        treeListHeight + this.element.scrollTop !== treeListScrollHeight
+                    ) { // down
                         if ((this.element.scrollTop + treeListHeight) < treeListScrollHeight) {
                             multiplier = treeListPositionBottomY - pointerPositionY;
                             multiplierY = (scrollThreshold / (multiplier >= 1 ? multiplier : 1)) * 2;
