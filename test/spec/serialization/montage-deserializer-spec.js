@@ -851,6 +851,14 @@ describe("serialization/montage-deserializer-spec", function () {
             });
         });
 
+        it("should deserialize singleton using the folowing syntax: require('[path].mjson')", function (done) {
+            require.async('spec/serialization/testmjson.mjson').then(function (module) {
+                expect(module.montageObject).toBeDefined();
+                expect(module.montageObject.name).toBe("RootObjectDescriptor");
+                done();
+            });
+        });
+
         it("should deserialize using instance after compilation", function (done) {
            var latch, objects;
 

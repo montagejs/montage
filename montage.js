@@ -306,9 +306,6 @@
 
         },
         initMontage: function (montageRequire, applicationRequire, params) {
-
-            //exports.Require.delegate = this;
-
             var dependencies = [
                 "core/core",
                 "core/event/event-manager",
@@ -332,9 +329,13 @@
                 var Montage = montageRequire("core/core").Montage;
                 var EventManager = montageRequire("core/event/event-manager").EventManager;
                 var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
+                var MontageDeserializer = montageRequire("core/serialization/deserializer/montage-deserializer").MontageDeserializer;
                 var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                 var logger = montageRequire("core/logger").logger;
                 var application;
+
+                exports.MontageDeserializer = MontageDeserializer;
+                exports.Require.delegate = self;
 
                 // montageWillLoad is mostly for testing purposes
                 if (typeof global.montageWillLoad === "function") {
@@ -374,6 +375,12 @@
                     });
                 });
             });
+        },
+
+        compileMJSONFile: function (mjson, require, moduleId) {
+            var deserializer = new exports.MontageDeserializer();
+            deserializer.init(mjson, require, void 0, require.location + moduleId);
+            return deserializer.deserializeObject();
         }
     };
     
