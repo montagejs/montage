@@ -1051,6 +1051,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                             parseInt(nodeOverStyle.marginLeft) - 4 + "px"; // 4px -> border width
                         placeholderStyle.opacity = 1;
                     } else {
+                        placeholderStyle.height = "0px";
                         placeholderStyle.opacity = 0;
                     }
                 }
