@@ -1078,9 +1078,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     // Delegate Method for positioning?
                     this._ghostElement.style.top = this._ghostElementBoundingRect.top + "px";
                     this._ghostElement.style.left = this._ghostElementBoundingRect.left + "px";
-                    this._ghostElement.style.visibility = "visible";
                     this._ghostElement.style.opacity = 1;
-                    this._placeholder.style.visibility = "visible";
                     this._needsToWaitforGhostElementBoundaries = false;
                 }
 

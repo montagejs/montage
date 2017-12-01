@@ -12,10 +12,6 @@
     */
 }
 
-.montage-TreeList.isSorting .montage-TreeList-nodeWrapper {
-    /* transition: margin-top .2s linear; */
-}
-
 .montage-TreeList-repetition {
     -ms-flex: 1;
     flex: 1;
@@ -31,7 +27,7 @@
 }
 
 .montage-TreeList-nodeWrapper.willDrop::before {
-    visibility: visible;
+    box-sizing: border-box;
     content: "";
     position: absolute;
     top: 0;
@@ -44,7 +40,6 @@
 
 .montage-TreeList-nodeWrapper.willDrop::after {
     box-sizing: border-box;
-    visibility: visible;
     content: "";
     position: absolute;
     top: 0;
@@ -60,7 +55,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    visibility: hidden;
+    visibility: visible;
     pointer-events: none;
     opacity: 0;
 }
@@ -68,7 +63,7 @@
 .montage-TreeList-placeholder {
     box-sizing: border-box;
     border-radius: 2px;
-    z-index: 1;
+    z-index: 2;
 }
 
 .montage-TreeList-placeholder.over {
