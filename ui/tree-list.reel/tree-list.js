@@ -1107,20 +1107,18 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                         treeListPositionBottomY = this._treeListBoundingClientRect.bottom,
                         multiplier;
 
-                    if ((pointerPositionY - scrollThreshold) <= treeListPositionTopY) { // up
-                        if (this.element.scrollTop !== 0) {
-                            multiplier = pointerPositionY - treeListPositionTopY;
-                            multiplierY = (scrollThreshold / (multiplier >= 1 ? multiplier : 1)) * 2;
-                            this.element.scrollTop = this.element.scrollTop - multiplierY;
-                        }
-                    } else if ((pointerPositionY + scrollThreshold) >= treeListPositionBottomY &&
-                        treeListHeight + this.element.scrollTop !== treeListScrollHeight
+                    if ((pointerPositionY - scrollThreshold) <= treeListPositionTopY &&
+                        this.element.scrollTop !== 0
+                    ) { // up
+                        multiplier = pointerPositionY - treeListPositionTopY;
+                        multiplierY = (scrollThreshold / (multiplier >= 1 ? multiplier : 1)) * 2;
+                        this.element.scrollTop = this.element.scrollTop - multiplierY;
+                    } else if (pointerPositionY + scrollThreshold >= treeListPositionBottomY &&
+                        this.element.scrollTop + treeListHeight < treeListScrollHeight
                     ) { // down
-                        if ((this.element.scrollTop + treeListHeight) < treeListScrollHeight) {
-                            multiplier = treeListPositionBottomY - pointerPositionY;
-                            multiplierY = (scrollThreshold / (multiplier >= 1 ? multiplier : 1)) * 2;
-                            this.element.scrollTop = this.element.scrollTop + multiplierY;
-                        }
+                        multiplier = treeListPositionBottomY - pointerPositionY;
+                        multiplierY = (scrollThreshold / (multiplier >= 1 ? multiplier : 1)) * 2;
+                        this.element.scrollTop = this.element.scrollTop + multiplierY;
                     }
                 }
             } else {
