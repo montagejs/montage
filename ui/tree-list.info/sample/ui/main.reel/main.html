@@ -63,6 +63,14 @@
                 }
             },
 
+            "debugDropNode": {
+                "prototype": "montage/ui/text.reel",
+                "values": {
+                    "element": {"#": "debugDropNode"},
+                    "value": {"<-": "@treeList._treeNodeWillAcceptDrop.object.data.filename"}
+                }
+            },
+
             "debugPlaceholderPosition": {
                 "prototype": "montage/ui/text.reel",
                 "values": {
@@ -127,7 +135,7 @@
                     <input type="checkbox" data-montage-id="isSortable" />
                 </p>
                 <p>
-                    <label>Placeholder strategy: </label><br /><br />
+                    <label>Placeholder Strategy: </label><br /><br />
                     <input data-montage-id="overStrategy" type="radio" value="over" id="over" /> <label for="over">Over</label>
                     <input data-montage-id="moveStrategy" type="radio" value="move" id="move" /> <label for="move">Move</label>
                 </p>
@@ -150,16 +158,20 @@
                     <span>Debug</span>
                 </h5>
                 <p>
-                    <span>Dragging node: </span>
+                    <span>Dragging Node: </span>
                     <span data-montage-id="debugDraggingNode" class="debug-value"></span>
                 </p>
                 <p>
-                    <span>Over node: </span>
+                    <span>Over Node: </span>
                     <span data-montage-id="debugOverNode" class="debug-value"></span>
                 </p>
                 <p>
-                    <span>Placeholder position: </span>
+                    <span>Placeholder Position: </span>
                     <span data-montage-id="debugPlaceholderPosition" class="debug-value"></span>
+                </p>
+                <p>
+                    <span>Drop Node: </span>
+                    <span data-montage-id="debugDropNode" class="debug-value"></span>
                 </p>
                 <p>
                     <span>Last Action Report: </span>
