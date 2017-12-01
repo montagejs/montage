@@ -822,14 +822,10 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             this._treeListBoundingClientRect = this.element.getBoundingClientRect();
 
             if (this._isDragging) {
+                this._placeholderBoundingClientRect = this._placeholder.getBoundingClientRect();
+
                 if (this._ghostElement && !this._ghostElementBoundingRect) {
                     this._ghostElementBoundingRect = this._draggingTreeNode.element.getBoundingClientRect();
-                }
-
-                if (this._placeholder) {
-                    this._placeholderBoundingClientRect = this._placeholder.getBoundingClientRect();
-                } else {
-                    return void 0;
                 }
 
                 var positionX = this._startPositionX + this._translateX,
@@ -1014,68 +1010,57 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
             if (this._isDragging) {
                 this.element.classList.add('isSorting');
+                this._placeholder.classList.add(this.placeholderStrategy);
+                this._placeholder.classList.remove(
+                    this.placeholderStrategy === TreeList.PLACEHOLDER_OVER ?
+                        TreeList.PLACEHOLDER_MOVE : TreeList.PLACEHOLDER_OVER
+                );
 
-                if (this._placeholder) {
-                    this._placeholder.classList.add(this.placeholderStrategy);
-                    this._placeholder.classList.remove(
-                        this.placeholderStrategy === TreeList.PLACEHOLDER_OVER ? 
-                            TreeList.PLACEHOLDER_MOVE : TreeList.PLACEHOLDER_OVER
-                    );
+                var placeholderStyle = this._placeholder.style;
 
-                    var placeholderStyle = this._placeholder.style;
+                if (
+                    this._placeholder && this._treeNodeOver &&
+                    this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE
+                ) {
+                    var nodeOverStyle = this._treeNodeOver.element.style,
+                        placeholderMarginTop = parseInt(nodeOverStyle.marginTop);
 
-                    if (
-                        this._placeholder && this._treeNodeOver &&
-                        this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE
-                    ) {
-                        var nodeOverStyle = this._treeNodeOver.element.style,
-                            placeholderMarginTop = parseInt(nodeOverStyle.marginTop);
+                    if (this._placerHolderPosition === PLACEHOLDER_POSITION.AFTER_NODE) {
+                        placeholderMarginTop += parseInt(this._treeNodeOver.element.style.height);
+                    }
 
-                        if (this._placerHolderPosition === PLACEHOLDER_POSITION.AFTER_NODE) {
-                            placeholderMarginTop += parseInt(this._treeNodeOver.element.style.height);
+                    if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE) {
+                        placeholderStyle.height = this.rowHeight + "px";
+
+                        if (this._placerHolderPosition === PLACEHOLDER_POSITION.BEFORE_NODE) {
+                            placeholderMarginTop -= this._rowHeight;
                         }
-
-                        if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE) {
-                            placeholderStyle.height = this.rowHeight + "px";
-
-                            if (this._placerHolderPosition === PLACEHOLDER_POSITION.BEFORE_NODE) {
-                                placeholderMarginTop -= this._rowHeight;
-                            }
-                        } else {
-                            placeholderStyle.height = "0px";
-                        }
-
-                        placeholderStyle.marginTop = placeholderMarginTop + "px";
-                        placeholderStyle.marginLeft = nodeOverStyle.marginLeft;
-                        placeholderStyle.width = this._treeListBoundingClientRect.width -
-                            parseInt(nodeOverStyle.marginLeft) - 4 + "px"; // 4px -> border width
-                        placeholderStyle.opacity = 1;
                     } else {
                         placeholderStyle.height = "0px";
-                        placeholderStyle.opacity = 0;
                     }
+
+                    placeholderStyle.top = placeholderMarginTop + "px";
+                    placeholderStyle.left = nodeOverStyle.marginLeft;
+                    placeholderStyle.width = this._treeListBoundingClientRect.width -
+                        parseInt(nodeOverStyle.marginLeft) - 4 + "px"; // 4px -> border width
+                    placeholderStyle.opacity = 1;
+                } else {
+                    placeholderStyle.height = "0px";
+                    placeholderStyle.opacity = 0;
                 }
 
                 if (!this._ghostElement) {
                     // Delegate Method for ghost element?
                     this._ghostElement = this._draggingTreeNode.element.cloneNode(true);
                     this._ghostElement.classList.add("montage-TreeList-ghostImage");
-
-                    if (!this._placeholder) {
-                        this._placeholder = document.createElement('div');
-                        this._placeholder.classList.add("montage-TreeList-placeholder");
-                        this.element.appendChild(this._placeholder);
-                    }
-
                     document.body.appendChild(this._ghostElement);
-
                     this._needsToWaitforGhostElementBoundaries = true;
                     this.needsDraw = true;
                     return void 0;
                 }
 
                 if (this._needsToWaitforGhostElementBoundaries) {
-                    // Delegate Method for positioning?
+                    // Delegate Method for ghost element positioning?
                     this._ghostElement.style.top = this._ghostElementBoundingRect.top + "px";
                     this._ghostElement.style.left = this._ghostElementBoundingRect.left + "px";
                     this._ghostElement.style.opacity = 1;
