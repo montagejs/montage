@@ -731,7 +731,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             var treeListRect = this._treeListBoundingClientRect,
                 placeholderRect = this._placeholderBoundingClientRect,    
                 heightThreshold = this._placeholderThreshold,
-                treeListScrollTop =  this.element.scrollTop,
+                treeListScrollTop = this._treeListScrollTop,
                 drawnIterations = this.repetition._drawnIterations,
                 treeListRectTop = treeListRect.top,
                 minDist = 0, rowRect = {}, dist, iteration, marginLeft,
@@ -819,10 +819,11 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
     willDraw: {
         value: function () {
-            this._treeListBoundingClientRect = this.element.getBoundingClientRect();
-
+            this._treeListBoundingClientRect = this._treeListWrapper.getBoundingClientRect();
+            this._placeholderBoundingClientRect = this._placeholder.getBoundingClientRect();
+            
             if (this._isDragging) {
-                this._placeholderBoundingClientRect = this._placeholder.getBoundingClientRect();
+                this._treeListScrollTop = this._treeListWrapper.scrollTop;
 
                 if (this._ghostElement && !this._ghostElementBoundingRect) {
                     this._ghostElementBoundingRect = this._draggingTreeNode.element.getBoundingClientRect();
@@ -1039,7 +1040,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                         placeholderStyle.height = "0px";
                     }
 
-                    placeholderStyle.top = placeholderMarginTop + "px";
+                    placeholderStyle.top = (placeholderMarginTop - this._treeListScrollTop) + "px";
                     placeholderStyle.left = nodeOverStyle.marginLeft;
                     placeholderStyle.width = this._treeListBoundingClientRect.width -
                         parseInt(nodeOverStyle.marginLeft) - 4 + "px"; // 4px -> border width
@@ -1083,7 +1084,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     this._translateX + "px," + this._translateY + "px,0)";
 
                 // Update scroll view if needed
-                var treeListScrollHeight = this.element.scrollHeight;
+                var treeListScrollHeight = this._treeListWrapper.scrollHeight;
 
                 if (treeListScrollHeight > treeListHeight) {
                     var multiplierY = 0, scrollThreshold = this._scrollThreshold,
@@ -1093,21 +1094,21 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                         multiplier;
 
                     if ((pointerPositionY - scrollThreshold) <= treeListPositionTopY &&
-                        this.element.scrollTop !== 0
+                        this._treeListScrollTop !== 0
                     ) { // up
                         multiplier = pointerPositionY - treeListPositionTopY;
                         multiplierY = (scrollThreshold / (multiplier >= 1 ? multiplier : 1)) * 2;
-                        this.element.scrollTop = this.element.scrollTop - multiplierY;
+                        this._treeListWrapper.scrollTop = this._treeListScrollTop - multiplierY;
                     } else if (pointerPositionY + scrollThreshold >= treeListPositionBottomY &&
-                        this.element.scrollTop + treeListHeight < treeListScrollHeight
+                        this._treeListWrapper.scrollTop + treeListHeight < treeListScrollHeight
                     ) { // down
                         multiplier = treeListPositionBottomY - pointerPositionY;
                         multiplierY = (scrollThreshold / (multiplier >= 1 ? multiplier : 1)) * 2;
-                        this.element.scrollTop = this.element.scrollTop + multiplierY;
+                        this._treeListWrapper.scrollTop = this._treeListScrollTop + multiplierY;
                     }
                 }
             } else {
-                this.element.classList.remove('isEditing');
+                this.element.classList.remove('isSorting');
 
                 if (this._ghostElement) {
                     document.body.removeChild(this._ghostElement);
@@ -1125,6 +1126,10 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     this._treeNodeWillAcceptDrop = null;
                     this._placeholder.style.opacity = 0;
                 }
+            }
+
+            if (this.placeholderStrategy === TreeList.PLACEHOLDER_OVER) {
+                this.element.style.paddingBottom = this._placeholderBoundingClientRect.height + "px";
             }
         }
     }

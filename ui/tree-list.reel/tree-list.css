@@ -1,7 +1,6 @@
 .montage-TreeList {
+    box-sizing: border-box;
     position: relative;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
     display: -ms-flexbox;
     display: flex;
     z-index: 1;
@@ -10,6 +9,16 @@
        in Social, Identify, and Area Brief panels. Had to add z-idex to those
        panels to make it work in IE 11.
     */
+}
+
+.montage-TreeList-wrapper {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+   -ms-flex: 1;
+    flex: 1;
 }
 
 .montage-TreeList-repetition {
