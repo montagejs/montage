@@ -461,7 +461,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
             for (var i = 0, length = drawnIterations.length; i < length; i++) {
                 iteration = drawnIterations[i];
-                if (iteration.object === node) {
+                if (iteration.object.data === node.data) {
                     return this._wrapIterationIntoTreeNode(iteration);
                 }
             }
