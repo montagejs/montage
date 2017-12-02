@@ -997,7 +997,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     element.classList.remove('is-expanded');
                 }
 
-                if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE && 
+                if (this._isDragging && this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE && 
                     this._treeNodeOver && object.data === this._treeNodeOver.object.data &&
                     this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE
                 ) {
@@ -1011,44 +1011,6 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
             if (this._isDragging) {
                 this.element.classList.add('isSorting');
-                this._placeholder.classList.add(this.placeholderStrategy);
-                this._placeholder.classList.remove(
-                    this.placeholderStrategy === TreeList.PLACEHOLDER_OVER ?
-                        TreeList.PLACEHOLDER_MOVE : TreeList.PLACEHOLDER_OVER
-                );
-
-                var placeholderStyle = this._placeholder.style;
-
-                if (
-                    this._placeholder && this._treeNodeOver &&
-                    this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE
-                ) {
-                    var nodeOverStyle = this._treeNodeOver.element.style,
-                        placeholderMarginTop = parseInt(nodeOverStyle.marginTop);
-
-                    if (this._placerHolderPosition === PLACEHOLDER_POSITION.AFTER_NODE) {
-                        placeholderMarginTop += parseInt(this._treeNodeOver.element.style.height);
-                    }
-
-                    if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE) {
-                        placeholderStyle.height = this.rowHeight + "px";
-
-                        if (this._placerHolderPosition === PLACEHOLDER_POSITION.BEFORE_NODE) {
-                            placeholderMarginTop -= this._rowHeight;
-                        }
-                    } else {
-                        placeholderStyle.height = "0px";
-                    }
-
-                    placeholderStyle.top = (placeholderMarginTop - this._treeListScrollTop) + "px";
-                    placeholderStyle.left = nodeOverStyle.marginLeft;
-                    placeholderStyle.width = this._treeListBoundingClientRect.width -
-                        parseInt(nodeOverStyle.marginLeft) - 4 + "px"; // 4px -> border width
-                    placeholderStyle.opacity = 1;
-                } else {
-                    placeholderStyle.height = "0px";
-                    placeholderStyle.opacity = 0;
-                }
 
                 if (!this._ghostElement) {
                     // Delegate Method for ghost element?
@@ -1072,20 +1034,14 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     this._previousTreeNodeWillAcceptDrop.element.classList.remove('willDrop');
                 }
 
-                if (this._treeNodeWillAcceptDrop &&
-                    this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE
-                ) {
-                    this._treeNodeWillAcceptDrop.element.classList.add('willDrop');
-                } else if (this._treeNodeWillAcceptDrop) {
-                    this._treeNodeWillAcceptDrop.element.classList.remove('willDrop');
-                }
-
                 this._ghostElement.style[TreeList.cssTransform] = "translate3d(" +
                     this._translateX + "px," + this._translateY + "px,0)";
 
+                var treeListScrollHeight = this._treeListWrapper.scrollHeight,
+                    placeholderStyle = this._placeholder.style,    
+                    isScrolling = false;
+                
                 // Update scroll view if needed
-                var treeListScrollHeight = this._treeListWrapper.scrollHeight;
-
                 if (treeListScrollHeight > treeListHeight) {
                     var multiplierY = 0, scrollThreshold = this._scrollThreshold,
                         pointerPositionY = this._startPositionY + this._translateY,
@@ -1099,14 +1055,67 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                         multiplier = pointerPositionY - treeListPositionTopY;
                         multiplierY = (scrollThreshold / (multiplier >= 1 ? multiplier : 1)) * 2;
                         this._treeListWrapper.scrollTop = this._treeListScrollTop - multiplierY;
+                        isScrolling = true;
+
                     } else if (pointerPositionY + scrollThreshold >= treeListPositionBottomY &&
                         this._treeListWrapper.scrollTop + treeListHeight < treeListScrollHeight
                     ) { // down
                         multiplier = treeListPositionBottomY - pointerPositionY;
                         multiplierY = (scrollThreshold / (multiplier >= 1 ? multiplier : 1)) * 2;
                         this._treeListWrapper.scrollTop = this._treeListScrollTop + multiplierY;
+                        isScrolling = true;
                     }
                 }
+
+                if (!isScrolling) {
+                    this._placeholder.classList.add(this.placeholderStrategy);
+                    this._placeholder.classList.remove(
+                        this.placeholderStrategy === TreeList.PLACEHOLDER_OVER ?
+                            TreeList.PLACEHOLDER_MOVE : TreeList.PLACEHOLDER_OVER
+                    );
+                    
+                    if (
+                        this._placeholder && this._treeNodeOver &&
+                        this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE
+                    ) {
+                        var nodeOverStyle = this._treeNodeOver.element.style,
+                            placeholderMarginTop = parseInt(nodeOverStyle.marginTop);
+
+                        if (this._placerHolderPosition === PLACEHOLDER_POSITION.AFTER_NODE) {
+                            placeholderMarginTop += parseInt(this._treeNodeOver.element.style.height);
+                        }
+
+                        if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE) {
+                            placeholderStyle.height = this.rowHeight + "px";
+
+                            if (this._placerHolderPosition === PLACEHOLDER_POSITION.BEFORE_NODE) {
+                                placeholderMarginTop -= this._rowHeight;
+                            }
+                        } else {
+                            placeholderStyle.height = "0px";
+                        }
+
+                        placeholderStyle.top = (placeholderMarginTop - this._treeListScrollTop) + "px";
+                        placeholderStyle.left = nodeOverStyle.marginLeft;
+                        placeholderStyle.width = this._treeListBoundingClientRect.width -
+                            parseInt(nodeOverStyle.marginLeft) - 4 + "px"; // 4px -> border width
+                        placeholderStyle.opacity = 1;
+                    } else {
+                        placeholderStyle.height = "0px";
+                        placeholderStyle.opacity = 0;
+                    }
+
+                    if (this._treeNodeWillAcceptDrop &&
+                        this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE
+                    ) {
+                        this._treeNodeWillAcceptDrop.element.classList.add('willDrop');
+                    } else if (this._treeNodeWillAcceptDrop) {
+                        this._treeNodeWillAcceptDrop.element.classList.remove('willDrop');
+                    }
+                } else {
+                    placeholderStyle.height = "0px";
+                    placeholderStyle.opacity = 0;
+                }               
             } else {
                 this.element.classList.remove('isSorting');
 
