@@ -43,11 +43,11 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
         }
     },
 
-    timeoutBeforeExpandNode: {
+    timeoutBeforeExpandTreeNode: {
         value: 750 // ms
     },
 
-    _isListeningToTranslate: {
+    _isListeningToTranslateEvents: {
         value: false
     },
 
@@ -74,7 +74,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
         value: 10
     },
 
-    _placerHolderPosition: {
+    _placerholderPosition: {
         value: null
     },
 
@@ -353,8 +353,6 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             window.addEventListener("resize", this, false);
             this._element.addEventListener("scroll", this, false);
             this._startListeningToTranslateIfNeeded();
-
-
             this.handleScroll();
             this.handleTreeChange();
         }
@@ -380,7 +378,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
         value: function () {
             if (this.isSortable &&
                 this.preparedForActivationEvents &&
-                !this._isListeningToTranslate
+                !this._isListeningToTranslateEvents
             ) {
                 this._startListeningToTranslate();
             }
@@ -390,15 +388,15 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
     _startListeningToTranslate: {
         value: function () {
             this._translateComposer.addEventListener('translateStart', this, false);
-            this._isListeningToTranslate = true;
+            this._isListeningToTranslateEvents = true;
         }
     },
 
     _stopListeningToTranslateIfNeeded: {
         value: function () {
-            if (this._isListeningToTranslate) {
+            if (this._isListeningToTranslateEvents) {
                 this._translateComposer.removeEventListener('translateStart', this, false);
-                this._isListeningToTranslate = false;
+                this._isListeningToTranslateEvents = false;
             }
         }
     },
@@ -435,19 +433,18 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
     _findRootIterationTreeNode: {
         value: function () {
-            return this._findIterationWithObject(this.controller.data);
+            return this._findIterationWithDataObject(this.controller.data);
         }
     },
 
-    _findIterationWithObject: {
-        value: function (object) {
+    _findIterationWithDataObject: {
+        value: function (dataObject) {
             var drawnIterations = this.repetition._drawnIterations,
-                rootObject = this.controller.data,
                 iteration;
 
             for (var i = 0, length = drawnIterations.length; i < length; i++) {
                 iteration = drawnIterations[i];
-                if (iteration.object.data === object) {
+                if (iteration.object.data === dataObject) {
                     return iteration;
                 }
             }
@@ -456,14 +453,10 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
     _findTreeNodeWithNode: {
         value: function (node) {
-            var drawnIterations = this.repetition._drawnIterations,
-                iteration;
+            var iteration = this._findIterationWithDataObject(node.data);
 
-            for (var i = 0, length = drawnIterations.length; i < length; i++) {
-                iteration = drawnIterations[i];
-                if (iteration.object.data === node.data) {
-                    return this._wrapIterationIntoTreeNode(iteration);
-                }
+            if (iteration) {
+                return this._wrapIterationIntoTreeNode(iteration);
             }
         }
     },
@@ -494,7 +487,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 var nodeObject = treeNode;
 
                 if (nodeObject.element) {
-                    if (this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE) {
+                    if (this._placerholderPosition === PLACEHOLDER_POSITION.OVER_NODE) {
                         nodeObject = treeNode.object;
                     } else {
                         nodeObject = treeNode.object.parent;
@@ -523,7 +516,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 }
 
                 self._expandNodeId = null;
-            }, this.timeoutBeforeExpandNode);
+            }, this.timeoutBeforeExpandTreeNode);
         }
     },
 
@@ -605,7 +598,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
                 if (
                     sourceChildren === targetChildren &&
-                    this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE
+                    this._placerholderPosition === PLACEHOLDER_POSITION.OVER_NODE
                 ) {
                     this._resetTranslateContext();
                     return void 0;
@@ -613,9 +606,9 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
                 sourceChildren.splice(sourceChildren.indexOf(draggingObject), 1);
 
-                var index = this._placerHolderPosition > PLACEHOLDER_POSITION.OVER_NODE ?
+                var index = this._placerholderPosition > PLACEHOLDER_POSITION.OVER_NODE ?
                     targetChildren.indexOf(this._treeNodeOver.object.data) +
-                    this._placerHolderPosition : targetChildren.length;
+                    this._placerholderPosition : targetChildren.length;
 
                 targetChildren.splice(index, 0, draggingObject)
 
@@ -651,7 +644,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             this.__translateComposer.translateX = 0;
             this.__translateComposer.translateY = 0;
             this._ghostElementBoundingRect = null;
-            this._placerHolderPosition = PLACEHOLDER_POSITION.OVER_NODE;
+            this._placerholderPosition = PLACEHOLDER_POSITION.OVER_NODE;
             this._treeNodeOver = null;
             this.needsDraw = true;
         }
@@ -738,7 +731,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 dY, dX, candidate, element, heightThreshold;
 
             if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE &&
-                this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE &&
+                this._placerholderPosition !== PLACEHOLDER_POSITION.OVER_NODE &&
                 pointerPositionY >= placeholderRect.top - heightThreshold &&
                 pointerPositionY <= placeholderRect.bottom + heightThreshold &&
                 pointerPositionX >= placeholderRect.left &&
@@ -804,11 +797,11 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     rowRect.top + (rowRect.height / 2);
 
             if (pointerPositionY >= minBottom && pointerPositionY <= maxBottom) {
-                this._placerHolderPosition = PLACEHOLDER_POSITION.AFTER_NODE;
+                this._placerholderPosition = PLACEHOLDER_POSITION.AFTER_NODE;
             } else if (pointerPositionY >= minTop && pointerPositionY <= maxTop) {
-                this._placerHolderPosition = PLACEHOLDER_POSITION.BEFORE_NODE;
+                this._placerholderPosition = PLACEHOLDER_POSITION.BEFORE_NODE;
             } else {
-                this._placerHolderPosition = PLACEHOLDER_POSITION.OVER_NODE;
+                this._placerholderPosition = PLACEHOLDER_POSITION.OVER_NODE;
             }
         }
     },
@@ -865,8 +858,8 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                          */
                         treeNodeOverData === draggingTreeNodeData ||
                         (treeNodeOverData === draggingParentTreeNodeData &&
-                            this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE) ||
-                        (this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE &&
+                            this._placerholderPosition === PLACEHOLDER_POSITION.OVER_NODE) ||
+                        (this._placerholderPosition !== PLACEHOLDER_POSITION.OVER_NODE &&
                             (overNodeIndex = draggingParentTreeNodeChildren.indexOf(treeNodeOverData)) > -1)
                     ) {
 
@@ -874,9 +867,9 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                             var draggingNodeIndex = draggingParentTreeNodeChildren.indexOf(draggingTreeNodeData);
 
                             if ((overNodeIndex + 1 === draggingNodeIndex &&
-                                this._placerHolderPosition !== PLACEHOLDER_POSITION.BEFORE_NODE) ||
+                                this._placerholderPosition !== PLACEHOLDER_POSITION.BEFORE_NODE) ||
                                 (overNodeIndex - 1 === draggingNodeIndex &&
-                                    this._placerHolderPosition !== PLACEHOLDER_POSITION.AFTER_NODE)
+                                    this._placerholderPosition !== PLACEHOLDER_POSITION.AFTER_NODE)
                             ) {  // next/previous sibling
                                 treeNodeOver = null;
                             }
@@ -912,7 +905,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
                                     if (
                                         !dropNodeCandidate.isExpanded &&
-                                        this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE
+                                        this._placerholderPosition === PLACEHOLDER_POSITION.OVER_NODE
                                     ) {
                                         this._scheduleToExpandNode(dropNodeCandidate);
                                     } else {
@@ -934,7 +927,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     // set previous tree node in order to remove the class name `willDrop`.
                     this._previousTreeNodeWillAcceptDrop = this._treeNodeWillAcceptDrop;
                     this._treeNodeWillAcceptDrop = null;
-                    this._placerHolderPosition = PLACEHOLDER_POSITION.OVER_NODE;
+                    this._placerholderPosition = PLACEHOLDER_POSITION.OVER_NODE;
                     this._cancelExpandingNodeIfNeeded();
                 }
             }
@@ -984,8 +977,8 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 }
 
                 if (shouldAddPlaceholderHeight &&
-                    (this._placerHolderPosition !== PLACEHOLDER_POSITION.AFTER_NODE ||
-                        (this._placerHolderPosition === PLACEHOLDER_POSITION.AFTER_NODE &&
+                    (this._placerholderPosition !== PLACEHOLDER_POSITION.AFTER_NODE ||
+                        (this._placerholderPosition === PLACEHOLDER_POSITION.AFTER_NODE &&
                             !this._isNodeParentOf(object.parent, this._treeNodeOver.object)))
                 ) {
                     marginTop += this.rowHeight;
@@ -1007,9 +1000,9 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
                 if (this._isDragging && this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE &&
                     this._treeNodeOver && object.data === this._treeNodeOver.object.data &&
-                    this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE
+                    this._placerholderPosition !== PLACEHOLDER_POSITION.OVER_NODE
                 ) {
-                    if (this._placerHolderPosition === PLACEHOLDER_POSITION.BEFORE_NODE) {
+                    if (this._placerholderPosition === PLACEHOLDER_POSITION.BEFORE_NODE) {
                         element.style.marginTop = marginTop + this.rowHeight + "px";
                     }
 
@@ -1084,19 +1077,19 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
                     if (
                         this._placeholder && this._treeNodeOver &&
-                        this._placerHolderPosition !== PLACEHOLDER_POSITION.OVER_NODE
+                        this._placerholderPosition !== PLACEHOLDER_POSITION.OVER_NODE
                     ) {
                         var nodeOverStyle = this._treeNodeOver.element.style,
                             placeholderMarginTop = parseInt(nodeOverStyle.marginTop);
 
-                        if (this._placerHolderPosition === PLACEHOLDER_POSITION.AFTER_NODE) {
+                        if (this._placerholderPosition === PLACEHOLDER_POSITION.AFTER_NODE) {
                             placeholderMarginTop += parseInt(this._treeNodeOver.element.style.height);
                         }
 
                         if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE) {
                             placeholderStyle.height = this.rowHeight + "px";
 
-                            if (this._placerHolderPosition === PLACEHOLDER_POSITION.BEFORE_NODE) {
+                            if (this._placerholderPosition === PLACEHOLDER_POSITION.BEFORE_NODE) {
                                 placeholderMarginTop -= this._rowHeight;
                             }
                         } else {
@@ -1114,7 +1107,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     }
 
                     if (this._treeNodeWillAcceptDrop &&
-                        this._placerHolderPosition === PLACEHOLDER_POSITION.OVER_NODE
+                        this._placerholderPosition === PLACEHOLDER_POSITION.OVER_NODE
                     ) {
                         this._treeNodeWillAcceptDrop.element.classList.add('willDrop');
                     } else if (this._treeNodeWillAcceptDrop) {
