@@ -520,16 +520,16 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
     _shouldNodeAcceptDrop: {
         value: function (targetNode, sourceNode) {
-            var targetObject = targetNode.data,
-                sourceObject = sourceNode.data,
+            var targetDataObject = targetNode.data,
+                sourceDataObject = sourceNode.data,
                 cursor = targetNode;
 
-            if (sourceObject === targetObject) {
+            if (sourceDataObject === targetDataObject) {
                 return false;
             }
 
             while (cursor && (cursor = cursor.parent)) {
-                if (cursor.data === sourceObject) {
+                if (cursor.data === sourceDataObject) {
                     return false;
                 }
             }
@@ -574,16 +574,16 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
         value: function () {
             if (this._treeNodeWillAcceptDrop) {
                 var draggingNode = this._draggingTreeNode,
-                    draggingObject = draggingNode.data,
-                    previousParentObject = draggingNode.parent.data,
-                    parentObject = this._treeNodeWillAcceptDrop.data,
+                    draggingDataObject = draggingNode.data,
+                    previousParentDataObject = draggingNode.parent.data,
+                    parentDataObject = this._treeNodeWillAcceptDrop.data,
                     sourceChildren = this.controller.childrenFromNode(
-                        previousParentObject
+                        previousParentDataObject
                     ),
                     targetChildren = this.controller.childrenFromNode(
-                        parentObject
+                        parentDataObject
                     ),
-                    sourceIndex = sourceChildren.indexOf(draggingObject);
+                    sourceIndex = sourceChildren.indexOf(draggingDataObject);
 
                 if (
                     sourceChildren === targetChildren &&
@@ -593,19 +593,19 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     return void 0;
                 }
 
-                sourceChildren.splice(sourceChildren.indexOf(draggingObject), 1);
+                sourceChildren.splice(sourceChildren.indexOf(draggingDataObject), 1);
 
                 var index = this._placerholderPosition > PLACEHOLDER_POSITION.OVER_NODE ?
                     targetChildren.indexOf(this._treeNodeOver.data) +
                     this._placerholderPosition : targetChildren.length;
 
-                targetChildren.splice(index, 0, draggingObject)
+                targetChildren.splice(index, 0, draggingDataObject)
 
                 this.dispatchEventNamed('orderchange', true, true, {
-                    object: draggingObject,
-                    previousParent: previousParentObject,
+                    object: draggingDataObject,
+                    previousParent: previousParentDataObject,
                     previousIndex: sourceIndex,
-                    parent: parentObject,
+                    parent: parentDataObject,
                     index: index
                 });
             }
@@ -635,6 +635,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             this._ghostElementBoundingRect = null;
             this._placerholderPosition = PLACEHOLDER_POSITION.OVER_NODE;
             this._treeNodeOver = null;
+            this._treeNodeWillAcceptDrop = null;
             this.needsDraw = true;
         }
     },
@@ -824,14 +825,13 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 }
 
                 if (treeNodeOver) {
-                    var draggingParentTreeNodeData = this._draggingTreeNode.parent.data,
-                        draggingTreeNodeData = this._draggingTreeNode.data,
+                    var draggingParentTreeNodeDataObject = this._draggingTreeNode.parent.data,
+                        draggingTreeNodeDataObject = this._draggingTreeNode.data,
                         draggingParentTreeNodeChildren = this.controller.childrenFromNode(
-                            draggingParentTreeNodeData
+                            draggingParentTreeNodeDataObject
                         ),
-                        treeNodeOverObject = treeNodeOver,
-                        treeNodeOverData = treeNodeOverObject.data,
-                        nodeOverAcceptChild = this._nodeAcceptChild(treeNodeOverObject),
+                        treeNodeOverDataObject = treeNodeOver.data,
+                        nodeOverAcceptChild = this._nodeAcceptChild(treeNodeOver),
                         overNodeIndex = -1;
                     
 
@@ -848,15 +848,15 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                          * - the over node is the direct parent node from the dragging node.
                          * - the over node is the next sibling of the dragging node.
                          */
-                        treeNodeOverData === draggingTreeNodeData ||
-                        (treeNodeOverData === draggingParentTreeNodeData &&
+                        treeNodeOverDataObject === draggingTreeNodeDataObject ||
+                        (treeNodeOverDataObject === draggingParentTreeNodeDataObject &&
                             this._placerholderPosition === PLACEHOLDER_POSITION.OVER_NODE) ||
                         (this._placerholderPosition !== PLACEHOLDER_POSITION.OVER_NODE &&
-                            (overNodeIndex = draggingParentTreeNodeChildren.indexOf(treeNodeOverData)) > -1)
+                            (overNodeIndex = draggingParentTreeNodeChildren.indexOf(treeNodeOverDataObject)) > -1)
                     ) {
 
                         if (overNodeIndex > -1) {
-                            var draggingNodeIndex = draggingParentTreeNodeChildren.indexOf(draggingTreeNodeData);
+                            var draggingNodeIndex = draggingParentTreeNodeChildren.indexOf(draggingTreeNodeDataObject);
 
                             if ((overNodeIndex + 1 === draggingNodeIndex &&
                                 this._placerholderPosition !== PLACEHOLDER_POSITION.BEFORE_NODE) ||
@@ -898,7 +898,6 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                                     this._cancelExpandingNodeIfNeeded();
                                 }
 
-                                this._previousTreeNodeWillAcceptDrop = this._treeNodeWillAcceptDrop;
                                 this._treeNodeWillAcceptDrop = dropNodeCandidate;
                             } else {
                                 treeNodeOver = null;
@@ -912,7 +911,6 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 this._treeNodeOver = treeNodeOver;
 
                 if (!treeNodeOver) {
-                    this._previousTreeNodeWillAcceptDrop = null;
                     this._treeNodeWillAcceptDrop = null;
                     this._placerholderPosition = PLACEHOLDER_POSITION.OVER_NODE;
                     this._cancelExpandingNodeIfNeeded();
@@ -1108,8 +1106,6 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 if (this._ghostElement) {
                     document.body.removeChild(this._ghostElement);
                     this._ghostElement = null;
-                    this._previousTreeNodeWillAcceptDrop = null;
-                    this._treeNodeWillAcceptDrop = null;
                     this._placeholder.style.opacity = 0;
                 }
             }
