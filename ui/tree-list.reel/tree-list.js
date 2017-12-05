@@ -871,7 +871,10 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     }
 
                     if (treeNodeOver) {
-                        var dropNodeCandidate = this._findClosestNodeWillAcceptDrop(treeNodeOver),
+                        var dropNodeCandidate = this._findClosestNodeWillAcceptDrop(
+                            this._placerholderPosition === PLACEHOLDER_POSITION.OVER_NODE ?
+                                treeNodeOver : treeNodeOver.parent
+                            ),
                             sourceNode = this._draggingTreeNode;
 
                         if (dropNodeCandidate && this._shouldNodeAcceptDrop(dropNodeCandidate, sourceNode)) {
