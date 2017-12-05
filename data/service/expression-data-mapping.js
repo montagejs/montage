@@ -166,7 +166,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     objectDescriptorReference: {
         get: function () {
             return  this._objectDescriptorReference ?   this._objectDescriptorReference.promise(require) :
-                Promise.resolve(null);
+                                                        Promise.resolve(null);
         },
         set: function (value) {
             this._objectDescriptorReference = value;
@@ -181,7 +181,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     schemaDescriptorReference: {
         get: function () {
             return  this._schemaDescriptorReference ?   this._schemaDescriptorReference.promise(require) :
-                Promise.resolve(null);
+                                                        Promise.resolve(null);
         },
         set: function (value) {
             this._schemaDescriptorReference = value;
@@ -483,7 +483,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             } else if(rule.converter) {
                 result = this._revertPropertyToRawData(data, propertyName, rule, scope);
             } else /*if (propertyDescriptor)*/ { //relaxing this for now
-                data[propertyName] = rule.expression(scope)
+                data[propertyName] = rule.expression(scope);
             }
             
             return result;
