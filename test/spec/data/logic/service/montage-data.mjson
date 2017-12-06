@@ -1,7 +1,7 @@
 {
     "root": {
         "prototype": "montage/data/service/data-service",
-        "properties": {
+        "values": {
             "name": "DataService",
             "childServices": [
                 {"@": "categoryService"},

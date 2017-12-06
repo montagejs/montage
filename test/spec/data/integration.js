@@ -4,13 +4,8 @@ var Deserializer = require("montage/core/serialization/deserializer/montage-dese
 
 describe("End-to-end Integration", function() {
 
-    it("can deserialize data-service", function (done) {
-        new Deserializer().init(JSON.stringify(serialization), require).deserializeObject().then(function (service) {
-            console.log("Service", service);
+    it("can deserialize data-service", function () {
+        var service = serialization.montageObject;
             expect(service).toBeDefined();
-            done();
-        });
     });
-    console.log("Serialization", serialization);
-
 });
