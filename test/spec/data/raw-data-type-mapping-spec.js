@@ -1,7 +1,6 @@
 var RawDataTypeMapping = require("montage/data/service/raw-data-type-mapping").RawDataTypeMapping,
     ObjectDescriptor = require("montage/core/meta/object-descriptor").ObjectDescriptor,
     Criteria = require("montage/core/criteria").Criteria,
-    Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     serialization = require("./logic/service/raw-data-type-mapping-spec.mjson");
 
 describe("A RawDataTypeMapping", function() {
@@ -42,21 +41,18 @@ describe("A RawDataTypeMapping", function() {
         expect(mapping.match(data2)).toBe(false);
     });
 
-    it("can deserializeSelf", function (done) {
-        var deserializer = new Deserializer().init(JSON.stringify(serialization), require);
-        return deserializer.deserializeObject().then(function (exports) {
-            expect(exports.mappings[0].type.name).toBe("Type 1");
-            expect(exports.mappings[0].criteria.expression).toBe("type == 'FOO_TYPE'");
+    it("can deserializeSelf", function () {
+        var object = serialization.montageObject;
+        expect(object.mappings[0].type.name).toBe("Type 1");
+        expect(object.mappings[0].criteria.expression).toBe("type == 'FOO_TYPE'");
 
-            expect(exports.mappings[1].type.name).toBe("Type 2");
-            expect(exports.mappings[1].criteria.expression).toBe("type == $paramType");
-            expect(exports.mappings[1].criteria.parameters.paramType).toBe("FOO_TYPE");
-            
+        expect(object.mappings[1].type.name).toBe("Type 2");
+        expect(object.mappings[1].criteria.expression).toBe("type == $paramType");
+        expect(object.mappings[1].criteria.parameters.paramType).toBe("FOO_TYPE");
+        
 
-            expect(exports.mappings[2].type.name).toBe("Type 3");
-            expect(exports.mappings[2].criteria.expression).toBe("type == $paramType");
-            expect(exports.mappings[2].criteria.parameters.paramType).toBe("FOO_TYPE");
-            done();
-        });
+        expect(object.mappings[2].type.name).toBe("Type 3");
+        expect(object.mappings[2].criteria.expression).toBe("type == $paramType");
+        expect(object.mappings[2].criteria.parameters.paramType).toBe("FOO_TYPE");
     });
 });

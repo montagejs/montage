@@ -1,7 +1,8 @@
 {
     "root": {
-        "prototype": "montage",
-        "properties": {
+        "prototype": "montage/core/core[Montage]",
+        "values": {
+            "name": "RootDescriptor",
             "mappings": [
                 {"@": "mapping1"},
                 {"@": "mapping2"},
