@@ -720,6 +720,51 @@ describe("serialization/montage-deserializer-spec", function () {
             });
         });
 
+        it("should deserialize only when children are deserialized", function (done) {
+            var serialization = {
+                    "root": {
+                        "prototype": "spec/serialization/testobjects-v2[SelfDeserializer]",
+                        "properties": {
+                            "stringProperty": "Parent",
+                            "array": [
+                                {"@": "test"},
+                                {"@": "test2"}
+                            ]
+                        }
+                    },
+                    "test": {
+                        "prototype": "spec/serialization/testobjects-v2[SelfDeserializer]",
+                        "properties": {
+                            "stringProperty": "Child",
+                            "objectProperty": {"@": "descriptor"},
+                            "parent": {"@": "root"}
+                        }
+                    },
+                    "test2": {
+                        "prototype": "spec/serialization/testobjects-v2[SelfDeserializer]",
+                        "properties": {
+                            "stringProperty": "Child2",
+                            "objectProperty": {"@": "descriptor"},
+                            "parent": {"@": "root"}
+                        }
+                    },
+                    "descriptor": {
+                        "object": "spec/serialization/testmjson2.mjson"
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(serializationString, require);
+            deserializer.deserializeObject().then(function (root) {
+                console.log("root", root);
+                expect(root).toBeDefined();
+            }).catch(function(reason) {
+                fail(reason);
+            }).finally(function () {
+                done();
+            });
+        });
+
         it("should deserialize using object: module.json", function (done) {
             var serialization = {
                     "root": {
@@ -847,6 +892,14 @@ describe("serialization/montage-deserializer-spec", function () {
             }).catch(function (reason) {
                 fail(reason);
             }).finally(function () {
+                done();
+            });
+        });
+
+        it("should deserialize singleton using the folowing syntax: require('[path].mjson')", function (done) {
+            require.async('spec/serialization/testmjson.mjson').then(function (module) {
+                expect(module.montageObject).toBeDefined();
+                expect(module.montageObject.name).toBe("RootObjectDescriptor");
                 done();
             });
         });

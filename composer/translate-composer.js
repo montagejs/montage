@@ -524,6 +524,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function () {
             if (window.PointerEvent) {
                 this._element.addEventListener("pointerdown", this, true);
+                // Quick Fix: Should be removed when the eventmanger 
+                // will handle the options parameter of the 
+                // addEventListener function.
+                this._element.style.touchAction = 'none';
 
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 this._element.addEventListener("MSPointerDown", this, true);
@@ -545,6 +549,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function () {
             if (window.PointerEvent) {
                 this._element.removeEventListener("pointerdown", this, true);
+                this._element.style.touchAction = 'auto';
 
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 this._element.removeEventListener("MSPointerDown", this, true);
@@ -767,7 +772,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      **/
     _shouldPreventDefault: {
         value: function (event) {
-            return !!event.target.tagName && this._NATIVE_ELEMENTS.indexOf(event.target.tagName) === -1 && !event.target.isContentEditable;
+            return !defaultEventManager.isPassiveEventType(event.type) && !!event.target.tagName && this._NATIVE_ELEMENTS.indexOf(event.target.tagName) === -1 && !event.target.isContentEditable;
         }
     },
 

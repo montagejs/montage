@@ -10,6 +10,33 @@ var Converter = require("./converter").Converter,
  */
 exports.PipelineConverter = Converter.specialize({
 
+    constructor: {
+        value: function () {
+            this.super();
+            this.addRangeAtPathChangeListener("converters", this, "_handleConvertersRangeChange");
+        }
+    },
+
+    _handleConvertersRangeChange: {
+        value: function (plus, minus, index) {
+            var all = this.converters ? this._arrayToSet(this.converters) : [],
+                plusSet = this._arrayToSet(plus),
+                minusSet = this._arrayToSet(minus),
+                converter, i;
+
+            for (i = 0; (converter = minus[i]); ++i) {
+                if (!plusSet.has(converter)) {
+                    converter.owner = null;
+                }
+            }
+    
+            for (i = 0; (converter = plus[i]); ++i) {
+                if (!minusSet.has(converter)) {
+                    converter.owner = converter.owner || this;
+                }
+            }
+        }
+    },
 
     /********************************************
      * Serialization
@@ -21,6 +48,7 @@ exports.PipelineConverter = Converter.specialize({
             value = deserializer.getProperty("converters");
             if (value !== void 0) {
                 this.converters = value;
+                
             }
         }
     },
@@ -43,6 +71,21 @@ exports.PipelineConverter = Converter.specialize({
      */
     converters: {
         value: undefined
+    },
+
+   
+
+    _arrayToSet: {
+        value: function (array) {
+            var set = new Set(),
+                i, item;
+            array = array || [];
+
+            for (i = 0; (item = array[i]); ++i) {
+                set.add(item);
+            }
+            return set;
+        }
     },
 
 

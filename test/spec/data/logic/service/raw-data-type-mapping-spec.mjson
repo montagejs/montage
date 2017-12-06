@@ -1,0 +1,74 @@
+{
+    "root": {
+        "prototype": "montage/core/core[Montage]",
+        "values": {
+            "name": "RootDescriptor",
+            "mappings": [
+                {"@": "mapping1"},
+                {"@": "mapping2"},
+                {"@": "mapping3"}
+            ]
+        }
+    },
+
+    "mapping1": {
+        "prototype": "montage/data/service/raw-data-type-mapping",
+        "properties": {
+            "type": {"@": "type1"},
+            "expression": "type == 'FOO_TYPE'"
+        }
+    },
+
+    "type1": {
+        "prototype": "montage/core/meta/object-descriptor",
+        "properties": {
+            "name": "Type 1"
+        }
+    },
+
+    "mapping2": {
+        "prototype": "montage/data/service/raw-data-type-mapping",
+        "properties": {
+            "type": {"@": "type2"},
+            "criteria": {
+                "expression": "type == $paramType",
+                "parameters": {
+                    "paramType": "FOO_TYPE"
+                }
+            }
+        }
+    },
+
+    "type2": {
+        "prototype": "montage/core/meta/object-descriptor",
+        "properties": {
+            "name": "Type 2"
+        }
+    },
+
+    "mapping3": {
+        "prototype": "montage/data/service/raw-data-type-mapping",
+        "properties": {
+            "type": {"@": "type3"},
+            "criteria": {"@": "mapping3Criteria"}
+        }
+    },
+
+    "mapping3Criteria": {
+        "prototype": "montage/core/criteria",
+        "properties": {
+            "expression": "type == $paramType",
+            "parameters": {
+                "paramType": "FOO_TYPE"
+            }
+        }
+    },
+
+    "type3": {
+        "prototype": "montage/core/meta/object-descriptor",
+        "properties": {
+            "name": "Type 3"
+        }
+    }
+
+}
