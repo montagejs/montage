@@ -1099,6 +1099,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 } else {
                     placeholderStyle.height = "0px";
                     placeholderStyle.opacity = 0;
+                    this.needsDraw = true;
                 }
             } else {
                 this.element.classList.remove('isSorting');
