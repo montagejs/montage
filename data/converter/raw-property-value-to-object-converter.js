@@ -1,6 +1,7 @@
 var Converter = require("core/converter/converter").Converter,
     Criteria = require("core/criteria").Criteria,
     DataQuery = require("data/model/data-query").DataQuery,
+    ObjectDescriptorReference = require("core/meta/object-descriptor-reference").ObjectDescriptorReference,
     Promise = require("core/promise").Promise,
     Scope = require("frb/scope"),
     parse = require("frb/parse"),
@@ -204,9 +205,9 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
     objectDescriptor: {
         get: function () {
             return  this._objectDescriptor                      ?   Promise.resolve(this._objectDescriptor) :
-                this.owner && this.owner.objectDescriptor   ?   Promise.resolve(this.owner.objectDescriptor) :
+                    this.owner && this.owner.objectDescriptor   ?   Promise.resolve(this.owner.objectDescriptor) :
                     this.owner && this.owner instanceof Promise ?   this._objectDescriptorReference :
-                        undefined;
+                                                                    undefined;
         },
         set: function (value) {
             this._objectDescriptor = value;

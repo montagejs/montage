@@ -1,9 +1,6 @@
 var ExpressionDataMapping = require("montage/data/service/expression-data-mapping").ExpressionDataMapping,
     CategoryService = require("spec/data/logic/service/category-service").CategoryService,
-<<<<<<< HEAD
     CountryService = require("spec/data/logic/service/country-service").CountryService,
-=======
->>>>>>> 17.1.1-beta
     DataService = require("montage/data/service/data-service").DataService,
     DateConverter = require("montage/core/converter/date-converter").DateConverter,
     ModuleObjectDescriptor = require("montage/core/meta/module-object-descriptor").ModuleObjectDescriptor,
@@ -88,10 +85,13 @@ describe("An Expression Data Mapping", function() {
     movieObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("title", movieObjectDescriptor, 1));
     movieSchemaModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/schema/logic/movie", require);
     movieSchema = new ModuleObjectDescriptor().initWithModuleAndExportName(movieSchemaModuleReference, "MovieSchema");
+    
 
     actionMovieModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/action-movie", require);
     actionMovieObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(actionMovieModuleReference, "ActionMovie");
     actionMovieObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("rating", actionMovieObjectDescriptor, 1));
+    actionMovieObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("criticScore", actionMovieObjectDescriptor, 1));
+    actionMovieObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("compositeRating", actionMovieObjectDescriptor, 1));
     actionMovieObjectDescriptor.parent = movieObjectDescriptor;
 
     categoryService = new CategoryService();
@@ -145,6 +145,7 @@ describe("An Expression Data Mapping", function() {
         "<-": "{categoryID: category_id}",
         converter: categoryConverter
     });
+    movieMapping.addRawDataMappingRule("category_id", {"<-": "category.id"});
     movieMapping.addObjectMappingRule("releaseDate", {
         "<->": "release_date",
         converter: dateConverter
@@ -154,6 +155,7 @@ describe("An Expression Data Mapping", function() {
     movieMapping.addRawDataMappingRule("budget", {"<-": "budget"});
     movieMapping.addRawDataMappingRule("is_featured", {"<-": "isFeatured"});
     movieService.addMappingForType(movieMapping, movieObjectDescriptor);
+    movieMapping.rawDataPrimaryKeys = ["id"];
     categoryMapping = new ExpressionDataMapping().initWithServiceObjectDescriptorAndSchema(categoryService, categoryObjectDescriptor);
     categoryMapping.addObjectMappingRule("name", {"<->": "name"});
     categoryMapping.addRequisitePropertyName("name");
@@ -161,13 +163,17 @@ describe("An Expression Data Mapping", function() {
 
     actionMovieMapping = new ExpressionDataMapping().initWithServiceObjectDescriptorAndSchema(movieService, actionMovieObjectDescriptor);
     actionMovieMapping.addObjectMappingRule("rating", {"<-": "fcc_rating.toUpperCase()"});
+    actionMovieMapping.addObjectMappingRule("criticScore", {"<-": "score"});
+    actionMovieMapping.addObjectMappingRule("compositeRating", {"<-": "{rating: mappedRating, score: mappedScore}"});
     actionMovieMapping.addRawDataMappingRule("fcc_rating", {"<-": "rating.toLowerCase()"});
+    actionMovieMapping.addRawDataMappingRule("mappedRating", {"<-": "rating"});
+    actionMovieMapping.addRawDataMappingRule("mappedScore", {"<-": "criticScore"});
     actionMovieMapping.addRequisitePropertyName("country", "rating");
-    countryConverter = new RawPropertyValueToObjectConverter().initWithConvertExpression("category_id");
+    countryConverter = new RawPropertyValueToObjectConverter().initWithConvertExpression("country_id");
     countryConverter.revertExpression = "id";
     countryConverter.owner = actionMovieMapping;
     actionMovieMapping.addObjectMappingRule("country", {
-        "<->": "country_id",
+        "<-": "country_id",
         converter: countryConverter
     });
     actionMovieMapping.addRawDataMappingRule("country_id", {"<-": "country.id"});
@@ -193,8 +199,16 @@ describe("An Expression Data Mapping", function() {
     });
 
     it("can create the correct number of mapping rules", function () {
-        expect(Object.keys(movieMapping._compiledObjectMappingRules).length).toBe(5);
-        expect(Object.keys(movieMapping._compiledRawDataMappingRules).length).toBe(4);
+        expect(movieMapping.objectMappingRules.size).toBe(5);
+        expect(movieMapping.rawDataMappingRules.size).toBe(5);
+    });
+
+    it("can inherit rawDataPrimaryKeys", function () {
+        expect(movieMapping.rawDataPrimaryKeys.length).toBe(1);
+        expect(actionMovieMapping.rawDataPrimaryKeys.length).toBe(1);
+        actionMovieMapping.rawDataPrimaryKeys = ["id", "category_id"];
+        expect(movieMapping.rawDataPrimaryKeys.length).toBe(1);
+        expect(actionMovieMapping.rawDataPrimaryKeys.length).toBe(2);
     });
 
     it("can map raw data to object properties", function (done) {
@@ -308,6 +322,20 @@ describe("An Expression Data Mapping", function() {
         });
     });
 
+    it("can map object to criteria source for property", function (done) {
+        return registrationPromise.then(function () {
+            var movie = new Movie(),
+                data = {};
+                movie.criticScore = 94;
+                movie.rating = "PG";
+            return actionMovieMapping.mapObjectToCriteriaSourceForProperty(movie, data, "compositeRating").then(function () {
+                expect(data.mappedScore).toBe(94);
+                expect(data.mappedRating).toBe("PG");
+                done();
+            });
+        });
+    });
+
     it("can automatically revert objects to raw data of the correct type", function (done) {
         var movie = {
                 title: "Star Wars",
@@ -322,6 +350,8 @@ describe("An Expression Data Mapping", function() {
             done();
         });
     });
+
+    
 
 
 });

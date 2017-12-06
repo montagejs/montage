@@ -1,7 +1,7 @@
 console.log('montage-testing', 'Start');
 
 module.exports = require("montage-testing").run(require, [
-    // // App
+    // App
     {name: "spec/application-spec", node: false},
     // Internal
     "spec/bitfield-spec",
