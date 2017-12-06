@@ -940,6 +940,12 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 shouldAddPlaceholderHeight = false,
                 rootCondition, marginTop, object, iteration, element,
                 rowHeight, i, length;
+            
+            this.element.classList.add(this.placeholderStrategy);
+            this.element.classList.remove(
+                this.placeholderStrategy === TreeList.PLACEHOLDER_OVER ?
+                    TreeList.PLACEHOLDER_MOVE : TreeList.PLACEHOLDER_OVER
+            );
 
             for (i = 0, length = drawnIterations.length; i < length; i++) {
                 iteration = drawnIterations[i];
@@ -997,7 +1003,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             }
 
             if (this._isDragging) {
-                this.element.classList.add('isSorting');
+                this.element.classList.add('is-sorting');
 
                 if (!this._ghostElement) {
                     // Delegate Method for ghost element?
@@ -1052,12 +1058,6 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 }
 
                 if (!isScrolling) {
-                    this._placeholder.classList.add(this.placeholderStrategy);
-                    this._placeholder.classList.remove(
-                        this.placeholderStrategy === TreeList.PLACEHOLDER_OVER ?
-                            TreeList.PLACEHOLDER_MOVE : TreeList.PLACEHOLDER_OVER
-                    );
-
                     if (
                         this._placeholder && this._treeNodeOver &&
                         this._placerholderPosition !== PLACEHOLDER_POSITION.OVER_NODE
@@ -1102,7 +1102,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     this.needsDraw = true;
                 }
             } else {
-                this.element.classList.remove('isSorting');
+                this.element.classList.remove('is-sorting');
 
                 if (this._ghostElement) {
                     document.body.removeChild(this._ghostElement);

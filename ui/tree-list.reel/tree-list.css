@@ -75,15 +75,19 @@
     z-index: 2;
 }
 
-.montage-TreeList-placeholder.over {
+.montage-TreeList.over .montage-TreeList-placeholder {
     border: 2px solid;
 }
 
-.montage-TreeList-placeholder.move {
+.montage-TreeList.move.is-sorting .montage-TreeList-nodeWrapper {
+    transition: margin-top .175s ease-in-out;
+}
+
+.montage-TreeList.move .montage-TreeList-placeholder {
     border: 2px dashed;
 }
 
-.montage-TreeList-placeholder.move::after {
+.montage-TreeList.move .montage-TreeList-placeholder::after {
     box-sizing: border-box;
     content: "";
     position: absolute;
