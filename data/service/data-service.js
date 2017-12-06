@@ -55,10 +55,16 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     deserializeSelf: {
         value:function (deserializer) {
-            var value;
+            var self = this,
+                result = null, 
+                value;
+
             value = deserializer.getProperty("childServices");
             if (value) {
                 this.registerChildServices(value);
+                result = this._childServiceRegistrationPromise.then(function () {
+                    return self;
+                });
             }
 
             value = deserializer.getProperty("model") || deserializer.getProperty("binder");
@@ -80,7 +86,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (value) {
                 this.delegate = value;
             }
-
+            
+            return result;
         }
     },
 
@@ -183,7 +190,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             return this.parentService ? this.parentService.rootService : this;
         }
     },
-
 
     /**
      * Convenience method to assess if a dataService is the rootService
@@ -484,21 +490,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     _constructorToObjectDescriptorMap: {
-        get: function () {
-            if (!this.__constructorToObjectDescriptorMap) {
-                this.__constructorToObjectDescriptorMap = new Map();
-            }
-            return this.__constructorToObjectDescriptorMap;
-        }
+        value: new Map()
     },
 
     _moduleIdToObjectDescriptorMap: {
-        get: function () {
-            if (!this.__moduleIdToObjectDescriptorMap) {
-                this.__moduleIdToObjectDescriptorMap = {};
-            }
-            return this.__moduleIdToObjectDescriptorMap;
-        }
+        value: {}
     },
 
     /**
@@ -781,8 +777,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-
-
     /**
      * Returns the AuthorizationPolicyType used by this DataService.
      *
@@ -837,7 +831,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     providesAuthorization: {
         value: false
     },
-
 
     /**
      *
@@ -968,14 +961,20 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     _getPrototypeForType: {
         value: function (type) {
-            var prototype;
+            var info, triggers, prototype;
             type = this._objectDescriptorForType(type);
             prototype = this._dataObjectPrototypes.get(type);
             if (type && !prototype) {
                 prototype = Object.create(type.objectPrototype || Montage.prototype);
                 this._dataObjectPrototypes.set(type, prototype);
-                this._dataObjectTriggers.set(type, DataTrigger.addTriggers(this, type, prototype));
-
+                if (type instanceof ObjectDescriptor || type instanceof DataObjectDescriptor) {
+                    triggers = DataTrigger.addTriggers(this, type, prototype);
+                } else {
+                    info = Montage.getInfoForObject(type.prototype);
+                    console.warn("Data Triggers cannot be created for this type. (" + (info && info.objectName) + ") is not an ObjectDescriptor");
+                    triggers = [];
+                }
+                this._dataObjectTriggers.set(type, triggers);
                 //We add a property that returns an object's snapshot
                 //We add a property that returns an object's primaryKey
                 //Let's postponed this for now and revisit when we need
@@ -1191,7 +1190,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             }
         }
     },
-
 
     /**
      * Request possibly asynchronous values of a data object's properties,
@@ -1432,6 +1430,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     _dataIdentifierByObject: {
+        // This property is shared with all child services.
+        // If created lazily the wrong data identifier will be returned when
+        // accessed by a child service.
         value: new WeakMap()
     },
 
@@ -1447,7 +1448,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * @returns {DataIdentifier}        - An object's DataIdentifier
      */
      dataIdentifierForObject: {
-        value: function(object) {
+        value: function (object) {
             return this._dataIdentifierByObject.get(object);
         }
     },

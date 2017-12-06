@@ -12,8 +12,6 @@ var DataMapping = require("./data-mapping").DataMapping,
 
 var Montage = require("montage").Montage;
 
-
-
 var ONE_WAY_BINDING = "<-";
 var TWO_WAY_BINDING = "<->";
 
@@ -26,11 +24,11 @@ var TWO_WAY_BINDING = "<->";
  * @extends external:DataMapping
  */
 exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionDataMapping.prototype */ {
-
+    
     /***************************************************************************
      * Serialization
      */
-
+    
     serializeSelf: {
         value: function (serializer) {
             // serializer.setProperty("name", this.name);
@@ -43,7 +41,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             // }
         }
     },
-
+    
     deserializeSelf: {
         value: function (deserializer) {
             var value = deserializer.getProperty("objectDescriptor"),
@@ -53,9 +51,9 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             } else {
                 this.objectDescriptor = value;
             }
-
+            
             this.schemaReference = deserializer.getProperty("schema");
-
+            
             value = deserializer.getProperty("objectMapping");
             if (value) {
                 this._mapObjectMappingRules(value.rules);
@@ -68,18 +66,15 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             if (value) {
                 this.addRequisitePropertyName.apply(this, value);
             }
-
+            
             value = deserializer.getProperty("rawDataPrimaryKeys");
             if (value) {
                 this.rawDataPrimaryKeys = value;
             }
-
+            
         }
     },
-
-
-
-
+    
     /**
      * @param   {ObjectDescriptor} objectDescriptor       - the definition of the objects
      *                                   mapped by this mapping.
@@ -94,7 +89,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             return this;
         }
     },
-
+    
     resolveReferences: {
         value: function () {
             var self = this;
@@ -103,7 +98,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             });
         }
     },
-
+    
     _resolveObjectDescriptorReferenceIfNecessary: {
         value: function () {
             var self = this,
@@ -118,13 +113,13 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             });
         }
     },
-
+    
     _resolveSchemaReferenceIfNecessary: {
         value: function () {
             var self = this,
                 requiresInitialization = !this.schemaDescriptor && this.schemaDescriptorReference,
                 promise = requiresInitialization ?  this.schemaReference.promise(require) :
-                                                    Promise.resolve(null);
+                    Promise.resolve(null);
             return promise.then(function (objectDescriptor) {
                 if (objectDescriptor) {
                     self.schemaDescriptor = objectDescriptor;
@@ -133,7 +128,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             });
         }
     },
-
+    
     /***************************************************************************
      * Properties
      */
@@ -167,7 +162,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             this._objectDescriptorReference = new ObjectDescriptorReference().initWithValue(value);
         }
     },
-
+    
     /**
      * The mapping for the parent object descriptor to 
      * this mapping's object descriptor.
@@ -196,7 +191,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             this._schemaDescriptorReference = new ObjectDescriptorReference().initWithValue(value);
         }
     },
-
+    
     /**
      * A reference to the object descriptor that is used
      * by this mapping.  Used by serialized data mappings.
@@ -230,7 +225,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             return this.__ownRequisitePropertyNames;
         }
     },
-
+    
     /**
      * A reference to the object descriptor of the "raw data" that
      * is used by this mapping.  Used by serialized data mappings.
@@ -245,7 +240,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             this._schemaDescriptorReference = value;
         }
     },
-
+    
     /**
      * The service that owns this mapping object.
      * Used to create fetches for relationships.
@@ -254,7 +249,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     service: {
         value: undefined
     },
-
+    
     /**
      * Adds a name to the list of properties that will participate in
      * eager mapping.  The requisite property names will be mapped
@@ -273,7 +268,10 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             }
         }
     },
-
+    
+    /**
+     * @property {Set}
+     */
     requisitePropertyNames: {
         get: function () {
             var parent, parentMapping,
@@ -293,11 +291,11 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             return this._requisitePropertyNames;
         }
     },
-
+    
     /***************************************************************************
      * Mapping
      */
-
+    
     /**
      * Convert raw data to data objects of an appropriate type.
      *
@@ -319,30 +317,138 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      *                             the raw data.
      * @argument {Object} object - An object whose properties must be set or
      *                             modified to represent the raw data.
-
      */
     mapRawDataToObject: {
         value: function (data, object) {
-            var iterator = this.requisitePropertyNames.values(),
-                parentMapping, promises, propertyName, result;
-
-
-            if (this.requisitePropertyNames.size) {
-                promises = [];
+            var requisitePropertyNames = this.requisitePropertyNames,
+                iterator = requisitePropertyNames.values(),
+                promises, propertyName, result;
+            
+            if (requisitePropertyNames.size) {
                 while ((propertyName = iterator.next().value)) {
-                    promises.push(this.mapRawDataToObjectProperty(data, object, propertyName));
+                    result = this.mapRawDataToObjectProperty(data, object, propertyName);
+                    if (this._isAsync(result)) {
+                        promises = promises || [];
+                        promises.push(result);
+                    }
                 }
-                result = Promise.all(promises);
-            } else {
-                result  = Promise.resolve(null);
             }
-
+            
+            return promises && promises.length && Promise.all(promises);
+        }
+    },
+    
+    /**
+     * Maps the value of a single raw data property onto the model object
+     *
+     * @method
+     * @argument {Object} data           - An object whose properties' values
+     *                                     hold the raw data.
+     * @argument {Object} object         - The object on which to assign the property
+     * @argument {string} propertyName   - The name of the model property to which
+     *                                     to assign the value(s).
+     * @returns {DataStream|Promise|?}   - Either the value or a "promise" for it
+     *
+     */
+    mapRawDataToObjectProperty: {
+        value: function (data, object, propertyName) {
+            //We should probably shift rules to be a Map rather than an anonymous object.
+            var rules = this._compiledObjectMappingRules,
+                rule = rules.hasOwnProperty(propertyName) && rules[propertyName],
+                propertyDescriptor = rule && this.objectDescriptor.propertyDescriptorForName(propertyName),
+                isRelationship = propertyDescriptor && !propertyDescriptor.definition && propertyDescriptor.valueDescriptor,
+                scope = this._scope;
+            
+            scope.value = data;
+            
+            // if (!propertyDescriptor || propertyDescriptor.definition) {
+            //     return null;
+            // }
+            
+            this._prepareRawDataToObjectRule(rule, propertyDescriptor);
+            
+            return  isRelationship && rule.inversePropertyName ?    this._resolveBothSidesOfRelationship(object, propertyDescriptor, rule, scope) :
+                    isRelationship ?                                this._resolveRelationship(object, propertyDescriptor, rule, scope) :
+                    propertyDescriptor ?                            this._resolveProperty(object, propertyDescriptor, rule, scope) :
+                                                                    null;
+        }
+    },
+    
+    _resolveBothSidesOfRelationship: {
+        value: function (object, propertyDescriptor, rule, scope) {
+            var self = this;
+            return this._resolveRelationship(object, propertyDescriptor, rule, scope).then(function () {
+                return propertyDescriptor.valueDescriptor;
+            }).then(function (objectDescriptor) {
+                var inversePropertyDescriptor = objectDescriptor.propertyDescriptorForName(rule.inversePropertyName),
+                    data = object[propertyDescriptor.name];
+                if (Array.isArray(data) && propertyDescriptor) {
+                    self._setObjectsValueForPropertyDescriptor(data, object, inversePropertyDescriptor);
+                }
+                return null;
+            });
+        }
+    },
+    
+    _resolveRelationship: {
+        value: function (object, propertyDescriptor, rule, scope) {
+            var self = this;
+            return rule.converter.convert(rule.expression(scope)).then(function (data) {
+                self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor);
+                return null;
+            });
+        }
+    },
+    
+    _revertRelationshipToRawData: {
+        value: function (rawData, propertyDescriptor, rule, scope) {
+            if (!rule.converter.revert) {
+                console.log("Converter does not have a revert function for property (" + propertyDescriptor.name + ")");
+            }
+            return rule.converter.revert(rule.expression(scope)).then(function (result) {
+                rawData[propertyDescriptor.name] = result;
+                return null;
+            });
+        }
+    },
+    
+    _revertPropertyToRawData: {
+        value: function (rawData, propertyName, rule, scope) {
+            var result = rule.converter.revert(rule.expression(scope)),
+                self;
+    
+            if (this._isAsync(result)) {
+                self = this;
+                result.then(function (value) {
+                    rawData[propertyName] = result;
+                    return null;
+                });
+            } else {
+                rawData[propertyName] = result;
+            }
             return result;
         }
     },
-
     
-
+    
+    _resolveProperty: {
+        value: function (object, propertyDescriptor, rule, scope) {
+            var result = this._parse(rule, scope),
+                propertyName = typeof propertyDescriptor === "object" ? propertyDescriptor.name : propertyDescriptor,
+                self = this;
+            
+            if (this._isAsync(result)) {
+                result.then(function (value) {
+                    self._setObjectValueForPropertyDescriptor(object, value, propertyDescriptor);
+                    return null;
+                });
+            } else {
+                object[propertyName] = result;
+            }
+            return result;
+        }
+    },
+    
     /**
      * Convert model objects to raw data objects of an appropriate type.
      *
@@ -369,16 +475,56 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         value: function (object, data) {
             var keys = this.rawDataMappingRules.keys(),
                 promises = [],
-                key;
-
+                key, result;
+            
             while ((key = keys.next().value)) {
-                promises.push(this.mapObjectToRawDataProperty(object, data, key));
+                result = this.mapObjectToRawDataProperty(object, data, key);
+                if (this._isAsync(result)) {
+                    promises = promises || [];
+                    promises.push(result);
+                }
             }
 
             return promises && promises.length && Promise.all(promises) || Promise.resolve(null);
         }
     },
+    
+    /**
+     * Maps the value of a single object property to raw data
+     *
+     * @method
+     * @argument {Object} object         - An object whose properties' values
+     *                                     hold the model data.
+     * @argument {Object} data           - The object on which to assign the property
+     * @argument {string} propertyName   - The name of the raw property to which
+     *                                     to assign the values.
+     */
+    mapObjectToRawDataProperty: {
+        value: function(object, data, propertyName, prefetchRequirements) {
+            var rules = this._compiledRawDataMappingRules,
+                scope = new Scope(object),
+                rule = rules[propertyName],
+                propertyDescriptor = rule && rule.propertyDescriptor,
+                isRelationship = propertyDescriptor && propertyDescriptor.valueDescriptor,
+                result;
 
+            if (prefetchRequirements && false) { //TJ account for this...
+                promise = this.service.rootService.getObjectPropertyExpressions(object, requiredObjectProperties);
+            }
+                
+            if (isRelationship && rule.converter) {
+                this._prepareObjectToRawDataRule(rule);
+                result = this._revertRelationshipToRawData(data, propertyDescriptor, rule, scope);
+            } else if(rule.converter) {
+                result = this._revertPropertyToRawData(data, propertyName, rule, scope);
+            } else /*if (propertyDescriptor)*/ { //relaxing this for now
+                data[propertyName] = rule.expression(scope);
+            }
+            
+            return result;
+        }
+    },
+    
     /**
      * Convert model object properties to the raw data properties present in the requirements
      * for a given propertyName
@@ -397,83 +543,55 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 rule = this.objectMappingRules.get(propertyName),
                 requiredRawProperties = rule ? rule.requirements : [],
                 rawRequirementsToMap = new Set(requiredRawProperties),
-                promises = [], 
-                key;
-
+                promises, key, result;
+            
             while ((key = keys.next().value)) {
-                if (rawRequirementsToMap.has(key)) {
-                    promises.push(this.mapObjectToRawDataProperty(object, data, key));
+                if (rules.hasOwnProperty(key) && rawRequirementsToMap.has(key)) {
+                    result = this._getAndMapObjectProperty(object, data, key, propertyName);
+                    if (this._isAsync(result)) {
+                        promises = promises || [];
+                        promises.push(result);
+                    }
                 }
                
             }
-
             return promises && promises.length && Promise.all(promises) || Promise.resolve(null);
         }
     },
-
-    /**
-     * Returns the value of a single raw data property evaluated against the model object
-     *
-     * @method
-     * @argument {Object} object                 - An object whose properties' values
-     *                                             hold the model data.
-     * @argument {Object} data                   - The object on which to assign the property
-     * @argument {string} propertyName           - The name of the raw property to which
-     *                                             to assign the values.
-     * @argument {Boolean} prefetchRequirements  - Declare whether to fetch the object properties required to 
-     *                                             evaluate the raw property. 
-     */
-    mapObjectToRawDataProperty: {
-        value: function(object, data, property, prefetchRequirements) {
-            var self = this,
-                rule = this.rawDataMappingRules.get(property),
-                scope = new Scope(object),
-                propertyDescriptor = rule && rule.propertyDescriptor,
+    
+    _getAndMapObjectProperty: {
+        value: function (object, data, propertyName) {
+            var rules = this._compiledRawDataMappingRules,
+                rule = rules[propertyName],
                 requiredObjectProperties = rule ? rule.requirements : [],
-                promise;
-
+                result, self;
             
-            if (prefetchRequirements) {
-                promise = this.service.rootService.getObjectPropertyExpressions(object, requiredObjectProperties);
+            result = this.service.rootService.getObjectPropertyExpressions(object, requiredObjectProperties);
+            
+            if (this._isAsync(result)) {
+                self = this;
+                result = result.then(function () {
+                    return self.mapObjectToRawDataProperty(object, data, propertyName);
+                });
             } else {
-                promise = this.nullPromise;
+                result = this.mapObjectToRawDataProperty(object, data, propertyName);
             }
-
-            return promise.then(function () {
-                if (propertyDescriptor) {
-                    return propertyDescriptor.valueDescriptor.then(function (descriptor) {
-                        self._prepareObjectToRawPropertyRule(rule);
-                        return rule.evaluate(scope);
-                    });
-                } else {
-                    return rule.evaluate(scope);
-                }
-            }).then(function(value) {
-                data[property] = value;
-            });
+            return result;
         }
     },
-
     
-    /**
-     * Prepares a rule's converter for the property being mapped. This allows 
-     * converters to be shared across multiple rules.
-     *
-     * @method
-     * @argument {MappingRule} rule   - A MappingRule to go from an object to a raw property
-     */
-    _prepareObjectToRawPropertyRule: {
+    _prepareObjectToRawDataRule: {
         value: function (rule) {
             var converter = rule.converter,
                 propertyDescriptor = rule.propertyDescriptor;
-
+            
             if (converter) {
                 converter.expression = converter.expression || rule.expression;
                 converter.foreignDescriptor = converter.foreignDescriptor || propertyDescriptor.valueDescriptor;
             }
         }
     },
-
+    
     /**
      * Returns the identifier of the child service of .service that is used to
      * fetch propertyName
@@ -488,68 +606,223 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         }
     },
     
-
-    
-
-    _convertRelationshipToRawData: {
-        value: function (object, propertyDescriptor, rule, scope) {
-            if (!rule.converter.revert) {
-                console.log("Converter does not have a revert function for property (" + propertyDescriptor.name + ")");
+    _compiledObjectMappingRules: {
+        get: function () {
+            if (!this.__compiledObjectMappingRules) {
+                this.__compiledObjectMappingRules = {};
+                this._mapObjectMappingRules(this._rawDataMappingRules);
+                this._mapObjectMappingRules(this._objectMappingRules, true);
             }
-            return rule.evaluate(scope);
+            
+            return this.__compiledObjectMappingRules;
         }
     },
-
-
     
-
-
-    /**
-     * Returns the value of a single model property evaluated against the raw data object
-     *
-     * @method
-     * @argument {Object} data           - An object whose properties' values
-     *                                     hold the raw data.
-     * @argument {Object} object         - The object on which to assign the property
-     * @argument {string} propertyName   - The name of the model property to which
-     *                                     to assign the values.
-     */
-
-    mapRawDataToObjectProperty: {
-        value: function (data, object, propertyName) {
-            var rule = this.objectMappingRules.get(propertyName),
-                propertyDescriptor = rule && this.objectDescriptor.propertyDescriptorForName(propertyName),
-                scope = this._scope,
-                self = this,
-                isRelationship, inverse,
-                result, value;
-
-            scope.value = data;
-            if (!propertyDescriptor || propertyDescriptor.definition) {
-                result = Promise.resolve(null);
-            } else {
-                result = propertyDescriptor.valueDescriptor.then(function (descriptor) {
-                    isRelationship = !!descriptor;
-                    inverse = rule.inversePropertyName;
-                    self._prepareRawDataToObjectPropertyRule(rule, propertyDescriptor);
-                    value = rule.evaluate(scope);
-                    if (self._isThenable(value)) {
-                        value = value.then(function (data) {
-                            self._assignDataToObjectProperty(object, propertyDescriptor, data);
-                            if (inverse) {
-                                self._assignObjectAsInverseProperty(object, descriptor, data, inverse);
-                            }
-                            return null;
-                        });
-                    } else {
-                        object[propertyDescriptor.name] = value;
+    _compiledRawDataMappingRules: {
+        get: function () {
+            if (!this.__compiledRawDataMappingRules) {
+                this.__compiledRawDataMappingRules = {};
+                this._mapRawDataMappingRules(this._objectMappingRules);
+                this._mapRawDataMappingRules(this._rawDataMappingRules, true);
+            }
+            return this.__compiledRawDataMappingRules;
+        }
+    },
+    
+    _rawDataMappingRules: {
+        value: undefined
+    },
+    
+    rawDataPrimaryKeys: {
+        value: undefined
+    },
+    
+    rawDataPrimaryKeyExpressions: {
+        get: function () {
+            if (!this._rawDataPrimaryKeyExpressions && this.rawDataPrimaryKeys) {
+                this._rawDataPrimaryKeyExpressions = this.rawDataPrimaryKeys.map(
+                    function (key) {
+                        return compile(parse(key));
                     }
-                    return value;
-                });
+                );
             }
-            return result;
+            return this._rawDataPrimaryKeyExpressions;
         }
     },
+    
+    _requisitePropertyNames: {
+        get: function () {
+            if (!this.__requisitePropertyNames) {
+                this.__requisitePropertyNames = new Set();
+            }
+            return this.__requisitePropertyNames;
+        }
+    },
+    
+    
+    
+    _mapRawDataMappingRules: {
+        value: function (rawRules, addOneWayBindings) {
+            var rules = this._compiledRawDataMappingRules,
+                propertyNames = rawRules ? Object.keys(rawRules) : [],
+                propertyName, rawRule, rule, i;
+            for (i = 0; (propertyName = propertyNames[i]); ++i) {
+                rawRule = rawRules[propertyName];
+                if (this._shouldMapRule(rawRule, addOneWayBindings)) {
+                    rule = addOneWayBindings ?  this._rawDataMappingRuleWithPropertyNameAndRawDataMappingRule(propertyName, rawRule) :
+                        this._rawDataMappingRuleWithPropertyNameAndObjectMappingRule(propertyName, rawRule);
+                    rules[rule.targetPath] = rule;
+                }
+            }
+        }
+    },
+    
+    // example: foo: {"<-": "bar"}
+    _objectMappingRuleWithPropertyNameAndObjectMappingRule: {
+        value: function (propertyName, rawRule) {
+            var propertyDescriptor = this.objectDescriptor.propertyDescriptorForName[propertyName],
+                sourcePath = rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING],
+                rule = this._makeRule(sourcePath, propertyName);
+            
+            rule.converter = rawRule.converter || this._defaultConverter(sourcePath, propertyName, true);
+            rule.inversePropertyName = rawRule.inversePropertyName;
+            rule.isReverter = false;
+            rule.propertyDescriptor = propertyDescriptor;
+            rule.serviceIdentifier = rawRule.serviceIdentifier;
+            
+            return rule;
+        }
+    },
+    
+    _rawDataMappingRuleWithPropertyNameAndRawDataMappingRule: {
+        value: function (propertyName, rawRule) {
+            var schemaDescriptor = this.schemaDescriptor,
+                propertyDescriptor = this.schemaDescriptor && schemaDescriptor.propertyDescriptorForName[propertyName],
+                sourcePath = rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING],
+                rule = this._makeRule(sourcePath, propertyName);
+            
+            rule.converter = rawRule.converter || this._defaultConverter(sourcePath, propertyName, false);
+            rule.inversePropertyName = rawRule.inversePropertyName;
+            rule.isReverter = false;
+            rule.propertyDescriptor = propertyDescriptor;
+            rule.serviceIdentifier = rawRule.serviceIdentifier;
+            
+            return rule;
+            
+        }
+    },
+    
+    _objectMappingRuleWithPropertyNameAndRawDataMappingRule: {
+        value: function (propertyName, rawRule) {
+            var targetPath = rawRule[TWO_WAY_BINDING],
+                propertyDescriptor = this.objectDescriptor.propertyDescriptorForName[targetPath],
+                rule = this._makeRule(propertyName, targetPath);
+            
+            rule.converter = rawRule.converter || this._defaultConverter(propertyName, targetPath, true);
+            rule.inversePropertyName = rawRule.inversePropertyName;
+            rule.isReverter = true;
+            rule.propertyDescriptor = propertyDescriptor;
+            rule.serviceIdentifier = rawRule.serviceIdentifier;
+            return rule;
+        }
+    },
+    
+    _rawDataMappingRuleWithPropertyNameAndObjectMappingRule: {
+        value: function (propertyName, rawRule) {
+            var targetPath = rawRule[TWO_WAY_BINDING],
+                schemaDescriptor = this.schemaDescriptor,
+                propertyDescriptor = this.schemaDescriptor && schemaDescriptor.propertyDescriptorForName[propertyName],
+                rule = this._makeRule(propertyName, targetPath);
+            
+            rule.converter = rawRule.converter || this._defaultConverter(propertyName, targetPath, false);
+            rule.inversePropertyName = rawRule.inversePropertyName;
+            rule.isReverter = true;
+            rule.propertyDescriptor = propertyDescriptor;
+            rule.serviceIdentifier = rawRule.serviceIdentifier;
+            return rule;
+        }
+    },
+    
+    _makeRule: {
+        value: function (source, target) {
+            var compiled = this._compileRuleExpression(source),
+                rule = new MappingRule();
+            rule.expression = compiled.expression;
+            rule.requirements = this._parseRequirementsFromParsedExpression(compiled.parsed);
+            rule.targetPath = target;
+            return rule;
+        }
+    },
+    
+    _makeRuleFromRawRule: {
+        value: function (rawRule, propertyName, addOneWayBindings) {
+            var propertyDescriptorName = addOneWayBindings ? rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING] : propertyName,
+                propertyDescriptor = this.objectDescriptor.propertyDescriptorForName(propertyDescriptorName),
+                sourcePath = addOneWayBindings ? rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING] : propertyName,
+                targetPath = addOneWayBindings && propertyName || rawRule[TWO_WAY_BINDING],
+                compiled = this._compileRuleExpression(sourcePath),
+                rule = new MappingRule();
+            
+            rule.converter = rawRule.converter || this._defaultConverter(sourcePath, targetPath);
+            rule.expression = compiled.expression;
+            rule.inversePropertyName = rawRule.inversePropertyName;
+            rule.isReverter = rawRule.converter && !addOneWayBindings;
+            rule.propertyDescriptor = propertyDescriptor;
+            rule.requirements = this._parseRequirementsFromParsedExpression(compiled.parsed);
+            rule.serviceIdentifier = rawRule.serviceIdentifier;
+            rule.targetPath = targetPath;
+            
+            return rule;
+        }
+    },
+    
+    __scope: {
+        value: null
+    },
+    
+    _scope: {
+        get: function() {
+            if (!this.__scope) {
+                this.__scope = new Scope();
+            }
+            return this.__scope;
+        }
+    },
+    
+    _setObjectsValueForPropertyDescriptor: {
+        value: function (objects, value, propertyDescriptor) {
+            var i, n;
+            for (i = 0, n = objects.length; i < n; i += 1) {
+                this._setObjectValueForPropertyDescriptor(objects[i], value, propertyDescriptor);
+            }
+        }
+    },
+    
+    _setObjectValueForPropertyDescriptor: {
+        value: function (object, value, propertyDescriptor) {
+            var propertyName = propertyDescriptor.name,
+                isToMany;
+            //Add checks to make sure that data matches expectations of propertyDescriptor.cardinality
+            
+            if (Array.isArray(value)) {
+                isToMany = propertyDescriptor.cardinality !== 1;
+                if (isToMany && Array.isArray(object[propertyName])) {
+                    object[propertyName].splice.apply(object[propertyName], [0, Infinity].concat(value));
+                } else if (isToMany) {
+                    object[propertyName] = value;
+                } else if (value.length) {
+                    //Cardinality is 1, if data contains more than 1 item, we throw
+                    if (value.length > 1) {
+                        throw new Error("ExpressionDataMapping for property \""+ this.objectDescriptor.name + "." + propertyName+"\" expects a cardinality of 1 but data to map doesn't match: "+value);
+                    }
+                    object[propertyName] = value[0];
+                }
+            } else {
+                object[propertyName] = value;
+            }
+        }
+    },
+
 
     /**
      * Prepares a rule's converter for the property being mapped. This allows 
@@ -558,7 +831,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      * @method
      * @argument {MappingRule} rule   - A MappingRule to go from raw data to an object property
      */
-    _prepareRawDataToObjectPropertyRule: {
+    _prepareRawDataToObjectRule: {
         value: function (rule, propertyDescriptor) {
             var converter = rule.converter;
             if (converter) {
@@ -569,7 +842,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             }
         }
     },
-
+    
     /**
      * Pre-fetches the model properties that are required to map another model property
      *
@@ -585,12 +858,13 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             if (!rule) {
                 console.log("No Rule For:", propertyName);
             }
-
+            
             return prerequisites ? this.service.rootService.getObjectProperties(object, prerequisites) : Promise.resolve(null);
         }
     },
+    
+    _isAsync: {
 
-    _isThenable: {
         value: function (object) {
             return object && object.then && typeof object.then === "function";
         }
@@ -762,6 +1036,24 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         }
     },
 
+    // From Jonathan
+    // _mapObjectMappingRules: { 
+    //     value: function (rawRules, addOneWayBindings) {
+    //         var rules = this._compiledObjectMappingRules,
+    //             propertyNames = rawRules ? Object.keys(rawRules) : [],
+    //             propertyName, rawRule, rule, i;
+            
+    //         for (i = 0; (propertyName = propertyNames[i]); ++i) {
+    //             rawRule = rawRules[propertyName];
+    //             if (this._shouldMapRule(rawRule, addOneWayBindings)) {
+    //                 rule = addOneWayBindings ?  this._objectMappingRuleWithPropertyNameAndObjectMappingRule(propertyName, rawRule) :
+    //                     this._objectMappingRuleWithPropertyNameAndRawDataMappingRule(propertyName, rawRule);
+    //                 rules[rule.targetPath] = rule;
+    //             }
+    //         }
+    //     }
+    // },
+
     
     /**
      * Maps raw object to rawData rules to MappingRule objects
@@ -807,7 +1099,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             return rule;
         }
     },
-
+    
     _shouldMapRule: {
         value: function (rawRule, addOneWayBindings) {
             var isOneWayBinding = rawRule.hasOwnProperty(ONE_WAY_BINDING),
@@ -815,7 +1107,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             return isOneWayBinding && addOneWayBindings || isTwoWayBinding;
         }
     },
-
+    
     _defaultConverter: {
         value: function (sourcePath, targetPath, isObjectMappingRule) {
             var sourceObjectDescriptor = isObjectMappingRule ? this.schemaDescriptor : this.objectDescriptor,
@@ -825,26 +1117,27 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 sourceDescriptorValueType = sourceDescriptor && sourceDescriptor.valueType,
                 targetDescriptorValueType = targetDescriptor && targetDescriptor.valueType,
                 shouldUseDefaultConverter = sourceDescriptor && targetDescriptor &&
-                                            sourceDescriptorValueType !== targetDescriptorValueType;
-
-            return  shouldUseDefaultConverter ? this._converterForValueTypes(targetDescriptorValueType, sourceDescriptorValueType) :
-                                                null;
-
+                    sourceDescriptorValueType !== targetDescriptorValueType;
+            
+            return  shouldUseDefaultConverter && isObjectMappingRule ?  this._converterForValueTypes(targetDescriptorValueType, sourceDescriptorValueType) :
+                    shouldUseDefaultConverter && !isObjectMappingRule ? this._converterForValueTypes(sourceDescriptorValueType, targetDescriptorValueType) :
+                                                                        null;
+            
         }
     },
-
+    
+    
     _converterForValueTypes: {
         value: function (sourceType, destinationType) {
             var converters = exports.ExpressionDataMapping.defaultConverters;
             return converters[sourceType] && converters[sourceType][destinationType] || null;
         }
     },
-
-
+    
     /***************************************************************************
      * Deprecated
      */
-
+    
     /**
      * @todo Document deprecation in favor of
      * [mapRawDataToObject()]{@link DataMapping#mapRawDataToObject}
@@ -854,7 +1147,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             return this.mapRawDataToObject(record, object, context);
         }
     },
-
+    
     /**
      * @todo Document deprecation in favor of
      * [mapObjectToRawData()]{@link DataMapping#mapObjectToRawData}
@@ -864,9 +1157,9 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             this.mapObjectToRawData(object, record);
         }
     }
-
+    
 }, {
-
+    
     defaultConverters: {
         get: function () {
             if (!exports.ExpressionDataMapping._defaultConverters) {
@@ -877,7 +1170,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             return exports.ExpressionDataMapping._defaultConverters;
         }
     },
-
+    
     _addDefaultConvertersToMap: {
         value: function (converters) {
             exports.ExpressionDataMapping._addDefaultBooleanConvertersToConverters(converters);
@@ -885,7 +1178,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             exports.ExpressionDataMapping._addDefaultStringConvertersToConverters(converters);
         }
     },
-
+    
     _addDefaultBooleanConvertersToConverters: {
         value: function (converters) {
             var booleanConverters = {};
@@ -916,7 +1209,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             converters["boolean"] = booleanConverters;
         }
     },
-
+    
     _addDefaultNumberConvertersToConverters: {
         value: function (converters) {
             var numberConverters = {};
@@ -947,7 +1240,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             converters["number"] = numberConverters;
         }
     },
-
+    
     _addDefaultStringConvertersToConverters: {
         value: function (converters) {
             var stringConverters = {};
@@ -978,5 +1271,5 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             converters["string"] = stringConverters;
         }
     }
-
+    
 });

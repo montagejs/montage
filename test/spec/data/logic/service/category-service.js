@@ -5,7 +5,7 @@ exports.CategoryService = RawDataService.specialize(/** @lends CategoryService.p
 
     fetchRawData: {
         value: function (stream) {
-            var categoryId = stream.query.criteria.parameters || -1,
+            var categoryId = stream.query.criteria.parameters.categoryID || -1,
                 isValidCategory = categoryId > 0 && CategoryNames.length >= categoryId,
                 categoryName = isValidCategory && CategoryNames[categoryId - 1] || "Unknown";
             

@@ -18,7 +18,7 @@
                 "@": "root"
             },
             "valueType": "object",
-            "targetObjectDescriptor": {
+            "valueDescriptor": {
                 "@": "objectDescriptor_converter_reference"
             },
             "helpKey": ""

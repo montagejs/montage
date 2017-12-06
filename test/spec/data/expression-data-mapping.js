@@ -1,6 +1,9 @@
 var ExpressionDataMapping = require("montage/data/service/expression-data-mapping").ExpressionDataMapping,
     CategoryService = require("spec/data/logic/service/category-service").CategoryService,
+<<<<<<< HEAD
     CountryService = require("spec/data/logic/service/country-service").CountryService,
+=======
+>>>>>>> 17.1.1-beta
     DataService = require("montage/data/service/data-service").DataService,
     DateConverter = require("montage/core/converter/date-converter").DateConverter,
     ModuleObjectDescriptor = require("montage/core/meta/module-object-descriptor").ModuleObjectDescriptor,
@@ -135,11 +138,11 @@ describe("An Expression Data Mapping", function() {
     movieMapping = new ExpressionDataMapping().initWithServiceObjectDescriptorAndSchema(movieService, movieObjectDescriptor, movieSchema);
     movieMapping.addRequisitePropertyName("title", "category", "budget", "isFeatured", "releaseDate");
     movieMapping.addObjectMappingRule("title", {"<->": "name"});
-    categoryConverter = new RawPropertyValueToObjectConverter().initWithConvertExpression("category_id");
-    categoryConverter.revertExpression = "id";
-    categoryConverter.owner = movieMapping;
+
+    categoryConverter = new RawPropertyValueToObjectConverter().initWithConvertExpression("category_id == $");
+    categoryConverter.service = categoryService;
     movieMapping.addObjectMappingRule("category", {
-        "<->": "category_id",
+        "<-": "{categoryID: category_id}",
         converter: categoryConverter
     });
     movieMapping.addObjectMappingRule("releaseDate", {
@@ -189,24 +192,31 @@ describe("An Expression Data Mapping", function() {
         });
     });
 
+    it("can create the correct number of mapping rules", function () {
+        expect(Object.keys(movieMapping._compiledObjectMappingRules).length).toBe(5);
+        expect(Object.keys(movieMapping._compiledRawDataMappingRules).length).toBe(4);
+    });
+
     it("can map raw data to object properties", function (done) {
-        var movie = {},
-            data = {
-                name: "Star Wars",
-                category_id: 1,
-                budget: "14000000.00",
-                is_featured: "true",
-                release_date: "05/25/1977"
-            };
-        return movieMapping.mapRawDataToObject(data, movie).then(function () {
-            expect(movie.title).toBe("Star Wars");
-            expect(movie.category).toBeDefined();
-            expect(movie.category && movie.category.name === "Action").toBeTruthy();
-            expect(typeof movie.releaseDate === "object").toBeTruthy();
-            expect(movie.releaseDate.getDate()).toBe(25);
-            expect(movie.releaseDate.getMonth()).toBe(4);
-            expect(movie.releaseDate.getFullYear()).toBe(1977);
-            done();
+        return registrationPromise.then(function () {
+            var movie = {},
+                data = {
+                    name: "Star Wars",
+                    category_id: 1,
+                    budget: "14000000.00",
+                    is_featured: "true",
+                    release_date: "05/25/1977"
+                };
+            return movieMapping.mapRawDataToObject(data, movie).then(function () {
+                expect(movie.title).toBe("Star Wars");
+                expect(movie.category).toBeDefined();
+                expect(movie.category && movie.category.name === "Action").toBeTruthy();
+                expect(typeof movie.releaseDate === "object").toBeTruthy();
+                expect(movie.releaseDate.getDate()).toBe(25);
+                expect(movie.releaseDate.getMonth()).toBe(4);
+                expect(movie.releaseDate.getFullYear()).toBe(1977);
+                done();
+            });
         });
     });
 

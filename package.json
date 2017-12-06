@@ -1,6 +1,6 @@
 {
   "name": "montage",
-  "version": "17.0.11",
+  "version": "17.1.1",
   "description": "Build your next application with a browser based platform that really gets the web.",
   "license": "BSD-3-Clause",
   "repository": {
@@ -52,10 +52,8 @@
     "collections": "~5.0.x",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
-    "jshint": "^2.9.5",
-    "moment-timezone": "^0.5.11",
-    "mr": "^17.0.8",
     "q-io": "^1.13.3",
+    "mr": "^17.0.9",
     "weak-map": "^1.0.5",
     "xhr2": "^0.1.4",
     "lodash.kebabcase": "^4.1.1",
@@ -69,6 +67,7 @@
     "http-server": "^0.10.0",
     "jasmine-console-reporter": "^1.2.7",
     "jasmine-core": "^2.5.2",
+    "jshint": "^2.9.5",
     "karma": "^1.5.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",

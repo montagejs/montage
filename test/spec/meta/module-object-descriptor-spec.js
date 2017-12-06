@@ -111,7 +111,7 @@ describe("meta/module-object-descriptor-spec", function () {
             it("correctly loads objectDescriptors with the same internal module ID cross package", function (done) {
                 require.loadPackage({location: "spec/meta/blueprint/package"}).then(function (require) {
                     return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.meta", require)
-                    .then(function (objectDescriptor) {
+                        .then(function (objectDescriptor) {
                         expect(objectDescriptor.parent).not.toBe(objectDescriptor);
                     }, function (err) {
                         fail(err);
