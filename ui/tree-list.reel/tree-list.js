@@ -1107,7 +1107,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                         placeholderStyle.top = (placeholderMarginTop - this._treeListScrollTop) + "px";
                         placeholderStyle.left = treeNodeOverStyle.marginLeft;
                         placeholderStyle.width = this._treeListBoundingClientRect.width -
-                            parseInt(treeNodeOverStyle.marginLeft) - 4 + "px"; // 4px -> border width
+                            parseInt(treeNodeOverStyle.marginLeft) + "px";
                         placeholderStyle.opacity = .85;
                     } else {
                         placeholderStyle.height = "0px";
