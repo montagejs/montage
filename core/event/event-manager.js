@@ -797,6 +797,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 delete aWindow.Worker.prototype.nativeAddEventListener;
             }
 
+            delete aWindow.EventTarget.prototype.nativeRemoveEventListener;
             delete aWindow.Element.prototype.nativeRemoveEventListener;
             delete aWindow.nativeRemoveEventListener;
 
