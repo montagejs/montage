@@ -310,6 +310,35 @@
                 // Expose bootstrap
                 global.bootstrap = bootstrapModule;
 
+                // Special case for bluebird under a bundle:
+                // When we get bluebird as part of our bundle, it will be in
+                // the form of a IIFE that defines Promise on the global
+                // namespace. Other modules (e.g. mr) are bundled in the form
+                // of a bootstrap() call. Since bluebird doesn't do this,
+                // we need to manually call bootstrap() ourselves, otherwise
+                // the bootstrapping process will not complete in time before
+                // montageDefine() calls are processed.
+                // TODO: Maybe mop should take care of providing the bootstrap()
+                // call for bluebird in bundles for us?
+                if (typeof global.BUNDLE !== "undefined") {
+                    global.nativePromise = global.Promise;
+                    Object.defineProperty(global, "Promise", {
+                        configurable: true,
+                        set: function(PromiseValue) {
+                            Object.defineProperty(global, "Promise", {
+                                value: PromiseValue
+                            });
+
+                            global.bootstrap("bluebird", function (require, exports) {
+                                return global.Promise;
+                            });
+                            global.bootstrap("promise", function (require, exports) {
+                                return global.Promise;
+                            });
+                        }
+                    });
+                }
+
                 // Load other module and skip promise
                 for (var id in dependencies) {
                     if (dependencies.hasOwnProperty(id)) {
