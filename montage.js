@@ -211,12 +211,11 @@
                         "exports": Promise,
                         "global": "Promise",
                         "export": "Promise",
-                        "location": "node_modules/bluebird/js/browser/bluebird.min.js",
+                        "location": "node_modules/bluebird/js/browser/bluebird.min.js"
                     },
                     "require": {
-                        "exports": mr, // Preloaded
-                        //location: "./require.js"
-                        "location": "node_modules/mr/require.js",
+                        "exports": mr,
+                        "location": "node_modules/mr/require.js"
                     }
                 };
 
@@ -291,7 +290,7 @@
                         // Fallback on flat strategy for missing nested module
                         if (module.strategy === 'nested') {
                             module.strategy = 'flat';
-                            module.script = resolveUrl(resolveUrl(location, '../../'), module.location);
+                            module.script = resolveUrl(location, module.location);
                             loadScript(module.script, bootstrapModuleScript.bind(null, module));
                         } else {
                             throw err;
@@ -327,9 +326,11 @@
                         }
 
                         // Update dependency
-                        dependencies[id] = module;  
-                        // Update locatiom from param
-                        module.location = params.hasOwnProperty(paramModuleLocation) ? params[paramModuleLocation] : module.location;
+                        dependencies[id] = module;
+                        // Update location of dependency from params, e.g. if we are in a mop build
+                        if (params.hasOwnProperty(paramModuleLocation)) {
+                            module.location = params[paramModuleLocation];
+                        }
 
                         // Reset bad exports
                         if (moduleHasExport(module)) {
