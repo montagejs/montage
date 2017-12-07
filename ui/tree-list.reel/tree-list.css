@@ -85,6 +85,7 @@
 
 .montage-TreeList.move .montage-TreeList-placeholder {
     border: 2px dashed;
+    transition: opacity .175s ease-in-out;
 }
 
 .montage-TreeList.move .montage-TreeList-placeholder::after {
