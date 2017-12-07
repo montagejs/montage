@@ -366,7 +366,7 @@
                             bootstrapModule(module.id, module.exports);
                         } else if (typeof module.shim !== "undefined") {
                             bootstrapModule(module.id, module.shim);
-                        } else {
+                        } else if (!global.BUNDLE) {
                             module.strategy = "nested";
                             module.script = resolveUrl(params.location, module.location);
                             loadScript(module.script, bootstrapModuleScript.bind(null, module));
