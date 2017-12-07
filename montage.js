@@ -278,11 +278,11 @@
                     }
 
                     // At least bootModule in order
-                    var mrPromise = bootModule("promise").Promise,
+                    var Promise = bootModule("promise").Promise,
                         miniURL = bootModule("mini-url"),
                         mrRequire = bootModule("require");
 
-                    callback(mrRequire, mrPromise, miniURL);
+                    callback(mrRequire, Promise, miniURL);
                 }
 
                 function bootstrapModuleScript(module, err, script) {
@@ -685,7 +685,7 @@
      */
     exports.initMontage = function() {
         var platform = exports.getPlatform();
-        return platform.bootstrap(function (mrRequire, mrPromise, miniURL) {
+        return platform.bootstrap(function (mrRequire, Promise, miniURL) {
 
             var config = {},
                 params = platform.getParams(),
@@ -693,27 +693,39 @@
                 applicationModuleId = params.module || "",
                 applicationLocation = miniURL.resolve(platform.getLocation(), params.package || ".");
 
-            // execute the preloading plan and stall the fallback module loader
-            // until it has finished
-            if (global.preload) {
-
+            if (typeof global.BUNDLE === "object") {
                 var bundleDefinitions = {};
                 var getDefinition = function (name) {
-                    return (bundleDefinitions[name] = bundleDefinitions[name] || Promise.resolve());
+                    if (!bundleDefinitions[name]) {
+                         var defer = bundleDefinitions[name] = {};
+                         var deferPromise = new Promise(function(resolve, reject) {
+                             defer.resolve = resolve;
+                             defer.reject = reject;
+                         });
+                         defer.promise = deferPromise;
+                         return defer;
+                    }
+                    return bundleDefinitions[name];
                 };
 
                 global.bundleLoaded = function (name) {
                     return getDefinition(name).resolve();
                 };
 
-                var preloading = Promise.resolve();
+                var preloading = {};
+                var preloadingPromise = new Promise(function (resolve, reject) {
+                    preloading.resolve = resolve;
+                    preloading.reject = reject;
+                });
+                preloading.promise = preloadingPromise;
+
                 config.preloaded = preloading.promise;
 
                 // preload bundles sequentially
-                var preloaded = mrPromise.resolve();
-                global.preload.forEach(function (bundleLocations) {
+                var preloaded = Promise.resolve();
+                global.BUNDLE.forEach(function (bundleLocations) {
                     preloaded = preloaded.then(function () {
-                        return mrPromise.all(bundleLocations.map(function (bundleLocation) {
+                        return Promise.all(bundleLocations.map(function (bundleLocation) {
                             loadScript(bundleLocation);
                             return getDefinition(bundleLocation).promise;
                         }));
@@ -722,7 +734,7 @@
 
                 // then release the module loader to run normally
                 preloading.resolve(preloaded.then(function () {
-                    delete global.preload;
+                    delete global.BUNDLE;
                     delete global.bundleLoaded;
                 }));
             }
@@ -762,7 +774,7 @@
                     type: "montageReady"
                 }, "*");
 
-                var trigger = new mrPromise(function(resolve) {
+                var trigger = new Promise(function(resolve) {
                     var messageCallback = function (event) {
                         if (
                             params.remoteTrigger === event.origin &&
@@ -854,7 +866,7 @@
                 .then(function (montageRequire) {
                     montageRequire.inject("core/mini-url", miniURL);
                     montageRequire.inject("core/promise", {
-                        Promise: mrPromise
+                        Promise: Promise
                     });
 
                     // Expose global require and mr
@@ -889,7 +901,7 @@
                         return montageRequire.deepLoad(dependency);
                     });
 
-                    return mrPromise.all(deepLoadPromises).then(function () {
+                    return Promise.all(deepLoadPromises).then(function () {
 
                         var Montage = montageRequire("core/core").Montage;
                         var EventManager = montageRequire("core/event/event-manager").EventManager;
