@@ -37,7 +37,7 @@
         function finallyHandler() {
             // remove clutter
             if (script.parentNode) {
-                script.parentNode.removeChild(script);   
+                script.parentNode.removeChild(script);
             }
         }
 
@@ -64,11 +64,11 @@
             }
         } else {
             throw new Error("Platform not supported");
-        }   
+        }
     }
 
     exports.initBrowser = function initBrowser() {
-        
+
         return  {
 
             resolveUrl: (function makeResolveUrl() {
@@ -131,7 +131,7 @@
 
                 if (!params) {
                     params = this._params = {};
-                    
+
                     // Find the <script> that loads us, so we can divine our
                     // parameters from its attributes.
                     var i, j, match, script, attr, name,
@@ -186,7 +186,7 @@
 
                 return params;
             },
-            
+
             loadPackage: function (dependency, config, packageDescription) {
                 return mr.loadPackage(dependency, config, packageDescription);
             },
@@ -234,8 +234,8 @@
                     var module = dependencies[id];
 
                     if (
-                        module && 
-                            moduleHasExport(module) === false && 
+                        module &&
+                            moduleHasExport(module) === false &&
                                 typeof module.factory === "function"
                     ) {
                         module.exports = module.factory(bootModule, (module.exports = {})) || module.exports;
@@ -254,9 +254,9 @@
                     if (!dependencies.hasOwnProperty(id)) {
                         return;
                     }
-                    
+
                     dependencies[id].factory = factory;
-                    
+
                     for (id in dependencies) {
                         if (dependencies.hasOwnProperty(id)) {
                             // this causes the function to exit if there are any remaining
@@ -275,7 +275,7 @@
 
                     // Restore inital Boostrap
                     if (initalBoostrap) {
-                        global.bootstrap = initalBoostrap;   
+                        global.bootstrap = initalBoostrap;
                     }
 
                     // At least bootModule in order
@@ -294,13 +294,13 @@
                             module.script = resolveUrl(resolveUrl(location, '../../'), module.location);
                             loadScript(module.script, bootstrapModuleScript.bind(null, module));
                         } else {
-                            throw err;   
+                            throw err;
                         }
                     } else if (module.export || module.global) {
 
                         bootstrapModule(module.id, function (bootRequire, exports) {
                             if (module.export) {
-                                exports[module.export] = global[module.global]; 
+                                exports[module.export] = global[module.global];
                             } else {
                                 return global[module.global];
                             }
@@ -323,7 +323,7 @@
                                 location: module
                             };
                         } else {
-                            module.id = id;   
+                            module.id = id;
                         }
 
                         // Update dependency
@@ -342,7 +342,7 @@
                             loadScript(module.script, bootstrapModuleScript.bind(null, module));
                         }
                     }
-                } 
+                }
             }
         };
     };
@@ -380,7 +380,7 @@
                     params.location = params[paramNamespace + 'Location'] = location;
                     // Detect command line
                     if (
-                        typeof process !== "undefined" && 
+                        typeof process !== "undefined" &&
                             typeof process.argv !== "undefined"
                     ) {
 
@@ -398,14 +398,14 @@
                             }
 
                             params.module = PATH.basename(module);
-                            params.package = PATH.dirname(FS.realpathSync(module)) + "/";  
+                            params.package = PATH.dirname(FS.realpathSync(module)) + "/";
                         }
                     }
                 }
 
-                return params; 
+                return params;
             },
-            
+
             loadPackage: function (dependency, config, packageDescription) {
                 return mr.loadPackage(dependency, config, packageDescription);
             },
@@ -444,7 +444,7 @@
     exports.initMontageCustomElement = function () {
 
         if (
-            typeof customElements === 'undefined' || 
+            typeof customElements === 'undefined' ||
                 typeof Reflect === 'undefined'
         ) {
             return void 0;
@@ -587,7 +587,7 @@
                 mainEnterDocument = component.enterDocument,
                 mainTemplateDidLoad = component.templateDidLoad,
                 proxyElement = this.findProxyForElement(this);
-            
+
             if (proxyElement) {
                 var observedAttributes = this.observedAttributes,
                     observedAttribute,
@@ -603,7 +603,7 @@
                     }
                 }
             }
-                
+
             this.application.eventManager.registerTargetForActivation(shadowRoot);
 
             component.templateDidLoad = function () {
@@ -662,7 +662,7 @@
                 location = params.location,
                 applicationModuleId = params.module || "",
                 applicationLocation = miniURL.resolve(platform.getLocation(), params.package || ".");
-                
+
             // execute the preloading plan and stall the fallback module loader
             // until it has finished
             if (global.preload) {
@@ -671,11 +671,11 @@
                 var getDefinition = function (name) {
                     return (bundleDefinitions[name] = bundleDefinitions[name] || Promise.resolve());
                 };
-                
+
                 global.bundleLoaded = function (name) {
                     return getDefinition(name).resolve();
                 };
-                
+
                 var preloading = Promise.resolve();
                 config.preloaded = preloading.promise;
 
@@ -756,7 +756,7 @@
                     window.addEventListener("message", messageCallback);
                 });
 
-                
+
                 // TODO need test
                 applicationRequirePromise = trigger.spread(function (location, injections) {
                     var promise = mrRequire.loadPackage({
@@ -890,7 +890,7 @@
                             application.eventManager = defaultEventManager;
 
                             return application._load(applicationRequire, function() {
-                                
+
                                 // If a module was specified in the config then we initialize it now
                                 if (applicationModuleId) {
                                     applicationRequire.async(applicationModuleId);
@@ -912,7 +912,7 @@
     };
 
     if (
-        typeof window !== "undefined" || 
+        typeof window !== "undefined" ||
             (typeof module === 'object' && module.exports &&
                 typeof require !== "undefined")
     ) {
