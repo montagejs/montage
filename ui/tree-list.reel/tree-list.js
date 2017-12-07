@@ -636,7 +636,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             this._draggingTreeNode = null;
             this.__translateComposer.translateX = 0;
             this.__translateComposer.translateY = 0;
-            this._ghostElementBoundingRect = null;
+            this._draggingElementBoundingRect = null;
             this._placerholderPosition = PLACEHOLDER_POSITION.OVER_NODE;
             this._treeNodeOver = null;
             this._treeNodeWillAcceptDrop = null;
@@ -816,9 +816,9 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             if (this._isDragging) {
                 this._treeListScrollTop = this._treeListWrapper.scrollTop;
 
-                if (this._ghostElement && !this._ghostElementBoundingRect) {
+                if (this._ghostElement && !this._draggingElementBoundingRect) {
                     var draggingElement = this._findTreeNodeElementWithNode(this._draggingTreeNode);
-                    this._ghostElementBoundingRect = draggingElement.getBoundingClientRect();
+                    this._draggingElementBoundingRect = draggingElement.getBoundingClientRect();
                 }
 
                 var positionX = this._startPositionX + this._translateX,
@@ -1042,8 +1042,9 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
                 if (this._needsToWaitforGhostElementBoundaries) {
                     // Delegate Method for ghost element positioning?
-                    this._ghostElement.style.top = this._ghostElementBoundingRect.top + "px";
-                    this._ghostElement.style.left = this._ghostElementBoundingRect.left + "px";
+                    this._ghostElement.style.top = this._draggingElementBoundingRect.top + "px";
+                    this._ghostElement.style.left = this._draggingElementBoundingRect.left + "px";
+                    this._ghostElement.style.width = this._draggingElementBoundingRect.width + "px";
                     this._ghostElement.style.opacity = 1;
                     this._needsToWaitforGhostElementBoundaries = false;
                 }

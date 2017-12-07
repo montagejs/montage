@@ -61,6 +61,7 @@
 
 .montage-TreeList-placeholder,
 .montage-TreeList-ghostImage {
+    box-sizing: border-box;
     position: absolute;
     top: 0;
     left: 0;
@@ -70,7 +71,6 @@
 }
 
 .montage-TreeList-placeholder {
-    box-sizing: border-box;
     border-radius: 2px;
     z-index: 2;
 }

@@ -112,20 +112,10 @@ input[type=checkbox][checked=checked].expand::before {
 }
 
 .montage-TreeList-ghostImage {
-    box-sizing: border-box;
-    height: 26px;
-    width: 50px;
-    border-radius: 4px;
     color: #2C82C9;
 }
 
 .montage-TreeList-ghostImage input[type=checkbox], 
 .montage-TreeList-ghostImage input[type=checkbox]::before {
     display: none;
-}
-
-.montage-TreeList-ghostImage .tree-list-row {
-    height: 100%;
-    justify-content: flex-end;
-    align-items: flex-start;
 }
