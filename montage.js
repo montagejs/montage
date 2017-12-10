@@ -173,7 +173,9 @@
                             // Legacy
                             params.location = this.resolveUrl(this.getLocation(), params.location);
                             params[paramNamespace + 'Location'] = params.location;
-                            params[paramNamespace + 'Hash'] = params.hash;
+                            if (!params[paramNamespace + 'Hash'] && params.hash) {
+                                params[paramNamespace + 'Hash'] = params.hash;
+                            }
 
                             // Permits multiple bootstrap.js <scripts>; by
                             // removing as they are discovered, next one
