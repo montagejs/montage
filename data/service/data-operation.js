@@ -13,14 +13,17 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      */
 
     constructor: {
-        value: function DataOperation() {
+        value: function DataOperation() {//RDW this might be too clever, if we hope to read operations from a store
             this.time = Date.now();
-            this._index = exports.DataOperation.prototype._currentIndex + 1 || 0;
+            this._index = exports.DataOperation.prototype._currentIndex + 1 || 0;//RDW need to be able to get the currentIndex from a store, or just need to trust that the store knows how to auto-increment index (id)
             exports.DataOperation.prototype._currentIndex = this._index;
         }
     },
 
     _currentIndex: {
+        value: undefined
+    },
+    _index: {
         value: undefined
     },
 
@@ -32,7 +35,7 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      * @type {number}
      */
     id: {
-        value: undefined
+        value: this._index
     },
 
     /**
@@ -120,7 +123,7 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     /***************************************************************************
      * Deprecated
      */
-
+//RDW there are no users of this... why "deprecated"?
     /**
      * @todo: Deprecate and remove when appropriate.
      */
@@ -149,12 +152,54 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
 
     Type: {
         value: {
-            CREATE: {isCreate: true},
-            READ: {isRead: true},
-            UPDATE: {isUpdate: true},
-            DELETE: {isDelete: true}
+            CREATE: { isCreate: true },
+            READ: { isRead: true },
+            UPDATE: { isUpdate: true },
+            DELETE: { isDelete: true }
         }
-    }
+    },
+
+    _lastOperation: {
+        value: function (operationType, dataID, dataType, data, context, time) {//RDW validate incoming arguments (defined dataID, dataType, data, check whether all values are correct types)? might be different per operationType
+            var newOperation = (new this.constructor);
+
+            newOperation.type = operationType;
+
+            newOperation.dataID = dataID;
+            newOperation.dataType = dataType;
+            newOperation.data = data;
+            newOperation.context = context;
+
+            if (time) {
+                newOperation.time = time;
+            }
+
+            return newOperation;
+        }
+    },
+
+    lastCreated: {
+        value: function (dataID, dataType, data, context, time) {
+            return this._lastOperation(this.Type.CREATE, dataID, dataType, data, context, time);
+        }
+    },
+
+    lastRead: {
+        value: function (dataID, dataType, data, context, time) {
+            return this._lastOperation(this.Type.READ, dataID, dataType, data, context, time);
+        }
+    },
+
+    lastUpdated: {
+        value: function (dataID, dataType, data, context, time) {
+            return this._lastOperation(this.Type.UPDATE, dataID, dataType, data, context, time);
+        }
+    },
+
+    lastDeleted: {
+        value: function (dataID, dataType, data, context, time) {
+            return this._lastOperation(this.Type.DELETE, dataID, dataType, data, context, time);
+        }
+    },
 
 });
-

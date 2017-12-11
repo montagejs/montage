@@ -1,15 +1,15 @@
 var RawDataService = require("data/service/raw-data-service").RawDataService,
+    StorageDataService = require("data/service/storage-data-service").StorageDataService,
+    IndexedDBDataService = require("data/service/indexed-d-b-data-service").IndexedDBDataService,//RDW FIXME maybe clunky to have a default, remove when we instantiate from a moduleId
     DataStream = require("data/service/data-stream").DataStream,
-    DataOperation= require("data/service/data-operation").DataOperation,
+    DataOperation = require("data/service/data-operation").DataOperation,
     Promise = require("core/promise").Promise,
     uuid = require("core/uuid"),
     DataOrdering = require("data/model/data-ordering").DataOrdering,
     DESCENDING = DataOrdering.DESCENDING,
     evaluate = require("frb/evaluate"),
     Map = require("collections/map"),
-    PersistentDataService, OfflineService;
-
-/* global Dexie */
+    WeakMap = require("collections/weak-map");
 
 /**
  * TODO: Document
@@ -29,251 +29,92 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
     constructor: {
         value: function PersistentDataService() {
             RawDataService.call(this);
+            this.isUniquing = true;
         }
     },
 
+    /***************************************************************************
+     * Serialization
+     */
+
     deserializeSelf: {
-        value:function (deserializer) {
+        value: function (deserializer) {
             this.super(deserializer);
 
-            var value;
-            value = deserializer.getProperty("persistingObjectDescriptorNames");
+            var value = deserializer.getProperty("persistingObjectDescriptorNames");
             if (value) {
                 this.persistingObjectDescriptorNames = value;
             }
-
         }
     },
 
     serializeSelf: {
-        value:function (serializer) {
+        value: function (serializer) {
             this.super(serializer);
 
             if (this.persistingObjectDescriptorNames) {
                 serializer.setProperty("persistingObjectDescriptorNames", this.persistingObjectDescriptorNames);
             }
-
         }
     },
 
-    /**
-     * returns a Promise that resolves to the object used by the service to
-     * store data. This is meant to be an abstraction of the "Database"
+    /***************************************************************************
+     * Basic Properties
      *
-     * @returns {Promise}
+     * Private properties are defined where they are used, not here.
      */
 
-    _storage: {
+    /**
+     * returns the StorageDataService used by the service to store operations (offline or persistent).
+     *
+     * @returns {StorageDataService}
+     */
+
+    _operations : {
         value: undefined
     },
-    storage: {
-        get: function() {
-            return this._storage || (this._storage = Promise.reject(new Error('Needs to be implemented by sub classes')));
-        }
-    },
-
-    name: {
-        value: void 0
-    },
-
-
-    // createObjectStoreFromSample: {
-    //     value: function (objectStoreName, primaryKey, sampleData) {
-    //         if (!sampleData) return;
-
-    //         var sampleDataKeys = Object.keys(sampleData),
-    //             storage = this._storage,
-    //             currentSchema = {};
-
-    //         storage.tables.forEach(function (table) {
-    //             currentSchema[table.name] = JSON.stringify(table.schema);
-    //         });
-
-    //         var schemaDefinition = primaryKey;
-    //         for (var i=0, iKey;(iKey = sampleDataKeys[i]);i++) {
-    //             if (iKey !== primaryKey) {
-    //                 schemaDefinition += ",";
-    //                 schemaDefinition +=  iKey;
-    //             }
-    //         }
-    //         currentSchema[objectStoreName] = schemaDefinition;
-    //         storage.version(storage.verno+1).stores(currentSchema);
-
-    //     }
-    // },
-
-    /**
-     * table/property/index name that tracks the date the record was last updated
-     *
-     * @returns {String}
-     */
-    operationTableName: {
-        value: "Operation"
-    },
-    /**
-     * name of the schema property that stores the name of the type/object store
-     * of the object the operation impacts
-     *
-     * @returns {String}
-     */
-    typePropertyName: {
-        value: "type"
-    },
-
-    /**
-     * name of the schema property that stores the last time the operation's object
-     * (dataID) was last fetched.
-     *
-     * @returns {String}
-     */
-    lastFetchedPropertyName: {
-        value: "lastFetched"
-    },
-
-   /**
-     * name of the schema property that stores the last time the operation's
-     * object was last modified.
-     *
-     * @returns {String}
-     */
-    lastModifiedPropertyName: {
-        value: "lastModified"
-    },
-
-     /**
-     * name of the schema property that stores the type of operation:
-     * This will be create or update or delete
-     *
-     * @returns {String}
-     */
-    operationPropertyName: {
-        value: "operation"
-    },
-    operationCreateName: {
-        value: "create"
-    },
-   operationUpdateName: {
-        value: "update"
-    },
-    operationDeleteName: {
-        value: "delete"
-    },
-
-   /**
-     * name of the schema property that stores the  changes made to the object in this operation
-     *
-     * @returns {String}
-     */
-    changesPropertyName: {
-        value: "changes" //This contains
-    },
-
-    /**
-     * name of the schema property that stores the primary key of the object the operation impacts
-     *
-     * @returns {String}
-     */
-    dataIDPropertyName: {
-        value: "dataID"
-    },
-
-   /**
-     * name of the schema property that stores unstructured/custom data for a service
-     * to stash what it may need for further use.
-     *
-     * @returns {String}
-     */
-    contextPropertyName: {
-        value: "context"
-    },
-
-
-    /*
-        returns all records, ordered by time, that reflect what hapened when offline.
-        We shoud
-        [{
-            // NO primaryKey: uuid-uuid-uuid,
-            lastFetched: Date("08-02-2016"),
-            lastModified: Date("08-02-2016"),
-            operation: "create",
-            data: {
-                hazard_id:  uuid-uuid-uuid,
-                "foo":"abc",
-                "bla":23
-            }
+    operations : {
+        get: function () {
+            var currentOperations = currentOperations || (this._operations = new IndexedDBDataService());//RDW FIXME maybe clunky to have a default, remove when we instantiate from a moduleId
+            return currentOperations;
         },
-        {
-            lastFetched: Date("08-02-2016"),
-            lastModified: Date("08-02-2016"),
-            operation: "update"
+        set: function (storageDataService) {
+            if (!storageDataService) {
+                this._operations = undefined;
+            }
+            else if (storageDataService instanceof StorageDataService) {
+                this._operations = storageDataService;
+            }
+            else {
+                throw "bogus operations service";
+            }
+        }
+    },
+
+    /**
+     * returns the StorageDataService used by the service to store model data.
+     *
+     * @returns {StorageDataService}
+     */
+
+    _storage : {
+        value: undefined
+    },
+    storage : {
+        get: function () {
+            var currentStorage = currentStorage || (this._storage = new IndexedDBDataService());//RDW FIXME maybe clunky to have a default, remove when we instantiate from a moduleId
+            return currentStorage;
         },
-        {
-            lastFetched: Date("08-02-2016"),
-            lastModified: Date("08-02-2016"),
-            operation: "update"
-        },
-        ]
-    */
-
-    offlineOperations: {
-        get: function() {
-            //Fetch
-        }
-
-    },
-
-    clearOfflineOperations: {
-        value: function(operations) {
-            //Fetch
-
-        }
-    },
-    /* Feels like that should return the data, in case it's called with null and created inside?*/
-    mapToRawSelector: {
-        value: function (object, data) {
-            // TO DO: Provide a default mapping based on object.TYPE.
-            // For now, subclasses must override this.
-        }
-    },
-
-    /* Benoit: this coming from offline-service and will be replaced by storageByObjectDescriptor
-    */
-
-    _tableByName: {
-        value: void 0
-    },
-    tableNamed: {
-        value: function(tableName) {
-            var table;
-            if (!this._tableByName) {
-                this._tableByName = new Map();
+        set: function (storageDataService) {
+            if (!storageDataService) {
+                this._storage = undefined;
             }
-            table = this._tableByName.get(tableName);
-            if (!table) {
-                table = this._storage[tableName];
-                if (!table) {
-                    var tables = this._storage.tables;
-                    for (var i=0, iTable; (iTable = tables[i]); i++) {
-                        if (iTable.name === tableName) {
-                            this._tableByName.set(tableName,(table = iTable));
-                            break;
-                        }
-                    }
-                }
+            else if (storageDataService instanceof StorageDataService) {
+                this._storage = storageDataService;
             }
-            return table;
-        }
-    },
-
-    _operationTable: {
-        value: void 0
-    },
-    operationTable: {
-        get:function() {
-            if (!this._operationTable) {
-                this._operationTable = this.tableNamed(this.operationTableName);
+            else {
+                throw "bogus storage service";
             }
-            return this._operationTable;
         }
     },
 
@@ -287,194 +128,49 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
         value: undefined
     },
     persistingObjectDescriptorNames: {
-        set: function(value) {
-            this._persistingObjectDescriptorNames = new Set(value);
+        set: function (value) {
+            this._persistingObjectDescriptorNames = new Set(value);//RDW where do we want to set this from? anything else to do here? how much do we depend on this (opt-in or opt-out)?
         },
-        get: function(value) {
+        get: function () {
             return this._persistingObjectDescriptorNames;
         }
     },
 
     /**
-     * returns true or false depending on wether PersistentDataService has been instructed
+     * returns true or false depending on whether PersistentDataService has been instructed
      * to persist the objectDescriptor passed as an argument.
      *
      * @argument {ObjectDescriptor} objectDescriptor
      * @returns {Boolean}
      */
-    persistsObjectDescriptor: {
-        value: function(objectDescriptor) {
+    persistsObjectDescriptor: {//RDW isn't there some other path if isOffline? (since PersistentDataService is intended to replace OfflineService)???
+        value: function (objectDescriptor) {
             return objectDescriptor && this._persistingObjectDescriptorNames && this._persistingObjectDescriptorNames.has(objectDescriptor.name);
         }
     },
-
     persistsObject: {
-        value: function(object) {
+        value: function (object) {
             return this.persistsObjectDescriptor(this.objectDescriptorForObject(object));
         }
     },
 
-
-  /**
+    /**
      * returns the list of all property descriptors that should persist for the
      * objectDescriptor passed as an argument. By default, return all propertyDescriptors.
-     * This can be customized and configured when a PersistentDataService is instanciated.
+     * This can be customized and configured when a PersistentDataService is instantiated.
      *
      * @argument {ObjectDescriptor} objectDescriptor
      * @returns {Array.<String>}
      */
     persistentPropertyDescriptors: {
-        value: function(objectDescriptor) {
+        value: function (objectDescriptor) {
             return objectDescriptor.propertyDescriptors;
         }
     },
 
-
-   /**
-     * This is the opportunity for a PersistentDataService to lazily create the storage needed
-     * to execute this query, or to optimize it if it turns out indexes don't exist for optimally execute a passed query. This could also be lazily and on frequency of request being used, as well as time spent executing it without. Traversing the query's criteria's syntactic tree and looking up
-     * property descriptors' valueDescriptors to navigate the set of persistentStorage needed
-     * and make sure they exit before attempting to fetch from it.
-     *
-     * @argument {DataStream} stream
-     * @returns {Promise}
+    /***************************************************************************
+     * Service Hierarchy
      */
-   storageForQuery: {
-        value: function(query) {
-            //Walk stream's criteria's syntax,
-            //  call storageForObjectDescriptor() for type of query
-            //  plus criteria's properties' valueDescriptor
-            //  if such property should persist (see persistentPropertyDescriptors)
-            var message = "PersistentDataService.storageForQuery is not implemented",
-                type = query && query.type;
-
-            if (type && typeof type === "string") {
-                message = message + " (" + type + ")";
-            } else if (type) {
-                message = message + " (" + (type.name || type.exportName) + ")";
-            }
-            return Promise.reject(new Error(message));
-        }
-    },
-
-    _databaseByModel: {
-        value: undefined
-    },
-    /**
-     * Returns the WeakMap keeping track of the storage objects
-     * used for objectDescriptors
-     *
-     * @returns {WeakMap}
-     */
-
-    databaseByModel: {
-        get: function() {
-            return this._databaseByModel || (this._databaseByModel = new WeakMap);
-        }
-    },
-    registerDatabaseForModel: {
-        value: function(database,model) {
-            this._databaseByModel.set(model,database);
-        }
-    },
-    unregisterDatabaseForModel: {
-        value: function(model) {
-            this._databaseByModel.delete(model);
-        }
-    },
-
-    /**
-     * Benoit: 8/8/2017. We are going to use a single database for an App model-group.
-     * If a persistent service is used for a single model, no pbm, to workaround possible
-     * name conflicts in ObjectDescriptors coming from different packages, we'll use the
-     * full moduleId of these ObjectDescriptors to name object stores / tables avoid name conflicts.
-     * Even if different databases end up being used, this choice will work as well.
-     *
-     * This API allows for one subclass to decide to use differrent databases for storing different
-     * ObjectDescriptors, or a subclass can decide to use only one.
-     * Returns a Promise for the persistence storage used to store objects
-     * described by the objectDescriptor passed as an argument.
-     *
-     * may need to introduce an _method used internally to minimize
-     * use of super()
-     *
-     * @argument {ObjectDescriptor} stream
-     * @returns {Promise}
-     */
-    databaseForModel: {
-        value: function(model) {
-            if (this.persistsModel(model)) {
-                var database = this._databaseByModel.get(model);
-                if (!database) {
-                    database = this.provideDatabaseForModel(model) || Promise.reject(null);
-                    this.registerDatabaseForModel(database,model);
-                }
-                return database;
-            }
-            return Promise.reject(null);
-        }
-    },
-
-    databaseForObjectDescriptor: {
-        value: function(objectDescriptor) {
-            return this.databaseForModel(objectDescriptor.model);
-        }
-    },
-
-    _storageByObjectDescriptor: {
-        value: undefined
-    },
-    /**
-     * Returns the WeakMap keeping track of the storage objects
-     * used for objectDescriptors
-     *
-     * @returns {WeakMap}
-     */
-
-    storageByObjectDescriptor: {
-        get: function() {
-            return this._storageByObjectDescriptor || (this._storageByObjectDescriptor = new WeakMap);
-        }
-    },
-    registerStorageForObjectDescriptor: {
-        value: function(storage,objectDescriptor) {
-            this._storageByObjectDescriptor.set(objectDescriptor,storage);
-        }
-    },
-    unregisterStorageForObjectDescriptor: {
-        value: function(objectDescriptor) {
-            this._storageByObjectDescriptor.delete(objectDescriptor);
-        }
-    },
-
-    /**
-     * Returns a Promise for the persistence storage used to store objects
-     * described by the objectDescriptor passed as an argument.
-     *
-     * Benoit: 8/8/2017: Ideally we want to create these storage lazily, on-demand.
-     *
-     * may need to introduce an _method used internally to minimize
-     * use of super()
-     *
-     * @argument {ObjectDescriptor} stream
-     * @returns {Promise}
-     */
-    storageForObjectDescriptor: {
-        value: function(objectDescriptor) {
-            return this.databaseForObjectDescriptor(objectDescriptor)
-                .then(function(database) {
-                    if (this.persistsObjectDescriptor(objectDescriptor)) {
-                        var storage = this._storageByObjectDescriptor.get(objectDescriptor);
-                        if (!storage) {
-                            storage = this.provideStorageForObjectDescriptor(objectDescriptor) || Promise.reject(null);
-                            this.registerStorageForObjectDescriptor(storage,objectDescriptor);
-                        }
-                        return storage;
-                    }
-                    return Promise.reject(null);
-                });
-        }
-    },
 
     /**
      * Get the first child service that can handle data of the specified type,
@@ -490,29 +186,62 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
     childServiceForType: {
         value: function (type) {
             var service = this.super(type);
-            if (service && this.persistsObjectDescriptor(type)) {
+
+            if (service &&
+                service !== this &&
+                service !== this.storage &&
+                service !== this.operations &&
+                this.persistsObjectDescriptor(type)) {
                 service.delegate = this;
             }
+
             return service;
         }
     },
 
-   fetchData: {
+    /***************************************************************************
+     * Mapping Raw Data
+     */
+
+    mapSelectorToRawDataQuery: {
+        value: function (query) {
+            return this.storage.mapSelectorToRawDataQuery(query);
+        }
+    },
+
+    mapRawDataToObject: {
+        value: function (rawData, object, context) {
+            return this.storage.mapRawDataToObject(rawData, object, context);
+        }
+    },
+
+    mapObjectToRawData: {
+        value: function (object, record, context) {
+            return this.storage.mapObjectToRawData(object, record, context);
+        }
+    },
+
+    /***************************************************************************
+     * Fetching Data
+     */
+
+    fetchData: {
         value: function (queryOrType, optionalCriteria, optionalStream) {
-            //We let the super logic apply, which will attempt to obtain data through any existing child service
+            // We let the super logic apply, which will attempt to obtain data through any existing child service
             var dataStream = this.super(queryOrType, optionalCriteria, optionalStream),
-                rawDataStream,
                 promise = dataStream,
-                rawPromise,
                 self = this;
 
             if (this.persistsObjectDescriptor(dataStream.query.type)) {
-
-                promise = promise.then(function(data) {
+                promise = promise.then(function (data) {
                     var rawDataStream = new DataStream();
+
                     rawDataStream.type = dataStream.type;
                     rawDataStream.query = dataStream.query;
-                    self._registerDataStreamForRawDataStream(dataStream,rawDataStream);
+
+                    self._registerDataStreamForRawDataStream(dataStream, rawDataStream);
+
+                    // Update the persisted data.
                     self.fetchRawData(rawDataStream);
 
                     return rawDataStream;
@@ -521,151 +250,101 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
 
             return promise;
         }
-   },
-
-   _dataStreamObjectsByPrimaryKey: {
-        value: new WeakMap()
-   },
-   objectsByPrimaryKeyForDataStream: {
-        value: function(dataStream) {
-            var value = this._dataStreamObjectsByPrimaryKey.get(dataStream);
-            if (!value) {
-                value = new Map();
-                this._dataStreamObjectsByPrimaryKey.set(dataStream,value);
-            }
-            return value;
-        }
-   },
-    __dataStreamForRawDataStream: {
-        value: new WeakMap()
     },
 
-   _dataStreamForRawDataStream: {
-       value: function(rawDataStream) {
-        return this.__dataStreamForRawDataStream.get(rawDataStream);
-       }
-   },
-   _registerDataStreamForRawDataStream: {
-       value: function(dataStream,rawDataStream) {
-        return this.__dataStreamForRawDataStream.set(rawDataStream,dataStream);
-       }
-   },
+    _dataStreamObjectsByPrimaryKey: {
+        value: new WeakMap()
+    },
+    objectsByPrimaryKeyForDataStream: {//RDW how does this get cleaned up when one is done with the DataStream in question?
+        value: function (dataStream) {
+            var value = this._dataStreamObjectsByPrimaryKey.get(dataStream);
+
+            if (!value) {
+                value = new Map();
+                this._dataStreamObjectsByPrimaryKey.set(dataStream, value);
+            }
+
+            return value;
+        }
+    },
+
+    _dataStreamByRawDataStream: {
+        value: new WeakMap()
+    },
+    _dataStreamForRawDataStream: {//RDW how does this get cleaned up when one is done with the DataStream in question?
+        value: function (rawDataStream) {
+            return this._dataStreamByRawDataStream.get(rawDataStream);
+        }
+    },
+    _registerDataStreamForRawDataStream: {
+        value: function (dataStream, rawDataStream) {
+            return this._dataStreamByRawDataStream.set(rawDataStream, dataStream);
+        }
+    },
 
     fetchRawData: {
         value: function (stream) {
-            var query = stream.query,
-                queryObjectDescriptor = query.type,
-                storage = this.storageForObjectDescriptor(queryObjectDescriptor),
-                criteria = query.criteria,
-                whereProperties = Object.keys(criteria),
-                orderings = query.orderings,
+            var self = this;
 
-                self = this;
-
-              /*
-                    The idea here (to finish) is to use the first criteria in the where, assuming it's the most
-                    important, and then filter the rest in memory by looping on remaining
-                    whereProperties amd whereEqualValues, index matches. Not sure how Dexie's Collection fits there
-                    results in the then is an Array... This first pass fetches offline Hazards with status === "A",
-                    which seems to be the only fetch for Hazards on load when offline.
-                */
-                storage.then(function (storage) {
-
-                    var resultPromise = self.tableNamed(query.type);
-                    resultPromise.toArray(function(results) {
-                        //Creates an infinite loop, we don't need what's there
-                        //self.addRawData(stream, results);
-                        //self.rawDataDone(stream);
-                        if (orderings) {
-                            var expression = "";
-                            //Build combined expression
-                            for (var i=0,iDataOrdering,iExpression;(iDataOrdering = orderings[i]);i++) {
-                                iExpression = iDataOrdering.expression;
-
-                                if (expression.length) {
-                                    expression += ".";
-                                }
-
-                                expression += "sorted{";
-                                expression += iExpression;
-                                expression += "}";
-
-                                if (iDataOrdering.order === DESCENDING) {
-                                    expression += ".reversed()";
-                                }
-                            }
-                            results = evaluate(expression, results);
-                        }
-
-                        stream.addRawData(results);
-                        stream.rawDataDone();
-
-                    });
-
-                //}
-                // else {
-                //     table.toArray()
-                //     .then(function(results) {
-                //         stream.addData(results);
-                //         stream.dataDone();
-                //     });
-                // }
-
-            }).catch('NoSuchDatabaseError', function(e) {
-                // Database with that name did not exist
-                stream.dataError(e);
-            }).catch(function (e) {
-                stream.dataError(e);
+            this.storage.fetchRawData(stream).then(function (data) {
+                if (data) {
+                    self.addRawData(stream, data);
+                    self.rawDataDone(stream);
+                }
             });
-
-            // Return the passed in or created stream.
-            return stream;
-        }
-    },
-
-    openTransaction: {
-        value: function() {
-            return Promise.resolve();
-        }
-    },
-
-    closeTransaction: {
-        value: function() {
-            return Promise.resolve();
         }
     },
 
     _updateOperationsByDataStream: {
         value: new Map()
     },
-
     //ToDo:
     //The dataStream will need to be removed from this structure when the cycle is completed.
-    updateOperationsForDataStream: {
-        value: function(dataStream) {
+    updateOperationsForDataStream: {//RDW how does this get cleaned up when one is done with the DataStream in question?
+        value: function (dataStream) {
             var operations = this._updateOperationsByDataStream.get(dataStream);
+
             if (!operations) {
-                this._updateOperationsByDataStream.set(dataStream,(operations = []));
+                this._updateOperationsByDataStream.set(dataStream, (operations = []));
             }
+
             return operations;
         }
     },
-    _objectsToUpdatesForDataStream: {
+
+    _objectsToUpdateByDataStream: {
         value: new Map()
     },
+    objectsToUpdateForDataStream: {//RDW how does this get cleaned up when one is done with the DataStream in question?
+        value: function (dataStream) {
+            var objects = this._objectsToUpdateByDataStream.get(dataStream);
 
-    objectsToUpdatesForDataStream: {
-        value: function(dataStream) {
-            var objects = this._objectsToUpdatesForDataStream.get(dataStream);
             if (!objects) {
-                this._objectsToUpdatesForDataStream.set(dataStream,(objects = []));
+                this._objectsToUpdateByDataStream.set(dataStream, (objects = []));
             }
+
             return objects;
         }
     },
+
+    _objectsToDeleteByDataStream: {
+        value: new Map()
+    },
+    objectsToDeleteForDataStream: {//RDW how does this get cleaned up when one is done with the DataStream in question?
+        value: function (dataStream) {
+            var objects = this._objectsToDeleteByDataStream.get(dataStream);
+
+            if (!objects) {
+                this._objectsToDeleteByDataStream.set(dataStream, (objects = []));
+            }
+
+            return objects;
+        }
+    },
+
     /**
-     * Delegate method allowing the persistent service to do the ground work
-     * as objects are created, avoiding to loop again later
+     * Delegate method allowing PersistentDataService to do the ground work
+     * for other services as objects are created, avoiding looping again later.
      *
      * @method
      * @argument {DataService} dataService
@@ -674,63 +353,76 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
      * @argument {Object} object
      * @returns {void}
      */
-    rawDataServiceDidAddOneRawData: {
-        value: function(dataService,dataStream,rawData,object) {
+    rawDataServiceDidAddOneRawData: {//RDW FIXME not going to use writeOfflineData, seemingly
+        value: function (dataService, dataStream, rawData, object) {
             if (this.persistsObject(object)) {
-                var dataIdentifier = this.dataIdentifierForObject(object),
-                    dataStreamPrimaryKeyMap = this.objectsByPrimaryKeyForDataStream(dataStream),
-                    dataOperation;
+                var existingDataIdentifier = this.dataIdentifierForObject(object),
+                    type = existingDataIdentifier || dataStream.query.type,
+                    dataIdentifier = existingDataIdentifier || this.dataIdentifierForTypeRawData(type, rawData);
 
-                //Register the object by primarykey, which we'll need later
-                dataStreamPrimaryKeyMap.set(dataIdentifier.primaryKey,object);
+                if (dataIdentifier) {
+                    var dataStreamPrimaryKeyMap = this.objectsByPrimaryKeyForDataStream(dataStream),
+                        dataOperation = DataOperation.lastRead(dataIdentifier.primaryKey, dataStream.query.type, rawData);
 
-                //The operation should be created atomically in the method that
-                //will actually save the data itself.
-                //Create the record to track the online Last Updated date
-                dataOperation = {};
-                dataOperation.dataID = dataIdentifier.primaryKey;
-                //We previously had the exact same time cached for all objects
-                //Need to keep an eye out for possible consequences due to that change
-                dataOperation[this.lastFetchedPropertyName] = Date.now();
-                dataOperation[this.typePropertyName] = dataStream.query.type;
+                    // Register the object by primarykey, which we'll need later
+                    dataStreamPrimaryKeyMap.set(dataIdentifier.primaryKey, object);
 
-                this.updateOperationsForDataStream(dataStream).push(dataOperation);
-                //Pseudo code.
-                this.objectsToUpdatesForDataStream(dataStream).push(object);
+                    // The operation should be created atomically in the method that
+                    // will actually save the data itself.
+                    // Create the record to track the online Last Updated date
+                    // We previously had the exact same time cached for all objects
+                    // Need to keep an eye out for possible consequences due to that change.
+
+                    this.updateOperationsForDataStream(dataStream).push(dataOperation);
+                    this.objectsToUpdateForDataStream(dataStream).push(object);//RDW FIXME HERE need to gather primaryKeys
+                }
+                else {
+                    if (!type) {
+                        console.error("missing type from query in rawDataServiceDidAddOneRawData");
+                    }
+
+                    if (!rawData) {
+                        console.error("missing rawData in rawDataServiceDidAddOneRawData");
+                    }
+
+                    if (type && rawData) {
+                        console.error("missing mapping for '" + type.typeName + "' in rawDataServiceDidAddOneRawData");
+                    }
+                }
             }
-
         }
     },
 
-    // addRawData: {
-    //     value: function (stream, records, context) {
-    //         this.super(stream, records, context);
-    //     }
-    // },
+    // This gets called in the home-stretch invocation of this.fetchRawData
 
     addOneRawData: {
-        value: function(stream, rawData, context, _type) {
-            var dataIdentifier = this.dataIdentifierForTypeRawData(stream.query.type,rawData),
-                primaryKey = dataIdentifier.primaryKey,
-                dataStream = this._dataStreamForRawDataStream(stream),
-                dataStreamPrimaryKeyMap = this.objectsByPrimaryKeyForDataStream(dataStream),
-                object = null,
-                dataOperation, dataStreamValue;
+        value: function (stream, rawData, context, _type) {
+            var dataStream = this._dataStreamForRawDataStream(stream),
+                object = null;
 
-            //Register the object by primarykey, which we'll need later
-            dataStreamValue = dataStreamPrimaryKeyMap.get(primaryKey);
-            //If results were returned by childServices but that primaryKey isn't found
-            //it means that this obect doesn't match stream's query criteria as it used to.
-            //We were removing it from storage in general, which could cause that object to disapear for other queries that it still matches. It should be done eventually
-            //for a per query cache
-            if (dataStream.data && dataStream.length > 0 && !dataStreamValue) {
-                this.deletesForDataStream(dataStream).push(primaryKey);
+            // If results were returned by childServices but that primaryKey isn't found,
+            // it means that this object doesn't match stream's query criteria as it used to.
+            // We were removing it from storage in general, which could cause that object to
+            // disapear for other queries that it still matches.
+            // It should be done eventually for a per query cache.
+
+            if (dataStream.data && dataStream.length > 0) {
+                var dataStreamPrimaryKeyMap = this.objectsByPrimaryKeyForDataStream(dataStream),
+                    dataIdentifier = this.dataIdentifierForTypeRawData(stream.query.type, rawData),
+                    primaryKey = dataIdentifier.primaryKey,
+                    dataStreamValue = dataStreamPrimaryKeyMap.get(primaryKey);
+
+                if (!dataStreamValue) {
+                    this.objectsToDeleteForDataStream(dataStream).push(primaryKey);//RDW FIXME HERE need to gather primaryKeys
+                }
             }
+            else {
+                // If no data was returned, we go on and create the object.
+                //RDW The presumption here is that the service in question is offline???
 
-            //If no data was returned, we go on and create the object
-            if (!dataStream.data || dataStream.length === 0) {
                 object = this.super(stream, rawData, context, _type);
             }
+
 
 
             //Do we have
@@ -744,201 +436,140 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
     rawDataDone: {
         value: function (stream, context) {
             var self = this;
-            this.super(stream, context)
-            .then(function() {
-                self.openTransaction()
-                .then(function() {
-                    var dataStream = self._dataStreamForRawDataStream(stream),
-                        updateOperations = self.objectsToUpdatesForDataStream(dataStream),
-                        deleteOperations = self.deletesForDataStream(dataStream),
-                        updates = stream.data;
 
-                    //Need to structure the API to
-                    return this.closeTransaction();
-                });
-            });
+            return this.super(stream, context).then(function () {
+                var dataStream = self._dataStreamForRawDataStream(stream),
+                    updateOperations = self.updateOperationsForDataStream(dataStream),
+                    updates = self.objectsToUpdateForDataStream(dataStream),
+                    deletes = self.objectsToDeleteForDataStream(dataStream),
+                    query = stream.query;
+//RDW FIXME HERE need to produce primary keys
+                return self._synchronizeOfflineStateForQuery(query, updates, updateOperations, deletes);
+            })
         }
     },
 
+    //readOfflineOperation//RDW FIXME not sure if there's stuff to do here
 
-     /**
-     * Called every time [addRawData()]{@link RawDataService#addRawData} is
-     * called while online to optionally cache that data for offline use.
-     *
-     * The default implementation does nothing. This is appropriate for
-     * subclasses that do not support offline operation or which operate the
-     * same way when offline as when online.
-     *
-     * Other subclasses may override this method to cache data fetched when
-     * online so [fetchOfflineData]{@link RawDataSource#fetchOfflineData} can
-     * use that data when offline.
-     *
-     * @method
-     * @argument {DataStream} stream   - The stream to which the fetched data is
-     *                                   being added.
-     * @argument {Array} rawDataArray  - An array of objects whose properties'
-     *                                   values hold the raw data.
-     * @argument {?} context           - The context value passed to the
-     *                                   [addRawData()]{@link DataMapping#addRawData}
-     *                                   call that is invoking this method.
+    /***************************************************************************
+     * Saving Data
      */
 
-    //writeOfflineData/readOfflineOperation
+    /**
+     * Subclasses should override this method to delete a data object when that
+     * object's raw data would be useful to perform the deletion.
+     *
+     * @method
+     * @argument {Object} record   - An object whose properties hold the raw
+     *                               data of the object to delete.
+     * @argument {?} context       - An arbitrary value sent by
+     *                               [deleteDataObject()]{@link RawDataService#deleteDataObject}.
+     *                               By default this is the object to delete.
+     * @returns {external:Promise} - A promise fulfilled when the object's data
+     * has been deleted. The promise's fulfillment value is not significant and
+     * will usually be `null`.
+     */
+    deleteRawData: {
+        value: function (record, context) {
+            this._deleteRawData(record, context);
+        }
+    },
+    _deleteRawData: {
+        value: function (record, context, dataIdentifier) {
+            var objectDescriptor = dataIdentifier ? dataIdentifier.objectDescriptor
+                                                  : this.objectDescriptorForObject(context),
+                model = objectDescriptor.model,
+                dataIdentifier = dataIdentifier || this.dataIdentifierForTypeRawData(objectDescriptor, record),
+                primaryKey = dataIdentifier.primaryKey,
+                operationStoreName = this.operations._offlineOperationsStoreName,
+                operation = DataOperation.lastDeleted(primaryKey, objectDescriptor, record, context),
+                self = this;
 
-    _persistFetchedDataStream: {
-        value: function (dataStream, rawData) {
-
-             var self = this,
-                dataArray = dataStream.data,
-                query = dataStream.query,
-                tableName = query.type,
-                table = this.tableNamed(tableName),
-                clonedArray = [],
-                i,countI,iRawData, iLastUpdated,
-                lastUpdated = Date.now(),
-                updateOperationArray = [],
-                dataID = this.dataIDPropertyName,
-                primaryKey = table.schema.primKey.name,
-                lastUpdatedPropertyName = this.lastFetchedPropertyName,
-                j, jRawData,
-                rawDataMapByPrimaryKey,
-                offlineObjectsToClear = [],
-                rawDataStream = new DataStream();
-
-                rawDataStream.type = dataStream.type;
-                rawDataStream.query = query;
-
-            //Make a clone of the array and create the record to track the online Last Updated date
-            for (i=0, countI = dataArray.length; i<countI; i++) {
-                if ((iRawData = dataArray[i])) {
-                    clonedArray.push(iRawData);
-
-                    //Create the record to track the online Last Updated date
-                    iLastUpdated = {};
-                    iLastUpdated[dataID] = iRawData[primaryKey];
-                    iLastUpdated[lastUpdatedPropertyName] = lastUpdated;
-                    iLastUpdated[this.typePropertyName] = tableName;
-                    updateOperationArray.push(iLastUpdated);
-                }
-            }
-
-            // 1) First we need to execute the equivalent of stream's query to find what we have matching locally
-            return this.fetchRawData(rawDataStream).then(function (fetchedRawRecords) {
-                // 2) Loop on offline results and if we can't find it in the recent dataArray:
-                //    2.0) Remove the non-matching record so it doesn't show up in results
-                //         if that query were immediately done next as offline.
-                // Not ideal as we're going to do at worse a full lookup of dataArray, every iteration
-                for (var i=0, countI = fetchedRawRecords.length, iRecord, iRecordPrimaryKey;(iRecord = fetchedRawRecords[i]);i++) {
-                    iRecordPrimaryKey = iRecord[self.dataIDPropertyName];
-                    // move above loop? remove conditional? saves case where countI = 0?
-                    if (!rawDataMapByPrimaryKey) {
-                        rawDataMapByPrimaryKey = new Map();
-                        for (j=0;(jRawData = dataArray[j]);j++) {
-                            rawDataMapByPrimaryKey.set(jRawData[primaryKey],jRawData);
-                        }
-                    }
-                    if (!rawDataMapByPrimaryKey.has(iRecord[primaryKey])) {
-                        offlineObjectsToClear.push(primaryKey);
-                    }
-                }
-
-                //Now we now what to delete: offlineObjectsToClear, what to put: dataArray.
-                //We need to be able to build a transaction and pass
-
-                // 3) Put new objects
-                return self.performOfflineSelectorChanges(query, clonedArray, updateOperationArray, offlineObjectsToClear);
-
-            })
-            .catch(function(e) {
-                console.log(query.type + ": performOfflineSelectorChanges failed",e);
-                console.error(e);
+            return self.operations._recordOperation(operationStoreName, operation).then(function () {
+                return self.storage._deleteRawData(record, context, dataIdentifier);
             });
-
         }
     },
 
-    readOfflineOperations: {
-        value: function (/* operationMapToService */) {
-            var self = this;
-            return new Promise(function (resolve, reject) {
-                var myDB = self._storage;
-                myDB.open().then(function (/* storage */) {
-                    self.operationTable.where("operation").anyOf("create", "update", "delete").toArray(function (offlineOperations) {
-                        resolve(offlineOperations);
-                    }).catch(function (e) {
-                        console.error(e);
-                        reject(e);
-                    });
+    /**
+     * Delegate method allowing PersistentDataService to do the ground work
+     * as objects are deleted.
+     *
+     * @method
+     * @argument {DataService} dataService
+     * @argument {Object} rawData
+     * @argument {Object} object
+     * @returns {void}
+     */
+    rawDataServiceWillDeleteRawData: {
+        value: function (dataService, rawData, object) {
+            var dataIdentifier = this.dataIdentifierForObject(object),
+                objectDescriptor = dataIdentifier.objectDescriptor,
+                self = this;
+
+            self._deleteOfflinePrimaryKeyDependenciesForData(rawData, objectDescriptor).then(function () {
+                self._deleteOfflinePrimaryKeys(dataIdentifier.primaryKey, objectDescriptor).then(function () {
+                    self._deleteRawData(rawData, object, dataIdentifier);
                 });
             });
         }
     },
 
-    performOfflineSelectorChanges: {
-        value: function (query, rawDataArray, updateOperationArray, offlineObjectsToClear) {
-            var myDB = this._storage,
-                self = this,
-                clonedRawDataArray = rawDataArray.slice(0), // why clone twice?
-                clonedUpdateOperationArray = updateOperationArray.slice(0),
-                clonedOfflineObjectsToClear = offlineObjectsToClear.slice(0);
+    /**
+     * Subclasses should override this method to save a data object when that
+     * object's raw data would be useful to perform the save.
+     *
+     * @method
+     * @argument {Object} record   - An object whose properties hold the raw
+     *                               data of the object to save.
+     * @argument {?} context       - An arbitrary value sent by
+     *                               [saveDataObject()]{@link RawDataService#saveDataObject}.
+     *                               By default this is the object to save.
+     * @returns {external:Promise} - A promise fulfilled when the object's data
+     * has been saved. The promise's fulfillment value is not significant and
+     * will usually be `null`.
+     */
+    saveRawData: {
+        value: function (record, context) {
+            this._saveRawData(record, context);
+        }
+    },
+    _saveRawData: {
+        value: function (record, context, dataIdentifier) {
+            var objectDescriptor = dataIdentifier ? dataIdentifier.objectDescriptor
+                                                  : this.objectDescriptorForObject(context),
+                model = objectDescriptor.model,
+                dataIdentifier = dataIdentifier || this.dataIdentifierForTypeRawData(objectDescriptor, record),
+                primaryKey = dataIdentifier.primaryKey,
+                operationStoreName = this.operations._offlineOperationsStoreName,
+                operation = DataOperation.lastUpdated(primaryKey, objectDescriptor, record, context),//RDW FIXME should be lastCreated, if we haven't seen this before. but we might have to do a fetch to even know?
+                self = this;
 
-            return myDB
-            .open()
-            .then(function (storage) {
-
-                var table = storage[query.type],
-                    operationTable = self.operationTable;
-
-            //Transaction:
-                //Objects to put:
-                //      rawDataArray
-                //      updateOperationArray
-                //Objects to delete:
-                //      offlineObjectsToClear in table and operationTable
-
-                storage.transaction('rw', table, operationTable, function () {
-
-                        return Dexie.Promise.all(
-                            [table.bulkPut(clonedRawDataArray),
-                            operationTable.bulkPut(clonedUpdateOperationArray),
-                            table.bulkDelete(clonedOfflineObjectsToClear),
-                            operationTable.bulkDelete(clonedOfflineObjectsToClear)]);
-
-                }).then(function(value) {
-                    //console.log(query.type + ": performOfflineSelectorChanges succesful: "+rawDataArray.length+" rawDataArray, "+clonedUpdateOperationArray.length+" updateOperationArray");
-                }).catch(function(e) {
-                        console.log(query.type + ": performOfflineSelectorChanges failed", e);
-                        console.error(e);
-                });
+            return self.operations._recordOperation(operationStoreName, operation).then(function () {
+                return self.storage._saveRawData(record, context, dataIdentifier);
             });
-
         }
     },
 
-    registerOfflinePrimaryKeyDependenciesForData: {
-        value: function(data, tableName, primaryKeyPropertyName) {
+    /**
+     * Delegate method allowing PersistentDataService to do the ground work
+     * as objects are saved (created/updated).
+     *
+     * @method
+     * @argument {DataService} dataService
+     * @argument {Object} rawData
+     * @argument {Object} object
+     * @returns {void}
+     */
+    rawDataServiceWillSaveRawData: {//RDW FIXME if the primary key was updated, will need to fix
+        value: function (dataService, rawData, object) {
+            var dataIdentifier = this.dataIdentifierForObject(object),
+                objectDescriptor = dataIdentifier.objectDescriptor,
+                self = this;
 
-            if (data.length === 0) {
-                return;
-            }
-
-            return PersistentDataService.registerOfflinePrimaryKeyDependenciesForData(data, tableName, primaryKeyPropertyName, this);
-        }
-    },
-
-    //TODO
-    deleteOfflinePrimaryKeyDependenciesForData: {
-        value: function(data, tableName, primaryKeyPropertyName) {
-            if (data.length === 0) {
-                return;
-            }
-
-            var tableSchema = this.schema[tableName],
-                //if we don't have a known list of foreign keys, we'll consider all potential candidate
-                foreignKeys = tableSchema.foreignKeys;
-
-
-            PersistentDataService.deleteOfflinePrimaryKeyDependenciesForData(data, tableName, primaryKeyPropertyName, foreignKeys);
+            self._registerOfflinePrimaryKeyDependenciesForData(rawData, objectDescriptor).then(function () {//RDW FIXME we may need to clean up dependencies that have changed
+                self._saveRawData(rawData, object, dataIdentifier);
+            });
         }
     },
 
@@ -946,204 +577,97 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
      * Save new data passed in objects of type
      *
      * @method
-     * @argument {Object} objects   - objects whose data should be created.
-     * @argument {String} type   - type of objects, likely to mean a "table" in storage
-     * @returns {external:Promise} - A promise fulfilled when all of the data in
-     * the changed object has been saved.
+     * @argument {Array} objects   - objects whose data should be updated.
+     * @argument {String} type   - type of objects
+     * @argument {Object} context   - an object that will be associated with operations
+     * @returns {external:Promise} - A promise fulfilled when all of objects has been saved.
      */
     createData: {
         value: function (objects, type, context) {
-            var self = this;
+            var promise;
 
-            return new Promise(function (resolve, reject) {
-                var myDB = self._storage,
-                table = self.tableNamed(type),
-                operationTable = self.operationTable,
-                clonedObjects = [],
-                operations = [],
-                primaryKey = table.schema.primKey.name,
-                dataID = self.dataIDPropertyName,
-                lastModifiedPropertyName = self.lastModifiedPropertyName,
-                lastModified = Date.now(),
-                typePropertyName = self.typePropertyName,
-                changesPropertyName = self.changesPropertyName,
-                operationPropertyName = self.operationPropertyName,
-                operationCreateName = self.operationCreateName,
-                primaryKeys = [];
+            if (objects && Array.isArray(objects) && objects.length) {
+                var model = type.model,
+                    storeName = this.storage._storeNameForObjectDescriptor(type),
+                    operations = [],
+                    operationTime = Date.now(),
+                    dataIdentifier,
+                    primaryKey,
+                    primaryKeys = [],
+                    primaryKeysToWrite,
+                    self = this;
 
+                for (var i = 0, iRawData; (iRawData = objects[i]); i++) {
+                    dataIdentifier = this.dataIdentifierForTypeRawData(type, iRawData);
+                    primaryKey = dataIdentifier ? dataIdentifier.primaryKey
+                                                : '';
 
-                myDB.open().then(function (storage) {
-                    storage.transaction('rw', table, operationTable,
-                        function () {
-
-                            //Assign primary keys and build operations
-                            for (var i=0, countI = objects.length, iRawData, iOperation, iPrimaryKey;i<countI;i++) {
-                                if ((iRawData = objects[i])) {
-
-                                    if (
-                                        typeof iRawData[primaryKey] === "undefined" ||
-                                            iRawData[primaryKey] === ""
-                                    ) {
-                                        //Set offline uuid based primary key
-                                        iRawData[primaryKey] = iPrimaryKey = uuid.generate();
-
-                                        //keep track of primaryKeys:
-                                        primaryKeys.push(iPrimaryKey);
-                                    }
-                                    else {
-                                        console.log("### PersistentDataService createData ",type,": iRaData ",iRawData," already have a primaryKey[",primaryKey,"]");
-                                    }
-
-                                    clonedObjects.push(iRawData);
-
-                                    //Create the record to track of last modified date
-                                    iOperation = {};
-                                    iOperation[dataID] = iPrimaryKey;
-                                    iOperation[lastModifiedPropertyName] = lastModified;
-                                    iOperation[typePropertyName] = type;
-                                    iOperation[changesPropertyName] = iRawData;
-                                    iOperation[operationPropertyName] = operationCreateName;
-                                    iOperation.context = context;
-
-                                    operations.push(iOperation);
-                                }
-                            }
-
-                            return Dexie.Promise.all([table.bulkAdd(clonedObjects),operationTable.bulkAdd(operations)]);
-
-                        }).then(function(value) {
-                            //Now write new offline primaryKeys
-                            PersistentDataService.writeOfflinePrimaryKeys(primaryKeys)
-                            .then(function() {
-                                //To verify it's there
-                                // PersistentDataService.fetchOfflinePrimaryKeys()
-                                // .then(function(offlinePrimaryKeys) {
-                                //     console.log(offlinePrimaryKeys);
-                                // });
-
-                                //Once this succedded, we need to add our temporary primary keys bookkeeping:
-                                //Register potential temporary primaryKeys
-                                self.registerOfflinePrimaryKeyDependenciesForData(objects, table.name, primaryKey)
-                                .then(function() {
-                                    resolve(objects);
-                                });
-                            })
-                            .catch(function(e) {
-                                reject(e);
-                                console.error(e);
-                            });
-                        }).catch(function(e) {
-                            reject(e);
-                            console.error(e);
-                        });
+                    if (typeof primaryKey === 'undefined' ||
+                        primaryKey === '') {
+                        primaryKey = dataIdentifier.primaryKey = uuid.generate();
+                        primaryKeysToWrite = primaryKeysToWrite || [];//RDW FIXME store separately, in case we only _writeOfflinePrimaryKeys if dataIdentifier didn't already exist and have one?
+                        primaryKeysToWrite.push(primaryKey);
                     }
-                );
-            });
-        }
-    },
 
-    updatePrimaryKey: {
-        value: function (currentPrimaryKey, newPrimaryKey, type) {
+                    operations.push(DataOperation.lastCreated(primaryKey, type, iRawData, context, operationTime));
+                    primaryKeys.push(primaryKey);
+                }
 
-            var myDB = this._storage,
-                table = this.tableNamed(type),
-                primaryKeyProperty = table.schema.primKey.name,
-                record,
-                updateRecord = {};
-
-            //because it's a primary key, we need to delete the record and re-create it...
-            //We fetch it first
-            return table.where(primaryKeyProperty).equals(currentPrimaryKey)
-                .first(function(record) {
-                    table.delete(currentPrimaryKey)
-                    .then(function() {
-                        //Assign the new one
-                        record[primaryKeyProperty] = newPrimaryKey;
-
-                        //Re-save
-                        return table.put(record);
-                    })
-                    .catch(function(e) {
-                            // console.log("tableName:failed to addO ffline Data",e)
-                            console.error(table.name,": failed to delete record with primaryKwy ",currentPrimaryKey,e);
+                promise = self.operations._recordOperation(self.operations._offlineOperationsStoreName, operations, true).then(function () {
+                    return self._writeOfflinePrimaryKeys(primaryKeysToWrite, type).then(function () {
+                        return self._registerOfflinePrimaryKeyDependenciesForData(objects, type).then(function () {
+                            return self._updateInStoreForModel(objects, primaryKeys, storeName, model, true);
                         });
+                    });
                 });
+            }
+            else {
+                promise = this.nullPromise;
+            }
+
+            return promise;
         }
     },
+
     /**
      * Save updates made to an array of existing data objects.
      *
      * @method
      * @argument {Array} objects   - objects whose data should be updated.
-     * @argument {String} type   - type of objects, likely to mean a "table" in storage
+     * @argument {String} type   - type of objects
      * @argument {Object} context   - an object that will be associated with operations
-     * @returns {external:Promise} - A promise fulfilled when all of the data in
-     * objects has been saved.
+     * @returns {external:Promise} - A promise fulfilled when all of objects has been saved.
      */
     updateData: {
         value: function (objects, type, context) {
-            var self = this;
-            if (!objects || objects.length === 0) {
-                return Dexie.Promise.resolve();
+            var promise;
+
+            if (objects && Array.isArray(objects) && objects.length) {
+                var model = type.model,
+                    storeName = this.storage._storeNameForObjectDescriptor(type),
+                    operations = [],
+                    operationTime = Date.now(),
+                    primaryKey,
+                    primaryKeys = [],
+                    self = this;
+
+                for (var i = 0, iRawData; (iRawData = objects[i]); i++) {
+                    primaryKey = this.dataIdentifierForTypeRawData(type, iRawData).primaryKey;
+                    operations.push(DataOperation.lastUpdated(primaryKey, type, iRawData, context, operationTime));
+                    primaryKeys.push(primaryKey);
+                }
+
+                promise = self.operations._recordOperation(self.operations._offlineOperationsStoreName, operations, true).then(function () {
+                    return self._registerOfflinePrimaryKeyDependenciesForData(objects, type).then(function () {
+                        return self._updateInStoreForModel(objects, primaryKeys, storeName, model, true);
+                    });
+                });
+            }
+            else {
+                promise = this.nullPromise;
             }
 
-            return new Promise(function (resolve, reject) {
-                var myDB = self._storage,
-                table = self.tableNamed(type),
-                operationTable = self.operationTable,
-                clonedObjects = objects.slice(0),
-                operations = [],
-                primaryKey = table.schema.primKey.name,
-                dataID = self.dataIDPropertyName,
-                lastModifiedPropertyName = self.lastModifiedPropertyName,
-                lastModified = Date.now(),
-                updateDataPromises = [],
-                typePropertyName = self.typePropertyName,
-                changesPropertyName = self.changesPropertyName,
-                operationPropertyName = self.operationPropertyName,
-                operationUpdateName = self.operationUpdateName;
-
-                myDB.open().then(function (storage) {
-                    storage.transaction('rw', table, operationTable,
-                        function () {
-                            //Make a clone of the array and create the record to track the online Last Updated date
-                            for (var i=0, countI = objects.length, iRawData, iOperation, iPrimaryKey;i<countI;i++) {
-                                if ((iRawData = objects[i])) {
-                                    iPrimaryKey = iRawData[primaryKey];
-                                    console.log("updateData ",iPrimaryKey,iRawData);
-                                    updateDataPromises.push(table.update(iPrimaryKey, iRawData));
-
-                                    //Create the record to track of last modified date
-                                    iOperation = {};
-                                    iOperation[dataID] = iPrimaryKey;
-                                    iOperation[lastModifiedPropertyName] = lastModified;
-                                    iOperation[typePropertyName] = type;
-                                    iOperation[changesPropertyName] = iRawData;
-                                    iOperation[operationPropertyName] = operationUpdateName;
-                                    iOperation.context = context;
-
-                                    updateDataPromises.push(operationTable.put(iOperation));
-                                }
-                            }
-                            return Dexie.Promise.all(updateDataPromises);
-
-                        }).then(function(value) {
-                            //Once this succedded, we need to add our temporary primary keys bookeeping:
-                            //Register potential temporary primaryKeys
-                            self.registerOfflinePrimaryKeyDependenciesForData(objects, table.name, primaryKey);
-
-
-                            resolve(clonedObjects);
-                            //console.log(table.name,": updateData for ",objects.length," objects succesfully",value);
-                        }).catch(function(e) {
-                            reject(e);
-                            // console.log("tableName:failed to addO ffline Data",e)
-                            console.error(table.name,": failed to updateData for ",objects.length," objects with error",e);
-                        });
-                    }
-                );
-
-            });
+            return promise;
         }
     },
 
@@ -1151,463 +675,497 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
      * Delete data passed in array.
      *
      * @method
-     * @argument {Object} objects   - objects whose data should be saved.
-     * @argument {String} type   - type of objects, likely to mean a "table" in storage
-     * @returns {external:Promise} - A promise fulfilled when all of the data in
-     * the changed object has been saved.
+     * @argument {Object} objects   - objects whose data should be deleted.
+     * @argument {String} type   - type of objects
+     * @argument {Object} context   - an object that will be associated with operations
+     * @returns {external:Promise} - A promise fulfilled when all of objects has been deleted.
      */
     deleteData: {
         value: function (objects, type, context) {
-            var self = this;
+            var promise;
 
-            if (!objects || objects.length === 0) {
-                return Dexie.Promise.resolve();
+            if (objects && Array.isArray(objects) && objects.length) {
+                var model = type.model,
+                    storeName = this.storage._storeNameForObjectDescriptor(type),
+                    operations = [],
+                    operationTime = Date.now(),
+                    primaryKey,
+                    primaryKeys = [],
+                    self = this;
+
+                for (var i = 0, iRawData; (iRawData = objects[i]); i++) {
+                    primaryKey = this.dataIdentifierForTypeRawData(type, iRawData).primaryKey;
+                    operations.push(DataOperation.lastDeleted(primaryKey, type, iRawData, context, operationTime));
+                    primaryKeys.push(primaryKey);
+                }
+
+                promise = self.operations._recordOperation(self.operations._offlineOperationsStoreName, operations, true).then(function () {
+                    return self._deleteOfflinePrimaryKeyDependenciesForData(objects, type).then(function () {
+                        return self._deleteOfflinePrimaryKeys(primaryKeys, type).then(function () {
+                            return self.storage._deleteFromStoreForModel(primaryKeys, storeName, model, true);
+                        });
+                    });
+                });
+            }
+            else {
+                promise = this.nullPromise;
             }
 
-            return new Promise(function (resolve, reject) {
-                var myDB = self._storage,
-                table = self.tableNamed(type),
-                operationTable = self.operationTable,
-                clonedObjects = objects.slice(0),
-                primaryKey = table.schema.primKey.name,
-                dataID = self.dataIDPropertyName,
-                lastModifiedPropertyName = self.lastModifiedPropertyName,
-                lastModified = Date.now(),
-                changesPropertyName = self.changesPropertyName,
-                typePropertyName = self.typePropertyName,
-                operationPropertyName = self.operationPropertyName,
-                operationDeleteName = self.operationDeleteName,
-                updateDataPromises = [];
+            return promise;
+        }
+    },
 
-                myDB.open().then(function (storage) {
-                    storage.transaction('rw', table, operationTable,
-                        function () {
-                            //Make a clone of the array and create the record to track the online Last Updated date
-                            for (var i=0, countI = objects.length, iRawData, iOperation, iPrimaryKey; i<countI; i++) {
-                                if ((iRawData = objects[i])) {
-                                    iPrimaryKey = iRawData[primaryKey];
-                                    updateDataPromises.push(table.delete(iPrimaryKey, iRawData));
+    /***************************************************************************
+     * Offline
+     */
 
-                                    //Create the record to track of last modified date
-                                    iOperation = {};
-                                    iOperation[dataID] = iPrimaryKey;
-                                    iOperation[lastModifiedPropertyName] = lastModified;
-                                    iOperation[typePropertyName] = type;
-                                    iOperation[changesPropertyName] = iRawData;
-                                    iOperation[operationPropertyName] = operationDeleteName;
-                                    iOperation.context = context;
+    readOfflineOperations: {
+        value: function () {
+            return this.operations.readOfflineOperations();//RDW should this call super.readOfflineOperations() and combine the results?
+        }
+    },
 
-                                    updateDataPromises.push(operationTable.put(iOperation));
-                                }
-                            }
-                            return Dexie.Promise.all(updateDataPromises);
+    _synchronizeOfflineStateForQuery: {
+        value: function (query, rawDataArray, rawDataArrayPrimaryKeys, updateOperationArray, offlineObjectsToClear) {
+            var self = this,
+                objectDescriptor = query.type,
+                model = objectDescriptor.model,
+                storeName = self.storage._storeNameForObjectDescriptor(objectDescriptor);
 
-                        }).then(function(value) {
-
-                            //Once this succeeded, we need to add our temporary primary keys bookkeeping:
-                            //Register potential temporary primaryKeys
-                            self.deleteOfflinePrimaryKeyDependenciesForData(objects, type, primaryKey);
-                            resolve(clonedObjects);
-                            //console.log(table.name,": updateData for ",objects.length," objects successfully",value);
-                        }).catch(function(e) {
-                            reject(e);
-                            // console.log("tableName:failed to add Offline Data",e)
-                            console.error(table.name,": failed to updateData for ",objects.length," objects with error",e);
-                        });
-                    }
-                );
-
-            });
+            // Transaction:
+            //     Objects to put:
+            //         rawDataArray into offline storage
+            //         updateOperationArray into offline operations?
+            //     Objects to delete:
+            //         offlineObjectsToClear in table and operationTable
+//RDW FIXME need to have gathered primary keys (either from operations.dataID, or pass them in)
+            return Promise.all([
+                self.storage._updateInStoreForModel(rawDataArray, rawDataArrayPrimaryKeys, storeName, model, false, true),
+                self.operations._recordOperation(self.operations._offlineOperationsStoreName, updateOperationArray, true),
+                self.storage._deleteFromStoreForModel(offlineObjectsToClear, storeName, model, true),
+                self.storage._deleteFromStoreForModel(offlineObjectsToClear, self.operations._offlineOperationsStoreName, model, true)
+            ]);
         }
     },
 
     deleteOfflineOperations: {
         value: function (operations) {
-            var self = this;
+            return this.operations.deleteOfflineOperations(operations);
+        }
+    },
 
-            if (!operations || operations.length === 0) {
-                return Promise.resolve();
+    /***************************************************************************
+     * Offline primary key support
+     */
+    /*   PrimaryKeys has offlinePrimaryKey and a property "dependencies" that contains an array of
+        {
+            offlinePrimaryKey:"uuid-1111-4444-5555",
+            dependencies:[
+                {
+                    serviceName: "AServiceName",
+                    storeName:"BlahTable",
+                    primaryKey:"uuid-1233-3455",
+                    foreignKeyName:"foo_ID"
+                }
+            ]
+        }
+
+        This tells us that the primaryKey "uuid-1111-4444-5555" appears as a foreignKey named "foo_ID" of the record in "BlahTable" that has the primaryKey value of "uuid-1233-3455"
+    */
+
+    _offlinePrimaryKeyRecordPrimaryKeyPropertyName: {
+        value: "offlinePrimaryKey"
+    },
+    _offlinePrimaryKeyRecordDependenciesPropertyName: {
+        value: "dependencies"
+    },
+    _offlinePrimaryKeyDependencyRecordStoreNamePropertyName: {
+        value: "storeName"
+    },
+    _offlinePrimaryKeyDependencyRecordPrimaryKeyPropertyName: {
+        value: "primaryKey"
+    },
+    _offlinePrimaryKeyDependencyRecordForeignKeyNamePropertyName: {
+        value: "foreignKeyName"
+    },
+
+    _offlinePrimaryKeyToOnlinePrimaryKey: {
+        value: new Map()
+    },
+    onlinePrimaryKeyForOfflinePrimaryKey: {
+        value: function (offlinePrimaryKey) {
+            return this._offlinePrimaryKeyToOnlinePrimaryKey.get(offlinePrimaryKey);
+        }
+    },
+
+    /**
+     * caches the primary keys only
+     */
+
+    _offlinePrimaryKeys: {
+        value: null
+    },
+    _offlinePrimaryKeysPromise: {
+        value: null
+    },
+
+    _fetchOfflinePrimaryKeys: {
+        value: function () {
+            if (!this._offlinePrimaryKeys) {
+                var self = this,
+                    _offlinePrimaryKeys = this._offlinePrimaryKeys = new Map();
+
+                return self.storage._fetchOfflinePrimaryKeys().then(function (offlinePrimaryKeys) {
+                    for (var i = 0, item; (item = offlinePrimaryKeys[i]); i++) {
+                        var offlinePrimaryKey = item[self._offlinePrimaryKeyRecordPrimaryKeyPropertyName];
+
+                        if (_offlinePrimaryKeys.has(offlinePrimaryKey)) {
+                            console.error("fetched duplicate offline primary key", offlinePrimaryKey);
+                        }
+
+                        _offlinePrimaryKeys.set(offlinePrimaryKey, item);
+                    }
+
+                    return _offlinePrimaryKeys;
+                });
+            }
+            else {
+                if (!this._offlinePrimaryKeysPromise) {
+                    this._offlinePrimaryKeysPromise = Promise.resolve(this._offlinePrimaryKeys);
+                }
+
+                return this._offlinePrimaryKeysPromise;
+            }
+        }
+    },
+
+    _newPrimaryKeyRecordForPrimaryKey: {
+        value: function (primaryKey) {
+            if (!primaryKey) {
+                throw "primary key undefined internally";
             }
 
-            return new Promise(function (resolve, reject) {
-                var myDB = self._storage,
-                    operationTable = self.operationTable,
-                    primaryKey = operationTable.schema.primKey.name,
-                    deleteOperationPromises = [];
+            var newRecord = {};
 
-                myDB.open().then(function (storage) {
-                    storage.transaction('rw', operationTable,
-                        function () {
-                            //Make a clone of the array and create the record to track the online Last Updated date
-                            for (var i=0, countI = operations.length, iOperation;i<countI;i++) {
-                                if ((iOperation = operations[i])) {
-                                    deleteOperationPromises.push(operationTable.delete(iOperation[primaryKey], iOperation));
-                                }
+            newRecord[this._offlinePrimaryKeyRecordPrimaryKeyPropertyName] = primaryKey;
+
+            return newRecord;
+        }
+    },
+    _newPrimaryKeyRecordsForPrimaryKeys: {
+        value: function (primaryKeys) {
+            var primaryKeyRecords = undefined;
+
+            if (primaryKeys) {
+                if (Array.isArray(primaryKeys)) {
+                    for (var i = 0, iPrimaryKey; (iPrimaryKey = primaryKeys[i]); i++) {
+                        primaryKeyRecords = primaryKeyRecords || [];
+                        primaryKeyRecords.push(this._newPrimaryKeyRecordForPrimaryKey(iPrimaryKey));
+                    }
+                }
+                else {
+                    primaryKeyRecords = this._newPrimaryKeyRecordForPrimaryKey(primaryKeys);
+                }
+            }
+
+            return primaryKeyRecords;
+        }
+    },
+
+    _writeOfflinePrimaryKeys: {
+        value: function (primaryKeys, objectDescriptor) {
+            var promise,
+                primaryKeyRecords = _newPrimaryKeyRecordsForPrimaryKeys(primaryKeys);
+
+            if (primaryKeyRecords) {
+                var self = this;
+
+                promise = self.storage._updateInStoreForModel(primaryKeyRecords,
+                                                              primaryKeys,
+                                                              self.storage._offlinePrimaryKeysStoreName,
+                                                              objectDescriptor.model,
+                                                              false,
+                                                              Array.isArray(primaryKeys)).then(function () {
+                    return self._fetchOfflinePrimaryKeys().then(function (offlinePrimaryKeys) {
+                        for (i = 0, iPrimaryKey; (iPrimaryKey = primaryKeys[i]); i++) {
+                            if (offlinePrimaryKeys.has(iPrimaryKey)) {
+                                throw "duplicate of new primary key: " + iPrimaryKey;
                             }
-                            return Dexie.Promise.all(deleteOperationPromises);
 
-                    }).then(function(value) {
-                        resolve();
-                        //console.log(table.name,": updateData for ",objects.length," objects succesfully",value);
-                    }).catch(function(e) {
-                        reject(e);
-                        // console.log("tableName:failed to add Offline Data",e)
-                        //console.error(operationTable.name,": failed to updateData for ",objects.length," objects with error",e);
+                            offlinePrimaryKeys.add(iPrimaryKey, primaryKeysRecords[i]);
+                        }
+
+                        return null;
                     });
                 });
+            }
+            else {
+                promise = this.nullPromise;
+            }
 
+            return promise;
+        }
+    },
+
+    /*
+     * Returns a promise resolved when onlinePrimaryKey has replaced offlinePrimaryKey
+     * both in memory and in storage
+     * @type {Promise}
+     */
+
+    replaceOfflinePrimaryKey: {
+        value: function (offlinePrimaryKey, onlinePrimaryKey, objectDescriptor, service) {//RDW FIXME this used to be the service that embedded on offlineService, which we don't do anymore
+            var self = this;
+
+            // Update the central table used by DataService's performOfflineOperations
+            // to update operations as they are processed.
+
+            this._offlinePrimaryKeyToOnlinePrimaryKey.set(offlinePrimaryKey, onlinePrimaryKey);
+
+            // Update the stored primaryKey.
+
+            return self.storage._updatePrimaryKey(offlinePrimaryKey, onlinePrimaryKey, objectDescriptor).then(function () {
+                // Now we need to update stored data as well and we need the cache populated from storage before we can do this:
+                // We shouldn't just rely on the fact that the app will immediately refetch everything and things would be broken
+                // if somehow the App would get offline again before a full refetch is done across every kind of data.
+
+                return self._fetchOfflinePrimaryKeys().then(function (offlinePrimaryKeys) {
+                    if (offlinePrimaryKeys.has(offlinePrimaryKey)) {
+                        var aPrimaryKeyRecord = offlinePrimaryKeys.get(offlinePrimaryKey),
+                            dependencies = aPrimaryKeyRecord[self._offlinePrimaryKeyRecordDependenciesPropertyName],
+                            promises;
+
+                        if (dependencies) {
+                            for (var i = 0, iDependency; (iDependency = dependencies[i]); i++) {
+                                var iUpdateRecord = {};
+
+                                iUpdateRecord[iDependency[self._offlinePrimaryKeyDependencyRecordForeignKeyNamePropertyName]] = onlinePrimaryKey;
+
+                                // Using updateData creates offlineOperations we don't want here, hence direct use of storage.
+                                // This is internal to PersistentDataService and descendants.
+
+                                promises = promises || [];
+                                promises.push(self.storage._updateInStoreForModel(iUpdateRecord,
+                                                                                  iDependency[self._offlinePrimaryKeyDependencyRecordPrimaryKeyPropertyName],
+                                                                                  iDependency[self._offlinePrimaryKeyDependencyRecordStoreNamePropertyName],
+                                                                                  objectDescriptor.model,//RDW FIXME this is probably wrong for cross-model relationships, change this when StorageDataService can look up an objectDescriptor from a storeName
+                                                                                  true));
+                            }
+                        }
+//RDW FIXME do we care about keeping a record of the offlinePrimaryKey once the offline primary key has been replaced with an onlinePrimaryKey?
+//RDW FIXME if there are inverse relationships, seems like we'd need to fix up the "primaryKey" field in some other offlinePrimaryKey records' dependencies
+                        offlinePrimaryKeys.delete(offlinePrimaryKey);//RDW FIXME this wasn't happening before, but seems like it should? even though we now have an "online" primary key, seems like we need to know if it changes?
+
+                        aPrimaryKeyRecord[self._offlinePrimaryKeyRecordPrimaryKeyPropertyName] = onlinePrimaryKey;//RDW FIXME this wasn't happening before, but seems like it should? even though we now have an "online" primary key, seems like we need to know if it changes?
+
+                        offlinePrimaryKeys.set(onlinePrimaryKey, aPrimaryKeyRecord);//RDW FIXME this wasn't happening before, but seems like it should? even though we now have an "online" primary key, seems like we need to know if it changes?
+
+                        return (promises ? Promise.all(promises) : self.nullPromise);
+                    }
+                    else {//RDW FIXME this wasn't happening before, but seems like it should? even though we now have an "online" primary key, seems like we need to know if it changes?
+                        return self._writeOfflinePrimaryKeys(onlinePrimaryKey, objectDescriptor);
+                    }
+                });
+            }).catch(function (reason) {
+                console.error("_updatePrimaryKey failed", reason);
+                throw reason;
             });
         }
     },
-    onlinePrimaryKeyForOfflinePrimaryKey: {
-        value: function(offlinePrimaryKey) {
-            return PersistentDataService.onlinePrimaryKeyForOfflinePrimaryKey(offlinePrimaryKey);
+
+    /**
+    * Assumes being invoked within the then of this._fetchOfflinePrimaryKeys.
+    * @returns {Object} - if we found a record to update, returns it
+    * otherwise returns null
+    */
+
+    _addPrimaryKeyDependency: {
+        value: function (offlinePrimaryKeys, aPrimaryKey, storeName, storePrimaryKey, storeForeignKeyName) {
+            var updatedRecord = null;
+
+            if (offlinePrimaryKeys.has(aPrimaryKey)) {
+                var aPrimaryKeyRecord = offlinePrimaryKeys.get(aPrimaryKey),
+                    dependencies = aPrimaryKeyRecord[this._offlinePrimaryKeyRecordDependenciesPropertyName],
+                    found = false;
+
+                // Now we search for a match... wish we could use an in-memory compound-index...
+
+                if (dependencies) {
+                    for (var i = 0, iDependency; (iDependency = dependencies[i]); i++) {
+                        if (iDependency[this._offlinePrimaryKeyDependencyRecordStoreNamePropertyName] === storeName &&
+                            iDependency[this._offlinePrimaryKeyDependencyRecordPrimaryKeyPropertyName] === storePrimaryKey &&
+                            iDependency[this._offlinePrimaryKeyDependencyRecordForeignKeyNamePropertyName] === storeForeignKeyName) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!found) {
+                    var primaryKeysRecord = {};
+
+                    primaryKeysRecord[this._offlinePrimaryKeyDependencyRecordStoreNamePropertyName] = storeName;
+                    primaryKeysRecord[this._offlinePrimaryKeyDependencyRecordPrimaryKeyPropertyName] = storePrimaryKey;
+                    primaryKeysRecord[this._offlinePrimaryKeyDependencyRecordForeignKeyNamePropertyName] = storeForeignKeyName;
+
+                    if (!dependencies) {
+                        dependencies = aPrimaryKeyRecord.dependencies = [];
+                    }
+
+                    dependencies.push(primaryKeysRecord);
+
+                    updatedRecord = aPrimaryKeyRecord;
+                }
+            }
+
+            return updatedRecord;
         }
     },
-    replaceOfflinePrimaryKey: {
-            value: function(offlinePrimaryKey,onlinePrimaryKey, type, service) {
-                return PersistentDataService.replaceOfflinePrimaryKey(offlinePrimaryKey,onlinePrimaryKey, type, service);
+
+    _registerOfflinePrimaryKeyDependenciesForData: {
+        value: function (data, objectDescriptor) {
+            var promise = this.nullPromise;
+
+            if (data && Array.isArray(data) && data.length) {
+                var self = this,
+                    representativeKeys = Object.keys(data[0]),//TODO better way to do this from the objectDescriptor?
+                    foreignKeys = representativeKeys;//if we don't have a known list of foreign keys, we'll consider all potential candidate//TODO there must be a better way to do this
+
+                promise = self._fetchOfflinePrimaryKeys().then(function (offlinePrimaryKeys) {
+                    var updatedRecord,
+                        updatedRecords,
+                        updatedPrimaryKeys,
+                        storeName;
+
+                    for (var i = 0, iData; (iData = data[i]); i++) {
+                        var iPrimaryKey = iData[primaryKeyPropertyName];//RDW FIXME dataIdentifierForTypeRawData, except prob this needs to be called on the individual service
+
+                        for (var j = 0, jForeignKeyName; (jForeignKeyName = foreignKeys[j]); j++) {
+                            var jForeignKeyValue = iData[jForeignKeyName];
+
+                            if (jForeignKeyValue) {
+                                storeName = storeName || self.storage._storeNameForObjectDescriptor(objectDescriptor);
+
+                                if ((updatedRecord = self._addPrimaryKeyDependency(offlinePrimaryKeys, jForeignKeyValue, storeName, iPrimaryKey, jForeignKeyName))) {
+                                    updatedRecords = updatedRecords || [];
+                                    updatedRecords.push(updatedRecord);
+                                    updatedPrimaryKeys = updatedPrimaryKeys || [];
+                                    updatedPrimaryKeys.push(jForeignKeyValue);
+                                }
+                            }
+                        }
+                    }
+
+                    if (updatedRecords && updatedRecords.length) {
+                        return self.storage._updateInStoreForModel(updatedRecords,
+                                                                   updatedPrimaryKeys,
+                                                                   self.storage._offlinePrimaryKeysStoreName,
+                                                                   objectDescriptor.model,
+                                                                   false,
+                                                                   true);
+                    }
+                });
             }
+
+            return promise;
+        }
+    },
+
+    _deleteOfflinePrimaryKeyDependenciesForData: {//RDW FIXME note that this didn't do anything in the prior, empty implementation
+        value: function (data, objectDescriptor) {
+            var promise;
+
+            if (data) {
+                var dataArray = (Array.isArray(data)) ? data
+                                                      : [data];
+
+                if (dataArray.length) {
+                    var self = this;
+
+                    promise = self._fetchOfflinePrimaryKeys().then(function (offlinePrimaryKeys) {
+                        var promises,
+                            storeName;
+
+                        for (var i = 0, iData; (iData = dataArray[i]); i++) {
+                            var iPrimaryKey = iData[primaryKeyPropertyName],//RDW FIXME dataIdentifierForTypeRawData, except prob this needs to be called on the individual service
+                                iPrimaryKeyRecord = offlinePrimaryKeys.get(iPrimaryKey),
+                                dependencies = iPrimaryKeyRecord[self._offlinePrimaryKeyRecordDependenciesPropertyName];
+
+                            if (dependencies) {//RDW FIXME remove the dependencies after processing here? or rely on _deleteOfflinePrimaryKeys?
+                                for (var i = 0, iDependency; (iDependency = dependencies[i]); i++) {
+                                    var iUpdateRecord = {};
+
+                                    iUpdateRecord[iDependency[self._offlinePrimaryKeyDependencyRecordForeignKeyNamePropertyName]] = null;//RDW FIXME make sure that the value being nullified had been iPrimaryKey?
+
+                                    // Using updateData creates offlineOperations we don't want here, hence direct use of storage.
+                                    // This is internal to PersistentDataService and descendants.
+
+                                    promises = promises || [];
+                                    promises.push(self.storage._updateInStoreForModel(iUpdateRecord,
+                                                                                      iDependency[self._offlinePrimaryKeyDependencyRecordPrimaryKeyPropertyName],
+                                                                                      iDependency[self._offlinePrimaryKeyDependencyRecordStoreNamePropertyName],
+                                                                                      objectDescriptor.model,//RDW FIXME this is probably wrong for cross-model relationships, change this when StorageDataService can look up an objectDescriptor from a storeName
+                                                                                      true));
+                                }
+                            }
+                        }
+
+                        return (promises ? Promise.all(promises) : self.nullPromise);
+                    });
+                }
+                else {
+                    promise = this.nullPromise;
+                }
+            }
+            else {
+                promise = this.nullPromise;
+            }
+
+            return promise;
+        }
+    },
+
+    _deleteOfflinePrimaryKeys: {
+        value: function (primaryKeys, objectDescriptor) {
+            var promise;
+
+            if (primaryKeys) {
+                var primaryKeysArray = (Array.isArray(primaryKeys)) ? primaryKeys
+                                                                    : [primaryKeys];
+
+                if (primaryKeysArray.length) {
+                    var self = this;
+
+                    promise = new Promise(function (resolve, reject) {
+                        return self._deleteFromStoreForModel(primaryKeysArray,
+                                                            self._offlinePrimaryKeysStoreName,
+                                                            objectDescriptor.model,
+                                                            true).then(function () {
+                            return self._fetchOfflinePrimaryKeys().then(function (offlinePrimaryKeys) {
+                                //Update local cache:
+                                for (var i = 0, iPrimaryKey; (iPrimaryKey = primaryKeysArray[i]); i++) {
+                                    offlinePrimaryKeys.delete(iPrimaryKey.offlinePrimaryKey);
+                                }
+
+                                resolve(null);
+                            });
+                        }).catch(function (e) {
+                            console.error("_deleteOfflinePrimaryKeys failed", e);
+                            reject(e);
+                        });
+                    });
+                }
+                else {
+                    promise = this.nullPromise;
+                }
+            }
+            else {
+                promise = this.nullPromise;
+            }
+
+            return promise;
+        }
     }
 },
-    {
-        _registeredPersistentDataServiceByName: {
-            value: new Map()
-        },
-        registerPersistentDataService: {
-            value: function(aPersistentDataService) {
-                this._registeredPersistentDataServiceByName.set(aPersistentDataService.name, aPersistentDataService);
-            }
-        },
-        registeredPersistentDataServiceNamed: {
-            value: function(aPersistentDataServiceName) {
-                return this._registeredPersistentDataServiceByName.get(aPersistentDataServiceName);
-            }
-        },
-        __offlinePrimaryKeyDB: {
-            value:null
-        },
-        _offlinePrimaryKeyDB: {
-            get: function() {
-                if (!this.__offlinePrimaryKeyDB) {
-                    var storage = this.__offlinePrimaryKeyDB = new Dexie("OfflinePrimaryKeys"),
-                        primaryKeysTable = storage["PrimaryKeys"];
-
-                    if (!primaryKeysTable) {
-                        /*   PrimaryKeys has offlinePrimaryKey and a property "dependencies" that contains an array of
-                            {
-                                offlinePrimaryKey:"uuid-1111-4444-5555",
-                                dependencies:[
-                                    {
-                                        serviceName: "AServiceName",
-                                        tableName:"BlahTable",
-                                        primaryKey:"uuid-1233-3455",
-                                        foreignKeyName:"foo_ID"
-                                    }
-                                ]
-                            }
-                                This tells us that the primaryKey "uuid-1111-4444-5555" appears as a foreignKey named "foo_ID" of the record in "BlahTable" that has the primaryKey value of "uuid-1233-3455"
-                        */
-
-                        var newDbSchema = {
-                            PrimaryKeys: "offlinePrimaryKey,dependencies.serviceName, dependencies.tableName, dependencies.primaryKey, dependencies.foreignKeyName"
-                        };
-                        storage.version(storage.verno+1).stores(newDbSchema);
-                    }
-
-                }
-                return this.__offlinePrimaryKeyDB;
-            }
-        },
-        _primaryKeysTable: {
-            value:null
-        },
-
-        primaryKeysTable: {
-            get: function() {
-                return this._primaryKeysTable || (this._primaryKeysTable = this._offlinePrimaryKeyDB.PrimaryKeys);
-            }
-        },
-
-        writeOfflinePrimaryKey: {
-            value: function(aPrimaryKey) {
-                return this.writeOfflinePrimaryKeys([aPrimaryKey]);
-            }
-        },
-
-        writeOfflinePrimaryKeys: {
-            value: function(primaryKeys) {
-                var storage = this._offlinePrimaryKeyDB,
-                    table = this.primaryKeysTable,
-                    primaryKeysRecords = [],
-                    self = this;
-
-                for (var i=0, countI = primaryKeys.length, iRawData, iPrimaryKey;i<countI;i++) {
-                    primaryKeysRecords.push({
-                        offlinePrimaryKey: primaryKeys[i]
-                    });
-                }
-                return new Promise(function (resolve, reject) {
-                    var i, iPrimaryKey,
-                        _offlinePrimaryKeys = self._offlinePrimaryKeys;
-
-                    table.bulkAdd(primaryKeysRecords)
-                    .then(function(lastKey) {
-                        self.fetchOfflinePrimaryKeys()
-                        .then(function(offlinePrimaryKeys) {
-
-                            //Update local cache:
-                            for (i=0;(iPrimaryKey = primaryKeys[i]);i++) {
-                                offlinePrimaryKeys.add(iPrimaryKey.offlinePrimaryKey,primaryKeysRecords[i]);
-                            }
-                            resolve(lastKey);
-                        });
-                    })
-                    .catch(function(e){
-                        console.error("deleteOfflinePrimaryKeys failed",e);
-                        reject(e);
-                    });
-
-                });
-            }
-        },
-
-        registerOfflinePrimaryKeyDependenciesForData: {
-            value: function(data, tableName, primaryKeyPropertyName, service) {
-
-                if (data.length === 0) {
-                    return;
-                }
-
-                var keys = Object.keys(data[0]),
-                    i, iData, countI, iPrimaryKey,
-                    j, jForeignKey, jForeignKeyValue,
-                    offlineService = PersistentDataService,
-                    tableSchema = service.schema[tableName],
-                    //if we don't have a known list of foreign keys, we'll consider all potential candidate
-                    foreignKeys = tableSchema.foreignKeys,
-                    updatedRecord, updatedRecords,
-                    self = this;
-
-                if (!foreignKeys) {
-                    foreignKeys = tableSchema._computedForeignKeys ||
-                        (tableSchema._computedForeignKeys = keys);
-                }
-
-                //We need the cache populated from storage before we can do this:
-                return this.fetchOfflinePrimaryKeys()
-                    .then(function(offlinePrimaryKeys) {
-
-                        for (i=0, countI = data.length;(i<countI);i++) {
-                            iData = data[i];
-                            iPrimaryKey = iData[primaryKeyPropertyName];
-                            for (j=0;(jForeignKey = foreignKeys[j]);j++) {
-                                jForeignKeyValue = iData[jForeignKey];
-                                //if we have a value in this foreignKey:
-                                if (jForeignKeyValue) {
-                                    if ((updatedRecord = self.addPrimaryKeyDependency(jForeignKeyValue, tableName,iPrimaryKey,jForeignKey, service.name))) {
-                                        updatedRecords = updatedRecords || [];
-                                        updatedRecords.push(updatedRecord);
-                                    }
-                                }
-                            }
-                        }
-
-
-                        if (updatedRecords && updatedRecords.length) {
-                            //We need to save:
-                            self.primaryKeysTable.bulkPut(updatedRecords)
-                            .then(function(lastKey) {
-                                console.log("Updated  offline primaryKeys dependencies" + lastKey); // Will be 100000.
-                            }).catch(Dexie.BulkError, function (e) {
-                                console.error (e);
-                            });
-
-                        }
-                });
-            }
-        },
-
-        deleteOfflinePrimaryKeyDependenciesForData: {
-            value: function(data, tableName, primaryKeyPropertyName, tableForeignKeys) {
-
-            }
-        },
-
-       /**
-        * this assumes this._offlinePrimaryKeys has already been fetched
-        * @returns {Object} - if we found a record to update, returns it
-        * otherwise returns null
-        */
-
-        addPrimaryKeyDependency: {
-            value: function(aPrimaryKey, tableName, tablePrimaryKey, tableForeignKey, serviceName) {
-
-                if (this._offlinePrimaryKeys.has(aPrimaryKey)) {
-                    var aPrimaryKeyRecord = this._offlinePrimaryKeys.get(aPrimaryKey),
-                        dependencies = aPrimaryKeyRecord.dependencies,
-                        i, iDependency, found = false,
-                        primaryKeysRecord;
-
-                    //Now we search for a match... whish we could use an in-memory
-                    //compound-index...
-                    if (dependencies) {
-                        for (i=0;(iDependency = dependencies[i]);i++) {
-                            if (
-                                iDependency.tableName === tableName &&
-                                    iDependency.primaryKey === tablePrimaryKey &&
-                                        iDependency.foreignKeyName === tableForeignKey
-                            ) {
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (!found) {
-                        primaryKeysRecord = {
-                            serviceName: serviceName,
-                            tableName: tableName,
-                            primaryKey: tablePrimaryKey,
-                            foreignKeyName: tableForeignKey
-                        };
-                        if (!dependencies) {
-                            dependencies = aPrimaryKeyRecord.dependencies = [];
-                        }
-                        dependencies.push(primaryKeysRecord);
-                        return aPrimaryKeyRecord;
-                    }
-                    return null;
-                }
-            }
-        },
-        _offlinePrimaryKeyToOnlinePrimaryKey: {
-            value: new Map()
-        },
-        onlinePrimaryKeyForOfflinePrimaryKey: {
-            value: function(offlinePrimaryKey) {
-                return this._offlinePrimaryKeyToOnlinePrimaryKey.get(offlinePrimaryKey);
-            }
-        },
-
-        /*
-        * Returns a promise resolved when onlinePrimaryKey has replaced offlinePrimaryKey
-        * both in memory and in IndexedDB
-        * @type {Promise}
-        */
-
-        replaceOfflinePrimaryKey: {
-            value: function(offlinePrimaryKey,onlinePrimaryKey, type, service) {
-                var self = this;
-                //Update the central table used by DataService's performOfflineOperations
-                //to update operations are they are processed
-                this._offlinePrimaryKeyToOnlinePrimaryKey.set(offlinePrimaryKey,onlinePrimaryKey);
-
-                //Update the stored primaryKey
-                return service.offlineService.updatePrimaryKey(offlinePrimaryKey, onlinePrimaryKey, type).then(function() {
-                    //Now we need to update stored data as well and we need the cache populated from storage before we can do this:
-                    //We shouldn't just rely on the fact that the app will immediately refetch everything and things would be broken
-                    //if somehow the App would get offline again before a full refetch is done across every kind of data.
-                    return self.fetchOfflinePrimaryKeys()
-                        .then(function(offlinePrimaryKeys) {
-
-                            if (offlinePrimaryKeys.has(offlinePrimaryKey)) {
-                                var aPrimaryKeyRecord = offlinePrimaryKeys.get(offlinePrimaryKey),
-                                    dependencies = aPrimaryKeyRecord.dependencies;
-
-                                if (dependencies) {
-                                    var i, iDependency, iOfflineService, iTableName, iPrimaryKey, iForeignKeyName, iUpdateRecord, updateArray = [];
-
-                                    for (i=0;(iDependency = dependencies[i]);i++) {
-                                        //The service that handles iTableName
-                                        iOfflineService = PersistentDataService.registeredPersistentDataServiceNamed(iDependency.serviceName);
-                                        iTableName = iDependency.tableName;
-                                        iPrimaryKey = iDependency.primaryKey;
-                                        iForeignKeyName = iDependency.foreignKeyName;
-
-                                        iUpdateRecord = {};
-                                        // updateArray[0] = iUpdateRecord;
-                                        iUpdateRecord[iOfflineService.schema[iTableName].primaryKey] = iPrimaryKey;
-                                        iUpdateRecord[iForeignKeyName] = onlinePrimaryKey;
-
-                                        return iOfflineService.tableNamed(iTableName).update(iPrimaryKey, iUpdateRecord);
-                                        //Using updateData creates offlineOperations we don't want here, hence direct use of table:
-                                        //This is internal to OfflineService and descendants.
-                                        // iOfflineService.updateData(updateArray, iTableName, null);
-
-
-                                    }
-                                }
-
-                            }
-
-                        });
-
-                })
-                .catch(function(e){
-                    console.error("updatePrimaryKey failed",e);
-                    throw e;
-                });
-            }
-        },
-        /**
-         * caches the primary keys only
-         */
-
-        _offlinePrimaryKeys: {
-            value: null
-        },
-        _offlinePrimaryKeysPromise: {
-            value: null
-        },
-        fetchOfflinePrimaryKeys: {
-            value: function() {
-                if (!this._offlinePrimaryKeys) {
-                    var _offlinePrimaryKeys = this._offlinePrimaryKeys = new Map(),
-                        self = this;
-                    return new Promise(function (resolve, reject) {
-                        self._offlinePrimaryKeyDB.PrimaryKeys.each(function (item, cursor) {
-                            _offlinePrimaryKeys.set(item.offlinePrimaryKey,item);
-                         })
-                         .then(function() {
-                             resolve(_offlinePrimaryKeys);
-                         })
-                         .catch(function(e){
-                             console.error("fetchOfflinePrimaryKeys failed",e);
-                             reject(e);
-                         });
-                    });
-                } else {
-                    if (!this._offlinePrimaryKeysPromise) {
-                        this._offlinePrimaryKeysPromise = Promise.resolve(this._offlinePrimaryKeys);
-                    }
-                    return this._offlinePrimaryKeysPromise;
-                }
-            }
-        },
-        deleteOfflinePrimaryKeys: {
-            value: function (primaryKeys) {
-                var self = this,
-                    _offlinePrimaryKeys = this._offlinePrimaryKeys;
-
-                if (!primaryKeys || primaryKeys.length === 0) {
-                    return Promise.resolve();
-                }
-
-                return new Promise(function (resolve, reject) {
-                    self._offlinePrimaryKeyDB.PrimaryKeys.bulkDelete(primaryKeys)
-                    .then(function() {
-                        //Update local cache:
-                        for (var i=0, iPrimaryKey;(iPrimaryKey = primaryKeys[i]);i++) {
-                            _offlinePrimaryKeys.delete(iPrimaryKey.offlinePrimaryKey);
-                        }
-                        resolve();
-                    })
-                    .catch(function(e){
-                        console.error("deleteOfflinePrimaryKeys failed",e);
-                        reject(e);
-                    });
-                });
-            }
-        }
-    });
+{
+});

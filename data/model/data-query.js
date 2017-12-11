@@ -28,7 +28,7 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
      *
      * @type {Object}
      */
-    criteria: {
+    criteria: {//TODO this ought to be formal Criteria? did this get lost in the selector->query transition
         get: function () {
             if (!this._criteria) {
                 this._criteria = {};

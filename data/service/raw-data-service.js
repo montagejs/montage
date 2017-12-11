@@ -223,8 +223,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     /***************************************************************************
      * Data Object Creation
      *
-     * If there were no mapping available in the app for this record giving use
-     * a type/class/condtructor, we should create one ourselves matching what we know.
+     * If there were no mapping available in the app for this record giving us
+     * a type/class/constructor, we should create one ourselves matching what we know.
      * For a REST service it would be the name of the Entity. Otherwise we should be able
      * to treat by ip domain, a type based on concatenation of all keys returned,
      * which would define the "shape"
@@ -471,7 +471,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     deleteDataObject: {
         value: function (object) {
             var record = {};
-            this._mapObjectToRawData(object, record);
+            this._mapObjectToRawData(object, record);//RDW isn't this supposed to return a Promise? shouldn't we wait on it?
+            this.callDelegateMethod("rawDataServiceWillDeleteRawData", this, iRecord, object);
             return this.deleteRawData(record, object);
         }
     },
@@ -511,13 +512,14 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * the changed object has been saved. The promise's fulfillment value is not
      * significant and will usually be `null`.
      */
-    // saveDataObject: {
-    //     value: function (object) {
-    //         var record = {};
-    //         this._mapObjectToRawData(object, record);
-    //         return this.saveRawData(record, object);
-    //     }
-    // },
+    saveDataObject: {
+        value: function (object) {
+            var record = {};
+            this._mapObjectToRawData(object, record);//RDW isn't this supposed to return a Promise? shouldn't we wait on it?
+            this.callDelegateMethod("rawDataServiceWillSaveRawData", this, iRecord, object);
+            return this.saveRawData(record, object);
+        }
+    },
 
     /**
      * Subclasses should override this method to save a data object when that
@@ -573,7 +575,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @method
      * @argument {Object} records  - An array of objects whose properties' values
      *                               hold the raw data.
-     * @argument {?DataQuery} selector
+     * @argument {?DataQuery} query
      *                             - Describes how the raw data was selected.
      * @argument {?} context       - The value that was passed in to the
      *                               [rawDataDone()]{@link RawDataService#rawDataDone}
@@ -849,8 +851,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 this._streamRawData.delete(stream);
             }
 
-            dataReadyPromise.then(function (results) {
-
+            return dataReadyPromise.then(function (results) {
                 return dataToPersist ? self.writeOfflineData(dataToPersist, stream.query, context) : null;
             }).then(function () {
                 stream.dataDone();
@@ -858,7 +859,6 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             }).catch(function (e) {
                 console.error(e);
             });
-
         }
     },
 
@@ -1035,7 +1035,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     /**
      * Public method invoked by the framework during the conversion from
      * an object to a raw data.
-     * Designed to be overriden by concrete RawDataServices to allow fine-graine control
+     * Designed to be overridden by concrete RawDataServices to allow fine-grained control
      * when needed, beyond transformations offered by an ObjectDescriptorDataMapping or
      * an ExpressionDataMapping
      *

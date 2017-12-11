@@ -694,9 +694,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     mappingWithType: {
         value: function (type) {
-            var mapping;
-            type = this._objectDescriptorForType(type);
-            mapping = this._mappingByType.has(type) && this._mappingByType.get(type);
+            var definitelyType = this._objectDescriptorForType(type),
+                ownMapping = this._mappingByType.has(type) && this._mappingByType.get(type),
+                childService = ownMapping || this.childServiceForType(type),
+                mapping = ownMapping || (childService && childService.mappingWithType(type));
+
             return mapping || null;
         }
     },
@@ -1297,7 +1299,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (object, propertyName, propertyDescriptor) {
             var self = this,
                 objectDescriptor = propertyDescriptor.owner,
-                mapping = objectDescriptor && this.mappingWithType(objectDescriptor),
+                mapping = objectDescriptor && this.mappingWithType(objectDescriptor),//RDW ExpressionDataMapping is inserted into the mix here
                 data = {};
 
             if (mapping) {
@@ -1666,10 +1668,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * Fetch data from the service using its child services.
      *
      * This method accept [types]{@link DataObjectDescriptor} as alternatives to
-     * [queries]{@link DataQuery}, and its [stream]{DataStream} argument is
+     * [queries]{@link DataQuery}, and its [stream]{@link DataStream} argument is
      * optional, but when it calls its child services it will provide them with
      * a [query]{@link DataQuery}, it provide them with a
-     * [stream]{DataStream}, creating one if necessary, and the stream will
+     * [stream]{@link DataStream}, creating one if necessary, and the stream will
      * include a reference to the query. Also, if a child service's
      * implementation of this method return `undefined` or `null`, this method
      * will return the stream passed in to the call to that child.
@@ -1733,7 +1735,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 var service;
                 //This is a workaround, we should clean that up so we don't
                 //have to go up to answer that question. The difference between
-                //.TYPE and Objectdescriptor still creeps-in when it comes to
+                //.TYPE and ObjectDescriptor still creeps-in when it comes to
                 //the service to answer that to itself
                 if (self.parentService && self.parentService.childServiceForType(query.type) === self && typeof self.fetchRawData === "function") {
                     service = self;
