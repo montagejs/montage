@@ -81,12 +81,14 @@ header {
 }
 
 input[type=checkbox].expand {
-	visibility: hidden;
+    -webkit-appearance: none;
+    -moz-appearance:    none;
+    appearance:         none;
+    outline:            none;
 }
 
 input[type=checkbox].expand::before {
     content: "\25BA";
-    visibility: visible;
     color: #48569E;
 }
 
