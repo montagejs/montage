@@ -743,7 +743,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     marginLeft = parseInt(element.style.marginLeft);
                     rowRect.top = treeListRectTop +
                         parseInt(element.style.marginTop) - treeListScrollTop;
-                    rowRect.left = treeListRect.x + marginLeft;
+                    rowRect.left = treeListRect.left + marginLeft;
                     rowRect.width = treeListRect.width - marginLeft;
                     rowRect.height = iteration.object.height * this._rowHeight;
                     rowRect.bottom = rowRect.top + rowRect.height;
@@ -1060,7 +1060,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 if (treeListScrollHeight > treeListHeight) {
                     var multiplierY = 0, scrollThreshold = this._scrollThreshold,
                         pointerPositionY = this._startPositionY + this._translateY,
-                        treeListPositionTopY = this._treeListBoundingClientRect.y,
+                        treeListPositionTopY = this._treeListBoundingClientRect.top,
                         treeListPositionBottomY = this._treeListBoundingClientRect.bottom,
                         multiplier;
 
