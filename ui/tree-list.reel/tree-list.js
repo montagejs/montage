@@ -714,6 +714,23 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
         value: 6 //px
     },
 
+    _isPointerOnPlaceholder: {
+        value: function (pointerPositionX, pointerPositionY) {
+            var placeholderRect = this._placeholderBoundingClientRect,
+                heightThreshold = this._placeholderThreshold;
+
+            if (pointerPositionY >= placeholderRect.top - heightThreshold &&
+                pointerPositionY <= placeholderRect.bottom + heightThreshold &&
+                pointerPositionX >= placeholderRect.left - heightThreshold &&
+                pointerPositionX <= placeholderRect.right + heightThreshold
+            ) {
+                return true;
+            }
+
+            return false;
+        }
+    },
+
     _findClosestTreeNode: {
         value: function (pointerPositionX, pointerPositionY) {
             var treeListRect = this._treeListBoundingClientRect,
@@ -721,33 +738,41 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 heightThreshold = this._placeholderThreshold,
                 treeListScrollTop = this._treeListScrollTop,
                 drawnIterations = this.repetition._drawnIterations,
-                treeListRectTop = treeListRect.top,
+                treeListRectTop = treeListRect.top, placeholder, object,
                 minDist = 0, rowRect = {}, dist, iteration, marginLeft,
                 dY, dX, candidate, element, heightThreshold;
 
             if (this.placeholderStrategy === TreeList.PLACEHOLDER_MOVE &&
                 this._placerholderPosition !== PLACEHOLDER_POSITION.OVER_NODE &&
-                pointerPositionY >= placeholderRect.top - heightThreshold &&
-                pointerPositionY <= placeholderRect.bottom + heightThreshold &&
-                pointerPositionX >= placeholderRect.left &&
-                pointerPositionX <= placeholderRect.right
+                this._isPointerOnPlaceholder(pointerPositionX, pointerPositionY)
             ) {
-                return this._placeholder;
+                placeholder = this._placeholder;
             }
 
             for (var i = 0, length = drawnIterations.length; i < length; i++) {
                 iteration = drawnIterations[i];
+                object = iteration.object;
 
-                if (iteration.object) {
+                if (object) {
                     element = iteration.firstElement;
                     marginLeft = parseInt(element.style.marginLeft);
                     rowRect.top = treeListRectTop +
                         parseInt(element.style.marginTop) - treeListScrollTop;
                     rowRect.left = treeListRect.left + marginLeft;
                     rowRect.width = treeListRect.width - marginLeft;
-                    rowRect.height = iteration.object.height * this._rowHeight;
+                    rowRect.height = object.height * this._rowHeight;
                     rowRect.bottom = rowRect.top + rowRect.height;
                     rowRect.right = rowRect.left + rowRect.width;
+
+                    if (placeholder) {
+                        if (rowRect.bottom === placeholderRect.top) {
+                            rowRect.height += placeholderRect.height / 2;
+                            rowRect.bottom += placeholderRect.height / 2;
+                        } else if (rowRect.top === placeholderRect.bottom) {
+                            rowRect.top -= placeholderRect.height / 2;
+                            rowRect.height += placeholderRect.height / 2;
+                        }
+                    }
 
                     if (
                         pointerPositionX >= rowRect.left && pointerPositionX <= rowRect.right &&
@@ -770,10 +795,16 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                             (candidate && candidate.data === this.controller.data)
                         ) {
                             minDist = dist;
-                            candidate = iteration.object;
+                            candidate = object;
                         }
                     }
                 }
+            }
+
+            if (!candidate || (
+                placeholder && placeholder !== candidate && this._treeNodeOver === candidate
+            )) {
+                candidate = placeholder;
             }
 
             return candidate;
@@ -781,16 +812,29 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
     },
 
     _getPlaceholderPositionOnTreeNode: {
-        value: function (treeNode, pointerPositionY, canBeOver) {
+        value: function (treeNode, pointerPositionX, pointerPositionY, canBeOver) {
             var treeNodeElement = this._findTreeNodeElementWithNode(treeNode),
+                placeholderRect = this._placeholderBoundingClientRect,    
                 rowRect = treeNodeElement.getBoundingClientRect(),
                 thresholdHeight = this._placeholderThreshold,
-                minBottom = canBeOver ? rowRect.bottom - thresholdHeight :
-                    rowRect.bottom - (rowRect.height / 2),
+                minBottom, maxBottom, minTop, maxTop,
                 maxBottom = rowRect.bottom + thresholdHeight,
-                minTop = rowRect.top - thresholdHeight,
+                minTop = rowRect.top - thresholdHeight;
+
+            
+            if (this.placeholderStrategy === TreeList.PLACEHOLDER_OVER) {
+                minBottom = canBeOver ? rowRect.bottom - thresholdHeight :
+                    rowRect.bottom - (rowRect.height / 2);
                 maxTop = canBeOver ? rowRect.top + thresholdHeight :
                     rowRect.top + (rowRect.height / 2);
+            } else {
+                maxTop = minBottom = rowRect.top + rowRect.height / 2;
+
+                if (this._isPointerOnPlaceholder(pointerPositionX, pointerPositionY)) {
+                    minTop -= placeholderRect.height / 2;
+                    maxBottom += placeholderRect.height / 2;
+                }
+            }            
 
             if (pointerPositionY >= minBottom && pointerPositionY <= maxBottom) {
                 return PLACEHOLDER_POSITION.AFTER_NODE;
@@ -840,9 +884,9 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                         overNodeIndex = -1,
                         previousPlaceholderPosition = this._placerholderPosition;
                     
-
                     this._placerholderPosition = this._getPlaceholderPositionOnTreeNode(
                         treeNodeOver,
+                        positionX,
                         positionY,
                         nodeOverAcceptChild
                     );
@@ -877,8 +921,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     }
 
                     if (treeNodeOver) {
-                        if ((previousPlaceholderPosition !== this._placerholderPosition &&
-                            this._placerholderPosition === PLACEHOLDER_POSITION.OVER_NODE) ||
+                        if ((previousPlaceholderPosition !== this._placerholderPosition) ||
                             this._shouldWaitForNextDrawCounter > 0
                         ) {
                             if (this._shouldWaitForNextDrawCounter === 0) {
