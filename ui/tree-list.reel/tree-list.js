@@ -620,10 +620,6 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
         }
     },
 
-    _shouldWaitForNextDrawCounter: {
-        value: 0
-    },
-
     _resetTranslateContext: {
         value: function () {
             this._cancelExpandingNodeIfNeeded();
@@ -640,7 +636,6 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             this._placerholderPosition = PLACEHOLDER_POSITION.OVER_NODE;
             this._treeNodeOver = null;
             this._treeNodeWillAcceptDrop = null;
-            this._shouldWaitForNextDrawCounter = 0;
             this.needsDraw = true;
         }
     },
@@ -881,8 +876,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                         ),
                         treeNodeOverDataObject = treeNodeOver.data,
                         nodeOverAcceptChild = this._nodeAcceptChild(treeNodeOver),
-                        overNodeIndex = -1,
-                        previousPlaceholderPosition = this._placerholderPosition;
+                        overNodeIndex = -1;
                     
                     this._placerholderPosition = this._getPlaceholderPositionOnTreeNode(
                         treeNodeOver,
@@ -921,16 +915,6 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     }
 
                     if (treeNodeOver) {
-                        if ((previousPlaceholderPosition !== this._placerholderPosition) ||
-                            this._shouldWaitForNextDrawCounter > 0
-                        ) {
-                            if (this._shouldWaitForNextDrawCounter === 0) {
-                                this._shouldWaitForNextDrawCounter = 1;
-                            }
-
-                            return void 0;
-                        }
-
                         var dropNodeCandidate = this._findClosestNodeWillAcceptDrop(
                             this._placerholderPosition === PLACEHOLDER_POSITION.OVER_NODE ?
                                 treeNodeOver : treeNodeOver.parent
@@ -995,13 +979,6 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
     draw: {
         value: function () {
-            if (this._shouldWaitForNextDrawCounter > 0) {
-                this.needsDraw = true;
-                this._shouldWaitForNextDrawCounter--;
-
-                return void 0;
-            }
-
             var treeListHeight = this._treeListBoundingClientRect.height,
                 drawnIterations = this.repetition._drawnIterations,
                 shouldAddPlaceholderHeight = false,
