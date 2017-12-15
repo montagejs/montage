@@ -156,12 +156,16 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
 
     placeholderStrategy: {
         set: function (placeholderStrategy) {
+            /**   Disable placeholder move strategy
+             *
             if (placeholderStrategy === TreeList.PLACEHOLDER_MOVE ||
                 placeholderStrategy === TreeList.PLACEHOLDER_OVER
             ) {
                 this._placeholderStrategy = placeholderStrategy;
                 this.needsDraw = true;
             }
+            *
+            **/
         },
         get: function () {
             return this._placeholderStrategy ||
