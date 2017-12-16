@@ -382,7 +382,7 @@
     exports.initNodeJS = function initServer() {
 
         var PATH = require("path"),
-            FS  = require("fs"),
+            FS  = require("q-io/fs"),
             URL = require("url"),
             htmlparser = require("htmlparser2"),
             DomUtils = htmlparser.DomUtils;
