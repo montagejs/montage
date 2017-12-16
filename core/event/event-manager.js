@@ -552,8 +552,10 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             // Note I think it may be implementation specific how these are implemented
             // so I'd rather preserve any native optimizations a browser has for
             // adding listeners to the document versus and element etc.
-
-            aWindow.EventTarget.prototype.nativeAddEventListener = aWindow.EventTarget.prototype.addEventListener;
+            if (aWindow.EventTarget) {
+                aWindow.EventTarget.prototype.nativeAddEventListener = aWindow.EventTarget.prototype.addEventListener;
+            }
+            
             aWindow.Element.prototype.nativeAddEventListener = aWindow.Element.prototype.addEventListener;
             Object.defineProperty(aWindow, "nativeAddEventListener", {
                 configurable: true,
@@ -578,8 +580,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 aWindow.MediaController.prototype.nativeAddEventListener = aWindow.MediaController.prototype.addEventListener;
             }
 
-
-            aWindow.EventTarget.prototype.nativeRemoveEventListener = aWindow.EventTarget.prototype.removeEventListener;
+            if (aWindow.EventTarget) {
+                aWindow.EventTarget.prototype.nativeRemoveEventListener = aWindow.EventTarget.prototype.removeEventListener;
+            }
             aWindow.Element.prototype.nativeRemoveEventListener = aWindow.Element.prototype.removeEventListener;
             Object.defineProperty(aWindow, "nativeRemoveEventListener", {
                 configurable: true,
@@ -605,17 +608,18 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             }
 
             // Redefine listener functions
-
             Object.defineProperty(aWindow, "addEventListener", {
                 configurable: true,
-                value: (aWindow.EventTarget.prototype.addEventListener =
-                aWindow.XMLHttpRequest.prototype.addEventListener =
+                value: (aWindow.XMLHttpRequest.prototype.addEventListener =
                     aWindow.Element.prototype.addEventListener =
                         aWindow.document.addEventListener =
                             function addEventListener(eventType, listener, useCapture) {
                                 return aWindow.defaultEventManager.registerEventListener(this, eventType, listener, !!useCapture);
                             })
             });
+            if (aWindow.EventTarget) {
+                aWindow.EventTarget.prototype.addEventListener = aWindow.addEventListener;
+            }
 
             if (aWindow.Worker) {
                 aWindow.Worker.prototype.addEventListener = aWindow.addEventListener;
@@ -627,7 +631,6 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             Object.defineProperty(aWindow, "removeEventListener", {
                 configurable: true,
                 value: (
-                    aWindow.EventTarget.prototype.removeEventListener =
                     aWindow.XMLHttpRequest.prototype.removeEventListener =
                     aWindow.Element.prototype.removeEventListener =
                         aWindow.document.removeEventListener =
@@ -635,6 +638,10 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                                 return aWindow.defaultEventManager.unregisterEventListener(this, eventType, listener, !!useCapture);
                             })
             });
+
+            if (aWindow.EventTarget) {
+                aWindow.EventTarget.prototype.removeEventListener = aWindow.removeEventListener;
+            }
 
             if (aWindow.Worker) {
                 aWindow.Worker.prototype.removeEventListener = aWindow.removeEventListener;
@@ -735,7 +742,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             delete aWindow.defaultEventManager;
 
             // Restore existing listener functions
-            aWindow.EventTarget.prototype.addEventListener = aWindow.EventTarget.prototype.nativeAddEventListener;
+            if (aWindow.EventTarget) {
+                aWindow.EventTarget.prototype.addEventListener = aWindow.EventTarget.prototype.nativeAddEventListener;
+            }
             aWindow.Element.prototype.addEventListener = aWindow.Element.prototype.nativeAddEventListener;
             Object.defineProperty(aWindow, "addEventListener", {
                 configurable: true,
@@ -748,7 +757,10 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 aWindow.Worker.prototype.addEventListener = aWindow.Worker.prototype.nativeAddEventListener;
             }
 
-            aWindow.EventTarget.prototype.removeEventListener = aWindow.EventTarget.prototype.nativeRemoveEventListener;
+            if (aWindow.EventTarget) {
+                aWindow.EventTarget.prototype.removeEventListener = aWindow.EventTarget.prototype.nativeRemoveEventListener;
+            }
+            
             aWindow.Element.prototype.removeEventListener = aWindow.Element.prototype.nativeRemoveEventListener;
             Object.defineProperty(aWindow, "removeEventListener", {
                 configurable: true,
@@ -787,7 +799,10 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             }
 
             // Delete our references
-            delete aWindow.EventTarget.prototype.nativeAddEventListener;
+            if (aWindow.EventTarget) {
+                delete aWindow.EventTarget.prototype.nativeAddEventListener;
+            }
+            
             delete aWindow.Element.prototype.nativeAddEventListener;
             delete aWindow.nativeAddEventListener;
 
@@ -797,7 +812,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 delete aWindow.Worker.prototype.nativeAddEventListener;
             }
 
-            delete aWindow.EventTarget.prototype.nativeRemoveEventListener;
+            if (aWindow.EventTarget) {
+                delete aWindow.EventTarget.prototype.nativeRemoveEventListener;
+            }
             delete aWindow.Element.prototype.nativeRemoveEventListener;
             delete aWindow.nativeRemoveEventListener;
 
