@@ -312,17 +312,17 @@
                 // Expose bootstrap
                 global.bootstrap = bootstrapModule;
 
-                // Special case for bluebird under a bundle:
-                // When we get bluebird as part of our bundle, it will be in
-                // the form of a IIFE that defines Promise on the global
-                // namespace. Other modules (e.g. mr) are bundled in the form
-                // of a bootstrap() call. Since bluebird doesn't do this,
-                // we need to manually call bootstrap() ourselves, otherwise
-                // the bootstrapping process will not complete in time before
-                // montageDefine() calls are processed.
-                // TODO: Maybe mop should take care of providing the bootstrap()
-                // call for bluebird in bundles for us?
                 if (typeof global.BUNDLE !== "undefined") {
+                    // Special case for bluebird under a bundle:
+                    // When we get bluebird as part of our bundle, it will be in
+                    // the form of a IIFE that defines Promise on the global
+                    // namespace. Other modules (e.g. mr) are bundled in the form
+                    // of a bootstrap() call. Since bluebird doesn't do this,
+                    // we need to manually call bootstrap() ourselves, otherwise
+                    // the bootstrapping process will not complete in time before
+                    // montageDefine() calls are processed.
+                    // TODO: Maybe mop should take care of providing the bootstrap()
+                    // call for bluebird in bundles for us?
                     global.nativePromise = global.Promise;
                     Object.defineProperty(global, "Promise", {
                         configurable: true,
@@ -339,39 +339,42 @@
                             });
                         }
                     });
-                }
 
-                // Load other module and skip promise
-                for (var id in dependencies) {
-                    if (dependencies.hasOwnProperty(id)) {
-                        var module = dependencies[id],
-                            paramModuleLocation = id + 'Location';
+                    bootstrapModule("mini-url", dependencies["mini-url"].shim);
+                } else {
+                    // Load in parallel, but only if we're not using a preloaded cache.
+                    // otherwise, these scripts will be inlined after already
+                    for (var id in dependencies) {
+                        if (dependencies.hasOwnProperty(id)) {
+                            var module = dependencies[id],
+                                paramModuleLocation = id + 'Location';
 
-                        if (typeof module === 'string') {
-                            module = {
-                                id: id,
-                                location: module
-                            };
-                        } else {
-                            module.id = id;
-                        }
+                            if (typeof module === 'string') {
+                                module = {
+                                    id: id,
+                                    location: module
+                                };
+                            } else {
+                                module.id = id;
+                            }
 
-                        // Update dependency
-                        dependencies[id] = module;
-                        // Update location of dependency from params, e.g. if we are in a mop build
-                        if (params.hasOwnProperty(paramModuleLocation)) {
-                            module.location = params[paramModuleLocation];
-                        }
+                            // Update dependency
+                            dependencies[id] = module;
+                            // Update location of dependency from params, e.g. if we are in a mop build
+                            if (params.hasOwnProperty(paramModuleLocation)) {
+                                module.location = params[paramModuleLocation];
+                            }
 
-                        // Reset bad exports
-                        if (moduleHasExport(module)) {
-                            bootstrapModule(module.id, module.exports);
-                        } else if (typeof module.shim !== "undefined") {
-                            bootstrapModule(module.id, module.shim);
-                        } else if (!global.BUNDLE) {
-                            module.strategy = "nested";
-                            module.script = resolveUrl(params.location, module.location);
-                            loadScript(module.script, bootstrapModuleScript.bind(null, module));
+                            // Reset bad exports
+                            if (moduleHasExport(module)) {
+                                bootstrapModule(module.id, module.exports);
+                            } else if (typeof module.shim !== "undefined") {
+                                bootstrapModule(module.id, module.shim);
+                            } else {
+                                module.strategy = "nested";
+                                module.script = resolveUrl(params.location, module.location);
+                                loadScript(module.script, bootstrapModuleScript.bind(null, module));
+                            }
                         }
                     }
                 }
@@ -517,6 +520,13 @@
             };
         };
 
+        // add the TemplateLoader to the middleware chain
+        mr.makeLoader = (function (makeLoader) {
+            return function (config) {
+                return exports.TemplateLoader(config, makeLoader(config));
+            };
+        })(mr.makeLoader);
+
         return {
             _location: null,
 
@@ -571,23 +581,42 @@
             },
 
             loadPackage: function (dependency, config, packageDescription) {
-                return mr.loadPackage(dependency, config, packageDescription);
+                if (dependency.slice(dependency.length - 1, dependency.length) !== "/") {
+                    dependency += "/";
+                }
+
+                config = config || {};
+                config.overlays = ["node", "server", "montage"];
+                config.location = URL.resolve(mr.getLocation(), dependency);
+
+                return mr.loadPackage(config.location, config, packageDescription);
             },
 
             bootstrap: function (callback) {
                 var self = this,
                     params = self.getParams();
 
-                // add the TemplateLoader to the middleware chain
-                mr.makeLoader = (function (makeLoader) {
-                    return function (config) {
-                        return exports.TemplateLoader(config, makeLoader(config));
-                    };
-                })(mr.makeLoader);
-
-                if (params.package) {
-                    callback(mr, Promise, miniURL);
-                }
+                var command = process.argv.slice(0, 3);
+                var args = process.argv.slice(2);
+                var program = args.shift();
+                return FS.canonical(program).then(function (program) {
+                    return findPackage(program)
+                    .catch(function (error) {
+                        if (error.message === "Can't find package") {
+                            loadFreeModule(program, command, args);
+                        } else {
+                            throw new Error(error);
+                        }
+                    })
+                    .then(function (directory) {
+                        return loadPackagedModule(directory, program, command, args);
+                    })
+                    .then(function () {
+                        if (params.package) {
+                            callback(mr, Promise, miniURL);
+                        }
+                    })
+                });
             }
         };
     };
