@@ -79,28 +79,6 @@
     border: 2px solid;
 }
 
-.montage-TreeList.move.is-sorting .montage-TreeList-nodeWrapper {
-    transition: margin-top .175s ease-in-out;
-}
-
-.montage-TreeList.move .montage-TreeList-placeholder {
-    border: 2px dashed;
-    transition: opacity .175s ease-in-out;
-}
-
-.montage-TreeList.move .montage-TreeList-placeholder::after {
-    box-sizing: border-box;
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    border-radius: 2px;
-    background: currentColor;
-    opacity: 0.5;
-}
-
 .montage-TreeList-ghostImage {
     z-index: 999999;
     margin: 0px !important;
