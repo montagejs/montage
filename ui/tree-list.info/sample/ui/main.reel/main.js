@@ -6,6 +6,8 @@ exports.Main = Component.specialize(/** @lends Main# */{
     constructor: {
         value: function () {
             this.root = {
+                filename: '/',
+                isDirectory: true,
                 children: [
                     {
                         filename: 'a',

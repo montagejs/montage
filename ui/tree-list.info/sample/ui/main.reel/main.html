@@ -13,7 +13,6 @@
                 "prototype": "montage/ui/tree-list.reel",
                 "values": {
                     "element": {"#": "treeList"},
-                    "isRootVisible": false,
                     "isRootExpanded": true,
                     "rowHeight": 26,
                     "delegate": {"<-": "@owner"},
@@ -86,6 +85,14 @@
                 }
             },
 
+            "isRootVisible": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "isRootVisible"},
+                    "checked": {"<->": "!!@treeList.isRootVisible"}
+                }
+            },
+
             "lastActionReport": {
                 "prototype": "montage/ui/text.reel",
                 "values": {
@@ -107,6 +114,10 @@
                 <p>
                     <label>Is Sortable: </label>
                     <input type="checkbox" data-montage-id="isSortable" />
+                </p>
+                <p>
+                    <label>Is Root Visible: </label>
+                    <input type="checkbox" data-montage-id="isRootVisible" />
                 </p>
             </div>
             <div class="tree-list-container container">
