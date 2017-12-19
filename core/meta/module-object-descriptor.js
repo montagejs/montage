@@ -123,40 +123,33 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
                 throw new Error("Require needed to get object descriptor " + moduleId);
             }
 
-            var targetRequire;
-
             var key = _require.location + "#" + moduleId;
             if (key in OBJECT_DESCRIPTOR_CACHE) {
                 return OBJECT_DESCRIPTOR_CACHE[key];
             }
 
-            return (OBJECT_DESCRIPTOR_CACHE[key] = _require.async(moduleId)
-                .then(function (object) {
-                    // Need to get the require from the module, because thats
-                    // what all the moduleId references are relative to.
+            return (OBJECT_DESCRIPTOR_CACHE[key] = _require.async(moduleId).then(function (module) {
+                var objectDescriptor = module.montageObject,
                     targetRequire = Deserializer.getModuleRequire(_require, moduleId);
-                    return new Deserializer().init(JSON.stringify(object), targetRequire).deserializeObject();
-                }).then(function (objectDescriptor) {
+                // TODO: May want to relax this to being just an Object Descriptor
+                if (!ModuleObjectDescriptor.prototype.isPrototypeOf(objectDescriptor)) {
+                    throw new Error("Object in " + moduleId + " is not a module-object-descriptor");
+                }
 
-                    // TODO: May want to relax this to being just an Object Descriptor
-                    if (!ModuleObjectDescriptor.prototype.isPrototypeOf(objectDescriptor)) {
-                        throw new Error("Object in " + moduleId + " is not a module-object-descriptor");
-                    }
+                objectDescriptor.objectDescriptorInstanceModule = new ModuleReference().initWithIdAndRequire(moduleId, _require);
 
-                    objectDescriptor.objectDescriptorInstanceModule = new ModuleReference().initWithIdAndRequire(moduleId, _require);
+                if (objectDescriptor._parentReference) {
+                    // Load parent "synchronously" so that all the properties
+                    // through the object descriptor chain are available
+                    return objectDescriptor._parentReference.promise(targetRequire) // MARK
+                        .then(function (parentObjectDescriptor) {
+                            objectDescriptor._parent = parentObjectDescriptor;
+                            return objectDescriptor;
+                        });
+                }
 
-                    if (objectDescriptor._parentReference) {
-                        // Load parent "synchronously" so that all the properties
-                        // through the object descriptor chain are available
-                        return objectDescriptor._parentReference.promise(targetRequire) // MARK
-                            .then(function (parentObjectDescriptor) {
-                                objectDescriptor._parent = parentObjectDescriptor;
-                                return objectDescriptor;
-                            });
-                    }
-
-                    return objectDescriptor;
-                }));
+                return objectDescriptor;
+            }));
         }
     },
 
