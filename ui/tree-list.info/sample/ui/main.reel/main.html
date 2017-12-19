@@ -18,7 +18,6 @@
                     "rowHeight": 26,
                     "delegate": {"<-": "@owner"},
                     "controller": {"<-": "@treeController"},
-                    "placeholderStrategy": {"<->": "@placeholderStrategyController.value"},
                     "isSortable": true
                 }
             },
@@ -87,34 +86,7 @@
                 }
             },
 
-            "placeholderStrategyController": {
-                "prototype": "montage/core/radio-button-controller",
-                "values": {
-                    "content": ["over", "move"]
-                }
-            },
-
-            "overStrategy": {
-                "prototype": "montage/ui/radio.reel",
-                "values": {
-                    "element": {"#": "overStrategy"},
-                    "value": "over",
-                    "radioButtonController": {"@": "placeholderStrategyController"},
-                    "disabled": true
-                }
-            },
-
-            "moveStrategy": {
-                "prototype": "montage/ui/radio.reel",
-                "values": {
-                    "element": {"#": "moveStrategy"},
-                    "value": "move",
-                    "radioButtonController": {"@": "placeholderStrategyController"},
-                    "disabled": true
-                }
-            },
-
-             "lastActionReport": {
+            "lastActionReport": {
                 "prototype": "montage/ui/text.reel",
                 "values": {
                     "element": {"#": "lastActionReport"},
@@ -135,11 +107,6 @@
                 <p>
                     <label>Is Sortable: </label>
                     <input type="checkbox" data-montage-id="isSortable" />
-                </p>
-                <p>
-                    <label>Placeholder Strategy: </label><br /><br />
-                    <input data-montage-id="overStrategy" type="radio" value="over" id="over" /> <label for="over">Over</label>
-                    <input data-montage-id="moveStrategy" type="radio" value="move" id="move" /> <label for="move">Move</label>
                 </p>
             </div>
             <div class="tree-list-container container">
