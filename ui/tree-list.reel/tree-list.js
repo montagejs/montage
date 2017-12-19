@@ -580,7 +580,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     targetChildren.indexOf(this._treeNodeOver.data) +
                     this._placerholderPosition : targetChildren.length;
 
-                targetChildren.splice(index, 0, draggingDataObject)
+                targetChildren.splice(index, 0, draggingDataObject);
 
                 this.dispatchEventNamed('orderchange', true, true, {
                     object: draggingDataObject,
@@ -715,7 +715,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 drawnIterations = this.repetition._drawnIterations,
                 treeListRectTop = treeListRect.top, object,
                 minDist = 0, rowRect = {}, dist, iteration, marginLeft,
-                dY, dX, candidate, element, heightThreshold;
+                dY, dX, candidate, element;
 
             for (var i = 0, length = drawnIterations.length; i < length; i++) {
                 iteration = drawnIterations[i];
@@ -758,7 +758,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                     }
                 }
             }
-            
+
             return candidate;
         }
     },
@@ -769,14 +769,12 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 placeholderRect = this._placeholderBoundingClientRect,    
                 rowRect = treeNodeElement.getBoundingClientRect(),
                 thresholdHeight = this._placeholderThreshold,
-                minBottom, maxBottom, minTop, maxTop,
                 maxBottom = rowRect.bottom + thresholdHeight,
-                minTop = rowRect.top - thresholdHeight;
-
-            minBottom = canBeOver ? rowRect.bottom - thresholdHeight :
-                rowRect.bottom - (rowRect.height / 2);
-            maxTop = canBeOver ? rowRect.top + thresholdHeight :
-                rowRect.top + (rowRect.height / 2);  
+                minTop = rowRect.top - thresholdHeight,
+                minBottom = canBeOver ? rowRect.bottom - thresholdHeight :
+                    rowRect.bottom - (rowRect.height / 2),
+                maxTop = canBeOver ? rowRect.top + thresholdHeight :
+                rowRect.top + (rowRect.height / 2);
 
             if (pointerPositionY >= minBottom && pointerPositionY <= maxBottom) {
                 return PLACEHOLDER_POSITION.AFTER_NODE;
@@ -1043,7 +1041,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                         placeholderStyle.left = treeNodeOverStyle.marginLeft;
                         placeholderStyle.width = this._treeListBoundingClientRect.width -
                             parseInt(treeNodeOverStyle.marginLeft) + "px";
-                        placeholderStyle.opacity = .85;
+                        placeholderStyle.opacity = 0.85;
                     } else {
                         placeholderStyle.opacity = 0;
                     }
