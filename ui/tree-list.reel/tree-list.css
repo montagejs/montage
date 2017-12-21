@@ -1,14 +1,24 @@
 .montage-TreeList {
+    box-sizing: border-box;
     position: relative;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
     display: -ms-flexbox;
     display: flex;
     z-index: 1;
+    height: 100%;
     /* TODO: in IE 11, this z-index causes the action menu not to work
        in Social, Identify, and Area Brief panels. Had to add z-idex to those
        panels to make it work in IE 11.
     */
+}
+
+.montage-TreeList-wrapper {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+   -ms-flex: 1;
+    flex: 1;
 }
 
 .montage-TreeList-repetition {
@@ -22,4 +32,54 @@
     left: 0;
     right: 0;
     overflow: hidden;
+    box-sizing: border-box;
+}
+
+.montage-TreeList-nodeWrapper.willDrop::before {
+    box-sizing: border-box;
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: currentColor;
+    opacity: 0.5;
+}
+
+.montage-TreeList-nodeWrapper.willDrop::after {
+    box-sizing: border-box;
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: transparent;
+    border: 2px solid currentColor; 
+}
+
+.montage-TreeList-placeholder,
+.montage-TreeList-ghostImage {
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    left: 0;
+    visibility: visible;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.montage-TreeList-placeholder {
+    border-radius: 2px;
+    z-index: 2;
+}
+
+.montage-TreeList.over .montage-TreeList-placeholder {
+    border: 2px solid;
+}
+
+.montage-TreeList-ghostImage {
+    z-index: 999999;
+    margin: 0px !important;
 }
