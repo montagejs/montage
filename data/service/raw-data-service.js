@@ -8,7 +8,10 @@ var DataService = require("data/service/data-service").DataService,
     parse = require("frb/parse"),
     Scope = require("frb/scope"),
     WeakMap = require("collections/weak-map"),
-    deprecate = require("core/deprecate");
+    deprecate = require("core/deprecate"),
+    parse = require("frb/parse"),
+    Scope = require("frb/scope"),
+    compile = require("frb/compile-evaluator");
 
 /**
  * Provides data objects of certain types and manages changes to them based on
@@ -40,6 +43,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: function RawDataService() {
             DataService.call(this);
             this._typeIdentifierMap = new Map();
+            this._descriptorToRawDataTypeMappings = new Map();
         }
     },
 
@@ -65,8 +69,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
     deserializeSelf: {
         value:function (deserializer) {
-
             this.super(deserializer);
+            var value = deserializer.getProperty("rawDataTypeMappings");
+            this._registerRawDataTypeMappings(value || []);
         }
     },
 
@@ -92,45 +97,6 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * Data Object Properties
      */
 
-    // decacheObjectProperties: {
-    //     value: function (object, propertyNames) {
-    //         return this.rootService.decacheObjectProperties(object, propertyNames);
-    //     }
-    // },
-
-    // getObjectProperties: {
-    //     value: function (object, propertyNames) {
-    //         return this.rootService.getObjectProperties(object, propertyNames);
-    //     }
-    // },
-
-    // updateObjectProperties: {
-    //     value: function (object, propertyNames) {
-    //         return this.rootService.updateObjectProperties(object, propertyNames);
-    //     }
-    // },
-
-    /**
-     * Fetch the value of a data object's property, possibly asynchronously.
-     *
-     * The default implementation of this method just return a fulfilled promise
-     * for `null`. Subclasses should override this method to perform any fetch
-     * or other operation required to get the requested data. The subclass
-     * implementations should only use calls to their
-     * [root service's]{@link DataService.rootService}
-     * [fetchData()]{@link DataService#fetchData} to fetch data.
-     *
-     * @method
-     */
-    // fetchObjectProperty: {
-    //     value: function (object, propertyName) {
-    //         var propertyDescriptor = this._propertyDescriptorForObjectAndName(object, propertyName),
-    //             destinationReference = propertyDescriptor && propertyDescriptor.valueDescriptor;
-    //         return destinationReference ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor) :
-    //                                         this.nullPromise;
-    //     }
-    // },
-
     _propertyDescriptorForObjectAndName: {
         value: function (object, propertyName) {
             var objectDescriptor = this.objectDescriptorForObject(object);
@@ -153,43 +119,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 }
             }
             return objectDescriptor;
-            // var typeName = object.constructor.TYPE.typeName,
-            //     isModel = this.model instanceof Model,
-            //     isObjectDescriptor = !isModel && this.model instanceof ObjectDescriptor,
-            //     isObjectsObjectDescriptor = isObjectDescriptor && this.model.name === typeName;
-            // return  isModel ?                       this.model.objectDescriptorForName(typeName) :
-            //     isObjectsObjectDescriptor ?     this.model :
-            //         undefined;
         }
     },
-
-    // _fetchObjectPropertyWithPropertyDescriptor: {
-    //     value: function (object, propertyName, propertyDescriptor) {
-    //         var self = this, moduleId, cachedDescriptor, service = this.rootService;
-    //         return propertyDescriptor.valueDescriptor.then(function (objectDescriptor) {
-    //             moduleId = [objectDescriptor.module.id, objectDescriptor.exportName].join("/");
-    //             cachedDescriptor = self.rootService._moduleIdToObjectDescriptorMap[moduleId];
-    //             var selector = DataQuery.withTypeAndCriteria(cachedDescriptor, {
-    //                 // snapshot: self._snapshots.get(object),
-    //                 source: object,
-    //                 relationshipKey: propertyName
-    //             });
-    //             return service.fetchData(selector);
-    //         }).then(function (data) {
-    //             return self._mapObjectPropertyValue(object, propertyDescriptor, data);
-    //         });
-    //         // return this._objectDescriptorTypeForValueDescriptor(propertyDescriptor.valueDescriptor).then(function (type) {
-    //         //     var selector = DataQuery.withTypeAndCriteria(type, {
-    //         //         snapshot: self._snapshots.get(object),
-    //         //         source: object,
-    //         //         relationshipKey: propertyName
-    //         //     });
-    //         //     return service.fetchData(selector);
-    //         // }).then(function (data) {
-    //         //     return self._mapObjectPropertyValue(object, propertyDescriptor, data);
-    //         // });
-    //     }
-    // },
 
     _mapObjectPropertyValue: {
         value: function (object, propertyDescriptor, value) {
@@ -221,130 +152,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     /***************************************************************************
-     * Data Object Creation
-     *
-     * If there were no mapping available in the app for this record giving use
-     * a type/class/condtructor, we should create one ourselves matching what we know.
-     * For a REST service it would be the name of the Entity. Otherwise we should be able
-     * to treat by ip domain, a type based on concatenation of all keys returned,
-     * which would define the "shape"
-     *
-     */
-
-    // getDataObject: {
-    //     value: function (type, data, context, dataIdentifier) {
-    //         return this.rootService.getDataObject(type, data, context, dataIdentifier);
-    //     }
-    // },
-
-    // createDataObject: {
-    //     value: function (type) {
-    //         return this.rootService.createDataObject(type);
-    //     }
-    // },
-
-    /***************************************************************************
-     * Data Object Changes
-     */
-
-    // createdDataObjects: {
-    //     get: function () {
-    //         return this.rootService.createdDataObjects();
-    //     }
-    // },
-
-    // changedDataObjects: {
-    //     get: function () {
-    //         return this.rootService.changedDataObjects();
-    //     }
-    // },
-
-    /***************************************************************************
      * Fetching Data
      */
-
-    /**
-     * Fetch data from this service for its parent. This method should not be
-     * called directly by anyone other than this service's parent. Calls to the
-     * root service should be made to initiate data fetches.
-     *
-     * Subclasses may override this method to fetch the requested data, but will
-     * usually override [fetchRawData()]{@link RawDataService#fetchRawData}
-     * instead.
-     *
-     * This method must be asynchronous and return as soon as possible even if
-     * it takes a while to generate the requested data objects. The data objects
-     * can be generated and added to the specified stream at any point after
-     * this method is called, even after it returns, with calls to
-     * [addData()]{@link DataStream#addData} and
-     * [dataDone()]{@link DataStream#dataDone}. Usually this will be done by
-     * having [fetchRawData()]{@link RawDataService#fetchRawData} make calls to
-     * [addRawData()]{@link RawDataService#addRawData} and
-     * [rawDataDone()]{@link RawDataService#rawDataDone}.
-     *
-     * The default implementation of this method calls
-     * [fetchRawData()]{@link RawDataService#fetchRawData}.
-     *
-     * @method
-     * @argument {DataObjectDescriptor|DataQuery}
-     *           typeOrSelector        - Defines what data should be returned.
-     *                                   If a [type]{@link DataOjectDescriptor}
-     *                                   is provided instead of a
-     *                                   {@link DataQuery}, a `DataQuery`
-     *                                   with the specified type and no
-     *                                   [criteria]{@link DataQuery#criteria}
-     *                                   will be created and used for the fetch.
-     * @argument {?DataStream} stream  - The stream to which the provided data
-     *                                   should be added. If no stream is
-     *                                   provided a stream will be created and
-     *                                   returned by this method.
-     * @returns {?DataStream} - The stream to which the fetched data objects
-     * were or will be added, whether this stream was provided to or created by
-     * this method.
-     */
-    // fetchData: {
-    //     value: function (queryOrType, stream) {
-    //         var isSupportedType = queryOrType instanceof DataObjectDescriptor || queryOrType instanceof ObjectDescriptor,
-    //             type = isSupportedType && queryOrType,
-    //             query = type && DataQuery.withTypeAndCriteria(type) || queryOrType;
-    //         stream = stream || new DataStream();
-    //         stream.query = query;
-    //         this._fetchRawData(stream);
-    //         return stream;
-    //     }
-    // },
-
-    // fetchData: {
-    //     value: function (queryOrType, stream) {
-    //         var self = this,
-    //              isSupportedType = queryOrType instanceof DataObjectDescriptor || queryOrType instanceof ObjectDescriptor,
-    //             type = isSupportedType && queryOrType,
-    //             query = type && DataQuery.withTypeAndCriteria(type) || queryOrType;
-    //         // Set up the stream.
-    //         stream = stream || new DataStream();
-    //         stream.query = query;
-    //             // Use a child service to fetch the data.
-    //             var service;
-    //             try {
-    //                 service = self.childServiceForType(query.type);
-    //                 if (service && service!==self) {
-    //                     stream = service.fetchData(query, stream) || stream;
-    //                     self._dataServiceByDataStream.set(stream, service);
-    //                 } else {
-    //                     if(typeof self.fetchRawData === "function") {
-    //                         self._fetchRawData(stream);
-    //                     }
-    //                     else {
-    //                         throw new Error("Can't fetch data of unknown type - " + query.type.typeName + "/" + query.type.uuid);
-    //                     }
-    //                 }
-    //             } catch (e) {
-    //                 stream.dataError(e);
-    //             }
-    //         // Return the passed in or created stream.
-    //         return stream;
-    //     }
-    // },
 
     /**
      * Fetch the raw data of this service.
@@ -380,21 +189,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      *                                 reference to the selector defining what
      *                                 raw data to fetch.
      */
-    // TODO, swizzling the stream's user-land selector for the rawData equivalent is not really
-    // practical nor safe, we either need to keep it separately or store it on the stream under
-    // rawDataQuery
 
-    // _fetchRawData: {
-    //     value: function (stream) {
-    //         var self = this;
-    //         this.authorizationPromise.then(function (authorization) {
-    //             var streamSelector = stream.query;
-    //             stream.query = self.mapSelectorToRawDataQuery(streamSelector);
-    //             self.fetchRawData(stream);
-    //             stream.query = streamSelector;
-    //         })
-    //     }
-    // },
 
     _fetchRawData: {
         value: function (stream) {
@@ -470,9 +265,20 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     deleteDataObject: {
         value: function (object) {
-            var record = {};
-            this._mapObjectToRawData(object, record);
-            return this.deleteRawData(record, object);
+            var self = this, 
+                record = {},
+                mapResult = this._mapObjectToRawData(object, record),
+                result;
+
+            if (mapResult instanceof Promise) {
+                result = mapResult.then(function () {
+                    return self.deleteRawData(record, object);
+                });
+            } else {
+                result = this.deleteRawData(record, object);
+            }
+            
+            return result;
         }
     },
 
@@ -496,28 +302,6 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             return this.nullPromise;
         }
     },
-
-    /**
-     * Subclasses should override this method to save a data object when that
-     * object's raw data wouldn't be useful to perform the save.
-     *
-     * The default implementation maps the data object to raw data and calls
-     * [saveRawData()]{@link RawDataService#saveRawData} with the data object
-     * passed in as the `context` argument of that method.
-     *
-     * @method
-     * @argument {Object} object   - The object to save.
-     * @returns {external:Promise} - A promise fulfilled when all of the data in
-     * the changed object has been saved. The promise's fulfillment value is not
-     * significant and will usually be `null`.
-     */
-    // saveDataObject: {
-    //     value: function (object) {
-    //         var record = {};
-    //         this._mapObjectToRawData(object, record);
-    //         return this.saveRawData(record, object);
-    //     }
-    // },
 
     /**
      * Subclasses should override this method to save a data object when that
@@ -647,6 +431,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 // only "outer scoped variable" we're accessing here is stream,
                 // which is a constant reference and won't cause unexpected
                 // behavior due to iteration.
+                // if (streamSelectorType.name && streamSelectorType.name.toUpperCase().indexOf("BSP") !== -1) {
+                //     debugger;
+                // }
                 this.addOneRawData(stream, iRecord, context, streamSelectorType).then(function (mappedObject) {
                     stream.addData([mappedObject]);
                 });
@@ -655,10 +442,12 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
+    
 
     addOneRawData: {
         value: function (stream, rawData, context) {
-            var object = this.objectForTypeRawData(stream.query.type, rawData, context),
+            var type = this._descriptorForParentAndRawData(stream.query.type, rawData),
+                object = this.objectForTypeRawData(type, rawData, context),
                 result;
 
             result = this._mapRawDataToObject(rawData, object, context);
@@ -700,11 +489,11 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
     objectForTypeRawData: {
         value:function(type, rawData, context) {
-                var dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData);
+            var dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData);
                 //Record snapshot before we may create an object
-                this.recordSnapshot(dataIdentifier, rawData);
-               //iDataIdentifier argument should be all we need later on
-                return this.getDataObject(type, rawData, context, dataIdentifier);
+            this.recordSnapshot(dataIdentifier, rawData);
+            //iDataIdentifier argument should be all we need later on
+            return this.getDataObject(type, rawData, context, dataIdentifier);
         }
     },
 
@@ -716,12 +505,12 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     //Gives us an indirection layer to deal with backward compatibility.
     dataIdentifierForTypeRawData: {
         value: function (type, rawData) {
-
             var mapping = this.mappingWithType(type),
                 rawDataPrimaryKeys = mapping ? mapping.rawDataPrimaryKeyExpressions : null,
                 scope = new Scope(rawData),
                 rawDataPrimaryKeysValues,
                 dataIdentifier, dataIdentifierMap, primaryKey;
+                
             if(rawDataPrimaryKeys && rawDataPrimaryKeys.length) {
 
                 dataIdentifierMap = this._typeIdentifierMap.get(type);
@@ -922,26 +711,17 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     /**
-     * Convert raw data to data objects of an appropriate type.
-     *
-     *
-     * @todo Make this method overridable by type name with methods like
-     * `mapRawDataToHazard()` and `mapRawDataToProduct()`.
+     * Retrieve DataMapping for this object.
      *
      * @method
-     * @argument {Object} record - An object whose properties' values hold
-     *                             the raw data.
-     * @argument {Object} object - An object whose properties must be set or
-     *                             modified to represent the raw data.
-     * @argument {?} context     - The value that was passed in to the
-     *                             [addRawData()]{@link RawDataService#addRawData}
-     *                             call that invoked this method.
+     * @argument {Object} object - An object whose object descriptor has a DataMapping
      */
     mappingForObject: {
         value: function (object) {
             var objectDescriptor = this.objectDescriptorForObject(object),
                 mapping = objectDescriptor && this.mappingWithType(objectDescriptor);
 
+            
             if (!mapping && objectDescriptor) {
                 mapping = this._objectDescriptorMappings.get(objectDescriptor);
                 if (!mapping) {
@@ -1119,6 +899,70 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 this.__objectDescriptorMappings = new Map();
             }
             return this.__objectDescriptorMappings;
+        }
+    },
+
+    /**
+     * Map from a parent class to the mappings used by the service to 
+     * determine what subclass to create an instance of for a particular
+     * rawData object
+     * 
+     * For example, say a class 'Person' has 2 subclasses 'Employee' & 'Customer'. 
+     * RawDataService would evaluate each person rawData object against each item 
+     * in _rawDataTypeMappings and determine if that rawData should be an instance
+     * of 'Employee' or 'Customer'.
+     * @type {Map<ObjectDescpriptor:RawDataTypeMapping>}
+     */
+    
+    _descriptorToRawDataTypeMappings: {
+        value: undefined
+    },
+
+    /**
+     * Adds each mapping passed in to _descriptorToRawDataTypeMappings 
+     * 
+     * @method
+     * @param {Array<RawDataTypeMapping>} mappings 
+     */
+    _registerRawDataTypeMappings: {
+        value: function (mappings) {
+            var mapping, parentType, 
+                i, n;
+
+            for (i = 0, n = mappings ? mappings.length : 0; i < n; i++) {
+                mapping = mappings[i];
+                parentType = mapping.type.parent;
+                if (!this._descriptorToRawDataTypeMappings.has(parentType)) {
+                    this._descriptorToRawDataTypeMappings.set(parentType, []);
+                }
+                this._descriptorToRawDataTypeMappings.get(parentType).push(mapping);
+            }
+        }
+    },
+
+    /**
+     * Evaluates a rawData object against the RawDataTypeMappings for the fetched
+     * class and returns the subclass for the first mapping that evaluates to true.
+     * 
+     * @method
+     * @param {ObjectDescriptor} parent Fetched class for which to look for subclasses
+     * @param {Object} rawData rawData to evaluate against the RawDataTypeMappings
+     * @return {ObjectDescriptor}
+     */
+    _descriptorForParentAndRawData: {
+        value: function (parent, rawData) {
+            var mappings = this._descriptorToRawDataTypeMappings.get(parent),
+                compiled, mapping, subType,
+                i, n;
+            
+            if (mappings && mappings.length) {
+                for (i = 0, n = mappings.length; i < n && !subType; ++i) {
+                    mapping = mappings[i];
+                    subType = mapping.criteria.evaluate(rawData) && mapping.type;
+                }
+            }
+            
+            return subType ? this._descriptorForParentAndRawData(subType, rawData) : parent;
         }
     },
 

@@ -1,0 +1,21 @@
+{
+    
+    "movie": {
+        "object": "spec/data/logic/model/movie.mjson"
+    },
+
+    "plotSummary": {
+        "object": "spec/data/logic/model/plot-summary.mjson"
+    },
+
+    "root": {
+        "prototype": "montage/data/service/raw-data-service",
+        "properties": {
+            "name": "RawDataService",
+            "types": [
+                 {"@": "movie"},
+                 {"@": "plotSummary"}
+             ]
+        }
+    }
+}

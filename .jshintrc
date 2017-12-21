@@ -128,7 +128,6 @@
         "Map": true,
         "Set": true,
         "URL": true,
-        "console": true,
         "Promise": true,
         "Event": true,
         "CustomEvent": true,
