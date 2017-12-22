@@ -6,6 +6,7 @@ var Montage = require("../core").Montage,
     Promise = require("../promise").Promise,
     PropertyDescriptor = require("./property-descriptor").PropertyDescriptor,
     PropertyValidationRule = require("./validation-rule").PropertyValidationRule,
+    Set = require("collections/set"),
     deprecate = require("../deprecate");
     
 
@@ -357,28 +358,15 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         value: false
     },
 
-
-    _arrayToSet: {
-        value: function (array) {
-            var set = new Set(),
-                i, item;
-            array = array || [];
-
-            for (i = 0; (item = array[i]); ++i) {
-                set.add(item);
-            }
-            return set;
-        }
-    },
     /**
      * Range change listener on this._ownPropertyDescriptors and 
      * this.parent.propertyDescriptors
      */
     _handlePropertyDescriptorsRangeChange: {
         value: function (plus, minus, index) {
-            var all = this._arrayToSet(this._propertyDescriptors),
-                plusSet = this._arrayToSet(plus),
-                minusSet = this._arrayToSet(minus),
+            var all = new Set(this._propertyDescriptors),
+                plusSet = new Set(plus),
+                minusSet = new Set(minus),
                 descriptor, i;
 
             for (i = 0; (descriptor = minus[i]); ++i) {
@@ -405,34 +393,35 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         }
     },
 
-    _preparePropertyDescriptorsCache: {
-        value: function () {
-            var ownDescriptors = this._ownPropertyDescriptors,
-                isReady = true,
-                descriptor, i, n;
+_preparePropertyDescriptorsCache: {
+    value: function () {
+        var ownDescriptors = this._ownPropertyDescriptors,
+            isReady = true,
+            descriptor, i, n;
+        
+        if (!this._propertyDescriptorsAreCached)  {
             
-            if (!this._propertyDescriptors)  {
-                
+            for (i = 0, n = ownDescriptors.length; i < n && isReady; ++i) {
+                descriptor = ownDescriptors[i];
+                isReady = !!(descriptor && descriptor.name);
+            }
+
+            if (isReady) {
+                this._propertyDescriptorsAreCached = true;
+                this._propertyDescriptors = [];
+                this._propertyDescriptorsTable.clear();
                 for (i = 0, n = ownDescriptors.length; i < n && isReady; ++i) {
                     descriptor = ownDescriptors[i];
-                    isReady = !!(descriptor && descriptor.name);
+                    descriptor._owner = this;
+                    this._propertyDescriptors.push(descriptor);
+                    this._propertyDescriptorsTable.set(descriptor.name,  descriptor);
                 }
-    
-                if (isReady) {
-                    this._propertyDescriptors = [];
-                    this._propertyDescriptorsTable.clear();
-                    for (i = 0, n = ownDescriptors.length; i < n && isReady; ++i) {
-                        descriptor = ownDescriptors[i];
-                        descriptor._owner = this;
-                        this._propertyDescriptors.push(descriptor);
-                        this._propertyDescriptorsTable.set(descriptor.name,  descriptor);
-                    }
-                    this.addRangeAtPathChangeListener("_ownPropertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
-                    this.addRangeAtPathChangeListener("parent.propertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
-                }
+                this.addRangeAtPathChangeListener("_ownPropertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
+                this.addRangeAtPathChangeListener("parent.propertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
             }
         }
-    },
+    }
+},
 
     /**
      * PropertyDescriptors for this object descriptor, not including those 
@@ -448,6 +437,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         value: null
     },
 
+    _propertyDescriptorsAreCached: {
+        value: false
+    },
+
     /**
      * PropertyDescriptors associated to this object descriptor, including those 
      * provided by this.parent.
@@ -456,14 +449,17 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
      */
     propertyDescriptors: {
         get: function () {
+            if (!this._propertyDescriptors) {
+                this._propertyDescriptors = [];
+            }
             this._preparePropertyDescriptorsCache();
-            return this._propertyDescriptors || [];
+            return this._propertyDescriptors;
         }
     },
 
     _validParentPropertyDescriptors: {
         value: function () {
-            var parentPropertyDescriptors = this.parent.propertyDescriptors.slice(), 
+            var parentPropertyDescriptors = this.parent.propertyDescriptors, 
                 descriptors = [],
                 descriptor, i;
 
