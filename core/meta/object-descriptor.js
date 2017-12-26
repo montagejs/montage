@@ -410,7 +410,7 @@ _preparePropertyDescriptorsCache: {
                 this._propertyDescriptorsAreCached = true;
                 this._propertyDescriptors = [];
                 this._propertyDescriptorsTable.clear();
-                for (i = 0, n = ownDescriptors.length; i < n && isReady; ++i) {
+                for (i = 0, n = ownDescriptors.length; i < n; ++i) {
                     descriptor = ownDescriptors[i];
                     descriptor._owner = this;
                     this._propertyDescriptors.push(descriptor);
