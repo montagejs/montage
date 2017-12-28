@@ -3,7 +3,7 @@ var jasmineRequire = require('jasmine-core/lib/jasmine-core/jasmine.js');
 var JasmineConsoleReporter = require('jasmine-console-reporter');
 var Montage = require('../montage');
 var PATH = require("path");
-
+global.XMLHttpRequest = require('xhr2');
 // Init
 var jasmine = jasmineRequire.core(jasmineRequire);
 var jasmineEnv = jasmine.getEnv();

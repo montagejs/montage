@@ -130,6 +130,8 @@ var MontageContext = Montage.specialize({
                 objects = this._objects,
                 object;
 
+
+
             if (label in objects) {
                 return objects[label];
             } else if (label in serialization) {

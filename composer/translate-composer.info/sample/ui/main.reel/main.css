@@ -1,7 +1,11 @@
 html, body {
-    height: 100%;
-    width: 100%;
+    position: fixed;
+    top: 0;
+    left:0;
+    right: 0;
+    bottom: 0;
     margin: 0;
+    padding: 0;
     font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
     -webkit-font-smoothing: antialiased;
     color: #555;

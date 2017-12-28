@@ -105,6 +105,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: null
     },
 
+    shouldCancelOnSroll: {
+        value: true
+    },
+
     _shouldDispatchTranslate: {
         value: false
     },
@@ -520,6 +524,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function () {
             if (window.PointerEvent) {
                 this._element.addEventListener("pointerdown", this, true);
+                // Quick Fix: Should be removed when the eventmanger 
+                // will handle the options parameter of the 
+                // addEventListener function.
+                this._element.style.touchAction = 'none';
 
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 this._element.addEventListener("MSPointerDown", this, true);
@@ -541,6 +549,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function () {
             if (window.PointerEvent) {
                 this._element.removeEventListener("pointerdown", this, true);
+                this._element.style.touchAction = 'auto';
 
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 this._element.removeEventListener("MSPointerDown", this, true);
@@ -763,7 +772,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      **/
     _shouldPreventDefault: {
         value: function (event) {
-            return !!event.target.tagName && this._NATIVE_ELEMENTS.indexOf(event.target.tagName) === -1 && !event.target.isContentEditable;
+            return !defaultEventManager.isPassiveEventType(event.type) && !!event.target.tagName && this._NATIVE_ELEMENTS.indexOf(event.target.tagName) === -1 && !event.target.isContentEditable;
         }
     },
 
@@ -817,18 +826,27 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 document.addEventListener("pointerup", this, false);
                 document.addEventListener("pointercancel", this, false);
 
+                if (this.shouldCancelOnSroll) {
+                    document.addEventListener("scroll", this, true);
+                }
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 this._element.addEventListener("MSPointerDown", this, false);
                 document.addEventListener("MSPointerMove", this, true);
                 document.addEventListener("MSPointerUp", this, false);
                 document.addEventListener("MSPointerCancel", this, false);
 
+                if (this.shouldCancelOnSroll) {
+                    document.addEventListener("scroll", this, true);
+                }
             } else {
                 if (this._observedPointer === this._MOUSE_POINTER) {
                     this._element.addEventListener("mousedown", this, false);
                     document.addEventListener("mousemove", this, true);
                     document.addEventListener("mouseup", this, false);
 
+                    if (this.shouldCancelOnSroll) {
+                        document.addEventListener("scroll", this, true);
+                    }
                 } else {
                     this._element.addEventListener("touchstart", this, false);
                     this._element.addEventListener("touchmove", this, true);
@@ -836,8 +854,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                     this._element.addEventListener("touchcancel", this, false);
                 }
             }
-
-            document.addEventListener("scroll", this, true);
 
             if (this.isAnimating) {
                 this.isAnimating = false;
@@ -1114,18 +1130,27 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 document.removeEventListener("pointerup", this, false);
                 document.removeEventListener("pointercancel", this, false);
 
+                if (this.shouldCancelOnSroll) {
+                    document.removeEventListener("scroll", this, true);
+                }
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 this._element.removeEventListener("MSPointerDown", this, false);
                 document.removeEventListener("MSPointerMove", this, true);
                 document.removeEventListener("MSPointerUp", this, false);
                 document.removeEventListener("MSPointerCancel", this, false);
-
+               
+                if (this.shouldCancelOnSroll) {
+                    document.removeEventListener("scroll", this, true);
+                }
             } else {
                 if (this._observedPointer === this._MOUSE_POINTER) {
                     this._element.removeEventListener("mousedown", this, false);
                     document.removeEventListener("mousemove", this, true);
                     document.removeEventListener("mouseup", this, false);
 
+                    if (this.shouldCancelOnSroll) {
+                        document.removeEventListener("scroll", this, true);
+                    }
                 } else {
                     this._element.removeEventListener("touchstart", this, false);
                     this._element.removeEventListener("touchmove", this, true);
@@ -1133,8 +1158,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                     this._element.removeEventListener("touchcancel", this, false);
                 }
             }
-
-            document.removeEventListener("scroll", this, true);
 
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 this.eventManager.forfeitPointer(this._observedPointer, this);

@@ -1,9 +1,7 @@
 language: node_js
 node_js:
   - "4"
-  # Disabled until Montage support flat node_modules aka npm 3+
-  #- "6"
-  #- "7"
+#  - "8"
 script: npm run $COMMAND
 env:
   - COMMAND=lint
