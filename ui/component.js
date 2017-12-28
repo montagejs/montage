@@ -28,7 +28,8 @@ var Montage = require("../core/core").Montage,
     drawLogger = require("../core/logger").logger("drawing").color.blue(),
     WeakMap = require("collections/weak-map"),
     Map = require("collections/map"),
-    Set = require("collections/set");
+    Set = require("collections/set"),
+    CustomEvent = global.CustomEvent;
 
 /**
  * @const
@@ -313,6 +314,12 @@ var rootComponent;
  */
 var Component = exports.Component = Target.specialize(/** @lends Component.prototype */{
     // Virtual Interface
+    constructor: {
+        value: function() {
+            this._parentComponent = null;
+            return this;
+        }
+    },
 
     /**
      * A human-friendly display title for the component.
@@ -350,6 +357,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     drawListLogger: {
         value: drawListLogger
+    },
+    drawLogger: {
+        value: drawLogger
     },
     /**
      * A delegate is an object that has helper methods specific to particular
@@ -2017,7 +2027,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     _arrayObjectPool: {
         value: {
             pool: null,
-            size: 200,
+            size: 50,
             ix: 0
         }
     },
@@ -2093,8 +2103,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     childComponent._addedToDrawList = false;
                     if (childComponent.canDraw()) { // TODO if canDraw is false when does needsDraw get reset?
                         childComponent._drawIfNeeded(level+1);
-                    } else if (drawLogger.isDebug) {
-                        drawLogger.debug(loggerToString(childComponent) + " can't draw.");
+                    } else if (this.drawLogger.isDebug) {
+                        this.drawLogger.debug(loggerToString(childComponent) + " can't draw.");
                     }
                 }
                 this._disposeArray(oldDrawList);
@@ -2125,7 +2135,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             }
 
             if (this._newDomContent !== null || this._shouldClearDomContentOnNextDraw) {
-                if (drawLogger.isDebug) {
+                if (this.drawLogger.isDebug) {
                     //jshint -W106
                     logger.debug("Component content changed: component ", this._montage_metadata.objectName, this.identifier, " newDomContent", this._newDomContent);
                     //jshint +W106
@@ -2374,7 +2384,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         for (i = 0; (component = components[i]); i++) {
                             component.attachToParentComponent();
                         }
-                    }    
+                    }
                 }
             }
         }
@@ -3290,7 +3300,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                             var _name = "_"+attributeName;
                             if ((this[_name] === null) && descriptor !== null && "value" in descriptor) {
                                 this[_name] = descriptor.value;
-                            }   
+                            }
                         }
                     }
                 }
@@ -3527,7 +3537,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         if (setter) {
                             setter.call(this, value);
                         } else {
-                            this[attributeName] = value;                            
+                            this[attributeName] = value;
                         }
 
                         this._elementAttributeValues[name] = value;
@@ -3598,9 +3608,16 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     constructor: {
         value: function RootComponent() {
-            this._drawTree = this._drawTree.bind(this);
+            var self = this;
+            this.__drawTree = this._drawTree;
+            this._drawTree = function RootComponent_drawTree(timestamp) {
+                self.__drawTree(timestamp);
+            };
             this._readyToDrawListIndex = new Map();
             this._addedStyleSheetsByTemplate = new WeakMap();
+            this.requestedAnimationFrame = null;
+            this._scheduleComposerRequest = false;
+            return this;
         }
     },
 
@@ -3797,8 +3814,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         value: function (composer) {
             this.composerList.push(composer);
 
-            if (drawLogger.isDebug) {
-                drawLogger.debug(this, composer, "Added to composer list");
+            if (this.drawLogger.isDebug) {
+                this.drawLogger.debug(this, composer, "Added to composer list");
             }
             // If a draw is already in progress this.drawTree() will not schedule another one, so track
             // that a composer requested a draw in case a new draw does need to be scheduled when the
@@ -3848,7 +3865,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      * @function
      */
     requestAnimationFrame: {
-        value: (global.requestAnimationFrame || global.webkitRequestAnimationFrame || 
+        value: (global.requestAnimationFrame || global.webkitRequestAnimationFrame ||
                     global.mozRequestAnimationFrame ||  global.msRequestAnimationFrame || setTimeout),
         enumerable: false
     },
@@ -3858,7 +3875,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      * @function
      */
     cancelAnimationFrame: {
-        value: (global.cancelAnimationFrame ||  global.webkitCancelAnimationFrame || 
+        value: (global.cancelAnimationFrame ||  global.webkitCancelAnimationFrame ||
                     global.mozCancelAnimationFrame || global.msCancelAnimationFrame || clearTimeout),
         enumerable: false
     },
@@ -3884,7 +3901,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         // Written by John Resig. Used under the Creative Commons Attribution 2.5 License.
         // http://ejohn.org/projects/javascript-diff-algorithm/
         value: function ( o, n ) {
-            var ns = {}, 
+            var ns = {},
                 os = {};
 
             function isNullOrUndefined(o) {
@@ -3893,9 +3910,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
             for (var i = 0; i < n.length; i++ ) {
                 if (isNullOrUndefined(ns[n[i]])) {
-                    ns[n[i]] = { 
-                        rows: [], 
-                        o: null 
+                    ns[n[i]] = {
+                        rows: [],
+                        o: null
                     };
                 }
                 ns[n[i]].rows.push( i );
@@ -3903,9 +3920,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
             for (i = 0; i < o.length; i++ ) {
                 if (isNullOrUndefined(os[o[i]])) {
-                    os[o[i]] = { 
-                        rows: [], 
-                        n: null 
+                    os[o[i]] = {
+                        rows: [],
+                        n: null
                     };
                 }
                 os[o[i]].rows.push(i);
@@ -3913,17 +3930,17 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
             for (i in ns ) {
                 if (
-                    ns[i].rows.length === 1 && 
-                        !isNullOrUndefined(os[i]) && 
+                    ns[i].rows.length === 1 &&
+                        !isNullOrUndefined(os[i]) &&
                             os[i].rows.length === 1
                 ) {
-                    n[ns[i].rows[0]] = { 
-                        text: n[ns[i].rows[0]], 
-                        row: os[i].rows[0] 
+                    n[ns[i].rows[0]] = {
+                        text: n[ns[i].rows[0]],
+                        row: os[i].rows[0]
                     };
-                    o[ os[i].rows[0] ] = { 
-                        text: o[ os[i].rows[0] ], 
-                        row: ns[i].rows[0]  
+                    o[ os[i].rows[0] ] = {
+                        text: o[ os[i].rows[0] ],
+                        row: ns[i].rows[0]
                     };
                 }
             }
@@ -3945,20 +3962,20 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                         n[i].row > 0 && isNullOrUndefined(o[ n[i].row - 1].text) &&
                             n[i - 1] === o[ n[i].row - 1 ]
                 ) {
-                    n[i - 1] = { 
-                        text: n[i - 1], 
-                        row: n[i].row - 1 
+                    n[i - 1] = {
+                        text: n[i - 1],
+                        row: n[i].row - 1
                     };
-                    o[n[i].row-1] = { 
-                        text: o[n[i].row-1], 
-                        row: i - 1 
+                    o[n[i].row-1] = {
+                        text: o[n[i].row-1],
+                        row: i - 1
                     };
                 }
             }
 
-            return { 
-                o: o, 
-                n: n 
+            return {
+                o: o,
+                n: n
             };
         }
     },
@@ -4007,8 +4024,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     addStyleSheetsFromTemplate: {
         value: function(template) {
             if(!this._addedStyleSheetsByTemplate.has(template)) {
-                var resources = template.getResources(), 
-                    ownerDocument = this.element.ownerDocument, 
+                var resources = template.getResources(),
+                    ownerDocument = this.element.ownerDocument,
                     styles = resources.createStylesForDocument(ownerDocument);
 
                 for (var i = 0, style; (style = styles[i]); i++) {
@@ -4053,9 +4070,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     drawTree: {
         value: function drawTree() {
             if (this.requestedAnimationFrame === null) { // 0 is a valid requestedAnimationFrame value
-                var requestAnimationFrame = this.requestAnimationFrame;
+                // var requestAnimationFrame = this.requestAnimationFrame;
                 if (requestAnimationFrame) {
-                    this.requestedAnimationFrame = requestAnimationFrame.call(window, this._drawTree);
+                    this.requestedAnimationFrame = window.requestAnimationFrame(this._drawTree);
                 } else {
                     // Shim based in Erik Möller's code at
                     // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
@@ -4075,7 +4092,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     },
 
     _drawTree: {
-        value: function (timestamp) {
+        value: function rootComponent_drawTree(timestamp) {
             var drawPerformanceStartTime;
 
             // Add all stylesheets needed by the components since last
@@ -4111,7 +4128,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             if (this._clearNeedsDrawTimeOut) {
                 this._clearNeedsDrawList();
             }
-            if (drawLogger.isDebug) {
+            if (this.drawLogger.isDebug) {
                 // Detect any DOM modification since the previous draw
                 var newSource = document.body.innerHTML;
                 if (this._oldSource && newSource !== this._oldSource) {
@@ -4129,7 +4146,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                     console.warn(warning.join("\n"));
                 }
 
-                console.group((timestamp ? drawLogger.toTimeString(new Date(timestamp)) + " " : "") + "Draw Fired");
+                console.group((timestamp ? this.drawLogger.toTimeString(new Date(timestamp)) + " " : "") + "Draw Fired");
             }
 
             this.drawIfNeeded();
@@ -4147,7 +4164,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                     ", Components: ", this._lastDrawComponentsCount);
             }
 
-            if (drawLogger.isDebug) {
+            if (this.drawLogger.isDebug) {
                 console.groupEnd();
                 this._oldSource =  document.body.innerHTML;
             }
@@ -4184,15 +4201,15 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
             if (needsDrawListIndex.has(component)) {
                 // Requesting a draw of a component that has already been drawn in the current cycle
-                if (drawLogger.isDebug) {
+                if (this.drawLogger.isDebug) {
                     if(this !== rootComponent) {
-                        drawLogger.debug(loggerToString(this) + " added to the draw cycle twice, this should not happen.");
+                        this.drawLogger.debug(loggerToString(this) + " added to the draw cycle twice, this should not happen.");
                     }
                 }
                 return;
             }
             this._readyToDrawList.push(component);
-            this._readyToDrawListIndex.set(component, true);
+            needsDrawListIndex.set(component, true);
 
             component._updateComponentDom();
         }
@@ -4218,7 +4235,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         value: function drawIfNeeded() {
             var needsDrawList = this._readyToDrawList, component, i, j, start = 0, firstDrawEvent,
                 composerList = this._composerList, composer, composerListLength,
-                isDrawLoggerDebug = drawLogger.isDebug;
+                drawLogger = this.drawLogger,
+                isDrawLoggerDebug =  drawLogger.isDebug;
 
             needsDrawList.length = 0;
             this._readyToDrawListIndex.clear();
@@ -4271,7 +4289,10 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                                     (needsDrawList.length > 1 ? " components." : " component."));
             }
             // Sort the needsDraw list so that any newly added items are drawn in the correct order re: parent-child
-            needsDrawList.sort(this._sortByLevel);
+            //No need to sort if there's only one childComponent
+            if(needsDrawList.length>1) {
+                needsDrawList.sort(this._sortByLevel);
+            }
 
             for (i = 0; i < j; i++) {
                 component = needsDrawList[i];
@@ -4353,7 +4374,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         }
     }
 });
- 
+
 exports.__root__ = rootComponent = new RootComponent().init();
 
 //https://github.com/kangax/html-minifier/issues/63
