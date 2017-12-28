@@ -71,10 +71,15 @@ exports.deprecationWarningOnce = function deprecationWarningOnce(name, alternati
  *
  * @returns {Function} deprecationWrapper
  */
-exports.deprecateMethod = function deprecate(scope, deprecatedFunction, name, alternative) {
+exports.deprecateMethod = function deprecate(scope, deprecatedFunction, name, alternative, once) {
     var deprecationWrapper = function () {
         // stackTraceLimit = 3 // deprecationWarning + deprecate + caller of the deprecated method
-        deprecationWarning(name, alternative, 3);
+        if (once) {
+            exports.deprecationWarningOnce(name, alternative, 3);
+        } else {
+            deprecationWarning(name, alternative, 3);
+        }
+        
         return deprecatedFunction.apply(scope ? scope : this, arguments);
     };
     deprecationWrapper.deprecatedFunction = deprecatedFunction;

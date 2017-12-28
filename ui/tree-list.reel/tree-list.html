@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
     <link rel="stylesheet" type="text/css" href="tree-list.css">
     <script type="text/montage-serialization">
     {
         "owner": {
             "values": {
                 "element": {"#": "owner"},
+                "_placeholder": {"#": "placeholder"},
+                "_treeListWrapper": {"#": "treeListWrapper"},
                 "repetition": {"@": "repetition"},
                 "repetitionController": {"@": "repetitionController"}
             }
@@ -33,11 +34,14 @@
 </head>
 <body>
     <div data-montage-id="owner" class="montage-TreeList">
-        <div data-montage-id="repetition" class="montage-TreeList-repetition">
-            <div class="montage-TreeList-nodeWrapper">
-                <div data-param="*"></div>
+        <div data-montage-id="treeListWrapper" class="montage-TreeList-wrapper">
+            <div data-montage-id="repetition" class="montage-TreeList-repetition">
+                <div class="montage-TreeList-nodeWrapper">
+                    <div data-param="*"></div>
+                </div>
             </div>
         </div>
+        <div data-montage-id="placeholder" class="montage-TreeList-placeholder over"></div>
     </div>
 </body>
 </html>

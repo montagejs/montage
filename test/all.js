@@ -126,6 +126,8 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/data/object-descriptor"},
     {name: "spec/data/property-descriptor"},
     {name: "spec/data/raw-data-service"},
+    {name: "spec/data/raw-data-type-mapping-spec", node: false},
+    {name: "spec/data/integration", node: false},
 
     // Meta
     { name: "spec/meta/converter-object-descriptor-spec", node: false},

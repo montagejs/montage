@@ -105,6 +105,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: null
     },
 
+    shouldCancelOnSroll: {
+        value: true
+    },
+
     _shouldDispatchTranslate: {
         value: false
     },
@@ -821,22 +825,28 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 document.addEventListener("pointermove", this, true);
                 document.addEventListener("pointerup", this, false);
                 document.addEventListener("pointercancel", this, false);
-                document.addEventListener("scroll", this, true);
 
+                if (this.shouldCancelOnSroll) {
+                    document.addEventListener("scroll", this, true);
+                }
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 this._element.addEventListener("MSPointerDown", this, false);
                 document.addEventListener("MSPointerMove", this, true);
                 document.addEventListener("MSPointerUp", this, false);
                 document.addEventListener("MSPointerCancel", this, false);
-                document.addEventListener("scroll", this, true);
 
+                if (this.shouldCancelOnSroll) {
+                    document.addEventListener("scroll", this, true);
+                }
             } else {
                 if (this._observedPointer === this._MOUSE_POINTER) {
                     this._element.addEventListener("mousedown", this, false);
                     document.addEventListener("mousemove", this, true);
                     document.addEventListener("mouseup", this, false);
-                    document.addEventListener("scroll", this, true);
 
+                    if (this.shouldCancelOnSroll) {
+                        document.addEventListener("scroll", this, true);
+                    }
                 } else {
                     this._element.addEventListener("touchstart", this, false);
                     this._element.addEventListener("touchmove", this, true);
@@ -1119,22 +1129,28 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 document.removeEventListener("pointermove", this, true);
                 document.removeEventListener("pointerup", this, false);
                 document.removeEventListener("pointercancel", this, false);
-                document.removeEventListener("scroll", this, true);
 
+                if (this.shouldCancelOnSroll) {
+                    document.removeEventListener("scroll", this, true);
+                }
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 this._element.removeEventListener("MSPointerDown", this, false);
                 document.removeEventListener("MSPointerMove", this, true);
                 document.removeEventListener("MSPointerUp", this, false);
                 document.removeEventListener("MSPointerCancel", this, false);
-                document.removeEventListener("scroll", this, true);
-
+               
+                if (this.shouldCancelOnSroll) {
+                    document.removeEventListener("scroll", this, true);
+                }
             } else {
                 if (this._observedPointer === this._MOUSE_POINTER) {
                     this._element.removeEventListener("mousedown", this, false);
                     document.removeEventListener("mousemove", this, true);
                     document.removeEventListener("mouseup", this, false);
-                    document.removeEventListener("scroll", this, true);
 
+                    if (this.shouldCancelOnSroll) {
+                        document.removeEventListener("scroll", this, true);
+                    }
                 } else {
                     this._element.removeEventListener("touchstart", this, false);
                     this._element.removeEventListener("touchmove", this, true);
@@ -1142,7 +1158,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                     this._element.removeEventListener("touchcancel", this, false);
                 }
             }
-
 
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 this.eventManager.forfeitPointer(this._observedPointer, this);
