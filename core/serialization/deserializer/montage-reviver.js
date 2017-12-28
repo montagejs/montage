@@ -416,6 +416,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (value, context, label) {
             var self = this,
                 locationId = value.prototype || value.object,
+                isObjectDescriptor = !!(locationId && (locationId.endsWith(".mjson") || locationId.endsWith(".meta"))),
                 module, locationDesc, location, objectName;
 
             if (locationId) {
@@ -424,14 +425,17 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 objectName = locationDesc.objectName;
             }
 
-            if (typeof module === "string" &&
-                (locationId.endsWith(".mjson") || locationId.endsWith(".meta")) &&
+            if (typeof module === "string" && isObjectDescriptor &&
                 this._deserializerConstructor.moduleContexts.has(
-                (location = context._require.location + locationId)
-            )) {
+                    (location = context._require.location + locationId)
+                )) {
                 // We have a circular reference. If we wanted to forbid circular
                 // references this is where we would throw an error.
                 return Promise.resolve(this._deserializerConstructor.moduleContexts.get(location)._objects.root);
+            }
+
+            if (isObjectDescriptor && !Promise.is(module) && !module.montageObject) {
+                module = context._require.async(locationDesc.moduleId);
             }
             
             if (Promise.is(module)) {
