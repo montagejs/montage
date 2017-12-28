@@ -1,5 +1,6 @@
 var Converter = require("./converter").Converter,
-    Promise = require("core/promise").Promise;
+    Promise = require("core/promise").Promise,
+    Set = require("collections/set");
 
 /**
  * Converter that chains a series of converters together
@@ -19,9 +20,8 @@ exports.PipelineConverter = Converter.specialize({
 
     _handleConvertersRangeChange: {
         value: function (plus, minus, index) {
-            var all = this.converters ? this._arrayToSet(this.converters) : [],
-                plusSet = this._arrayToSet(plus),
-                minusSet = this._arrayToSet(minus),
+            var plusSet = new Set(plus),
+                minusSet = new Set(minus),
                 converter, i;
 
             for (i = 0; (converter = minus[i]); ++i) {
@@ -71,21 +71,6 @@ exports.PipelineConverter = Converter.specialize({
      */
     converters: {
         value: undefined
-    },
-
-   
-
-    _arrayToSet: {
-        value: function (array) {
-            var set = new Set(),
-                i, item;
-            array = array || [];
-
-            for (i = 0; (item = array[i]); ++i) {
-                set.add(item);
-            }
-            return set;
-        }
     },
 
 
