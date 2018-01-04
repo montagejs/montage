@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"}
+                }
+            },
+
+            "custom": {
+                "prototype": "montage/ui/list-item-menu.reel",
+                "values": {
+                    "element": {"#": "list-item-menu"}
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>List Item Menu Sample</header>
+        <section class="items">
+            <div data-montage-id="list-item-menu" class="list-item">
+                <div data-arg="options-left">
+                    <button class="archive">Archive</button>
+                </div>
+                <div data-arg="content">Item 1</div>
+                <div data-arg="options-right">
+                    <button class="delete">Delete</button>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
