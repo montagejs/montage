@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="list-item-menu.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "owner"},
+                "dragElement": {"#": "drag"},
+                "leftOptionsElement": {"#": "leftOptions"},
+                "rightOptionsElement": {"#": "rightOptions"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="ListItemMenu">
+        <div data-montage-id="drag" class="ListItemMenu-wrapper">
+            <div data-montage-id="leftOptions" class="ListItemMenu-zone left">
+                <div data-param="options-left" class="ListItemMenu-options"></div>
+            </div>
+            <div class="ListItemMenu-zone">
+                <div data-param="content" class="ListItemMenu-content"></div>
+            </div>
+            <div data-montage-id="rightOptions" class="ListItemMenu-zone right">
+                <div data-param="options-right" class="ListItemMenu-options"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
