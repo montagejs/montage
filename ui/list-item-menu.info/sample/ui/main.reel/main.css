@@ -1,0 +1,42 @@
+html, body, .Main {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+        -webkit-font-smoothing: antialiased;
+
+}
+
+.Main, .items {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+header {
+    margin-top: 20px;
+    font-size: 42px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 40px;
+}
+
+.items {
+    height: 500px;
+    width: 300px;
+    border: 1px solid #bdc3c7;
+}
+
+.list-item {
+    border-bottom: 1px solid #bdc3c7;
+}
+
+
+.archive {
+    background-color: #27ae60;
+}
+
+.delete {
+    background-color: #e74c3c;
+}
