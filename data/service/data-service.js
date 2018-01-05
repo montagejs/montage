@@ -833,17 +833,18 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
-     *
+     * Perform whatever tasks are necessary to authorize 
+     * this service and returns a Promise that resolves with
+     * an Authorization object.
      *
      * @method
      * @returns Promise
      */
     authorize: {
-        value: function () {
-            console.warn("DataService.authorize() must be overridden by the implementing service", arguments);
-            return this.nullPromise;
-        }
+        value: undefined
     },
+
+
     /**
      *
      * @method

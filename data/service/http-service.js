@@ -459,17 +459,6 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
         }
     },
 
-    /**
-     *
-     *
-     * @method
-     * @returns Promise
-     */
-    authorize: {
-        //Must be overridden by the implementing service
-        value: undefined
-    },
-
     /***************************************************************************
      * Utilities
      */
