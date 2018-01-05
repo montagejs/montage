@@ -369,16 +369,16 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                             this._previousDirection === ListItemMenu.DIRECTION.LEFT
                         ) {
                             translateX = this._dragElementRect.width * -1.5;
-
                         } else if (sign > 0 &&
                             this._previousDirection === ListItemMenu.DIRECTION.RIGHT
                         ) {
                             translateX = this._dragElementRect.width * -0.5;
+                        } else {
+                            this.isOpened = false;
                         }
                     }
 
                     this.__translateComposer.translateX = translateX;
-                    this.isOpened = false;
                 }
 
                 this.dragElement.style[ListItemMenu.cssTransform] = "translate3d(" +
