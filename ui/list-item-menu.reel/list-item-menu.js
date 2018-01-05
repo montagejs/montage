@@ -2,7 +2,8 @@
  * @module "ui/list-item-menu.reel"
  */
 var Component = require("../component").Component,
-    TranslateComposer = require("../../composer/translate-composer").TranslateComposer;
+    TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
+    PressComposer = require("../../composer/press-composer").PressComposer;
 
 /**
  * @class ListItemMenu
@@ -18,8 +19,25 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: false
     },
 
-    isOpened: {
+    _isOpened: {
         value: false
+    },
+
+    isOpened: {
+        set: function (opened) {
+            if (opened !== this._opened) {
+                this._isOpened = opened;
+
+                if (opened) {
+                    this._pressComposer.addEventListener('press', this, false);
+                } else {
+                   this._pressComposer.removeEventListener('press', this, false);
+                }
+            }
+        },
+        get: function () {
+            return this._isOpened;
+        }
     },
 
     __translateComposer: {
@@ -37,6 +55,21 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             }
 
             return this.__translateComposer;
+        }
+    },
+
+    __pressComposer: {
+        value: null
+    },
+
+    _pressComposer: {
+        get: function () {
+            if (!this.__pressComposer) {
+                this.__pressComposer = new PressComposer();
+                this.addComposerForElement(this.__pressComposer, document);
+            }
+
+            return this.__pressComposer;
         }
     },
 
@@ -203,6 +236,14 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     handleTranslateCancel: {
         value: function () {
             this._resetTranslateContext();
+        }
+    },
+
+    handlePress: {
+        value: function () {
+            if (this.isOpened && !this._isDragging) {
+                this.close();
+            }
         }
     },
 
