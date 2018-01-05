@@ -11,6 +11,10 @@ var Component = require("../component").Component,
  */
 var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListItemMenu.prototype */{
 
+    _minDistance: {
+        value: 0
+    },
+
     _shouldOpenListItem: {
         value: false
     },
@@ -208,11 +212,17 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             this._translateX = event.translateX;
             this._deltaX = this._translateX - this._startPositionX;
 
+            var distance = Math.abs(this._deltaX);
+
             if (!this.isOpened && !this._direction &&
-                Math.abs(this._deltaX) > this._thresholdDirection
+                distance > this._thresholdDirection
             ) {
                 this._direction = this._deltaX > 0 ? ListItemMenu.DIRECTION.RIGHT : 
                     ListItemMenu.DIRECTION.LEFT;
+            }
+
+            if (distance > this._minDistance) {
+                this._minDistance = distance;
             }
 
             this.needsDraw = true;
@@ -223,9 +233,10 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: function (event) {
             var velocity = this._findVelocity(event.timeStamp - this._startTimestamp);
 
-            if (this._direction && velocity > 0.15 &&
-                Math.abs(this._deltaX) > this._dragElementRect.width * 0.05
-            ) { /* swipe detected */
+            if (!this._shouldOpenListItem && this._direction && ((velocity > 0.15 &&
+                Math.abs(this._deltaX) > this._dragElementRect.width * 0.05) || 
+                (this._minDistance >= this._dragElementRect.width * 0.1))
+            ) { /* swipe detected or min distance reached */
                 this._shouldOpenListItem = true;
             }
 
@@ -268,6 +279,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             this._removeDragEventListeners();
             this._deltaX = 0;
             this._startTimestamp = 0;
+            this._minDistance = 0;
             this._isDragging = false;
             this.needsDraw = true;
         }
