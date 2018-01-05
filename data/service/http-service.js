@@ -282,10 +282,6 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
      * error the promise will be rejected with the error.
      */
 
-    _authRegexp: {
-        value: new RegExp(/error=\"([^&]*)\"/)
-    },
-
     _fetchHttpRawDataWithParsedArguments: {
         value: function (parsed) {
             var self = this,
@@ -354,11 +350,7 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
         }
     },
 
-    _isRequestUnauthorized: {
-        value: function (request) {
-            return request.status === 401 || (typeof this.didAuthorizationFail === "function" && this.didAuthorizationFail(request));
-        }
-    },
+    
 
     fetchHttpRawData: {
         value: function (url, headers, body, types, query, sendCredentials) {
@@ -451,6 +443,31 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
         value: function (value) {
             return typeof value === "boolean" || value instanceof Boolean;
         }
+    },
+
+    /***************************************************************************
+     * Authorization
+     */
+
+    _authRegexp: {
+        value: new RegExp(/error=\"([^&]*)\"/)
+    },
+
+    _isRequestUnauthorized: {
+        value: function (request) {
+            return request.status === 401 || (typeof this.didAuthorizationFail === "function" && this.didAuthorizationFail(request));
+        }
+    },
+
+    /**
+     *
+     *
+     * @method
+     * @returns Promise
+     */
+    authorize: {
+        //Must be overridden by the implementing service
+        value: undefined
     },
 
     /***************************************************************************
