@@ -833,7 +833,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
-     * Perform whatever tasks are necessary to authorize 
+     * Performs whatever tasks are necessary to authorize 
      * this service and returns a Promise that resolves with
      * an Authorization object.
      *
