@@ -235,8 +235,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 this._minDistance = distance;
             }
 
-            console.log(this._deltaX, this._previousDirection)
-
             this.needsDraw = true;
         }
     },
