@@ -309,6 +309,14 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         translateX = isLeft && this._deltaX < 0 ?
                             this._dragElementRect.width * -2 : 0;
                     }
+
+                    if (translateX > 0) {
+                        translateX = 0;
+                    }
+
+                    if (translateX < this._dragElementRect.width * -2) {
+                        translateX = this._dragElementRect.width * -2;
+                    }
                 } else if (this._direction || this._shouldCloseListItem) {
                     if (this._shouldOpenListItem) {
                         if (this._direction === ListItemMenu.DIRECTION.LEFT) {
