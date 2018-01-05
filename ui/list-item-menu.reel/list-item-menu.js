@@ -18,6 +18,10 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: false
     },
 
+    isOpened: {
+        value: false
+    },
+
     __translateComposer: {
         value: null
     },
@@ -45,12 +49,16 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             if (firstTime && !ListItemMenu.cssTransform) {
                 if ("webkitTransform" in this._element.style) {
                     ListItemMenu.cssTransform = "webkitTransform";
+                    ListItemMenu.cssTransition = "webkitTransition";
                 } else if ("MozTransform" in this._element.style) {
                     ListItemMenu.cssTransform = "MozTransform";
+                    ListItemMenu.cssTransition = "MozTransition";
                 } else if ("oTransform" in this._element.style) {
                     ListItemMenu.cssTransform = "oTransform";
+                    ListItemMenu.cssTransition = "oTransition";
                 } else {
                     ListItemMenu.cssTransform = "transform";
+                    ListItemMenu.cssTransition = "transition";
                 }
             }
 
@@ -74,6 +82,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     /**
      * Plublic Apis
      */
+
 
     openLeft: {
         value: function () {
@@ -106,6 +115,29 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             this.needsDraw = true;
         }
     },
+
+
+    /**
+     * Private Methods
+     */
+
+
+    _findVelocity: {
+        enumerable: false,
+        value: function (deltaTime) {
+            if (deltaTime > 300) {
+                return 0;
+            }
+
+            return (Math.sqrt((this._deltaX * this._deltaX)) / deltaTime);
+        }
+    },
+
+
+     /**
+     * Event Listeners
+     */
+
     
     _startListeningToTranslateIfNeeded: {
         value: function () {
@@ -133,6 +165,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: function (event) {
             this._startPositionX = this.__translateComposer.translateX;
             this._isDragging = true;
+            this._startTimestamp = event.timeStamp;
             this._addDragEventListeners();
         }
     },
@@ -142,7 +175,9 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             this._translateX = event.translateX;
             this._deltaX = this._translateX - this._startPositionX;
 
-            if (!this._direction && Math.abs(this._deltaX) > this._thresholdDirection) {
+            if (!this.isOpened && !this._direction &&
+                Math.abs(this._deltaX) > this._thresholdDirection
+            ) {
                 this._direction = this._deltaX > 0 ? ListItemMenu.DIRECTION.RIGHT : 
                     ListItemMenu.DIRECTION.LEFT;
             }
@@ -152,7 +187,15 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     },
 
     handleTranslateEnd: {
-        value: function () {
+        value: function (event) {
+            var velocity = this._findVelocity(event.timeStamp - this._startTimestamp);
+
+            if (this._direction && velocity > 0.15 &&
+                Math.abs(this._deltaX) > this._dragElementRect.width * 0.05
+            ) { /* swipe detected */
+                this._shouldOpenListItem = true;
+            }
+
             this._resetTranslateContext();
         }
     },
@@ -183,6 +226,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: function () {
             this._removeDragEventListeners();
             this._deltaX = 0;
+            this._startTimestamp = 0;
             this._isDragging = false;
             this.needsDraw = true;
         }
@@ -206,13 +250,15 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
                     this.dragElement.style.WebkitTransition = null;
 
-                    // Hides not sliding options.
-                    if (isLeft) {
-                        this.rightOptionsElement.classList.remove('hide');
-                        this.leftOptionsElement.classList.add('hide');
-                    } else {
-                        this.rightOptionsElement.classList.add('hide');
-                        this.leftOptionsElement.classList.remove('hide');
+                    if (!this.isOpened) {
+                        // Hides not sliding options.
+                        if (isLeft) {
+                            this.rightOptionsElement.classList.remove('hide');
+                            this.leftOptionsElement.classList.add('hide');
+                        } else {
+                            this.rightOptionsElement.classList.add('hide');
+                            this.leftOptionsElement.classList.remove('hide');
+                        }
                     }
 
                     // Blocks translating when reaching edges.
@@ -229,16 +275,26 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         } else {
                             translateX = this._dragElementRect.width * -0.5;
                         }
+
+                        this.__translateComposer.translateX = translateX;
+                        this.isOpened = true;
                     } else {
                         translateX = this.__translateComposer.translateX = - this._dragElementRect.width;
+                        this.isOpened = false;
                     }
 
-                    this.dragElement.style.WebkitTransition = 'transform .3s ease-out';
+                    this.dragElement.style[ListItemMenu.cssTransition] = ListItemMenu.DEFAULT_TRANSITION;
                     this._shouldCloseListItem = false;
                     this._shouldOpenListItem = false;
                     this._direction = null;
                 } else {
                     translateX = this.__translateComposer.translateX = - this._dragElementRect.width;
+
+                    if (this.isOpened) {
+                        this.dragElement.style[ListItemMenu.cssTransition] = ListItemMenu.DEFAULT_TRANSITION;
+                    }
+
+                    this.isOpened = false;
                 }
 
                 this.dragElement.style[ListItemMenu.cssTransform] = "translate3d(" +
@@ -253,6 +309,10 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 LEFT: 'LEFT',
                 RIGHT: 'RIGHT'
             }
-        }    
+        },
+        
+        DEFAULT_TRANSITION: {
+            value: 'transform .3s ease-out'
+        }
     }
 );
