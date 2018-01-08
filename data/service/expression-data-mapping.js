@@ -68,7 +68,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             var value = deserializer.getProperty("objectDescriptor"),
                 self = this, 
                 hasReferences = false,
-                result = null;
+                result = this;
             if (value instanceof ObjectDescriptorReference) {
                 this.objectDescriptorReference = value;
                 hasReferences = true;
@@ -95,25 +95,25 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 result = this.resolveReferences().then(function () {
                     value = deserializer.getProperty("objectMapping");
                     if (value) {
-                        self._mapObjectMappingRules(value.rules);
+                        self._rawOwnObjectMappingRules = value.rules;
                     }
                     value = deserializer.getProperty("rawDataMapping");
                     if (value) {
-                        self._mapRawDataMappingRules(value.rules);
+                        self._rawOwnRawDataMappingRules = value.rules;
                     }
                     return self;
                 });
             } else {
                 value = deserializer.getProperty("objectMapping");
                 if (value) {
-                    self._mapObjectMappingRules(value.rules);
+                    self._rawOwnObjectMappingRules = value.rules;
                 }
                 value = deserializer.getProperty("rawDataMapping");
                 if (value) {
-                    self._mapRawDataMappingRules(value.rules);
+                    self._rawOwnRawDataMappingRules = value.rules;
                 }
             }
-            return this;
+            return result;
         }
     },
     
@@ -868,10 +868,15 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         }
     },
 
+    _rawOwnObjectMappingRules: {
+        value: undefined
+    },
+
     _ownObjectMappingRules: {
         get: function () {
             if (!this.__ownObjectMappingRules) {
                 this.__ownObjectMappingRules = new Map();
+                this._mapObjectMappingRules(this._rawOwnObjectMappingRules || {});
             }
             return this.__ownObjectMappingRules;
         }
@@ -890,11 +895,15 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         }
     },
 
+    _rawOwnRawDataMappingRules: {
+        value: undefined
+    },
 
     _ownRawDataMappingRules: {
         get: function () {
             if (!this.__ownRawDataMappingRules) {
                 this.__ownRawDataMappingRules = new Map();
+                this._mapRawDataMappingRules(this._rawOwnRawDataMappingRules || {});
             }
             return this.__ownRawDataMappingRules;
         }

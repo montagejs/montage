@@ -393,35 +393,35 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         }
     },
 
-_preparePropertyDescriptorsCache: {
-    value: function () {
-        var ownDescriptors = this._ownPropertyDescriptors,
-            isReady = true,
-            descriptor, i, n;
-        
-        if (!this._propertyDescriptorsAreCached)  {
-            
-            for (i = 0, n = ownDescriptors.length; i < n && isReady; ++i) {
-                descriptor = ownDescriptors[i];
-                isReady = !!(descriptor && descriptor.name);
-            }
 
-            if (isReady) {
-                this._propertyDescriptorsAreCached = true;
-                this._propertyDescriptors = [];
-                this._propertyDescriptorsTable.clear();
-                for (i = 0, n = ownDescriptors.length; i < n; ++i) {
+    _preparePropertyDescriptorsCache: {
+        value: function () {
+            var ownDescriptors = this._ownPropertyDescriptors,
+                isReady = true,
+                descriptor, i, n;
+            if (!this._propertyDescriptorsAreCached)  {
+                
+                for (i = 0, n = ownDescriptors.length; i < n && isReady; ++i) {
                     descriptor = ownDescriptors[i];
-                    descriptor._owner = this;
-                    this._propertyDescriptors.push(descriptor);
-                    this._propertyDescriptorsTable.set(descriptor.name,  descriptor);
+                    isReady = !!(descriptor && descriptor.name);
                 }
-                this.addRangeAtPathChangeListener("_ownPropertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
-                this.addRangeAtPathChangeListener("parent.propertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
+
+                if (isReady) {
+                    this._propertyDescriptorsAreCached = true;
+                    this._propertyDescriptors = [];
+                    this._propertyDescriptorsTable.clear();
+                    for (i = 0, n = ownDescriptors.length; i < n; ++i) {
+                        descriptor = ownDescriptors[i];
+                        descriptor._owner = this;
+                        this._propertyDescriptors.push(descriptor);
+                        this._propertyDescriptorsTable.set(descriptor.name,  descriptor);
+                    }
+                    this.addRangeAtPathChangeListener("_ownPropertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
+                    this.addRangeAtPathChangeListener("parent.propertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
+                }
             }
         }
-    }
-},
+    },
 
     /**
      * PropertyDescriptors for this object descriptor, not including those 
