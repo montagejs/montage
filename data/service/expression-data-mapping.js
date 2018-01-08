@@ -582,7 +582,8 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     },
     
     /**
-     * Maps the value of a single object property to raw data
+     * Maps the value of a single object property to raw data. Assumes that 
+     * the object property has been resolved
      *
      * @method
      * @argument {Object} object         - An object whose properties' values
@@ -591,14 +592,14 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      * @argument {string} propertyName   - The name of the raw property to which
      *                                     to assign the values.
      */
-    mapObjectToRawDataProperty: {
+    _mapObjectToRawDataProperty: {
         value: function(object, data, propertyName) {
             var rule = this.rawDataMappingRules.get(propertyName),
                 scope = new Scope(object),
                 propertyDescriptor = rule && rule.propertyDescriptor,
                 isRelationship = propertyDescriptor && propertyDescriptor.valueDescriptor,
                 result;
-                
+
             if (isRelationship && rule.converter) {
                 this._prepareObjectToRawDataRule(rule);
                 result = this._revertRelationshipToRawData(data, propertyDescriptor, rule, scope);
@@ -608,6 +609,37 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 data[propertyName] = rule.expression(scope);
             }
             
+            return result;
+        }
+    },
+
+     /**
+     * Prefetches any object properties required to map the rawData property 
+     * and maps once the fetch is complete.
+     *
+     * @method
+     * @argument {Object} object         - An object whose properties' values
+     *                                     hold the model data.
+     * @argument {Object} data           - The object on which to assign the property
+     * @argument {string} propertyName   - The name of the raw property to which
+     *                                     to assign the values.
+     */
+    mapObjectToRawDataProperty: {
+        value: function (object, data, propertyName) {
+            var rule = this.rawDataMappingRules.get(propertyName),
+                requiredObjectProperties = rule ? rule.requirements : [],
+                result, self;
+
+            result = this.service.rootService.getObjectPropertyExpressions(object, requiredObjectProperties);
+            
+            if (this._isAsync(result)) {
+                self = this;
+                result = result.then(function () {
+                    return self._mapObjectToRawDataProperty(object, data, propertyName);
+                });
+            } else {
+                result = this._mapObjectToRawDataProperty(object, data, propertyName);
+            }
             return result;
         }
     },
@@ -634,7 +666,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             
             while ((key = keys.next().value)) {
                 if (rawRequirementsToMap.has(key)) {
-                    result = this._getAndMapObjectProperty(object, data, key, propertyName);
+                    result = this.mapObjectToRawDataProperty(object, data, key, propertyName);
                     if (this._isAsync(result)) {
                         promises = promises || [];
                         promises.push(result);
@@ -643,26 +675,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                
             }
             return promises && promises.length && Promise.all(promises) || Promise.resolve(null);
-        }
-    },
-    
-    _getAndMapObjectProperty: {
-        value: function (object, data, propertyName) {
-            var rule = this.rawDataMappingRules.get(propertyName),
-                requiredObjectProperties = rule ? rule.requirements : [],
-                result, self;
-            
-            result = this.service.rootService.getObjectPropertyExpressions(object, requiredObjectProperties);
-            
-            if (this._isAsync(result)) {
-                self = this;
-                result = result.then(function () {
-                    return self.mapObjectToRawDataProperty(object, data, propertyName);
-                });
-            } else {
-                result = this.mapObjectToRawDataProperty(object, data, propertyName);
-            }
-            return result;
         }
     },
     
