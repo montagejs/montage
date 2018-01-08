@@ -495,13 +495,24 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
     _revertRelationshipToRawData: {
         value: function (rawData, propertyDescriptor, rule, scope) {
+            var propertyName = propertyDescriptor.name,
+                self, result;
+
             if (!rule.converter.revert) {
                 console.log("Converter does not have a revert function for property (" + propertyDescriptor.name + ")");
             }
-            return rule.evaluate(scope).then(function (result) {
-                rawData[propertyDescriptor.name] = result;
-                return null;
-            });
+            result = rule.evaluate(scope);
+
+            if (this._isAsync(result)) {
+                self = this;
+                result.then(function (value) {
+                    rawData[propertyName] = result;
+                    return null;
+                });
+            } else {
+                rawData[propertyName] = result;
+            }
+            return result;
         }
     },
 
