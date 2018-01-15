@@ -40,3 +40,7 @@ header {
 .delete {
     background-color: #e74c3c;
 }
+
+.ListItemMenu-content {
+    text-indent: 6px;
+}
