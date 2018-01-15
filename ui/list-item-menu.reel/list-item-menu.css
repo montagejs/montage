@@ -50,3 +50,11 @@
     text-decoration: none;
     text-align: center;
 }
+
+.ListItemMenu-zone.left .ListItemMenu-options {
+    justify-content: flex-end;
+}
+
+.ListItemMenu-zone.right .ListItemMenu-options {
+    justify-content: flex-start;
+}

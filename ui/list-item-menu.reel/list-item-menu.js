@@ -298,7 +298,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: function () {
             if (!this._dragElementRect) {
                 this._dragElementRect = this.dragElement.getBoundingClientRect();
-
+                this._leftButtons = this.leftOptionsElement.querySelectorAll('button');
                 this._rightButtons = this.rightOptionsElement.querySelectorAll('button');
             }
         }
@@ -341,9 +341,12 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         translateX = this._dragElementRect.width * -2;
                     }
 
-                    if (this._rightButtons && this._rightButtons.length === 1) {
-                        this._rightButtons[0].style.width = Math.abs(Math.abs(translateX) - this._dragElementRect.width) + 'px';
-                        this._rightButtons[0].style[ListItemMenu.cssTransition] = 'none';
+                    var direction = this._direction || this._previousDirection;
+                    var buttonList = direction === ListItemMenu.DIRECTION.LEFT ? this._rightButtons : this._leftButtons;
+
+                    if (buttonList && buttonList.length === 1) {
+                        buttonList[0].style.width = Math.abs(Math.abs(translateX) - this._dragElementRect.width) + 'px';
+                        buttonList[0].style[ListItemMenu.cssTransition] = 'none';
                     }
                 } else if (this._direction || this._shouldCloseListItem) {
                     if (this._shouldOpenListItem) {
@@ -353,17 +356,20 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                             translateX = this._dragElementRect.width * -0.5;
                         }
 
-                        if (parseInt(this._rightButtons[0].style.width) >= this._dragElementRect.width / 2) {
-                            this._rightButtons[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
+                        var buttonList = this._direction === ListItemMenu.DIRECTION.LEFT ? this._rightButtons : this._leftButtons;
+
+                        if (parseInt(buttonList[0].style.width) >= this._dragElementRect.width / 2) {
+                            buttonList[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
                         }
 
-                        this._rightButtons[0].style.width = '50%';
-
+                        buttonList[0].style.width = '50%';
                         this.__translateComposer.translateX = translateX;
                         this.isOpened = true;
+                        //todo: raise opened event?
                     } else {
                         translateX = this.__translateComposer.translateX = - this._dragElementRect.width;
                         this.isOpened = false;
+                        //todo: raise closed event?
                     }
 
                     this.dragElement.style[ListItemMenu.cssTransition] = ListItemMenu.DEFAULT_TRANSITION;
@@ -391,8 +397,11 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         }
 
                         if (this.isOpened) {
-                            this._rightButtons[0].style.width = '50%';
-                            this._rightButtons[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
+                            var direction = this._direction || this._previousDirection;
+                            var buttonList = direction === ListItemMenu.DIRECTION.LEFT ? this._rightButtons : this._leftButtons;
+
+                            buttonList[0].style.width = '50%';
+                            buttonList[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
                         }
                     }
 
