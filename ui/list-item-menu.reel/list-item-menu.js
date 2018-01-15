@@ -298,6 +298,8 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: function () {
             if (!this._dragElementRect) {
                 this._dragElementRect = this.dragElement.getBoundingClientRect();
+
+                this._rightButtons = this.rightOptionsElement.querySelectorAll('button');
             }
         }
     },
@@ -338,6 +340,11 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     if (translateX < this._dragElementRect.width * -2) {
                         translateX = this._dragElementRect.width * -2;
                     }
+
+                    if (this._rightButtons && this._rightButtons.length === 1) {
+                        this._rightButtons[0].style.width = Math.abs(Math.abs(translateX) - this._dragElementRect.width) + 'px';
+                        this._rightButtons[0].style[ListItemMenu.cssTransition] = 'none';
+                    }
                 } else if (this._direction || this._shouldCloseListItem) {
                     if (this._shouldOpenListItem) {
                         if (this._direction === ListItemMenu.DIRECTION.LEFT) {
@@ -345,6 +352,12 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         } else {
                             translateX = this._dragElementRect.width * -0.5;
                         }
+
+                        if (parseInt(this._rightButtons[0].style.width) >= this._dragElementRect.width / 2) {
+                            this._rightButtons[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
+                        }
+
+                        this._rightButtons[0].style.width = '50%';
 
                         this.__translateComposer.translateX = translateX;
                         this.isOpened = true;
@@ -357,12 +370,12 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     this._shouldCloseListItem = false;
                     this._shouldOpenListItem = false;
                     this._direction = null;
+
                 } else {
                     translateX = - this._dragElementRect.width;
 
                     if (this.isOpened) {
                         this.dragElement.style[ListItemMenu.cssTransition] = ListItemMenu.DEFAULT_TRANSITION;
-
                         var sign = Math.sign(this._deltaX);
 
                         if (sign < 0 &&
@@ -375,6 +388,11 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                             translateX = this._dragElementRect.width * -0.5;
                         } else {
                             this.isOpened = false;
+                        }
+
+                        if (this.isOpened) {
+                            this._rightButtons[0].style.width = '50%';
+                            this._rightButtons[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
                         }
                     }
 
@@ -397,6 +415,10 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         
         DEFAULT_TRANSITION: {
             value: 'transform .3s ease-out'
+        },
+
+        BUTTON_TRANSITION: {
+            value: 'width .3s ease-in'
         }
     }
 );
