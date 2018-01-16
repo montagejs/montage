@@ -7,7 +7,7 @@
             "owner": {
                 "values": {
                     "element": {"#": "main"},
-                    "listItem": {"@": "custom"}
+                    "listItem": {"@": "listItemMenu"}
                 },
                 "listeners": [
                     {
@@ -17,7 +17,7 @@
                 ]
             },
 
-            "custom": {
+            "listItemMenu": {
                 "prototype": "montage/ui/list-item-menu.reel",
                 "values": {
                     "element": {"#": "list-item-menu"}
@@ -38,6 +38,21 @@
                     "element": {"#": "delete"},
                     "label": "Delete"
                 }
+            },
+
+            "listItemMenu2": {
+                "prototype": "montage/ui/list-item-menu.reel",
+                "values": {
+                    "element": {"#": "list-item-menu-2"}
+                }
+            },
+
+            "delete2": {
+                "prototype": "montage/ui/button.reel",
+                "values": {
+                    "element": {"#": "delete-2"},
+                    "label": "Delete"
+                }
             }
 
         }
@@ -54,6 +69,13 @@
                 <div data-arg="content">Item 1</div>
                 <div data-arg="options-right">
                     <button data-montage-id="delete" class="delete"></button>
+                </div>
+            </div>
+
+            <div data-montage-id="list-item-menu-2" class="list-item">
+                <div data-arg="content">Item 2</div>
+                <div data-arg="options-right">
+                    <button data-montage-id="delete-2" class="delete"></button>
                 </div>
             </div>
         </section>
