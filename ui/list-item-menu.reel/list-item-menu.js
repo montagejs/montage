@@ -83,10 +83,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     },
 
-    _thresholdDirection: {
-        value: 8
-    },
-
     enterDocument: {
         value: function (firstTime) {
             if (firstTime && !ListItemMenu.cssTransform) {
@@ -300,23 +296,34 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 this._dragElementRect = this.dragElement.getBoundingClientRect();
                 this._leftButtons = this.leftOptionsElement.querySelectorAll('button');
                 this._rightButtons = this.rightOptionsElement.querySelectorAll('button');
-            }
+
+                // hack for the "elastic" animation
+                if (this._rightButtons && this._rightButtons.length) {
+                    this.rightOptionsElement.style.backgroundColor =
+                        getComputedStyle(this._rightButtons[0])["background-color"];
+                }
+
+                if (this._leftButtons && this._leftButtons.length) {
+                    this.leftOptionsElement.style.backgroundColor =
+                        getComputedStyle(this._leftButtons[0])["background-color"]
+                }
+            }           
         }
     },
 
     draw: {
         value: function () {
             if (this.__translateComposer) {
-                var translateX = this._translateX;
+                var translateX = this._translateX, direction = this._direction,
+                    isDirectionLeft = direction === ListItemMenu.DIRECTION.LEFT,
+                    buttonList;
 
                 if (this._isDragging) {
-                    var isLeft = this._direction === ListItemMenu.DIRECTION.LEFT;
-
                     this.dragElement.style.WebkitTransition = null;
 
                     if (!this.isOpened) {
                         // Hides not sliding options.
-                        if (isLeft) {
+                        if (isDirectionLeft) {
                             this.rightOptionsElement.classList.remove('hide');
                             this.leftOptionsElement.classList.add('hide');
                         } else {
@@ -329,7 +336,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     if (this._direction &&
                         Math.abs(this._deltaX) > this._dragElementRect.width
                     ) {
-                        translateX = isLeft && this._deltaX < 0 ?
+                        translateX = isDirectionLeft && this._deltaX < 0 ?
                             this._dragElementRect.width * -2 : 0;
                     }
 
@@ -341,28 +348,32 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         translateX = this._dragElementRect.width * -2;
                     }
 
-                    var direction = this._direction || this._previousDirection;
-                    var buttonList = direction === ListItemMenu.DIRECTION.LEFT ? this._rightButtons : this._leftButtons;
+                    buttonList = (direction || this._previousDirection) === ListItemMenu.DIRECTION.LEFT ?
+                        this._rightButtons : this._leftButtons;
 
                     if (buttonList && buttonList.length === 1) {
-                        buttonList[0].style.width = Math.abs(Math.abs(translateX) - this._dragElementRect.width) + 'px';
+                        buttonList[0].style.width = Math.abs(Math.abs(translateX) -
+                            this._dragElementRect.width) + 'px';
                         buttonList[0].style[ListItemMenu.cssTransition] = 'none';
                     }
                 } else if (this._direction || this._shouldCloseListItem) {
                     if (this._shouldOpenListItem) {
-                        if (this._direction === ListItemMenu.DIRECTION.LEFT) {
+                        if (isDirectionLeft) {
                             translateX = this._dragElementRect.width * -1.5;
                         } else {
                             translateX = this._dragElementRect.width * -0.5;
                         }
 
-                        var buttonList = this._direction === ListItemMenu.DIRECTION.LEFT ? this._rightButtons : this._leftButtons;
+                        buttonList = isDirectionLeft ? this._rightButtons : this._leftButtons;
 
-                        if (parseInt(buttonList[0].style.width) >= this._dragElementRect.width / 2) {
-                            buttonList[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
+                        if (buttonList) {
+                            if (parseInt(buttonList[0].style.width) >= this._dragElementRect.width / 2) {
+                                buttonList[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
+                            }
+
+                            buttonList[0].style.width = '50%';
                         }
 
-                        buttonList[0].style.width = '50%';
                         this.__translateComposer.translateX = translateX;
                         this.isOpened = true;
                         //todo: raise opened event?
@@ -397,11 +408,13 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         }
 
                         if (this.isOpened) {
-                            var direction = this._direction || this._previousDirection;
-                            var buttonList = direction === ListItemMenu.DIRECTION.LEFT ? this._rightButtons : this._leftButtons;
-
-                            buttonList[0].style.width = '50%';
-                            buttonList[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
+                            buttonList = (direction || this._previousDirection) === ListItemMenu.DIRECTION.LEFT ?
+                                this._rightButtons : this._leftButtons;
+                            
+                            if (buttonList) {
+                                buttonList[0].style.width = '50%';
+                                buttonList[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
+                            }
                         }
                     }
 
@@ -427,7 +440,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         },
 
         BUTTON_TRANSITION: {
-            value: 'width .3s ease-in'
+            value: 'width .3s ease-out'
         }
     }
 );
