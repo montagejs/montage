@@ -37,10 +37,14 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 this._isOpened = opened;
 
                 if (opened) {
+                    this._pressComposer.load();
                     this._pressComposer.addEventListener('press', this, false);
+                    this._pressComposer.addEventListener('pressStart', this, false);
                     this._previousDirection = this._direction;
                 } else {
+                    this._pressComposer.removeEventListener('pressStart', this, false);
                     this._pressComposer.removeEventListener('press', this, false);
+                    this._pressComposer.unload();
                     this._previousDirection = null; 
                 }
             }
@@ -253,6 +257,16 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     handleTranslateCancel: {
         value: function () {
             this._resetTranslateContext();
+        }
+    },
+
+    handlePressStart: {
+        value: function (event) {
+            var target = event.targetElement;
+            
+            if (this.element !== target && !this.element.contains(target)) {
+                this.close();
+            }
         }
     },
 
