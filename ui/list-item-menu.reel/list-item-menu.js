@@ -229,6 +229,13 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             if (!this.isOpened && !this._direction) {
                 this._direction = this._deltaX > 0 ? ListItemMenu.DIRECTION.RIGHT : 
                     ListItemMenu.DIRECTION.LEFT;
+                
+                if ((this._direction === ListItemMenu.DIRECTION.LEFT && (!this._rightButtons || !this._rightButtons.length)) ||
+                    (this._direction === ListItemMenu.DIRECTION.RIGHT && (!this._leftButtons || !this._leftButtons.length))
+                ) {
+                    this._translateComposer._cancel();
+                    return void 0;
+                }
             }
 
             if (distance > this._minDistance) {
