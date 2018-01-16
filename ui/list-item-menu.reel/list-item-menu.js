@@ -380,7 +380,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
                         buttonList = isDirectionLeft ? this._rightButtons : this._leftButtons;
 
-                        if (buttonList) {
+                        if (buttonList && buttonList.length) {
                             if (parseInt(buttonList[0].style.width) >= this._dragElementRect.width / 2) {
                                 buttonList[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
                             }
@@ -425,7 +425,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                             buttonList = (direction || this._previousDirection) === ListItemMenu.DIRECTION.LEFT ?
                                 this._rightButtons : this._leftButtons;
                             
-                            if (buttonList) {
+                            if (buttonList && buttonList.length) {
                                 buttonList[0].style.width = '50%';
                                 buttonList[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
                             }
