@@ -3849,7 +3849,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      */
     requestAnimationFrame: {
         value: (global.requestAnimationFrame || global.webkitRequestAnimationFrame || 
-                    global.mozRequestAnimationFrame ||  global.msRequestAnimationFrame || setTimeout),
+                    global.mozRequestAnimationFrame ||  global.msRequestAnimationFrame),
         enumerable: false
     },
 
@@ -3859,7 +3859,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      */
     cancelAnimationFrame: {
         value: (global.cancelAnimationFrame ||  global.webkitCancelAnimationFrame || 
-                    global.mozCancelAnimationFrame || global.msCancelAnimationFrame || clearTimeout),
+                    global.mozCancelAnimationFrame || global.msCancelAnimationFrame),
         enumerable: false
     },
 
