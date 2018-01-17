@@ -52,7 +52,6 @@
     "collections": "~5.0.x",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
-    "jshint": "^2.9.5",
     "xhr2": "^0.1.4",
     "lodash.camelcase": "^4.3.0",
     "lodash.kebabcase": "^4.1.1",
