@@ -381,7 +381,7 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
             // should base their object descriptors on Montage's version of object
             // descriptor.
             var isMontageDataType = type instanceof DataObjectDescriptor || type instanceof ObjectDescriptor;
-            return isMontageDataType ?  this._addTriggersForMontageDataType(service, type, prototype, name) :
+            return isMontageDataType ?  this._addTriggersForMontageDataType(service, type, prototype, requisitePropertyNames) :
                                         this._addTriggers(service, type, prototype, requisitePropertyNames);
         }
     },

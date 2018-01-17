@@ -443,6 +443,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    _serviceProvidingMappings: {
+        value: function (objectDescriptor) {
+            return this;
+        }
+    },
+
     _makePrototypeForType: {
         value: function (objectDescriptor) {
             var self = this,
@@ -450,9 +456,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             return module.require.async(module.id).then(function (exports) {
                 var constructor = exports[objectDescriptor.exportName],
                     prototype = Object.create(constructor.prototype),
-                    mapping = self.mappingWithType(objectDescriptor),
+                    service = self._serviceProvidingMappings(objectDescriptor),
+                    mapping = service.mappingWithType(objectDescriptor),
                     requisitePropertyNames = mapping && mapping.requisitePropertyNames || new Set(),
-                    dataTriggers = DataTrigger.addTriggers(self, objectDescriptor, prototype, requisitePropertyNames);
+                    dataTriggers = DataTrigger.addTriggers(service, objectDescriptor, prototype, requisitePropertyNames);
                 self._dataObjectPrototypes.set(constructor, prototype);
                 self._dataObjectPrototypes.set(objectDescriptor, prototype);
                 self._dataObjectTriggers.set(objectDescriptor, dataTriggers);
@@ -483,7 +490,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     _objectDescriptorForType: {
         value: function (type) {
-            return  this._constructorToObjectDescriptorMap.get(type) ||
+            return  this._constructorToObjectDescriptorMap.get(type) ||//RDW FIXME this is fragile, if _makePrototypeForType hasn't been invoked for a type before now, as in the case of montage-twitter
                     typeof type === "string" && this._moduleIdToObjectDescriptorMap[type] ||
                     type;
         }
@@ -968,7 +975,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 prototype = Object.create(type.objectPrototype || Montage.prototype);
                 this._dataObjectPrototypes.set(type, prototype);
                 if (type instanceof ObjectDescriptor || type instanceof DataObjectDescriptor) {
-                    triggers = DataTrigger.addTriggers(this, type, prototype);
+                    var service = this._serviceProvidingMappings(type),
+                        mapping = service.mappingWithType(type),
+                        requisitePropertyNames = mapping && mapping.requisitePropertyNames || new Set();
+
+                    triggers = DataTrigger.addTriggers(service, type, prototype, requisitePropertyNames);
                 } else {
                     info = Montage.getInfoForObject(type.prototype);
                     console.warn("Data Triggers cannot be created for this type. (" + (info && info.objectName) + ") is not an ObjectDescriptor");
@@ -1299,7 +1310,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (object, propertyName, propertyDescriptor) {
             var self = this,
                 objectDescriptor = propertyDescriptor.owner,
-                mapping = objectDescriptor && this.mappingWithType(objectDescriptor),//RDW ExpressionDataMapping is inserted into the mix here
+                service = objectDescriptor && self._serviceProvidingMappings(objectDescriptor),
+                mapping = objectDescriptor && service.mappingWithType(objectDescriptor),//RDW ExpressionDataMapping is inserted into the mix here
                 data = {};
 
             if (mapping) {
@@ -1720,18 +1732,27 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             var self = this,
                 isSupportedType = !(queryOrType instanceof DataQuery),
                 type = isSupportedType && queryOrType,
-                criteria = optionalCriteria instanceof DataStream ? undefined : optionalCriteria,
-                query = type ? DataQuery.withTypeAndCriteria(type, criteria) : queryOrType,
-                stream = optionalCriteria instanceof DataStream ? optionalCriteria : optionalStream;
+                objectDescriptorForType = isSupportedType && self._objectDescriptorForType(type),
+                criteria = optionalCriteria instanceof DataStream ? undefined
+                                                                  : optionalCriteria,
+                query = objectDescriptorForType ? DataQuery.withTypeAndCriteria(objectDescriptorForType, criteria)
+                                                : queryOrType,
+                stream = optionalCriteria instanceof DataStream ? optionalCriteria
+                                                                : optionalStream;
 
-            // make sure type is an object descriptor or a data object descriptor.
-            query.type = this._objectDescriptorForType(query.type);
+            // Make sure type is an ObjectDescriptor or DataObjectDescriptor for an incoming DataQuery.
+            if (!type) {
+                type = query.type;
+                objectDescriptorForType = self._objectDescriptorForType(query.type);
+                query.type = objectDescriptorForType;
+            }
+
             // Set up the stream.
             stream = stream || new DataStream();
             stream.query = query;
             stream.dataExpression = query.selectExpression;
 
-            this._dataServiceByDataStream.set(stream, this._childServiceRegistrationPromise.then(function() {
+            self._dataServiceByDataStream.set(stream, self._childServiceRegistrationPromise.then(function() {
                 var service;
                 //This is a workaround, we should clean that up so we don't
                 //have to go up to answer that question. The difference between
@@ -1814,7 +1835,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 mapping, propertyName;
 
             if (!serviceModuleID) {
-                mapping = this.mappingWithType(query.type);
+                mapping = this.mappingWithType(query.type);//RDW might need _serviceProvidingMappings here
                 propertyName = mapping && parameters && parameters.propertyName;
                 serviceModuleID = propertyName && mapping.serviceIdentifierForProperty(propertyName);
             }

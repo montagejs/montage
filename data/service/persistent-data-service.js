@@ -75,15 +75,22 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
     },
     operations : {
         get: function () {
-            var currentOperations = currentOperations || (this._operations = new IndexedDBDataService());//RDW FIXME maybe clunky to have a default, remove when we instantiate from a moduleId
+            var currentOperations = this._operations || (this.operations = new IndexedDBDataService());//RDW FIXME maybe clunky to have a default, remove when we instantiate from a moduleId
             return currentOperations;
         },
         set: function (storageDataService) {
+            var currentOperations = this._operations;
+
+            if (currentOperations) {
+                this.removeChildService(currentOperations);
+            }
+
             if (!storageDataService) {
                 this._operations = undefined;
             }
             else if (storageDataService instanceof StorageDataService) {
                 this._operations = storageDataService;
+                this.addChildService(storageDataService);
             }
             else {
                 throw "bogus operations service";
@@ -102,15 +109,22 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
     },
     storage : {
         get: function () {
-            var currentStorage = currentStorage || (this._storage = new IndexedDBDataService());//RDW FIXME maybe clunky to have a default, remove when we instantiate from a moduleId
+            var currentStorage = this._storage || (this.storage = new IndexedDBDataService());//RDW FIXME maybe clunky to have a default, remove when we instantiate from a moduleId
             return currentStorage;
         },
         set: function (storageDataService) {
+            var currentStorage = this._storage;
+
+            if (currentStorage) {
+                this.removeChildService(currentStorage);
+            }
+
             if (!storageDataService) {
                 this._storage = undefined;
             }
             else if (storageDataService instanceof StorageDataService) {
                 this._storage = storageDataService;
+                this.addChildService(storageDataService);
             }
             else {
                 throw "bogus storage service";
@@ -188,14 +202,20 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
             var service = this.super(type);
 
             if (service &&
-                service !== this &&
-                service !== this.storage &&
-                service !== this.operations &&
+                this.notThisService(service) &&
                 this.persistsObjectDescriptor(type)) {
                 service.delegate = this;
             }
 
             return service;
+        }
+    },
+
+    notThisService: {
+        value: function (service) {
+            return (service !== this &&
+                    service !== this._operations &&
+                    service !== this._storage);
         }
     },
 
@@ -205,19 +225,15 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
 
     mapSelectorToRawDataQuery: {
         value: function (query) {
-            return this.storage.mapSelectorToRawDataQuery(query);
-        }
-    },
+            var queryType = query.type,
+                service = this.childServiceForType(queryType),
+                persistentQuery = service.mapQueryToPersistentQuery(query);
 
-    mapRawDataToObject: {
-        value: function (rawData, object, context) {
-            return this.storage.mapRawDataToObject(rawData, object, context);
-        }
-    },
+            if (!persistentQuery) {
+                persistentQuery = service.mapSelectorToRawDataQuery(query);
+            }
 
-    mapObjectToRawData: {
-        value: function (object, record, context) {
-            return this.storage.mapObjectToRawData(object, record, context);
+            return persistentQuery;
         }
     },
 
@@ -230,14 +246,18 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
             // We let the super logic apply, which will attempt to obtain data through any existing child service
             var dataStream = this.super(queryOrType, optionalCriteria, optionalStream),
                 promise = dataStream,
-                self = this;
+                self = this,
+                query = dataStream.query,
+                type = query.type,
+                objectDescriptor = self._objectDescriptorForType(type);
 
-            if (this.persistsObjectDescriptor(dataStream.query.type)) {
+            query.type = objectDescriptor;//RDW FIXME hmmm
+
+            if (self.persistsObjectDescriptor(objectDescriptor)) {
                 promise = promise.then(function (data) {
                     var rawDataStream = new DataStream();
 
-                    rawDataStream.type = dataStream.type;
-                    rawDataStream.query = dataStream.query;
+                    rawDataStream.query = self.mapSelectorToRawDataQuery(query);
 
                     self._registerDataStreamForRawDataStream(dataStream, rawDataStream);
 
@@ -353,19 +373,18 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
      * @argument {Object} object
      * @returns {void}
      */
-    rawDataServiceDidAddOneRawData: {//RDW FIXME not going to use writeOfflineData, seemingly
+    rawDataServiceDidAddOneRawData: {
         value: function (dataService, dataStream, rawData, object) {
-            if (this.persistsObject(object)) {
-                var existingDataIdentifier = this.dataIdentifierForObject(object),
-                    type = existingDataIdentifier || dataStream.query.type,
-                    dataIdentifier = existingDataIdentifier || this.dataIdentifierForTypeRawData(type, rawData);
+            if (this.notThisService(dataService) && this.persistsObject(object)) {
+                var type = this._objectDescriptorForType(dataStream.query.type),//RDW FIXME hmmm
+                    dataIdentifier = this.dataIdentifierForObjectTypeRawData(object, type, rawData);
 
                 if (dataIdentifier) {
                     var dataStreamPrimaryKeyMap = this.objectsByPrimaryKeyForDataStream(dataStream),
-                        dataOperation = DataOperation.lastRead(dataIdentifier.primaryKey, dataStream.query.type, rawData);
+                        dataOperation = DataOperation.lastRead(dataIdentifier.primaryKey, type, rawData);
 
                     // Register the object by primarykey, which we'll need later
-                    dataStreamPrimaryKeyMap.set(dataIdentifier.primaryKey, object);
+                    dataStreamPrimaryKeyMap.set(dataIdentifier.primaryKey, rawData);
 
                     // The operation should be created atomically in the method that
                     // will actually save the data itself.
@@ -374,7 +393,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                     // Need to keep an eye out for possible consequences due to that change.
 
                     this.updateOperationsForDataStream(dataStream).push(dataOperation);
-                    this.objectsToUpdateForDataStream(dataStream).push(object);//RDW FIXME HERE need to gather primaryKeys
+                    this.objectsToUpdateForDataStream(dataStream).push(rawData);
                 }
                 else {
                     if (!type) {
@@ -396,9 +415,9 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
     // This gets called in the home-stretch invocation of this.fetchRawData
 
     addOneRawData: {
-        value: function (stream, rawData, context, _type) {
+        value: function (stream, rawData, context, streamType) {
             var dataStream = this._dataStreamForRawDataStream(stream),
-                object = null;
+                object = undefined;
 
             // If results were returned by childServices but that primaryKey isn't found,
             // it means that this object doesn't match stream's query criteria as it used to.
@@ -406,28 +425,21 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
             // disapear for other queries that it still matches.
             // It should be done eventually for a per query cache.
 
-            if (dataStream.data && dataStream.length > 0) {
+            if (dataStream && dataStream.data && dataStream.data.length) {
                 var dataStreamPrimaryKeyMap = this.objectsByPrimaryKeyForDataStream(dataStream),
-                    dataIdentifier = this.dataIdentifierForTypeRawData(stream.query.type, rawData),
+                    dataIdentifier = this.dataIdentifierForObjectTypeRawData(context, streamType, rawData),
                     primaryKey = dataIdentifier.primaryKey,
                     dataStreamValue = dataStreamPrimaryKeyMap.get(primaryKey);
 
                 if (!dataStreamValue) {
                     this.objectsToDeleteForDataStream(dataStream).push(primaryKey);//RDW FIXME HERE need to gather primaryKeys
+                    object = this.nullPromise;
                 }
             }
-            else {
-                // If no data was returned, we go on and create the object.
-                //RDW The presumption here is that the service in question is offline???
 
-                object = this.super(stream, rawData, context, _type);
+            if (!object) {
+                object = this.super(stream, rawData, context, streamType);
             }
-
-
-
-            //Do we have
-
-
 
             return object;
         }
@@ -437,15 +449,28 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
         value: function (stream, context) {
             var self = this;
 
-            return this.super(stream, context).then(function () {
-                var dataStream = self._dataStreamForRawDataStream(stream),
-                    updateOperations = self.updateOperationsForDataStream(dataStream),
-                    updates = self.objectsToUpdateForDataStream(dataStream),
-                    deletes = self.objectsToDeleteForDataStream(dataStream),
-                    query = stream.query;
-//RDW FIXME HERE need to produce primary keys
-                return self._synchronizeOfflineStateForQuery(query, updates, updateOperations, deletes);
-            })
+            return self.super(stream, context).then(function () {
+                return self._synchronizeOfflineStateForStream(stream, context);
+            });
+        }
+    },
+
+    /**
+     * Delegate method allowing PersistentDataService to finish the ground work
+     * for other services after objects are fetched.
+     *
+     * @method
+     * @argument {DataService} dataService
+     * @argument {DataStream} dataStream
+     * @argument {Object} context
+     * @returns {void}
+     */
+    rawDataServiceDidRawDataDone: {
+        value: function (dataService, stream, context) {
+            if (this.notThisService(dataService) && 
+                this.persistsObjectDescriptor(this._objectDescriptorForType(stream.query.type))) {
+                    this._synchronizeOfflineStateForStream(stream, context);
+            }
         }
     },
 
@@ -479,7 +504,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
             var objectDescriptor = dataIdentifier ? dataIdentifier.objectDescriptor
                                                   : this.objectDescriptorForObject(context),
                 model = objectDescriptor.model,
-                dataIdentifier = dataIdentifier || this.dataIdentifierForTypeRawData(objectDescriptor, record),
+                dataIdentifier = dataIdentifier || this.dataIdentifierForObjectTypeRawData(context, objectDescriptor, record),
                 primaryKey = dataIdentifier.primaryKey,
                 operationStoreName = this.operations._offlineOperationsStoreName,
                 operation = DataOperation.lastDeleted(primaryKey, objectDescriptor, record, context),
@@ -503,15 +528,17 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
      */
     rawDataServiceWillDeleteRawData: {
         value: function (dataService, rawData, object) {
-            var dataIdentifier = this.dataIdentifierForObject(object),
-                objectDescriptor = dataIdentifier.objectDescriptor,
-                self = this;
+            if (this.notThisService(dataService) && this.persistsObject(object)) {
+                var dataIdentifier = this.dataIdentifierForObject(object),
+                    objectDescriptor = dataIdentifier.objectDescriptor,
+                    self = this;
 
-            self._deleteOfflinePrimaryKeyDependenciesForData(rawData, objectDescriptor).then(function () {
-                self._deleteOfflinePrimaryKeys(dataIdentifier.primaryKey, objectDescriptor).then(function () {
-                    self._deleteRawData(rawData, object, dataIdentifier);
+                self._deleteOfflinePrimaryKeyDependenciesForData(rawData, objectDescriptor).then(function () {
+                    self._deleteOfflinePrimaryKeys(dataIdentifier.primaryKey, objectDescriptor).then(function () {
+                        self._deleteRawData(rawData, object, dataIdentifier);
+                    });
                 });
-            });
+            }
         }
     },
 
@@ -539,7 +566,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
             var objectDescriptor = dataIdentifier ? dataIdentifier.objectDescriptor
                                                   : this.objectDescriptorForObject(context),
                 model = objectDescriptor.model,
-                dataIdentifier = dataIdentifier || this.dataIdentifierForTypeRawData(objectDescriptor, record),
+                dataIdentifier = dataIdentifier || this.dataIdentifierForObjectTypeRawData(context, objectDescriptor, record),
                 primaryKey = dataIdentifier.primaryKey,
                 operationStoreName = this.operations._offlineOperationsStoreName,
                 operation = DataOperation.lastUpdated(primaryKey, objectDescriptor, record, context),//RDW FIXME should be lastCreated, if we haven't seen this before. but we might have to do a fetch to even know?
@@ -563,13 +590,15 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
      */
     rawDataServiceWillSaveRawData: {//RDW FIXME if the primary key was updated, will need to fix
         value: function (dataService, rawData, object) {
-            var dataIdentifier = this.dataIdentifierForObject(object),
-                objectDescriptor = dataIdentifier.objectDescriptor,
-                self = this;
+            if (this.notThisService(dataService) && this.persistsObject(object)) {
+                var dataIdentifier = this.dataIdentifierForObject(object),
+                    objectDescriptor = dataIdentifier.objectDescriptor,
+                    self = this;
 
-            self._registerOfflinePrimaryKeyDependenciesForData(rawData, objectDescriptor).then(function () {//RDW FIXME we may need to clean up dependencies that have changed
-                self._saveRawData(rawData, object, dataIdentifier);
-            });
+                self._registerOfflinePrimaryKeyDependenciesForData(rawData, objectDescriptor).then(function () {//RDW FIXME we may need to clean up dependencies that have changed
+                    self._saveRawData(rawData, object, dataIdentifier);
+                });
+            }
         }
     },
 
@@ -598,7 +627,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                     self = this;
 
                 for (var i = 0, iRawData; (iRawData = objects[i]); i++) {
-                    dataIdentifier = this.dataIdentifierForTypeRawData(type, iRawData);
+                    dataIdentifier = this.dataIdentifierForObjectTypeRawData(iRawData, type, iRawData);
                     primaryKey = dataIdentifier ? dataIdentifier.primaryKey
                                                 : '';
 
@@ -652,7 +681,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                     self = this;
 
                 for (var i = 0, iRawData; (iRawData = objects[i]); i++) {
-                    primaryKey = this.dataIdentifierForTypeRawData(type, iRawData).primaryKey;
+                    primaryKey = this.dataIdentifierForObjectTypeRawData(iRawData, type, iRawData).primaryKey;
                     operations.push(DataOperation.lastUpdated(primaryKey, type, iRawData, context, operationTime));
                     primaryKeys.push(primaryKey);
                 }
@@ -694,7 +723,7 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
                     self = this;
 
                 for (var i = 0, iRawData; (iRawData = objects[i]); i++) {
-                    primaryKey = this.dataIdentifierForTypeRawData(type, iRawData).primaryKey;
+                    primaryKey = this.dataIdentifierForObjectTypeRawData(iRawData, type, iRawData).primaryKey;
                     operations.push(DataOperation.lastDeleted(primaryKey, type, iRawData, context, operationTime));
                     primaryKeys.push(primaryKey);
                 }
@@ -725,26 +754,72 @@ exports.PersistentDataService = PersistentDataService = RawDataService.specializ
         }
     },
 
+    _synchronizeOfflineStateForStream: {
+        value: function (stream, context) {
+            var self = this,
+                dataStream = self._dataStreamForRawDataStream(stream) || stream,
+                updateOperations = self.updateOperationsForDataStream(dataStream),// this only comes from rawDataServiceDidAddOneRawData
+                updates = self.objectsToUpdateForDataStream(dataStream),// this only comes from rawDataServiceDidAddOneRawData
+                deletes = self.objectsToDeleteForDataStream(dataStream),// this only comes from addOneRawData (bc of PersistentDataService.fetchRawData)
+                query = stream.query,
+                type = self._objectDescriptorForType(dataStream.query.type),//RDW FIXME hmmm
+                primaryKeys = [],
+                dataIdentifier,
+                primaryKey,
+                rawData;
+
+            for (iUpdate in updates) {
+                rawData = updates[iUpdate];
+                dataIdentifier = self.dataIdentifierForObjectTypeRawData(rawData, type, rawData),
+                primaryKey = dataIdentifier ? dataIdentifier.primaryKey : "";
+
+                if (primaryKey.length) {
+                    primaryKeys.push(dataIdentifier.primaryKey);//RDW FIXME or get from updateOperations
+                }
+                else {
+                    throw "unable to determine dataIdentifier for type '" + (type ? type.name : "MISSING TYPE") + "' and rawData '" + rawData + "'";
+                }
+            }
+
+            return self._synchronizeOfflineStateForQuery(query, updates, primaryKeys, updateOperations, deletes);
+        }
+    },
+
     _synchronizeOfflineStateForQuery: {
         value: function (query, rawDataArray, rawDataArrayPrimaryKeys, updateOperationArray, offlineObjectsToClear) {
-            var self = this,
-                objectDescriptor = query.type,
-                model = objectDescriptor.model,
-                storeName = self.storage._storeNameForObjectDescriptor(objectDescriptor);
+            var result;
 
-            // Transaction:
-            //     Objects to put:
-            //         rawDataArray into offline storage
-            //         updateOperationArray into offline operations?
-            //     Objects to delete:
-            //         offlineObjectsToClear in table and operationTable
-//RDW FIXME need to have gathered primary keys (either from operations.dataID, or pass them in)
-            return Promise.all([
-                self.storage._updateInStoreForModel(rawDataArray, rawDataArrayPrimaryKeys, storeName, model, false, true),
-                self.operations._recordOperation(self.operations._offlineOperationsStoreName, updateOperationArray, true),
-                self.storage._deleteFromStoreForModel(offlineObjectsToClear, storeName, model, true),
-                self.storage._deleteFromStoreForModel(offlineObjectsToClear, self.operations._offlineOperationsStoreName, model, true)
-            ]);
+            if (rawDataArrayPrimaryKeys.length || offlineObjectsToClear.length) {
+                var self = this,
+                    objectDescriptor = self._objectDescriptorForType(query.type),//RDW FIXME hmmm
+                    model = objectDescriptor.model,
+                    storeName = self.storage._storeNameForObjectDescriptor(objectDescriptor),
+                    promiseArray = [];
+
+                // Transaction:
+                //     Objects to put:
+                //         rawDataArray into offline storage
+                //         updateOperationArray into offline operations?
+                //     Objects to delete:
+                //         offlineObjectsToClear in table and operationTable
+
+                if (rawDataArrayPrimaryKeys.length) {
+                    promiseArray.push(self.storage._updateInStoreForModel(rawDataArray, rawDataArrayPrimaryKeys, storeName, model, false, true));
+                    promiseArray.push(self.operations._recordOperation(self.operations._offlineOperationsStoreName, updateOperationArray, true));
+                }
+
+                if (offlineObjectsToClear.length) {
+                    promiseArray.push(self.storage._deleteFromStoreForModel(offlineObjectsToClear, storeName, model, true));
+                    promiseArray.push(self.operations._deleteFromStoreForModel(offlineObjectsToClear, self.operations._offlineOperationsStoreName, model, true));
+                }
+
+                result = Promise.all(promiseArray);
+            }
+            else {
+                result = this.emptyArrayPromise;
+            }
+
+            return result;
         }
     },
 

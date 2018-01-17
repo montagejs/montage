@@ -57,6 +57,20 @@ exports.StorageDataService = StorageDataService = RawDataService.specialize(/** 
         }
     },
 
+    _operationsRequirePrimaryKey: {
+        value: true
+    },
+
+    /***************************************************************************
+     * Service Hierarchy
+     */
+
+    _serviceProvidingMappings: {
+        value: function (objectDescriptor) {
+            return this.rootService.childServiceForType(objectDescriptor);
+        }
+    },
+
     /***************************************************************************
      * Saving Data
      */
@@ -86,7 +100,7 @@ exports.StorageDataService = StorageDataService = RawDataService.specialize(/** 
                                                  : this.objectDescriptorForObject(context),
                 model = objectDescriptor.model,
                 primaryKey = dataIdentifier ? dataIdentifier.primaryKey
-                                            : this.dataIdentifierForTypeRawData(objectDescriptor, record).primaryKey,
+                                            : this.dataIdentifierForObjectTypeRawData(context, objectDescriptor, record).primaryKey,
                 recordStoreName = this._storeNameForObjectDescriptor(objectDescriptor);
 
             return self._deleteFromStoreForModel(primaryKey, recordStoreName, model);
@@ -118,7 +132,7 @@ exports.StorageDataService = StorageDataService = RawDataService.specialize(/** 
                                                  : this.objectDescriptorForObject(context),
                 model = objectDescriptor.model,
                 primaryKey = dataIdentifier ? dataIdentifier.primaryKey
-                                            : this.dataIdentifierForTypeRawData(objectDescriptor, record).primaryKey,
+                                            : this.dataIdentifierForObjectTypeRawData(context, objectDescriptor, record).primaryKey,
                 recordStoreName = this._storeNameForObjectDescriptor(objectDescriptor);
 
             return self._updateInStoreForModel(record, primaryKey, recordStoreName, model);
@@ -155,10 +169,17 @@ exports.StorageDataService = StorageDataService = RawDataService.specialize(/** 
 
                 if (isBulkOperation) {
                     model = operation[0].dataType.model;
+                    primaryKey = undefined;
 
-                    for (var i = 0, iOperation; (iOperation = operation[i]); i++) {
-                        primaryKey = primaryKey || [];
-                        primaryKey.push(iOperation[indexPropertyName]);
+                    if (this._operationsRequirePrimaryKey) {
+                        var i,
+                            iOperation;
+
+                        primaryKey = [];
+
+                        for (i = 0; (iOperation = operation[i]); i++) {
+                            primaryKey.push(iOperation[indexPropertyName]);
+                        }
                     }
                 }
                 else {

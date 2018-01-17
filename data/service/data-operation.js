@@ -35,7 +35,9 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      * @type {number}
      */
     id: {
-        value: this._index
+        get: function () {
+            return this.index || this._index;
+        }
     },
 
     /**

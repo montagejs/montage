@@ -1,13 +1,15 @@
 var StorageDataService = require("data/service/storage-data-service").StorageDataService,
+    compile = require("frb/compile-evaluator"),
     DataStream = require("data/service/data-stream").DataStream,
-    Promise = require("core/promise").Promise,
     DataOrdering = require("data/model/data-ordering").DataOrdering,
     DESCENDING = DataOrdering.DESCENDING,
     evaluate = require("frb/evaluate"),
     Map = require("collections/map"),
     Model = require("core/meta/model").Model,
     ModelGroup = require("core/meta/model-group").ModelGroup,
-    WeakMap = require("collections/weak-map");
+    Promise = require("core/promise").Promise,
+    Scope = require("frb/scope"),
+    Set = require("collections/set");
 /**
  * TODO: Document
  *
@@ -57,6 +59,13 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
         }
     },
 
+    _operationsRequirePrimaryKey: {
+        value: false
+    },
+    _operationsShouldAutoIncrement: {
+        value: false
+    },
+
     /**
      * Benoit: 8/8/2017. We are going to use a single database for an App model-group.//TODO model-group or model? parameter says "model"
      * If a persistent service is used for a single model, no pbm, to workaround possible
@@ -76,103 +85,20 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
      * @returns {Promise}
      */
 
-    /**
-     * returns a Promise that resolves to the object used by the service to
-     * store data. This is meant to be an abstraction of the "Database"
-     *
-     * @returns {Promise}
-     */
-
-    databaseByModel: {
+    registeredModels: {
         get: function () {
-            return IndexedDBDataService.databaseByModel;
+            return IndexedDBDataService.registeredModels;
         }
     },
 
-    registerDatabaseForModel: {
-        value: function (database, model) {
-            this.databaseByModel.set(model, database);
-        }
-    },
-    unregisterDatabaseForModel: {
+    registerModel: {
         value: function (model) {
-            this.databaseByModel.delete(model);
+            this.registeredModels.add(model);
         }
     },
-
-    _registeredDatabaseForModel: {
+    unregisterModel: {
         value: function (model) {
-            var database = this.provideDatabaseForModel(model);
-
-            this.registerDatabaseForModel(database, model);
-
-            return database;
-        }
-    },
-    _resetDatabaseForModel: {
-        value: function (model) {
-            this.unregisterDatabaseForModel(model);
-
-            return this._registeredDatabaseForModel(model);
-        }
-    },
-
-    databaseForModel : {
-        value: function (model, objectDescriptor) {
-            var database = this.databaseByModel.get(model);
-
-            if (database) {
-                var self = this;
-
-                database.then(function (db) {
-                    if (objectDescriptor && !db.objectStoreNames.contains(self._storeNameForObjectDescriptor(objectDescriptor))) {
-                        console.error("CLOSING FOR " + objectDescriptor.name);//RDW FIXME REMOVE
-                        db.close();
-
-                        database = self._resetDatabaseForModel(model);
-                    }
-
-                    return database;
-                },
-                function (reason) {
-                    console.error("CLOSING REJECT databaseForModel " + (objectDescriptor ? objectDescriptor.name : "NONSPECIFIC"));//RDW FIXME REMOVE
-                    database = self._resetDatabaseForModel(model);
-
-                    return database;
-                }).catch(function (reason) {
-                    console.error("CLOSING CATCH databaseForModel " + (objectDescriptor ? objectDescriptor.name : "NONSPECIFIC"));//RDW FIXME REMOVE
-                    database = self._resetDatabaseForModel(model);
-
-                    return database;
-                });
-                console.error("RETURNING databaseForModel " + (objectDescriptor ? objectDescriptor.name : "NONSPECIFIC"));//RDW FIXME REMOVE
-            }
-            else {
-                console.error("REGISTERING databaseForModel " + (objectDescriptor ? objectDescriptor.name : "NONSPECIFIC"));//RDW FIXME REMOVE
-                database = this._registeredDatabaseForModel(model);
-            }
-
-            return database;
-        }
-    },
-    databaseForObjectDescriptor: {
-        value: function (objectDescriptor) {
-            return this.databaseForModel(objectDescriptor.model, objectDescriptor);
-        }
-    },
-
-    _invalidateDatabaseForModel: {
-        value: function (event) {
-            var modelToInvalidate = event.target.result.model,
-                self = this;
-
-            // We reject it, in the event that this event is actually settling this Promise.
-            // Rejecting the Promise will have no effect on a previously settled Promise.
-            // If the Promise was previously fulfilled, we use a fulfillment then() handler to unregister it.
-
-            self.databaseForModel(modelToInvalidate).reject(event).then(function (result) {
-                self.unregisterDatabaseForModel(modelToInvalidate);
-            });
+            this.registeredModels.delete(model);
         }
     },
 
@@ -193,37 +119,51 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
         }
     },
 
-    provideDatabaseForModel : {
-        value: function (model) {
-            var factory = this.factory;
+    provideTransactionForModelStoreNamesMode : {
+        value: function (model, storeNames, isReadWrite) {
+            console.error("TRANSACTION " + (isReadWrite ? "R/W" : "R/O") + " " + storeNames);//RDW FIXME REMOVE
+            var self = this,
+                result,
+                factory = self.factory;
 
             if (factory) {
-                var databasePromiseResolve,
-                    databasePromiseReject,
-                    self = this,
-                    database = new Promise(function (resolve, reject) {
-                        databasePromiseResolve = resolve;
-                        databasePromiseReject = reject;
+                if (model && storeNames) {
+                    var storeNamesArray = Array.isArray(storeNames) ? storeNames
+                                                                    : [storeNames],
+                        mode = isReadWrite ? 'readwrite'
+                                           : 'readonly';
 
-                        self._openDatabaseConnection(factory, model);
+                    result = new Promise(function (resolve, reject) {
+                        self._openDatabaseConnection(resolve, reject, factory, model, storeNamesArray, mode);
                     });
 
-                database.resolve = databasePromiseResolve;
-                database.reject = databasePromiseReject;
-
-                return database;
+                    self.registerModel(model);
+                }
+                else {
+                    if (storeNames) {
+                        result = Promise.reject("missing model");
+                    }
+                    else if (model) {
+                        result = Promise.reject("missing storeNames");
+                    }
+                    else {
+                        result = Promise.reject("missing model and storeNames");
+                    }
+                }
             }
             else {
-                return Promise.reject(new Error("Your environment doesn't support IndexedDB."));
+                result = Promise.reject(new Error("Your environment doesn't support IndexedDB."));
             }
+
+            return result;
         }
     },
 
     _openDatabaseConnection: {
-        value: function (factory, model, version) {
+        value: function (resolve, reject, factory, model, storeNames, mode, version) {
             var name = model.name,
                 possibleUpgrade = (version || version === 0),
-                request = possibleUpgrade ? factory.open(name, version)
+                request = possibleUpgrade ? factory.open(name, version)//RDW is name used for something clever?
                                           : factory.open(name);
 
             if (!request) {
@@ -232,81 +172,129 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
             else {
                 request.identifier = "openDatabase";
                 request.addEventListener("blocked", this, false);
-                request.addEventListener("close", this, false);
                 request.addEventListener("error", this, false);
                 request.addEventListener("success", this, false);
                 request.addEventListener("upgradeneeded", this, false);
 
-                request.waitingForOpenSuccess = true;
+                request.resolve = resolve;
+                request.reject = reject;
                 request.model = model;
+                request.storeNames = storeNames;
+                request.mode = mode;
+            }
+        }
+    },
+
+    _discardEventDecorations: {
+        value: function (eventTarget) {
+            eventTarget.removeEventListener("abort", this, false);
+            eventTarget.removeEventListener("blocked", this, false);
+            eventTarget.removeEventListener("close", this, false);
+            eventTarget.removeEventListener("error", this, false);
+            eventTarget.removeEventListener("success", this, false);
+            eventTarget.removeEventListener("upgradeneeded", this, false);
+            eventTarget.removeEventListener("versionchange", this, false);
+
+            eventTarget.identifier = undefined;
+            eventTarget.resolve = undefined;
+            eventTarget.reject = undefined;
+            eventTarget.model = undefined;
+            eventTarget.storeNames = undefined;
+            eventTarget.mode = undefined;
+        }
+    },
+    _discardEventTarget: {
+        value: function (eventTarget) {
+            this._discardEventDecorations(eventTarget);
+
+            if (eventTarget instanceof IDBDatabase) {
+                console.error("CLOSING OPEN CONNECTION");//RDW FIXME REMOVE
+                eventTarget.close();
+            }
+            else if (eventTarget instanceof IDBOpenDBRequest) {
+                if (eventTarget.readyState === "done") {
+                    var dbResult = eventTarget.result;
+
+                    if (dbResult) {
+                        console.error("CLOSING REQUESTED CONNECTION");//RDW FIXME REMOVE
+                        dbResult.close();
+                    }
+                    else { console.error("NOTHING THERE CANNOT CLOSE"); }//RDW FIXME REMOVE
+                }
+                else { console.error("PENDING CANNOT CLOSE"); }//RDW FIXME REMOVE
             }
         }
     },
     _discardDatabaseConnection: {
         value: function (event) {
-            var dbRequest = event.target;
-
-            dbRequest.removeEventListener("abort", this, false);
-            dbRequest.removeEventListener("blocked", this, false);
-            dbRequest.removeEventListener("error", this, false);
-            dbRequest.removeEventListener("success", this, false);
-            dbRequest.removeEventListener("upgradeneeded", this, false);
-            dbRequest.removeEventListener("versionchange", this, false);
+            this._discardEventTarget(event.target);
         }
     },
 
     handleOpenDatabaseBlocked: {
         value: function (event) {
-            console.error("BLOCKED");//RDW FIXME REMOVE
+            console.error("REOPEN (BLOCKED) " + event.target.storeNames);//RDW FIXME REMOVE
             // https://stackoverflow.com/questions/23636247/how-long-can-the-server-connection-be-persisted-in-db-js
-            this._invalidateDatabaseConnection(event);
-        }
-    },
-    handleOpenDatabaseClose: {
-        value: function (event) {
-            console.error("CLOSE");//RDW FIXME REMOVE
-            this._invalidateDatabaseConnection(event);
+//            this._rerequestDatabaseConnection(event);
         }
     },
     handleOpenDatabaseError: {
         value: function (event) {
-            console.error("OPEN DB ERROR");//RDW FIXME REMOVE
-            this._invalidateDatabaseConnection(event);
+            console.error("REJECT (OPEN DB ERROR) " + event.target.storeNames);//RDW FIXME REMOVE
+            var dbRequest = event.target;
+
+            this._discardEventDecorations(dbRequest);
+
+            dbRequest.reject(dbRequest.error);
         }
     },
     handleOpenDatabaseSuccess: {
         value: function (event) {
             var dbRequest = event.target,
                 dbResult = dbRequest.result,
-                model = dbRequest.model;
+                modelOrGroup = dbRequest.model,
+                storeNames = dbRequest.storeNames;
 
-            console.error("SUCCESS");//RDW FIXME REMOVE
-            if (this._shouldUpgradeDatabaseForModelOrGroup(dbResult, model)) {
+            if (this._shouldUpgradeDatabaseForModelOrGroup(dbResult, modelOrGroup, storeNames)) {
+                console.error("REOPEN (UPGRADING) " + storeNames);//RDW FIXME REMOVE
                 var newVersion = dbResult.version + 1;
 
-                this._discardDatabaseConnection(event);
-                this._openDatabaseConnection(this.factory, model, newVersion);
+                this._rerequestDatabaseConnection(event, newVersion);
             }
             else {
-                dbRequest.waitingForOpenSuccess = false;
+                console.error("****** (SUCCESS) " + storeNames);//RDW FIXME REMOVE
+                var resolve = dbRequest.resolve,
+                    reject = dbRequest.reject,
+                    storeNames = dbRequest.storeNames,
+                    mode = dbRequest.mode,
+                    transaction;
+
+                this._discardEventDecorations(dbRequest);
 
                 dbResult.identifier = "database";
-                dbResult.model = model;
-
                 dbResult.addEventListener("abort", this, false);
+                dbResult.addEventListener("close", this, false);
                 dbResult.addEventListener("error", this, false);
                 dbResult.addEventListener("versionchange", this, false);
 
-                this.databaseForModel(model).resolve(dbResult);
+                dbResult.model = modelOrGroup;
+                dbResult.resolve = resolve;
+                dbResult.reject = reject;
+                dbResult.storeNames = storeNames;
+                dbResult.mode = mode;
+
+                transaction = dbResult.transaction(storeNames, mode);
+
+                resolve(transaction);
             }
         }
     },
-//TODO we prob don't want to randomly create indexes bc size limits in IndexedDB ... either the model(s) should hint what indexes to create or we should just create them as we proceed
-//TODO or can we build a schema dynamically, as queries come in, then persist it? would need to be able to kick off upgrades, e.g. in IndexedDB
-    handleOpenDatabaseUpgradeneeded: {//TODO store commonly used properties on objects, and create indexes for them here
+    handleOpenDatabaseUpgradeneeded: {//RDW FIXME create commonly used indexes here
         value: function (event) {
-            var dbResult = event.target.result,
-                modelOrGroup = event.target.model;
+            console.error("****** (UPGRADING)");//RDW FIXME REMOVE
+            var dbRequest = event.target,
+                dbResult = dbRequest.result,
+                modelOrGroup = dbRequest.model;
 
             if (modelOrGroup instanceof ModelGroup) {
                 var models = modelOrGroup.models;
@@ -319,20 +307,20 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
                 this._createObjectStoresForModel(dbResult, modelOrGroup);
             }
             else {
-                throw "must be instance of Model or ModelGroup"; 
+                throw "must be instance of Model or ModelGroup";
             }
         }
     },
 
     _shouldUpgradeDatabaseForModelOrGroup: {
-        value: function (dbToCheck, modelOrGroup) {
+        value: function (dbToCheck, modelOrGroup, storeNamesToCheck) {
             var result = false;
 
             if (modelOrGroup instanceof ModelGroup) {
                 var models = modelOrGroup.models;
 
                 for (iModel in models) {
-                    result = this._shouldUpgradeDatabaseForModelOrGroup(dbToCheck, models[iModel]);
+                    result = this._shouldUpgradeDatabaseForModelOrGroup(dbToCheck, models[iModel], storeNamesToCheck);
 
                     if (result) {
                         break;
@@ -340,22 +328,33 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
                 }
             }
             else if (modelOrGroup instanceof Model) {
-                var model = modelOrGroup,
-                    modelVersion = model.version;
+                var modelVersion = modelOrGroup.version;
 
                 if (modelVersion) {
                     result = (modelVersion > dbToCheck.version);
                 }
 
                 if (!result) {
-                    var existingObjectStoreNames = dbToCheck.objectStoreNames,
-                        objectDescriptorsToCheck = modelOrGroup.objectDescriptors;
+                    var existingObjectStoreNames = dbToCheck.objectStoreNames;
 
-                    for (iObjectDescriptor in objectDescriptorsToCheck) {
-                        result = !existingObjectStoreNames.contains(this._storeNameForObjectDescriptor(objectDescriptorsToCheck[iObjectDescriptor]));
+                    if (storeNamesToCheck) {
+                        for (iStoreName in storeNamesToCheck) {
+                            result = !existingObjectStoreNames.contains(storeNamesToCheck[iStoreName]);
 
-                        if (result) {
-                            break;
+                            if (result) {
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        var objectDescriptorsToCheck = modelOrGroup.objectDescriptors;
+
+                        for (iObjectDescriptor in objectDescriptorsToCheck) {
+                            result = !existingObjectStoreNames.contains(this._storeNameForObjectDescriptor(objectDescriptorsToCheck[iObjectDescriptor]));
+
+                            if (result) {
+                                break;
+                            }
                         }
                     }
                 }
@@ -395,7 +394,13 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
                 operationsStoreNames = [this._persistentOperationsStoreName, this._offlineOperationsStoreName];
 
             for (storeNameIndex in operationsStoreNames) {
-                this._createObjectStore(dbToFill, existingObjectStoreNames, operationsStoreNames[storeNameIndex], this._operationsIndexName, true);//RDW may not need autoIncrement, if DataOperation is always gonna provide an index anyway
+                var operationsStoreName = operationsStoreNames[storeNameIndex];
+
+                if (dbToFill.version === 1 && existingObjectStoreNames.contains(operationsStoreName)) {
+                    dbToFill.deleteObjectStore(operationsStoreName);
+                }
+
+                this._createObjectStore(dbToFill, existingObjectStoreNames, operationsStoreName, this._operationsIndexName, true/*this._operationsShouldAutoIncrement*/);
             }
 
             for (iObjectDescriptor in objectDescriptors) {
@@ -407,34 +412,44 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
         }
     },
 
-    _invalidateDatabaseConnection: {
-        value: function (event) {
+    _rerequestDatabaseConnection: {
+        value: function (event, shouldIncrementVersion) {
+            var eventTarget = event.target;
+                model = eventTarget.model,
+                resolve = eventTarget.resolve,
+                reject = eventTarget.reject,
+                newVersion = shouldIncrementVersion,
+                storeNames = eventTarget.storeNames,
+                mode = eventTarget.mode;
+
             this._discardDatabaseConnection(event);
-
-            if (!event.target.waitingForOpenSuccess) {
-                // If there was a fulfilled Promise before, we need to unregister it.
-                this._invalidateDatabaseForModel(event);
-            }
+            this._openDatabaseConnection(resolve, reject, this.factory, model, storeNames, mode, newVersion);
         }
     },
 
-    handleDatabaseAbort: {
+    handleDatabaseAbort: {//RDW FIXME HERE
         value: function (event) {
-            console.error("ABORT");//RDW FIXME REMOVE
-            this._invalidateDatabaseConnection(event);
+            console.error("REOPEN (ABORT) " + event.target.storeNames);//RDW FIXME REMOVE
+            this._rerequestDatabaseConnection(event);
         }
     },
-    handleDatabaseError: {
+    handleDatabaseClose: {
         value: function (event) {
-            console.error("DB ERROR");//RDW FIXME REMOVE
-            this._invalidateDatabaseConnection(event);
+            console.error("REOPEN (CLOSE) " + event.target.storeNames);//RDW FIXME REMOVE
+            this._rerequestDatabaseConnection(event);
         }
     },
-    handleDatabaseVersionChange: {
+    handleDatabaseError: {//RDW FIXME HERE
         value: function (event) {
-            console.error("VERSIONCHANGE");//RDW FIXME REMOVE
+            console.error("REOPEN (ERROR)" + event.target.storeNames);//RDW FIXME REMOVE
+            this._rerequestDatabaseConnection(event);
+        }
+    },
+    handleDatabaseVersionchange: {//RDW FIXME HERE
+        value: function (event) {
+            console.error("REOPEN (VERSIONCHANGE) " + event.target.storeNames);//RDW FIXME REMOVE
             // https://stackoverflow.com/questions/23636247/how-long-can-the-server-connection-be-persisted-in-db-js
-            this._invalidateDatabaseConnection(event);
+//            this._rerequestDatabaseConnection(event);
         }
     },
 
@@ -444,22 +459,44 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
 
     fetchRawData: {
         value: function (stream) {
-            var self = this,
-                objectDescriptor = stream.query.type;
+            var query = stream.query,
+                type = query.type,
+                objectDescriptor = this._objectDescriptorForType(type);//RDW FIXME hmmm
 
-            self.databaseForModel(objectDescriptor.model, objectDescriptor).then(function (db) {
-                console.error("FETCHING " + objectDescriptor.name);//RDW FIXME REMOVE
-                self._fetchFollowedByOrder(self, db, stream);
-            },
-            function (reason) {
-                console.error("REJECT ON FETCHING " + objectDescriptor.name);//RDW FIXME REMOVE
-                stream.dataError(reason);
-            }).catch(function (reason) {
-                console.error("CATCH ON FETCHING " + objectDescriptor.name);//RDW FIXME REMOVE
-                stream.dataError(reason);
-            });
+            query.type = objectDescriptor;
+
+            console.error("FETCHING " + objectDescriptor.name);//RDW FIXME REMOVE
+            this._fetchFollowedByOrder(stream);
 
             return stream;
+        }
+    },
+
+    _addDataToService: {
+        value: function (shouldMap, stream, rawData, context) {
+            if (stream && rawData) {
+                if (shouldMap) {
+                    var rawDataArray = Array.isArray(rawData) ? rawData
+                                                            : [rawData];
+                    this.addRawData(stream, rawDataArray, context);
+                }
+                else {
+                    stream.addData(rawData);
+                }
+            }
+        }
+    },
+
+    _dataDoneToService: {
+        value: function (shouldMap, stream, context) {
+            if (stream) {
+                if (shouldMap) {
+                    this.rawDataDone(stream, context);
+                }
+                else {
+                    stream.dataDone();
+                }
+            }
         }
     },
 
@@ -489,8 +526,9 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
     },
 
     _fetchFollowedByOrder: {
-        value: function (self, db, stream) {
-            var query = stream.query,
+        value: function (stream) {
+            var self = this,
+                query = stream.query,
                 criteria = query.criteria,
                 orderings = query.orderings,
                 shouldOrder = (orderings && Array.isArray(orderings) && orderings.length),
@@ -501,11 +539,11 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
                 streamToUse.query = query;
             }
 
-            self._fetchTBD(self, db, criteria.syntax, criteria.parameters, streamToUse);
+            self._fetchTBD(criteria.syntax, criteria.parameters, streamToUse, true);
 
             if (shouldOrder) {//TODO this ordering maybe doesn't matter, might be able to do in the prior "orderings" block
                 streamToUse.then(function (values) {
-                    var expression = self._orderingExpression,
+                    var expression = self._orderingExpression(orderings),
                         results = evaluate(expression, values);
 
                     stream.addData(results);
@@ -518,34 +556,37 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
     },
 
     _fetchTBD: {
-        value: function (self, db, syntax, parameters, stream) {
-            var syntaxType = syntax ? syntax.type
+        value: function (syntax, parameters, stream, shouldMap) {
+            var self = this,
+                syntaxType = syntax ? syntax.type
                                     : 'all';
 
             switch (syntaxType) {
                 case 'and':
                 case 'not':
                 case 'or':
-                    self._fetchCompound(self, db, syntax, parameters, stream);
+                    self._fetchCompound(syntax, parameters, stream, shouldMap);
                     break;
                 default:
-                    self._fetchLeaf(self, db, syntax, parameters, stream);
+                    self._fetchLeaf(syntax, parameters, stream, shouldMap);
                     break;
             }
         }
     },
 
     _fetchCompound: {
-        value: function (self, db, syntax, parameters, stream) {
+        value: function (syntax, parameters, stream, shouldMap) {
+            var self = this;
+
             switch (syntax.type) {
                 case 'and':
-                    self._fetchAnd(self, db, syntax, parameters, stream);
+                    self._fetchAnd(syntax, parameters, stream, shouldMap);
                     break;
                 case 'not':
-                    self._fetchNot(self, db, syntax, parameters, stream);
+                    self._fetchNot(syntax, parameters, stream, shouldMap);
                     break;
                 case 'or':
-                    self._fetchOr(self, db, syntax, parameters, stream);
+                    self._fetchOr(syntax, parameters, stream, shouldMap);
                     break;
                 default://TODO may need to generalize this further
                     break;
@@ -554,52 +595,58 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
     },
 
     _fetchAnd: {
-        value: function (self, db, syntax, parameters, stream) {
-            var streamLeft = DataStream.withTypeOrSelector(stream.query),
+        value: function (syntax, parameters, stream, shouldMap) {
+            var self = this,
+                streamLeft = DataStream.withTypeOrSelector(stream.query),
                 syntaxArgs = syntax.args
                 syntaxLeft = syntaxArgs[0];
 
-            self._fetchTBD(self, db, syntaxLeft, parameters, streamLeft);
+            self._fetchTBD(syntaxLeft, parameters, streamLeft);
 
             streamLeft.then(function (valueLeft) {
                 var resultLeft = valueLeft,
                     resultLeftLength = resultLeft.length;
 
-                if (resultLeftLength > 0) {
+                if (resultLeftLength) {
                     var streamRight = DataStream.withTypeOrSelector(stream.query),
                         syntaxRight = syntaxArgs[1];
 
-                    self._fetchTBD(self, db, syntaxRight, parameters, streamRight);
+                    self._fetchTBD(syntaxRight, parameters, streamRight);
 
                     streamRight.then(function (valueRight) {
                         var resultRight = valueRight,
                             resultRightLength = resultRight.length;
 
-                        if (resultRightLength > 0) {
+                        if (resultRightLength) {
                             var leftIsShorter = (resultLeftLength < resultRightLength),
                                 shorterResult = leftIsShorter ? resultLeft : resultRight,
-                                longerResult = leftIsShorter ? resultRight : resultLeft;
+                                longerResult = leftIsShorter ? resultRight : resultLeft,
+                                longerResultJSON = [];
 
                             // This depends on the fact that the sources are the same for both right and left,
                             // as a poor man's deep object comparison.
                             //TODO maybe this isn't so, if the various subcriteria are not of the same type
 
-                            var longerResultJSON = longerResult.map(function (r) { return JSON.stringify(r); });
+                            for (var i = 0, iLongerResult; (iLongerResult = longerResult[i]); i++) {
+                                longerResultJSON.push(JSON.stringify(iLongerResult));
+                            }
 
                             longerResult.length = 0;
 
-                            shorterResult.filter(function (value) {
-                                return (longerResultJSON.indexOf(JSON.stringify(value)) >= 0);
-                            }).map(function (r) { stream.addData(r); });
+                            for (var j = 0, jShorterResult; (jShorterResult = shorterResult[j]); j++) {
+                                if (longerResultJSON.indexOf(JSON.stringify(jShorterResult)) >= 0) {
+                                    self._addDataToService(shouldMap, stream, jShorterResult);
+                                }
+                            }
                         }
 
-                        stream.dataDone();
+                        self._dataDoneToService(shouldMap, stream);
                     }).catch(function (reason) {
                         stream.dataError(reason);
                     });
                 }
                 else {
-                    stream.dataDone();
+                    self._dataDoneToService(shouldMap, stream);
                 }
             }).catch(function (reason) {
                 stream.dataError(reason);
@@ -608,35 +655,53 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
     },
 
     _fetchNot: {
-        value: function (self, db, syntax, parameters, stream) {
-            var syntaxArgs = syntax.args,
+        value: function (syntax, parameters, stream, shouldMap) {
+            var self = this,
+                syntaxArgs = syntax.args,
                 embeddedSyntax = syntaxArgs[0],
-                embeddedStream = DataStream.withTypeOrSelector(stream.query);
+                query = stream.query,
+                embeddedStream = DataStream.withTypeOrSelector(query);
 
-            self._fetchTBD(self, db, embeddedSyntax, parameters, embeddedStream);
+            self._fetchTBD(embeddedSyntax, parameters, embeddedStream);
 
             embeddedStream.then(function (embeddedResult) {
-                var storeName = self._storeNameForObjectDescriptor(stream.query.type),
-                    trans = db.transaction(storeName, 'readonly'),
-                    objectStore = trans.objectStore(storeName),
-                    cursorOrigin = objectStore,
-                    embeddedResultJSON = embeddedResult.map(function (r) { return JSON.stringify(r); });
+                if (embeddedResult && embeddedResult.length) {
+                    var type = query.type,
+                        model = type.model,
+                        storeName = self._storeNameForObjectDescriptor(type),
+                        embeddedResultJSON = [];
 
-                cursorOrigin.openCursor().onsuccess = function (event) {//TODO might need an onError
-                    var cursor = event.target.result;
+                    for (var i = 0, iEmbeddedResult; (iEmbeddedResult = embeddedResult[i]); i++) {
+                        embeddedResultJSON.push(JSON.stringify(iEmbeddedResult));
+                    }
 
-                    if (cursor) {
-                        var currentCursorValue = cursor.value;
+                    self.provideTransactionForModelStoreNamesMode(model, storeName, false).then(function (trans) {//TODO provide a reject handler and a catch handler
+                        console.error("+++_NOT " + storeName);//RDW FIXME REMOVE
+                        var objectStore = trans.objectStore(storeName),
+                            cursorOrigin = objectStore;
 
-                        if (embeddedResultJSON.indexOf(JSON.stringify(currentCursorValue)) < 0) {
-                            stream.addData(currentCursorValue);
+                        cursorOrigin.openCursor().onsuccess = function (event) {//TODO might need an onError
+                            var cursor = event.target.result;
+
+                            if (cursor) {
+                                var currentCursorValue = cursor.value;
+
+                                if (embeddedResultJSON.indexOf(JSON.stringify(currentCursorValue)) < 0) {
+                                    self._addDataToService(shouldMap, stream, currentCursorValue);
+                                }
+
+                                cursor.continue();
+                            }
+                            else {
+                                console.error("---_NOT (DONE) " + objectStore.name);//RDW FIXME REMOVE
+                                self._discardEventTarget(trans.db);
+                                self._dataDoneToService(shouldMap, stream);
+                            }
                         }
-
-                        cursor.continue();
-                    }
-                    else {
-                        stream.dataDone();
-                    }
+                    });
+                }
+                else {
+                    self._fetchLeaf_all(stream, shouldMap); // nothing to "not" === getAll
                 }
             }).catch(function (reason) {
                 stream.dataError(reason);
@@ -645,26 +710,27 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
     },
 
     _fetchOr: {
-        value: function (self, db, syntax, parameters, stream) {
-            var streamLeft = DataStream.withTypeOrSelector(stream.query),
+        value: function (syntax, parameters, stream, shouldMap) {
+            var self = this,
+                streamLeft = DataStream.withTypeOrSelector(stream.query),
                 streamRight = DataStream.withTypeOrSelector(stream.query),
                 syntaxArgs = syntax.args,
                 syntaxLeft = syntaxArgs[0],
                 syntaxRight = syntaxArgs[1];
 
-            self._fetchTBD(self, db, syntaxLeft, parameters, streamLeft);
-            self._fetchTBD(self, db, syntaxRight, parameters, streamRight);
+            self._fetchTBD(syntaxLeft, parameters, streamLeft);
+            self._fetchTBD(syntaxRight, parameters, streamRight);
 
             Promise.all([streamLeft, streamRight]).then(function (values) {
                 var valuesSet = new Set();
 
-                values.forEach(v => Array.isArray(v) ? v.forEach(vv => valuesSet.add(JSON.stringify(vv))) : valuesSet.add(JSON.stringify(v)));
+                values.forEach(v => Array.isArray(v) ? v.forEach(vv => valuesSet.add(JSON.stringify(vv))) : valuesSet.add(JSON.stringify(v)));//TODO replace forEach with a for loop
 
                 values.length = 0;
 
-                valuesSet.forEach(value => stream.addData(JSON.parse(value)));
+                valuesSet.forEach(value => self._addDataToService(shouldMap, stream, JSON.parse(value)));//TODO replace forEach with a for loop
 
-                stream.dataDone();
+                self._dataDoneToService(shouldMap, stream);
             }).catch(function (reason) {
                 stream.dataError(reason);
             });
@@ -672,128 +738,145 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
     },
 
     _fetchLeaf: {
-        value: function (self, db, syntax, parameters, stream) {
+        value: function (syntax, parameters, stream, shouldMap) {
+            var self = this;
+
             if (syntax) {
                 switch (syntax.type) {
                     case 'equals':
                     case 'in':
-                        self._fetchLeaf_inEquals(self, db, syntax, parameters, stream);
+                        self._fetchLeaf_inEquals(syntax, parameters, stream, shouldMap);
                         break;
                     default:
-                        self._fetchLeaf_generic(self, db, syntax, parameters, stream);
+                        self._fetchLeaf_generic(syntax, parameters, stream, shouldMap);
                         break;
                 }
             }
             else {
-                self._fetchLeaf_all(self, db, stream);
+                self._fetchLeaf_all(stream, shouldMap);
             }
         }
     },
 
-    _fetchLeaf_all: {
-        value: function (self, db, stream) {
-            var storeName = self._storeNameForObjectDescriptor(stream.query.type),
-                trans = db.transaction(storeName, 'readonly'),
-                objectStore = trans.objectStore(storeName),
-                cursorOrigin = objectStore;
+    _fetchLeaf_all: {//RDW FIXME this should use objectStore.getAll
+        value: function (stream, shouldMap) {
+            var self = this,
+                type = stream.query.type,
+                model = type.model,
+                storeName = self._storeNameForObjectDescriptor(type);
 
-            cursorOrigin.openCursor().onsuccess = function (event) {//TODO might need an onError
-                var cursor = event.target.result;
+            self.provideTransactionForModelStoreNamesMode(model, storeName, false).then(function (trans) {//RDW FIXME provide a reject handler and a catch handler
+                console.error("+++_ALL " + storeName);//RDW FIXME REMOVE
+                var objectStore = trans.objectStore(storeName),
+                    getRequest = objectStore.getAll();
 
-                if (cursor) {
-                    var cursorValue = cursor.value;
-
-                    if (cursorValue) {
-                        stream.addData(cursorValue);
-                    }
-
-                    cursor.continue();
+                getRequest.onsuccess = function (event) {
+                    self._addDataToService(shouldMap, stream, event.target.result);
+                    console.error("---_ALL (DONE) " + objectStore.name);//RDW FIXME REMOVE
+                    self._discardEventTarget(trans.db);
+                    self._dataDoneToService(shouldMap, stream);
                 }
-                else {
-                    stream.dataDone();
+                getRequest.onerror = function (event) {
+                    self._discardEventTarget(trans.db);
+                    stream.dataError(event.error);
                 }
-            }
+            });
         }
     },
 
     _fetchLeaf_inEquals: {
-        value: function (self, db, syntax, parameters, stream) {
-            var syntaxArgs = syntax.args,
+        value: function (syntax, parameters, stream, shouldMap) {
+            var self = this,
+                syntaxArgs = syntax.args,
                 leftExpression = syntaxArgs[0],
-                leftValue = self._valueForSyntax(self, leftExpression, parameters),
+                leftValue = self._valueForSyntax(leftExpression, parameters),
                 rightExpression = syntaxArgs[1],
-                rightValue = self._valueForSyntax(self, rightExpression, parameters),
+                rightValue = self._valueForSyntax(rightExpression, parameters),
                 indexName = undefined,
                 indexNameResult = undefined,
                 comparisonValues = undefined;
 
             if (leftValue) {
                 comparisonValues = leftValue['_valueForSyntax'];
-                indexNameResult = self._indexNameForSyntax(self, rightExpression, parameters);
+                indexNameResult = self._indexNameForSyntax(rightExpression, parameters);
             }//TODO may need to do more than ELSE here
             else {
-                comparisonValues = rightValue['_valueForSyntax'];
-                indexNameResult = self._indexNameForSyntax(self, leftExpression, parameters);
+                comparisonValues = rightValue ? rightValue['_valueForSyntax'] : rightValue;
+                indexNameResult = self._indexNameForSyntax(leftExpression, parameters);
             }
 
             indexName = indexNameResult ? indexNameResult['_indexNameForSyntax'] : indexNameResult;
 
-            if (comparisonValues.length > 0) {
-                var storeName = self._storeNameForObjectDescriptor(stream.query.type),
-                    trans = db.transaction(storeName, 'readonly'),
-                    objectStore = trans.objectStore(storeName),
-                    indexAvailable = indexName ? objectStore.indexNames.contains(indexName) : false,
-                    cursorOrigin = indexAvailable ? objectStore.index(indexName) : objectStore,
-                    sortedComparisonValues = comparisonValues.sort(),
-                    scvLength = sortedComparisonValues.length,
-                    scvIndex = 0,
-                    currentComparisonValue = sortedComparisonValues[scvIndex];
+            if (!indexName || !comparisonValues) {
+                self._fetchLeaf_generic(syntax, parameters, stream, shouldMap);
+            }
+            else if (comparisonValues.length) {
+                var type = stream.query.type,
+                    model = type.model,
+                    storeName = self._storeNameForObjectDescriptor(type);
 
-                cursorOrigin.openCursor().onsuccess = function (event) {//TODO might need an onError
-                    var cursor = event.target.result;
+                self.provideTransactionForModelStoreNamesMode(model, storeName, false).then(function (trans) {//RDW FIXME provide a reject handler and a catch handler
+                    console.error("+++_IN= " + storeName);//RDW FIXME REMOVE
+                    var objectStore = trans.objectStore(storeName),
+                        indexAvailable = indexName ? objectStore.indexNames.contains(indexName)
+                                                   : false,
+                        cursorOrigin = indexAvailable ? objectStore.index(indexName)
+                                                      : objectStore,
+                        sortedComparisonValues = comparisonValues.sort(),
+                        scvLength = sortedComparisonValues.length,
+                        scvIndex = 0,
+                        currentComparisonValue = sortedComparisonValues[scvIndex];
 
-                    if (cursor) {
-                        var currentCursorKey = cursor.key;
+                    cursorOrigin.openCursor().onsuccess = function (event) {//TODO might need an onError
+                        var cursor = event.target.result;
 
-                        if (indexAvailable) {
-                            if (currentCursorKey == currentComparisonValue) {
-                                stream.addData(cursor.value);
-                                cursor.continue();
+                        if (cursor) {
+                            var currentCursorKey = cursor.key;
+
+                            if (indexAvailable) {
+                                if (currentCursorKey == currentComparisonValue) {
+                                    self._addDataToService(shouldMap, stream, cursor.value);
+                                    cursor.continue();
+                                }
+                                else {
+                                    while (currentCursorKey > sortedComparisonValues[scvIndex]) {
+                                        scvIndex += 1;
+
+                                        if (scvIndex >= scvLength) {
+                                            console.error("---_IN= (DONE) " + objectStore.name);//RDW FIXME REMOVE
+                                            self._discardEventTarget(trans.db);
+                                            self._dataDoneToService(shouldMap, stream);
+                                        }
+                                    }
+
+                                    currentComparisonValue = sortedComparisonValues[scvIndex];
+                                    cursor.continue(currentComparisonValue);
+                                }
                             }
                             else {
-                                while (currentCursorKey > sortedComparisonValues[scvIndex]) {
-                                    scvIndex += 1;
-
-                                    if (scvIndex >= scvLength) {
-                                        stream.dataDone();
-                                    }
+                                if (sortedComparisonValues.includes(currentComparisonValue)) {
+                                    self._addDataToService(shouldMap, stream, cursor.value);
                                 }
 
-                                currentComparisonValue = sortedComparisonValues[scvIndex];
-                                cursor.continue(currentComparisonValue);
+                                cursor.continue();
                             }
                         }
                         else {
-                            if (sortedComparisonValues.includes(currentComparisonValue)) {
-                                stream.addData(cursor.value);
-                            }
-
-                            cursor.continue();
+                            console.error("---_IN= (DONE) " + objectStore.name);//RDW FIXME REMOVE
+                            self._discardEventTarget(trans.db);
+                            self._dataDoneToService(shouldMap, stream);
                         }
                     }
-                    else {
-                        stream.dataDone();
-                    }
-                }
+                });
             }
             else {
-                stream.dataDone();
+                self._dataDoneToService(shouldMap, stream);
             }
         }
     },
 
     _indexNameForSyntax: {
-        value: function (self, syntax, parameters) {
+        value: function (syntax, parameters) {
             var result = undefined;
 
             if (syntax.type == 'property') {
@@ -814,7 +897,7 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
     },
 
     _valueForSyntax: {
-        value: function (self, syntax, parameters) {
+        value: function (syntax, parameters) {
             var result = undefined;
 
             if (syntax.type == 'literal') {
@@ -850,32 +933,40 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
     },
 
     _fetchLeaf_generic: {
-        value: function (self, db, syntax, parameters, stream) {
-            var compiledSyntax = compile(syntax),
+        value: function (syntax, parameters, stream, shouldMap) {
+            var self = this,
+                compiledSyntax = compile(syntax),
                 scope = new Scope(),
-                storeName = self._storeNameForObjectDescriptor(stream.query.type),
-                trans = db.transaction(storeName, 'readonly'),
-                objectStore = trans.objectStore(storeName),
-                cursorOrigin = objectStore;
+                type = stream.query.type,
+                model = type.model,
+                storeName = self._storeNameForObjectDescriptor(type);
 
-            scope.parameters = parameters;
+            self.provideTransactionForModelStoreNamesMode(model, storeName, false).then(function (trans) {//RDW FIXME provide a reject handler and a catch handler
+                console.error("+++_GEN " + storeName);//RDW FIXME REMOVE
+                var objectStore = trans.objectStore(storeName),
+                    cursorOrigin = objectStore;
 
-            cursorOrigin.openCursor().onsuccess = function (event) {//TODO might need an onError
-                var cursor = event.target.result;
+                scope.parameters = parameters;
 
-                if (cursor) {
-                    scope.value = cursor.value;
+                cursorOrigin.openCursor().onsuccess = function (event) {//TODO might need an onError
+                    var cursor = event.target.result;
 
-                    if (compiledSyntax(scope) === true) {
-                        stream.addData(cursor.value);
+                    if (cursor) {
+                        scope.value = cursor.value;
+
+                        if (compiledSyntax(scope) === true) {
+                            self._addDataToService(shouldMap, stream, cursor.value);
+                        }
+
+                        cursor.continue();
                     }
-
-                    cursor.continue();
+                    else {
+                        console.error("---_GEN (DONE) " + objectStore.name);//RDW FIXME REMOVE
+                        self._discardEventTarget(trans.db);
+                        self._dataDoneToService(shouldMap, stream);
+                    }
                 }
-                else {
-                    stream.dataDone();
-                }
-            }
+            });
         }
     },
 
@@ -888,35 +979,49 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
             var self = this;
 
             return new Promise(function (resolve, reject) {
-                self.databaseForModel(model).then(function (db) {
-                    if (db.objectStoreNames.contains(storeName)) {
-                        var trans = db.transaction(storeName, 'readwrite'),
-                            objectStore = trans.objectStore(storeName),
-                            promises;
+                self.provideTransactionForModelStoreNamesMode(model, storeName, true).then(function (trans) {
+                    console.error("+++_UPD " + storeName);//RDW FIXME REMOVE
+                    var objectStore = trans.objectStore(storeName),
+                        promises;
 
-                        if (isBulkOperation && Array.isArray(record) && Array.isArray(primaryKey)) {
-                            for (var i = 0, n = primaryKey && primaryKey.length; i < n; i++) {
-                                promises = promises || [];
-                                promises.push(self._maybeGetThenPutInStore(self, record[i], primaryKey[i], objectStore, isPartialRecord));
+                    if (isBulkOperation && Array.isArray(record)) {
+                        var usePrimaryKeys = primaryKey && Array.isArray(primaryKey) && primaryKey.length,
+                            bulkCount = record.length,
+                            primaryKeyValue = undefined;
+
+                        if (usePrimaryKeys && usePrimaryKeys != bulkCount) {
+                            throw "primaryKey count " + usePrimaryKeys + " deviates from record count " + bulkCount;
+                        }
+
+                        for (var i = 0; i < bulkCount; i++) {
+                            promises = promises || [];
+
+                            if (usePrimaryKeys) {
+                                primaryKeyValue = primaryKey[i];
                             }
-                        }
-                        else {
-                            promises = [self._maybeGetThenPutInStore(self, record, primaryKey, objectStore, isPartialRecord)];
-                        }
 
-                        if (promises) {
-                            return Promise.all(promises).then(function () {
-                                resolve(null);
-                            }).catch(function (reason) {
-                                reject(reason);
-                            });
-                        }
-                        else {
-                            return self.emptyArrayPromise;
+                            promises.push(self._maybeGetThenPutInStore(self, record[i], primaryKeyValue, objectStore, isPartialRecord));
                         }
                     }
                     else {
-                        reject("missing store name: " + storeName);
+                        promises = [self._maybeGetThenPutInStore(self, record, primaryKey, objectStore, isPartialRecord)];
+                    }
+
+                    if (promises) {
+                        return Promise.all(promises).then(function () {
+                            console.error("---_UPD (DONE) " + objectStore.name);//RDW FIXME REMOVE
+                            self._discardEventTarget(trans.db);
+                            resolve(null);
+                        }).catch(function (reason) {
+                            console.error("---_UPD (CATCH) " + objectStore.name);//RDW FIXME REMOVE
+                            self._discardEventTarget(trans.db);
+                            reject(reason);
+                        });
+                    }
+                    else {
+                        console.error("---_UPD (NADA) " + objectStore.name);//RDW FIXME REMOVE
+                        self._discardEventTarget(trans.db);
+                        return self.emptyArrayPromise;
                     }
                 },
                 function (reason) {
@@ -963,7 +1068,8 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
     _putInStore: {
         value: function (record, primaryKey, objectStore) {
             return new Promise(function (resolve, reject) {
-                var putRequest = objectStore.put(record, primaryKey);
+                var putRequest = primaryKey ? objectStore.put(record, primaryKey)
+                                            : objectStore.put(record);
 
                 putRequest.onsuccess = function (event) {
                     resolve(null);//RDW something other than null?
@@ -980,35 +1086,36 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
             var self = this;
 
             return new Promise(function (resolve, reject) {
-                self.databaseForModel(model).then(function (db) {
-                    if (db.objectStoreNames.contains(storeName)) {
-                        var trans = db.transaction(storeName, 'readwrite'),
-                            objectStore = trans.objectStore(storeName),
-                            promises;
+                self.provideTransactionForModelStoreNamesMode(model, storeName, true).then(function (trans) {
+                    console.error("+++_DEL " + storeName);//RDW FIXME REMOVE
+                    var objectStore = trans.objectStore(storeName),
+                        promises;
 
-                        if (isBulkOperation && Array.isArray(primaryKey)) {
-                            for (var i = 0, n = primaryKey && primaryKey.length; i < n; i++) {
-                                promises = promises || [];
-                                promises.push(self._deleteFromStore(primaryKey[i], objectStore));
-                            }
-                        }
-                        else {
-                            promises = [self._deleteFromStore(primaryKey, objectStore)];
-                        }
-
-                        if (promises) {
-                            return Promise.all(promises).then(function () {
-                                resolve(null);
-                            }).catch(function (reason) {
-                                reject(reason);
-                            });
-                        }
-                        else {
-                            return self.emptyArrayPromise;
+                    if (isBulkOperation && Array.isArray(primaryKey)) {
+                        for (var i = 0, n = primaryKey && primaryKey.length; i < n; i++) {
+                            promises = promises || [];
+                            promises.push(self._deleteFromStore(primaryKey[i], objectStore));
                         }
                     }
                     else {
-                        reject("missing store name: " + storeName);
+                        promises = [self._deleteFromStore(primaryKey, objectStore)];
+                    }
+
+                    if (promises) {
+                        return Promise.all(promises).then(function () {
+                            console.error("---_DEL (DONE) " + objectStore.name);//RDW FIXME REMOVE
+                            self._discardEventTarget(trans.db);
+                            resolve(null);
+                        }).catch(function (reason) {
+                            console.error("---_DEL (CATCH)" + objectStore.name);//RDW FIXME REMOVE
+                            self._discardEventTarget(trans.db);
+                            reject(reason);
+                        });
+                    }
+                    else {
+                        console.error("---_DEL (NADA) " + objectStore.name);//RDW FIXME REMOVE
+                        self._discardEventTarget(trans.db);
+                        return self.emptyArrayPromise;
                     }
                 },
                 function (reason) {
@@ -1053,7 +1160,7 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
                     var self = this,
                         modelsToOperations = {};
 
-                    operations.forEach(function (operation) {
+                    operations.forEach(function (operation) {//TODO replace forEach with a for loop
                         var model = operation.dataType.model;
 
                         if (!modelsToOperations.has(model)) {
@@ -1063,7 +1170,7 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
                         modelsToOperations.get(model).push(operation);
                     });
 
-                    return Promise.all(modelsToOperations.values().map(function (someOperations) {
+                    return Promise.all(modelsToOperations.values().map(function (someOperations) {//TODO replace map with a for loop
                         return self._deleteOfflineOperationsForSingleModel(someOperations);
                     })).then(function () {
                         resolve(null);
@@ -1088,7 +1195,7 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
         value: function (operations) {
             var result = this.nullPromise;
 
-            if (operations && operations.length > 0) {
+            if (operations && operations.length) {
                 var self = this,
                     model = operations[0].dataType.model,
                     operationsStoreName = self._offlineOperationsStoreName,
@@ -1118,34 +1225,37 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
                 storeName = self._storeNameForObjectDescriptor(objectDescriptor);
 
             return new Promise(function (resolve, reject) {
-                self.databaseForModel(model).then(function (db) {
-                    if (db.objectStoreNames.contains(storeName)) {
-                        var trans = db.transaction(storeName, 'readwrite'),
-                            objectStore = trans.objectStore(storeName),
-                            getRequest = objectStore.get(offlinePrimaryKey);
+                self.provideTransactionForModelStoreNamesMode(model, storeName, true).then(function (trans) {
+                    console.error("+++_PK " + storeName);//RDW FIXME REMOVE
+                    var objectStore = trans.objectStore(storeName),
+                        getRequest = objectStore.get(offlinePrimaryKey);
 
-                        getRequest.onsuccess = function (event) {
-                            var getResult = event.target.result;
+                    getRequest.onsuccess = function (event) {
+                        var getResult = event.target.result;
 
-                            if (getResult) {
-                                getResult[objectStore.keyPath] = onlinePrimaryKey;
+                        if (getResult) {
+                            getResult[objectStore.keyPath] = onlinePrimaryKey;
 
-                                self._putInStore(getResult, onlinePrimaryKey, objectStore).then(function () {
-                                    resolve(null);//RDW something other than null?
-                                }).catch(function (reason) {
-                                    reject(reason);
-                                });
-                            }
-                            else {
-                                reject("no prior record of " + offlinePrimaryKey);
-                            }
+                            self._putInStore(getResult, onlinePrimaryKey, objectStore).then(function () {
+                                console.error("---_PK (DONE) " + objectStore.name);//RDW FIXME REMOVE
+                                self._discardEventTarget(trans.db);
+                                resolve(null);//RDW something other than null?
+                            }).catch(function (reason) {
+                                console.error("---_PK (CATCH) " + objectStore.name);//RDW FIXME REMOVE
+                                self._discardEventTarget(trans.db);
+                                reject(reason);
+                            });
                         }
-                        getRequest.onerror = function (event) {
-                            reject(event.error);
+                        else {
+                            console.error("---_PK (NADA) " + objectStore.name);//RDW FIXME REMOVE
+                            self._discardEventTarget(trans.db);
+                            reject("no prior record of " + offlinePrimaryKey);
                         }
                     }
-                    else {
-                        reject("missing store name: " + storeName);
+                    getRequest.onerror = function (event) {
+                        console.error("---_PK (ERROR) " + objectStore.name);//RDW FIXME REMOVE
+                        self._discardEventTarget(trans.db);
+                        reject(event.error);
                     }
                 },
                 function (reason) {
@@ -1166,7 +1276,7 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
             var promises,
                 results;
 
-            for (model in this.databaseByModel.keys()) {
+            for (model in this.registeredModels) {//RDW FIXME figure out if this is an index or a member
                 promises = promises || [];
                 results = results || [];
 
@@ -1189,38 +1299,31 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
             var self = this;
 
             return new Promise(function (resolve, reject) {
-                self.databaseForModel(model).then(function (db) {
-                    if (db.objectStoreNames.contains(storeName)) {
-                        var trans = db.transaction(storeName, 'readonly'),
-                            objectStore = trans.objectStore(storeName),
-                            getRequest = objectStore.getAll();
+                self.provideTransactionForModelStoreNamesMode(model, storeName, false).then(function (trans) {
+                    var objectStore = trans.objectStore(storeName),
+                        getRequest = objectStore.getAll();
 
-                        getRequest.onsuccess = function (event) {
-                            var results = event.target.result;
+                    getRequest.onsuccess = function (event) {
+                        var results = event.target.result;
 
-                            if (Array.isArray(results)) {
-                                if (filterFunction) {
-                                    results = results.filter(filterFunction);
-                                }
+                        if (Array.isArray(results)) {
+                            if (filterFunction) {
+                                results = results.filter(filterFunction);
+                            }
+                        }
+                        else {
+                            if (results) {
+                                results = [results];
                             }
                             else {
-                                if (results) {
-                                    results = [results];
-                                }
-                                else {
-                                    results = [];
-                                }
+                                results = [];
                             }
+                        }
 
-                            resolve(results);
-                        }
-                        getRequest.onerror = function (event) {
-                            reject(event.error);
-                        }
+                        resolve(results);
                     }
-                    else {
-                        // These may be optional stores, or stores that might be legitimately missing when this fetch occurs.
-                        resolve([]);
+                    getRequest.onerror = function (event) {
+                        reject(event.error);
                     }
                 },
                 function (reason) {
@@ -1241,12 +1344,12 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
 
     // If separate instances of IndexedDBDataService are used, ensure that they know about all of the models.
 
-    _databaseByModel : {
+    _registeredModels : {
         value: undefined
     },
-    databaseByModel: {
+    registeredModels: {
         get: function () {
-            return this._databaseByModel || (this._databaseByModel = new Map());
+            return this._registeredModels || (this._registeredModels = new Set());
         }
     },
 
@@ -1255,7 +1358,7 @@ exports.IndexedDBDataService = IndexedDBDataService = StorageDataService.special
     },
     objectDesciptorsByStoreName: {
         get: function () {
-            return this._objectDesciptorsByStoreName || (this._objectDesciptorsByStoreName = new /*Weak*/Map());//RDW FIXME should this be a WeakMap (complains about key here)
+            return this._objectDesciptorsByStoreName || (this._objectDesciptorsByStoreName = new Map());
         }
     }
 });

@@ -631,7 +631,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     addRawData: {
         value: function (stream, records, context) {
             var offline, i, n,
-                streamSelectorType = stream.query.type,
+                streamType = stream.query.type,
                 iRecord;
             // Record fetched raw data for offline use if appropriate.
             offline = records && !this.isOffline && this._streamRawData.get(stream);
@@ -649,18 +649,19 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 // only "outer scoped variable" we're accessing here is stream,
                 // which is a constant reference and won't cause unexpected
                 // behavior due to iteration.
-                this.addOneRawData(stream, iRecord, context, streamSelectorType).then(function (mappedObject) {
-                    stream.addData([mappedObject]);
-                });
+                if (iRecord) {
+                    this.addOneRawData(stream, iRecord, context, streamType).then(function (mappedObject) {
+                        stream.addData([mappedObject]);
+                    });
+                }
                 /*jshint +W083*/
             }
         }
     },
 
-
     addOneRawData: {
-        value: function (stream, rawData, context) {
-            var object = this.objectForTypeRawData(stream.query.type, rawData, context),
+        value: function (stream, rawData, context, streamType) {
+            var object = this.objectForTypeRawData(streamType, rawData, context),
                 result;
 
             result = this._mapRawDataToObject(rawData, object, context);
@@ -718,8 +719,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     //Gives us an indirection layer to deal with backward compatibility.
     dataIdentifierForTypeRawData: {
         value: function (type, rawData) {
-
-            var mapping = this.mappingWithType(type),
+            var service = this._serviceProvidingMappings(type),
+                mapping = service.mappingWithType(type),
                 rawDataPrimaryKeys = mapping ? mapping.rawDataPrimaryKeyExpressions : null,
                 scope = new Scope(rawData),
                 rawDataPrimaryKeysValues,
@@ -757,6 +758,22 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 return dataIdentifier;
             }
             return undefined;
+        }
+    },
+
+    dataIdentifierForObjectTypeRawData: {//RDW FIXME probably only PersistentDataServices and StorageDataServices are likely to traffic in both cooked and raw data
+        value: function (object, type, rawData) {
+            var result = undefined;
+
+            if (object) {
+                result = this.dataIdentifierForObject(object);
+            }
+
+            if (!result && type && rawData) {
+                result = this.dataIdentifierForTypeRawData(type, rawData);
+            }
+
+            return result;
         }
     },
 
@@ -839,22 +856,23 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     rawDataDone: {
         value: function (stream, context) {
             var self = this,
-                dataToPersist = this._streamRawData.get(stream),
-                mappingPromises = this._streamMapDataPromises.get(stream),
-                dataReadyPromise = mappingPromises ? Promise.all(mappingPromises) : this.nullPromise;
+                dataToPersist = self._streamRawData.get(stream),
+                mappingPromises = self._streamMapDataPromises.get(stream),
+                dataReadyPromise = mappingPromises ? Promise.all(mappingPromises) : self.nullPromise;
 
             if (mappingPromises) {
-                this._streamMapDataPromises.delete(stream);
+                self._streamMapDataPromises.delete(stream);
             }
 
             if (dataToPersist) {
-                this._streamRawData.delete(stream);
+                self._streamRawData.delete(stream);
             }
 
             return dataReadyPromise.then(function (results) {
                 return dataToPersist ? self.writeOfflineData(dataToPersist, stream.query, context) : null;
             }).then(function () {
                 stream.dataDone();
+                self.callDelegateMethod("rawDataServiceDidRawDataDone", self, stream, context);
                 return null;
             }).catch(function (e) {
                 console.error(e);
@@ -921,6 +939,12 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }, "mapSelectorToRawDataSelector", "mapSelectorToRawDataQuery"),
     },
 
+    mapQueryToPersistentQuery: {
+        value: function (query) {
+            return undefined;
+        }
+    },
+
     /**
      * Convert raw data to data objects of an appropriate type.
      *
@@ -940,7 +964,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     mappingForObject: {
         value: function (object) {
             var objectDescriptor = this.objectDescriptorForObject(object),
-                mapping = objectDescriptor && this.mappingWithType(objectDescriptor);
+                service = objectDescriptor && this._serviceProvidingTriggers(objectDescriptor),
+                mapping = objectDescriptor && service.mappingWithType(objectDescriptor);
 
             if (!mapping && objectDescriptor) {
                 mapping = this._objectDescriptorMappings.get(objectDescriptor);

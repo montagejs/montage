@@ -557,7 +557,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     // example: foo: {"<-": "bar"}
     _objectMappingRuleWithPropertyNameAndObjectMappingRule: {
         value: function (propertyName, rawRule) {
-            var propertyDescriptor = this.objectDescriptor.propertyDescriptorForName[propertyName],
+            var propertyDescriptor = this.objectDescriptor.propertyDescriptorForName(propertyName),
                 sourcePath = rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING],
                 rule = this._makeRule(sourcePath, propertyName);
 
@@ -592,7 +592,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     _objectMappingRuleWithPropertyNameAndRawDataMappingRule: {
         value: function (propertyName, rawRule) {
             var targetPath = rawRule[TWO_WAY_BINDING],
-                propertyDescriptor = this.objectDescriptor.propertyDescriptorForName[targetPath],
+                propertyDescriptor = this.objectDescriptor.propertyDescriptorForName(targetPath),
                 rule = this._makeRule(propertyName, targetPath);
 
             rule.converter = rawRule.converter || this._defaultConverter(propertyName, targetPath, true);
