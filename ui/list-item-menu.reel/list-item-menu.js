@@ -326,7 +326,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
                 if (this._leftButtons && this._leftButtons.length) {
                     this.leftOptionsElement.style.backgroundColor =
-                        getComputedStyle(this._leftButtons[0])["background-color"]
+                        getComputedStyle(this._leftButtons[0])["background-color"];
                 }
             }           
         }
@@ -388,10 +388,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         buttonList = isDirectionLeft ? this._rightButtons : this._leftButtons;
 
                         if (buttonList && buttonList.length) {
-                            if (parseInt(buttonList[0].style.width) >= this._dragElementRect.width / 2) {
-                                buttonList[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
-                            }
-
+                            buttonList[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
                             buttonList[0].style.width = '50%';
                         }
 
@@ -401,7 +398,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     } else {
                         translateX = this.__translateComposer.translateX = - this._dragElementRect.width;
                         this.isOpened = false;
-                        //todo: raise closed event?
                     }
 
                     this.dragElement.style[ListItemMenu.cssTransition] = ListItemMenu.DEFAULT_TRANSITION;
@@ -457,11 +453,11 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         },
         
         DEFAULT_TRANSITION: {
-            value: 'transform .3s ease-out'
+            value: 'transform .25s ease-out'
         },
 
         BUTTON_TRANSITION: {
-            value: 'width .3s ease-out'
+            value: 'width .25s ease-out'
         }
     }
 );
