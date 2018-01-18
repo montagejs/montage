@@ -280,11 +280,11 @@
                     }
 
                     // At least bootModule in order
-                    var Promise = bootModule("promise").Promise,
+                    var mrPromise = bootModule("promise").Promise,
                         miniURL = bootModule("mini-url"),
                         mrRequire = bootModule("require");
 
-                    callback(mrRequire, Promise, miniURL);
+                    callback(mrRequire, mrPromise, miniURL);
                 }
 
                 function bootstrapModuleScript(module, err, script) {
@@ -615,7 +615,7 @@
                         if (params.package) {
                             callback(mr, Promise, miniURL);
                         }
-                    })
+                    });
                 });
             }
         };
@@ -854,7 +854,7 @@
      */
     exports.initMontage = function() {
         var platform = exports.getPlatform();
-        return platform.bootstrap(function (mrRequire, Promise, miniURL) {
+        return platform.bootstrap(function (mrRequire, mrPromise, miniURL) {
 
             var config = {},
                 params = platform.getParams(),
@@ -867,7 +867,7 @@
                 var getDefinition = function (name) {
                     if (!bundleDefinitions[name]) {
                          var defer = bundleDefinitions[name] = {};
-                         var deferPromise = new Promise(function(resolve, reject) {
+                         var deferPromise = new mrPromise(function(resolve, reject) {
                              defer.resolve = resolve;
                              defer.reject = reject;
                          });
@@ -882,7 +882,7 @@
                 };
 
                 var preloading = {};
-                var preloadingPromise = new Promise(function (resolve, reject) {
+                var preloadingPromise = new mrPromise(function (resolve, reject) {
                     preloading.resolve = resolve;
                     preloading.reject = reject;
                 });
@@ -891,10 +891,10 @@
                 config.preloaded = preloading.promise;
 
                 // preload bundles sequentially
-                var preloaded = Promise.resolve();
+                var preloaded = mrPromise.resolve();
                 global.BUNDLE.forEach(function (bundleLocations) {
                     preloaded = preloaded.then(function () {
-                        return Promise.all(bundleLocations.map(function (bundleLocation) {
+                        return mrPromise.all(bundleLocations.map(function (bundleLocation) {
                             loadScript(bundleLocation);
                             return getDefinition(bundleLocation).promise;
                         }));
@@ -943,7 +943,7 @@
                     type: "montageReady"
                 }, "*");
 
-                var trigger = new Promise(function(resolve) {
+                var trigger = new mrPromise(function(resolve) {
                     var messageCallback = function (event) {
                         if (
                             params.remoteTrigger === event.origin &&
@@ -1035,7 +1035,7 @@
                 .then(function (montageRequire) {
                     montageRequire.inject("core/mini-url", miniURL);
                     montageRequire.inject("core/promise", {
-                        Promise: Promise
+                        Promise: mrPromise
                     });
 
                     // Expose global require and mr
