@@ -527,6 +527,33 @@
             };
         })(mr.makeLoader);
 
+        function findPackage(path) {
+            var directory = FS.directory(path);
+            if (directory === path) {
+                throw new Error("Can't find package");
+            }
+            var packageJson = FS.join(directory, "package.json");
+            return FS.stat(packageJson).then(function (stat) {
+                if (stat.isFile()) {
+                    return directory;
+                } else {
+                    return findPackage(directory);
+                }
+            });
+        }
+
+        function loadFreeModule(/*program, command, args*/) {
+            throw new Error("Can't load module that is not in a package");
+        }
+
+        function loadPackagedModule(directory, program/*, command, args*/) {
+            return exports.loadPackage(directory)
+            .then(function (require) {
+                var id = program.slice(directory.length + 1);
+                return require.async(id);
+            });
+        }
+
         return {
             _location: null,
 
