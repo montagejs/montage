@@ -48,27 +48,36 @@ var ModuleLoader = Montage.specialize({
         }
     },
 
+    getModuleDescriptor: {
+        value: function (_require, moduleId) {
+            var moduleDescriptor = _require.getModuleDescriptor(_require.resolve(moduleId));
+
+            while (moduleDescriptor.redirect !== void 0) {
+                moduleDescriptor = _require.getModuleDescriptor(module.redirect);
+            }
+
+            if (moduleDescriptor.mappingRedirect !== void 0) {
+                return this.getExports(
+                    moduleDescriptor.mappingRequire,
+                    moduleDescriptor.mappingRedirect
+                );
+            }
+
+            return moduleDescriptor;
+        }
+    },
+    
     getExports: {
         value: function (_require, moduleId) {
-            var module = _require.getModuleDescriptor(_require.resolve(moduleId));
-
-            while (module.redirect !== void 0) {
-                module = _require.getModuleDescriptor(module.redirect);
-            }
-
-            if (module.mappingRedirect !== void 0) {
-                return this.getExports(module.mappingRequire, module.mappingRedirect);
-            }
-
-            return module.exports;
+            var moduleDescriptor = this.getModuleDescriptor(_require, moduleId);
+            return moduleDescriptor ? moduleDescriptor.exports : void 0;
         }
     },
 
     getModule: {
         value: function (moduleId, label) {
             var objectRequires = this._objectRequires,
-                _require,
-                module;
+                _require, module;
 
             if (objectRequires && label in objectRequires) {
                 _require = objectRequires[label];
@@ -77,6 +86,10 @@ var ModuleLoader = Montage.specialize({
             }
 
             module = this.getExports(_require, moduleId);
+
+            if (!module && (moduleId.endsWith(".mjson") || moduleId.endsWith(".meta"))) {
+                module = this.getModuleDescriptor(_require, moduleId).text;
+            }
 
             if (!module) {
                 module = _require.async(moduleId);
@@ -415,18 +428,32 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     reviveMontageObject: {
         value: function (value, context, label) {
             var self = this,
-                module,
-                locationDesc,
                 locationId = value.prototype || value.object,
-                objectName;
+                isObjectDescriptor = !!(locationId &&
+                    (locationId.endsWith(".mjson") || locationId.endsWith(".meta"))),
+                module, locationDesc, location, objectName;
+            
+           
 
             if (locationId) {
                 locationDesc = MontageReviver.parseObjectLocationId(locationId);
-                module = this.moduleLoader.getModule(locationDesc.moduleId,
-                    label);
+                module = this.moduleLoader.getModule(locationDesc.moduleId, label);
                 objectName = locationDesc.objectName;
             }
 
+            if (typeof module === "string" && isObjectDescriptor &&
+                this._deserializerConstructor.moduleContexts.has(
+                    (location = context._require.location + locationId)
+                )) {
+                // We have a circular reference. If we wanted to forbid circular
+                // references this is where we would throw an error.
+                return Promise.resolve(this._deserializerConstructor.moduleContexts.get(location)._objects.root);
+            }
+
+            if (isObjectDescriptor && !Promise.is(module) && !module.montageObject) {
+                module = context._require.async(locationDesc.moduleId);
+            }
+            
             if (Promise.is(module)) {
                 return module.then(function (exports) {
                     return self.instantiateObject(exports, locationDesc, value, objectName, context, label);
@@ -446,44 +473,19 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     instantiateObject: {
         value: function (module, locationDesc, value, objectName, context, label) {
-            var self = this,
-                moduleId = value.prototype || value.object,
+            var moduleId = value.prototype || value.object,
                 object;
 
             if (moduleId && (moduleId.endsWith(".mjson") || moduleId.endsWith(".meta"))) {
-                return this.getMjsonObject(value, module, moduleId, context)
-                    .then(function (object) {
-                        context.setObjectLabel(object, label);
-                        return self.instantiateMjsonObject(value, object, objectName, context, label);
-                    });
+                object = value && "prototype" in value ?
+                    Object.create(module.montageObject) : module.montageObject;
+                context.setObjectLabel(object, label);
+                return this.instantiateMJSONObject(value, object, objectName, context, label);
             } else {
                 object = this.getMontageObject(value, module, objectName, context, label);
                 context.setObjectLabel(object, label);
                 return this.instantiateMontageObject(value, object, objectName, context, label);
             }
-        }
-    },
-
-    getMjsonObject: {
-        value: function (serialization, json, moduleId, context) {
-            var self = this,
-                deserializer = new this._deserializerConstructor().init(
-                    json,
-                    this._deserializerConstructor.getModuleRequire(this._require, moduleId),
-                    void 0,
-                    moduleId
-                );
-            return Promise.resolve(deserializer)
-                .then(function (deserializer) {
-                    return deserializer.deserializeObject();
-                })
-                .then(function (object) {
-                    if ("prototype" in serialization) {
-                        return Object.create(object);
-                    } else {
-                        return object;
-                    }
-                });
         }
     },
 
@@ -527,7 +529,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         }
     },
 
-    instantiateMjsonObject: {
+    instantiateMJSONObject: {
         value: function (serialization, object, objectName, context, label) {
             var self = this,
                 montageObjectDesc;

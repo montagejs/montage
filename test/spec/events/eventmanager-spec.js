@@ -115,6 +115,12 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                 expect(request.nativeAddEventListener).not.toBe(request.addEventListener);
             });
 
+            it("should have overridden the addEventListener for EventTarget", function () {
+                var request = testDocument.defaultView.EventTarget.prototype;
+                expect(request.nativeAddEventListener).toBeTruthy();
+                expect(request.nativeAddEventListener).not.toBe(request.addEventListener);
+            });
+
             if (Worker) {
                 it("should have overridden the addEventListener for Worker", function () {
                     var worker = testDocument.defaultView.Worker.prototype;
@@ -150,6 +156,12 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
 
             it("should have overridden the removeEventListener for XMLHttpRequest", function () {
                 var request = testDocument.defaultView.XMLHttpRequest.prototype;
+                expect(request.nativeRemoveEventListener).toBeTruthy();
+                expect(request.nativeRemoveEventListener).not.toBe(request.removeEventListener);
+            });
+
+            it("should have overridden the removeEventListener for EventTarget", function () {
+                var request = testDocument.defaultView.EventTarget.prototype;
                 expect(request.nativeRemoveEventListener).toBeTruthy();
                 expect(request.nativeRemoveEventListener).not.toBe(request.removeEventListener);
             });
@@ -192,11 +204,24 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                 expect(testWindow.defaultEventManager).toBeUndefined();
                 expect(testWindow.document.body.nativeAddEventListener).toBeUndefined();
                 expect(testWindow.document.body.addEventListener).toBeDefined();
+                expect(testWindow.document.body.nativeRemoveEventListener).toBeUndefined();
+                expect(testWindow.document.body.removeEventListener).toBeDefined();
 
                 eventManager.registerWindow(testWindow);
 
                 expect(testWindow.defaultEventManager).toEqual(eventManager);
                 expect(testWindow.document.body.nativeAddEventListener).toBeDefined();
+                expect(testWindow.document.body.addEventListener).toBeDefined();
+                expect(testWindow.document.body.nativeRemoveEventListener).toBeDefined();
+                expect(testWindow.document.body.removeEventListener).toBeDefined();
+
+                eventManager.unregisterWindow(testWindow);
+
+                expect(testWindow.defaultEventManager).toBeUndefined();
+                expect(testWindow.document.body.nativeAddEventListener).toBeUndefined();
+                expect(testWindow.document.body.addEventListener).toBeDefined();
+                expect(testWindow.document.body.nativeRemoveEventListener).toBeUndefined();
+                expect(testWindow.document.body.removeEventListener).toBeDefined();
             });
         });
 
@@ -825,6 +850,36 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                     });
 
                 });
+
+
+                it("must apply Montage features to arbitrary objects inheriting from EventTarget", function () {
+
+                    var eventSpy = {
+                        handleSuccess: function (event) {
+                        },
+                        handleEvent: function (event) {
+                        }
+                    };
+
+                    spyOn(eventSpy, 'handleSuccess');
+                    spyOn(eventSpy, 'handleEvent');
+
+                    var request = window.indexedDB.open("MyTestDatabase", 1);
+                    request.addEventListener("success", eventSpy, false);
+
+                    var DBDeleteRequest = window.indexedDB.deleteDatabase("MyTestDatabase");
+
+                    DBDeleteRequest.onerror = function(event) {
+                        expect(eventSpy.handleSuccess).toHaveBeenCalled();
+                        expect(eventSpy.handleEvent).not.toHaveBeenCalled();
+                    };
+
+                    DBDeleteRequest.onsuccess = function(event) {
+                      expect(eventSpy.handleSuccess).toHaveBeenCalled();
+                      expect(eventSpy.handleEvent).not.toHaveBeenCalled();
+                    };
+                });
+
 
                 describe("involving identifiers", function () {
 

@@ -1,0 +1,39 @@
+{
+    "root": {
+        "prototype": "montage/core/meta/module-object-descriptor",
+        "properties": {
+            "name": "PlotSummary",
+            "propertyDescriptors": [
+                {"@": "movie"},
+                {"@": "summary"}
+            ],
+            "objectDescriptorModule": {
+                "%": "spec/data/logic/model/plot-summary.mjson"
+            },
+            "exportName": "PlotSummary",
+            "module": {
+                "%": "spec/data/logic/model/plot-summary"
+            }
+        }
+    },
+
+    "movie_descriptor": {
+        "object": "spec/data/logic/model/movie.mjson"
+    },
+
+    "movie": {
+        "prototype": "montage/core/meta/property-descriptor",
+        "properties": {
+            "name": "movie",
+            "valueDescriptor": {"@": "movie"}
+        }
+    },
+
+    "summary": {
+        "prototype": "montage/core/meta/property-descriptor",
+        "properties": {
+            "name": "summary",
+            "valueType": "string"
+        }
+    }
+}

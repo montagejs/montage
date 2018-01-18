@@ -1,6 +1,4 @@
 var HttpService = require("montage/data/service/http-service").HttpService,
-    DataService = require("montage/data/service/data-service").DataService,
-    DataSelector = require("montage/data/service/data-selector").DataSelector,
     WeatherReport = require("../model/weather-report").WeatherReport;
 
 /**
