@@ -883,6 +883,19 @@
         var platform = exports.getPlatform();
         return platform.bootstrap(function (mrRequire, mrPromise, miniURL) {
 
+            function defer() {
+                var resolve, reject;
+                var promise = new mrPromise(function (_resolve, _reject) {
+                    resolve = _resolve;
+                    reject = _reject;
+                });
+                return {
+                    promise: promise,
+                    resolve: resolve,
+                    reject: reject
+                };
+            }
+
             var config = {},
                 params = platform.getParams(),
                 location = params.location,
@@ -893,13 +906,7 @@
                 var bundleDefinitions = {};
                 var getDefinition = function (name) {
                     if (!bundleDefinitions[name]) {
-                         var defer = bundleDefinitions[name] = {};
-                         var deferPromise = new mrPromise(function(resolve, reject) {
-                             defer.resolve = resolve;
-                             defer.reject = reject;
-                         });
-                         defer.promise = deferPromise;
-                         return defer;
+                         return bundleDefinitions[name] = defer();
                     }
                     return bundleDefinitions[name];
                 };
@@ -908,13 +915,7 @@
                     return getDefinition(name).resolve();
                 };
 
-                var preloading = {};
-                var preloadingPromise = new mrPromise(function (resolve, reject) {
-                    preloading.resolve = resolve;
-                    preloading.reject = reject;
-                });
-                preloading.promise = preloadingPromise;
-
+                var preloading = defer();
                 config.preloaded = preloading.promise;
 
                 // preload bundles sequentially
