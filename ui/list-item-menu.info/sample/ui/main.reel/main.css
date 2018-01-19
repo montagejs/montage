@@ -42,11 +42,11 @@ header {
     background-color: rgb(100, 100, 100);
 }
 
-.isOpened.right-side.gray .ListItemMenu-content {
+.is-opened.right-side.gray .ListItemMenu-content {
     border-right: 1px solid #bdc3c7;
 }
 
-.isOpened.left-side.gray .ListItemMenu-content {
+.is-opened.left-side.gray .ListItemMenu-content {
     border-left: 1px solid #bdc3c7;
 }
 
