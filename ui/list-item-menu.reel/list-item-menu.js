@@ -589,11 +589,11 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         },
         
         DEFAULT_TRANSITION: {
-            value: 'transform .25s ease-out'
+            value: 'transform .25s cubic-bezier(0, 0, 0.35, 1)'
         },
 
         BUTTON_TRANSITION: {
-            value: 'width .25s ease-out'
+            value: 'left .25s cubic-bezier(0, 0, 0.35, 1)'
         }
     }
 );
