@@ -45,6 +45,14 @@ header {
     background-color: #9E9D9B;
 }
 
+.dot {
+    height: 5px;
+    width: 5px;
+    background-color: white;
+    border-radius: 50%;
+    display: inline-block;
+}
+
 .move {
     background-color: #5659C9;
 }
