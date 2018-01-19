@@ -228,8 +228,10 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 this._direction = this._deltaX > 0 ? ListItemMenu.DIRECTION.RIGHT : 
                     ListItemMenu.DIRECTION.LEFT;
                 
-                if ((this._direction === ListItemMenu.DIRECTION.LEFT && (!this._rightButtons || !this._rightButtons.length)) ||
-                    (this._direction === ListItemMenu.DIRECTION.RIGHT && (!this._leftButtons || !this._leftButtons.length))
+                if ((this._direction === ListItemMenu.DIRECTION.LEFT &&
+                    (!this._rightButtons || !this._rightButtons.length)) ||
+                    (this._direction === ListItemMenu.DIRECTION.RIGHT &&
+                    (!this._leftButtons || !this._leftButtons.length))
                 ) {
                     this._translateComposer._cancel();
                     return void 0;
@@ -329,11 +331,22 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
                 // hack for the "elastic" animation
                 if (this._rightButtons && this._rightButtons.length) {
+                    if (this._rightButtons.length > 3) {
+                        throw new Error('list item menu doesn\'t support more' +
+                            'than 3 buttons per side');
+                    }
                     this.rightOptionsElement.style.backgroundColor =
-                        getComputedStyle(this._rightButtons[0])["background-color"];
+                        getComputedStyle(
+                            this._rightButtons[this._rightButtons.length - 1]
+                        )["background-color"];
                 }
 
                 if (this._leftButtons && this._leftButtons.length) {
+                    if (this._leftButtons.length > 3) {
+                        throw new Error('list item menu doesn\'t support more' +
+                            'than 3 buttons per side');
+                    }
+
                     this.leftOptionsElement.style.backgroundColor =
                         getComputedStyle(this._leftButtons[0])["background-color"];
                 }
@@ -346,7 +359,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             if (this.__translateComposer) {
                 var translateX = this._translateX, direction = this._direction,
                     isDirectionLeft = direction === ListItemMenu.DIRECTION.LEFT,
-                    buttonList;
+                    buttonList, length, i;
 
                 if (this._isDragging) {
                     this.dragElement.style.WebkitTransition = null;
@@ -381,10 +394,12 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     buttonList = (direction || this._previousDirection) === ListItemMenu.DIRECTION.LEFT ?
                         this._rightButtons : this._leftButtons;
 
-                    if (buttonList && buttonList.length === 1) {
-                        buttonList[0].style.width = Math.abs(Math.abs(translateX) -
-                            this._dragElementRect.width) + 'px';
-                        buttonList[0].style[ListItemMenu.cssTransition] = 'none';
+                    if (buttonList && buttonList.length) {
+                        for (i = 0, length = buttonList.length; i < length; i++) {
+                            buttonList[i].style.width = (Math.abs(Math.abs(translateX) -
+                                this._dragElementRect.width)) / length + 'px';
+                            buttonList[i].style[ListItemMenu.cssTransition] = 'none';
+                        }
                     }
                 } else if (this._direction || this._shouldCloseListItem) {
                     if (this._shouldOpenListItem) {
@@ -397,13 +412,14 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         buttonList = isDirectionLeft ? this._rightButtons : this._leftButtons;
 
                         if (buttonList && buttonList.length) {
-                            buttonList[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
-                            buttonList[0].style.width = '50%';
+                            for (i = 0, length = buttonList.length; i < length; i++) {
+                                buttonList[i].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
+                                buttonList[i].style.width = (50 / length) + '%';
+                            }
                         }
 
                         this.__translateComposer.translateX = translateX;
                         this.isOpened = true;
-                        //todo: raise opened event?
                     } else {
                         translateX = this.__translateComposer.translateX = - this._dragElementRect.width;
                         this.isOpened = false;
@@ -438,8 +454,10 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                                 this._rightButtons : this._leftButtons;
                             
                             if (buttonList && buttonList.length) {
-                                buttonList[0].style.width = '50%';
-                                buttonList[0].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
+                                for (i = 0, length = buttonList.length; i < length; i++) {
+                                    buttonList[i].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
+                                    buttonList[i].style.width = (50 / length) + '%';
+                                }
                             }
                         }
                     }
