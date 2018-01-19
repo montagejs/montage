@@ -32,6 +32,23 @@ header {
     border-bottom: 1px solid #bdc3c7;
 }
 
+.gray .ListItemMenu-options button {
+    font-size: 14px;
+    white-space: nowrap;
+    color: rgb(100, 100, 100);
+}
+
+.gray .ListItemMenu-options button .dot {
+    background-color: rgb(100, 100, 100);
+}
+
+.isOpened.right-side.gray .ListItemMenu-content {
+    border-right: 1px solid #bdc3c7;
+}
+
+.isOpened.left-side.gray .ListItemMenu-content {
+    border-left: 1px solid #bdc3c7;
+}
 
 .archive {
     background-color: #2C82C9;
@@ -43,7 +60,6 @@ header {
 
 .more {
     background-color: #9E9D9B;
-    white-space: nowrap;
 }
 
 .dot {
