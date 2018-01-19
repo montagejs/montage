@@ -413,10 +413,10 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         throw new Error('list item menu doesn\'t support more' +
                             'than 3 buttons per side');
                     }
-                    this.rightOptionsElement.style.backgroundColor =
-                        getComputedStyle(
-                            this._rightButtons[this._rightButtons.length - 1]
-                        )["background-color"];
+                    // this.rightOptionsElement.style.backgroundColor =
+                    //     getComputedStyle(
+                    //         this._rightButtons[this._rightButtons.length - 1]
+                    //     )["background-color"];
                 }
 
                 if (this._leftButtons && this._leftButtons.length) {
@@ -425,8 +425,8 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                             'than 3 buttons per side');
                     }
 
-                    this.leftOptionsElement.style.backgroundColor =
-                        getComputedStyle(this._leftButtons[0])["background-color"];
+                    // this.leftOptionsElement.style.backgroundColor =
+                    //     getComputedStyle(this._leftButtons[0])["background-color"];
                 }
             }
         }
@@ -435,9 +435,10 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     draw: {
         value: function () {
             if (this.__translateComposer) {
-                var translateX = this._translateX, direction = this._direction,
+                var translateX = this._translateX,
+                    direction = this._direction || this._previousDirection,
                     isDirectionLeft = direction === ListItemMenu.DIRECTION.LEFT,
-                    buttonList, length, i;
+                    buttonList, length, i, left;
 
                 if (this._isDragging) {
                     this.dragElement.style.WebkitTransition = null;
@@ -474,9 +475,19 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
                     if (buttonList && buttonList.length) {
                         for (i = 0, length = buttonList.length; i < length; i++) {
-                            buttonList[i].style.width = (Math.abs(Math.abs(translateX) -
-                                this._dragElementRect.width)) / length + 'px';
                             buttonList[i].style[ListItemMenu.cssTransition] = 'none';
+
+                            if (isDirectionLeft) {
+                                buttonList[i].style.zIndex = i;
+                                buttonList[i].style.left = (((Math.abs(Math.abs(translateX) -
+                                    this._dragElementRect.width)) / length) * i) + 'px';
+                                buttonList[i].style.textAlign = 'left';
+                            } else {
+                                buttonList[i].style.zIndex = length - i;
+                                buttonList[i].style.left = -(((Math.abs(Math.abs(translateX) -
+                                    this._dragElementRect.width)) / length) * (length - i - 1)) + 'px';
+                                buttonList[i].style.textAlign = 'right';
+                            }
                         }
                     }
                 } else if (this._direction || this._shouldCloseListItem) {
@@ -492,7 +503,14 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         if (buttonList && buttonList.length) {
                             for (i = 0, length = buttonList.length; i < length; i++) {
                                 buttonList[i].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
-                                buttonList[i].style.width = (50 / length) + '%';
+
+                                if (isDirectionLeft) {
+                                    buttonList[i].style.zIndex = i;
+                                    buttonList[i].style.left = (i * (50 / length)) + '%';
+                                } else {
+                                    buttonList[i].style.zIndex = length - i;
+                                    buttonList[i].style.left = -((length - i - 1) * (50 / length)) + '%';
+                                }
                             }
                         }
 
@@ -530,14 +548,20 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         this._shouldOpenListItem = false;
 
                         if (this.isOpened) {
-                            
                             buttonList = (direction || this._previousDirection) === ListItemMenu.DIRECTION.LEFT ?
                                 this._rightButtons : this._leftButtons;
                             
                             if (buttonList && buttonList.length) {
                                 for (i = 0, length = buttonList.length; i < length; i++) {
                                     buttonList[i].style[ListItemMenu.cssTransition] = ListItemMenu.BUTTON_TRANSITION;
-                                    buttonList[i].style.width = (50 / length) + '%';
+
+                                    if (isDirectionLeft) {
+                                        buttonList[i].style.zIndex = i;
+                                        buttonList[i].style.left = (i * (50 / length)) + '%';
+                                    } else {
+                                        buttonList[i].style.zIndex = length - i;
+                                        buttonList[i].style.left = -((length - i - 1) * (50 / length)) + '%';
+                                    }
                                 }
                             }
                         }

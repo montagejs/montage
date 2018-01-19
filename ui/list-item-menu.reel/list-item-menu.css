@@ -67,12 +67,16 @@
 }
 
 .ListItemMenu .ListItemMenu-zone.right .ListItemMenu-options {
+    position: relative;
     -webkit-box-pack: start;
         -ms-flex-pack: start;
             justify-content: flex-start;
 }
 
 .ListItemMenu .ListItemMenu-options button {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     padding: 0;
@@ -81,8 +85,9 @@
     color: white;
     outline: none;
     text-decoration: none;
-    text-align: center;
+    text-align: left;
     font-weight: bold;
+    white-space: nowrap;
 }
 
 .ListItemMenu .ListItemMenu-zone.right.has-reach-end button {
