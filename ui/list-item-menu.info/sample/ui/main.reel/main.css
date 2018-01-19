@@ -43,6 +43,7 @@ header {
 
 .more {
     background-color: #9E9D9B;
+    white-space: nowrap;
 }
 
 .dot {
