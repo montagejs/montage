@@ -15,12 +15,51 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: 0
     },
 
-    _shouldOpenListItem: {
+    __shouldOpenListItem: {
         value: false
     },
 
-    _shouldCloseListItem: {
+    __shouldCloseListItem: {
         value: false
+    },
+
+    _shouldOpenListItem: {
+        set: function (should) {
+            should = !!should;
+
+            if (should !== this.__shouldOpenListItem) {
+                this.__shouldOpenListItem = should;
+                this.__shouldCloseListItem = !should;
+            }
+        },
+        get: function () {
+            return this.__shouldOpenListItem;
+        }
+    },
+
+    _shouldCloseListItem: {
+        set: function (should) {
+            should = !!should;
+
+            if (should !== this.__shouldCloseListItem) {
+                this.__shouldCloseListItem = should;
+                this.__shouldOpenListItem = !should;
+            }
+        },
+        get: function () {
+            return this.__shouldCloseListItem;
+        }
+    },
+
+    _direction: {
+        value: null
+    },
+
+    _openedSide: {
+        get: function () {
+            return this._previousDirection ? this._previousDirection === ListItemMenu.DIRECTION.LEFT ?
+                ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT : null;
+        }
     },
 
     _previousDirection: {
@@ -167,7 +206,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     
     _hasReachMinDistance: {
         value: function () {
-            return this._distance >= this._dragElementRect.width * 0.1;
+            return this._distance >= this._dragElementRect.width * 0.15;
         }
     },
 
@@ -238,10 +277,11 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 }
             }
 
-            var distance = this._translateX + this._dragElementRect.width;
+            var distance = this._translateX + this._dragElementRect.width,
+                direction = this._direction || this._previousDirection;
 
-            if (this._direction === ListItemMenu.DIRECTION.LEFT && distance > 0 || 
-                this._direction === ListItemMenu.DIRECTION.RIGHT && distance < 0 
+            if (direction === ListItemMenu.DIRECTION.LEFT && distance > 0 || 
+                direction === ListItemMenu.DIRECTION.RIGHT && distance < 0 
             ) {
                 distance = 0;
             }
@@ -261,10 +301,15 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: function (event) {
             var velocity = this._findVelocity(event.timeStamp - this._startTimestamp);
 
-            if (!this._shouldOpenListItem && this._direction && ((velocity > 0.15 &&
-                Math.abs(this._deltaX) > this._dragElementRect.width * 0.05) || 
-                (this._hasReachMinDistance()))
-            ) { /* swipe detected or min distance reached */
+            if (velocity > 0.15 && Math.abs(this._deltaX) > this._dragElementRect.width * 0.05) {
+                if (this._deltaX > 0) { // right
+                    this._shouldOpenListItem = this._isOpened &&
+                        this._openedSide === ListItemMenu.DIRECTION.RIGHT ? false : true;
+                } else { // left
+                    this._shouldOpenListItem = this._isOpened &&
+                        this._openedSide === ListItemMenu.DIRECTION.LEFT ? false : true;
+                }
+            } else if (this._hasReachMinDistance()) {
                 this._shouldOpenListItem = true;
             }
 
@@ -437,17 +482,19 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         this.dragElement.style[ListItemMenu.cssTransition] = ListItemMenu.DEFAULT_TRANSITION;
                         var sign = Math.sign(this._deltaX);
 
-                        if (sign < 0 &&
+                        if ((sign < 0 || this._shouldOpenListItem) &&
                             this._previousDirection === ListItemMenu.DIRECTION.LEFT
                         ) {
                             translateX = this._dragElementRect.width * -1.5;
-                        } else if (sign > 0 &&
+                        } else if ((sign > 0 || this._shouldOpenListItem) &&
                             this._previousDirection === ListItemMenu.DIRECTION.RIGHT
                         ) {
                             translateX = this._dragElementRect.width * -0.5;
                         } else {
                             this.isOpened = false;
                         }
+
+                        this._shouldOpenListItem = false;
 
                         if (this.isOpened) {
                             buttonList = (direction || this._previousDirection) === ListItemMenu.DIRECTION.LEFT ?
