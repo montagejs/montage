@@ -4,14 +4,21 @@ html, body, .Main {
     height: 100%;
     width: 100%;
     font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
-        -webkit-font-smoothing: antialiased;
-
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .Main, .items {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    align-items: center;
-    flex-direction: column;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
 }
 
 header {
@@ -28,29 +35,29 @@ header {
     border: 1px solid #bdc3c7;
 }
 
-.list-item {
+.ListItemMenu {
     border-bottom: 1px solid #bdc3c7;
 }
 
-.gray .ListItemMenu-options button {
+.ListItemMenu.gray .ListItemMenu-options button {
     font-size: 14px;
     white-space: nowrap;
     color: rgb(100, 100, 100);
 }
 
-.gray .ListItemMenu-options button .dot {
+.ListItemMenu.gray .ListItemMenu-options button .dot {
     background-color: rgb(100, 100, 100);
 }
 
-.is-opened.right-side.gray .ListItemMenu-content {
+.ListItemMenu.gray.is-opened.right-side .ListItemMenu-content {
     border-right: 1px solid #bdc3c7;
 }
 
-.is-opened.left-side.gray .ListItemMenu-content {
+.ListItemMenu.gray.is-opened.left-side .ListItemMenu-content {
     border-left: 1px solid #bdc3c7;
 }
 
-.archive {
+.ListItemMenu .archive {
     background-color: #2C82C9;
 }
 
@@ -76,8 +83,4 @@ header {
 
 .pin {
     background-color: #2CC990;
-}
-
-.ListItemMenu-content {
-    text-indent: 6px;
 }

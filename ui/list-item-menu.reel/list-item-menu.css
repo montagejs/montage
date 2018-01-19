@@ -6,71 +6,73 @@
     height: 42px;
     box-sizing: border-box;
     overflow: hidden;
-    user-select: none;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
 }
 
-.ListItemMenu-wrapper {
+.ListItemMenu .ListItemMenu-wrapper {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    flex-wrap: nowrap;
-    transform: translate3d(-100%, 0, 0);
+    -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+    -webkit-transform: translate3d(-100%, 0, 0);
+            transform: translate3d(-100%, 0, 0);
 }
 
-.ListItemMenu-zone {
-    flex: 0 0 auto;
+.ListItemMenu .ListItemMenu-zone {
+    -webkit-box-flex: 0;
+        -ms-flex: 0 0 auto;
+            flex: 0 0 auto;
     width: 100%;
     height: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
     visibility: visible;;
 }
 
-.ListItemMenu-zone.hide {
+.ListItemMenu .ListItemMenu-zone.hide {
     visibility: hidden;
 }
 
-.ListItemMenu-zone.right.has-reach-end button {
-    background-color: transparent;
-    animation: text-align-left .25s forwards;
-}
-
-.ListItemMenu-zone.left.has-reach-end button {
-    background-color: transparent;
-    animation: text-align-right .25s forwards;
-}
-
-
-@keyframes text-align-left {
-  0%, 10% {
-      transform: translateX(0%);
-  }
-  90%, 100% {
-      transform: translateX(-40%);
-  }
-}
-
-@keyframes text-align-right {
-  0%, 10% {
-      transform: translateX(0%);
-  }
-  90%, 100% {
-      transform: translateX(40%);
-  }
-}
-
-
-
-.ListItemMenu-options,
-.ListItemMenu-content {
+.ListItemMenu .ListItemMenu-options,
+.ListItemMenu .ListItemMenu-content {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    flex: 1;
-    align-items: center;
+    -webkit-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
 }
 
-.ListItemMenu-options button {
+.ListItemMenu .ListItemMenu-content {
+    text-indent: 6px;
+}
+
+.ListItemMenu .ListItemMenu-zone.left .ListItemMenu-options {
+    -webkit-box-pack: end;
+        -ms-flex-pack: end;
+            justify-content: flex-end;
+}
+
+.ListItemMenu .ListItemMenu-zone.right .ListItemMenu-options {
+    -webkit-box-pack: start;
+        -ms-flex-pack: start;
+            justify-content: flex-start;
+}
+
+.ListItemMenu .ListItemMenu-options button {
     width: 100%;
     height: 100%;
     padding: 0;
@@ -80,12 +82,61 @@
     outline: none;
     text-decoration: none;
     text-align: center;
+    font-weight: bold;
 }
 
-.ListItemMenu-zone.left .ListItemMenu-options {
-    justify-content: flex-end;
+.ListItemMenu .ListItemMenu-zone.right.has-reach-end button {
+    background-color: transparent;
+    -webkit-animation: text-align-left .25s forwards;
+            animation: text-align-left .25s forwards;
 }
 
-.ListItemMenu-zone.right .ListItemMenu-options {
-    justify-content: flex-start;
+.ListItemMenu .ListItemMenu-zone.left.has-reach-end button {
+    background-color: transparent;
+    -webkit-animation: text-align-right .25s forwards;
+            animation: text-align-right .25s forwards;
+}
+
+@-webkit-keyframes text-align-left {
+  0%, 10% {
+      -webkit-transform: translateX(0%);
+              transform: translateX(0%);
+  }
+  90%, 100% {
+      -webkit-transform: translateX(-40%);
+              transform: translateX(-40%);
+  }
+}
+
+@keyframes text-align-left {
+  0%, 10% {
+      -webkit-transform: translateX(0%);
+              transform: translateX(0%);
+  }
+  90%, 100% {
+      -webkit-transform: translateX(-40%);
+              transform: translateX(-40%);
+  }
+}
+
+@-webkit-keyframes text-align-right {
+  0%, 10% {
+      -webkit-transform: translateX(0%);
+              transform: translateX(0%);
+  }
+  90%, 100% {
+      -webkit-transform: translateX(40%);
+              transform: translateX(40%);
+  }
+}
+
+@keyframes text-align-right {
+  0%, 10% {
+      -webkit-transform: translateX(0%);
+              transform: translateX(0%);
+  }
+  90%, 100% {
+      -webkit-transform: translateX(40%);
+              transform: translateX(40%);
+  }
 }
