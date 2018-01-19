@@ -84,7 +84,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     this._pressComposer.removeEventListener('pressStart', this, false);
                     this._pressComposer.removeEventListener('press', this, false);
                     this._pressComposer.unload();
-                    this._previousDirection = null; 
+                    this._previousDirection = null;
                 }
             }
         },
@@ -229,9 +229,9 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     },
 
 
-     /**
-     * Event Listeners
-     */
+    /**
+    * Event Listeners
+    */
 
     
     _startListeningToTranslateIfNeeded: {
@@ -271,13 +271,13 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             this._deltaX = this._translateX - this._startPositionX;
 
             if (!this.isOpened && !this._direction) {
-                this._direction = this._deltaX > 0 ? ListItemMenu.DIRECTION.RIGHT : 
+                this._direction = this._deltaX > 0 ? ListItemMenu.DIRECTION.RIGHT :
                     ListItemMenu.DIRECTION.LEFT;
                 
                 if ((this._direction === ListItemMenu.DIRECTION.LEFT &&
                     (!this._rightButtons || !this._rightButtons.length)) ||
                     (this._direction === ListItemMenu.DIRECTION.RIGHT &&
-                    (!this._leftButtons || !this._leftButtons.length))
+                        (!this._leftButtons || !this._leftButtons.length))
                 ) {
                     this._translateComposer._cancel();
                     return void 0;
@@ -285,10 +285,14 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             }
 
             var distance = this._translateX + this._dragElementRect.width,
-                direction = this._direction || this._previousDirection;
+                direction = this._direction || this._previousDirection,
+                side = direction === ListItemMenu.DIRECTION.LEFT ?
+                    ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT,
+                listButtons = side === ListItemMenu.DIRECTION.RIGHT ?
+                    this._rightButtons : this._leftButtons;
 
-            if (direction === ListItemMenu.DIRECTION.LEFT && distance > 0 || 
-                direction === ListItemMenu.DIRECTION.RIGHT && distance < 0 
+            if (direction === ListItemMenu.DIRECTION.LEFT && distance > 0 ||
+                direction === ListItemMenu.DIRECTION.RIGHT && distance < 0
             ) {
                 distance = 0;
             }
@@ -300,20 +304,22 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             }
 
             this._distance = distance;
+
+            if (listButtons && listButtons.length === 1 && this._hasReachMaxDistance()) {
+                this._hasReachEnd = true;
+            } else {
+                this._hasReachEnd = false;
+            }
+            
             this.needsDraw = true;
         }
     },
 
     handleTranslateEnd: {
         value: function (event) {
-            var direction = this._direction || this._previousDirection,
-                side = direction === ListItemMenu.DIRECTION.LEFT ?
-                    ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT, 
-                listButtons = side === ListItemMenu.DIRECTION.LEFT ?
-                    this._rightButtons : this._leftButtons
-
-            if (listButtons && listButtons.length === 1 && this._hasReachMaxDistance()) {
-                var actionEvent = document.createEvent("CustomEvent");
+            if (this._hasReachEnd) {
+                var actionEvent = document.createEvent("CustomEvent"),
+                    direction = this._direction || this._previousDirection;
                 
                 actionEvent.initCustomEvent("action", true, true, {
                     side: direction === ListItemMenu.DIRECTION.LEFT ? ListItemMenu.DIRECTION.RIGHT :
@@ -389,6 +395,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             this._startTimestamp = 0;
             this._distance = 0;
             this._isDragging = false;
+            this._hasReachEnd = false;
             this.needsDraw = true;
         }
     },
@@ -421,7 +428,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     this.leftOptionsElement.style.backgroundColor =
                         getComputedStyle(this._leftButtons[0])["background-color"];
                 }
-            }           
+            }
         }
     },
 
@@ -523,6 +530,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         this._shouldOpenListItem = false;
 
                         if (this.isOpened) {
+                            
                             buttonList = (direction || this._previousDirection) === ListItemMenu.DIRECTION.LEFT ?
                                 this._rightButtons : this._leftButtons;
                             
@@ -542,17 +550,32 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     translateX + "px,0,0)";
             }
 
-            if (this._distance > 0 || this._openedSide) {
-                var openedSide = this._openedSide ? this._openedSide :
-                    (direction || this._previousDirection) === ListItemMenu.DIRECTION.LEFT ?
-                        ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT;
-                
-                this.element.classList.add('isOpened');
+            var currentDirection = (direction || this._previousDirection),
+                openedSide;
+
+            if (currentDirection) {
+                openedSide = this._openedSide || currentDirection === ListItemMenu.DIRECTION.LEFT ?
+                ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT;
+            }
+            
+            if (this._distance > 0 || openedSide) {
+                this.element.classList.add('is-opened');
                 this.element.classList.add(openedSide.toLowerCase() + '-side');
             } else {
-                this.element.classList.remove('isOpened');
+                this.element.classList.remove('is-opened');
                 this.element.classList.remove('left-side');
                 this.element.classList.remove('right-side');
+            }
+
+            if (this._hasReachEnd) {
+                if (openedSide === ListItemMenu.DIRECTION.LEFT) {
+                    this.leftOptionsElement.classList.add('has-reach-end');
+                } else {
+                    this.rightOptionsElement.classList.add('has-reach-end');
+                }
+            } else {
+                this.leftOptionsElement.classList.remove('has-reach-end');
+                this.rightOptionsElement.classList.remove('has-reach-end');
             }
         }
     }
