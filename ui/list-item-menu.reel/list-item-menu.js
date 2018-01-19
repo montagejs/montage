@@ -210,6 +210,13 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     },
 
+    _hasReachMaxDistance: {
+        value: function () {
+            return this._distance >= this._dragElementRect.width * 0.85;
+        }
+    },
+
+
     _findVelocity: {
         enumerable: false,
         value: function (deltaTime) {
@@ -299,18 +306,37 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
     handleTranslateEnd: {
         value: function (event) {
-            var velocity = this._findVelocity(event.timeStamp - this._startTimestamp);
+            var direction = this._direction || this._previousDirection,
+                side = direction === ListItemMenu.DIRECTION.LEFT ?
+                    ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT, 
+                listButtons = side === ListItemMenu.DIRECTION.LEFT ?
+                    this._rightButtons : this._leftButtons
 
-            if (velocity > 0.15 && Math.abs(this._deltaX) > this._dragElementRect.width * 0.05) {
-                if (this._deltaX > 0) { // right
-                    this._shouldOpenListItem = this._isOpened &&
-                        this._openedSide === ListItemMenu.DIRECTION.RIGHT ? false : true;
-                } else { // left
-                    this._shouldOpenListItem = this._isOpened &&
-                        this._openedSide === ListItemMenu.DIRECTION.LEFT ? false : true;
+            if (listButtons && listButtons.length === 1 && this._hasReachMaxDistance()) {
+                var actionEvent = document.createEvent("CustomEvent");
+                
+                actionEvent.initCustomEvent("action", true, true, {
+                    side: direction === ListItemMenu.DIRECTION.LEFT ? ListItemMenu.DIRECTION.RIGHT :
+                        ListItemMenu.DIRECTION.LEFT
+                });
+
+                this.dispatchEvent(actionEvent);
+                this._shouldCloseListItem = true;
+
+            } else {
+                var velocity = this._findVelocity(event.timeStamp - this._startTimestamp);
+
+                if (velocity > 0.15 && Math.abs(this._deltaX) > this._dragElementRect.width * 0.05) {
+                    if (this._deltaX > 0) { // right
+                        this._shouldOpenListItem = this._isOpened &&
+                            this._openedSide === ListItemMenu.DIRECTION.RIGHT ? false : true;
+                    } else { // left
+                        this._shouldOpenListItem = this._isOpened &&
+                            this._openedSide === ListItemMenu.DIRECTION.LEFT ? false : true;
+                    }
+                } else if (this._hasReachMinDistance()) {
+                    this._shouldOpenListItem = true;
                 }
-            } else if (this._hasReachMinDistance()) {
-                this._shouldOpenListItem = true;
             }
 
             this._resetTranslateContext();
