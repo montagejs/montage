@@ -515,6 +515,15 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 this.dragElement.style[ListItemMenu.cssTransform] = "translate3d(" +
                     translateX + "px,0,0)";
             }
+
+            if (this.isOpened) {
+                this.element.classList.add('isOpened');
+                this.element.classList.add(this._openedSide.toLowerCase() + '-side');
+            } else {
+                this.element.classList.remove('isOpened');
+                this.element.classList.remove('left-side');
+                this.element.classList.remove('right-side');
+            }
         }
     }
 
