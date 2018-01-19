@@ -542,9 +542,13 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     translateX + "px,0,0)";
             }
 
-            if (this.isOpened) {
+            if (this._distance > 0 || this._openedSide) {
+                var openedSide = this._openedSide ? this._openedSide :
+                    (direction || this._previousDirection) === ListItemMenu.DIRECTION.LEFT ?
+                        ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT;
+                
                 this.element.classList.add('isOpened');
-                this.element.classList.add(this._openedSide.toLowerCase() + '-side');
+                this.element.classList.add(openedSide.toLowerCase() + '-side');
             } else {
                 this.element.classList.remove('isOpened');
                 this.element.classList.remove('left-side');
