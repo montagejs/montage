@@ -41,6 +41,18 @@ header {
     background-color: #e74c3c;
 }
 
+.more {
+    background-color: #9E9D9B;
+}
+
+.move {
+    background-color: #5659C9;
+}
+
+.pin {
+    background-color: #2CC990;
+}
+
 .ListItemMenu-content {
     text-indent: 6px;
 }
