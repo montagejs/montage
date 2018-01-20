@@ -374,13 +374,12 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                         this._label = this.originalElement.firstChild.data;
                     }
                     if (!this.element.firstChild) {
-                        this.element.appendChild(document.createTextNode(""));
+                        var span = document.createElement("span");
+                        span.appendChild(document.createTextNode(''));
+                        this.element.appendChild(span);
                     }
+
                     this._labelNode = this.element.firstChild;
-                    // this.setLabelInitialValue(this._labelNode.data)
-                    // if (this._label === undefined) {
-                    //     this._label = this._labelNode.data;
-                    // }
                 }
 
                 //this.classList.add("montage-Button");
@@ -403,8 +402,8 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
             }
             if (this.isInputElement) {
                 this._element.value = value;
-            } else if (this._labelNode) {
-                this._labelNode.data = value;
+            } else if (this._labelNode && this._labelNode.firstChild) {
+                this._labelNode.firstChild.data = value;
             }
         }
     },
