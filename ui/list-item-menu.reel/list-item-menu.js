@@ -608,7 +608,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT;
             }
             
-            if (this._distance > 0 || openedSide) {
+            if ((openedSide && this.isOpened) || this._distance > 0) {
                 this.element.classList.add('is-opened');
                 this.element.classList.add(openedSide.toLowerCase() + '-side');
             } else {
