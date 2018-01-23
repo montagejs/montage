@@ -85,7 +85,20 @@
     color: white;
     outline: none;
     text-decoration: none;
-    text-align: left;
     font-weight: bold;
     white-space: nowrap;
+}
+
+.ListItemMenu .ListItemMenu-zone.right .ListItemMenu-options button {
+    text-align: left;
+}
+
+.ListItemMenu .ListItemMenu-zone.left .ListItemMenu-options button {
+    text-align: right;
+}
+
+.ListItemMenu .ListItemMenu-options button > span { 
+    transform: translate3d(0, 0, 0);
+    position: relative;
+    display: inline-block;
 }
