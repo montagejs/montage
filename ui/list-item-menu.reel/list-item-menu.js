@@ -423,7 +423,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
     _setButtonBoundaries: {
         value: function (buttonList, marginSide) {
-            var i, length, button, label, labelRect;
+            var i, length, button, label, labelRect, buttonWidth;
 
             if (buttonList && (length = buttonList.length)) {
                 buttonWidth = this._dragElementRect.width / 2 / length;
@@ -454,8 +454,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     isDirectionLeft = direction === ListItemMenu.DIRECTION.LEFT,
                     buttonList = isDirectionLeft ?
                         this._rightButtons : this._leftButtons,
-                    length, i, translate, button, buttonStyle, buttonPosition,
-                    openedSide;
+                    length, buttonPosition, openedSide;
 
                 if (this._isDragging) {
                     dragElementStyle[ListItemMenu.cssTransition] = 'none';
@@ -524,7 +523,8 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
                     dragElementStyle[ListItemMenu.cssTransition] = (
                         ListItemMenu.DEFAULT_TRANSITION
-                    )
+                    );
+
                     this._shouldClose = false;
                     this._shouldOpen = false;
                     this._direction = null;
@@ -602,6 +602,8 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
     _translateButtons: {
         value: function (buttonList, initialPosition, transition, isDirectionLeft) {
+            var button, buttonStyle, translate;
+
             for (var i = 0, length = buttonList.length; i < length; i++) {
                 button = buttonList[i];
                 buttonStyle = button.style;
