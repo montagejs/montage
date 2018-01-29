@@ -132,6 +132,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             if (value) {
                 this.maxAge = value;
             }
+            value = deserializer.getProperty("userInterfaceDescriptorModule")
+            if (value) {
+                this.userInterfaceDescriptorModule = value;
+            }
         }
     },
 
@@ -988,6 +992,27 @@ _preparePropertyDescriptorsCache: {
 
     objectDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
     objectDescriptor: require("../core")._objectDescriptorDescriptor,
+
+    userInterfaceDescriptor: {
+        get: function () {
+            if (!this._userInterfaceDescriptor) {
+                if (this.userInterfaceDescriptorModule) {
+                    Montage.defineProperty(this, "_userInterfaceDescriptor", {
+                        enumerable: false,
+                        value: this.userInterfaceDescriptorModule.require.async(
+                            this.userInterfaceDescriptorModule.id
+                        ).then(function (userInterfaceDescriptorModule) {
+                            return userInterfaceDescriptorModule.montageObject;
+                        })
+                    });
+                } else {
+                    this._userInterfaceDescriptor = Promise.resolve();
+                }
+            }
+
+            return this._userInterfaceDescriptor;
+        }
+    },
 
     /**********************************************************************************
      * Deprecated methods.
