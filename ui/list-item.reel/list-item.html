@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="list-item.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "owner"}
+            }
+        },
+
+        "label": {
+            "prototype": "../text.reel",
+            "values": {
+                "element": {"#": "label"},
+                "value": {"<-": "@owner.object.defined() && @owner.userInterfaceDescriptor.defined() ? @owner.object.path(@owner.userInterfaceDescriptor.nameExpression) : @owner.label"}
+            }
+        },
+
+        "description": {
+            "prototype": "../text.reel",
+            "values": {
+                "element": {"#": "description"},
+                "value": {"<-": "@owner.object.defined() && @owner.userInterfaceDescriptor.defined() ? @owner.object.path(@owner.userInterfaceDescriptor.descriptionExpression) : @owner.description"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="ListItem">
+        <div data-montage-id="icon">
+
+        </div>
+        <div class="ListItem-inner">
+            <h2 data-montage-id="label" class="ListItem-label"></h2>
+            <i data-montage-id="description" class="ListItem-description"></i>
+        </div>
+    </div>
+</body>
+</html>

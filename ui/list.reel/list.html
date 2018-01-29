@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="list.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "list"},
+                    "_repetition": {"#": "repetition"}
+                }
+            },
+
+            "repetition": {
+                "prototype": "../repetition.reel",
+                "values": {
+                    "element": {"#": "repetition"},
+                    "content": {"<-": "@owner.content"},
+                    "isSelectionEnabled": {"<->": "@owner.isSelectionEnabled"}
+                }
+            },
+
+            ":iteration": {
+               "alias": "@repetition:iteration"
+            }
+        }
+    </script>
+</head>
+<body>
+	<div data-montage-id="list" class="List">
+        <ul data-montage-id="repetition" class="List-repetition">
+            <li data-param="*"></li>
+        </ul>
+	</div>
+</body>
+</html>

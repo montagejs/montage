@@ -1,0 +1,18 @@
+.List {
+    -webkit-flex: 1;
+    flex: 1;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    font-size: 16px;
+    color: hsla(0,0%,0%,.5);
+    list-style: none;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #c8c7cc;
+}
+
+.List-repetition {
+    padding: 0;
+    margin: 0;
+}

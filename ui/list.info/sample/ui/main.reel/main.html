@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"}
+                }
+            },
+
+            "list": {
+                "prototype": "montage/ui/list.reel",
+                "values": {
+                    "element": {"#": "list"},
+                    "content": {"<-": "@owner.content"}
+                }
+            },
+
+            "listItem": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "item"},
+                    "label": {"<-": "@list:iteration.object.lastname + ' ' + @list:iteration.object.firstname"},
+                    "description": {"<-": "@list:iteration.object.department"}
+                }
+            },
+
+            "listUI": {
+                "prototype": "montage/ui/list.reel",
+                "values": {
+                    "element": {"#": "list-ui"},
+                    "content": {"<-": "@owner.content"}
+                }
+            },
+
+            "listItemUI": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "item-ui"},
+                    "object": {"<-": "@listUI:iteration.object"}
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>List Sample</header>
+        <div data-montage-id="list">
+            <div data-montage-id="item"></div>
+        </div>
+
+        <header>List Sample User Interface descriptor</header>
+        <div data-montage-id="list-ui">
+            <div data-montage-id="item-ui"></div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+{
+    "root": {
+        "prototype": "montage/core/meta/module-object-descriptor",
+        "values": {
+            "name": "Employee",
+            "exportName": "Employee",
+            "propertyDescriptors": [
+                {"@": "firstname"},
+                {"@": "lastname"},
+                {"@": "department"}
+            ],
+            "objectDescriptorModule": {
+                "%": "core/model/employee.mjson"
+            },
+            "module": {
+                "%": "core/model/employee"
+            },
+            "userInterfaceDescriptorModule": {
+                "%": "core/model/employee-ui-descriptor.mjson"
+            }
+        }
+    },
+
+    "firstname": {
+        "prototype": "montage/core/meta/property-descriptor",
+        "values": {
+            "name": "firstname",
+            "valueType": "string"
+        }
+    },
+
+    "lastname": {
+        "prototype": "montage/core/meta/property-descriptor",
+        "values": {
+            "name": "lastname",
+            "valueType": "string"
+        }
+    },
+
+    "department": {
+        "prototype": "montage/core/meta/property-descriptor",
+        "values": {
+            "name": "department",
+            "valueType": "string"
+        }
+    }
+}

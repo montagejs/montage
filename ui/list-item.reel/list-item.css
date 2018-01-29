@@ -1,0 +1,30 @@
+.ListItem {
+    padding-left: 16px;
+    border-radius: 0;
+    position: relative;
+    color: #000;
+    background-color: #fff;
+    min-height: 2.75em;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border-top: 1px solid #c8c7cc;
+    box-sizing: border-box;
+}
+
+.ListItem:first-of-type {
+    border-top: none;
+}
+ 
+.ListItem-label {
+    margin: 0 0 2px;
+    font-size: 1em;
+    font-weight: 400;
+}
+
+.ListItem-description {
+    font-size: .85em;
+    line-height: normal;
+    color: #8e9093;
+    margin: 0 0 2px;
+}
