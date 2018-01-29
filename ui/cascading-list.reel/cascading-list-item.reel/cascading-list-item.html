@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="cascading-list-item.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"},
+                "content": {"@": "content"}
+            },
+            "bindings": {
+                "selectedObject": {"<->": "@content.component.selectedObject"},
+                "classList.has('has-error')": {"<-": "@owner.error.defined()"},
+                "classList.has('help-is-shown')": {"<-": "@owner.helpShown"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "title": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "title"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.isCollection ? path(@owner.userInterfaceDescriptor.collectionNameExpression) : @owner.object.path(@owner.userInterfaceDescriptor.nameExpression)"}
+            }
+        },
+        "helpButton": {
+            "prototype": "blue-shark/ui/button.reel",
+            "properties": {
+                "element": {"#": "helpButton"},
+                "value": "Help"
+            },
+            "bindings": {
+                "classList.has('is-visible')": {"<-": "@helpMessage.value"}
+            }
+        },
+        "content": {
+            "prototype": "ui/controls/placeholder.reel",
+            "properties": {
+                "element": {"#": "content"}
+            },
+            "bindings": {
+                "moduleId": {"<-": "@owner.inspectorComponentModuleId"},
+                "object": {"<-": "@owner.data.object"},
+                "context": {"<-": "@owner.data"},
+                "classList.has('Inspector-scroll')": {"<-": "@owner.inspectorComponentModuleId != 'ui/controls/viewer.reel'"}
+            }
+        },
+        "scrollview": {
+            "prototype": "blue-shark/ui/scrollview.reel",
+            "properties": {
+                "element": {"#": "scrollview"},
+                "overflow": "scrollY"
+            }
+        },
+        "helpMessage": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "helpMessage"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.object.path(@owner.userInterfaceDescriptor.helpMessage)"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="CascadingListItem">
+        <div class="CascadingListItem-header">
+            <div data-montage-id="title" class="CascadingListItem-title"></div>
+            <div class="CascadingListItem-controls">
+                <button data-montage-id="helpButton" class="CascadingListItem-controls-help Button--naked Button--icon">
+                    <svg><use xlink:href="#i-help"/></svg>
+                </button>
+            </div>
+        </div>
+        <div class="CascadingListItem-help">
+            <div data-montage-id="scrollview">
+                <div class="CascadingListItem-help-message">
+                    <h5>Help</h5>
+                    <div data-montage-id="helpMessage"></div>
+                </div>
+            </div>
+        </div>
+        <div data-montage-id="content" class="CascadingListItem-content"></div>
+    </div>
+</body>
+</html>

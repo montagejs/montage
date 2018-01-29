@@ -1,0 +1,14 @@
+{
+    "root": {
+        "prototype": "montage/core/meta/user-interface-descriptor",
+        "properties": {
+            "inspectorComponent": "ui/inspectors/customer.reel",
+            "creatorInspectorComponent": "ui/inspectors/customer.reel",
+            "collectionInspectorComponent": "montage/ui/list.reel",
+            "iconComponent": "ui/icons/customer.reel",
+            "collectionLabelExpression": "'Customers'",
+            "labelExpression": "id.defined() ? lastname + ' ' + fistname : 'Create a customer'",
+            "definitionExpression": "title"
+        }
+    }
+}-

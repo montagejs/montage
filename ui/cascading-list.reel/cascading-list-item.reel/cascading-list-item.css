@@ -1,0 +1,98 @@
+.CascadingListItem {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    font-family: 'lato';
+    border-right: 1px solid rgba(255,255,255,.15);
+}
+
+.CascadingListItem-header {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    justify-content: space-between;
+    height:  3em;
+    padding: 0 1em;
+    background-color: #0F1213;
+    border-bottom: 1px solid #2F3233;
+
+    & button {
+        color: #fff;
+    }
+}
+
+.CascadingListItem-controls {
+    /* offset for naked button */
+    margin-right: -.7em;
+
+    & > button {
+        display: none;
+    }
+}
+
+.CascadingListItem-controls-help {
+    @nest .help-is-shown & {
+        color: #2B9CD8;
+    }
+}
+
+.CascadingListItem-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 1em;
+    font-weight: 400;
+    text-shadow: 0 1px rgba(0,0,0,.2);
+}
+
+.CascadingListItem-content {
+    position: relative;
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+
+    & > * {
+        position: relative;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 16em;
+    }
+}
+
+/* Help */
+
+.CascadingListItem-help {
+    display: flex;
+    flex-direction: column;
+    height: 0;
+    background-color: rgba(32, 137, 211, .05);
+    border-radius: 4px;
+    transition: height .25s ease-in-out;
+
+    @nest .help-is-shown & {
+        height: 10em;
+    }
+
+    & h5 {
+        margin-top: .5em;
+    }
+
+    & .Scrollview-transform { position: absolute; }
+    & .ScrollviewSpacer     { overflow: hidden; }
+}
+
+.CascadingListItem-help-message {
+    color: #fff;
+    padding: .5em 1em;
+}
+
+
+
+
+
+
+
+

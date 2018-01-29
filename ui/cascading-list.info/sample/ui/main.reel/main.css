@@ -1,0 +1,137 @@
+html, body, .Main {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+     -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.Main {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+header {
+    padding: 60px 0;
+    font-size: 2rem;
+    text-align: center;
+    color: #33495d;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+}
+
+.containers {
+    position: absolute;
+    top: 180px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    flex: 1;
+    padding: 0 40px;
+    color: #5f748a;
+    font-size: .85rem;
+}
+
+.container {
+    height: 300px;
+    width: 200px;
+    padding: 12px;
+    border-radius: 4px;
+    border: 1px solid;
+    display: flex;
+    flex-direction: column;
+}
+
+.container h5 {
+    position: relative;
+    text-align: center;
+    margin: 5px 0 15px 0;
+    font-size: 1rem;
+    color: #33495d;
+}
+
+.container h5:before {
+    position: absolute;
+    content: "";
+    left: 0;
+    top: 55%;
+    width: 100%;
+    border-bottom: 1px solid #33495d;
+    z-index: 0;
+}
+
+.container h5 span {
+    position: relative;
+    display: inline-block;
+    padding: 0 12px;
+    background-color: #fff;
+    z-index: 1;
+}
+
+.container p {
+    margin: 6px 0;
+}
+
+.tree-list-wrapper {
+    flex: 1;
+}
+
+.debug-container .debug-value {
+    color: #ec6367;
+}
+
+input[type=checkbox].expand {
+    -webkit-appearance: none;
+    -moz-appearance:    none;
+    appearance:         none;
+    outline:            none;
+}
+
+input[type=checkbox].expand::before {
+    content: "\25BA";
+    color: #48569E;
+}
+
+input[type=checkbox][checked=checked].expand::before {
+    content: "\25BC";
+}
+
+.hide {
+    display: none;
+}
+
+.tree-list-row {
+    height: 26px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.tree-list-row .locked::after {
+    font-family: FontAwesome;
+    content: "\f023";
+    margin-left: 12px;
+}
+
+.montage-TreeList-ghostImage {
+    color: #2C82C9;
+}
+
+.montage-TreeList-ghostImage input[type=checkbox], 
+.montage-TreeList-ghostImage input[type=checkbox]::before {
+    display: none;
+}
