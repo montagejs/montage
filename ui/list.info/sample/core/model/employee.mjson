@@ -5,6 +5,7 @@
             "name": "Employee",
             "exportName": "Employee",
             "propertyDescriptors": [
+                {"@": "id"},
                 {"@": "firstname"},
                 {"@": "lastname"},
                 {"@": "department"}
@@ -18,6 +19,14 @@
             "userInterfaceDescriptorModule": {
                 "%": "core/model/employee-ui-descriptor.mjson"
             }
+        }
+    },
+
+    "id": {
+        "prototype": "montage/core/meta/property-descriptor",
+        "values": {
+            "name": "id",
+            "valueType": "number"
         }
     },
 
