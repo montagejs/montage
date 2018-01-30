@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"},
+                    "componentModule": {"%": "ui/hello-world.reel"},
+                    "componentModule2": {"%": "ui/hello-world2.reel"}
+                }
+            },
+
+            "placeholder1": {
+                "prototype": "montage/ui/placeholder.reel",
+                "values": {
+                    "element": {"#": "placeholder1"},
+                    "componentModule": {"<-": "!!@secondComponent.checked ? @owner.componentModule2 : @owner.componentModule"}
+                }
+            },
+
+            "placeholder2": {
+                "prototype": "montage/ui/placeholder.reel",
+                "values": {
+                    "element": {"#": "placeholder2"},
+                    "object": {"<-": "!!@secondMessage.checked ? @owner.message2 : @owner.message"},
+                    "componentModule": {"<-": "!!@secondComponent.checked ? @owner.componentModule2 : @owner.componentModule"}
+                }
+            },
+
+            "placeholderHidden": {
+                "prototype": "montage/ui/placeholder.reel",
+                "values": {
+                    "element": {"#": "placeholderHidden"}
+                }
+            },
+
+            "secondMessage": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "secondMessage"}
+                }
+            },
+
+            "secondComponent": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "secondComponent"}
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>PlaceHolder Sample</header>
+        <div data-montage-id="placeholder1"></div>
+        <div data-montage-id="placeholderHidden"></div>
+
+        <header>PlaceHolder Sample with User Interface descriptor</header>
+        <div data-montage-id="placeholder2"></div>
+
+        <div class="options">
+            <h4>Options: </h4>
+            <p>
+                <span>Second Message: </span>
+                <input type="checkbox" data-montage-id="secondMessage" />
+            </p>
+            <p>
+                <span>Second Component: </span>
+                <input type="checkbox" data-montage-id="secondComponent" />
+            </p>
+        </div>
+    </div>
+</body>
+</html>
