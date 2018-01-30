@@ -1,0 +1,15 @@
+{
+    "root": {
+        "prototype": "montage/core/meta/user-interface-descriptor",
+        "values": {
+            "inspectorComponentModule": {
+                "%": "ui/inspectors/department.reel"
+            },
+            "iconComponentModule": {
+                "%": "ui/icons/department.reel"
+            },
+            "collectionNameExpression": "'Departments'",
+            "nameExpression": "name"
+        }
+    }
+}

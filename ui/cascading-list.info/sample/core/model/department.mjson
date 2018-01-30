@@ -1,0 +1,39 @@
+{
+    "root": {
+        "prototype": "montage/core/meta/module-object-descriptor",
+        "values": {
+            "name": "Employee",
+            "exportName": "Department",
+            "propertyDescriptors": [
+                {"@": "id"},
+                {"@": "name"}
+            ],
+            "objectDescriptorModule": {
+                "%": "core/model/department.mjson"
+            },
+            "module": {
+                "%": "core/model/department"
+            },
+            "userInterfaceDescriptorModule": {
+                "%": "core/model/department-ui-descriptor.mjson"
+            }
+        }
+    },
+
+    "id": {
+        "prototype": "montage/core/meta/property-descriptor",
+        "values": {
+            "name": "id",
+            "valueType": "number"
+        }
+    },
+
+    "name": {
+        "prototype": "montage/core/meta/property-descriptor",
+        "values": {
+            "name": "name",
+            "valueType": "string"
+        }
+    }
+
+}
