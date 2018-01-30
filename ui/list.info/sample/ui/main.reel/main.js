@@ -33,10 +33,29 @@ exports.Main = Component.specialize(/** @lends Main# */{
 
                     },
                     {
-                        firstname: 'Leo',
-                        lastname: 'Luna',
+                        firstname: 'Emanuel',
+                        lastname: 'Sullivan',
                         department: 'management',
                         id: 1301
+                    },
+                    {
+                        firstname: 'Gretchen',
+                        lastname: 'Chapman',
+                        department: 'accounting',
+                        id: 1103
+                    },
+                    {
+                        firstname: 'Courtney',
+                        lastname: 'Simon',
+                        department: 'logistics',
+                        id: 1202
+
+                    },
+                    {
+                        firstname: 'Brett',
+                        lastname: 'Lucas',
+                        department: 'management',
+                        id: 1302
                     }
                 ],
                 employees = [],

@@ -10,11 +10,18 @@
                 }
             },
 
+            "contentController": {
+                "prototype": "montage/core/range-controller",
+                "values": {
+                    "content": {"<-": "@owner.content"}
+                }
+            },
+
             "list": {
                 "prototype": "montage/ui/list.reel",
                 "values": {
                     "element": {"#": "list"},
-                    "content": {"<-": "@owner.content"}
+                    "contentController": {"<-": "@contentController"}
                 }
             },
 
@@ -27,11 +34,18 @@
                 }
             },
 
+            "contentControllerUI": {
+                "prototype": "montage/core/range-controller",
+                "values": {
+                    "content": {"<-": "@owner.content"}
+                }
+            },
+
             "listUI": {
                 "prototype": "montage/ui/list.reel",
                 "values": {
                     "element": {"#": "list-ui"},
-                    "content": {"<-": "@owner.content"}
+                    "contentController": {"<-": "@contentControllerUI"}
                 }
             },
 
@@ -40,6 +54,24 @@
                 "values": {
                     "element": {"#": "item-ui"},
                     "object": {"<-": "@listUI:iteration.object"}
+                }
+            },
+
+            "allowMultipeSelection": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "allowMultipeSelection"},
+                    "checked": {"<->": "!!@contentController.allowsMultipleSelection"},
+                    "checked": {"<->": "!!@contentControllerUI.allowsMultipleSelection"}
+                }
+            },
+
+            "isSelectionEnabled": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "isSelectionEnabled"},
+                    "checked": {"<->": "!!@list.isSelectionEnabled"},
+                    "checked": {"<->": "!!@listUI.isSelectionEnabled"}
                 }
             }
 
@@ -56,6 +88,18 @@
         <header>List Sample User Interface descriptor</header>
         <div data-montage-id="list-ui">
             <div data-montage-id="item-ui"></div>
+        </div>
+
+        <div class="options">
+            <h2>Options: </h2>
+            <p>
+                <span>Enable Selection: </span>
+                <input type="checkbox" data-montage-id="isSelectionEnabled" />
+            </p>
+            <p>
+                <span>Allow Multipe Selection: </span>
+                <input type="checkbox" data-montage-id="allowMultipeSelection" />
+            </p>
         </div>
     </div>
 </body>

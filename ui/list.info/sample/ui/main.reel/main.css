@@ -31,4 +31,5 @@ header {
     margin: auto;
     position: relative;
     width: 480px;
+    max-height: 225px;
 }
