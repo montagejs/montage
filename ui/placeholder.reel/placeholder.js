@@ -95,27 +95,28 @@ var Placeholder = exports.Placeholder = Slot.specialize({
                     moduleId.length &&
                     this._shouldFetchComponent
                 ) {
-                    var self = this;
+                    var self = this,
+                        require = this.componentModule.require;
 
                     this.content = null;
                     this._isLoadingComponent = true;
                     this._shouldFetchComponent = false;
 
-                    promise = this._fetchComponentConstructor(moduleId)
+                    promise = this._fetchComponentConstructor(moduleId, require)
                         .then(function (componentConstructor) {
                             var component = (self.component = (
                                 self.content = new componentConstructor()
                             )),
                             oldEnterDocument = component.enterDocument;
                         
-                        self.component.enterDocument = function (isFirstTime) {
-                            self._isLoadingComponent = false;
-                            self._dispatchPlaceholderContentLoaded();
+                            self.component.enterDocument = function (isFirstTime) {
+                                self._isLoadingComponent = false;
+                                self._dispatchPlaceholderContentLoaded();
 
-                            if (component.enterDocument = oldEnterDocument) {
-                                component.enterDocument(isFirstTime);
-                            }
-                        };
+                                if ((component.enterDocument = oldEnterDocument)) {
+                                    component.enterDocument(isFirstTime);
+                                }
+                            };
                     });
                 }
             }
@@ -125,15 +126,13 @@ var Placeholder = exports.Placeholder = Slot.specialize({
     },
 
     _fetchComponentConstructor: {
-        value: function (moduleId) {
+        value: function (moduleId, require) {
             var promise;
 
             if (this._componentsMap.has(moduleId)) {
                 promise = Promise.resolve(this._componentsMap.get(moduleId));
             } else {
-                var self = this,
-                    moduleId = this.componentModule.id,    
-                    require = this.componentModule.require;
+                var self = this;
 
                 promise = require.async(moduleId).then(function (exports) {
                     var componentConstructor = exports[Object.keys(exports)[0]];
