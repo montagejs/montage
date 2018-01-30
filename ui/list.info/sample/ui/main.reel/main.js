@@ -1,6 +1,5 @@
 var Component = require("montage/ui/component").Component,
     Employee = require("../../core/model/employee").Employee;    
-EmployeeUIDescriptor = require("../../core/model/employee-ui-descriptor.mjson").montageObject;    
 
 exports.Main = Component.specialize(/** @lends Main# */{
 
@@ -69,11 +68,6 @@ exports.Main = Component.specialize(/** @lends Main# */{
                 employee.department = data[i].department;
                 employees.push(employee);
             }
-            Employee.descriptor = EmployeeUIDescriptor;
-
-            Employee.objectDescriptor.then(function (objectDescriptor) {
-                Employee.objectDescriptor.userInterfaceDescriptor;
-            })
 
             this.content = employees;
         }

@@ -137,7 +137,9 @@ exports.CascadingList = Component.specialize({
                                 self.cascadingListItemAtIndex(context.columnIndex - 1).selectedObject = context.object;
                             });
                         });
-                    } else return Promise.resolve();
+                    } else {
+                        return Promise.resolve();
+                    }
                 });
             }
         }
@@ -179,8 +181,7 @@ exports.CascadingList = Component.specialize({
 
             if (this._populatePromise) {
                 return this._populatePromise.then(function () {
-
-                    return self._populatePromise = self.application.delegate.userInterfaceDescriptorForObject(object).then(function (userInterfaceDescriptor) {
+                    return (self._populatePromise = self.application.delegate.userInterfaceDescriptorForObject(object).then(function (userInterfaceDescriptor) {
                         columnIndex = Math.min(currentStackLength, columnIndex);
                         var context = {
                             object: object,
@@ -193,10 +194,10 @@ exports.CascadingList = Component.specialize({
                         self._push(context);
                         self._populatePromise = null;
                         return context;
-                    });
+                    }));
                 });
             } else {
-                return self._populatePromise = self.application.delegate.userInterfaceDescriptorForObject(object).then(function (userInterfaceDescriptor) {
+                return (self._populatePromise = self.application.delegate.userInterfaceDescriptorForObject(object).then(function (userInterfaceDescriptor) {
                     columnIndex = Math.min(currentStackLength, columnIndex);
                     var context = {
                         object: object,
@@ -209,7 +210,7 @@ exports.CascadingList = Component.specialize({
                     self._push(context);
                     self._populatePromise = null;
                     return context;
-                });
+                }));
             }
         }
     }
