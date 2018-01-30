@@ -9,15 +9,15 @@
                 "values": {
                     "element": {"#": "list"},
                     "_repetition": {"#": "repetition"}
-                }
+                } 
             },
 
             "repetition": {
                 "prototype": "../repetition.reel",
                 "values": {
                     "element": {"#": "repetition"},
-                    "content": {"<-": "@owner.content"},
-                    "isSelectionEnabled": {"<->": "@owner.isSelectionEnabled"}
+                    "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"},
+                    "contentController": {"<-": "@owner.contentController"}
                 }
             },
 

@@ -10,66 +10,51 @@ exports.List = Component.specialize({
         value: null
     },
 
-    _scroller: {
-        value: null
-    },
-
-    /**
-     Description TODO
-     @type {Property}
-     @default null
-     */
-    delegate: {
-        value: null
-    },
-
-    content: {
-        value: null
-    },
-
     contentController: {
         value: null
     },
 
-    axis: {
+    _selection: {
         value: null
     },
 
     /**
      Description TODO
-     @private
+     @public
      */
-    isSelectionEnabled: {
-        value: null
+    selection: {
+        get: function () {
+            if (this._contentController) {
+                return this._contentController.selection;
+            }
+
+            return [];
+        }
     },
 
     /**
-     * Threshold at which the list will fire a "listEnd" event. This is the ratio of
+     Description TODO
+     @public
      */
-    listEndEventThreshold: {
-        value: 1
+    isSelectionEnabled: {
+        value: false
     },
 
-
-    _fireEndEvent: {
-        value: function() {
-            this.dispatchEventNamed("listEnd");
-        }
+    /**
+     FIXME: can't bind a property already bound! 
+     https://github.com/montagejs/montage/issues/1932
+     @public
+     */
+    allowsMultipleSelection: {
+        value: false
     },
 
-    handlePropertyChange: {
-        value: function(changeValue, key, object) {
-            if (key === "scrollY" || key === "_maxTranslateY") {
-                if (this._scroller && object === this._scroller) {
-                    if (this._scroller.scrollY >=
-                        (this._scroller._maxTranslateY * this.listEndEventThreshold) &&
-                        this._scroller._maxTranslateY > 0
-                    ) {
-                        this._fireEndEvent();
-                    }
-                }
-            }
-        }
+    /**
+     * https://github.com/montagejs/montage/pull/1491
+     * Add delegate methods
+     */
+    delegate: {
+        value: null
     }
 
 });
