@@ -26,6 +26,7 @@ When serializing their states, a table view that is data driven, the user tweaks
  * @extends Montage
  */
 exports.UserInterfaceDescriptor = Montage.specialize( /** @lends UserInterfaceDescriptor.prototype # */ {
+
     /**
      * The object a UserInterfaceDescriptor describes. This is intented be an ObjectDescriptor/blueprint or a PropertyDescriptor/PropertyBlueprint
      *
@@ -45,59 +46,84 @@ exports.UserInterfaceDescriptor = Montage.specialize( /** @lends UserInterfaceDe
     },
 
     /**
-     * A component to be used to visually represent an object described by the descriptor
-     *
-     * @type {Component} iconComponent
+     * An expression that enables a UserInterfaceDescriptor to get a short description from its describedObject.
+     * @type {MontageExpression} descriptionExpression
      */
-    iconComponent: {
+    descriptionExpression: {
         value: void 0
     },
 
+    /**
+    * An expression that enables a UserInterfaceDescriptor to get a collection display names from its describedObject.
+     * Like "employees"
+    * @type {MontageExpression} collectionNameExpression
+    */
+    collectionNameExpression: {
+        value: void 0
+    },
+
+    /**
+     * A component to be used to visually represent an object described by the descriptor
+     *
+     * @type {Component} iconComponentModule
+     */
+    iconComponentModule: {
+        value: void 0
+    },
 
     /**
      * A component to be used to create new objects as described by descriptor
      *
-     * @type {Component} creatorComponent
+     * @type {Component} creatorComponentModule
      */
-    creatorComponent: {
+    creatorComponentModule: {
         value: void 0
     },
 
     /**
      * A component to be used to inspect an object described by descriptor
      *
-     * @type {Component} inspectorComponent
+     * @type {Component} inspectorComponentModule
      */
-    inspectorComponent: {
+    inspectorComponentModule: {
         value: void 0
     },
 
     /**
      * A component to be used to edit descriptor's described object directly, over/around the object itself.
-     * compared to the inspectorComponent that indirectly interact with the object.
+     * compared to the inspectorComponentModule that indirectly interact with the object.
      * This is especially relevant for authoring tools.
      *
-     * @type {Component} editorComponent
+     * @type {Component} editorComponentModule
      */
-    editorComponent: {
+    editorComponentModule: {
         value: void 0
     },
 
     /**
      * A component to be used to inspect a collection of descriptor's described object
      *
-     * @type {Component} collectionInspectorComponent
+     * @type {Component} collectionInspectorComponentModule
      */
-    collectionInspectorComponent: {
+    collectionInspectorComponentModule: {
+        value: void 0
+    },
+
+    /**
+     * A component to be used to edit a collection of descriptor's described object directly
+     *
+     * @type {Component} collectionEditorComponentModule
+     */
+    collectionEditorComponentModule: {
         value: void 0
     },
 
     /**
      * A component to be used to represent a single instance of descriptor's described object in a collection of described objects
      *
-     * @type {Component} collectionItemComponent
+     * @type {Component} collectionItemComponentModule
      */
-    collectionItemComponent: {
+    collectionItemComponentModule: {
         value: void 0
     },
 
