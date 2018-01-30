@@ -1,0 +1,35 @@
+{
+    "root": {
+        "prototype": "montage/core/meta/module-object-descriptor",
+        "values": {
+            "name": "Customer",
+            "exportName": "Customer",
+            "propertyDescriptors": [
+                {"@": "firstname"},
+                {"@": "lastname"}
+            ],
+            "objectDescriptorModule": {
+                "%": "spec/meta/blueprint/customer.mjson"
+            },
+            "module": {
+                "%": "spec/meta/blueprint/customer"
+            }
+        }
+    },
+
+    "firstname": {
+        "prototype": "montage/core/meta/property-descriptor",
+        "values": {
+            "name": "firstname",
+            "valueType": "string"
+        }
+    },
+
+    "lastname": {
+        "prototype": "montage/core/meta/property-descriptor",
+        "values": {
+            "name": "lastname",
+            "valueType": "string"
+        }
+    }
+}
