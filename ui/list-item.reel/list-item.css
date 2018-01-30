@@ -5,11 +5,17 @@
     color: #000;
     background-color: #fff;
     min-height: 2.75em;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    align-items: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
     overflow: hidden;
     border-top: 1px solid #c8c7cc;
     box-sizing: border-box;
+    -webkit-transition: background-color .2s linear;
+    transition: background-color .2s linear;
 }
 
 .ListItem:first-of-type {
@@ -27,4 +33,12 @@
     line-height: normal;
     color: #8e9093;
     margin: 0 0 2px;
+}
+
+.ListItem.selected {
+    background-color: #d9d9d9;
+}
+
+.ListItem.active {
+    background-color: #e9e9e9;
 }
