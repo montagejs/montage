@@ -2327,7 +2327,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     parameterElement = parameters[key];
                     argument = templateArguments ? templateArguments[key] : void 0;
 
-                    if ((key === "*") || (key === "each")) {
+                    if ((key === "*") /** || (key === "each") */) {
                         if (this._element.childElementCount === 0 &&
                             !(this._element.firstChild &&
                                 this._element.firstChild.data &&
