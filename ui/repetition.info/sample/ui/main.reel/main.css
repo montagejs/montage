@@ -34,6 +34,10 @@ header {
     font-size: 0;
 }
 
+.list {
+    font-size: 1rem;
+}
+
 h4 {
     font-size: 1rem;
     text-align: center;
