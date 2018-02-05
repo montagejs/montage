@@ -97,6 +97,20 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
         }
     },
 
+    removeObject: {
+        value: function (label) {
+            var serializationObject = this.getSerializationObject();
+
+            if (serializationObject && label in serializationObject) {
+                delete serializationObject[label];
+
+                this.initWithObject(serializationObject);
+            }
+            
+            return this;
+        }
+    },
+
     hasSerializationLabel: {
         value: function (label) {
             return label in this.getSerializationObject();
