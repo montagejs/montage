@@ -2328,25 +2328,29 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     argument = templateArguments ? templateArguments[key] : void 0;
 
                     if ((key === "*") || (key === "each")) {
-                        if (this._element.childElementCount === 0) {
+                        if (this._element.childElementCount === 0 &&
+                            !(this._element.firstChild &&
+                                this._element.firstChild.data &&
+                                this._element.firstChild.data.trim())
+                        ) {
                          //We're missing an argument, we're going to check if we have a default
-                             if (parameterElement && parameterElement.childElementCount > 0) {
-                                 range = this._element.ownerDocument.createRange();
-                                 range.selectNodeContents(parameterElement);
-                                 parameterElement.parentNode.replaceChild(range.extractContents(), parameterElement);
+                            if (parameterElement && parameterElement.childElementCount > 0) {
+                                range = this._element.ownerDocument.createRange();
+                                range.selectNodeContents(parameterElement);
+                                parameterElement.parentNode.replaceChild(range.extractContents(), parameterElement);
 
                                 //Should we re-construct the structure from the default?
                                 //  if(!templateArguments) {
                                 //      templateArguments = this._domArguments = {"*":};
                                 //
                                 //  }
-                             } else {
+                            } else {
                                 //  throw new Error('No arguments provided for ' +
                                 //  this.templateModuleId + '. Arguments needed for data-param: ' +
                                 //  key + '.');
                                 //Remove the data-parm="*" element
                                 parameterElement.parentNode.removeChild(parameterElement);
-                             }
+                            }
                         } else {
                             range = this._element.ownerDocument.createRange();
                             range.selectNodeContents(this._element);
