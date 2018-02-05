@@ -1482,9 +1482,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                     return iteration;
                 });
 
-                return promise.then(null, function () {
+                return promise.then(null, function (error) {
                     // but regardless of whether this iteration failed, allow
                     // another iteration to be created
+                    console.error(error)
                 });
             });
 
