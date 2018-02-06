@@ -97,14 +97,48 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
         }
     },
 
-    removeObject: {
+    removeObjectWithLabel: {
         value: function (label) {
             var serializationObject = this.getSerializationObject();
 
             if (serializationObject && label in serializationObject) {
                 delete serializationObject[label];
 
-                this.initWithObject(serializationObject);
+                if (this._serializationLabels) {
+                    this._serializationLabels.splice(
+                        this._serializationLabels.indexOf(label), 1
+                    );
+                }
+
+                this._serializationString = null;
+            }
+            
+            return this;
+        }
+    },
+
+    removeObjectsWithLabels: {
+        value: function (labels) {
+            var serializationObject = this.getSerializationObject();
+            
+            if (serializationObject && labels) {
+                var label;
+
+                for (var i = 0, length = labels.length; i < length; i++) {
+                    label = labels[i];
+                    
+                    if (label in serializationObject) {
+                        delete serializationObject[label];
+
+                        if (this._serializationLabels) {
+                            this._serializationLabels.splice(
+                                this._serializationLabels.indexOf(label), 1
+                            );
+                        }
+                    }
+                }
+
+                this._serializationString = null;
             }
             
             return this;
