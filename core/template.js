@@ -995,12 +995,11 @@ var Template = Montage.specialize( /** @lends Template# */ {
                             !!(argumentElement.firstChild &&
                                 argumentElement.firstChild.data &&
                                 argumentElement.firstChild.data.trim())
-                        ) { // has arguments
-                            var elementIds = this._getChildrenElementIds(parameterElement);
-                            
-                            for (var i = 0, length = elementIds.length; i < length; i++) {
-                                serialization.removeObject(elementIds[0]);
-                            }
+                        ) { // has arguments, need to clean the serialization.
+                            var labels = serialization.getSerializationLabels();
+                            serialization.removeObjectsWithLabels(
+                                this._getChildrenElementIds(parameterElement)
+                            );
                         } else {
                             var range = parameterElement.ownerDocument.createRange();
                             range.selectNodeContents(parameterElement);
