@@ -1,0 +1,8 @@
+{
+    "root": {
+        "object": "montage/core/application[application]",
+        "values": {
+            "loginPOSTURL": "https://someserver.domain.com/login"
+        }
+    }
+}
