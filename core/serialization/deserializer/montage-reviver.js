@@ -18,6 +18,18 @@ require("../../shim/string");
 var PROXY_ELEMENT_MAP = new WeakMap();
 var DATA_ATTRIBUTES_MAP = new Map();
 
+/**
+ * Element methods that are implemented natively and throw an invocation error
+ * if applied to the wrong type. When an element proxy proxies these methods,
+ * it needs to call `bind(element)` to avoid the invocation error.
+ */
+var ELEMENT_NATIVE_METHODS = [
+    "dispatchEvent", "addEventListener",
+    "firstElementChild", "firstChild",
+    "getAttribute", "getAttributeNames", "getAttributeNode",
+    "getElementsByClassName", "getElementsByTagName"
+];
+
 var ModuleLoader = Montage.specialize({
 
     _require: {
@@ -285,7 +297,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                         return true;
                     },
                     get: function (target, propertyName) {
-                        return target[propertyName] || element[propertyName];
+                        var property = target[propertyName] || element[propertyName];
+                        if (typeof property === "function" && ELEMENT_NATIVE_METHODS.indexOf(propertyName) !== -1) {
+                            return property.bind(target[propertyName] ? target : element);
+                        }
+                        return property;
                     }
                 }));
             }
