@@ -14,24 +14,6 @@ exports.List = Component.specialize({
         value: null
     },
 
-    _selection: {
-        value: null
-    },
-
-    /**
-     Description TODO
-     @public
-     */
-    selection: {
-        get: function () {
-            if (this._contentController) {
-                return this._contentController.selection;
-            }
-
-            return [];
-        }
-    },
-
     /**
      Description TODO
      @public

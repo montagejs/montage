@@ -6,11 +6,13 @@
     padding: 0;
     text-align: left;
     font-size: 16px;
+    font-size: 1rem;
     color: hsla(0,0%,0%,.5);
     list-style: none;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
     border: 1px solid #c8c7cc;
+    box-sizing: border-box;
 }
 
 .List-repetition {

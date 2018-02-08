@@ -1,15 +1,20 @@
-var MontageModule = require("montage"),
-    Montage = MontageModule.Montage,
-    objectDescriptorModuleIdDescriptor = MontageModule._objectDescriptorModuleIdDescriptor,
-    objectDescriptorDescriptor = MontageModule._objectDescriptorDescriptor;
+var DataModel = require("./data-model").DataModel;
 
 /**
  * @class Employee
  * @extends Montage
  */
-exports.Employee = Montage.specialize({
+exports.Employee = DataModel.specialize({
 
-    fisrtname: {
+    constructor: {
+        value: function (firstname, lastname, department) {
+            this.firstname = firstname;
+            this.lastname = lastname;
+            this.department = department;
+        }
+    },
+
+    firstname: {
         value: null
     },
 
@@ -17,14 +22,8 @@ exports.Employee = Montage.specialize({
         value: null
     },
 
-    departement: {
+    department: {
         value: null
     }
-
-}, {
-
-    objectDescriptorModuleId: objectDescriptorModuleIdDescriptor,
-
-    objectDescriptor: objectDescriptorDescriptor
 
 });

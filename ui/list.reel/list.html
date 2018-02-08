@@ -8,7 +8,9 @@
             "owner": {
                 "values": {
                     "element": {"#": "list"},
-                    "_repetition": {"#": "repetition"}
+                    "_repetition": {"#": "repetition"},
+                    "selection": {"<->": "@repetition.selection"},
+                    "context.selectedObject": {"<->": "@repetition.selection.one()"}
                 } 
             },
 
@@ -16,13 +18,25 @@
                 "prototype": "../repetition.reel",
                 "values": {
                     "element": {"#": "repetition"},
-                    "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"},
-                    "contentController": {"<-": "@owner.contentController"}
+                    "isSelectionEnabled": {"<-": "@owner.context.defined() ? true : @owner.isSelectionEnabled"},
+                    "contentController": {"<->": "@owner.contentController"},
+                    "content": {"<-": "@owner.context.defined() ? @owner.context.object : (@owner.contentController.content || @owner.content)"}
                 }
             },
 
             ":iteration": {
                "alias": "@repetition:iteration"
+            },
+
+            "listItem": {
+                "prototype": "../list-item.reel",
+                "values": {
+                    "element": {"#": "listItem"},
+                    "list": {"<-": "@owner"},
+                    "rowIndex": {"<-": "@repetition:iteration.index"},
+                    "delegate": {"<-": "@owner.context.defined() ? @owner.context.delegate : @owner.delegate"},
+                    "object": {"<-": "@repetition:iteration.object"}
+                }
             }
         }
     </script>
@@ -30,7 +44,9 @@
 <body>
 	<div data-montage-id="list" class="List">
         <ul data-montage-id="repetition" class="List-repetition">
-            <li data-param="*"></li>
+            <li data-param="*">
+                <div data-montage-id="listItem"></div>
+            </li>
         </ul>
 	</div>
 </body>

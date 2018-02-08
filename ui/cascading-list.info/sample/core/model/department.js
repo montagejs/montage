@@ -1,26 +1,19 @@
-var MontageModule = require("montage"),
-    Montage = MontageModule.Montage,
-    objectDescriptorModuleIdDescriptor = MontageModule._objectDescriptorModuleIdDescriptor,
-    objectDescriptorDescriptor = MontageModule._objectDescriptorDescriptor;
+var DataModel = require("./data-model").DataModel;
 
 /**
  * @class Department
- * @extends Montage
+ * @extends DataModel
  */
-exports.Department = Montage.specialize({
+exports.Department = DataModel.specialize({
 
-    id: {
-        value: null
+    constructor: {
+        value: function (name) {
+            this.name = name;
+        }
     },
 
     name: {
         value: null
     }
-
-}, {
-
-    objectDescriptorModuleId: objectDescriptorModuleIdDescriptor,
-
-    objectDescriptor: objectDescriptorDescriptor
 
 });

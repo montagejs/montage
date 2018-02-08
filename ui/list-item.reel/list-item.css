@@ -1,10 +1,12 @@
 .ListItem {
     padding-left: 16px;
+    padding-left: 1rem;
     border-radius: 0;
     position: relative;
     color: #000;
     background-color: #fff;
-    min-height: 2.75em;
+    min-height: 44px;
+    min-height: 2.75rem;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -12,24 +14,22 @@
         -ms-flex-align: center;
             align-items: center;
     overflow: hidden;
-    border-top: 1px solid #c8c7cc;
+    border-bottom: 1px solid #c8c7cc;
     box-sizing: border-box;
     -webkit-transition: background-color .2s linear;
     transition: background-color .2s linear;
 }
-
-.ListItem:first-of-type {
-    border-top: none;
-}
  
 .ListItem-label {
     margin: 0 0 2px;
-    font-size: 1em;
+    font-size: 16px;
+    font-size: 1rem;
     font-weight: 400;
 }
 
 .ListItem-description {
-    font-size: .85em;
+    font-size: 13.6px;
+    font-size: .85rem;
     line-height: normal;
     color: #8e9093;
     margin: 0 0 2px;

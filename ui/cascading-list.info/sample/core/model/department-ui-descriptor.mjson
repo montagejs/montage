@@ -5,6 +5,12 @@
             "inspectorComponentModule": {
                 "%": "ui/inspectors/department.reel"
             },
+            "creatorInspectorComponentModule": {
+                "%": "ui/inspectors/department.reel"
+            },
+            "collectionInspectorComponentModule": {
+                "%": "montage/ui/list.reel"
+            },
             "iconComponentModule": {
                 "%": "ui/icons/department.reel"
             },

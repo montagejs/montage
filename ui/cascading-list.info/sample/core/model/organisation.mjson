@@ -1,0 +1,30 @@
+{
+    "root": {
+        "prototype": "montage/core/meta/module-object-descriptor",
+        "values": {
+            "name": "Organisation",
+            "exportName": "Organisation",
+            "propertyDescriptors": [
+                {"@": "companyName"}
+            ],
+            "objectDescriptorModule": {
+                "%": "core/model/organisation.mjson"
+            },
+            "module": {
+                "%": "core/model/organisation"
+            },
+            "userInterfaceDescriptorModule": {
+                "%": "core/model/organisation-ui-descriptor.mjson"
+            }
+        }
+    },
+
+    "companyName": {
+        "prototype": "montage/core/meta/property-descriptor",
+        "values": {
+            "name": "name",
+            "valueType": "string"
+        }
+    }
+
+}

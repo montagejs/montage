@@ -49,17 +49,18 @@ var Placeholder = exports.Placeholder = Slot.specialize({
         }
     },
 
-    _object: {
+    _context: {
         value: null
     },
 
-    object: {
+    context: {
         get: function () {
-            return this._object;
+            return this._context;
         },
-        set: function (object) {
-            if (this._object !== object) {
-                this._object = object;
+        set: function (context) {
+            if (this._context !== context) {
+                this._context = context;
+                this._shouldFetchComponent = true;
                 this.needsDraw = true;
             }
         }
@@ -88,7 +89,7 @@ var Placeholder = exports.Placeholder = Slot.specialize({
         value: function () {
             var promise;
 
-            if (this.componentModule) {
+            if (this.componentModule && this.context) {
                 var moduleId = this.componentModule.id;
 
                 if (typeof moduleId === "string" &&
@@ -105,11 +106,11 @@ var Placeholder = exports.Placeholder = Slot.specialize({
                     promise = this._fetchComponentConstructor(moduleId, require)
                         .then(function (componentConstructor) {
                             var component = (self.component = (
-                                self.content = new componentConstructor()
-                            )),
-                            oldEnterDocument = component.enterDocument;
-                        
-                            self.component.enterDocument = function (isFirstTime) {
+                                    self.content = new componentConstructor()
+                                )),
+                                oldEnterDocument = component.enterDocument;
+                            
+                            component.enterDocument = function (isFirstTime) {
                                 self._isLoadingComponent = false;
                                 self._dispatchPlaceholderContentLoaded();
 
@@ -148,12 +149,11 @@ var Placeholder = exports.Placeholder = Slot.specialize({
 
     draw: {
         value: function () {
-            var self = this,
-                object = this.object;
+            var self = this;
                 
             this._fetchComponentIfNeeded().then(function () {
                 if (self.component) {
-                    self.component.object = object;
+                    self.component.context = self.context;
                 }
             });
         }

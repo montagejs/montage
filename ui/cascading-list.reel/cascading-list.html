@@ -6,31 +6,26 @@
     {
 
         "owner": {
-            "properties": {
+            "values": {
                 "element": {"#": "owner"},
-                "repetition": {"@": "repetition"},
-                "scrollView": {"@": "scrollview"}
+                "repetition": {"@": "repetition"}
             }
         },
 
         "repetition": {
-            "prototype": "montage/ui/repetition.reel",
-            "properties": {
-                "element": {"#": "repetition"}
-            },
-            "bindings": {
-                "content": {"<-": "@owner.stack"}
+            "prototype": "../repetition.reel",
+            "values": {
+                "element": {"#": "repetition"},
+                "content": {"<-": "@owner._stack"}
             }
         },
 
         "item": {
             "prototype": "./cascading-list-item.reel",
-            "properties": {
+            "values": {
                 "element": {"#": "item"},
-                "cascadingList": {"@": "owner"}
-            },
-            "bindings": {
-                "data": {"<-": "@repetition:iteration.object"}
+                "cascadingList": {"@": "owner"},
+                "context": {"<-": "@repetition:iteration.object"}
             }
         }
 

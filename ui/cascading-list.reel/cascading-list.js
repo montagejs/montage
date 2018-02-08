@@ -1,6 +1,45 @@
-var Component = require("montage/ui/component").Component,
-    CascadingListItem = require("ui/controls/cascading-list.reel/cascading-list-item.reel").CascadingListItem;
+var Component = require("../component").Component,
+    MontageModule = require("../../core/core"),
+    Promise = require('../../core/promise').Promise,
+    Montage = MontageModule.Montage,
+    objectDescriptorDescriptor = MontageModule._objectDescriptorDescriptor;
 
+// Needs to provide an Api on Montage 
+var DummyObject = Montage.specialize(null, {
+    objectDescriptor: objectDescriptorDescriptor
+});
+
+var CascadingListContext = exports.CascadingListContext = Montage.specialize({
+
+    object: {
+        value: null
+    },
+
+    userInterfaceDescriptor: {
+        value: null
+    },
+
+    columnIndex: {
+        value: null
+    },
+
+    cascadingList: {
+        value: null
+    },
+
+    cascadingListItem: {
+        value: null
+    },
+
+    selectedObject: {
+        value: null
+    },
+
+    delegate: {
+        value: null
+    }
+
+});
 
 exports.CascadingList = Component.specialize({
 
@@ -25,38 +64,17 @@ exports.CascadingList = Component.specialize({
         set: function (root) {
             if (this._root !== root) {
                 this._root = root;
-                this.popAll(true);
 
-                if (this._selectionService) {
-                    this._restoreSelection();
+                if (root) {
+                    this.expand(root);
                 }
             }
         }
     },
 
-    templateDidLoad: {
-        value: function () {
-            this._selectionService = this.application.selectionService;
-        }
-    },
-
-    enterDocument: {
-        value: function () {
-            this._restoreSelection();
-            this.addPathChangeListener("_selectionService.needsRefresh", this, "_handleNeedsRefreshChange");
-        }
-    },
-
     exitDocument: {
         value: function () {
-            if (this.getPathChangeDescriptor("_selectionService.needsRefresh", this)) {
-                this.removePathChangeListener("_selectionService.needsRefresh", this);
-            }
-            this._resetCascadingListItemAtIndex(0);
-
-            if (this._currentIndex > 0) {
-                this.popAtIndex(1, true);
-            }
+            this.popAll();
         }
     },
 
@@ -68,19 +86,20 @@ exports.CascadingList = Component.specialize({
     },
 
     popAll: {
-        value: function (isSelectionSaved) {
+        value: function () {
             while (this._stack.length) {
-                this._pop(isSelectionSaved);
+                this._pop();
             }
         }
     },
 
     popAtIndex: {
-        value: function (index, isSelectionSaved) {
+        value: function (index) {
             if (index <= this._currentIndex && this._currentIndex !== -1) {
-                this._pop(isSelectionSaved);
+                this._pop();
 
-                // the value of the property _currentIndex changed when _pop() has been called.
+                // the value of the property _currentIndex 
+                // changed when _pop() has been called.
                 if (index <= this._currentIndex) {
                     this.popAtIndex(index);
                 }
@@ -115,141 +134,123 @@ exports.CascadingList = Component.specialize({
         }
     },
 
-    _handleNeedsRefreshChange: {
-        value: function () {
-            if (this._selectionService.needsRefresh) {
-                this._restoreSelection();
-                this._selectionService.needsRefresh = false;
-            }
-        }
-    },
-
-    _restoreSelection: {
-        value: function () {
-            if (this._root) {
-                var self = this;
-                this._selection = this._selectionService.getSelection(this.application.section);
-                var rootPromise = this._stack.length === 0 && this._populatePromise ? this._populatePromise : this.expand(this._root);
-                return rootPromise.then(function () {
-                    if (self._selection && self._selection.length > 0) {
-                        return Promise.mapSeries(self._selection, function (selectedObject) {
-                            return self.expand(selectedObject, self._selection.indexOf(selectedObject) + 1).then(function (context) {
-                                self.cascadingListItemAtIndex(context.columnIndex - 1).selectedObject = context.object;
-                            });
-                        });
-                    } else {
-                        return Promise.resolve();
-                    }
-                });
-            }
-        }
-    },
-
     _push: {
         value: function (context) {
             this._stack.push(context);
-            this._selectionService.saveSelection(this.application.section, this._stack);
             this.needsDraw = true;
         }
     },
 
     _pop: {
         value: function (isSelectionSaved) {
-            this._resetCascadingListItemAtIndex(this._currentIndex);
+            var cascadingListItem = this.cascadingListItemAtIndex(this._currentIndex);
+
+            // if (cascadingListItem) {
+            //     cascadingListItem.resetSelection();
+            // }
+
             this._stack.pop();
-            if (!isSelectionSaved) {
-                this._selectionService.saveSelection(this.application.section, this._stack);
-            }
             this._currentIndex--;
         }
     },
 
-    _resetCascadingListItemAtIndex: {
-        value: function (index) {
-            var cascadingListItem = this.cascadingListItemAtIndex(index);
+    __dummyObject: {
+        value: null
+    },
 
-            if (cascadingListItem) {
-                cascadingListItem.resetSelection();
+    _dummyObject: {
+        get: function () {
+            if (!this.__dummyObject) {
+                this.__dummyObject = new DummyObject();
             }
+
+            return this.__dummyObject;
         }
     },
 
     _populateColumnWithObjectAndIndex: {
         value: function (object, columnIndex) {
-            var self = this;
-            var currentStackLength = self._stack.length;
+            if (!this._populatePromise && object) {
+                var self = this,
+                    objectDescriptorModuleId,
+                    objectDescriptorModuleIdCandidate,
+                    objectDescriptor,
+                    constructor;
 
-            if (this._populatePromise) {
-                return this._populatePromise.then(function () {
-                    return (self._populatePromise = self.application.delegate.userInterfaceDescriptorForObject(object).then(function (userInterfaceDescriptor) {
-                        columnIndex = Math.min(currentStackLength, columnIndex);
-                        var context = {
-                            object: object,
-                            userInterfaceDescriptor: userInterfaceDescriptor,
-                            columnIndex: columnIndex
-                        };
-                        if (currentStackLength > 0) {
-                            context.parentContext = self._stack[currentStackLength - 1];
-                        }
-                        self._push(context);
-                        self._populatePromise = null;
-                        return context;
-                    }));
-                });
-            } else {
-                return (self._populatePromise = self.application.delegate.userInterfaceDescriptorForObject(object).then(function (userInterfaceDescriptor) {
-                    columnIndex = Math.min(currentStackLength, columnIndex);
-                    var context = {
-                        object: object,
-                        userInterfaceDescriptor: userInterfaceDescriptor,
-                        columnIndex: columnIndex
-                    };
-                    if (currentStackLength > 0) {
-                        context.parentContext = self._stack[currentStackLength - 1];
+                if (typeof object === "object" &&
+                    (constructor = object.constructor) &&
+                    constructor.objectDescriptorModuleId
+                ) {
+                    objectDescriptorModuleId = constructor.objectDescriptorModuleId
+                }
+
+                objectDescriptorModuleIdCandidate = this.callDelegateMethod(
+                    "cascadingListWillUseObjectDescriptorModuleIdForObjectAtColumnIndex",
+                    self,
+                    objectDescriptorModuleId,
+                    object,
+                    columnIndex
+                );
+
+                if (objectDescriptorModuleIdCandidate) {
+                    var infoDelegate = Montage.getInfoForObject(this.delegate),
+                        infoDummyObjectConstructor = Montage.getInfoForObject(this._dummyObject.constructor);
+                    
+                    infoDummyObjectConstructor.require = infoDelegate.require; // not safe
+                    objectDescriptorModuleId = objectDescriptorModuleIdCandidate;
+                }
+
+                if (objectDescriptorModuleId) {
+                    if (!constructor || !constructor.objectDescriptorModuleId ||
+                        constructor.objectDescriptorModuleId !== objectDescriptorModuleId
+                    ) {
+                        constructor = this._dummyObject.constructor;
+                        constructor.objectDescriptorModuleId = objectDescriptorModuleId;
                     }
-                    self._push(context);
-                    self._populatePromise = null;
-                    return context;
-                }));
+                    
+                    objectDescriptor = constructor.objectDescriptor;
+
+                    if (objectDescriptor) {
+                        this._populatePromise = objectDescriptor
+                            .then(function (objectDescriptor) {
+                                objectDescriptor = self.callDelegateMethod(
+                                    "cascadingListWillUseObjectDescriptorForObjectAtColumnIndex",
+                                    self,
+                                    objectDescriptor,
+                                    object,
+                                    columnIndex
+                                ) || objectDescriptor;
+
+                                return objectDescriptor.userInterfaceDescriptor
+                                    .then(function (UIDescriptor) {
+                                        var context = new CascadingListContext();
+                                        context.object = object;
+                                        context.userInterfaceDescriptor = UIDescriptor;
+                                        context.columnIndex = columnIndex;
+                                        context.cascadingList = self;
+                                        context.delegate = self.delegate;
+
+                                        self._push(context);
+                                        self._populatePromise = null;
+                                        self._dummyObject.constructor.objectDescriptorModuleId = null;
+                                        self._dummyObject.constructor.objectDescriptor = null;
+
+                                        if (infoDummyObjectConstructor) {
+                                            infoDummyObjectConstructor.require = null;
+                                        }
+
+                                        return context;
+                                    });
+                            });
+                    }
+                } else {
+                    //todo ask manually ?
+                }
+
             }
+            
+            return this._populatePromise || Promise.resolve();
         }
     }
 
-}, {
-        findCascadingListItemContextWithComponent: {
-            value: function (component) {
-                var parentComponent = component.parentComponent;
-
-                if (parentComponent) {
-                    if (parentComponent instanceof CascadingListItem) {
-                        return parentComponent;
-                    }
-
-                    return this.findCascadingListItemContextWithComponent(parentComponent);
-                }
-
-                return null;
-            }
-        },
-
-        findPreviousCascadingListItemContextWithComponent: {
-            value: function (component) {
-                var cascadingListItem = this.findCascadingListItemContextWithComponent(component),
-                    previousCascadingListItem = null;
-
-                if (cascadingListItem && cascadingListItem.data.columnIndex > 0) {
-                    previousCascadingListItem = cascadingListItem.cascadingList.cascadingListItemAtIndex(cascadingListItem.data.columnIndex - 1);
-                }
-
-                return previousCascadingListItem;
-            }
-        },
-
-        findPreviousContextWithComponent: {
-            value: function (component) {
-                var previousCascadingListItem = this.findPreviousCascadingListItemContextWithComponent(component);
-
-                return previousCascadingListItem ? previousCascadingListItem.data : null;
-            }
-        }
-    });
+});

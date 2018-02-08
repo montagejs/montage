@@ -29,8 +29,18 @@ exports.ListItem = Component.specialize({
                 if (object) {
                     this._getUserInterfaceDescriptor(object);
                 }
+
+                this.needsDraw = true;
             }
         }
+    },
+
+    rowIndex: {
+        value: -1
+    },
+
+    list: {
+        value: null
     },
 
     userInterfaceDescriptor: {
@@ -45,10 +55,12 @@ exports.ListItem = Component.specialize({
                 this.canDrawGate.setField(this.constructor.CAN_DRAW_FIELD, false);
 
                 return object.constructor.objectDescriptor.then(function (objectDescriptor) {
-                    self.canDrawGate.setField(self.constructor.CAN_DRAW_FIELD, true);
 
                     if (objectDescriptor) {
                         objectDescriptor.userInterfaceDescriptor.then(function (userInterfaceDescriptor) {
+                            self.canDrawGate.setField(self.constructor.CAN_DRAW_FIELD, true);
+                            self.needsDraw = true;
+
                             return (self.userInterfaceDescriptor = userInterfaceDescriptor);
                         });
                     }
@@ -56,6 +68,20 @@ exports.ListItem = Component.specialize({
             }
 
             return Promise.resolve();
+        }
+    },
+
+    draw: {
+        value: function () {
+            if (!this.label && !this.userInterfaceDescriptor && this.object) {
+                this.label = this.callDelegateMethod(
+                    "listItemNeedsLabelForObject",
+                    this,
+                    this.object,
+                    this.rowIndex,
+                    this.list
+                );
+            }
         }
     }
 

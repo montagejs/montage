@@ -773,33 +773,35 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     getTemplateArgumentElement: {
         value: function (argumentName) {
-            var ownerModuleId, element, range, argument, label,
-                template = this._ownerDocumentPart.template;
+            if (this._ownerDocumentPart) {
+                var ownerModuleId, element, range, argument, label,
+                    template = this._ownerDocumentPart.template;
 
-            if (global._montage_le_flag) {
-                ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
-                label = this._montage_metadata.label;
-            }
-
-            if (argumentName === "*") {
-                element = template.getElementById(this.getElementId());
-
-                range = template.document.createRange();
-                range.selectNodeContents(element);
-                argument = range.cloneContents();
-                if (global._montage_le_flag && element.children.length > 0) {
-                    this._leTagStarArgument(ownerModuleId, label, argument);
-                }
-            } else {
-                argument = this._getTemplateDomArgument(argumentName).cloneNode(true);
-                argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
                 if (global._montage_le_flag) {
-                    this._leTagNamedArgument(ownerModuleId, label, argument,
-                        argumentName);
+                    ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
+                    label = this._montage_metadata.label;
                 }
-            }
 
-            return argument;
+                if (argumentName === "*") {
+                    element = template.getElementById(this.getElementId());
+
+                    range = template.document.createRange();
+                    range.selectNodeContents(element);
+                    argument = range.cloneContents();
+                    if (global._montage_le_flag && element.children.length > 0) {
+                        this._leTagStarArgument(ownerModuleId, label, argument);
+                    }
+                } else {
+                    argument = this._getTemplateDomArgument(argumentName).cloneNode(true);
+                    argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
+                    if (global._montage_le_flag) {
+                        this._leTagNamedArgument(ownerModuleId, label, argument,
+                            argumentName);
+                    }
+                }
+
+                return argument;
+            }
         }
     },
 

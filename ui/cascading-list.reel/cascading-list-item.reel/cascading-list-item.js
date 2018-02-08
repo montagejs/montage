@@ -1,4 +1,4 @@
-var Component = require("montage/ui/component").Component;
+var Component = require("../../component").Component;
 
 /**
  * @class CascadingListItem
@@ -6,62 +6,43 @@ var Component = require("montage/ui/component").Component;
  */
 exports.CascadingListItem = Component.specialize({
 
-
-    _data: {
+    _context: {
         value: null
     },
 
-    helpShown: {
-        value: false
-    },
-
-    data: {
+    context: {
         get: function () {
-            return this._data;
+            return this._context;
         },
-        set: function (data) {
-            if (this._data !== data) {
-                var inspectorComponentModuleId = null;
+        set: function (context) {
+            if (this._context !== context) {
+                var componentModule = null;
 
-                if (data) {
-                    var defaultInspectorId = this.constructor.DEFAULT_INSPECTOR_ID,
-                        userInterfaceDescriptor = data.userInterfaceDescriptor,
-                        object = this.object = data.object;
+                if (context) {
+                    var UIDescriptor = context.userInterfaceDescriptor,
+                        object = this.object = context.object;
 
-                    data.cascadingListItem = this;
+                    context.cascadingListItem = this;
+
                     this.isCollection = Array.isArray(object);
-                    this.userInterfaceDescriptor = userInterfaceDescriptor;
-                    this.error = data.error;
+                    this.userInterfaceDescriptor = UIDescriptor;
 
-                    if (userInterfaceDescriptor) {
-                        //todo: need to be smarter here
+                    if (UIDescriptor) {
                         if (this.isCollection) {
-                            var collectionInspectorComponentModule = userInterfaceDescriptor.collectionInspectorComponentModule;
-
-                            inspectorComponentModuleId = collectionInspectorComponentModule ?
-                                (collectionInspectorComponentModule.id || collectionInspectorComponentModule['%']) : defaultInspectorId;
-
-                        } else if (object && typeof object === "object") {
-                            var inspectorComponentModule = userInterfaceDescriptor.inspectorComponentModule,
-                                id = object.id;
-
-                            if ((id !== void 0 && id !== null) || object._isNewObject) {
-                                inspectorComponentModuleId = inspectorComponentModule ?
-                                    (inspectorComponentModule.id || inspectorComponentModule['%']) : defaultInspectorId;
-                            } else {
-                                var creatorComponentModule = userInterfaceDescriptor.creatorComponentModule;
-
-                                inspectorComponentModuleId = creatorComponentModule ? (creatorComponentModule.id || creatorComponentModule['%']) :
-                                    inspectorComponentModule ? (inspectorComponentModule.id || inspectorComponentModule['%']) : defaultInspectorId;
-                            }
+                            
+                            componentModule = UIDescriptor.collectionInspectorComponentModule;
+                        } else {
+                            componentModule = UIDescriptor.inspectorComponentModule;
                         }
+                        
+                        // delegate method creator
                     }
                 } else {
                     this.object = null;
                 }
 
-                this._data = data;
-                this.inspectorComponentModuleId = inspectorComponentModuleId;
+                this._context = context;
+                this.componentModule = componentModule;
             }
         }
     },
@@ -72,7 +53,7 @@ exports.CascadingListItem = Component.specialize({
     },
 
 
-    inspectorComponentModuleId: {
+    componentModule: {
         value: null
     },
 
@@ -80,7 +61,6 @@ exports.CascadingListItem = Component.specialize({
     _selectedObject: {
         value: void 0
     },
-
 
     selectedObject: {
         get: function () {
@@ -90,86 +70,36 @@ exports.CascadingListItem = Component.specialize({
             if (this._selectedObject !== selectedObject) {
                 this._selectedObject = selectedObject;
 
-                if (selectedObject !== void 0 && selectedObject !== null) {
-                    this.selectedId = this.application.modelDescriptorService.getObjectType(selectedObject) + '#' +
-                        (selectedObject.id || '');
-                    this.cascadingList.expand(selectedObject, this.data.columnIndex + 1);
-
-                } else if (this.data.columnIndex < this.cascadingList._currentIndex) {
-                    if (!this._isResetting) {
-                        this.selectedId = null;
+                if (this.context) {
+                    if (selectedObject) {
+                        this.cascadingList.expand(
+                            selectedObject,
+                            this.context.columnIndex + 1
+                        );
+                    } else if (
+                        this.context.columnIndex < this.cascadingList._currentIndex
+                    ) {
+                        this.cascadingList.popAtIndex(
+                            this.context.columnIndex + 1,
+                            this._isResetting
+                        );
                     }
-                    this.cascadingList.popAtIndex(this.data.columnIndex + 1, this._isResetting);
                 }
             }
         }
     },
 
-    needToScrollIntoView: {
-        value: false
-    },
-
-    enterDocument: {
-        value: function (isFirstTime) {
-            if (isFirstTime) {
-                this.addEventListener("placeholderContentLoaded", this);
-            }
-        }
-    },
-
-    handlePlaceholderContentLoaded: {
-        value: function (event) {
-            if (event.detail === this.content) {
-                this.needToScrollIntoView = true;
-                this.needsDraw = true;
-            }
-        }
-    },
-
-    resetSelection: {
+    resetSelectedObject: {
         value: function () {
-            this._isResetting = true;
             this.selectedObject = null;
 
-            if (this.content && this.content.component && this.content.component.selectedObject) {
+            if (this.content &&
+                this.content.component &&
+                this.content.component.selectedObject
+            ) {
                 this.content.component.selectedObject = null;
             }
-            this._isResetting = false;
         }
-    },
-
-
-    dismiss: {
-        value: function () {
-            if (this._inDocument) {
-                this.cascadingList.popAtIndex(this.data.columnIndex);
-            }
-        }
-    },
-
-    handleHelpButtonAction: {
-        value: function () {
-            this.helpShown = !this.helpShown;
-        }
-    },
-
-    draw: {
-        value: function () {
-            if (this.needToScrollIntoView) {
-                if (!this.content._element.clientWidth) {
-                    this.needsDraw = true;
-                } else {
-                    this.cascadingList.scrollView.scrollIntoView(false);
-                    this.needToScrollIntoView = false;
-                }
-            }
-        }
-    }
-
-}, {
-
-    DEFAULT_INSPECTOR_ID: {
-        value: 'ui/controls/viewer.reel'
     }
 
 });

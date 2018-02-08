@@ -1,0 +1,12 @@
+{
+    "root": {
+        "prototype": "montage/core/meta/user-interface-descriptor",
+        "values": {
+            "collectionNameExpression": "'Organisation'",
+            "collectionInspectorComponentModule": {
+                "%": "montage/ui/list.reel"
+            },
+            "nameExpression": "companyName"
+        }
+    }
+}

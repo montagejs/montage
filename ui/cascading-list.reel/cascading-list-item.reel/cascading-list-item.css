@@ -1,98 +1,79 @@
 .CascadingListItem {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    flex-direction: column;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
     position: relative;
     font-family: 'lato';
-    border-right: 1px solid rgba(255,255,255,.15);
+    border-right: 1px solid #c8c7cc;
+    box-sizing: center;
 }
 
 .CascadingListItem-header {
     position: relative;
     z-index: 1;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    justify-content: space-between;
-    height:  3em;
-    padding: 0 1em;
-    background-color: #0F1213;
-    border-bottom: 1px solid #2F3233;
-
-    & button {
-        color: #fff;
-    }
-}
-
-.CascadingListItem-controls {
-    /* offset for naked button */
-    margin-right: -.7em;
-
-    & > button {
-        display: none;
-    }
-}
-
-.CascadingListItem-controls-help {
-    @nest .help-is-shown & {
-        color: #2B9CD8;
-    }
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -ms-flex-negative: 0;
+        flex-shrink: 0;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    height: 48px;
+    height:  3rem;
+    padding: 0 16px;
+    padding: 0 1rem;
+    border-bottom: 1px solid #c8c7cc;
+    border-top: 1px solid #c8c7cc;
 }
 
 .CascadingListItem-title {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    font-size: 1em;
-    font-weight: 400;
-    text-shadow: 0 1px rgba(0,0,0,.2);
+    font-size: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
 }
 
 .CascadingListItem-content {
     position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    flex-grow: 1;
-    flex-direction: column;
-
-    & > * {
-        position: relative;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-width: 16em;
-    }
+    -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+            flex-grow: 1;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
 }
 
-/* Help */
-
-.CascadingListItem-help {
+.CascadingListItem-content > * {
+    position: relative;
+    -webkit-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    flex-direction: column;
-    height: 0;
-    background-color: rgba(32, 137, 211, .05);
-    border-radius: 4px;
-    transition: height .25s ease-in-out;
-
-    @nest .help-is-shown & {
-        height: 10em;
-    }
-
-    & h5 {
-        margin-top: .5em;
-    }
-
-    & .Scrollview-transform { position: absolute; }
-    & .ScrollviewSpacer     { overflow: hidden; }
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    min-width: 256px;
+    min-width: 16rem;
 }
 
-.CascadingListItem-help-message {
-    color: #fff;
-    padding: .5em 1em;
+.CascadingListItem-content .List {
+    border: none;
 }
-
-
-
-
-
-
-
-
