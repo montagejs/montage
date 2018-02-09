@@ -57,9 +57,11 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
         },
         set: function (value) {
             var selected;
-
+ 
             if (this._object !== value) {
+                this.dispatchBeforeOwnPropertyChange("object", this._object);
                 this._object = value;
+                this.dispatchOwnPropertyChange("object", this._object);
                 selected = this.repetition.contentController.selection.indexOf(value) !== -1;
                 if (this._selected !== selected) {
                     this.selected = selected;
