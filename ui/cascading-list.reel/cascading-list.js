@@ -175,7 +175,7 @@ exports.CascadingList = Component.specialize({
                     (constructor = object.constructor) &&
                     constructor.objectDescriptorModuleId
                 ) {
-                    objectDescriptorModuleId = constructor.objectDescriptorModuleId
+                    objectDescriptorModuleId = constructor.objectDescriptorModuleId;
                 }
 
                 objectDescriptorModuleIdCandidate = this.callDelegateMethod(
@@ -233,9 +233,10 @@ exports.CascadingList = Component.specialize({
                                     });
                             });
                     }
-                } else {
-                    //todo ask manually ?
                 }
+                // else {
+                //     //todo ask manually ?
+                // }
             }
 
             return this._populatePromise || Promise.resolve();

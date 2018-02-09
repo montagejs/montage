@@ -46,7 +46,7 @@ exports.MockService = Montage.specialize({
                     'Lucas',
                     'Management'
                 )
-            ]
+            ];
         }
     },
 
@@ -57,7 +57,7 @@ exports.MockService = Montage.specialize({
                 new Department('Sales'),
                 new Department('Accounting'),
                 new Department('Logistics')
-            ]
+            ];
         }
     }
 
