@@ -142,13 +142,7 @@ exports.CascadingList = Component.specialize({
     },
 
     _pop: {
-        value: function (isSelectionSaved) {
-            var cascadingListItem = this.cascadingListItemAtIndex(this._currentIndex);
-
-            // if (cascadingListItem) {
-            //     cascadingListItem.resetSelection();
-            // }
-
+        value: function () {
             this._stack.pop();
             this._currentIndex--;
         }
@@ -223,12 +217,8 @@ exports.CascadingList = Component.specialize({
 
                                 return objectDescriptor.userInterfaceDescriptor
                                     .then(function (UIDescriptor) {
-                                        var context = new CascadingListContext();
-                                        context.object = object;
+                                        var context = self._createCascadingListContextWithObjectAndColumnIndex(object, columnIndex);
                                         context.userInterfaceDescriptor = UIDescriptor;
-                                        context.columnIndex = columnIndex;
-                                        context.cascadingList = self;
-                                        context.delegate = self.delegate;
 
                                         self._push(context);
                                         self._populatePromise = null;
@@ -246,10 +236,21 @@ exports.CascadingList = Component.specialize({
                 } else {
                     //todo ask manually ?
                 }
-
             }
-            
+
             return this._populatePromise || Promise.resolve();
+        }
+    },
+
+    _createCascadingListContextWithObjectAndColumnIndex: {
+        value: function (object, columnIndex) {
+            var context = new CascadingListContext();
+            context.object = object;
+            context.columnIndex = columnIndex;
+            context.cascadingList = this;
+            context.delegate = this.delegate;
+
+            return context;
         }
     }
 

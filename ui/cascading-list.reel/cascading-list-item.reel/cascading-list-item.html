@@ -15,7 +15,7 @@
             "prototype": "../../text.reel",
             "values": {
                 "element": {"#": "title"},
-                "value": {"<-": "@owner.isCollection ? path(@owner.userInterfaceDescriptor.collectionNameExpression) : @owner.object.path(@owner.userInterfaceDescriptor.nameExpression)"}
+                "value": {"<-": "@owner.isCollection ? path(@owner.userInterfaceDescriptor.collectionNameExpression) : @owner.context.object.path(@owner.userInterfaceDescriptor.nameExpression)"}
             }
         },
         "content": {

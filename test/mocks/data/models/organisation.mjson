@@ -1,6 +1,6 @@
 {
     "root": {
-        "prototype": "montage/core/meta/module-object-descriptor",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "Organisation",
             "exportName": "Organisation",
@@ -8,19 +8,19 @@
                 {"@": "companyName"}
             ],
             "objectDescriptorModule": {
-                "%": "core/model/organisation.mjson"
+                "%": "test/mocks/data/models/organisation.mjson"
             },
             "module": {
-                "%": "core/model/organisation"
+                "%": "test/mocks/data/models/organisation"
             },
             "userInterfaceDescriptorModule": {
-                "%": "core/model/organisation-ui-descriptor.mjson"
+                "%": "test/mocks/data/models/organisation-ui-descriptor.mjson"
             }
         }
     },
 
     "companyName": {
-        "prototype": "montage/core/meta/property-descriptor",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "name",
             "valueType": "string"

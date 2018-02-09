@@ -1,18 +1,18 @@
 {
     "root": {
-        "prototype": "montage/core/meta/user-interface-descriptor",
+        "prototype": "core/meta/user-interface-descriptor",
         "values": {
             "inspectorComponentModule": {
-                "%": "ui/inspectors/employee.reel"
+                "%": "test/mocks/data/inspectors/employee.reel"
             },
             "creatorInspectorComponentModule": {
-                "%": "ui/inspectors/employee.reel"
+                "%": "test/mocks/data/inspectors/employee.reel"
             },
             "collectionInspectorComponentModule": {
-                "%": "montage/ui/list.reel"
+                "%": "ui/list.reel"
             },
             "iconComponentModule": {
-                "%": "ui/icons/employee.reel"
+                "%": "test/mocks/data/icons/employee.reel"
             },
             "collectionNameExpression": "'Employees'",
             "nameExpression": "lastname + ' ' + firstname",

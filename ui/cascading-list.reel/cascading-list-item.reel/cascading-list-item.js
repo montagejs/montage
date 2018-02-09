@@ -4,7 +4,7 @@ var Component = require("../../component").Component;
  * @class CascadingListItem
  * @extends Component
  */
-exports.CascadingListItem = Component.specialize({
+var CascadingListItem = exports.CascadingListItem = Component.specialize({
 
     _context: {
         value: null
@@ -20,7 +20,7 @@ exports.CascadingListItem = Component.specialize({
 
                 if (context) {
                     var UIDescriptor = context.userInterfaceDescriptor,
-                        object = this.object = context.object;
+                        object = context.object;
 
                     context.cascadingListItem = this;
 
@@ -29,16 +29,16 @@ exports.CascadingListItem = Component.specialize({
 
                     if (UIDescriptor) {
                         if (this.isCollection) {
-                            
-                            componentModule = UIDescriptor.collectionInspectorComponentModule;
+                            componentModule = (
+                                UIDescriptor.collectionInspectorComponentModule ||
+                                CascadingListItem.defaultCollectionModule
+                            );
                         } else {
                             componentModule = UIDescriptor.inspectorComponentModule;
                         }
                         
                         // delegate method creator
                     }
-                } else {
-                    this.object = null;
                 }
 
                 this._context = context;
@@ -102,4 +102,11 @@ exports.CascadingListItem = Component.specialize({
         }
     }
 
+}, {
+    defaultCollectionModule: {
+        value: {
+            id: '../../list.reel',
+            require: require
+        }
+    }    
 });

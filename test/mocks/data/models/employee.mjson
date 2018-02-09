@@ -1,6 +1,6 @@
 {
     "root": {
-        "prototype": "montage/core/meta/module-object-descriptor",
+        "prototype": "core/meta/module-object-descriptor",
         "values": {
             "name": "Employee",
             "exportName": "Employee",
@@ -11,19 +11,19 @@
                 {"@": "department"}
             ],
             "objectDescriptorModule": {
-                "%": "core/model/employee.mjson"
+                "%": "test/mocks/data/models/employee.mjson"
             },
             "module": {
-                "%": "core/model/employee"
+                "%": "test/mocks/data/models/employee"
             },
             "userInterfaceDescriptorModule": {
-                "%": "core/model/employee-ui-descriptor.mjson"
+                "%": "test/mocks/data/models/employee-ui-descriptor.mjson"
             }
         }
     },
 
     "id": {
-        "prototype": "montage/core/meta/property-descriptor",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "id",
             "valueType": "number"
@@ -31,7 +31,7 @@
     },
 
     "firstname": {
-        "prototype": "montage/core/meta/property-descriptor",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "firstname",
             "valueType": "string"
@@ -39,7 +39,7 @@
     },
 
     "lastname": {
-        "prototype": "montage/core/meta/property-descriptor",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "lastname",
             "valueType": "string"
@@ -47,7 +47,7 @@
     },
 
     "department": {
-        "prototype": "montage/core/meta/property-descriptor",
+        "prototype": "core/meta/property-descriptor",
         "values": {
             "name": "department",
             "valueType": "string"
