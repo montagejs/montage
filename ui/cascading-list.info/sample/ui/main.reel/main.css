@@ -40,3 +40,8 @@ header {
     bottom: 0;
     right: 0;
 }
+
+.CascadingListItem {
+    width: 256px;
+    width: 16rem;
+}
