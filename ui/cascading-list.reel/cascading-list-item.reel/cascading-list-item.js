@@ -37,7 +37,14 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
                             componentModule = UIDescriptor.inspectorComponentModule;
                         }
                         
-                        // delegate method creator
+                        componentModule = this.callDelegateMethod(
+                            "cascadingListWillUseComponentModuleForObjectAtColumnIndex",
+                            context.cascadingList,
+                            componentModule,
+                            object,
+                            context.columnIndex,
+                            UIDescriptor
+                        ) || componentModule;
                     }
                 }
 
