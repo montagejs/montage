@@ -1657,41 +1657,61 @@ exports._blueprintModuleIdDescriptor = {
     }
 };
 
+exports.getObjectDescriptorWithModuleId = function (objectDescriptorModuleId, _require) {
+    var self = this;
+
+    if (!exports._objectDescriptorDescriptor.ObjectDescriptorModulePromise) {
+        exports._objectDescriptorDescriptor.ObjectDescriptorModulePromise = (
+            require.async("./meta/module-object-descriptor").get("ModuleObjectDescriptor")
+        );
+    }
+
+    return exports._objectDescriptorDescriptor.ObjectDescriptorModulePromise.then(function (ObjectDescriptor) {
+        return ObjectDescriptor.getObjectDescriptorWithModuleId(objectDescriptorModuleId, _require)
+            .catch(function (error) {
+                // FIXME only generate object descriptor if the moduleId
+                // requested does not exist. If any parents do not
+                // exist then the error should still be thrown.
+                if (error.message.indexOf("Can't XHR") !== -1) {
+                    return ObjectDescriptor.createDefaultObjectDescriptorForObject(self).then(function (objectDescriptor) {
+                        return objectDescriptor;
+                    });
+                } else {
+                    throw error;
+                }
+            });
+    });
+}
+
 exports._objectDescriptorDescriptor = {
     serializable:false,
     enumerable: false,
-    get:function () {
-        var info = Montage.getInfoForObject(this);
-        var self = info && !info.isInstance ? this : this.constructor;
-        if (!Object.getOwnPropertyDescriptor(self, "_objectDescriptor") || !self._objectDescriptor) {
+    get: function () {
+        var info = Montage.getInfoForObject(this),
+            self = info && !info.isInstance ? this : this.constructor;
+        
+        if (!Object.getOwnPropertyDescriptor(self, "_objectDescriptor") ||
+            !self._objectDescriptor
+        ) {
             var objectDescriptorModuleId = self.objectDescriptorModuleId || self.blueprintModuleId;
+
             if (!objectDescriptorModuleId) {
-                throw new TypeError("ObjectDescriptor moduleId undefined for the module '" + JSON.stringify(self) + "'");
+                throw new TypeError(
+                    "ObjectDescriptor moduleId undefined for the module '" +
+                    JSON.stringify(self) + "'"
+                );
             }
-            if (!exports._objectDescriptorDescriptor.ObjectDescriptorModulePromise) {
-                exports._objectDescriptorDescriptor.ObjectDescriptorModulePromise = require.async("core/meta/module-object-descriptor").get("ModuleObjectDescriptor");
-            }
+
+            info = Montage.getInfoForObject(self);
+
             Montage.defineProperty(self, "_objectDescriptor", {
                 enumerable: false,
-                value: exports._objectDescriptorDescriptor.ObjectDescriptorModulePromise.then(function (ObjectDescriptor) {
-                    var info = Montage.getInfoForObject(self);
-
-                    return ObjectDescriptor.getObjectDescriptorWithModuleId(objectDescriptorModuleId, info.require)
-                        .catch(function (error) {
-                            // FIXME only generate object descriptor if the moduleId
-                            // requested does not exist. If any parents do not
-                            // exist then the error should still be thrown.
-                            if (error.message.indexOf("Can't XHR") !== -1) {
-                                return ObjectDescriptor.createDefaultObjectDescriptorForObject(self).then(function (objectDescriptor) {
-                                    return objectDescriptor;
-                                });
-                            } else {
-                                throw error;
-                            }
-                        });
-                })
+                value: exports.getObjectDescriptorWithModuleId(
+                    objectDescriptorModuleId, info.require
+                )
             });
         }
+
         return self._objectDescriptor;
     },
     set:function (value) {
