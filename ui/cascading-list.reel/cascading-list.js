@@ -150,7 +150,7 @@ exports.CascadingList = Component.specialize({
                     objectDescriptorModuleId,
                     objectDescriptorModuleIdCandidate,
                     objectDescriptor,
-                    delegateRequire,
+                    infoDelegate,
                     constructor;
 
                 if (typeof object === "object" &&
@@ -169,8 +169,7 @@ exports.CascadingList = Component.specialize({
                 );
 
                 if (objectDescriptorModuleIdCandidate) {
-                    var infoDelegate = Montage.getInfoForObject(this.delegate);
-                    delegateRequire = infoDelegate.require;
+                    infoDelegate = Montage.getInfoForObject(this.delegate);
                     objectDescriptorModuleId = objectDescriptorModuleIdCandidate;
                 }
 
@@ -178,7 +177,7 @@ exports.CascadingList = Component.specialize({
                     if (objectDescriptorModuleIdCandidate) {
                         objectDescriptor = getObjectDescriptorWithModuleId(
                             objectDescriptorModuleId,
-                            delegateRequire || require
+                            infoDelegate ? infoDelegate.require : require
                         );
                     } else {
                         objectDescriptor = constructor.objectDescriptor;
@@ -195,32 +194,51 @@ exports.CascadingList = Component.specialize({
                                     columnIndex
                                 ) || objectDescriptor;
 
-                                return objectDescriptor.userInterfaceDescriptor
-                                    .then(function (UIDescriptor) {
-                                        var context = self._createCascadingListContextWithObjectAndColumnIndex(
-                                            object,
-                                            columnIndex
-                                        );
-                                        context.userInterfaceDescriptor = UIDescriptor;
-                                        self._push(context);
-                                        self._populatePromise = null;
-                                        return context;
-                                    });
+                                return objectDescriptor.userInterfaceDescriptor;
                             });
                     }
                 }
-                // else {
-                //     //todo ask manually ?
-                // }
+                else {
+                    var userInterfaceDescriptorModuleId = self.callDelegateMethod(
+                        "cascadingListNeedsUserInterfaceDescriptorForObjectAtColumnIndex",
+                        this,
+                        object,
+                        columnIndex
+                    ) || objectDescriptor;
+
+                    if (userInterfaceDescriptorModuleId) {
+                        infoDelegate = infoDelegate || Montage.getInfoForObject(this.delegate);
+
+                        this._populatePromise = (infoDelegate.require || require).async(userInterfaceDescriptorModuleId)
+                            .then(function (userInterfaceDescriptorModule) {
+                                return userInterfaceDescriptorModule.montageObject;
+                            });
+                    } else { // leave a chance to the deeper components to handle it 
+                        this._populatePromise = Promise.resolve();
+                    }
+                }
             }
 
-            return this._populatePromise || Promise.resolve();
+            return this._populatePromise.then(function (UIDescriptor) {
+                var context = self._createCascadingListContextWithObjectAndColumnIndex(
+                    object,
+                    columnIndex
+                );
+
+                context.userInterfaceDescriptor = UIDescriptor;
+                
+                self._push(context);
+                self._populatePromise = null;
+
+                return context;
+            });
         }
     },
 
     _createCascadingListContextWithObjectAndColumnIndex: {
         value: function (object, columnIndex) {
             var context = new CascadingListContext();
+
             context.object = object;
             context.columnIndex = columnIndex;
             context.cascadingList = this;
