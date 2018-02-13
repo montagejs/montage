@@ -18,6 +18,14 @@
                 "value": {"<-": "@owner.isCollection ? path(@owner.userInterfaceDescriptor.collectionNameExpression) : @owner.context.object.path(@owner.userInterfaceDescriptor.nameExpression)"}
             }
         },
+        "edit": {
+            "prototype": "../../button.reel",
+            "values": {
+                "element": {"#": "edit"},
+                "label": {"<-": "@owner.isCollection ? path(@owner.userInterfaceDescriptor.collectionEditNameExpression) : path(@owner.userInterfaceDescriptor.editNameExpression)"},
+                "detail.get('context')": {"<-": "@owner.context"}
+            }
+        },
         "content": {
             "prototype": "../../placeholder.reel",
             "values": {
@@ -32,7 +40,9 @@
 <body>
     <div data-montage-id="owner" class="CascadingListItem">
         <div class="CascadingListItem-header">
+            <!-- <div data-montage-id="back" class="CascadingListItem-back"></div> -->
             <div data-montage-id="title" class="CascadingListItem-title"></div>
+            <div data-montage-id="edit" class="CascadingListItem-edit"></div>
         </div>
         <div data-montage-id="content" class="CascadingListItem-content"></div>
     </div>

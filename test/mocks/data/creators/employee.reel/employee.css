@@ -1,0 +1,32 @@
+.field {
+    padding: 4px 16px;
+    padding: .25rem 1rem;
+    height: 32px;
+    height: 2rem;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+}
+
+.button.save {
+    color: white;
+    background: #0076FF;
+    width: 72px;
+    width: 4.5rem;
+    text-align: center;
+    padding: 4px 0;
+    padding: .25rem 0;
+    align-self: flex-end;
+    margin: 16px;
+    margin: 1rem;
+}
+
+.button[disabled] {
+    opacity: 0.5;
+}

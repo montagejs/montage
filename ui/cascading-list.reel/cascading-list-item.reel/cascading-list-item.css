@@ -44,6 +44,10 @@
     text-align: center;
 }
 
+.CascadingListItem-edit {
+    color: #0076FF;
+}
+
 .CascadingListItem-content {
     position: relative;
     display: -webkit-box;

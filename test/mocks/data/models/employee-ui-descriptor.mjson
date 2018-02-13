@@ -6,7 +6,7 @@
                 "%": "test/mocks/data/inspectors/employee.reel"
             },
             "creatorInspectorComponentModule": {
-                "%": "test/mocks/data/inspectors/employee.reel"
+                "%": "test/mocks/data/creators/employee.reel"
             },
             "collectionInspectorComponentModule": {
                 "%": "ui/list.reel"
@@ -15,6 +15,7 @@
                 "%": "test/mocks/data/icons/employee.reel"
             },
             "collectionNameExpression": "'Employees'",
+            "collectionEditNameExpression": "'Add'",
             "nameExpression": "lastname + ' ' + firstname",
             "descriptionExpression": "department"
         }

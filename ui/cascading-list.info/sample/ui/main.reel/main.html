@@ -6,7 +6,8 @@
         {
             "owner": {
                 "values": {
-                    "element": {"#": "main"}
+                    "element": {"#": "main"},
+                    "cascadingList": {"@": "cascadingList"}
                 }
             },
 
@@ -16,7 +17,13 @@
                     "element": {"#": "cascadingList"},
                     "delegate": {"<-": "@owner"},
                     "root": {"<-": "@owner.root"}
-                }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
             }
         }
     </script>

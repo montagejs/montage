@@ -73,6 +73,12 @@ exports.CascadingList = Component.specialize({
         }
     },
 
+    push: {
+        value: function (object) {
+            this.expand(object, this._currentIndex + 1);
+        }
+    },
+
     pop: {
         value: function () {
             this._pop();
