@@ -2,12 +2,7 @@ var Component = require("../component").Component,
     MontageModule = require("../../core/core"),
     Promise = require('../../core/promise').Promise,
     Montage = MontageModule.Montage,
-    objectDescriptorDescriptor = MontageModule._objectDescriptorDescriptor;
-
-// Needs to provide an Api on Montage 
-var DummyObject = Montage.specialize(null, {
-    objectDescriptor: objectDescriptorDescriptor
-});
+    getObjectDescriptorWithModuleId = MontageModule.getObjectDescriptorWithModuleId;
 
 var CascadingListContext = exports.CascadingListContext = Montage.specialize({
 
@@ -148,20 +143,6 @@ exports.CascadingList = Component.specialize({
         }
     },
 
-    __dummyObject: {
-        value: null
-    },
-
-    _dummyObject: {
-        get: function () {
-            if (!this.__dummyObject) {
-                this.__dummyObject = new DummyObject();
-            }
-
-            return this.__dummyObject;
-        }
-    },
-
     _populateColumnWithObjectAndIndex: {
         value: function (object, columnIndex) {
             if (!this._populatePromise && object) {
@@ -169,6 +150,7 @@ exports.CascadingList = Component.specialize({
                     objectDescriptorModuleId,
                     objectDescriptorModuleIdCandidate,
                     objectDescriptor,
+                    delegateRequire,
                     constructor;
 
                 if (typeof object === "object" &&
@@ -180,29 +162,27 @@ exports.CascadingList = Component.specialize({
 
                 objectDescriptorModuleIdCandidate = this.callDelegateMethod(
                     "cascadingListWillUseObjectDescriptorModuleIdForObjectAtColumnIndex",
-                    self,
+                    this,
                     objectDescriptorModuleId,
                     object,
                     columnIndex
                 );
 
                 if (objectDescriptorModuleIdCandidate) {
-                    var infoDelegate = Montage.getInfoForObject(this.delegate),
-                        infoDummyObjectConstructor = Montage.getInfoForObject(this._dummyObject.constructor);
-                    
-                    infoDummyObjectConstructor.require = infoDelegate.require; // not safe
+                    var infoDelegate = Montage.getInfoForObject(this.delegate);
+                    delegateRequire = infoDelegate.require;
                     objectDescriptorModuleId = objectDescriptorModuleIdCandidate;
                 }
 
                 if (objectDescriptorModuleId) {
-                    if (!constructor || !constructor.objectDescriptorModuleId ||
-                        constructor.objectDescriptorModuleId !== objectDescriptorModuleId
-                    ) {
-                        constructor = this._dummyObject.constructor;
-                        constructor.objectDescriptorModuleId = objectDescriptorModuleId;
+                    if (objectDescriptorModuleIdCandidate) {
+                        objectDescriptor = getObjectDescriptorWithModuleId(
+                            objectDescriptorModuleId,
+                            delegateRequire || require
+                        );
+                    } else {
+                        objectDescriptor = constructor.objectDescriptor;
                     }
-                    
-                    objectDescriptor = constructor.objectDescriptor;
 
                     if (objectDescriptor) {
                         this._populatePromise = objectDescriptor
@@ -217,18 +197,13 @@ exports.CascadingList = Component.specialize({
 
                                 return objectDescriptor.userInterfaceDescriptor
                                     .then(function (UIDescriptor) {
-                                        var context = self._createCascadingListContextWithObjectAndColumnIndex(object, columnIndex);
+                                        var context = self._createCascadingListContextWithObjectAndColumnIndex(
+                                            object,
+                                            columnIndex
+                                        );
                                         context.userInterfaceDescriptor = UIDescriptor;
-
                                         self._push(context);
                                         self._populatePromise = null;
-                                        self._dummyObject.constructor.objectDescriptorModuleId = null;
-                                        self._dummyObject.constructor.objectDescriptor = null;
-
-                                        if (infoDummyObjectConstructor) {
-                                            infoDummyObjectConstructor.require = null;
-                                        }
-
                                         return context;
                                     });
                             });
