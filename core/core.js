@@ -1681,7 +1681,7 @@ exports.getObjectDescriptorWithModuleId = function (objectDescriptorModuleId, _r
                 }
             });
     });
-}
+};
 
 exports._objectDescriptorDescriptor = {
     serializable:false,
