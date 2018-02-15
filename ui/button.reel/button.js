@@ -119,7 +119,8 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 }
             }
 
-            this._label = String(value);
+            this._label = value !== void 0 && value !== null ?
+                String(value) : this._emptyLabel;
 
             if (this.isInputElement) {
                 this._value = value;
