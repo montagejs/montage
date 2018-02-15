@@ -8,9 +8,9 @@
             "owner": {
                 "values": {
                     "element": {"#": "list"},
-                    "_repetition": {"#": "repetition"},
+                    "_repetition": {"@": "repetition"},
                     "selection": {"<->": "@repetition.selection"},
-                    "context.selectedObject": {"<->": "@repetition.selection.one()"}
+                    "context.selectedObject": {"<-": "@repetition.selection.one()"}
                 } 
             },
 

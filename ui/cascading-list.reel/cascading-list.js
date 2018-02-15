@@ -144,8 +144,16 @@ exports.CascadingList = Component.specialize({
 
     _pop: {
         value: function () {
+            var cascadingListItem;
+
             this._stack.pop();
             this._currentIndex--;
+
+            if (this._stack[this._currentIndex] &&
+                (cascadingListItem = this._stack[this._currentIndex].cascadingListItem)
+            ) {
+                cascadingListItem.context.selectedObject = null;
+            }
         }
     },
 

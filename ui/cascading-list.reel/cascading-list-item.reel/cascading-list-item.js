@@ -54,16 +54,13 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
         }
     },
 
-
     isCollection: {
         value: false
     },
 
-
     componentModule: {
         value: null
     },
-
 
     _selectedObject: {
         value: void 0
@@ -86,25 +83,9 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
                     } else if (
                         this.context.columnIndex < this.cascadingList._currentIndex
                     ) {
-                        this.cascadingList.popAtIndex(
-                            this.context.columnIndex + 1,
-                            this._isResetting
-                        );
+                        this.cascadingList.popAtIndex(this.context.columnIndex + 1);
                     }
                 }
-            }
-        }
-    },
-
-    resetSelectedObject: {
-        value: function () {
-            this.selectedObject = null;
-
-            if (this.content &&
-                this.content.component &&
-                this.content.component.selectedObject
-            ) {
-                this.content.component.selectedObject = null;
             }
         }
     }

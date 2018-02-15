@@ -2,6 +2,15 @@ var Component = require("../component").Component;
 
 exports.List = Component.specialize({
 
+    enterDocument: {
+        value: function () {
+            this.addPathChangeListener(
+                "context.selectedObject", this, "handleSelectedObjectChange"
+            );
+        }
+    },
+
+
     /**
      Description TODO
      @private
@@ -37,6 +46,25 @@ exports.List = Component.specialize({
      */
     delegate: {
         value: null
+    },
+
+    handleSelectedObjectChange: {
+        value: function (value) {
+            if (this._repetition && this._repetition.selection) {
+                if (value) {
+                    if (this._repetition.selection.indexOf(value) === -1) {
+                        this._repetition.selection.clear();
+                        this._repetition.selection.push(value);
+                    }
+                } else if (this._repetition.selection.length) {
+                    this._repetition.selection.clear();
+                }
+            }
+
+            // odd issue although the change is detected the value selectedObject 
+            // is not updated.
+            this.context.selectedObject = value;
+        }
     }
 
 });
