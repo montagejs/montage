@@ -4,7 +4,8 @@
  * @requires montage/composer/composer
  */
 var Montage = require("../core/core").Montage,
-    Composer = require("./composer").Composer;
+    Composer = require("./composer").Composer,
+    DefaultKeyManager = require('../core/event/key-manager').defaultKeyManager;
 
 
 /**
@@ -49,18 +50,11 @@ var KeyManagerProxy = Montage.specialize({
 
             if (!this._defaultKeyManager) {
                 this._keysToRegister.push(keyComposer);
-                if (!this._loadingDefaultKeyManager) {
-                    this._loadingDefaultKeyManager = true;
-
-                    require.async("core/event/key-manager")
-                    .then(function (module) {
-                        var keyManager = thisRef._defaultKeyManager = module.defaultKeyManager;
-                        thisRef._keysToRegister.forEach(function (keyComposer) {
-                            keyManager.registerKey(keyComposer);
-                        });
-                        thisRef._keysToRegister.length = 0;
-                    });
-                }
+                var keyManager = thisRef._defaultKeyManager = DefaultKeyManager;
+                thisRef._keysToRegister.forEach(function (keyComposer) {
+                    keyManager.registerKey(keyComposer);
+                });
+                thisRef._keysToRegister.length = 0;
             } else {
                 // This will happend only if somebody uses a cached return
                 // value from KeyManagerProxy.defaultKeyManager
