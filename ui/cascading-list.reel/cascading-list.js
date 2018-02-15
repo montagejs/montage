@@ -32,6 +32,10 @@ var CascadingListContext = exports.CascadingListContext = Montage.specialize({
 
     delegate: {
         value: null
+    },
+
+    isEditing: {
+        value: false
     }
 
 });
@@ -82,7 +86,6 @@ exports.CascadingList = Component.specialize({
     pop: {
         value: function () {
             this._pop();
-            this.needsDraw = true;
         }
     },
 
@@ -109,19 +112,28 @@ exports.CascadingList = Component.specialize({
     },
 
     expand: {
-        value: function (object, columnIndex) {
+        value: function (object, columnIndex, isEditing) {
             columnIndex = columnIndex || 0;
 
             if (columnIndex) {
+                var firstIteration = true;
+                
                 for (var i = this._stack.length - columnIndex; i > 0; i--) {
-                    this._pop();
+                    this._pop(firstIteration ? object : null);
+
+                    if (firstIteration) {
+                        firstIteration = false;
+                    }
                 }
             } else {
                 this.popAll();
             }
 
             this._currentIndex = columnIndex;
-            return this._populateColumnWithObjectAndIndex(object, columnIndex);
+
+            return this._populateColumnWithObjectAndIndex(
+                object, columnIndex, isEditing
+            );
         }
     },
 
@@ -137,28 +149,35 @@ exports.CascadingList = Component.specialize({
 
     _push: {
         value: function (context) {
-            this._stack.push(context);
+            this._stack.splice(context.columnIndex, 1, context);
             this.needsDraw = true;
+            this.dispatchEventNamed('cascadingListPush', true, true, context);
         }
     },
 
     _pop: {
-        value: function () {
-            var cascadingListItem;
-
-            this._stack.pop();
+        value: function (object) {
+            var cascadingListItem,
+                context = this._stack.pop();
+            
             this._currentIndex--;
 
             if (this._stack[this._currentIndex] &&
                 (cascadingListItem = this._stack[this._currentIndex].cascadingListItem)
             ) {
-                cascadingListItem.context.selectedObject = null;
+                if (object !== cascadingListItem.context.selectedObject) {
+                    cascadingListItem.context.selectedObject = null;
+                }
             }
+
+            context.isEditing = false;
+            this.needsDraw = true;
+            this.dispatchEventNamed('cascadingListPop', true, true, context);
         }
     },
 
     _populateColumnWithObjectAndIndex: {
-        value: function (object, columnIndex) {
+        value: function (object, columnIndex, isEditing) {
             if (!this._populatePromise && object) {
                 var self = this,
                     objectDescriptorModuleId,
@@ -240,6 +259,7 @@ exports.CascadingList = Component.specialize({
                 );
 
                 context.userInterfaceDescriptor = UIDescriptor;
+                context.isEditing = !!isEditing;
                 
                 self._push(context);
                 self._populatePromise = null;

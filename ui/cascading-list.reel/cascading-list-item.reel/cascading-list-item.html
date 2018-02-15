@@ -11,6 +11,14 @@
                 "selectedObject": {"<->": "context.selectedObject"}
             }
         },
+        "back": {
+            "prototype": "../../button.reel",
+            "values": {
+                "element": {"#": "back"},
+                "label": {"<-": "@owner.isCollection ? path(@owner.userInterfaceDescriptor.collectionBackNameExpression) : path(@owner.userInterfaceDescriptor.backNameExpression)"},
+                "detail.get('context')": {"<-": "@owner.context"}
+            }
+        },
         "title": {
             "prototype": "../../text.reel",
             "values": {
@@ -23,7 +31,8 @@
             "values": {
                 "element": {"#": "edit"},
                 "label": {"<-": "@owner.isCollection ? path(@owner.userInterfaceDescriptor.collectionEditNameExpression) : path(@owner.userInterfaceDescriptor.editNameExpression)"},
-                "detail.get('context')": {"<-": "@owner.context"}
+                "detail.get('context')": {"<-": "@owner.context"},
+                "classList.has('invisible')": {"<-": "@owner.context.isEditing"}
             }
         },
         "content": {
@@ -40,7 +49,7 @@
 <body>
     <div data-montage-id="owner" class="CascadingListItem">
         <div class="CascadingListItem-header">
-            <!-- <div data-montage-id="back" class="CascadingListItem-back"></div> -->
+            <div data-montage-id="back" class="CascadingListItem-back"></div>
             <div data-montage-id="title" class="CascadingListItem-title"></div>
             <div data-montage-id="edit" class="CascadingListItem-edit"></div>
         </div>

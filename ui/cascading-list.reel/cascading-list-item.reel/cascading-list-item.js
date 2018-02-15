@@ -43,7 +43,7 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
                             componentModule,
                             object,
                             context.columnIndex,
-                            UIDescriptor
+                            context
                         ) || componentModule;
                     }
                 }
