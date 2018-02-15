@@ -15,8 +15,8 @@
                 "%": "test/mocks/data/icons/employee.reel"
             },
             "collectionNameExpression": "'Employees'",
-            "collectionEditNameExpression": "'Add'",
-            "editNameExpression": "'Edit'",
+            "collectionEditExpression": "'Add'",
+            "editExpression": "'Edit'",
             "nameExpression": "lastname + ' ' + firstname",
             "descriptionExpression": "department"
         }

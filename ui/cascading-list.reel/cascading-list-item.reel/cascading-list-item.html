@@ -15,7 +15,7 @@
             "prototype": "../../button.reel",
             "values": {
                 "element": {"#": "back"},
-                "label": {"<-": "@owner.isCollection ? path(@owner.userInterfaceDescriptor.collectionBackNameExpression) : path(@owner.userInterfaceDescriptor.backNameExpression)"},
+                "label": {"<-": "@owner.isCollection ? path(@owner.userInterfaceDescriptor.collectionBackExpression) : path(@owner.userInterfaceDescriptor.backExpression)"},
                 "detail.get('context')": {"<-": "@owner.context"}
             }
         },
@@ -30,7 +30,7 @@
             "prototype": "../../button.reel",
             "values": {
                 "element": {"#": "edit"},
-                "label": {"<-": "@owner.isCollection ? path(@owner.userInterfaceDescriptor.collectionEditNameExpression) : path(@owner.userInterfaceDescriptor.editNameExpression)"},
+                "label": {"<-": "@owner.isCollection ? path(@owner.userInterfaceDescriptor.collectionEditExpression) : path(@owner.userInterfaceDescriptor.editExpression)"},
                 "detail.get('context')": {"<-": "@owner.context"},
                 "classList.has('invisible')": {"<-": "@owner.context.isEditing"}
             }
