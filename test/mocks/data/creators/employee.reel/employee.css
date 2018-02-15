@@ -1,4 +1,4 @@
-.field {
+.employee-editor .field {
     padding: 4px 16px;
     padding: .25rem 1rem;
     height: 32px;
@@ -14,19 +14,30 @@
             justify-content: space-between;
 }
 
-.button.save {
+.employee-editor .buttons {
+    display: flex;
+    justify-content: space-around;
+}
+
+.employee-editor .button {
     color: white;
-    background: #0076FF;
     width: 72px;
     width: 4.5rem;
     text-align: center;
     padding: 4px 0;
     padding: .25rem 0;
-    align-self: flex-end;
-    margin: 16px;
-    margin: 1rem;
+    margin: 16px 0;
+    margin: 1rem 0;
 }
 
-.button[disabled] {
+.employee-editor .button.save {
+    background: #0076FF;
+}
+
+.employee-editor .button.cancel {
+    background: #FE3824;
+}
+
+.employee-editor .button[disabled] {
     opacity: 0.5;
 }

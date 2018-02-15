@@ -12,6 +12,9 @@ exports.Main = Component.specialize(/** @lends Main# */{
                 this.mockService.fetchEmployees(),
                 this.mockService.fetchDepartments()                
             ];
+
+            this.addEventListener('cascadingListPop', this, false);
+            this.addEventListener('cascadingListPush', this, false);
         }
     },
 
@@ -36,9 +39,9 @@ exports.Main = Component.specialize(/** @lends Main# */{
     },
 
     cascadingListWillUseComponentModuleForObjectAtColumnIndex: {
-        value: function (cascadingList, componentModule, object, columnIndex, UIDescriptor) {
-            if (object instanceof Employee && !object.firstname) {
-                return UIDescriptor.creatorInspectorComponentModule;
+        value: function (cascadingList, componentModule, object, columnIndex, context) {
+            if (object instanceof Employee && (!object.firstname || context.isEditing)) {
+                return context.userInterfaceDescriptor.creatorInspectorComponentModule;
             }
         }
     },
@@ -53,15 +56,35 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
+    handleCascadingListPush: {
+        value: function (event) {
+            console.log('CascadingListPush', event.detail);
+        }
+    },
+
+    handleCascadingListPop: {
+        value: function (event) {
+            console.log('CascadingListPop', event.detail);
+        }
+    },
+
     handleEditAction: {
         value: function (event) {
             var cascadingListContext = event.detail.get('context');
 
-            if (cascadingListContext && cascadingListContext.object === this.root[0]) {
-                this.cascadingList.expand(
-                    new Employee(),
-                    cascadingListContext.columnIndex + 1
-                );
+            if (cascadingListContext) {
+                if (cascadingListContext && cascadingListContext.object === this.root[0]) {
+                    this.cascadingList.expand(
+                        new Employee(),
+                        cascadingListContext.columnIndex + 1
+                    );
+                } else if (cascadingListContext.object instanceof Employee) {
+                    this.cascadingList.expand(
+                        cascadingListContext.object,
+                        cascadingListContext.columnIndex,
+                        true
+                    );
+                }
             }
         }
     },
@@ -76,8 +99,34 @@ exports.Main = Component.specialize(/** @lends Main# */{
                 cascadingListContext.object.lastname &&
                 cascadingListContext.object.department
             ) {
-                this.root[0].push(cascadingListContext.object);
-                this.cascadingList.pop();
+                if (this.root[0].indexOf(cascadingListContext.object) === -1) {
+                    this.root[0].push(cascadingListContext.object);
+                    this.cascadingList.pop();
+                } else {
+                    this.cascadingList.expand(
+                        cascadingListContext.object,
+                        cascadingListContext.columnIndex
+                    );
+                }
+            }
+        }
+    },
+
+    handleCancelAction: {
+        value: function (event) {
+            var cascadingListContext = event.detail.get('context');
+
+            if (cascadingListContext &&
+                cascadingListContext.object instanceof Employee
+            ) {
+                if (this.root[0].indexOf(cascadingListContext.object) === -1) {
+                    this.cascadingList.pop();
+                } else {
+                    this.cascadingList.expand(
+                        cascadingListContext.object,
+                        cascadingListContext.columnIndex
+                    );
+                }
             }
         }
     }

@@ -42,6 +42,15 @@
                 }
             },
 
+            "cancel": {
+                "prototype": "../../../../../ui/button.reel",
+                "values": {
+                    "element": {"#": "cancel"},
+                    "label": "Cancel",
+                    "detail.get('context')": {"<-": "@owner.context"}
+                }
+            },
+
             "save": {
                 "prototype": "../../../../../ui/button.reel",
                 "values": {
@@ -55,7 +64,7 @@
     </script>
 </head>
 <body>
-    <div data-montage-id="owner">
+    <div data-montage-id="owner" class="employee-editor">
         <div class="field">
             <span>First Name:</span>
             <input data-montage-id="firstname" />
@@ -68,7 +77,10 @@
             <span>Department:</span>
             <select data-montage-id="department"></select>
         </div>
-        <div data-montage-id="save" class="button save"></div>
+        <div class="buttons">
+            <div data-montage-id="cancel" class="button cancel"></div>
+            <div data-montage-id="save" class="button save"></div>
+        </div>
     </div>
 </body>
 </html>

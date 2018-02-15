@@ -16,6 +16,7 @@
             },
             "collectionNameExpression": "'Employees'",
             "collectionEditNameExpression": "'Add'",
+            "editNameExpression": "'Edit'",
             "nameExpression": "lastname + ' ' + firstname",
             "descriptionExpression": "department"
         }

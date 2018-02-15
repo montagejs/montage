@@ -14,7 +14,7 @@ exports.MockService = Montage.specialize({
                 new Employee(
                     'Annette',
                     'Alarcon',
-                    'sales'
+                    'Sales'
                 ),
                 new Employee(
                     'Fredricka',
