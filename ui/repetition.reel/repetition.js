@@ -1006,9 +1006,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             this.defineBinding("selectedIndexes", {
                 "<-": "selectedIterations.map{index}"
             });
-            this.defineBinding("allowsMultipleSelection", {
-                "<-": "contentController.allowsMultipleSelection"
-            });
 
             // The iteration template:
             // ---
@@ -1030,6 +1027,11 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 "_handleInnerTemplateChange"
             );
 
+            this.addPathChangeListener(
+                "contentController.allowsMultipleSelection",
+                this,
+                "_handleContentControllerAllowsMultipleSelectionChange"
+            );
 
             // The state of the DOM:
             // ---
@@ -1117,6 +1119,19 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     _setupRequirements: {
         value: "[!_iterationTemplate.defined(),!_newDomContent.defined(),!_shouldClearDomContentOnNextDraw,_isComponentExpanded,_ownerDocumentPart.defined()].every{}"
+    },
+
+    /**
+     * Update the repetition's `allowsMultipleSelection` property,
+     * when the contentController's `allowsMultipleSelection` property changes
+     * @private
+     */
+    _handleContentControllerAllowsMultipleSelectionChange: {
+        value: function (value) {
+            if (this.allowsMultipleSelection !== value) {
+                this.allowsMultipleSelection = value;
+            }
+        }
     },
 
     /**
