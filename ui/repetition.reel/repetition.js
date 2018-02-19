@@ -1917,6 +1917,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             if (selectionTracking) {
                 this._enableSelectionTracking();
             } else {
+                this.selection.clear();
                 this._disableSelectionTracking();
             }
         }
