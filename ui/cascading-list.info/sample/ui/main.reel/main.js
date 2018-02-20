@@ -68,7 +68,7 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
-    handleEditAction: {
+    handleHeaderRightAction: {
         value: function (event) {
             var cascadingListContext = event.detail.get('context');
 

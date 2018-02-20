@@ -11,30 +11,42 @@
                 "selectedObject": {"<->": "context.selectedObject"}
             }
         },
-        "back": {
+
+        "header": {
+            "value": {"#": "header"},
+            "values": {
+                "hidden": {"<-": "@owner.shouldHideHeader"}
+            }
+        },
+
+        "headerLeft": {
             "prototype": "../../button.reel",
             "values": {
-                "element": {"#": "back"},
-                "label": {"<-": "@owner.isCollection ? path(@owner.userInterfaceDescriptor.collectionBackExpression) : path(@owner.userInterfaceDescriptor.backExpression)"},
+                "element": {"#": "header-left"},
+                "label": {"<-": "@owner.headerLeftLabel"},
                 "detail.get('context')": {"<-": "@owner.context"}
             }
         },
-        "title": {
-            "prototype": "../../text.reel",
-            "values": {
-                "element": {"#": "title"},
-                "value": {"<-": "@owner.isCollection ? path(@owner.userInterfaceDescriptor.collectionNameExpression) : @owner.context.object.path(@owner.userInterfaceDescriptor.nameExpression)"}
-            }
-        },
-        "edit": {
+
+        "headerMiddle": {
             "prototype": "../../button.reel",
             "values": {
-                "element": {"#": "edit"},
-                "label": {"<-": "@owner.isCollection ? path(@owner.userInterfaceDescriptor.collectionEditExpression) : path(@owner.userInterfaceDescriptor.editExpression)"},
+                "element": {"#": "header-middle"},
+                "label": {"<-": "@owner.headerMiddleLabel"},
+                "detail.get('context')": {"<-": "@owner.context"}
+            }
+        },
+
+        "headerRight": {
+            "prototype": "../../button.reel",
+            "values": {
+                "element": {"#": "header-right"},
+                "label": {"<-": "@owner.headerRightLabel"},
                 "detail.get('context')": {"<-": "@owner.context"},
                 "classList.has('invisible')": {"<-": "@owner.context.isEditing"}
             }
         },
+
         "content": {
             "prototype": "../../placeholder.reel",
             "values": {
@@ -42,18 +54,57 @@
                 "componentModule": {"<-": "@owner.componentModule"},
                 "context": {"<-": "@owner.context"}
             }
+        },
+
+        "footer": {
+            "value": {"#": "footer"},
+            "values": {
+                "hidden": {"<-": "@owner.shouldHideFooter"}
+            }
+        },
+
+        "footerLeft": {
+            "prototype": "../../button.reel",
+            "values": {
+                "element": {"#": "footer-left"},
+                "detail.get('context')": {"<-": "@owner.context"},
+                "label": {"<-": "@owner.footerLeftLabel"}
+            }
+        },
+
+        "footerMiddle": {
+            "prototype": "../../button.reel",
+            "values": {
+                "element": {"#": "footer-middle"},
+                "detail.get('context')": {"<-": "@owner.context"},
+                "label": {"<-": "@owner.footerMiddleLabel"}
+            }
+        },
+
+        "footerRight": {
+            "prototype": "../../button.reel",
+            "values": {
+                "element": {"#": "footer-right"},
+                "detail.get('context')": {"<-": "@owner.context"},
+                "label": {"<-": "@owner.footerRightLabel"}
+            }
         }
     }
     </script>
 </head>
 <body>
     <div data-montage-id="owner" class="CascadingListItem">
-        <div class="CascadingListItem-header">
-            <div data-montage-id="back" class="CascadingListItem-back"></div>
-            <div data-montage-id="title" class="CascadingListItem-title"></div>
-            <div data-montage-id="edit" class="CascadingListItem-edit"></div>
+        <div data-montage-id="header" class="CascadingListItem-header">
+            <div data-montage-id="header-left" class="CascadingListItemAction CascadingListItemAction-header left"></div>
+            <div data-montage-id="header-middle" class="CascadingListItemAction CascadingListItemAction-header middle"></div>
+            <div data-montage-id="header-right" class="CascadingListItemAction CascadingListItemAction-header right"></div>
         </div>
         <div data-montage-id="content" class="CascadingListItem-content"></div>
+        <div data-montage-id="footer" class="CascadingListItem-footer">
+            <div data-montage-id="footer-left" class="CascadingListItemAction CascadingListItemAction-footer left"></div>
+            <div data-montage-id="footer-middle" class="CascadingListItemAction CascadingListItemAction-footer middle"></div>
+            <div data-montage-id="footer-right" class="CascadingListItemAction CascadingListItemAction-footer right"></div>
+        </div>
     </div>
 </body>
 </html>

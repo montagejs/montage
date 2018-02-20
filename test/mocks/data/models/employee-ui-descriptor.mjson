@@ -15,10 +15,12 @@
                 "%": "test/mocks/data/icons/employee.reel"
             },
             "collectionNameExpression": "'Employees'",
-            "collectionEditExpression": "'Add'",
-            "editExpression": "'Edit'",
             "nameExpression": "lastname + ' ' + firstname",
-            "descriptionExpression": "department"
+            "descriptionExpression": "department",
+            
+            "cascadingListItemHeaderRightCollectionNameExpression": "'Add'",
+            "cascadingListItemHeaderRightNameExpression": "'Edit'",
+            "cascadingListItemFooterMiddleCollectionNameExpression": "length + ' item' + (length == 1 ? '' : 's')"
         }
     }
 }

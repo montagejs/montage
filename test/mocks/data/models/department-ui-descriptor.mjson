@@ -12,7 +12,8 @@
                 "%": "test/mocks/data/icons/department.reel"
             },
             "collectionNameExpression": "'Departments'",
-            "nameExpression": "name"
+            "nameExpression": "name",
+            "cascadingListItemFooterMiddleCollectionNameExpression": "length + ' item' + (length == 1 ? '' : 's')"
         }
     }
 }

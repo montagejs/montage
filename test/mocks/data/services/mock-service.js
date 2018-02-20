@@ -45,6 +45,61 @@ exports.MockService = Montage.specialize({
                     'Brett',
                     'Lucas',
                     'Management'
+                ),
+                new Employee(
+                    'Mamie',
+                    'Henderson',
+                    'Sales'
+                ),
+                new Employee(
+                    'Shaun',
+                    'Davidson',
+                    'Accounting'
+                ),
+                new Employee(
+                    'Adam',
+                    'Owens',
+                    'Logistics'
+                ),
+                new Employee(
+                    'Jeffrey',
+                    'Cross',
+                    'Management'
+                ),
+                new Employee(
+                    'Flora',
+                    'Adkins',
+                    'Accounting'
+                ),
+                new Employee(
+                    'Rosemary',
+                    'Adams',
+                    'Logistics'
+                ),
+                new Employee(
+                    'Henrietta',
+                    'Silva',
+                    'Management'
+                ),
+                new Employee(
+                    'Alvin',
+                    'Jennings',
+                    'Management'
+                ),
+                new Employee(
+                    'Casey',
+                    'Norris',
+                    'Accounting'
+                ),
+                new Employee(
+                    'Santiago',
+                    'Peters',
+                    'Logistics'
+                ),
+                new Employee(
+                    'Johnny',
+                    'Bailey',
+                    'Management'
                 )
             ];
         }

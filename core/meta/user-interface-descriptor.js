@@ -63,42 +63,6 @@ exports.UserInterfaceDescriptor = Montage.specialize( /** @lends UserInterfaceDe
     },
 
     /**
-    * An expression that enables a UserInterfaceDescriptor to get a collection back label from its describedObject.
-     * Like "Back"
-    * @type {MontageExpression} collectionBackExpression
-    */
-    collectionBackExpression: {
-        value: void 0
-    },
-
-    /**
-    * An expression that enables a UserInterfaceDescriptor to get a collection edit label from its describedObject.
-     * Like "Edit"
-    * @type {MontageExpression} collectionEditExpression
-    */
-    collectionEditExpression: {
-        value: void 0
-    },
-
-    /**
-     * An expression that enables a UserInterfaceDescriptor to get a edit label from its describedObject.
-     * Like "Edit"
-     * @type {MontageExpression} editExpression
-     */
-    editExpression: {
-        value: void 0
-    },
-
-    /**
-     * An expression that enables a UserInterfaceDescriptor to get a back label from its describedObject.
-     * Like "Back"
-     * @type {MontageExpression} backExpression
-     */
-    backExpression: {
-        value: void 0
-    },
-
-    /**
      * A component to be used to visually represent an object described by the descriptor
      *
      * @type {Component} iconComponentModule
@@ -172,6 +136,5 @@ exports.UserInterfaceDescriptor = Montage.specialize( /** @lends UserInterfaceDe
     propertyUserInterfaceDescriptors: {
         value: void 0
     }
-
 
 });
