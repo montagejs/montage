@@ -73,6 +73,10 @@ exports.CascadingList = Component.specialize({
         }
     },
 
+    shouldDispatchCascadingListEvents: {
+        value: false
+    },
+
     exitDocument: {
         value: function () {
             this.popAll();
@@ -153,7 +157,10 @@ exports.CascadingList = Component.specialize({
         value: function (context) {
             this.history.splice(context.columnIndex, 1, context);
             this.needsDraw = true;
-            this.dispatchEventNamed('cascadingListPush', true, true, context);
+
+            if (this.shouldDispatchCascadingListEvents) {
+                this.dispatchEventNamed('cascadingListPush', true, true, context);
+            }
         }
     },
 
@@ -174,7 +181,10 @@ exports.CascadingList = Component.specialize({
 
             context.isEditing = false;
             this.needsDraw = true;
-            this.dispatchEventNamed('cascadingListPop', true, true, context);
+
+            if (this.shouldDispatchCascadingListEvents) {
+                this.dispatchEventNamed('cascadingListPop', true, true, context);
+            }
         }
     },
 
