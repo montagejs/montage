@@ -12,7 +12,7 @@ exports.ListItem = Component.specialize({
                 "_label": {
                     "<-": "object.defined() && " +
                         "userInterfaceDescriptor.defined() ? " +
-                        "object.path(@owner.userInterfaceDescriptor.nameExpression) : " +
+                        "object.path(userInterfaceDescriptor.nameExpression) : " +
                         "label"
                 }
             });
