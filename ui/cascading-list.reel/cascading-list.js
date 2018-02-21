@@ -26,6 +26,8 @@ var CascadingListContext = exports.CascadingListContext = Montage.specialize({
         value: null
     },
 
+    //TODO: change name to selection
+    //Wait for selection manager
     selectedObject: {
         value: null
     },
