@@ -85,7 +85,7 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
 
                 if (context) {
                     var UIDescriptor = context.userInterfaceDescriptor,
-                        object = object = context.object;
+                        object = context.object;
 
                     context.cascadingListItem = this;
 
