@@ -44,11 +44,11 @@ exports.CascadingList = Component.specialize({
 
     constructor: {
         value: function () {
-            this._stack = [];
+            this.history = [];
         }
     },
 
-    _stack: {
+    history: {
         value: null
     },
 
@@ -91,7 +91,7 @@ exports.CascadingList = Component.specialize({
 
     popAll: {
         value: function () {
-            while (this._stack.length) {
+            while (this.history.length) {
                 this._pop();
             }
         }
@@ -118,7 +118,7 @@ exports.CascadingList = Component.specialize({
             if (columnIndex) {
                 var firstIteration = true;
                 
-                for (var i = this._stack.length - columnIndex; i > 0; i--) {
+                for (var i = this.history.length - columnIndex; i > 0; i--) {
                     this._pop(firstIteration ? object : null);
 
                     if (firstIteration) {
@@ -149,7 +149,7 @@ exports.CascadingList = Component.specialize({
 
     _push: {
         value: function (context) {
-            this._stack.splice(context.columnIndex, 1, context);
+            this.history.splice(context.columnIndex, 1, context);
             this.needsDraw = true;
             this.dispatchEventNamed('cascadingListPush', true, true, context);
         }
@@ -158,12 +158,12 @@ exports.CascadingList = Component.specialize({
     _pop: {
         value: function (object) {
             var cascadingListItem,
-                context = this._stack.pop();
+                context = this.history.pop();
             
             this._currentIndex--;
 
-            if (this._stack[this._currentIndex] &&
-                (cascadingListItem = this._stack[this._currentIndex].cascadingListItem)
+            if (this.history[this._currentIndex] &&
+                (cascadingListItem = this.history[this._currentIndex].cascadingListItem)
             ) {
                 if (object !== cascadingListItem.context.selectedObject) {
                     cascadingListItem.context.selectedObject = null;
