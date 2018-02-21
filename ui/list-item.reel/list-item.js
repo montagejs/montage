@@ -6,6 +6,19 @@ var Component = require("../component").Component;
  */
 exports.ListItem = Component.specialize({
 
+    constructor: {
+        value: function () {
+            this.defineBindings({
+                "_label": {
+                    "<-": "object.defined() && " +
+                        "userInterfaceDescriptor.defined() ? " +
+                        "object.path(@owner.userInterfaceDescriptor.nameExpression) : " +
+                        "label"
+                }
+            });
+        }
+    },
+
     label: {
         value: null
     },
@@ -49,39 +62,35 @@ exports.ListItem = Component.specialize({
 
     _getUserInterfaceDescriptor: {
         value: function (object) {
-            if (object && object.constructor.objectDescriptor) {
-                var self = this;
+            var self = this,
+                promise;
 
+            if (object && object.constructor.objectDescriptor) {
                 this.canDrawGate.setField(this.constructor.CAN_DRAW_FIELD, false);
 
                 return object.constructor.objectDescriptor.then(function (objectDescriptor) {
-
                     if (objectDescriptor) {
                         objectDescriptor.userInterfaceDescriptor.then(function (userInterfaceDescriptor) {
                             self.canDrawGate.setField(self.constructor.CAN_DRAW_FIELD, true);
                             self.needsDraw = true;
-
                             return (self.userInterfaceDescriptor = userInterfaceDescriptor);
                         });
                     }
                 });
+            } else {
+                promise = Promise.resolve();
             }
 
-            return Promise.resolve();
-        }
-    },
-
-    draw: {
-        value: function () {
-            if (!this.label && !this.userInterfaceDescriptor && this.object) {
-                this.label = this.callDelegateMethod(
-                    "listItemNeedsLabelForObject",
-                    this,
-                    this.object,
-                    this.rowIndex,
-                    this.list
-                );
-            }
+            return promise.then(function () {
+                self.label = self.callDelegateMethod(
+                    "listItemWillUseLabelForObjectAtRowIndex",
+                    self,
+                    self._label,
+                    self.object,
+                    self.rowIndex,
+                    self.list
+                ) || self._label || self.label;
+            });
         }
     }
 

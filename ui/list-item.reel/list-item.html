@@ -6,7 +6,8 @@
     {
         "owner": {
             "values": {
-                "element": {"#": "owner"}
+                "element": {"#": "owner"},
+                "labelComponent": {"@": "label"}
             }
         },
 
@@ -14,7 +15,7 @@
             "prototype": "../text.reel",
             "values": {
                 "element": {"#": "label"},
-                "value": {"<-": "@owner.object.defined() && @owner.userInterfaceDescriptor.defined() ? @owner.object.path(@owner.userInterfaceDescriptor.nameExpression) : @owner.label"}
+                "value": {"<-": "@owner._label || @owner.label"}
             }
         },
 

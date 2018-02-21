@@ -46,8 +46,8 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
-    listItemNeedsLabelForObject: {
-        value: function (listItem, object, rowIndex, list) {
+    listItemWillUseLabelForObjectAtRowIndex: {
+        value: function (listItem, label, object, rowIndex, list) {
             if (object === this.root[0]) {
                 return 'Employees';
             } else if (object === this.root[1]) {
