@@ -104,7 +104,7 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
                         }
                         
                         componentModule = this.callDelegateMethod(
-                            "cascadingListWillUseComponentModuleForObjectAtColumnIndex",
+                            "cascadingListWillUseInspectorComponentModuleForObjectAtColumnIndex",
                             context.cascadingList,
                             componentModule,
                             object,

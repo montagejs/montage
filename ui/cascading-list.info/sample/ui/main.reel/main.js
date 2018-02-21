@@ -38,7 +38,7 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
-    cascadingListWillUseComponentModuleForObjectAtColumnIndex: {
+    cascadingListWillUseInspectorComponentModuleForObjectAtColumnIndex: {
         value: function (cascadingList, componentModule, object, columnIndex, context) {
             if (object instanceof Employee && (!object.firstname || context.isEditing)) {
                 return context.userInterfaceDescriptor.creatorInspectorComponentModule;
