@@ -228,56 +228,63 @@ exports.CascadingList = Component.specialize({
                         objectDescriptor = constructor.objectDescriptor;
                     }
 
-                    if (objectDescriptor) {
-                        this._populatePromise = objectDescriptor
-                            .then(function (objectDescriptor) {
-                                objectDescriptor = self.callDelegateMethod(
-                                    "cascadingListWillUseObjectDescriptorForObjectAtColumnIndex",
-                                    self,
-                                    objectDescriptor,
-                                    object,
-                                    columnIndex
-                                ) || objectDescriptor;
-
-                                return objectDescriptor.userInterfaceDescriptor;
-                            });
-                    }
+                    this._populatePromise = objectDescriptor;
+                } else {
+                    this._populatePromise = Promise.resolve();
                 }
-                else {
-                    var userInterfaceDescriptorModuleId = self.callDelegateMethod(
-                        "cascadingListNeedsUserInterfaceDescriptorForObjectAtColumnIndex",
-                        this,
+
+                return this._populatePromise.then(function (objectDescriptor) {
+                    objectDescriptor = self.callDelegateMethod(
+                        "cascadingListWillUseObjectDescriptorForObjectAtColumnIndex",
+                        self,
+                        objectDescriptor,
                         object,
                         columnIndex
                     ) || objectDescriptor;
 
-                    if (userInterfaceDescriptorModuleId) {
-                        infoDelegate = infoDelegate || Montage.getInfoForObject(this.delegate);
+                    return objectDescriptor;
+                }).then(function (objectDescriptor) {
+                    var userInterfaceDescriptorModuleId = objectDescriptor &&
+                        objectDescriptor.userInterfaceDescriptorModule ?
+                        objectDescriptor.userInterfaceDescriptorModule.id : null;
+                    
+                    userInterfaceDescriptorModuleId = self.callDelegateMethod(
+                        "cascadingListWillUseUserInterfaceDescriptorIdForObjectAtColumnIndex",
+                        self,
+                        userInterfaceDescriptorModuleId,
+                        object,
+                        columnIndex
+                    ) || userInterfaceDescriptorModuleId;
 
-                        this._populatePromise = (infoDelegate.require || require).async(userInterfaceDescriptorModuleId)
+                    if (objectDescriptor && objectDescriptor.userInterfaceDescriptorModule &&
+                        objectDescriptor.userInterfaceDescriptorModule.id === userInterfaceDescriptorModuleId
+                    ) {
+                        return objectDescriptor.userInterfaceDescriptor;
+                    } else if (userInterfaceDescriptorModuleId) {
+                        infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
+
+                        return (infoDelegate.require || require).async(userInterfaceDescriptorModuleId)
                             .then(function (userInterfaceDescriptorModule) {
                                 return userInterfaceDescriptorModule.montageObject;
                             });
-                    } else { // leave a chance to the deeper components to handle it 
-                        this._populatePromise = Promise.resolve();
                     }
-                }
+                }).then(function (UIDescriptor) {
+                    var context = self._createCascadingListContextWithObjectAndColumnIndex(
+                        object,
+                        columnIndex
+                    );
+
+                    context.userInterfaceDescriptor = UIDescriptor;
+                    context.isEditing = !!isEditing;
+
+                    self._push(context);
+                    self._populatePromise = null;
+
+                    return context;
+                });
             }
 
-            return this._populatePromise.then(function (UIDescriptor) {
-                var context = self._createCascadingListContextWithObjectAndColumnIndex(
-                    object,
-                    columnIndex
-                );
-
-                context.userInterfaceDescriptor = UIDescriptor;
-                context.isEditing = !!isEditing;
-                
-                self._push(context);
-                self._populatePromise = null;
-
-                return context;
-            });
+            return this._populatePromise;
         }
     },
 

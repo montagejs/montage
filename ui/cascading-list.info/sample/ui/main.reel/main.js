@@ -30,9 +30,9 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
-    cascadingListNeedsUserInterfaceDescriptorForObjectAtColumnIndex: {
-        value: function (cascadingList, object, columnIndex) {
-            if (object === this.root) {
+    cascadingListWillUseUserInterfaceDescriptorIdForObjectAtColumnIndex: {
+        value: function (cascadingList, userInterfaceDescriptorModuleId, object, columnIndex) {
+            if (object === this.root && !userInterfaceDescriptorModuleId) {
                 return 'montage/test/mocks/data/models/organisation-ui-descriptor.mjson';
             }
         }
