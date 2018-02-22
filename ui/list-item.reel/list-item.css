@@ -42,3 +42,20 @@
 .ListItem.active {
     background-color: #e9e9e9;
 }
+
+.ListItem.navigable:after {
+    content: "\0003E";
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    color: #C7C7CC;
+    padding-right: 16px;
+    padding-right: 1rem;
+}

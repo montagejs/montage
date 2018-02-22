@@ -18,6 +18,12 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
+    shouldListEnableNavigation: {
+        value: function (list, isNavigationEnabled) {
+            return true;
+        }
+    },
+
     cascadingListWillUseObjectDescriptorModuleIdForObjectAtColumnIndex: {
         value: function (cascadingList, moduleId, object, columnIndex) {
             if (!moduleId) {

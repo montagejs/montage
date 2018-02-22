@@ -19,6 +19,10 @@ exports.ListItem = Component.specialize({
         }
     },
 
+    isNavigationEnabled: {
+        value: false
+    },
+
     label: {
         value: null
     },

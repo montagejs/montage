@@ -10,7 +10,8 @@
                     "element": {"#": "list"},
                     "_repetition": {"@": "repetition"},
                     "selection": {"<->": "@repetition.selection"},
-                    "context.selectedObject": {"<-": "@repetition.selection.one()"}
+                    "context.selectedObject": {"<-": "@repetition.selection.one()"},
+                    "delegate": {"<-": "@owner.context.defined() ? @owner.context.delegate : @owner.delegate"}
                 } 
             },
 
@@ -34,7 +35,8 @@
                     "element": {"#": "listItem"},
                     "list": {"<-": "@owner"},
                     "rowIndex": {"<-": "@repetition:iteration.index"},
-                    "delegate": {"<-": "@owner.context.defined() ? @owner.context.delegate : @owner.delegate"},
+                    "isNavigationEnabled": {"<-": "@owner.isNavigationEnabled"},
+                    "delegate": {"<-": "@owner.delegate"},
                     "object": {"<-": "@repetition:iteration.object"}
                 }
             }

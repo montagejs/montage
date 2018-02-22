@@ -2,14 +2,23 @@ var Component = require("../component").Component;
 
 exports.List = Component.specialize({
 
-    enterDocument: {
+    templateDidLoad: {
         value: function () {
             this.addPathChangeListener(
                 "context.selectedObject", this, "handleSelectedObjectChange"
             );
+
+            this.isNavigationEnabled = this.callDelegateMethod(
+                "shouldListEnableNavigation",
+                this,
+                this.isNavigable
+            ) || this.isNavigable;
         }
     },
 
+    isNavigationEnabled: {
+        value: false
+    },
 
     /**
      Description TODO
