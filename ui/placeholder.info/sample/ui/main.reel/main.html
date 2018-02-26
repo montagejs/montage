@@ -12,6 +12,15 @@
                 }
             },
 
+            "placeholder": {
+                "prototype": "montage/ui/placeholder.reel",
+                "values": {
+                    "element": {"#": "placeholder"},
+                    "componentModule": {"%": "montage/ui/text.reel"},
+                    "component.value": {"<-": "'Message test'"}
+                }
+            },
+
             "placeholder1": {
                 "prototype": "montage/ui/placeholder.reel",
                 "values": {
@@ -24,7 +33,7 @@
                 "prototype": "montage/ui/placeholder.reel",
                 "values": {
                     "element": {"#": "placeholder2"},
-                    "object": {"<-": "!!@secondMessage.checked ? @owner.message2 : @owner.message"},
+                    "data": {"<-": "!!@secondMessage.checked ? @owner.message2 : @owner.message"},
                     "componentModule": {"<-": "!!@secondComponent.checked ? @owner.componentModule2 : @owner.componentModule"}
                 }
             },
@@ -56,10 +65,15 @@
 <body>
     <div data-montage-id="main" class="Main">
         <header>PlaceHolder Sample</header>
-        <div data-montage-id="placeholder1"></div>
+        
         <div data-montage-id="placeholderHidden"></div>
+        
+        <div data-montage-id="placeholder"></div>
+        <br />
+        <div data-montage-id="placeholder1"></div>
 
         <header>PlaceHolder Sample with User Interface descriptor</header>
+        
         <div data-montage-id="placeholder2"></div>
 
         <div class="options">

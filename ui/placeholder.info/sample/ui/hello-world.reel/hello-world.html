@@ -14,7 +14,7 @@
                 "prototype": "montage/ui/text.reel",
                 "values": {
                     "element": {"#": "message"},
-                    "value": {"<-": "@owner.object.defined() && @owner.userInterfaceDescriptor.defined() ? @owner.object.path(@owner.userInterfaceDescriptor.nameExpression) : 'Hello World!'"}
+                    "value": {"<-": "@owner.data.defined() && @owner.userInterfaceDescriptor.defined() ? @owner.data.path(@owner.userInterfaceDescriptor.nameExpression) : 'Hello World!'"}
                 }
             }
 

@@ -2,20 +2,22 @@ var Component = require("montage/ui/component").Component;
 
 exports.HelloWorld = Component.specialize(/** @lends HelloWorld# */{
 
-    _object: {
+    // Super Class Data Controller?
+
+    _data: {
         value: null
     },
 
-    object: {
+    data: {
         get: function () {
-            return this._object;
+            return this._data;
         },
-        set: function (object) {
-            if (this._object !== object) {
-                this._object = object;
+        set: function (data) {
+            if (this._data !== data) {
+                this._data = data;
 
-                if (object) {
-                    this._getUserInterfaceDescriptor(object);
+                if (data) {
+                    this._getUserInterfaceDescriptor(data);
                 }
             }
         }
@@ -26,13 +28,13 @@ exports.HelloWorld = Component.specialize(/** @lends HelloWorld# */{
     },
 
     _getUserInterfaceDescriptor: {
-        value: function (object) {
-            if (object && object.constructor.objectDescriptor) {
+        value: function (data) {
+            if (data && data.constructor.objectDescriptor) {
                 var self = this;
 
                 this.canDrawGate.setField(this.constructor.CAN_DRAW_FIELD, false);
 
-                return object.constructor.objectDescriptor.then(function (objectDescriptor) {
+                return data.constructor.objectDescriptor.then(function (objectDescriptor) {
                     self.canDrawGate.setField(self.constructor.CAN_DRAW_FIELD, true);
 
                     if (objectDescriptor) {

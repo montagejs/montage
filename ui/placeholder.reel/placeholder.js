@@ -10,14 +10,6 @@ var Placeholder = exports.Placeholder = Slot.specialize({
         }
     },
 
-    _shouldFetchComponent: {
-        value: false
-    },
-
-    _isLoadingComponent: {
-        value: false
-    },
-
     _componentsMap: {
         get: function () {
             return Placeholder.componentModulesMap;
@@ -32,6 +24,10 @@ var Placeholder = exports.Placeholder = Slot.specialize({
         value: true
     },
 
+    needsFetchingComponent: {
+        value: false
+    },
+
     _componentModule: {
         value: null
     },
@@ -43,24 +39,24 @@ var Placeholder = exports.Placeholder = Slot.specialize({
         set: function (value) {
             if (this._componentModule !== value) {
                 this._componentModule = value;
-                this._shouldFetchComponent = true;
+                this.needsFetchingComponent = true;
                 this.needsDraw = true;
             }
         }
     },
 
-    _context: {
+    _data: {
         value: null
     },
 
-    context: {
+    data: {
         get: function () {
-            return this._context;
+            return this._data;
         },
-        set: function (context) {
-            if (this._context !== context) {
-                this._context = context;
-                this._shouldFetchComponent = true;
+        set: function (data) {
+            if (this._data !== data) {
+                this._data = data;
+                this.needsFetchingComponent = true;
                 this.needsDraw = true;
             }
         }
@@ -74,52 +70,34 @@ var Placeholder = exports.Placeholder = Slot.specialize({
         }
     },
 
-    _dispatchPlaceholderContentLoaded: {
-        value: function () {
-            this.dispatchEventNamed(
-                "placeholderContentLoaded",
-                true,
-                true,
-                this
-            );
-        }
-    },
-
     _fetchComponentIfNeeded: {
         value: function () {
-            var promise;
+            var promise, moduleId;
 
-            if (this.componentModule && this.context) {
-                var moduleId = this.componentModule.id;
+            if (this.componentModule &&
+                (moduleId = this.componentModule.id) &&
+                typeof moduleId === "string" && moduleId.length &&
+                this.needsFetchingComponent
+            ) {
+                var self = this,
+                    require = this.componentModule.require;
 
-                if (typeof moduleId === "string" &&
-                    moduleId.length &&
-                    this._shouldFetchComponent
-                ) {
-                    var self = this,
-                        require = this.componentModule.require;
+                this.content = null;
 
-                    this.content = null;
-                    this._isLoadingComponent = true;
-                    this._shouldFetchComponent = false;
+                promise = this._fetchComponentConstructor(moduleId, require)
+                    .then(function (componentConstructor) {
+                        var component = (self.component = (
+                            new componentConstructor()
+                        ));
 
-                    promise = this._fetchComponentConstructor(moduleId, require)
-                        .then(function (componentConstructor) {
-                            var component = (self.component = (
-                                    self.content = new componentConstructor()
-                                )),
-                                oldEnterDocument = component.enterDocument;
-                            
-                            component.enterDocument = function (isFirstTime) {
-                                self._isLoadingComponent = false;
-                                self._dispatchPlaceholderContentLoaded();
+                        component.defineBinding(
+                            'data',
+                            { "<-": "data", source: self }
+                        );
 
-                                if ((component.enterDocument = oldEnterDocument)) {
-                                    component.enterDocument(isFirstTime);
-                                }
-                            };
-                    });
-                }
+                        self.needsFetchingComponent = false;
+                        self.content = component;
+                });
             }
 
             return promise || Promise.resolve();
@@ -148,14 +126,8 @@ var Placeholder = exports.Placeholder = Slot.specialize({
     },
 
     draw: {
-        value: function () {
-            var self = this;
-                
-            this._fetchComponentIfNeeded().then(function () {
-                if (self.component) {
-                    self.component.context = self.context;
-                }
-            });
+        value: function () {                
+            this._fetchComponentIfNeeded();
         }
     }
 
