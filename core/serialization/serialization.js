@@ -97,6 +97,42 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
         }
     },
 
+    removeObjectWithLabel: {
+        value: function (label, _serializationObject) {
+            _serializationObject = _serializationObject || this.getSerializationObject();
+
+            if (_serializationObject && label in _serializationObject) {
+                delete _serializationObject[label];
+
+                if (this._serializationLabels) {
+                    this._serializationLabels.splice(
+                        this._serializationLabels.indexOf(label), 1
+                    );
+                }
+
+                this._serializationString = null;
+            }
+            
+            return this;
+        }
+    },
+
+    removeObjectsWithLabels: {
+        value: function (labels) {
+            var serializationObject = this.getSerializationObject();
+            
+            if (serializationObject && labels) {
+                for (var i = 0, length = labels.length; i < length; i++) {                    
+                    this.removeObjectWithLabel(labels[i], serializationObject);
+                }
+
+                this._serializationString = null;
+            }
+            
+            return this;
+        }
+    },
+
     hasSerializationLabel: {
         value: function (label) {
             return label in this.getSerializationObject();
