@@ -89,12 +89,7 @@ var Placeholder = exports.Placeholder = Slot.specialize({
                         var component = (self.component = (
                             new componentConstructor()
                         ));
-
-                        component.defineBinding(
-                            'data',
-                            { "<-": "data", source: self }
-                        );
-
+                        component.data = self.data;
                         self.needsFetchingComponent = false;
                         self.content = component;
                 });
