@@ -461,7 +461,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             if (object) {
                 this.callDelegateMethod("rawDataServiceDidAddOneRawData", this, stream, rawData, object);
             }
-            return;
+            return result;
         }
     },
 
