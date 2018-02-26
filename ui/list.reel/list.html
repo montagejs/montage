@@ -10,8 +10,8 @@
                     "element": {"#": "list"},
                     "_repetition": {"@": "repetition"},
                     "selection": {"<->": "@repetition.selection"},
-                    "context.selectedObject": {"<-": "@repetition.selection.one()"},
-                    "delegate": {"<-": "@owner.context.defined() ? @owner.context.delegate : @owner.delegate"}
+                    "data.selectedObject": {"<-": "@repetition.selection.one()"},
+                    "delegate": {"<-": "@owner.data.defined() ? @owner.data.delegate : @owner.delegate"}
                 } 
             },
 
@@ -19,9 +19,9 @@
                 "prototype": "../repetition.reel",
                 "values": {
                     "element": {"#": "repetition"},
-                    "isSelectionEnabled": {"<-": "@owner.context.defined() ? true : @owner.isSelectionEnabled"},
+                    "isSelectionEnabled": {"<-": "@owner.data.defined() ? true : @owner.isSelectionEnabled"},
                     "contentController": {"<->": "@owner.contentController"},
-                    "content": {"<-": "@owner.context.defined() ? @owner.context.object : (@owner.contentController.content || @owner.content)"}
+                    "content": {"<-": "@owner.data.defined() ? @owner.data.object : (@owner.contentController.content || @owner.content)"}
                 }
             },
 

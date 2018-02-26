@@ -72,7 +72,9 @@ exports.List = Component.specialize({
 
             // odd issue although the change is detected the value selectedObject 
             // is not updated.
-            this.context.selectedObject = value;
+            if (this.data) {
+                this.data.selectedObject = value;
+            }
         }
     }
 
