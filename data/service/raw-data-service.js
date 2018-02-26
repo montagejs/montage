@@ -265,7 +265,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     deleteDataObject: {
         value: function (object) {
-            var self = this, 
+            var self = this,
                 record = {},
                 mapResult = this._mapObjectToRawData(object, record),
                 result;
@@ -277,7 +277,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             } else {
                 result = this.deleteRawData(record, object);
             }
-            
+
             return result;
         }
     },
@@ -420,12 +420,13 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             if (offline) {
                 offline.push.apply(offline, records);
             } else if (records && !this.isOffline) {
-                this._streamRawData.set(stream, records.slice());
+                //Do we really need to make a shallow copy of the array for bookeeping?
+                //this._streamRawData.set(stream, records.slice());
+                this._streamRawData.set(stream, records);
             }
             // Convert the raw data to appropriate data objects. The conversion
             // will be done in place to avoid creating any unnecessary array.
-            for (i = 0, n = records && records.length; i < n; i += 1) {
-                iRecord = records[i];
+            for (i = 0, n = records && records.length; i < n; i++) {
                 /*jshint -W083*/
                 // Turning off jshint's function within loop warning because the
                 // only "outer scoped variable" we're accessing here is stream,
@@ -434,37 +435,33 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 // if (streamSelectorType.name && streamSelectorType.name.toUpperCase().indexOf("BSP") !== -1) {
                 //     debugger;
                 // }
-                this.addOneRawData(stream, iRecord, context, streamSelectorType).then(function (mappedObject) {
-                    stream.addData([mappedObject]);
-                });
+                this.addOneRawData(stream, records[i], context, streamSelectorType);
                 /*jshint +W083*/
             }
         }
     },
 
-    
+
 
     addOneRawData: {
         value: function (stream, rawData, context) {
             var type = this._descriptorForParentAndRawData(stream.query.type, rawData),
                 object = this.objectForTypeRawData(type, rawData, context),
-                result;
-
-            result = this._mapRawDataToObject(rawData, object, context);
+                result = this._mapRawDataToObject(rawData, object, context);
 
             if (result && result instanceof Promise) {
                 result = result.then(function () {
-                    return object;
+                    stream.addData(object);
                 });
             } else {
-                result = Promise.resolve(object);
+                stream.addData(object);
             }
             this._addMapDataPromiseForStream(result, stream);
 
             if (object) {
                 this.callDelegateMethod("rawDataServiceDidAddOneRawData", this, stream, rawData, object);
             }
-            return result;
+            return;
         }
     },
 
@@ -510,7 +507,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 scope = new Scope(rawData),
                 rawDataPrimaryKeysValues,
                 dataIdentifier, dataIdentifierMap, primaryKey;
-                
+
             if(rawDataPrimaryKeys && rawDataPrimaryKeys.length) {
 
                 dataIdentifierMap = this._typeIdentifierMap.get(type);
@@ -721,7 +718,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             var objectDescriptor = this.objectDescriptorForObject(object),
                 mapping = objectDescriptor && this.mappingWithType(objectDescriptor);
 
-            
+
             if (!mapping && objectDescriptor) {
                 mapping = this._objectDescriptorMappings.get(objectDescriptor);
                 if (!mapping) {
@@ -903,30 +900,30 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     /**
-     * Map from a parent class to the mappings used by the service to 
+     * Map from a parent class to the mappings used by the service to
      * determine what subclass to create an instance of for a particular
      * rawData object
-     * 
-     * For example, say a class 'Person' has 2 subclasses 'Employee' & 'Customer'. 
-     * RawDataService would evaluate each person rawData object against each item 
+     *
+     * For example, say a class 'Person' has 2 subclasses 'Employee' & 'Customer'.
+     * RawDataService would evaluate each person rawData object against each item
      * in _rawDataTypeMappings and determine if that rawData should be an instance
      * of 'Employee' or 'Customer'.
      * @type {Map<ObjectDescpriptor:RawDataTypeMapping>}
      */
-    
+
     _descriptorToRawDataTypeMappings: {
         value: undefined
     },
 
     /**
-     * Adds each mapping passed in to _descriptorToRawDataTypeMappings 
-     * 
+     * Adds each mapping passed in to _descriptorToRawDataTypeMappings
+     *
      * @method
-     * @param {Array<RawDataTypeMapping>} mappings 
+     * @param {Array<RawDataTypeMapping>} mappings
      */
     _registerRawDataTypeMappings: {
         value: function (mappings) {
-            var mapping, parentType, 
+            var mapping, parentType,
                 i, n;
 
             for (i = 0, n = mappings ? mappings.length : 0; i < n; i++) {
@@ -943,7 +940,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     /**
      * Evaluates a rawData object against the RawDataTypeMappings for the fetched
      * class and returns the subclass for the first mapping that evaluates to true.
-     * 
+     *
      * @method
      * @param {ObjectDescriptor} parent Fetched class for which to look for subclasses
      * @param {Object} rawData rawData to evaluate against the RawDataTypeMappings
@@ -954,14 +951,14 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             var mappings = this._descriptorToRawDataTypeMappings.get(parent),
                 compiled, mapping, subType,
                 i, n;
-            
+
             if (mappings && mappings.length) {
                 for (i = 0, n = mappings.length; i < n && !subType; ++i) {
                     mapping = mappings[i];
                     subType = mapping.criteria.evaluate(rawData) && mapping.type;
                 }
             }
-            
+
             return subType ? this._descriptorForParentAndRawData(subType, rawData) : parent;
         }
     },
