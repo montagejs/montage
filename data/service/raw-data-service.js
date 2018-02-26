@@ -11,7 +11,8 @@ var DataService = require("data/service/data-service").DataService,
     deprecate = require("core/deprecate"),
     parse = require("frb/parse"),
     Scope = require("frb/scope"),
-    compile = require("frb/compile-evaluator");
+    compile = require("frb/compile-evaluator"),
+    Promise = require("core/promise").Promise;
 
 /**
  * Provides data objects of certain types and manages changes to them based on
@@ -456,6 +457,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 });
             } else {
                 stream.addData(object);
+                result = Promise.resolve(object);
             }
             this._addMapDataPromiseForStream(result, stream);
 
