@@ -452,6 +452,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             if (result && result instanceof Promise) {
                 result = result.then(function () {
                     stream.addData(object);
+                    return object;
                 });
             } else {
                 stream.addData(object);
