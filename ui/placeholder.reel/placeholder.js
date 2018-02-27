@@ -39,8 +39,11 @@ var Placeholder = exports.Placeholder = Slot.specialize({
         set: function (value) {
             if (this._componentModule !== value) {
                 this._componentModule = value;
-                this.needsFetchingComponent = true;
-                this.needsDraw = true;
+
+                if (value) {
+                    this.needsFetchingComponent = true;
+                    this.needsDraw = true;
+                }
             }
         }
     },
@@ -56,8 +59,11 @@ var Placeholder = exports.Placeholder = Slot.specialize({
         set: function (data) {
             if (this._data !== data) {
                 this._data = data;
-                this.needsFetchingComponent = true;
-                this.needsDraw = true;
+
+                if (this._componentModule) {
+                    this.needsFetchingComponent = true;
+                    this.needsDraw = true;
+                }
             }
         }
     },
@@ -92,7 +98,10 @@ var Placeholder = exports.Placeholder = Slot.specialize({
                         component.data = self.data;
                         self.needsFetchingComponent = false;
                         self.content = component;
-                });
+                    }, function (error) {
+                        self.needsFetchingComponent = false;
+                        throw error;
+                } );
             }
 
             return promise || Promise.resolve();
