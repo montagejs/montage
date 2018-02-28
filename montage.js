@@ -871,7 +871,7 @@
                         var logger = montageRequire("core/logger").logger;
                         
                         exports.MontageDeserializer = MontageDeserializer;
-                        exports.Require.delegate = self;
+                        exports.Require.delegate = exports;
 
                         // montageWillLoad is mostly for testing purposes
                         if (typeof global.montageWillLoad === "function") {
