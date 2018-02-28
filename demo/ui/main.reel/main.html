@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Montage Hello</title>
+    <link rel="stylesheet" href="main.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "owner"}
+            }
+        },
+        "myData": {
+            "prototype": "montage/ui/text.reel",
+            "values": {
+                "element": {"#": "myData"},
+                "value": {"<-": "@owner.myData"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="Main">
+        <span data-montage-id="myData"></span>
+    </div>
+</body>
+</html>

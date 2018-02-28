@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+    <title>Montage demo</title>
+    <style type="text/css"> body { font-family: sans-serif; } </style>
+</head>
+<body>
+    <h1>Hello Montage</h1>
+    <script src="../montage.js"></script>
+    <script type="text/montage-serialization">
+    {
+        "app": {
+            "prototype": "montage/app.reel",
+            "values": {
+               "useFeature": false,
+               "endpointURL": "https://example.com"
+            }
+        },
+        "owner": {
+            "prototype": "montage/ui/loader.reel"
+        }
+    }
+    </script>
+</head>
+<body>
+    <span class="loading"></span>
+</body>
+</html>

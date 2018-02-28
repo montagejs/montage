@@ -83,6 +83,7 @@
   "scripts": {
     "test": "node test/run-node.js",
     "jsdoc": "jsdoc -c jsdoc.json",
+    "start:demo": "concurrently \"http-server -p 8084\" \"open http://localhost:8084/demo/\"",
     "integration": "MONTAGE_VERSION=${MONTAGE_VERSION:=./} MOP_VERSION=${MOP_VERSION:=#master} node node_modules/mop-integration/integration",
     "lint": "jshint .",
     "test:karma": "karma start --no-auto-watch --single-run",
@@ -94,6 +95,7 @@
     "test:jasmine": "concurrently \"http-server -p 8085\" \"open http://localhost:8085/test/run.html\""
   },
   "exclude": [
+    "demo",
     "report",
     "doc",
     "test",
