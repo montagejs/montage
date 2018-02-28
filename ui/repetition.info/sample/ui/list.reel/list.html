@@ -14,7 +14,9 @@
             "prototype": "montage/ui/repetition.reel",
             "values": {
                 "element": {"#": "repetition"},
-                "content": {"<-": "@owner.content"}
+                "content": {"<-": "@owner.content"},
+                "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"},
+                "allowsMultipleSelection": {"<-": "@owner.allowsMultipleSelection"}
             }
         },
 
@@ -34,10 +36,10 @@
     </script>
 </head>
 <body>
-    <div data-montage-id="owner">
-        <div data-montage-id="repetition">
+    <div data-montage-id="owner" >
+        <div data-montage-id="repetition" class="list">
             <div data-param="*">
-                <span data-montage-id="text"></span>
+                <span data-montage-id="text" class="item"></span>
             </div>
         </div>
     </div>

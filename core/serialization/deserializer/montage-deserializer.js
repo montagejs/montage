@@ -3,6 +3,7 @@ var Montage = require("../../core").Montage,
     MontageReviver = require("./montage-reviver").MontageReviver,
     Promise = require("../../promise").Promise,
     Map = require("collections/map").Map,
+    Promise = require("core/promise").Promise,
     deprecate = require("../../deprecate");
 
 var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
@@ -97,7 +98,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                 locationId,
                 locationDesc,
                 module,
-                promises = [];
+                promises;
 
             if (serialization !== null) {
                 labels = Object.keys(serialization);
@@ -115,13 +116,13 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                         locationDesc = MontageReviver.parseObjectLocationId(locationId);
                         module = moduleLoader.getModule(locationDesc.moduleId, label);
                         if (Promise.is(module)) {
-                            promises.push(module);
+                            (promises || (promises = [])).push(module);
                         }
                     }
                 }
             }
 
-            if (promises.length > 0) {
+            if (promises) {
                 return Promise.all(promises);
             }
         }

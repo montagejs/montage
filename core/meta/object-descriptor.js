@@ -8,7 +8,7 @@ var Montage = require("../core").Montage,
     PropertyValidationRule = require("./validation-rule").PropertyValidationRule,
     Set = require("collections/set"),
     deprecate = require("../deprecate");
-    
+
 
 var Defaults = {
     name: "default",
@@ -27,9 +27,9 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
 
     constructor: {
         value: function ObjectDescriptor() {
-            this._eventDescriptors = [];
+            // this._eventDescriptors = [];
             this._ownPropertyDescriptors = [];
-            
+
             this._propertyDescriptorGroups = {};
             this._eventPropertyDescriptorsTable = new Map();
             this.defineBinding("eventDescriptors", {"<-": "_eventDescriptors.concat(parent.eventDescriptors)"});
@@ -110,7 +110,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             }
 
             this.customPrototype = this._getPropertyWithDefaults(deserializer, "customPrototype");
-            
+
             value = deserializer.getProperty("propertyDescriptors") || deserializer.getProperty("propertyBlueprints");
             if (value) {
                 this._ownPropertyDescriptors = value;
@@ -359,7 +359,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
-     * Range change listener on this._ownPropertyDescriptors and 
+     * Range change listener on this._ownPropertyDescriptors and
      * this.parent.propertyDescriptors
      */
     _handlePropertyDescriptorsRangeChange: {
@@ -398,9 +398,9 @@ _preparePropertyDescriptorsCache: {
         var ownDescriptors = this._ownPropertyDescriptors,
             isReady = true,
             descriptor, i, n;
-        
+
         if (!this._propertyDescriptorsAreCached)  {
-            
+
             for (i = 0, n = ownDescriptors.length; i < n && isReady; ++i) {
                 descriptor = ownDescriptors[i];
                 isReady = !!(descriptor && descriptor.name);
@@ -424,7 +424,7 @@ _preparePropertyDescriptorsCache: {
 },
 
     /**
-     * PropertyDescriptors for this object descriptor, not including those 
+     * PropertyDescriptors for this object descriptor, not including those
      * provided by this.parent
      *
      * @property {Array<PropertyDescriptor>} value
@@ -442,7 +442,7 @@ _preparePropertyDescriptorsCache: {
     },
 
     /**
-     * PropertyDescriptors associated to this object descriptor, including those 
+     * PropertyDescriptors associated to this object descriptor, including those
      * provided by this.parent.
      *
      * @property {Array<PropertyDescriptor>} value
@@ -459,7 +459,7 @@ _preparePropertyDescriptorsCache: {
 
     _validParentPropertyDescriptors: {
         value: function () {
-            var parentPropertyDescriptors = this.parent.propertyDescriptors, 
+            var parentPropertyDescriptors = this.parent.propertyDescriptors,
                 descriptors = [],
                 descriptor, i;
 
@@ -637,7 +637,7 @@ _preparePropertyDescriptorsCache: {
             } else if (propertyDescriptor === exports.UnknownPropertyDescriptor) {
                 propertyDescriptor = null;
             }
-            
+
             if (!propertyDescriptor && this.parent) {
                 propertyDescriptor = this.parent.propertyDescriptorForName(name);
             }
@@ -762,8 +762,13 @@ _preparePropertyDescriptorsCache: {
         }
     },
 
-    _eventDescriptors: {
+    __eventDescriptors: {
         value: null
+    },
+    _eventDescriptors: {
+        get: function() {
+            return this.__eventDescriptors || (this.__eventDescriptors = []);
+        }
     },
 
     /**

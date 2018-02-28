@@ -18,6 +18,18 @@ require("../../shim/string");
 var PROXY_ELEMENT_MAP = new WeakMap();
 var DATA_ATTRIBUTES_MAP = new Map();
 
+/**
+ * Element methods that are implemented natively and throw an invocation error
+ * if applied to the wrong type. When an element proxy proxies these methods,
+ * it needs to call `bind(element)` to avoid the invocation error.
+ */
+var ELEMENT_NATIVE_METHODS = [
+    "dispatchEvent", "addEventListener",
+    "firstElementChild", "firstChild",
+    "getAttribute", "getAttributeNames", "getAttributeNode",
+    "getElementsByClassName", "getElementsByTagName"
+];
+
 var ModuleLoader = Montage.specialize({
 
     _require: {
@@ -66,7 +78,7 @@ var ModuleLoader = Montage.specialize({
             return moduleDescriptor;
         }
     },
-    
+
     getExports: {
         value: function (_require, moduleId) {
             var moduleDescriptor = this.getModuleDescriptor(_require, moduleId);
@@ -285,7 +297,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                         return true;
                     },
                     get: function (target, propertyName) {
-                        return target[propertyName] || element[propertyName];
+                        var property = target[propertyName] || element[propertyName];
+                        if (typeof property === "function" && ELEMENT_NATIVE_METHODS.indexOf(propertyName) !== -1) {
+                            return property.bind(target[propertyName] ? target : element);
+                        }
+                        return property;
                     }
                 }));
             }
@@ -343,29 +359,34 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     return object;
                 }
 
-                var revivedValue = this.reviveValue(value.value, context, label),
-                    valueType = this.getTypeOf(value.value);
+                var valueType = this.getTypeOf(value.value),
+                    revivedValue = this.reviveValue(value.value, context, label),
+                    revivedUnits = this.reviveObjectLiteral(value, context, undefined, MontageReviver._unitNames);
+
+                context.setObjectLabel(revivedValue, label);
 
                 if (valueType === "Element") {
                     if (!Promise.is(revivedValue)) {
                         var proxyElement = this.setProxyOnElement(revivedValue, value);
                         this.setProxyForDatasetOnElement(revivedValue, value);
                         this.wrapSetAttributeForElement(revivedValue);
-                        context.setBindingsToDeserialize(proxyElement, value);
+
+                        context.setBindingsToDeserialize(proxyElement, revivedUnits);
                         this.deserializeMontageObjectValues(
                             proxyElement,
-                            value.values || value.properties, //deprecated
+                            revivedUnits.values || revivedUnits.properties, //deprecated
                             context
                         );
+                        context.setUnitsToDeserialize(proxyElement, revivedUnits, MontageReviver._unitNames);
                     }
                 } else if (valueType === "object") {
-                    context.setBindingsToDeserialize(revivedValue, value);
+                    context.setBindingsToDeserialize(revivedValue, revivedUnits);
                     this.deserializeMontageObjectValues(
                         revivedValue,
-                        value.values || value.properties, //deprecated
+                        revivedUnits.values || revivedUnits.properties, //deprecated
                         context
                     );
-                    context.setUnitsToDeserialize(revivedValue, value, MontageReviver._unitNames);
+                    context.setUnitsToDeserialize(revivedValue, revivedUnits, MontageReviver._unitNames);
                 }
 
                 return revivedValue;
@@ -432,8 +453,6 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 isObjectDescriptor = !!(locationId &&
                     (locationId.endsWith(".mjson") || locationId.endsWith(".meta"))),
                 module, locationDesc, location, objectName;
-            
-           
 
             if (locationId) {
                 locationDesc = MontageReviver.parseObjectLocationId(locationId);
@@ -453,7 +472,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             if (isObjectDescriptor && !Promise.is(module) && !module.montageObject) {
                 module = context._require.async(locationDesc.moduleId);
             }
-            
+
             if (Promise.is(module)) {
                 return module.then(function (exports) {
                     return self.instantiateObject(exports, locationDesc, value, objectName, context, label);
@@ -796,7 +815,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     },
 
     reviveObjectLiteral: {
-        value: function(value, context, label) {
+        value: function(value, context, label, filterKeys) {
             var item,
                 promises = [];
 
@@ -805,7 +824,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             }
 
             for (var propertyName in value) {
-                if (value.hasOwnProperty(propertyName)) {
+                if (value.hasOwnProperty(propertyName) && (!filterKeys || filterKeys.indexOf(propertyName) > -1)) {
                     if (value[propertyName] === value) {
                         // catch object property that point to its parent
                         return value;
