@@ -11,7 +11,8 @@ exports.List = Component.specialize({
             this.isNavigationEnabled = this.callDelegateMethod(
                 "shouldListEnableNavigation",
                 this,
-                this.isNavigable
+                this.isNavigationEnabled,
+                this._repetition.content
             ) || this.isNavigable;
         }
     },
