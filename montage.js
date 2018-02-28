@@ -662,7 +662,10 @@
                 location = params.location,
                 applicationModuleId = params.module || "",
                 applicationLocation = miniURL.resolve(platform.getLocation(), params.package || ".");
-                
+            
+            // Exports mrRequire as Require
+            exports.Require = mrRequire;
+
             // execute the preloading plan and stall the fallback module loader
             // until it has finished
             if (global.preload) {
@@ -816,7 +819,7 @@
                 });
             }
 
-            applicationRequirePromise.then(function (applicationRequire) {
+            return applicationRequirePromise.then(function (applicationRequire) {
                 return applicationRequire.loadPackage({
                     location: params.montageLocation,
                     hash: params.montageHash
@@ -866,7 +869,7 @@
                         var MontageDeserializer = montageRequire("core/serialization/deserializer/montage-deserializer").MontageDeserializer;    
                         var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                         var logger = montageRequire("core/logger").logger;
-                    
+                        
                         exports.MontageDeserializer = MontageDeserializer;
                         exports.Require.delegate = self;
 
@@ -910,7 +913,7 @@
                         });
                     });
                 });
-            });
+            }).done();
         });
     };
 
