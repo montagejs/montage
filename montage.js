@@ -771,7 +771,7 @@
                 });
             }
 
-            applicationRequirePromise.then(function (applicationRequire) {
+            return applicationRequirePromise.then(function (applicationRequire) {
                 return applicationRequire.loadPackage({
                     location: montageLocation,
                     hash: params.montageHash
@@ -829,7 +829,9 @@
 
                     return platform.initMontage(montageRequire, applicationRequire, params);
                 });
-            });
+
+            // Will throw error if there is one
+            }).done();
         });
     };
 
