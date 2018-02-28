@@ -1,0 +1,10 @@
+{
+    "name": "montage-demo",
+    "version": "1.0.0",
+    "dependencies": {
+        "montage": "*"
+    },
+     "mappings": {
+        "montage": "../"
+    }
+}
