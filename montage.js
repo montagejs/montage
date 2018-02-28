@@ -921,7 +921,7 @@
                 var bundleDefinitions = {};
                 var getDefinition = function (name) {
                     if (!bundleDefinitions[name]) {
-                         return bundleDefinitions[name] = defer();
+                         return (bundleDefinitions[name] = defer());
                     }
                     return bundleDefinitions[name];
                 };
