@@ -990,6 +990,25 @@ var Template = Montage.specialize( /** @lends Template# */ {
                     argumentElement = templateArgumentProvider.getTemplateArgumentElement(
                         parameterName);
 
+                    if (parameterName === "*" && parameterElement.childElementCount > 0) { // has default
+                        if (argumentElement.childElementCount > 0 ||
+                            !!(argumentElement.firstChild &&
+                                argumentElement.firstChild.data &&
+                                argumentElement.firstChild.data.trim())
+                        ) { // has arguments, need to clean the serialization.
+                            var labels = serialization.getSerializationLabels();
+                            serialization.removeObjectsWithLabels(
+                                this._getChildrenElementIds(parameterElement)
+                            );
+                        } else {
+                            var range = parameterElement.ownerDocument.createRange();
+                            range.selectNodeContents(parameterElement);
+                            this.replaceNode(range.extractContents(), parameterElement);
+
+                            break;
+                        }
+                    }
+                    
                     // Store all element ids of the argument, we need to create
                     // a serialization with the components that point to them.
                     argumentsElementIds.push.apply(argumentsElementIds,

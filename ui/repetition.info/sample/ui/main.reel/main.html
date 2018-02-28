@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"}
+                }
+            },
+
+            "repetition": {
+                "prototype": "montage/ui/repetition.reel",
+                "values": {
+                    "element": {"#": "repetition"},
+                    "content": {"<-": "@owner.content"}
+                }
+            },
+
+            "text": {
+                "prototype": "montage/ui/text.reel",
+                "values": {
+                    "element": {"#": "text"},
+                    "value": {"<-": "@repetition:iteration.object"}
+                }
+            },
+
+            "list1": {
+                "prototype": "ui/list.reel",
+                "values": {
+                    "element": {"#": "list1"},
+                    "content": {"<-": "@owner.content"}
+                }
+            },
+
+            "text1": {
+                "prototype": "montage/ui/text.reel",
+                "values": {
+                    "element": {"#": "text1"},
+                    "value": {"<-": "@list1:iteration.object"}
+                }
+            },
+           
+            "list2": {
+                "prototype": "ui/list.reel",
+                "values": {
+                    "element": {"#": "list2"},
+                    "content": {"<-": "@owner.content"}
+                }
+            },
+
+            "list3": {
+                "prototype": "ui/list.reel",
+                "values": {
+                    "element": {"#": "list3"},
+                    "content": {"<-": "@owner.content"},
+                    "isSelectionEnabled": true
+                }
+            },
+
+            "list4": {
+                "prototype": "ui/list.reel",
+                "values": {
+                    "element": {"#": "list4"},
+                    "content": {"<-": "@owner.content"},
+                    "allowsMultipleSelection": true
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>Repetition Sample</header>
+        <div class="content">
+            <h4>Simple</h4>
+            <div data-montage-id="repetition" class="list">
+                <span data-montage-id="text"><span>
+            </div>
+            <h4>Repetition with templating</h4>
+            <div data-montage-id="list1" class="list">
+                <span data-montage-id="text1"><span>
+            </div>
+            <h4>Repetition with templating and default</h4>
+            <div data-montage-id="list2" ></div>
+            <h4>Selection Enabled</h4>
+            <div data-montage-id="list3"></div>
+            <h4>Multiple Selection Enabled</h4>
+            <div data-montage-id="list4"></div>
+        </div>
+    </div>
+</body>
+</html>

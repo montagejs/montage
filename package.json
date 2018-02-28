@@ -87,6 +87,7 @@
   "scripts": {
     "test": "node test/run-node.js",
     "jsdoc": "jsdoc -c jsdoc.json",
+    "start:demo": "concurrently \"http-server -p 8084\" \"open http://localhost:8084/demo/\"",
     "integration": "MONTAGE_VERSION=${MONTAGE_VERSION:=./} MOP_VERSION=${MOP_VERSION:=#master} node node_modules/mop-integration/integration",
     "lint": "jshint .",
     "build": "webpack",
@@ -100,6 +101,7 @@
     "test:jasmine-webpack": "concurrently \"http-server -p 8086\" \"open http://localhost:8086/test/run-webpack.html\""
   },
   "exclude": [
+    "demo",
     "report",
     "doc",
     "test",

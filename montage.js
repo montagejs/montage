@@ -154,6 +154,7 @@
                             params.location = script.getAttribute("data-" + paramNamespace + "-location");
                         }
                         if (params.location) {
+
                             if (script.dataset) {
                                 for (name in script.dataset) {
                                     if (script.dataset.hasOwnProperty(name)) {
@@ -172,6 +173,8 @@
 
                             // Legacy
                             params.location = this.resolveUrl(this.getLocation(), params.location);
+                            params.packagesLocation = this.resolveUrl(params.location , '../../');
+
                             params[paramNamespace + 'Location'] = params.location;
                             if (!params[paramNamespace + 'Hash'] && params.hash) {
                                 params[paramNamespace + 'Hash'] = params.hash;
@@ -287,26 +290,35 @@
                     callback(mrRequire, mrPromise, miniURL);
                 }
 
-                function bootstrapModuleScript(module, err, script) {
-                    if (err) {
-                        // Fallback on flat strategy for missing nested module
-                        if (module.strategy === 'nested') {
-                            module.strategy = 'flat';
-                            module.script = resolveUrl(location, module.location);
-                            loadScript(module.script, bootstrapModuleScript.bind(null, module));
-                        } else {
-                            throw err;
-                        }
-                    } else if (module.export || module.global) {
+                // This define if the script should be loaded has "nested" of "flat" dependencies in packagesLocation.
+                // Change to "nested" for npm 2 support or add data-packages-strategy="nested" on montage.js script tag.
+                var defaultStrategy = params.packagesStrategy || 'nested'; 
 
-                        bootstrapModule(module.id, function (bootRequire, exports) {
-                            if (module.export) {
-                                exports[module.export] = global[module.global];
+                function bootstrapModuleScript(module, strategy) {
+                    module.strategy = strategy || defaultStrategy; 
+                    var locationRoot = strategy === "flat" ? params.packagesLocation : params.location;
+                    module.script = resolveUrl(locationRoot, module.location);
+                    loadScript(module.script, function (err, script) {
+                        if (err) {
+                            if (module.strategy === defaultStrategy) {
+                                var nextStrategy = module.strategy === 'flat' ? 'nested' : 'flat';
+                                bootstrapModuleScript(module, nextStrategy);
                             } else {
-                                return global[module.global];
+                                throw err;
                             }
-                        });
-                    }
+                        } else if (module.export || module.global) {
+                            defaultStrategy = module.strategy;
+                            bootstrapModule(module.id, function (bootRequire, exports) {
+                                if (module.export) {
+                                    exports[module.export] = global[module.global]; 
+                                } else {
+                                    return global[module.global];
+                                }
+                            });
+                        } else if (!module.factory && !module.exports) {
+                            throw new Error('Unable to load module ' + module.id);
+                        }
+                    });
                 }
 
                 // Expose bootstrap
@@ -371,9 +383,7 @@
                             } else if (typeof module.shim !== "undefined") {
                                 bootstrapModule(module.id, module.shim);
                             } else {
-                                module.strategy = "nested";
-                                module.script = resolveUrl(params.location, module.location);
-                                loadScript(module.script, bootstrapModuleScript.bind(null, module));
+                                bootstrapModuleScript(module);
                             }
                         }
                     }
@@ -901,7 +911,12 @@
                 location = params.location,
                 applicationModuleId = params.module || "",
                 applicationLocation = miniURL.resolve(platform.getLocation(), params.package || ".");
+            
+            // Exports mrRequire as Require
+            exports.Require = mrRequire;
 
+            // execute the preloading plan and stall the fallback module loader
+            // until it has finished
             if (typeof global.BUNDLE === "object") {
                 var bundleDefinitions = {};
                 var getDefinition = function (name) {
@@ -1055,7 +1070,7 @@
                 });
             }
 
-            applicationRequirePromise.then(function (applicationRequire) {
+            return applicationRequirePromise.then(function (applicationRequire) {
                 return applicationRequire.loadPackage({
                     location: params.montageLocation,
                     hash: params.montageHash
@@ -1107,7 +1122,7 @@
                         var logger = montageRequire("core/logger").logger;
 
                         exports.MontageDeserializer = MontageDeserializer;
-                        exports.Require.delegate = self;
+                        exports.Require.delegate = exports;
 
                         // montageWillLoad is mostly for testing purposes
                         if (typeof global.montageWillLoad === "function") {
@@ -1149,7 +1164,8 @@
                         });
                     });
                 });
-            });
+            // Will throw error if there is one
+            }).done();
         });
     };
 

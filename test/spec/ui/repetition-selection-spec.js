@@ -180,6 +180,23 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function (t
                         expect(repetition.iterations[i].selected).toBeFalsy();
                     }
                 });
+
+                it("should properly update the iterations selected property after disabling the selection", function () {
+                    var i;
+
+                    repetition.contentController.selection = [];
+                    for (i = 0; i < 6; i++) {
+                        expect(repetition.iterations[i].selected).toBeFalsy();
+                    }
+
+                    repetition.contentController.selection = [repetition.iterations[0].object];
+                    expect(repetition.iterations[0].selected).toBeTruthy();
+                   
+                    repetition.isSelectionEnabled = false;
+                    for (i = 0; i < 6; i++) {
+                        expect(repetition.iterations[i].selected).toBeFalsy();
+                    }
+                });
             });
 
             describe("multiple selection", function () {

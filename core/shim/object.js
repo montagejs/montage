@@ -59,3 +59,37 @@ if (!Object.seal) {
     });
 }
 
+/**
+ * Assigns all properties from source objects onto the target object.
+ * @function external:Object.assign
+ * @param {Object} target The object to assign values onto. Must be
+ * truthy.
+ * @param {...Object} sources Objects whose properties should be
+ * assigned onto the target. If none are given, the function call
+ * is a no-op.
+ * @return {Object} the target object
+ */
+if (!Object.assign) {
+    Object.defineProperty(Object, "assign", {
+        value: function (target, sources) {
+            var source,
+                s, ss,
+                keys,
+                k, kk;
+            if (target === void 0 || target === null) {
+                throw new TypeError("Cannot convert undefined or null to object");
+            }
+            for (s = 1, ss = arguments.length; s < ss; ++s) {
+                source = arguments[s];
+                keys = Object.keys(source);
+                for (k = 0, kk = keys.length; k < kk; ++k) {
+                    target[keys[k]] = source[keys[k]];
+                }
+            }
+            return target;
+        },
+        writable: true,
+        enumerable: false,
+        configurable: true
+    });
+}
