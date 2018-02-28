@@ -19,7 +19,7 @@
                 "prototype": "../repetition.reel",
                 "values": {
                     "element": {"#": "repetition"},
-                    "isSelectionEnabled": {"<-": "@owner.data.defined() ? true : @owner.isSelectionEnabled"},
+                    "isSelectionEnabled": {"<-": "@owner.data.defined() ? @owner.isNavigationEnabled : @owner.isSelectionEnabled"},
                     "contentController": {"<->": "@owner.contentController"},
                     "content": {"<-": "@owner.data.defined() ? @owner.data.object : (@owner.contentController.content || @owner.content)"}
                 }
@@ -37,7 +37,7 @@
                     "rowIndex": {"<-": "@repetition:iteration.index"},
                     "isNavigationEnabled": {"<-": "@owner.isNavigationEnabled"},
                     "delegate": {"<-": "@owner.delegate"},
-                    "object": {"<-": "@repetition:iteration.object"}
+                    "data": {"<-": "@repetition:iteration.object"}
                 }
             }
         }

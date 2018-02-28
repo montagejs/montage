@@ -1,5 +1,6 @@
 var Montage = require("montage").Montage,
     Employee = require('../models/employee').Employee,
+    Store = require('../models/store').Store,
     Department = require('../models/department').Department;    
 
 /**
@@ -108,10 +109,24 @@ exports.MockService = Montage.specialize({
     fetchDepartments: {
         value: function () {
             return [
-                new Department('Management'),
-                new Department('Sales'),
-                new Department('Accounting'),
-                new Department('Logistics')
+                new Department('Management', 'management.svg'),
+                new Department('Sales', 'sales.svg'),
+                new Department('Accounting', 'accounting.svg'),
+                new Department('Logistics', 'logistics.svg')
+            ];
+        }
+    },
+
+    fetchStores: {
+        value: function () {
+            return [
+                new Store('store 1', 'San Francisco'),
+                new Store('store 2', 'Paris'),
+                new Store('store 3', 'Montreal'),
+                new Store('store 4', 'New York'),
+                new Store('store 4', 'London'),
+                new Store('store 4', 'Tokyo'),
+                new Store('store 4', 'Shanghai')
             ];
         }
     }

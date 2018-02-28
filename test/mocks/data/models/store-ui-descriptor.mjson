@@ -1,0 +1,14 @@
+{
+    "root": {
+        "prototype": "core/meta/user-interface-descriptor",
+        "values": {
+            "iconComponentModule": {
+                "%": "test/mocks/data/icons/store.reel"
+            },
+            "collectionNameExpression": "'Stores'",
+            "nameExpression": "name",
+            "descriptionExpression": "city",
+            "cascadingListItemFooterMiddleCollectionNameExpression": "length + ' item' + (length == 1 ? '' : 's')"
+        }
+    }
+}

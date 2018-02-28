@@ -8,9 +8,7 @@
             "creatorInspectorComponentModule": {
                 "%": "test/mocks/data/inspectors/department.reel"
             },
-            "iconComponentModule": {
-                "%": "test/mocks/data/icons/department.reel"
-            },
+            "iconExpression": "thumbnail",
             "collectionNameExpression": "'Departments'",
             "nameExpression": "name",
             "cascadingListItemFooterMiddleCollectionNameExpression": "length + ' item' + (length == 1 ? '' : 's')"

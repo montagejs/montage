@@ -7,7 +7,18 @@
         "owner": {
             "values": {
                 "element": {"#": "owner"},
+                "_montageIconModule": {"%": "../icon.reel"},
                 "classList.has('navigable')": {"<-": "@owner.isNavigationEnabled"}
+            }
+        },
+
+        "placeholder": {
+            "prototype": "../placeholder.reel",
+            "values": {
+                "element": {"#": "icon"},
+                "componentModule": {"<-": "@owner._iconModule"},
+                "component.name": {"<-": "@owner._iconName"},
+                "component.src": {"<-": "@owner._iconSrc"}
             }
         },
 
@@ -15,7 +26,7 @@
             "prototype": "../text.reel",
             "values": {
                 "element": {"#": "label"},
-                "value": {"<-": "@owner._label || @owner.label"}
+                "value": {"<-": "@owner._label"}
             }
         },
 
@@ -23,7 +34,7 @@
             "prototype": "../text.reel",
             "values": {
                 "element": {"#": "description"},
-                "value": {"<-": "@owner.object.defined() && @owner.userInterfaceDescriptor.defined() ? @owner.object.path(@owner.userInterfaceDescriptor.descriptionExpression) : @owner.description"}
+                "value": {"<-": "@owner._description"}
             }
         }
     }
@@ -31,8 +42,7 @@
 </head>
 <body>
     <div data-montage-id="owner" class="ListItem">
-        <div data-montage-id="icon">
-        </div>
+        <div data-montage-id="icon" class="ListItem-icon"></div>
         <div class="ListItem-inner">
             <h2 data-montage-id="label" class="ListItem-label"></h2>
             <i data-montage-id="description" class="ListItem-description"></i>

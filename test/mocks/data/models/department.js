@@ -7,12 +7,18 @@ var DataModel = require("./data-model").DataModel;
 exports.Department = DataModel.specialize({
 
     constructor: {
-        value: function (name) {
+        value: function (name, thumbnail) {
             this.name = name;
+            this.thumbnail = 'http://' + window.location.host +
+                '/test/mocks/data/icons/svgs/' + thumbnail;
         }
     },
 
     name: {
+        value: null
+    },
+
+    thumbnail: {
         value: null
     }
 

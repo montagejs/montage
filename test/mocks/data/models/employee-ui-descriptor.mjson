@@ -11,13 +11,10 @@
             "collectionInspectorComponentModule": {
                 "%": "ui/list.reel"
             },
-            "iconComponentModule": {
-                "%": "test/mocks/data/icons/employee.reel"
-            },
+            "iconName": "person",
             "collectionNameExpression": "'Employees'",
             "nameExpression": "lastname + ' ' + firstname",
             "descriptionExpression": "department",
-            
             "cascadingListItemHeaderRightCollectionNameExpression": "'Add'",
             "cascadingListItemHeaderRightNameExpression": "'Edit'",
             "cascadingListItemFooterMiddleCollectionNameExpression": "length + ' item' + (length == 1 ? '' : 's')"

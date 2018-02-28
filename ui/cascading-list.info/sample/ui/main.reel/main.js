@@ -10,7 +10,8 @@ exports.Main = Component.specialize(/** @lends Main# */{
 
             this.root = [
                 this.mockService.fetchEmployees(),
-                this.mockService.fetchDepartments()                
+                this.mockService.fetchDepartments(),
+                this.mockService.fetchStores()                
             ];
 
             this.addEventListener('cascadingListPop', this, false);
@@ -19,8 +20,8 @@ exports.Main = Component.specialize(/** @lends Main# */{
     },
 
     shouldListEnableNavigation: {
-        value: function (list, isNavigationEnabled) {
-            return true;
+        value: function (list, isNavigationEnabled, content) {
+            return content !== this.root[2];
         }
     },
 
@@ -31,7 +32,9 @@ exports.Main = Component.specialize(/** @lends Main# */{
                     return 'montage/test/mocks/data/models/employee.mjson';
                 } else if (object === this.root[1]) {
                     return 'montage/test/mocks/data/models/department.mjson';
-                }
+                 } else if (object === this.root[2]) {
+                     return 'montage/test/mocks/data/models/store.mjson';
+                 }
             }
         }
     },
@@ -58,6 +61,33 @@ exports.Main = Component.specialize(/** @lends Main# */{
                 return 'Employees';
             } else if (object === this.root[1]) {
                 return 'Departments';
+            } else if (object === this.root[2]) {
+                return 'Stores';
+            }
+        }
+    },
+   
+    listItemWillUseIconNameForObjectAtRowIndex: {
+        value: function (listItem, moduleId, object, rowIndex, list) {
+            if (object === this.root[0]) {
+                return 'people';
+            }
+        }
+    },
+
+    listItemWillUseIconModuleIdForObjectAtRowIndex: {
+        value: function (listItem, moduleId, object, rowIndex, list) {
+            if (object === this.root[1]) {
+                return 'montage/test/mocks/data/icons/department.reel';
+            }
+        }
+    },
+
+    listItemWillUseIconSrcForObjectAtRowIndex: {
+        value: function (listItem, moduleId, object, rowIndex, list) {
+            if (object === this.root[2]) {
+                return 'http://' + window.location.host +
+                    '/test/mocks/data/icons/svgs/stores.svg';
             }
         }
     },

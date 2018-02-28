@@ -1,0 +1,35 @@
+.Montage-icon {
+    position: relative;
+    text-align: center;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: inline-block;
+}
+
+.Montage-icon[hidden] {
+    display: none;
+}
+
+.Montage-icon::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 1em;
+}
+
+.Montage-icon[data-icon=home]::before {
+    content:'\1F3E0';
+}
+
+.Montage-icon[data-icon=person]::before {
+    content:'\1F464';
+}
+
+.Montage-icon[data-icon=people]::before {
+    content:'\1F465';
+}

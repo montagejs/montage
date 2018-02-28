@@ -19,6 +19,20 @@
     -webkit-transition: background-color .2s linear;
     transition: background-color .2s linear;
 }
+
+.ListItem .ListItem-icon {
+    min-width: 24px;
+    min-width: 1.5rem;
+    min-height: 24px;
+    min-height: 1.5rem;
+    margin: 8px 16px 8px 0;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+}
  
 .ListItem-label {
     margin: 0 0 2px;
