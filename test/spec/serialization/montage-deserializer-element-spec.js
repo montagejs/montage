@@ -66,8 +66,18 @@ describe("serialization/montage-deserializer-element-spec", function () {
             deserializer.init(serializationString, require);
 
             deserializer.deserialize(null, rootEl).then(function (objects) {
+                expect(defaultEventManager._registeredBubbleEventListeners.has("click")).toBe(true);
                 var registeredEventListeners = defaultEventManager._registeredBubbleEventListeners.get("click");
-                expect(registeredEventListeners.get(rootEl.firstElementChild) === objects.rootEl).toBe(true);
+                var proxyElement = registeredEventListeners.keysArray()[0];
+                return new Promise(function (resolve) {
+                    expect(proxyElement).toBeTruthy();
+                    objects.rootEl.addEventListener("action", function () {
+                        resolve();
+                    });
+                    proxyElement.dispatchEvent.call(proxyElement, new CustomEvent("action"));
+                }).timeout(500);
+            }).catch(function (err) {
+                fail(err);
             }).finally(function () {
                 done();
             });
@@ -86,7 +96,7 @@ describe("serialization/montage-deserializer-element-spec", function () {
                 }
             },
                 serializationString = JSON.stringify(serialization);
-            
+
             rootEl.innerHTML = '<div data-montage-id="id">content</div>';
             deserializer.init(serializationString, require);
 
