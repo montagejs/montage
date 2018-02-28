@@ -154,6 +154,7 @@
                             params.location = script.getAttribute("data-" + paramNamespace + "-location");
                         }
                         if (params.location) {
+
                             if (script.dataset) {
                                 for (name in script.dataset) {
                                     if (script.dataset.hasOwnProperty(name)) {
@@ -172,6 +173,8 @@
 
                             // Legacy
                             params.location = this.resolveUrl(this.getLocation(), params.location);
+                            params.packagesLocation = this.resolveUrl(params.location , '../../');
+
                             params[paramNamespace + 'Location'] = params.location;
                             params[paramNamespace + 'Hash'] = params.hash;
 
@@ -286,26 +289,39 @@
                     callback(mrRequire, mrPromise, miniURL);
                 }
 
-                function bootstrapModuleScript(module, err, script) {
-                    if (err) {
-                        // Fallback on flat strategy for missing nested module
-                        if (module.strategy === 'nested') {
-                            module.strategy = 'flat';
-                            module.script = resolveUrl(resolveUrl(location, '../../'), module.location);
-                            loadScript(module.script, bootstrapModuleScript.bind(null, module));
-                        } else {
-                            throw err;   
-                        }
-                    } else if (module.export || module.global) {
+                // This define if the script should be loaded has "nested" of "flat" dependencies in packagesLocation.
+                // Change to "nested" for npm 2 support or add data-packages-strategy="nested" on montage.js script tag.
+                var defaultStrategy = params.packagesStrategy || 'flat'; 
 
-                        bootstrapModule(module.id, function (bootRequire, exports) {
-                            if (module.export) {
-                                exports[module.export] = global[module.global]; 
+                function resolveModuleLocation(module, strategy) {
+                    var locationRoot = strategy === "flat" ? params.packagesLocation : params.location;
+                    return resolveUrl(locationRoot, module.location);
+                }
+
+                function bootstrapModuleScript(module, strategy) {
+                    module.strategy = strategy || defaultStrategy; 
+                    module.script = resolveModuleLocation(module, module.strategy);
+                    loadScript(module.script, function (err, script) {
+                        if (err) {
+                            if (module.strategy === defaultStrategy) {
+                                var nextStrategy = module.strategy === 'flat' ? 'nested' : 'flat';
+                                bootstrapModuleScript(module, nextStrategy);
                             } else {
-                                return global[module.global];
+                                throw err;
                             }
-                        });
-                    }
+                        } else if (module.export || module.global) {
+                            defaultStrategy = module.strategy;
+                            bootstrapModule(module.id, function (bootRequire, exports) {
+                                if (module.export) {
+                                    exports[module.export] = global[module.global]; 
+                                } else {
+                                    return global[module.global];
+                                }
+                            });
+                        } else if (!module.exports) {
+                            throw new Error('Unable to load module ' + module.id);
+                        }
+                    });
                 }
 
                 // Expose bootstrap
@@ -337,9 +353,7 @@
                         } else if (typeof module.shim !== "undefined") {
                             bootstrapModule(module.id, module.shim);
                         } else {
-                            module.strategy = "nested";
-                            module.script = resolveUrl(params.location, module.location);
-                            loadScript(module.script, bootstrapModuleScript.bind(null, module));
+                            bootstrapModuleScript(module);
                         }
                     }
                 } 
