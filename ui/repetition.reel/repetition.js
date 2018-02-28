@@ -9,6 +9,8 @@ var PressComposer = require("../../composer/press-composer").PressComposer;
 
 var Map = require("collections/map");
 var Set = require("collections/set");
+var PropertyChanges = require("collections/listen/property-changes");
+
 var logger = require("../../core/logger").logger("repetition").color.magenta();
 
 var TIMEOUT_BEFORE_ITERATION_BECOME_ACTIVE = 60;
@@ -56,14 +58,20 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             return this._object;
         },
         set: function (value) {
-            var selected;
 
             if (this._object !== value) {
+                var selected;
+
+                this.dispatchBeforeOwnPropertyChange("object", this._object);
+
                 this._object = value;
                 selected = this.repetition.contentController.selection.indexOf(value) !== -1;
                 if (this._selected !== selected) {
                     this.selected = selected;
                 }
+
+                this.dispatchOwnPropertyChange("object", value);
+
             }
         }
     },
@@ -80,14 +88,42 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
     /**
      * @private
      */
-    _childComponents: {value: null},
+    __childComponents: {value: null},
+    _childComponents: {
+
+        get: function () {
+            return this.__childComponents;
+        },
+        set: function (value) {
+
+            if (this.__childComponents !== value) {
+                this.dispatchBeforeOwnPropertyChange("_childComponents", this.__childComponents);
+                this.__childComponents = value;
+                this.dispatchOwnPropertyChange("_childComponents", value);
+            }
+        }
+    },
 
     /**
      * The position of this iteration within the content controller, and within
      * the document immediately after the repetition has drawn.
      * @type {number}
      */
-    index: {value: null},
+    _index: {value: null},
+    index: {
+
+        get: function () {
+            return this._index;
+        },
+        set: function (value) {
+
+            if (this._index !== value) {
+                this.dispatchBeforeOwnPropertyChange("index", this._index);
+                this._index = value;
+                this.dispatchOwnPropertyChange("index", value);
+            }
+        }
+    },
 
     /**
      * The position of this iteration on the document last time it was drawn,
@@ -137,7 +173,21 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      * the draw thereafter.
      * @private
      */
-    _noTransition: {value: null},
+    __noTransition: {value: null},
+    _noTransition: {
+
+        get: function () {
+            return this.__noTransition;
+        },
+        set: function (value) {
+
+            if (this.__noTransition !== value) {
+                this.dispatchBeforeOwnPropertyChange("_noTransition", this.__noTransition);
+                this.__noTransition = value;
+                this.dispatchOwnPropertyChange("_noTransition", value);
+            }
+        }
+    },
 
     /**
      * The document part created by instantiating the iteration template.
@@ -167,8 +217,10 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
                 }
             }
             if (this._selected !== value) {
+                this.dispatchBeforeOwnPropertyChange("selected", this._selected);
                 this._selected = value;
                 this._updateRepetitionDirtyClassIteration();
+                this.dispatchOwnPropertyChange("selected", value);
             }
         }
     },
@@ -180,7 +232,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
     constructor: {
         value: function Iteration() {
             if (logger.isDebug) {
-                logger.debug("Iteration:%s create iteration %O", Object.hash(this), this);
+                logger.debug("Iteration constructor: create iteration %s", Object.hash(this));
             }
 
             this.repetition = null;
@@ -393,6 +445,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             // boundary and adjust the boundaries array accordingly so future
             // injections and retractions can find their corresponding
             // boundaries.
+            // Benoit: Todo: see if we csan leverage Range operations instead
             repetition._boundaries.splice(index, 1);
             var fragment = this._fragment;
             var child = topBoundary.nextSibling;
@@ -463,7 +516,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             var index = this._drawnIndex;
             // Short-circuit if the iteration is not on the document.
             if (index === null || index === undefined) {
-                return;                
+                return;
             }
 
             for (
@@ -494,10 +547,10 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
         get: function () {
             var repetition = this.repetition;
             var index = this._drawnIndex;
-            
+
             // Short-circuit if the iteration is not on the document.
             if (index === null || index === undefined) {
-                return;                
+                return;
             }
 
             for (
@@ -526,6 +579,19 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      */
     cachedFirstElement: {
         value: null
+    },
+
+    /**
+     * As dispatching has been implemented in key  setters, limit use of default method
+     * for corresponding keys.
+     * @private
+     */
+    makePropertyObservable: {
+        value: function(key) {
+            if(key !== "object" && key !== "_childComponents"  && key !== "index" && key !== "_noTransition" && key !== "selected") {
+                PropertyChanges.prototype.makePropertyObservable.call(this, key);
+            }
+        }
     }
 
 });
@@ -854,7 +920,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                         }
                     }
                 }
-            }   
+            }
         }
     },
 
@@ -1475,6 +1541,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 instances = Object.create(instances);
                 instances[self._iterationLabel] = iteration;
 
+                //Benoit: Not sure this promise is actually needed anymore with repetitionIdentifer:iteration being on the temmplateObjects
                 promise = self._iterationTemplate.instantiateWithInstances(instances, _document)
                 .then(function (part) {
                     part.parentDocumentPart = self._ownerDocumentPart;
@@ -1663,8 +1730,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                             logger.debug("Repetition:%s reusing %s", Object.hash(this), Object.hash(iteration));
                         }
                     }
-                    var content = organizedContent[start + i];
-                    iteration.object = content;
+                    iteration.object = organizedContent[start + i];
+                    if (logger.isDebug) {
+                        logger.debug("Repetition:%s Iteration:%s object set to: %",Object.hash(this), Object.hash(iteration), iteration.object);
+                    }
 
                     plusIterations[j] = iteration;
                 }
@@ -1684,8 +1753,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * @private
      */
     _updateIndexes: {
-        value: function (index) {
-            var iterations = this.iterations;
+        value: function (startIndex) {
+            var iterations = this.iterations,
+                index = startIndex;
             for (; index < iterations.length; index++) {
                 iterations[index].index = index;
             }

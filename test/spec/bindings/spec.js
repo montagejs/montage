@@ -33,7 +33,8 @@ var Montage = require("montage").Montage,
     Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer,
     Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver,
-    Promise = require("montage/core/promise").Promise;
+    Promise = require("montage/core/promise").Promise,
+    Component = require("montage/ui/component").Component;
 
 var Alpha = Montage.specialize( {
 
@@ -1246,6 +1247,56 @@ describe("bindings/spec", function () {
             }).finally(function () {
                 done();
             });
+        });
+
+        it("can properly define bindings", function () {
+
+            var MyComponent = Component.specialize({
+                    aProperty: {
+                        get: function () {
+                            return this._aProperty;
+                        },
+                        set: function (value) {
+                            this._aProperty = value;
+                        }
+                    }
+                }),
+                MyObject = Montage.specialize({}),
+                MyExtendedObject = MyObject.specialize({
+                    _myProperty: {
+                        value: 0
+                    },
+                    myProperty: {
+                        get: function () {
+                            return this._myProperty;
+                        },
+                        set: function (value) {
+                            this._myProperty = value;
+                        }
+                    }
+                }),
+                c = new MyComponent(),
+                c2 = new MyComponent(),
+                o = new MyExtendedObject();
+
+            c.defineBinding("aProperty", {"<-": "myProperty", source: o});
+            c.defineBinding("aPropertyIsDefined", {"<-": "myProperty.defined()", source: o});
+            c2.defineBinding("aProperty", {"<-": "myProperty", source: o});
+
+            expect(c.aProperty).toBe(0);
+            expect(c2.aProperty).toBe(0);
+
+            o.myProperty++;
+
+            expect(c.aProperty).toBe(1);
+            expect(c2.aProperty).toBe(1);
+
+            for (var i = 0, n = 100; i < n; i++) {
+                o.myProperty = i;
+                expect(c.aProperty).toBe(i);
+                expect(c2.aProperty).toBe(i);
+            }
+
         });
     });
 });
