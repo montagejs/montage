@@ -291,16 +291,12 @@
 
                 // This define if the script should be loaded has "nested" of "flat" dependencies in packagesLocation.
                 // Change to "nested" for npm 2 support or add data-packages-strategy="nested" on montage.js script tag.
-                var defaultStrategy = params.packagesStrategy || 'flat'; 
-
-                function resolveModuleLocation(module, strategy) {
-                    var locationRoot = strategy === "flat" ? params.packagesLocation : params.location;
-                    return resolveUrl(locationRoot, module.location);
-                }
+                var defaultStrategy = params.packagesStrategy || 'nested'; 
 
                 function bootstrapModuleScript(module, strategy) {
                     module.strategy = strategy || defaultStrategy; 
-                    module.script = resolveModuleLocation(module, module.strategy);
+                    var locationRoot = strategy === "flat" ? params.packagesLocation : params.location;
+                    module.script = resolveUrl(locationRoot, module.location);
                     loadScript(module.script, function (err, script) {
                         if (err) {
                             if (module.strategy === defaultStrategy) {
@@ -318,7 +314,7 @@
                                     return global[module.global];
                                 }
                             });
-                        } else if (!module.exports) {
+                        } else if (!module.factory && !module.exports) {
                             throw new Error('Unable to load module ' + module.id);
                         }
                     });
