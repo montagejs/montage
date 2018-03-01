@@ -15,11 +15,17 @@ var Component = require("ui/component").Component;
 exports.Succession = Component.specialize(/** @lends Succession.prototype */{
 
     contentBuildInAnimation: {
-        value: undefined
+        value: {
+            fromCssClass: "montage-Succession--buildInFrom",
+            cssClass: "montage-Succession--buildIn"
+        }
     },
 
     contentBuildOutAnimation: {
-        value: undefined
+        value: {
+            cssClass: "montage-Succession--buildOut",
+            toCssClass: "montage-Succession--buildOutTo"
+        }
     },
 
     /**
