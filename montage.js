@@ -635,7 +635,7 @@
 
                 var command = process.argv.slice(0, 3);
                 var args = process.argv.slice(2);
-                var program = args.shift();
+                var program = args.length ? args.shift() : "./";
                 return FS.canonical(program).then(function (program) {
                     return findPackage(program)
                     .catch(function (error) {
