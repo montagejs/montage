@@ -810,6 +810,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     _start: {
         value: function (x, y, target, timeStamp) {
+            x = Math.floor(x);
+            y = Math.floor(y);
+
             this.pointerStartEventPosition = {
                 pageX: x,
                 pageY: y,
@@ -901,19 +904,19 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
                     if (this._claimPointerPolicy === this.CLAIM_POINTER_POLICIES.MOVE) {
                         var threshold = this._observedPointer === this._MOUSE_POINTER ? this._mouseRadiusThreshold : this._touchRadiusThreshold,
-                            dX = pointerStartEventPosition.pageX - contactPoint.clientX,
-                            dY = pointerStartEventPosition.pageY - contactPoint.clientY;
+                            dX = pointerStartEventPosition.pageX - Math.floor(contactPoint.clientX),
+                            dY = pointerStartEventPosition.pageY - Math.floor(contactPoint.clientY);
 
                         shouldClaimPointer = Composer.isCoordinateOutsideRadius(dX, dY, threshold);
 
                         if (shouldClaimPointer) {
                             // Updates translate start position when the claiming pointer policy is set to ”move".
-                            pointerStartEventPosition.pageX = contactPoint.clientX;
-                            pointerStartEventPosition.pageY = contactPoint.clientY;
+                            pointerStartEventPosition.pageX = Math.floor(contactPoint.clientX);
+                            pointerStartEventPosition.pageY = Math.floor(contactPoint.clientY);
                             pointerStartEventPosition.target = contactPoint.target;
                             pointerStartEventPosition.timeStamp = event.timeStamp;
-                            this._pointerX = contactPoint.clientX;
-                            this._pointerY = contactPoint.clientY;
+                            this._pointerX = Math.floor(contactPoint.clientX);
+                            this._pointerY = Math.floor(contactPoint.clientY);
                         }
                     }
 
@@ -958,6 +961,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 isNegativeDeltaX,
                 deltaX,
                 deltaY;
+            
+            x = Math.floor(x);
+            y = Math.floor(y);
 
             if (event.type === "wheel" || event.type === "mousewheel") {
                 if (this._axis !== "vertical") {
@@ -1040,6 +1046,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function (x, y) {
             var pointerDelta;
             this._isSelfUpdate = true;
+
+            x = Math.floor(x);
+            y = Math.floor(y);
 
             if (this._axis !== "vertical") {
                 pointerDelta = this._invertXAxis ? (this._pointerX - x) : (x - this._pointerX);
@@ -1187,8 +1196,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             if (!velocity || 0 === velocity.speed || isNaN(velocity.speed)) {
                 // If there's no speed then we calculate a vector from the
                 // initial position to the current position.
-                dX = this.pointerStartEventPosition.pageX - event.clientX;
-                dY = this.pointerStartEventPosition.pageY - event.clientY;
+                dX = this.pointerStartEventPosition.pageX - Math.floor(event.clientX);
+                dY = this.pointerStartEventPosition.pageY - Math.floor(event.clientY);
                 angle = Math.atan2(dY, dX);
             } else {
                 angle = velocity.angle;
