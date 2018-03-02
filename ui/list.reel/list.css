@@ -19,3 +19,8 @@
     padding: 0;
     margin: 0;
 }
+
+.List .item.selected,
+.List .item.selected .ListItem {
+    background-color: #d9d9d9;
+}

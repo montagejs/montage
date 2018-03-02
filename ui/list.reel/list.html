@@ -11,7 +11,8 @@
                     "_repetition": {"@": "repetition"},
                     "selection": {"<->": "@repetition.selection"},
                     "data.selectedObject": {"<-": "@repetition.selection.one()"},
-                    "delegate": {"<-": "@owner.data.defined() ? @owner.data.delegate : @owner.delegate"}
+                    "delegate": {"<-": "@owner.data.defined() ? @owner.data.delegate : @owner.delegate"},
+                    "montageListItemModule": { "%": "../list-item.reel"}
                 } 
             },
 
@@ -28,18 +29,19 @@
             ":iteration": {
                "alias": "@repetition:iteration"
             },
-
-            "listItem": {
-                "prototype": "../list-item.reel",
+            
+            "placeholder": {
+                "prototype": "../placeholder.reel",
                 "values": {
-                    "element": {"#": "listItem"},
-                    "list": {"<-": "@owner"},
-                    "rowIndex": {"<-": "@repetition:iteration.index"},
-                    "isNavigationEnabled": {"<-": "@owner.isNavigationEnabled"},
-                    "delegate": {"<-": "@owner.delegate"},
+                    "element": {"#": "item"},
+                    "componentModule": {"<-": "@owner.data.userInterfaceDescriptor.collectionItemComponentModule || @owner.montageListItemModule"},
+                    "component.list": {"<-": "@owner"},
+                    "component.rowIndex": {"<-": "@repetition:iteration.index"},
+                    "component.isNavigationEnabled": {"<-": "@owner.isNavigationEnabled"},
+                    "component.delegate": {"<-": "@owner.delegate"},
                     "data": {"<-": "@repetition:iteration.object"}
                 }
-            }
+            }          
         }
     </script>
 </head>
@@ -47,7 +49,7 @@
 	<div data-montage-id="list" class="List">
         <ul data-montage-id="repetition" class="List-repetition">
             <li data-param="*">
-                <div data-montage-id="listItem"></div>
+                <div data-montage-id="item" class="item"></div>
             </li>
         </ul>
 	</div>
