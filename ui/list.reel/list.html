@@ -33,7 +33,7 @@
             "placeholder": {
                 "prototype": "../placeholder.reel",
                 "values": {
-                    "element": {"#": "item"},
+                    "element": {"#": "placeholder"},
                     "componentModule": {"<-": "@owner.data.userInterfaceDescriptor.collectionItemComponentModule || @owner.montageListItemModule"},
                     "component.list": {"<-": "@owner"},
                     "component.rowIndex": {"<-": "@repetition:iteration.index"},
@@ -49,7 +49,7 @@
 	<div data-montage-id="list" class="List">
         <ul data-montage-id="repetition" class="List-repetition">
             <li data-param="*">
-                <div data-montage-id="item" class="item"></div>
+                <div data-montage-id="placeholder" class="item"></div>
             </li>
         </ul>
 	</div>
