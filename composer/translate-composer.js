@@ -114,7 +114,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     _allowFloats: {
-        value: false
+        value: true
     },
 
     /**
