@@ -6,6 +6,7 @@ var Component = require("../component").Component;
  */
 var Icon = exports.Icon = Component.specialize({
 
+    /*jshint eqeqeq:false*/
     _src: {
         value: null
     },
@@ -32,6 +33,7 @@ var Icon = exports.Icon = Component.specialize({
             return this._name;
         },
         set: function (name) {
+            
             if (this._name != name) {
                 this._name = name;
                 this._src = null;
@@ -39,6 +41,7 @@ var Icon = exports.Icon = Component.specialize({
             }
         }
     },
+    /*jshint eqeqeq:true*/
 
     draw: { 
         value: function () {
