@@ -1,6 +1,7 @@
 var Montage = require("montage").Montage,
     Employee = require('../models/employee').Employee,
     Store = require('../models/store').Store,
+    Settings = require('../models/settings').Settings,
     Department = require('../models/department').Department;    
 
 /**
@@ -127,6 +128,16 @@ exports.MockService = Montage.specialize({
                 new Store('store 4', 'London'),
                 new Store('store 4', 'Tokyo'),
                 new Store('store 4', 'Shanghai')
+            ];
+        }
+    },
+
+    fetchSettings: {
+        value: function () {
+            return [
+                new Settings('Data', '345 GB'),
+                new Settings('Restrictions', null, true),
+                new Settings('Allow holidays', null, false),
             ];
         }
     }

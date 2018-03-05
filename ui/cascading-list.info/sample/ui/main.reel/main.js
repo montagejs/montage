@@ -11,7 +11,8 @@ exports.Main = Component.specialize(/** @lends Main# */{
             this.root = [
                 this.mockService.fetchEmployees(),
                 this.mockService.fetchDepartments(),
-                this.mockService.fetchStores()                
+                this.mockService.fetchStores(),            
+                this.mockService.fetchSettings()                
             ];
 
             this.addEventListener('cascadingListPop', this, false);
@@ -21,7 +22,7 @@ exports.Main = Component.specialize(/** @lends Main# */{
 
     shouldListEnableNavigation: {
         value: function (list, isNavigationEnabled, content) {
-            return content !== this.root[2];
+            return content !== this.root[2] && content !== this.root[3];
         }
     },
 
@@ -43,6 +44,8 @@ exports.Main = Component.specialize(/** @lends Main# */{
         value: function (cascadingList, userInterfaceDescriptorModuleId, object, columnIndex) {
             if (object === this.root && !userInterfaceDescriptorModuleId) {
                 return 'montage/test/mocks/data/models/organisation-ui-descriptor.mjson';
+            } else if (object === this.root[3]) {
+                return 'montage/test/mocks/data/models/settings-ui-descriptor.mjson';
             }
         }
     },
@@ -63,6 +66,8 @@ exports.Main = Component.specialize(/** @lends Main# */{
                 return 'Departments';
             } else if (object === this.root[2]) {
                 return 'Stores';
+            } else if (object === this.root[3]) {
+                return 'Settings';
             }
         }
     },
