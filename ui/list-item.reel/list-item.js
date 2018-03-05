@@ -23,7 +23,7 @@ exports.ListItem = Component.specialize({
                         "path(userInterfaceDescriptor.iconExpression || null)) : null"
                 },
                 "_defaultIconModule": {
-                    "<-": "_iconName || _iconSrc || iconModule ? (iconModule || _montageIconModule) : null"
+                    "<-": "_iconName || _iconSrc || iconModule ? (iconModule || _montageIconComponentModule) : null"
                 },
                 "_iconModule": {
                     "<-": "data.defined() && " +
@@ -163,7 +163,7 @@ exports.ListItem = Component.specialize({
                     };
                 }
 
-                if (self._iconModule === self._montageIconModule) {
+                if (self._iconModule === self._montageIconComponentModule) {
                     self._iconSrc = candidateModuleId = self.callDelegateMethod(
                         "listItemWillUseIconSrcForObjectAtRowIndex",
                         self,

@@ -7,7 +7,7 @@
         "owner": {
             "values": {
                 "element": {"#": "owner"},
-                "_montageIconModule": {"%": "../icon.reel"},
+                "_montageIconComponentModule": {"%": "../icon.reel"},
                 "classList.has('navigable')": {"<-": "@owner.isNavigationEnabled"}
             }
         },
@@ -36,6 +36,15 @@
                 "element": {"#": "description"},
                 "value": {"<-": "@owner._description"}
             }
+        },
+
+        "toogle": {
+            "value": {},
+            "values": {
+                "element": {"#": "value"},
+                "componentModule": {"<-": "@owner.value.defined() && !@owner.isNavigationEnabled ? @owner._montageToogleComponentModule : null"},
+                "component.value": {"<-": "@owner.value"}
+            }
         }
     }
     </script>
@@ -47,6 +56,7 @@
             <h2 data-montage-id="label" class="ListItem-label"></h2>
             <i data-montage-id="description" class="ListItem-description"></i>
         </div>
+        <div data-montage-id="value"></div>
     </div>
 </body>
 </html>
