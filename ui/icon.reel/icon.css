@@ -1,8 +1,14 @@
 .Montage-icon {
     position: relative;
     text-align: center;
+    min-width: 24px;
     min-width: 1.5rem;
+    min-height: 24px;
     min-height: 1.5rem;
+    max-width: 24px;
+    max-width: 1.5rem;
+    max-height: 24px;
+    max-height: 1.5rem;
     background-size: contain;
     background-repeat: no-repeat;
     display: inline-block;
@@ -12,7 +18,7 @@
     display: none;
 }
 
-.Montage-icon::before {
+.Montage-icon:before {
     content: '';
     position: absolute;
     top: 0;
@@ -22,14 +28,14 @@
     font-size: 1em;
 }
 
-.Montage-icon[data-icon=home]::before {
+.Montage-icon[data-icon=home]:before {
     content:'\1F3E0';
 }
 
-.Montage-icon[data-icon=person]::before {
+.Montage-icon[data-icon=person]:before {
     content:'\1F464';
 }
 
-.Montage-icon[data-icon=people]::before {
+.Montage-icon[data-icon=people]:before {
     content:'\1F465';
 }
