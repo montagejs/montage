@@ -34,11 +34,12 @@
                 "prototype": "../placeholder.reel",
                 "values": {
                     "element": {"#": "placeholder"},
-                    "componentModule": {"<-": "@owner.data.userInterfaceDescriptor.collectionItemComponentModule || @owner.montageListItemModule"},
                     "component.list": {"<-": "@owner"},
+                    "componentModule": {"<-": "@owner.data.userInterfaceDescriptor.collectionItemComponentModule || @owner.montageListItemModule"},
+                    "component.delegate": {"<-": "@owner.delegate"},
                     "component.rowIndex": {"<-": "@repetition:iteration.index"},
                     "component.isNavigationEnabled": {"<-": "@owner.isNavigationEnabled"},
-                    "component.delegate": {"<-": "@owner.delegate"},
+                    "component.userInterfaceDescriptor": {"<-": "@owner.data.userInterfaceDescriptor"},
                     "data": {"<-": "@repetition:iteration.object"}
                 }
             }          
