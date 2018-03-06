@@ -142,7 +142,7 @@ exports.ListItem = Component.specialize({
     handleAction: {
         value: function (event) {
             var checked = event.detail;
-            console.log(checked)
+
             if (this.data &&
                 this.userInterfaceDescriptor &&
                 this.userInterfaceDescriptor.valueExpression
