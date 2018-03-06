@@ -97,6 +97,7 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/ui/slot-spec", node: false},
     {name: "spec/ui/substitution-spec", node: false},
     {name: "spec/ui/text-input-spec", node: false},
+    {name: "spec/ui/control/text-field-spec", node: false}
     {name: "spec/ui/slider-spec", node: false},
     {name: "spec/ui/text/text-spec", node: false},
     {name: "spec/ui/label/label-spec", node: false},
@@ -129,14 +130,14 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/data/raw-data-type-mapping-spec", node: false},
     {name: "spec/data/integration", node: false},
 
-    // Meta
-    { name: "spec/meta/converter-object-descriptor-spec", node: false},
-    { name: "spec/meta/module-object-descriptor-spec", node: false},
-    {name: "spec/meta/build-in-component-object-descriptor-spec", node: false},
-    {name: "spec/meta/component-object-descriptor-spec", node: false},
-    {name: "spec/meta/controller-object-descriptor-spec", node: false},
-    {name: "spec/meta/event-descriptor-spec", node: false},
-    { name: "spec/meta/object-descriptor-spec", node: false}
+    // // Meta
+    // { name: "spec/meta/converter-object-descriptor-spec", node: false},
+    // { name: "spec/meta/module-object-descriptor-spec", node: false},
+    // {name: "spec/meta/build-in-component-object-descriptor-spec", node: false},
+    // {name: "spec/meta/component-object-descriptor-spec", node: false},
+    // {name: "spec/meta/controller-object-descriptor-spec", node: false},
+    // {name: "spec/meta/event-descriptor-spec", node: false},
+    // { name: "spec/meta/object-descriptor-spec", node: false}
 ]).then(function () {
     console.log('montage-testing', 'End');
 }, function (err) {

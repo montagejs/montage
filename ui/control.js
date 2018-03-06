@@ -187,15 +187,19 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         value: /INPUT|TEXTAREA|A|SELECT|BUTTON|LABEL/
     },
 
+    __elementNeedsTabIndex: {
+        value: undefined
+    },
     _elementNeedsTabIndex: {
-        value: function () {
-            return this.element.tagName.match(this._elementNeedsTabIndexRegex) === null;
+        get: function () {
+            return this.__elementNeedsTabIndex !== undefined ? this.__elementNeedsTabIndex
+            : (this.__elementNeedsTabIndex = (this.element.tagName.match(this._elementNeedsTabIndexRegex) === null));
         }
     },
 
     draw: {
-        value: function () {
-        if (this._elementNeedsTabIndex()) {
+        value: function Control_draw () {
+        if (this._elementNeedsTabIndex) {
             if (this._preventFocus) {
                 this.element.removeAttribute("tabindex");
             } else {
@@ -217,7 +221,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         get: function () {
             //Should the be done in focus instead?
             var shouldBeginEditing = this.callDelegateMethod("shouldBeginEditing", this);
-            return (shouldBeginEditing !== false);
+            return !this.disabled && (shouldBeginEditing !== false);
         }
     },
 
@@ -252,7 +256,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
 /**
     Specifies whether the button should receive focus or not.
     @type {boolean}
-    @event longpress 
+    @event longpress
 */
     preventFocus: {
         get: function () {
@@ -333,10 +337,15 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
                     if (this.converter) {
                         var convertedValue;
                         try {
-                            //Where is the matching convert?
-                            convertedValue = this.converter.revert(value);
+                            //isActiveTarget is set by EventManager. If true, the control
+                            //is being interracted with by the user.
+                            convertedValue = this.isActiveTarget
+                                ? this.converter.revert(value)
+                                : this.converter.convert(value);
                             this.error = null;
                             this._value = convertedValue;
+                            // if(this.isActiveTarget) console.log("isActiveTarget: revert value");
+                            // else console.log("convert value");
                         } catch (e) {
                             // unable to convert - maybe error
                             this._value = value;
