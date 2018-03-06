@@ -97,7 +97,7 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/ui/slot-spec", node: false},
     {name: "spec/ui/substitution-spec", node: false},
     {name: "spec/ui/text-input-spec", node: false},
-    {name: "spec/ui/control/text-field-spec", node: false}
+    {name: "spec/ui/control/text-field-spec", node: false},
     {name: "spec/ui/slider-spec", node: false},
     {name: "spec/ui/text/text-spec", node: false},
     {name: "spec/ui/label/label-spec", node: false},
