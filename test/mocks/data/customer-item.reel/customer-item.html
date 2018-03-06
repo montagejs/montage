@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="customer-item.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "owner"}
+                }
+            },
+
+            "label": {
+                "prototype": "../../../../ui/text.reel",
+                "values": {
+                    "element": {"#": "label"},
+                    "value": {"<-": "@owner.data.firstname + ' ' + @owner.data.lastname"}
+                }
+            },
+
+            "city": {
+                "prototype": "../../../../ui/text.reel",
+                "values": {
+                    "element": {"#": "city"},
+                    "value": {"<-": "@owner.data.city"}
+                }
+            },
+
+            "premium": {
+                "value": {"#": "premium"},
+                "values": {
+                    "hidden": {"<-": "!@owner.data.premium"}
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="CustomerItem">
+        <div class="CustomerItem-text">
+            <div data-montage-id="label" class="CustomerItem-label"></div>
+            <div data-montage-id="city" class="CustomerItem-city"></div>
+        </div>
+       
+        <div data-montage-id="premium" class="CustomerItem-premium">
+             &#9733;
+        </div>
+    </div>
+</body>
+</html>

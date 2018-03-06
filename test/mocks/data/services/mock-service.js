@@ -2,6 +2,7 @@ var Montage = require("montage").Montage,
     Employee = require('../models/employee').Employee,
     Store = require('../models/store').Store,
     Settings = require('../models/settings').Settings,
+    Customer = require('../models/customer').Customer,
     Department = require('../models/department').Department;    
 
 /**
@@ -138,6 +139,17 @@ exports.MockService = Montage.specialize({
                 new Settings('Data', '345 GB'),
                 new Settings('Restrictions', null, true),
                 new Settings('Allow holidays', null, false),
+            ];
+        }
+    },
+
+    fetchCustomers: {
+        value: function () {
+            return [
+                new Customer('Marcus', 'Osborne', 'New York'),
+                new Customer('Howard', 'Morrison', 'San Francisco', true),
+                new Customer('Shane', 'Byrd', 'Montreal', true),
+                new Customer('Marcus', 'Walters', 'Shanghai')
             ];
         }
     }

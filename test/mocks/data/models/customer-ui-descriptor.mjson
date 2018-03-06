@@ -1,0 +1,14 @@
+{
+    "root": {
+        "prototype": "core/meta/user-interface-descriptor",
+        "values": {
+            "collectionNameExpression": "'Customers'",
+            "nameExpression": "lastname + ' ' + firstname",
+            "descriptionExpression": "city",
+            "collectionItemComponentModule": {
+                "%": "test/mocks/data/customer-item.reel"
+            },
+            "cascadingListItemFooterMiddleCollectionNameExpression": "length + ' item' + (length == 1 ? '' : 's')"
+        }
+    }
+}
