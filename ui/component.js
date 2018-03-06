@@ -451,30 +451,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     },
 
     /**
-     * Dispatch the actionEvent this component is configured to emit upon interaction
-     * @private
-     */
-    _dispatchActionEvent: {
-        value: function () {
-            this.dispatchEvent(this.createActionEvent());
-        },
-        enumerable: false
-    },
-
-    /**
-     * Convenience to create a custom event named "action"
-     * @function
-     * @returns and event to dispatch upon interaction
-     */
-    createActionEvent: {
-        value: function () {
-            var actionEvent = document.createEvent("CustomEvent");
-            actionEvent.initCustomEvent("action", true, true, null);
-            return actionEvent;
-        }
-    },
-
-    /**
      * The gate controlling the canDraw() response of the component.
      * @type {Gate}
      * @private

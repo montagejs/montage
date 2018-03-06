@@ -487,7 +487,7 @@ var Select = exports.Select =  Control.specialize(/** @lends module:"montage/ui/
                 this._setContentControllerSelectedIndexes(arr);
                 this._synchValues();
             }
-            this._dispatchActionEvent();
+            this.dispatchActionEvent();
         }
     }
 

@@ -238,7 +238,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
             if (mutableEvent._event.identifier === "space" ||
                 mutableEvent._event.identifier === "enter") {
                 this.active = false;
-                this._dispatchActionEvent();
+                this.dispatchActionEvent();
             }
         }
     },
@@ -294,7 +294,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         value: function (event) {
             if (!this._promise){
                 this.active = false;
-                this._dispatchActionEvent();
+                this.dispatchActionEvent();
                 this._removeEventListeners();
             }
         }

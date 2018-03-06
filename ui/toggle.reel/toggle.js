@@ -70,6 +70,7 @@ var Toggle = exports.Toggle = Component.specialize({
     handlePress: {
         value: function () {
             this.checked = !this.checked;
+            this.dispatchActionEvent(this.checked);
         }
     }
 

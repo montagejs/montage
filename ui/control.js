@@ -41,8 +41,8 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
      * @fires AbstractControl#action
      */
     dispatchActionEvent: {
-        value: function () {
-            return this.dispatchEvent(this.createActionEvent());
+        value: function (detail) {
+            return this.dispatchEvent(this.createActionEvent(detail));
         }
     },
 
@@ -91,12 +91,14 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
      * @returns {AbstractControl#action}
      */
     createActionEvent: {
-        value: function () {
-            var actionEvent = document.createEvent("CustomEvent"),
-                eventDetail;
-
-            eventDetail = this._detail;
-            actionEvent.initCustomEvent("action", true, true, eventDetail);
+        value: function (detail) {
+            var actionEvent = document.createEvent("CustomEvent");
+            actionEvent.initCustomEvent(
+                "action",
+                true,
+                true,
+                detail !== void 0 ? detail : this._detail
+            );
             return actionEvent;
         }
     },
