@@ -118,13 +118,14 @@
         -ms-flex-align: center;
                 -ms-grid-row-align: center;
             align-items: center;
-    -webkit-box-align: end;
-        -ms-flex-align: end;
-                -ms-grid-row-align: flex-end;
-            align-items: flex-end;
 }
 
 .ListItem.navigable .ListItem-text.description-right .ListItem-description {
     margin-right: 18px;
     margin-right: 1.125rem;
+}
+
+.ListItem .ListItem-value {
+    font-size: .65rem;
+    margin-left: 8px;
 }

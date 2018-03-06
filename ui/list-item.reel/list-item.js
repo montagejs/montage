@@ -1,4 +1,5 @@
 var Component = require("../component").Component,
+    assign = require("frb/assign"),
     Montage = require("../../core/core").Montage;
 
 /**
@@ -42,8 +43,42 @@ exports.ListItem = Component.specialize({
                         "userInterfaceDescriptor.defined() ? " +
                         "(data.path(userInterfaceDescriptor.descriptionExpression) || " +
                         "description) : description"
+                },
+                "__value": {
+                    "<-": "data.defined() && userInterfaceDescriptor.defined() && !isNavigationEnabled ? " +
+                        "data.path(userInterfaceDescriptor.valueExpression) : _value"
+                },
+                "_valueComponentModule": {
+                    "<-": "__value.defined() && userInterfaceDescriptor.defined() ? " +
+                        "(userInterfaceDescriptor.valueComponentModule || _montageToogleComponentModule) : _montageToogleComponentModule"
                 }
             });
+        }
+    },
+
+    _value: {
+        value: null
+    },
+
+    value: {
+        set: function (value) {
+            this._value = !!value;
+        }, 
+        get: function () {
+            return this._value;
+        }
+    },
+
+    _isNavigationEnabled: {
+        value: false
+    },
+
+    isNavigationEnabled: {
+        set: function (isNavigationEnabled) {
+            this._isNavigationEnabled = !!isNavigationEnabled;
+        },
+        get: function () {
+            return this._isNavigationEnabled;
         }
     },
 
@@ -102,6 +137,23 @@ exports.ListItem = Component.specialize({
 
     userInterfaceDescriptor: {
         value: null
+    },
+
+    handleAction: {
+        value: function (event) {
+            var checked = event.detail;
+            console.log(checked)
+            if (this.data &&
+                this.userInterfaceDescriptor &&
+                this.userInterfaceDescriptor.valueExpression
+            ) {
+                assign(
+                    this.data,
+                    this.userInterfaceDescriptor.valueExpression,
+                    checked
+                );
+            }
+        }
     },
 
     _getUserInterfaceDescriptor: {

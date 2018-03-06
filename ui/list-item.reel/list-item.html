@@ -8,8 +8,15 @@
             "values": {
                 "element": {"#": "owner"},
                 "_montageIconComponentModule": {"%": "../icon.reel"},
+                "_montageToogleComponentModule": {"%": "../toggle.reel"},
                 "classList.has('navigable')": {"<-": "@owner.isNavigationEnabled"}
-            }
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
         },
 
         "placeholder": {
@@ -38,12 +45,12 @@
             }
         },
 
-        "toogle": {
-            "value": {},
+        "placeholderValue": {
+            "prototype": "../placeholder.reel",
             "values": {
                 "element": {"#": "value"},
-                "componentModule": {"<-": "@owner.value.defined() && !@owner.isNavigationEnabled ? @owner._montageToogleComponentModule : null"},
-                "component.value": {"<-": "@owner.value"}
+                "componentModule": {"<-": "@owner.__value.defined() ? @owner._valueComponentModule : null"},
+                "component.checked": {"<-": "@owner.__value"}
             }
         }
     }
@@ -55,8 +62,8 @@
         <div class="ListItem-text">
             <h2 data-montage-id="label" class="ListItem-label"></h2>
             <i data-montage-id="description" class="ListItem-description"></i>
+            <div data-montage-id="value" class="ListItem-value"></div>
         </div>
-        <div data-montage-id="value"></div>
     </div>
 </body>
 </html>

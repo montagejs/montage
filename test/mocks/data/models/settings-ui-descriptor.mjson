@@ -5,6 +5,7 @@
             "collectionNameExpression": "'Settings'",
             "nameExpression": "label",
             "descriptionExpression": "description",
+            "valueExpression": "value",
             "cascadingListItemFooterMiddleCollectionNameExpression": "length + ' item' + (length == 1 ? '' : 's')"
         }
     }
