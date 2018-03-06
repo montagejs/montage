@@ -14,7 +14,7 @@
                 "prototype": "../../../../../ui/text-field.reel",
                 "values": {
                     "element": {"#": "firstname"},
-                    "value": {"<->": "@owner.context.object.firstname"}
+                    "value": {"<->": "@owner.data.object.firstname"}
                 }
             },
 
@@ -22,7 +22,7 @@
                 "prototype": "../../../../../ui/text-field.reel",
                 "values": {
                     "element": {"#": "lastname"},
-                    "value": {"<->": "@owner.context.object.lastname"}
+                    "value": {"<->": "@owner.data.object.lastname"}
                 }
             },
 
@@ -38,7 +38,7 @@
                 "values": {
                     "element": {"#": "department"},
                     "contentController": {"<-": "@contentController"},
-                    "value": {"<->": "@owner.context.object.department"}
+                    "value": {"<->": "@owner.data.object.department"}
                 }
             },
 
@@ -47,7 +47,7 @@
                 "values": {
                     "element": {"#": "cancel"},
                     "label": "Cancel",
-                    "detail.get('context')": {"<-": "@owner.context"}
+                    "detail.get('data')": {"<-": "@owner.data"}
                 }
             },
 
@@ -56,7 +56,7 @@
                 "values": {
                     "element": {"#": "save"},
                     "label": "Save",
-                    "detail.get('context')": {"<-": "@owner.context"},
+                    "detail.get('data')": {"<-": "@owner.data"},
                     "disabled": {"<-": "!(@department.value && @lastname.value && @firstname.value)"}
                 }
             }

@@ -16,7 +16,7 @@
             "nameExpression": "lastname + ' ' + firstname",
             "descriptionExpression": "department",
             "cascadingListItemHeaderRightCollectionNameExpression": "'Add'",
-            "cascadingListItemHeaderRightNameExpression": "'Edit'",
+            "cascadingListItemHeaderRightNameExpression": "isNew ? '' : 'Edit'",
             "cascadingListItemFooterMiddleCollectionNameExpression": "length + ' item' + (length == 1 ? '' : 's')"
         }
     }

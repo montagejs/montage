@@ -11,6 +11,8 @@ exports.Employee = DataModel.specialize({
             this.firstname = firstname;
             this.lastname = lastname;
             this.department = department;
+
+            this.isNew = !firstname && !lastname && !department;
         }
     },
 
@@ -24,6 +26,10 @@ exports.Employee = DataModel.specialize({
 
     department: {
         value: null
+    },
+
+    isNew: {
+        value: false
     }
 
 });

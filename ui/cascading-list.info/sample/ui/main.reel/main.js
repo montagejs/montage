@@ -132,7 +132,7 @@ exports.Main = Component.specialize(/** @lends Main# */{
 
     handleSaveAction: {
         value: function (event) {
-            var cascadingListContext = event.detail.get('context');
+            var cascadingListContext = event.detail.get('data');
 
             if (cascadingListContext &&
                 cascadingListContext.object instanceof Employee &&
@@ -155,7 +155,7 @@ exports.Main = Component.specialize(/** @lends Main# */{
 
     handleCancelAction: {
         value: function (event) {
-            var cascadingListContext = event.detail.get('context');
+            var cascadingListContext = event.detail.get('data');
 
             if (cascadingListContext &&
                 cascadingListContext.object instanceof Employee

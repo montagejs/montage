@@ -31,17 +31,25 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
                         "userInterfaceDescriptor.collectionNameExpression || \"''\") || " +
                         "path(userInterfaceDescriptor.cascadingListItemHeaderMiddleCollectionNameExpression || " +
                         "userInterfaceDescriptor.collectionNameExpression || \"''\")) : " +
-                        "(object.path(userInterfaceDescriptor.cascadingListItemHeaderMiddleNameExpression || " +
-                        "userInterfaceDescriptor.nameExpression || \"''\") || " +
-                        "path(userInterfaceDescriptor.cascadingListItemHeaderMiddleNameExpression || " +
-                        "userInterfaceDescriptor.nameExpression || \"''\"))"
+                        "object.path(userInterfaceDescriptor.cascadingListItemHeaderMiddleNameExpression || " +
+                        "userInterfaceDescriptor.nameExpression || \"''\")"
+                },
+                "_headerRightLabelObjectExpression": {
+                    "<-": "!isCollection ? " +
+                        "object.path(userInterfaceDescriptor.cascadingListItemHeaderRightNameExpression) : ''"
+                },
+                "_headerRightLabelExpression": {
+                    "<-": "!isCollection ? " +
+                        "path(userInterfaceDescriptor.cascadingListItemHeaderRightNameExpression) : ''"
+                },
+                "__headerRightLabelExpression": {
+                    "<-": "_headerRightLabelExpression || _headerRightLabelObjectExpression"
                 },
                 "headerRightLabel": {
                     "<-": "isCollection ? " +
                         "(object.path(userInterfaceDescriptor.cascadingListItemHeaderRightCollectionNameExpression || \"''\") || " +
                         "path(userInterfaceDescriptor.cascadingListItemHeaderRightCollectionNameExpression || \"''\")) : " +
-                        "(object.path(this.userInterfaceDescriptor.cascadingListItemHeaderRightNameExpression || \"''\") || " +
-                        "path(userInterfaceDescriptor.cascadingListItemHeaderRightNameExpression || \"''\"))"
+                        "__headerRightLabelExpression"
                 },
                 "footerLeftLabel": {
                     "<-": "isCollection ? " +
