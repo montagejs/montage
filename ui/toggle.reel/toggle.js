@@ -1,11 +1,11 @@
-var Component = require("../component").Component,
+var Control = require("../control").Control,
     PressComposer = require("../../composer/press-composer").PressComposer;
 
 /**
  * @class Toggle
- * @extends Component
+ * @extends Control
  */
-var Toggle = exports.Toggle = Component.specialize({
+var Toggle = exports.Toggle = Control.specialize({
 
     checked: {
         value: false
@@ -73,6 +73,5 @@ var Toggle = exports.Toggle = Component.specialize({
             this.dispatchActionEvent(this.checked);
         }
     }
-
 
 });
