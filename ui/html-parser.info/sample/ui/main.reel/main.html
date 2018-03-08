@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"}
+                }
+            },
+
+            "parser1": {
+                "prototype": "montage/ui/html-parser.reel",
+                "values": {
+                    "element": {"#": "parser1"},
+                    "data": "<span style='color: #0000ff; font-size: 3em;'>bonjour<\/span><script>alert('hello')<\/script>"
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>HTML Parser Samples</header>
+        <div class="content">
+            <div data-montage-id="parser1"></div>
+        </div>
+    </div>
+</body>
+</html>
