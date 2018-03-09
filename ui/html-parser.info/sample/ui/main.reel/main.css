@@ -37,4 +37,9 @@ header {
     -webkit-box-direction: normal;
         -ms-flex-direction: column;
             flex-direction: column;
+    padding: 20px;
+}
+
+.parser {
+    margin-bottom: 1em;
 }

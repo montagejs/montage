@@ -66,16 +66,88 @@ var HtmlParser = exports.HtmlParser = Component.specialize(/** @lends HtmlParser
         }
     },
 
+    allowedTags: {
+        value: null
+    },
+
+    allowedAttributes: {
+        value: null
+    },
+
+    nonTextTags: {
+        value: null
+    },
+
+    _allowedStyles: {
+        value: null
+    },
+
+    allowedStyles: {
+        set: function (allowedStyles) {
+            if (allowedStyles) {
+                var elementKeys = Object.keys(allowedStyles),
+                    styles;
+
+                for (var i = 0, l = elementKeys.length; i < l; i++) {
+                    element = allowedStyles[elementKeys[i]];
+                    styleKeys = Object.keys(element);
+
+                    for (var ii = 0, ll = styleKeys.length; ii < ll; ii++) { 
+                        styles = element[styleKeys[i]];
+
+                        for (var iii = 0, lll = styles.length; iii < lll; iii++) {
+                            styles[iii] = new RegExp(styles[iii]);
+                        }
+                    }                    
+                }
+
+                this._allowedStyles = allowedStyles;
+                
+            } else {
+                this._allowedStyles = null;
+            }
+        },
+        get: function () {
+            return this._allowedStyles;
+        }
+    },
+
+    _getSanitizerOptions: {
+        value: function () {
+            var options = {};
+
+            if (this.allowedTags) {
+                options.allowedTags = this.allowedTags;
+            }
+
+            if (this.allowedAttributes) {
+                options.allowedAttributes = this.allowedAttributes;
+            } 
+
+            if (this.nonTextTags) {
+                options.nonTextTags = this.nonTextTags;
+            }
+
+            if (this.allowedStyles) {
+                options.allowedStyles = this.allowedStyles;
+            }
+
+            return Object.assign({}, this.options, options);
+        }
+    },
+
     draw: {
         value: function () {
-            if (sanitizeHtml) {
-                this.element.innerHTML = this.data && this.needsSanitizeHtml ?
-                    sanitizeHtml(this.data, this.options) : '';
-                this.needsSanitizeHtml = false;
-            } else {
-                this.needsDraw = true;
-            }
+            this.element.innerHTML = this.data && this.needsSanitizeHtml ?
+                sanitizeHtml(this.data, this._getSanitizerOptions()) : '';
+            this.needsSanitizeHtml = false;
         }
     }
   
+}, {
+    
+    DefaultSanitizerOptions: {
+        value: defaultOptions
+    }
+        
 });

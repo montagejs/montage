@@ -14,7 +14,33 @@
                 "prototype": "montage/ui/html-parser.reel",
                 "values": {
                     "element": {"#": "parser1"},
-                    "data": "<span style='color: #0000ff; font-size: 3em;'>bonjour<\/span><script>alert('hello')<\/script>"
+                    "data": "<span style='color: #3498db; font-size: 3em;'>Hello</span><script>alert('hello');<\/script>"
+                }
+            },
+
+            "parser2": {
+                "prototype": "montage/ui/html-parser.reel",
+                "values": {
+                    "element": {"#": "parser2"},
+                    "data": "<div style='color: #e74c3c; font-size: 1.5em;'><span>Bonjour </span><i>Montage</i></div>",
+                    "allowedTags": ["div", "span"],
+                    "nonTextTags": ["i"]
+                }
+            },
+
+            "parser3": {
+                "prototype": "montage/ui/html-parser.reel",
+                "values": {
+                    "element": {"#": "parser3"},
+                    "data": "<span style='color: #e74c3c; font-size: 3em;' title='hola' alt='hola'>Holà</span>",
+                    "allowedAttributes": {
+                        "span": ["style", "title"]
+                    },
+                    "allowedStyles": {
+                        "span": {
+                            "font-size": ["^[0-9]+(?:em|px)$"]
+                        }
+                    }
                 }
             }
 
@@ -25,7 +51,10 @@
     <div data-montage-id="main" class="Main">
         <header>HTML Parser Samples</header>
         <div class="content">
-            <div data-montage-id="parser1"></div>
+            <div data-montage-id="parser1" class="parser"></div>
+            <div data-montage-id="parser2" class="parser"></div>
+            <div data-montage-id="parser3" class="parser"></div>
+            <div data-montage-id="parser4" class="parser"></div>
         </div>
     </div>
 </body>
