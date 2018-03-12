@@ -21,10 +21,10 @@ exports.ListItem = Component.specialize({
                     "<-": "data.defined() && " +
                         "userInterfaceDescriptor.defined() ? " +
                         "(data.path(userInterfaceDescriptor.iconExpression || null) || " +
-                        "path(userInterfaceDescriptor.iconExpression || null)) : null"
+                        "path(userInterfaceDescriptor.iconExpression || null)) : iconSrc"
                 },
                 "_defaultIconModule": {
-                    "<-": "_iconName || _iconSrc || iconModule ? (iconModule || _montageIconComponentModule) : null"
+                    "<-": "_iconName || _iconSrc || iconComponentModule ? (iconComponentModule || _montageIconComponentModule) : null"
                 },
                 "_iconModule": {
                     "<-": "data.defined() && " +
@@ -48,9 +48,12 @@ exports.ListItem = Component.specialize({
                     "<-": "data.defined() && userInterfaceDescriptor.defined() && !isNavigationEnabled ? " +
                         "data.path(userInterfaceDescriptor.valueExpression) : _value"
                 },
+                "_defaultToggleComponentModule": {
+                    "<-": "toggleComponentModule || _montageToogleComponentModule"
+                },
                 "_valueComponentModule": {
                     "<-": "__value.defined() && userInterfaceDescriptor.defined() ? " +
-                        "(userInterfaceDescriptor.valueComponentModule || _montageToogleComponentModule) : _montageToogleComponentModule"
+                        "(userInterfaceDescriptor.valueComponentModule || _defaultToggleComponentModule) : _defaultToggleComponentModule"
                 }
             });
         }
@@ -104,7 +107,11 @@ exports.ListItem = Component.specialize({
         value: null
     },
 
-    iconModule: {
+    iconComponentModule: {
+        value: null
+    },
+
+    toggleComponentModule: {
         value: null
     },
 

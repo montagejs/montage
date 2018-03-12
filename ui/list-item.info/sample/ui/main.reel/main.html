@@ -116,6 +116,83 @@
                     "descriptionPosition": "bottom",
                     "isNavigationEnabled": true
                 }
+            },
+
+            "listItem12": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem12"},
+                    "label": "Item 12",
+                    "iconName": "home"
+                }
+            },
+
+            "listItem13": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem13"},
+                    "label": "Item 13",
+                    "iconName": "home",
+                    "description": "description"
+                }
+            },
+
+            "listItem14": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem14"},
+                    "label": "Item 14",
+                    "iconName": "home",
+                    "description": "description",
+                    "isNavigationEnabled": true
+                }
+            },
+
+            "listItem15": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem15"},
+                    "label": "Item 15",
+                    "iconName": "home",
+                    "description": "description",
+                    "descriptionPosition": "bottom",
+                    "isNavigationEnabled": true
+                }
+            },
+
+            "listItem16": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem16"},
+                    "label": "Item 16",
+                    "iconSrc": "../../../test/mocks/data/icons/svgs/logistics.svg",
+                    "description": "description + icon src"
+                }
+            },
+
+            "listItem17": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem17"},
+                    "label": "Item 17",
+                    "iconComponentModule": {
+                        "%": "montage/test/mocks/data/icons/department.reel"
+                    },
+                    "description": "description + icon module"
+                }
+            },
+
+            "listItem18": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem18"},
+                    "label": "Item 18",
+                    "value": {"<->": "!!@owner.item18Value"},
+                    "description":  {"<-": "!!@owner.item18Value ? 'ON' : 'OFF'"},
+                    "toggleComponentModule": {
+                        "%": "montage/test/mocks/data/icons/check.reel"
+                    }
+                }
             }
 
         }
@@ -136,8 +213,6 @@
         <div data-montage-id="listItem9"></div>
         <div data-montage-id="listItem10"></div>
         <div data-montage-id="listItem11"></div>
-
-        <h4>list item with object descriptor</h4>
         <div data-montage-id="listItem12"></div>
         <div data-montage-id="listItem13"></div>
         <div data-montage-id="listItem14"></div>
@@ -145,6 +220,9 @@
         <div data-montage-id="listItem16"></div>
         <div data-montage-id="listItem17"></div>
         <div data-montage-id="listItem18"></div>
+
+        <h4>list item with object descriptor</h4>
+
         <div data-montage-id="listItem19"></div>
         <div data-montage-id="listItem20"></div>
         <div data-montage-id="listItem21"></div>
