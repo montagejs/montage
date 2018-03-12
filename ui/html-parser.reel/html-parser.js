@@ -138,9 +138,14 @@ var HtmlParser = exports.HtmlParser = Component.specialize(/** @lends HtmlParser
 
     draw: {
         value: function () {
-            this.element.innerHTML = this.data && this.needsSanitizeHtml ?
-                sanitizeHtml(this.data, this._getSanitizerOptions()) : '';
-            this.needsSanitizeHtml = false;
+            if (window.sanitizeHtml) {
+                this.element.innerHTML = this.data && this.needsSanitizeHtml ?
+                    sanitizeHtml(this.data, this._getSanitizerOptions()) : '';
+                this.needsSanitizeHtml = false;
+            } else {
+                this.needsDraw = true;
+            }
+           
         }
     }
   
