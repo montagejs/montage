@@ -82,6 +82,20 @@ exports.ListItem = Component.specialize({
         }
     },
 
+    _descriptionPosition: {
+        value: null
+    },
+
+    descriptionPosition: {
+        set: function (descriptionPosition) {
+            this._descriptionPosition = descriptionPosition === 'bottom' ?
+                descriptionPosition: 'right';
+        },
+        get: function () {
+            return this._descriptionPosition;
+        }
+    },
+
     label: {
         value: null
     },
@@ -149,6 +163,8 @@ exports.ListItem = Component.specialize({
                     checked
                 );
             }
+            
+            this.value = checked;
         }
     },
 

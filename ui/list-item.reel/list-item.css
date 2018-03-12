@@ -1,12 +1,10 @@
 .ListItem {
-    padding-left: 16px;
-    padding-left: 1rem;
+    padding-left: 1em;
     border-radius: 0;
     position: relative;
     color: #000;
     background-color: #fff;
-    min-height: 44px;
-    min-height: 2.75rem;
+    min-height: 2.75em;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -14,11 +12,13 @@
         -ms-flex-align: center;
             align-items: center;
     overflow: hidden;
-    border-bottom: 1px solid #c8c7cc;
+    border: 1px solid #c8c7cc;
     box-sizing: border-box;
     -webkit-transition: background-color .2s linear;
     transition: background-color .2s linear;
 }
+
+/** States **/
 
 .ListItem.selected {
     background-color: #d9d9d9;
@@ -28,55 +28,13 @@
     background-color: #e9e9e9;
 }
 
-.ListItem .ListItem-icon {
-    min-width: 24px;
-    min-width: 1.5rem;
-    min-height: 24px;
-    min-height: 1.5rem;
-    max-width: 24px;
-    max-width: 1.5rem;
-    max-height: 24px;
-    max-height: 1.5rem;
-    margin: 8px 16px 8px 0;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
-}
-
-.ListItem .ListItem-text {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
-    position: relative;
-    margin-right: 16px;
-    margin-right: 1rem;
-}
-
-.ListItem .ListItem-text.description-right,
-.ListItem:not(.navigable) .ListItem-text {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
-}
-
 .ListItem.navigable .ListItem-text:after {
     content: "\203A";
     position: absolute;
     right: 0;
     top: 0;
     bottom: 0;
-    font-size: 2rem;
+    font-size: 2em;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -84,48 +42,88 @@
         -ms-flex-align: center;
             align-items: center;
     color: #C7C7CC;
-}
- 
-.ListItem .ListItem-text .ListItem-label {
-    margin: 0 0 2px;
-    font-size: 16px;
-    font-size: 1rem;
-    font-weight: 400;
+    margin-top: -.2em;
 }
 
-.ListItem .ListItem-text.description-right .ListItem-label,
-.ListItem:not(.navigable) .ListItem-text .ListItem-label {
-    margin-bottom: 0px;
+.ListItem.navigable .ListItem-text .ListItem-description {
+    margin-right: 1.85em;
 }
 
-.ListItem .ListItem-text .ListItem-description {
+/** Icon **/
+
+.ListItem .ListItem-icon {
+    min-width: 1.5em;
+    min-height: 1.5em;
+    max-width: 1.5em;
+    max-height: 1.5em;
+    margin: .5em 1em .5em 0;
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    flex: 1;
-    font-size: 13.6px;
-    font-size: .85rem;
-    line-height: normal;
-    color: #8e9093;
-    margin: 0 0 2px;
-}
-
-.ListItem .ListItem-text.description-right .ListItem-description,
-.ListItem:not(.navigable) .ListItem-text .ListItem-description {
-    margin-bottom: 0px;
-    -webkit-box-pack: end;
-        -ms-flex-pack: end;
-            justify-content: flex-end;
     -webkit-box-align: center;
         -ms-flex-align: center;
-                -ms-grid-row-align: center;
             align-items: center;
 }
 
-.ListItem.navigable .ListItem-text.description-right .ListItem-description {
-    margin-right: 18px;
-    margin-right: 1.125rem;
+/** Label + description **/
+
+.ListItem .ListItem-text {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+    position: relative;
+    margin-right: 1em;
 }
 
+.ListItem .ListItem-text .ListItem-label {
+    margin: 0;
+    font-size: 1em;
+    font-weight: 400;
+}
+
+.ListItem .ListItem-text .ListItem-description {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
+    font-size: .85em;
+    line-height: normal;
+    color: #8e9093;
+    margin: 0;
+    -webkit-box-pack: end;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+}
+
+/** Description position **/
+
+.ListItem.description-bottom .ListItem-text {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-align: start;
+        -ms-flex-align: start;
+                -ms-grid-row-align: flex-start;
+            align-items: flex-start;
+}
+
+.ListItem.description-bottom .ListItem-text .ListItem-description,
+.ListItem.description-bottom .ListItem-text .ListItem-label {
+    margin: 0 0 2px;
+}
+
+/** Boolean Value **/
+
 .ListItem .ListItem-value {
-    font-size: .5rem;
-    margin-left: 8px;
+    font-size: .5em;
+    margin-right: 1.75em;
 }

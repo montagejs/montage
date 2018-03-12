@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"}
+                }
+            },
+
+            "listItem": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem"},
+                    "label": "Item 1"
+                }
+            },
+
+            "listItem2": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem2"},
+                    "label": "Item 2",
+                    "isNavigationEnabled": true
+                }
+            },
+
+            "listItem3": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem3"},
+                    "label": "Item 3",
+                    "description": "description"
+                }
+            },
+
+            "listItem4": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem4"},
+                    "label": "Item 4",
+                    "description": "description + isNavigationEnabled set to true",
+                    "isNavigationEnabled": true
+                }
+            },
+
+            "listItem5": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem5"},
+                    "label": "Item 5",
+                    "description": "description + descriptionPosition set to bottom",
+                    "descriptionPosition": "bottom"
+                }
+            },
+
+            "listItem6": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem6"},
+                    "label": "Item 6",
+                    "description": "description + descriptionPosition set to bottom + isNavigationEnabled set to true",
+                    "isNavigationEnabled": true,
+                    "descriptionPosition": "bottom"
+                }
+            },
+
+            "listItem7": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem7"},
+                    "label": "Item 7",
+                    "value": true
+                }
+            },
+
+            "listItem8": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem8"},
+                    "label": "Item 8",
+                    "value": false
+                }
+            },
+
+            "listItem9": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem9"},
+                    "label": "Item 9",
+                    "value": {"<->": "!!@owner.item9Value"},
+                    "description":  {"<-": "!!@owner.item9Value ? 'ON' : 'OFF'"}
+                }
+            },
+
+            "listItem10": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem10"},
+                    "label": "Item 10",
+                    "value": {"<->": "!!@owner.item10Value"},
+                    "description":  {"<-": "!!@owner.item10Value ? 'ON' : 'OFF'"},
+                    "descriptionPosition": "bottom"
+                }
+            },
+
+            "listItem11": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem11"},
+                    "label": "Item 11",
+                    "value": {"<->": "!!@owner.item11Value"},
+                    "description":  {"<-": "!!@owner.item11Value ? 'ON' : 'OFF'"},
+                    "descriptionPosition": "bottom",
+                    "isNavigationEnabled": true
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>List Item Samples</header>
+        <h4>list item </h4>
+        <div data-montage-id="listItem"></div>
+        <div data-montage-id="listItem2"></div>
+        <div data-montage-id="listItem3"></div>
+        <div data-montage-id="listItem4"></div>
+        <div data-montage-id="listItem5"></div>
+        <div data-montage-id="listItem6"></div>
+        <div data-montage-id="listItem7"></div>
+        <div data-montage-id="listItem8"></div>
+        <div data-montage-id="listItem9"></div>
+        <div data-montage-id="listItem10"></div>
+        <div data-montage-id="listItem11"></div>
+    </div>
+</body>
+</html>

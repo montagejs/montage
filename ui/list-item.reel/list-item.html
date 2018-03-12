@@ -9,7 +9,10 @@
                 "element": {"#": "owner"},
                 "_montageIconComponentModule": {"%": "../icon.reel"},
                 "_montageToogleComponentModule": {"%": "../toggle.reel"},
-                "classList.has('navigable')": {"<-": "@owner.isNavigationEnabled"}
+                "classList.has('active')": {"<-": "@owner.active"},
+                "classList.has('selected')": {"<-": "@owner.selected"},
+                "classList.has('navigable')": {"<-": "@owner.isNavigationEnabled"},
+                "classList.has('description-bottom')": {"<-": "@owner.descriptionPosition == 'bottom'"}
             },
             "listeners": [
                 {
@@ -49,7 +52,7 @@
             "prototype": "../placeholder.reel",
             "values": {
                 "element": {"#": "value"},
-                "componentModule": {"<-": "@owner.__value.defined() ? @owner._valueComponentModule : null"},
+                "componentModule": {"<-": "@owner.__value.defined() && !@owner.isNavigationEnabled ? @owner._valueComponentModule : null"},
                 "component.checked": {"<-": "@owner.__value"}
             }
         }
@@ -62,8 +65,8 @@
         <div class="ListItem-text">
             <div data-montage-id="label" class="ListItem-label"></div>
             <div data-montage-id="description" class="ListItem-description"></div>
-            <div data-montage-id="value" class="ListItem-value"></div>
         </div>
+        <div data-montage-id="value" class="ListItem-value"></div>
     </div>
 </body>
 </html>
