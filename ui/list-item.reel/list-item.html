@@ -7,19 +7,14 @@
         "owner": {
             "values": {
                 "element": {"#": "owner"},
+                "_valuePlaceholderComponent": {"@": "placeholderValue"},
                 "_montageIconComponentModule": {"%": "../icon.reel"},
                 "_montageToogleComponentModule": {"%": "../toggle.reel"},
                 "classList.has('active')": {"<-": "@owner.active"},
                 "classList.has('selected')": {"<-": "@owner.selected"},
                 "classList.has('navigable')": {"<-": "@owner.isNavigationEnabled"},
                 "classList.has('description-bottom')": {"<-": "@owner.descriptionPosition == 'bottom'"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
+            }
         },
 
         "placeholder": {

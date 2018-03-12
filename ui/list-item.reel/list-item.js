@@ -1,4 +1,5 @@
 var Component = require("../component").Component,
+    PressComposer = require("../../composer/press-composer").PressComposer,
     assign = require("frb/assign"),
     Montage = require("../../core/core").Montage;
 
@@ -156,9 +157,79 @@ exports.ListItem = Component.specialize({
         value: null
     },
 
-    handleAction: {
-        value: function (event) {
-            var checked = event.detail;
+    __pressComposer: {
+        value: null
+    },
+
+    _pressComposer: {
+        get: function () {
+            if (!this.__pressComposer) {
+                this.__pressComposer = new PressComposer();
+                this.__pressComposer.delegate = this;
+                this.addComposerForElement(
+                    this.__pressComposer, 
+                    this._valuePlaceholderComponent.element
+                );
+            }
+
+            return this.__pressComposer;
+        }
+    },
+
+    shouldComposerSurrenderPointerToComponent: {
+        value: function (pressComposer, pointer, component) {
+            if (pressComposer === this.__pressComposer && 
+                this.element.contains(component.element)
+            ) {
+                return false;
+            }
+            return true;
+        }
+    },
+
+    enterDocument: {
+        value: function () {
+            this._startListeningToPressIfNeeded();
+        }
+    },
+
+    prepareForActivationEvents: {
+        value: function () {
+            this._startListeningToPress();
+        }
+    },
+
+    exitDocument: {
+        value: function () {
+            this._startListeningToPressIfNeeded();
+        }
+    },
+
+    _startListeningToPressIfNeeded: {
+        value: function () {
+            if (this.preparedForActivationEvents) {
+                this._startListeningToPress();
+            }
+        }
+    },
+
+    _startListeningToPress: {
+        value: function () {
+            this._pressComposer.addEventListener('press', this);
+        }
+    },
+
+    _stopListeningToPress: {
+        value: function () {
+            if (this.preparedForActivationEvents) {
+                this._pressComposer.removeEventListener('press', this);
+            }
+        }
+    },
+
+    handlePress: {
+        value: function () {
+            var checked = !this.__value;
 
             if (this.data &&
                 this.userInterfaceDescriptor &&
