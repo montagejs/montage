@@ -23,7 +23,8 @@ exports.Main = Component.specialize(/** @lends Main# */{
 
     shouldListEnableNavigation: {
         value: function (list, isNavigationEnabled, content) {
-            return content !== this.root[2] && content !== this.root[4];
+            return content !== this.root[2] && content !== this.root[4] &&
+                content !== this.root[3];
         }
     },
 
