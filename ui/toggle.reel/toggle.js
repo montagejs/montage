@@ -11,7 +11,6 @@ var Toggle = exports.Toggle = Control.specialize({
         value: false
     },
 
-
     __pressComposer: {
         value: null
     },

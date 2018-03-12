@@ -1,7 +1,6 @@
 .montage-toggle {
     position: relative;
     display: inline-block;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
     background-color: #fff;
     width: 3.125em;
@@ -10,8 +9,12 @@
     vertical-align: middle;
     border: 2px solid #e6e6e6;
     cursor: pointer;
-    user-select: none;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
     -webkit-tap-highlight-color: transparent;
+    -webkit-transition: background-color .3s cubic-bezier(.5,.15,.2,1);
     transition: background-color .3s cubic-bezier(.5,.15,.2,1);
 }
 
@@ -31,8 +34,12 @@
     background-clip: content-box;
     background-color: #fff;
     box-shadow: 0 3px 12px rgba(0,0,0,.16), 0 3px 1px rgba(0,0,0,.1);
+    -webkit-transition: -webkit-transform .2s cubic-bezier(.5,.15,.2,1);
+    transition: -webkit-transform .2s cubic-bezier(.5,.15,.2,1);
     transition: transform .2s cubic-bezier(.5,.15,.2,1);
-    transform: translate3d(0,0,0);
+    transition: transform .2s cubic-bezier(.5,.15,.2,1), -webkit-transform .2s cubic-bezier(.5,.15,.2,1);
+    -webkit-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
 }
 
 
@@ -43,6 +50,23 @@
     border-color: transparent;
 }
 
+.montage-toggle.checked.blue {
+    background-color: #488aff;
+}
+
+.montage-toggle.checked.red {
+    background-color: #f53d3d;
+}
+
+.montage-toggle.checked.yellow {
+    background-color: #ffc527;
+}
+
+.montage-toggle[disabled] {
+    opacity: .5;
+}
+
 .montage-toggle.checked .montage-toggle-thumb {
-    transform: translate3d(70%,0,0);
+    -webkit-transform: translate3d(70%,0,0);
+            transform: translate3d(70%,0,0);
 }

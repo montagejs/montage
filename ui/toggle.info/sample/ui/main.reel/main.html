@@ -15,6 +15,21 @@
                 "values": {
                     "element": {"#": "toggle"}
                 }
+            },
+
+            "toggle2": {
+                "prototype": "montage/ui/toggle.reel",
+                "values": {
+                    "element": {"#": "toggle2"},
+                    "disabled": true
+                }
+            },
+
+            "toggle3": {
+                "prototype": "montage/ui/toggle.reel",
+                "values": {
+                    "element": {"#": "toggle3"}
+                }
             }
 
         }
@@ -22,9 +37,13 @@
 </head>
 <body>
     <div data-montage-id="main" class="Main">
-        <header>Toggle Sample</header>
-        
+        <header>Toggle Samples</header>
+        <h4>Green</h4>
         <div data-montage-id="toggle"></div>
+        <h4>Disabled</h4>
+        <div data-montage-id="toggle2"></div>
+        <h4>Red</h4>
+        <div data-montage-id="toggle3" class="red"></div>
     </div>
 </body>
 </html>
