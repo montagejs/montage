@@ -81,6 +81,13 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             if (typeof this.maxAge === "number") {
                 serializer.setProperty("maxAge", this.maxAge);
             }
+
+            if (this.userInterfaceDescriptorModule) {
+                serializer.setProperty(
+                    "userInterfaceDescriptorModule",
+                    this.userInterfaceDescriptorModule
+                );
+            }
         }
     },
 
