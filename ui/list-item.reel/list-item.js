@@ -1,7 +1,9 @@
 var Component = require("../component").Component,
     PressComposer = require("../../composer/press-composer").PressComposer,
     assign = require("frb/assign"),
-    Montage = require("../../core/core").Montage;
+    MontageModule = require("../../core/core"),
+    Montage = MontageModule.Montage,
+    getObjectDescriptorWithModuleId = MontageModule.getObjectDescriptorWithModuleId;
 
 /**
  * @class ListItem
