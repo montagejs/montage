@@ -234,16 +234,6 @@ exports.CascadingList = Component.specialize({
                 }
 
                 return this._populatePromise.then(function (objectDescriptor) {
-                    objectDescriptor = self.callDelegateMethod(
-                        "cascadingListWillUseObjectDescriptorForObjectAtColumnIndex",
-                        self,
-                        objectDescriptor,
-                        object,
-                        columnIndex
-                    ) || objectDescriptor;
-
-                    return objectDescriptor;
-                }).then(function (objectDescriptor) {
                     var userInterfaceDescriptorModuleId = objectDescriptor &&
                         objectDescriptor.userInterfaceDescriptorModule ?
                         objectDescriptor.userInterfaceDescriptorModule.id : null;

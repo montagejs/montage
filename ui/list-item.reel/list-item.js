@@ -13,14 +13,12 @@ exports.ListItem = Component.specialize({
         value: function () {
             this.defineBindings({
                 "_iconName": {
-                    "<-": "data.defined() && " +
-                        "userInterfaceDescriptor.defined() ? " +
+                    "<-": "data.defined() && userInterfaceDescriptor.defined() ? " +
                         "(userInterfaceDescriptor.iconName || " +
                         "iconName) : iconName"
                 },
                 "_iconSrc": {
-                    "<-": "data.defined() && " +
-                        "userInterfaceDescriptor.defined() ? " +
+                    "<-": "data.defined() && userInterfaceDescriptor.defined() ? " +
                         "(data.path(userInterfaceDescriptor.iconExpression || null) || " +
                         "path(userInterfaceDescriptor.iconExpression || null)) : iconSrc"
                 },
@@ -29,25 +27,22 @@ exports.ListItem = Component.specialize({
                         "(iconComponentModule || _montageIconComponentModule) : null"
                 },
                 "_iconModule": {
-                    "<-": "data.defined() && " +
-                        "userInterfaceDescriptor.defined() ? " +
+                    "<-": "data.defined() && userInterfaceDescriptor.defined() ? " +
                         "(userInterfaceDescriptor.iconComponentModule || " +
                         "_defaultIconModule) : _defaultIconModule"
                 },
                 "_label": {
-                    "<-": "data.defined() && " +
-                        "userInterfaceDescriptor.defined() ? " +
+                    "<-": "data.defined() && userInterfaceDescriptor.defined() ? " +
                         "(data.path(userInterfaceDescriptor.nameExpression) || " +
                         "label) : label"
                 },
                 "_description": {
-                    "<-": "data.defined() && " +
-                        "userInterfaceDescriptor.defined() ? " +
+                    "<-": "data.defined() && userInterfaceDescriptor.defined() ? " +
                         "(data.path(userInterfaceDescriptor.descriptionExpression) || " +
                         "description) : description"
                 },
                 "__value": {
-                    "<-": "data.defined() && userInterfaceDescriptor.defined() && !isNavigationEnabled ? " +
+                    "<-": "data.defined() && userInterfaceDescriptor.defined() ? " +
                         "data.path(userInterfaceDescriptor.valueExpression) : _value"
                 },
                 "_defaultToggleComponentModule": {
@@ -259,27 +254,85 @@ exports.ListItem = Component.specialize({
     _getUserInterfaceDescriptor: {
         value: function (data) {
             var self = this,
+                objectDescriptorModuleIdCandidate,    
+                objectDescriptorModuleId,
+                objectDescriptor,
+                infoDelegate,
+                constructor,
                 promise;
 
-            if (data && data.constructor.objectDescriptor) {
-                this.canDrawGate.setField(this.constructor.CAN_DRAW_FIELD, false);
+            this.canDrawGate.setField(this.constructor.CAN_DRAW_FIELD, false);
 
-                return data.constructor.objectDescriptor.then(function (objectDescriptor) {
-                    if (objectDescriptor) {
-                        objectDescriptor.userInterfaceDescriptor.then(function (userInterfaceDescriptor) {
-                            self.canDrawGate.setField(self.constructor.CAN_DRAW_FIELD, true);
-                            self.needsDraw = true;
-                            return (self.userInterfaceDescriptor = userInterfaceDescriptor);
-                        });
-                    }
-                });
+            if (typeof data === "object" &&
+                (constructor = data.constructor) &&
+                constructor.objectDescriptorModuleId
+            ) {
+                objectDescriptorModuleId = constructor.objectDescriptorModuleId;
+            }
+
+            objectDescriptorModuleIdCandidate = this.callDelegateMethod(
+                "listItemWillUseObjectDescriptorModuleIdForObjectAtRowIndex",
+                this,
+                objectDescriptorModuleId,
+                this.data,
+                this.rowIndex,
+                this.list
+            ) || this._label;
+
+            if (objectDescriptorModuleIdCandidate) {
+                infoDelegate = Montage.getInfoForObject(this.delegate);
+                objectDescriptorModuleId = objectDescriptorModuleIdCandidate;
+            }
+
+            if (objectDescriptorModuleId) {
+                if (objectDescriptorModuleIdCandidate) {
+                    objectDescriptor = getObjectDescriptorWithModuleId(
+                        objectDescriptorModuleId,
+                        infoDelegate ? infoDelegate.require : require
+                    );
+                } else {
+                    objectDescriptor = constructor.objectDescriptor;
+                }
+
+                promise = objectDescriptor;
             } else {
                 promise = Promise.resolve();
             }
 
-            return promise.then(function () {
-                var moduleId = self._iconModule ? self._iconModule.id : null,
-                    candidateModuleId;
+            return promise.then(function (objectDescriptor) {
+                var userInterfaceDescriptorModuleId = objectDescriptor &&
+                    objectDescriptor.userInterfaceDescriptorModule ?
+                    objectDescriptor.userInterfaceDescriptorModule.id : null;
+
+                userInterfaceDescriptorModuleId = self.callDelegateMethod(
+                    "listItemWillUseUserInterfaceDescriptorModuleIdForObjectAtRowIndex",
+                    self,
+                    userInterfaceDescriptorModuleId,
+                    self.data,
+                    self.rowIndex,
+                    self.list
+                ) || userInterfaceDescriptorModuleId;
+
+                if (objectDescriptor && objectDescriptor.userInterfaceDescriptorModule &&
+                    objectDescriptor.userInterfaceDescriptorModule.id === userInterfaceDescriptorModuleId
+                ) {
+                    return objectDescriptor.userInterfaceDescriptor;
+                } else if (userInterfaceDescriptorModuleId) {
+                    infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
+
+                    return (infoDelegate.require || require).async(userInterfaceDescriptorModuleId)
+                        .then(function (userInterfaceDescriptorModule) {
+                            return userInterfaceDescriptorModule.montageObject;
+                        });
+                }
+            }).then(function (UIDescriptor) {
+                self.userInterfaceDescriptor = UIDescriptor; // trigger biddings.
+
+                var iconComponentModuleId = self._iconModule ? self._iconModule.id : null,
+                    valueComponentModuleId = self._valueComponentModule ?
+                        self._valueComponentModule.id : null,    
+                    candidateValueComponentModuleId,    
+                    candidateIconComponentModuleId;
 
                 self._label = self.callDelegateMethod(
                     "listItemWillUseLabelForObjectAtRowIndex",
@@ -299,24 +352,27 @@ exports.ListItem = Component.specialize({
                     self.list
                 ) || self._description; // defined by a bidding expression
                                 
-                candidateModuleId = self.callDelegateMethod(
+                candidateIconComponentModuleId = self.callDelegateMethod(
                     "listItemWillUseIconModuleIdForObjectAtRowIndex",
                     self,
-                    moduleId,
+                    iconComponentModuleId,
                     self.data,
                     self.rowIndex,
                     self.list
-                ) || moduleId; // defined by a bidding expression
+                ) || iconComponentModuleId; // defined by a bidding expression
                 
-                if (candidateModuleId && moduleId !== candidateModuleId && self.delegate) {
+                if (candidateIconComponentModuleId &&
+                    iconComponentModuleId !== candidateIconComponentModuleId && self.delegate
+                ) {
+                    infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
                     self._iconModule = {
-                        require: Montage.getInfoForObject(self.delegate).require,
-                        id: candidateModuleId
+                        require: infoDelegate.require || require,
+                        id: candidateIconComponentModuleId
                     };
                 }
 
                 if (self._iconModule === self._montageIconComponentModule) {
-                    self._iconSrc = candidateModuleId = self.callDelegateMethod(
+                    self._iconSrc = self.callDelegateMethod(
                         "listItemWillUseIconSrcForObjectAtRowIndex",
                         self,
                         self._iconSrc,
@@ -325,7 +381,7 @@ exports.ListItem = Component.specialize({
                         self.list
                     ) || self._iconSrc; // defined by a bidding expression
 
-                    self._iconName = candidateModuleId = self.callDelegateMethod(
+                    self._iconName = self.callDelegateMethod(
                         "listItemWillUseIconNameForObjectAtRowIndex",
                         self,
                         self._iconName,
@@ -333,7 +389,47 @@ exports.ListItem = Component.specialize({
                         self.rowIndex,
                         self.list
                     ) || self._iconName; // defined by a bidding expression
-                }              
+                }
+
+                candidateValueComponentModuleId = self.callDelegateMethod(
+                    "listItemWillUseValueComponentModuleIdForObjectAtRowIndex",
+                    self,
+                    valueComponentModuleId,
+                    self.data,
+                    self.rowIndex,
+                    self.list
+                ) || valueComponentModuleId; // defined by a bidding expression
+
+                if (candidateValueComponentModuleId &&
+                    valueComponentModuleId !== candidateValueComponentModuleId && self.delegate
+                ) {
+                    infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
+                    self._valueComponentModule = {
+                        require: infoDelegate.require || require,
+                        id: candidateValueComponentModuleId
+                    };
+                }
+                
+                self.descriptionPosition = self.callDelegateMethod(
+                    "listItemWillUseDescriptionPositionForObjectAtRowIndex",
+                    self,
+                    self.descriptionPosition,
+                    self.data,
+                    self.rowIndex,
+                    self.list
+                ) || self.descriptionPosition; // default value
+
+                self.isNavigationEnabled = self.callDelegateMethod(
+                    "listItemShouldEnableNavigationForObjectAtRowIndex",
+                    self,
+                    self.isNavigationEnabled,
+                    self.data,
+                    self.rowIndex,
+                    self.list
+                ) || self.isNavigationEnabled; // default value
+
+                self.canDrawGate.setField(self.constructor.CAN_DRAW_FIELD, true);
+                self.needsDraw = true;
             });
         }
     }

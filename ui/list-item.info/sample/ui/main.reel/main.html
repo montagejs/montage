@@ -280,6 +280,66 @@
                     "label": "Item 27",
                     "selected": true
                 }
+            },
+
+            "listItem28": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem28"},
+                    "data": {"<-": "@owner.employees[0]"}
+                }
+            },
+
+            "listItem29": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem29"},
+                    "data": {"<-": "@owner.employees[1]"},
+                    "delegate": {"=": "@owner"}
+                }
+            },
+
+            "listItem30": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem30"},
+                    "data": {"<-": "@owner.customers[0]"}
+                }
+            },
+
+            "listItem31": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem31"},
+                    "data": {"<-": "@owner.departments[0]"}
+                }
+            },
+
+            "listItem32": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem32"},
+                    "data": {"<-": "@owner.departments[1]"},
+                    "delegate": {"=": "@owner"}
+                }
+            },
+
+            "listItem33": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem33"},
+                    "data": {"<-": "@owner.settings[1]"},
+                    "delegate": {"=": "@owner"}
+                }
+            },
+
+            "listItem34": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem34"},
+                    "data": {"<-": "@owner.settings[2]"},
+                    "delegate": {"=": "@owner"}
+                }
             }
 
         }
@@ -288,7 +348,7 @@
 <body>
     <div data-montage-id="main" class="Main">
         <header>List Item Samples</header>
-        <h4>list item </h4>
+        <h4>list items </h4>
         <div data-montage-id="listItem"></div>
         <div data-montage-id="listItem2"></div>
         <div data-montage-id="listItem3"></div>
@@ -316,7 +376,16 @@
         <div data-montage-id="listItem25"></div>
         <div data-montage-id="listItem26"></div>
         <div data-montage-id="listItem27"></div>
-        <h4>list item with object descriptor</h4>
+
+        <h4>list items with object descriptor</h4>
+        <div data-montage-id="listItem28"></div>
+        <div data-montage-id="listItem29"></div>
+        <div data-montage-id="listItem30"></div>
+        <div data-montage-id="listItem31"></div>
+        <div data-montage-id="listItem32"></div>
+        <div data-montage-id="listItem33"></div>
+        <div data-montage-id="listItem34"></div>
+
     </div>
 </body>
 </html>
