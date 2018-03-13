@@ -25,7 +25,8 @@ exports.ListItem = Component.specialize({
                         "path(userInterfaceDescriptor.iconExpression || null)) : iconSrc"
                 },
                 "_defaultIconModule": {
-                    "<-": "_iconName || _iconSrc || iconComponentModule ? (iconComponentModule || _montageIconComponentModule) : null"
+                    "<-": "_iconName || _iconSrc || iconComponentModule ? " +
+                        "(iconComponentModule || _montageIconComponentModule) : null"
                 },
                 "_iconModule": {
                     "<-": "data.defined() && " +
@@ -54,7 +55,8 @@ exports.ListItem = Component.specialize({
                 },
                 "_valueComponentModule": {
                     "<-": "__value.defined() && userInterfaceDescriptor.defined() ? " +
-                        "(userInterfaceDescriptor.valueComponentModule || _defaultToggleComponentModule) : _defaultToggleComponentModule"
+                        "(userInterfaceDescriptor.valueComponentModule || " +
+                        "_defaultToggleComponentModule) : _defaultToggleComponentModule"
                 }
             });
         }
