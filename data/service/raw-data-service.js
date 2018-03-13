@@ -442,7 +442,27 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
-
+    /**
+     * Called by [addRawData()]{@link RawDataService#addRawData} to add an object
+     * for the passed record to the stream. This method both takes care of doing
+     * mapRawDataToObject and add the object to the stream.
+     *
+     * @method
+     * @argument {DataStream} stream
+     *                           - The stream to which the data objects created
+     *                             from the raw data should be added.
+     * @argument {Object} rawData - An anonymnous object whose properties'
+     *                             values hold the raw data. This array
+     *                             will be modified by this method.
+     * @argument {?} context     - An arbitrary value that will be passed to
+     *                             [getDataObject()]{@link RawDataService#getDataObject}
+     *                             and
+     *                             [mapRawDataToObject()]{@link RawDataService#mapRawDataToObject}
+     *                             if it is provided.
+     *
+     * @returns {Promise<MappedObject>} - A promise resolving to the mapped object.
+     *
+     */
 
     addOneRawData: {
         value: function (stream, rawData, context) {
