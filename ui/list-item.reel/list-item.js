@@ -100,6 +100,14 @@ exports.ListItem = Component.specialize({
         }
     },
 
+    active: {
+        value: false
+    },
+
+    selected: {
+        value: false
+    },
+
     label: {
         value: null
     },
