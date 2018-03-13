@@ -86,7 +86,7 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
-    listItemWillUseIconModuleIdForObjectAtRowIndex: {
+    listItemWillUseIconComponentModuleIdForObjectAtRowIndex: {
         value: function (listItem, moduleId, object, rowIndex, list) {
             if (object === this.root[1]) {
                 return 'montage/test/mocks/data/icons/department.reel';

@@ -22,7 +22,7 @@
             "prototype": "../placeholder.reel",
             "values": {
                 "element": {"#": "icon"},
-                "componentModule": {"<-": "@owner._iconModule"},
+                "componentModule": {"<-": "@owner._iconComponentModule"},
                 "component.name": {"<-": "@owner._iconName"},
                 "component.src": {"<-": "@owner._iconSrc"}
             }
@@ -49,7 +49,7 @@
             "prototype": "../placeholder.reel",
             "values": {
                 "element": {"#": "value"},
-                "componentModule": {"<-": "@owner.__value.defined() ? @owner._valueComponentModule : null"},
+                "componentModule": {"<-": "@owner.__value.defined() ? @owner._toggleComponentModule : null"},
                 "component.checked": {"<-": "@owner.__value"}
             }
         }

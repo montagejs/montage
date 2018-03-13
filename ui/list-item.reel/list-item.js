@@ -22,14 +22,14 @@ exports.ListItem = Component.specialize({
                         "(data.path(userInterfaceDescriptor.iconExpression || null) || " +
                         "path(userInterfaceDescriptor.iconExpression || null)) : iconSrc"
                 },
-                "_defaultIconModule": {
+                "_defaultIconComponenModule": {
                     "<-": "_iconName || _iconSrc || iconComponentModule ? " +
                         "(iconComponentModule || _montageIconComponentModule) : null"
                 },
-                "_iconModule": {
+                "_iconComponentModule": {
                     "<-": "data.defined() && userInterfaceDescriptor.defined() ? " +
                         "(userInterfaceDescriptor.iconComponentModule || " +
-                        "_defaultIconModule) : _defaultIconModule"
+                        "_defaultIconComponenModule) : _defaultIconComponenModule"
                 },
                 "_label": {
                     "<-": "data.defined() && userInterfaceDescriptor.defined() ? " +
@@ -48,9 +48,9 @@ exports.ListItem = Component.specialize({
                 "_defaultToggleComponentModule": {
                     "<-": "toggleComponentModule || _montageToogleComponentModule"
                 },
-                "_valueComponentModule": {
+                "_toggleComponentModule": {
                     "<-": "__value.defined() && userInterfaceDescriptor.defined() ? " +
-                        "(userInterfaceDescriptor.valueComponentModule || " +
+                        "(userInterfaceDescriptor.toggleComponentModule || " +
                         "_defaultToggleComponentModule) : _defaultToggleComponentModule"
                 }
             });
@@ -326,12 +326,13 @@ exports.ListItem = Component.specialize({
                         });
                 }
             }).then(function (UIDescriptor) {
-                self.userInterfaceDescriptor = UIDescriptor; // trigger biddings.
+                self.userInterfaceDescriptor = UIDescriptor || self.userInterfaceDescriptor; // trigger biddings.
 
-                var iconComponentModuleId = self._iconModule ? self._iconModule.id : null,
-                    valueComponentModuleId = self._valueComponentModule ?
-                        self._valueComponentModule.id : null,    
-                    candidateValueComponentModuleId,    
+                var iconComponentModuleId = self._iconComponentModule ?
+                    self._iconComponentModule.id : null,
+                    toggleComponentModuleId = self._toggleComponentModule ?
+                        self._toggleComponentModule.id : null,    
+                    candidateToggleComponentModuleId,    
                     candidateIconComponentModuleId;
 
                 self._label = self.callDelegateMethod(
@@ -353,7 +354,7 @@ exports.ListItem = Component.specialize({
                 ) || self._description; // defined by a bidding expression
                                 
                 candidateIconComponentModuleId = self.callDelegateMethod(
-                    "listItemWillUseIconModuleIdForObjectAtRowIndex",
+                    "listItemWillUseIconComponentModuleIdForObjectAtRowIndex",
                     self,
                     iconComponentModuleId,
                     self.data,
@@ -365,13 +366,13 @@ exports.ListItem = Component.specialize({
                     iconComponentModuleId !== candidateIconComponentModuleId && self.delegate
                 ) {
                     infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
-                    self._iconModule = {
+                    self._iconComponentModule = {
                         require: infoDelegate.require || require,
                         id: candidateIconComponentModuleId
                     };
                 }
 
-                if (self._iconModule === self._montageIconComponentModule) {
+                if (self._iconComponentModule === self._montageIconComponentModule) {
                     self._iconSrc = self.callDelegateMethod(
                         "listItemWillUseIconSrcForObjectAtRowIndex",
                         self,
@@ -391,22 +392,22 @@ exports.ListItem = Component.specialize({
                     ) || self._iconName; // defined by a bidding expression
                 }
 
-                candidateValueComponentModuleId = self.callDelegateMethod(
-                    "listItemWillUseValueComponentModuleIdForObjectAtRowIndex",
+                candidateToggleComponentModuleId = self.callDelegateMethod(
+                    "listItemWillUseToggleComponentModuleIdForObjectAtRowIndex",
                     self,
-                    valueComponentModuleId,
+                    toggleComponentModuleId,
                     self.data,
                     self.rowIndex,
                     self.list
-                ) || valueComponentModuleId; // defined by a bidding expression
+                ) || toggleComponentModuleId; // defined by a bidding expression
 
-                if (candidateValueComponentModuleId &&
-                    valueComponentModuleId !== candidateValueComponentModuleId && self.delegate
+                if (candidateToggleComponentModuleId &&
+                    toggleComponentModuleId !== candidateToggleComponentModuleId && self.delegate
                 ) {
                     infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
-                    self._valueComponentModule = {
+                    self._toggleComponentModule = {
                         require: infoDelegate.require || require,
-                        id: candidateValueComponentModuleId
+                        id: candidateToggleComponentModuleId
                     };
                 }
                 
