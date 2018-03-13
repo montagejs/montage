@@ -47,7 +47,7 @@
             "prototype": "../placeholder.reel",
             "values": {
                 "element": {"#": "value"},
-                "componentModule": {"<-": "@owner.__value.defined() && !@owner.isNavigationEnabled ? @owner._valueComponentModule : null"},
+                "componentModule": {"<-": "@owner.__value.defined() ? @owner._valueComponentModule : null"},
                 "component.checked": {"<-": "@owner.__value"}
             }
         }
