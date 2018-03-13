@@ -6,7 +6,8 @@
         {
             "owner": {
                 "values": {
-                    "element": {"#": "main"}
+                    "element": {"#": "main"},
+                    "listItem38": {"@": "listItem38"}
                 }
             },
 
@@ -340,6 +341,59 @@
                     "data": {"<-": "@owner.settings[2]"},
                     "delegate": {"=": "@owner"}
                 }
+            },
+
+            "listItem35": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem35"},
+                    "data": {"<-": "@owner.employees[2]"},
+                    "delegate": {"=": "@owner"}
+                }
+            },
+
+            "listItem36": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem36"},
+                    "data": {"<-": "@owner.employees[3]"},
+                    "delegate": {"=": "@owner"}
+                }
+            },
+
+            "listItem37": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem37"},
+                    "data": {"<-": "@owner.employees[4]"},
+                    "delegate": {"=": "@owner"}
+                }
+            },
+
+            "listItem38": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem38"},
+                    "data": {"<-": "@owner.settings[1]"},
+                    "delegate": {"=": "@owner"}
+                }
+            },
+
+            "listItem39": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem39"},
+                    "data": {"<-": "@owner.stores[0]"}
+                }
+            },
+
+            "listItem40": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem40"},
+                    "data": {"<-": "@owner.check"},
+                    "delegate": {"=": "@owner"}
+                }
             }
 
         }
@@ -385,6 +439,12 @@
         <div data-montage-id="listItem32"></div>
         <div data-montage-id="listItem33"></div>
         <div data-montage-id="listItem34"></div>
+        <div data-montage-id="listItem35"></div>
+        <div data-montage-id="listItem36"></div>
+        <div data-montage-id="listItem37"></div>
+        <div data-montage-id="listItem38"></div>
+        <div data-montage-id="listItem39"></div>
+        <div data-montage-id="listItem40"></div>
 
     </div>
 </body>

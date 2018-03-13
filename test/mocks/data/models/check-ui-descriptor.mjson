@@ -1,0 +1,13 @@
+{
+    "root": {
+        "prototype": "core/meta/user-interface-descriptor",
+        "values": {
+            "nameExpression": "label",
+            "descriptionExpression": "description",
+            "valueExpression": "value",
+            "toggleComponentModule": {
+                "%": "test/mocks/data/icons/check.reel"
+            }
+        }
+    }
+}

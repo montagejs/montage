@@ -59,6 +59,18 @@ exports.ListItem = Component.specialize({
         }
     },
 
+    _templateDidLoad: {
+        value: false
+    },
+
+    templateDidLoad: {
+        value: function () {
+            //FIXME: not safe!
+            this._templateDidLoad = true;
+            this._getUserInterfaceDescriptorIfNeeded();
+        }
+    },
+
     _value: {
         value: null
     },
@@ -142,12 +154,7 @@ exports.ListItem = Component.specialize({
         set: function(data) {
             if (this._data !== data) {
                 this._data = data;
-
-                if (data) {
-                    this._getUserInterfaceDescriptor(data);
-                }
-
-                this.needsDraw = true;
+                this._getUserInterfaceDescriptorIfNeeded();
             }
         }
     },
@@ -250,6 +257,15 @@ exports.ListItem = Component.specialize({
             }
             
             this.value = checked;
+        }
+    },
+
+    _getUserInterfaceDescriptorIfNeeded: {
+        value: function () {
+            if (this.data && this._templateDidLoad) {
+                this._getUserInterfaceDescriptor(this.data);
+                this.needsDraw = true;
+            }
         }
     },
 

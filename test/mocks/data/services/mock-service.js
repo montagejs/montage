@@ -2,6 +2,7 @@ var Montage = require("montage").Montage,
     Employee = require('../models/employee').Employee,
     Store = require('../models/store').Store,
     Settings = require('../models/settings').Settings,
+    Check = require('../models/check').Check,
     Customer = require('../models/customer').Customer,
     Department = require('../models/department').Department;    
 
@@ -151,6 +152,12 @@ exports.MockService = Montage.specialize({
                 new Customer('Shane', 'Byrd', 'Montreal', true),
                 new Customer('Marcus', 'Walters', 'Shanghai')
             ];
+        }
+    },
+
+    fetchCheck: {
+        value: function () {
+            return new Check();
         }
     }
 

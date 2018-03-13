@@ -22,6 +22,10 @@ exports.Settings = Montage.specialize({
         }
     },
 
+    description: {
+        value: null
+    },
+
     label: {
         value: null
     },
