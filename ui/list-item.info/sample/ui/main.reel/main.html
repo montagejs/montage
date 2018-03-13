@@ -40,9 +40,8 @@
                 "prototype": "montage/ui/list-item.reel",
                 "values": {
                     "element": {"#": "listItem4"},
-                    "label": "Item 4",
-                    "description": "description + isNavigationEnabled set to true",
-                    "isNavigationEnabled": true
+                    "label": "Item 4 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempor leo ultricies, accumsan arcu in, sollicitudin purus. Curabitur est lorem, ornare quis ipsum ac, auctor semper nisl. Proin a elit enim Suspendisse vitae leo sed orci hendrerit gravida. Cras imperdiet nunc eu tortor malesuada lobortis. Cras mattis, metus nec suscipit.",
+                    "description": "description"
                 }
             },
 
@@ -51,8 +50,7 @@
                 "values": {
                     "element": {"#": "listItem5"},
                     "label": "Item 5",
-                    "description": "description + descriptionPosition set to bottom",
-                    "descriptionPosition": "bottom"
+                    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempor leo ultricies, accumsan arcu in, sollicitudin purus. Curabitur est lorem, ornare quis ipsum ac, auctor semper nisl. Proin a elit enim Suspendisse vitae leo sed orci hendrerit gravida. Cras imperdiet nunc eu tortor malesuada lobortis. Cras mattis, metus nec suscipit."
                 }
             },
 
@@ -60,10 +58,8 @@
                 "prototype": "montage/ui/list-item.reel",
                 "values": {
                     "element": {"#": "listItem6"},
-                    "label": "Item 6",
-                    "description": "description + descriptionPosition set to bottom + isNavigationEnabled set to true",
-                    "isNavigationEnabled": true,
-                    "descriptionPosition": "bottom"
+                    "label": "Item 6 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempor leo ultricies, accumsan arcu in, sollicitudin purus. Curabitur est lorem, ornare quis ipsum ac, auctor semper nisl. Proin a elit enim Suspendisse vitae leo sed orci hendrerit gravida. Cras imperdiet nunc eu tortor malesuada lobortis. Cras mattis, metus nec suscipit.",
+                    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempor leo ultricies, accumsan arcu in, sollicitudin purus. Curabitur est lorem, ornare quis ipsum ac, auctor semper nisl. Proin a elit enim Suspendisse vitae leo sed orci hendrerit gravida. Cras imperdiet nunc eu tortor malesuada lobortis. Cras mattis, metus nec suscipit."
                 }
             },
 
@@ -72,7 +68,8 @@
                 "values": {
                     "element": {"#": "listItem7"},
                     "label": "Item 7",
-                    "value": true
+                    "isNavigationEnabled": true,
+                    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempor leo ultricies, accumsan arcu in, sollicitudin purus. Curabitur est lorem, ornare quis ipsum ac, auctor semper nisl. Proin a elit enim Suspendisse vitae leo sed orci hendrerit gravida. Cras imperdiet nunc eu tortor malesuada lobortis. Cras mattis, metus nec suscipit."
                 }
             },
 
@@ -81,17 +78,19 @@
                 "values": {
                     "element": {"#": "listItem8"},
                     "label": "Item 8",
-                    "value": false
+                    "value": true,
+                    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempor leo ultricies, accumsan arcu in, sollicitudin purus. Curabitur est lorem, ornare quis ipsum ac, auctor semper nisl. Proin a elit enim Suspendisse vitae leo sed orci hendrerit gravida. Cras imperdiet nunc eu tortor malesuada lobortis. Cras mattis, metus nec suscipit."
                 }
             },
 
-            "listItem9": {
+             "listItem9": {
                 "prototype": "montage/ui/list-item.reel",
                 "values": {
                     "element": {"#": "listItem9"},
                     "label": "Item 9",
-                    "value": {"<->": "!!@owner.item9Value"},
-                    "description":  {"<-": "!!@owner.item9Value ? 'ON' : 'OFF'"}
+                    "value": true,
+                    "isNavigationEnabled": true,
+                    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempor leo ultricies, accumsan arcu in, sollicitudin purus. Curabitur est lorem, ornare quis ipsum ac, auctor semper nisl. Proin a elit enim Suspendisse vitae leo sed orci hendrerit gravida. Cras imperdiet nunc eu tortor malesuada lobortis. Cras mattis, metus nec suscipit."
                 }
             },
 
@@ -100,9 +99,8 @@
                 "values": {
                     "element": {"#": "listItem10"},
                     "label": "Item 10",
-                    "value": {"<->": "!!@owner.item10Value"},
-                    "description":  {"<-": "!!@owner.item10Value ? 'ON' : 'OFF'"},
-                    "descriptionPosition": "bottom"
+                    "description": "description + isNavigationEnabled set to true",
+                    "isNavigationEnabled": true
                 }
             },
 
@@ -111,10 +109,8 @@
                 "values": {
                     "element": {"#": "listItem11"},
                     "label": "Item 11",
-                    "value": {"<->": "!!@owner.item11Value"},
-                    "description":  {"<-": "!!@owner.item11Value ? 'ON' : 'OFF'"},
-                    "descriptionPosition": "bottom",
-                    "isNavigationEnabled": true
+                    "description": "description + descriptionPosition set to bottom",
+                    "descriptionPosition": "bottom"
                 }
             },
 
@@ -123,7 +119,9 @@
                 "values": {
                     "element": {"#": "listItem12"},
                     "label": "Item 12",
-                    "iconName": "home"
+                    "description": "description + descriptionPosition set to bottom + isNavigationEnabled set to true",
+                    "isNavigationEnabled": true,
+                    "descriptionPosition": "bottom"
                 }
             },
 
@@ -132,8 +130,7 @@
                 "values": {
                     "element": {"#": "listItem13"},
                     "label": "Item 13",
-                    "iconName": "home",
-                    "description": "description"
+                    "value": true
                 }
             },
 
@@ -142,9 +139,7 @@
                 "values": {
                     "element": {"#": "listItem14"},
                     "label": "Item 14",
-                    "iconName": "home",
-                    "description": "description",
-                    "isNavigationEnabled": true
+                    "value": false
                 }
             },
 
@@ -153,10 +148,8 @@
                 "values": {
                     "element": {"#": "listItem15"},
                     "label": "Item 15",
-                    "iconName": "home",
-                    "description": "description",
-                    "descriptionPosition": "bottom",
-                    "isNavigationEnabled": true
+                    "value": {"<->": "!!@owner.item15Value"},
+                    "description":  {"<-": "!!@owner.item15Value ? 'ON' : 'OFF'"}
                 }
             },
 
@@ -165,8 +158,9 @@
                 "values": {
                     "element": {"#": "listItem16"},
                     "label": "Item 16",
-                    "iconSrc": "../../../test/mocks/data/icons/svgs/logistics.svg",
-                    "description": "description + icon src"
+                    "value": {"<->": "!!@owner.item16Value"},
+                    "description":  {"<-": "!!@owner.item16Value ? 'ON' : 'OFF'"},
+                    "descriptionPosition": "bottom"
                 }
             },
 
@@ -175,10 +169,10 @@
                 "values": {
                     "element": {"#": "listItem17"},
                     "label": "Item 17",
-                    "iconComponentModule": {
-                        "%": "montage/test/mocks/data/icons/department.reel"
-                    },
-                    "description": "description + icon module"
+                    "value": {"<->": "!!@owner.item17Value"},
+                    "description":  {"<-": "!!@owner.item17Value ? 'ON' : 'OFF'"},
+                    "descriptionPosition": "bottom",
+                    "isNavigationEnabled": true
                 }
             },
 
@@ -189,9 +183,7 @@
                     "label": "Item 18",
                     "value": {"<->": "!!@owner.item18Value"},
                     "description":  {"<-": "!!@owner.item18Value ? 'ON' : 'OFF'"},
-                    "toggleComponentModule": {
-                        "%": "montage/test/mocks/data/icons/check.reel"
-                    }
+                    "isNavigationEnabled": true
                 }
             },
 
@@ -200,7 +192,7 @@
                 "values": {
                     "element": {"#": "listItem19"},
                     "label": "Item 19",
-                    "active": true
+                    "iconName": "home"
                 }
             },
 
@@ -209,6 +201,83 @@
                 "values": {
                     "element": {"#": "listItem20"},
                     "label": "Item 20",
+                    "iconName": "home",
+                    "description": "description"
+                }
+            },
+
+            "listItem21": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem21"},
+                    "label": "Item 21",
+                    "iconName": "home",
+                    "description": "description",
+                    "isNavigationEnabled": true
+                }
+            },
+
+            "listItem22": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem22"},
+                    "label": "Item 22",
+                    "iconName": "home",
+                    "description": "description",
+                    "descriptionPosition": "bottom",
+                    "isNavigationEnabled": true
+                }
+            },
+
+            "listItem23": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem23"},
+                    "label": "Item 23",
+                    "iconSrc": "../../../test/mocks/data/icons/svgs/logistics.svg",
+                    "description": "description + icon src"
+                }
+            },
+
+            "listItem24": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem24"},
+                    "label": "Item 24",
+                    "iconComponentModule": {
+                        "%": "montage/test/mocks/data/icons/department.reel"
+                    },
+                    "description": "description + icon module"
+                }
+            },
+
+            "listItem25": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem25"},
+                    "label": "Item 25",
+                    "value": {"<->": "!!@owner.item25Value"},
+                    "description":  {"<-": "!!@owner.item25Value ? 'ON' : 'OFF'"},
+                    "toggleComponentModule": {
+                        "%": "montage/test/mocks/data/icons/check.reel"
+                    }
+                }
+            },
+
+            "listItem26": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem26"},
+                    "label": "Item 26",
+                    "active": true
+                }
+            },
+
+            "listItem27": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem27"},
+                    "label": "Item 27",
                     "selected": true
                 }
             }
@@ -240,10 +309,14 @@
         <div data-montage-id="listItem18"></div>
         <div data-montage-id="listItem19"></div>
         <div data-montage-id="listItem20"></div>
-
-        <h4>list item with object descriptor</h4>
         <div data-montage-id="listItem21"></div>
         <div data-montage-id="listItem22"></div>
+        <div data-montage-id="listItem23"></div>
+        <div data-montage-id="listItem24"></div>
+        <div data-montage-id="listItem25"></div>
+        <div data-montage-id="listItem26"></div>
+        <div data-montage-id="listItem27"></div>
+        <h4>list item with object descriptor</h4>
     </div>
 </body>
 </html>

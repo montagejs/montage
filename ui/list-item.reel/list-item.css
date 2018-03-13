@@ -1,5 +1,6 @@
 .ListItem {
-    padding-left: 1em;
+    padding-left: 8px;
+    padding-right: 8px;
     border-radius: 0;
     position: relative;
     color: #000;
@@ -31,7 +32,7 @@
 .ListItem.navigable:after {
     content: "\203A";
     position: absolute;
-    right: .5em;
+    right: 16px;
     top: 0;
     bottom: 0;
     font-size: 2em;
@@ -42,11 +43,20 @@
         -ms-flex-align: center;
             align-items: center;
     color: #C7C7CC;
-    margin-top: -.2em;
+    margin-top: -6px;
 }
 
-.ListItem.navigable .ListItem-text .ListItem-description {
-    margin-right: 1.85em;
+.ListItem.navigable .ListItem-text {
+    margin-right: 27px;
+}
+
+.ListItem.navigable.has-value .ListItem-text {
+    margin-right: 0;
+}
+
+.ListItem.navigable .ListItem-value {
+    font-size: .5em;
+    margin-right: 35px;
 }
 
 /** Icon **/
@@ -56,7 +66,7 @@
     min-height: 1.5em;
     max-width: 1.5em;
     max-height: 1.5em;
-    margin: .5em 1em .5em 0;
+    margin: 8px;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -78,29 +88,32 @@
         -ms-flex-align: center;
         align-items: center;
     position: relative;
-    margin-right: 1em;
+    overflow: hidden;
+}
+
+.ListItem .ListItem-text .ListItem-description,
+.ListItem .ListItem-text .ListItem-label {
+    padding-left: 8px;
+    padding-right: 8px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
 }
 
 .ListItem .ListItem-text .ListItem-label {
-    margin: 0;
     font-size: 1em;
     font-weight: 400;
 }
 
 .ListItem .ListItem-text .ListItem-description {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
     font-size: .85em;
-    line-height: normal;
     color: #8e9093;
-    margin: 0;
-    -webkit-box-pack: end;
-    -ms-flex-pack: end;
-    justify-content: flex-end;
+    text-align: right;
+    max-width: 35%;
 }
 
 /** Description position **/
@@ -119,16 +132,17 @@
 .ListItem.description-bottom .ListItem-text .ListItem-description,
 .ListItem.description-bottom .ListItem-text .ListItem-label {
     margin: 0 0 2px;
+    max-width: 90%;
+}
+
+.ListItem.description-bottom .ListItem-text .ListItem-description {
+    text-align: left;
 }
 
 /** Boolean Value **/
 
 .ListItem .ListItem-value {
-    font-size: .5em;
-    margin-right: 1.75em;
-}
-
-.ListItem.navigable .ListItem-value {
-    font-size: .5em;
-    margin-right: 4.85em;
+    font-size: .6em;
+    margin-right: 8px;
+    margin-left: 8px;
 }
