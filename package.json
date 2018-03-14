@@ -59,8 +59,7 @@
     "lodash.camelcase": "^4.3.0",
     "lodash.trim": "^4.5.1",
     "lodash.snakecase": "^4.1.1",
-    "proxy-polyfill": "~0.1.7",
-    "sanitize-html": "^1.18.2"
+    "proxy-polyfill": "~0.1.7"
   },
   "devDependencies": {
     "concurrently": "^3.4.0",

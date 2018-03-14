@@ -98,7 +98,7 @@ if (Object.hasOwnProperty('deepFreeze') === false) {
             
             for (var i = 0, length = propertyNames.length; i < length; i++) {
                 if ((property = object[propertyNames[i]]) !== null &&
-                    typeof property == 'object'
+                    typeof property === 'object'
                 ) {
                     Object.deepFreeze(property);
                 }
