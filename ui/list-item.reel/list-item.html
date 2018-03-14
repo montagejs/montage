@@ -22,7 +22,7 @@
             "prototype": "../placeholder.reel",
             "values": {
                 "element": {"#": "icon"},
-                "componentModule": {"<-": "@owner._iconComponentModule"},
+                "componentModule": {"<-": "@owner._montageIconComponentModule.id == @owner._iconComponentModule.id && !@owner._iconName && !@owner._iconSrc ? null : @owner._iconComponentModule"},
                 "component.name": {"<-": "@owner._iconName"},
                 "component.src": {"<-": "@owner._iconSrc"}
             }

@@ -61,11 +61,7 @@
 
 /** Icon **/
 
-.ListItem .ListItem-icon {
-    min-width: 1.5em;
-    min-height: 1.5em;
-    max-width: 1.5em;
-    max-height: 1.5em;
+.ListItem .ListItem-icon > * {
     margin: 8px;
     display: -webkit-box;
     display: -ms-flexbox;

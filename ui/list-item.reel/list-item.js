@@ -25,8 +25,7 @@ exports.ListItem = Component.specialize({
                         "path(userInterfaceDescriptor.iconExpression || null)) : iconSrc"
                 },
                 "_defaultIconComponenModule": {
-                    "<-": "_iconName || _iconSrc || iconComponentModule ? " +
-                        "(iconComponentModule || _montageIconComponentModule) : null"
+                    "<-": "iconComponentModule || _montageIconComponentModule"
                 },
                 "_iconComponentModule": {
                     "<-": "data.defined() && userInterfaceDescriptor.defined() ? " +
@@ -67,7 +66,7 @@ exports.ListItem = Component.specialize({
         value: function () {
             //FIXME: not safe!
             this._templateDidLoad = true;
-            this._getUserInterfaceDescriptorIfNeeded();
+            this._loadDataUserInterfaceDescriptorIfNeeded();
         }
     },
 
@@ -154,7 +153,7 @@ exports.ListItem = Component.specialize({
         set: function(data) {
             if (this._data !== data) {
                 this._data = data;
-                this._getUserInterfaceDescriptorIfNeeded();
+                this._loadDataUserInterfaceDescriptorIfNeeded();
             }
         }
     },
@@ -260,12 +259,11 @@ exports.ListItem = Component.specialize({
         }
     },
 
-    _getUserInterfaceDescriptorIfNeeded: {
+    _loadDataUserInterfaceDescriptorIfNeeded: {
         value: function () {
             if (this.data && this._templateDidLoad) {
-                this._getUserInterfaceDescriptor(this.data);
-                this.needsDraw = true;
-            }
+                return this._getUserInterfaceDescriptor(this.data);
+            }  
         }
     },
 
@@ -281,69 +279,75 @@ exports.ListItem = Component.specialize({
 
             this.canDrawGate.setField(this.constructor.CAN_DRAW_FIELD, false);
 
-            if (typeof data === "object" &&
-                (constructor = data.constructor) &&
-                constructor.objectDescriptorModuleId
-            ) {
-                objectDescriptorModuleId = constructor.objectDescriptorModuleId;
-            }
-
-            objectDescriptorModuleIdCandidate = this.callDelegateMethod(
-                "listItemWillUseObjectDescriptorModuleIdForObjectAtRowIndex",
-                this,
-                objectDescriptorModuleId,
-                this.data,
-                this.rowIndex,
-                this.list
-            ) || this._label;
-
-            if (objectDescriptorModuleIdCandidate) {
-                infoDelegate = Montage.getInfoForObject(this.delegate);
-                objectDescriptorModuleId = objectDescriptorModuleIdCandidate;
-            }
-
-            if (objectDescriptorModuleId) {
-                if (objectDescriptorModuleIdCandidate) {
-                    objectDescriptor = getObjectDescriptorWithModuleId(
-                        objectDescriptorModuleId,
-                        infoDelegate ? infoDelegate.require : require
-                    );
-                } else {
-                    objectDescriptor = constructor.objectDescriptor;
-                }
-
-                promise = objectDescriptor;
-            } else {
-                promise = Promise.resolve();
-            }
-
-            return promise.then(function (objectDescriptor) {
-                var userInterfaceDescriptorModuleId = objectDescriptor &&
-                    objectDescriptor.userInterfaceDescriptorModule ?
-                    objectDescriptor.userInterfaceDescriptorModule.id : null;
-
-                userInterfaceDescriptorModuleId = self.callDelegateMethod(
-                    "listItemWillUseUserInterfaceDescriptorModuleIdForObjectAtRowIndex",
-                    self,
-                    userInterfaceDescriptorModuleId,
-                    self.data,
-                    self.rowIndex,
-                    self.list
-                ) || userInterfaceDescriptorModuleId;
-
-                if (objectDescriptor && objectDescriptor.userInterfaceDescriptorModule &&
-                    objectDescriptor.userInterfaceDescriptorModule.id === userInterfaceDescriptorModuleId
+            if (!this.userInterfaceDescriptor) {
+                if (typeof data === "object" &&
+                    (constructor = data.constructor) &&
+                    constructor.objectDescriptorModuleId
                 ) {
-                    return objectDescriptor.userInterfaceDescriptor;
-                } else if (userInterfaceDescriptorModuleId) {
-                    infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
-
-                    return (infoDelegate.require || require).async(userInterfaceDescriptorModuleId)
-                        .then(function (userInterfaceDescriptorModule) {
-                            return userInterfaceDescriptorModule.montageObject;
-                        });
+                    objectDescriptorModuleId = constructor.objectDescriptorModuleId;
                 }
-            }).then(function (UIDescriptor) {
+
+                objectDescriptorModuleIdCandidate = this.callDelegateMethod(
+                    "listItemWillUseObjectDescriptorModuleIdForObjectAtRowIndex",
+                    this,
+                    objectDescriptorModuleId,
+                    this.data,
+                    this.rowIndex,
+                    this.list
+                );
+
+                if (objectDescriptorModuleIdCandidate) {
+                    infoDelegate = Montage.getInfoForObject(this.delegate);
+                    objectDescriptorModuleId = objectDescriptorModuleIdCandidate;
+                }
+
+                if (objectDescriptorModuleId) {
+                    if (objectDescriptorModuleIdCandidate) {
+                        objectDescriptor = getObjectDescriptorWithModuleId(
+                            objectDescriptorModuleId,
+                            infoDelegate ? infoDelegate.require : require
+                        );
+                    } else {
+                        objectDescriptor = constructor.objectDescriptor;
+                    }
+
+                    promise = objectDescriptor;
+                } else {
+                    promise = Promise.resolve();
+                }
+
+                promise = promise.then(function (objectDescriptor) {
+                    var userInterfaceDescriptorModuleId = objectDescriptor &&
+                        objectDescriptor.userInterfaceDescriptorModule ?
+                        objectDescriptor.userInterfaceDescriptorModule.id : null;
+
+                    userInterfaceDescriptorModuleId = self.callDelegateMethod(
+                        "listItemWillUseUserInterfaceDescriptorModuleIdForObjectAtRowIndex",
+                        self,
+                        userInterfaceDescriptorModuleId,
+                        self.data,
+                        self.rowIndex,
+                        self.list
+                    ) || userInterfaceDescriptorModuleId;
+
+                    if (objectDescriptor && objectDescriptor.userInterfaceDescriptorModule &&
+                        objectDescriptor.userInterfaceDescriptorModule.id === userInterfaceDescriptorModuleId
+                    ) {
+                        return objectDescriptor.userInterfaceDescriptor;
+                    } else if (userInterfaceDescriptorModuleId) {
+                        infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
+
+                        return (infoDelegate.require || require).async(userInterfaceDescriptorModuleId)
+                            .then(function (userInterfaceDescriptorModule) {
+                                return userInterfaceDescriptorModule.montageObject;
+                            });
+                    }
+                });
+            } else {
+                promise = Promise.resolve(this.userInterfaceDescriptor);
+            }
+            
+            return promise.then(function (UIDescriptor) {
                 self.userInterfaceDescriptor = UIDescriptor || self.userInterfaceDescriptor; // trigger biddings.
 
                 var iconComponentModuleId = self._iconComponentModule ?
@@ -448,7 +452,6 @@ exports.ListItem = Component.specialize({
                 ) || self.isNavigationEnabled; // default value
 
                 self.canDrawGate.setField(self.constructor.CAN_DRAW_FIELD, true);
-                self.needsDraw = true;
             });
         }
     }
