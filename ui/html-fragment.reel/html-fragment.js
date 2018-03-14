@@ -53,19 +53,6 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
         }
     },
 
-    _options: {
-        value: null
-    },
-
-    options: {
-        set: function (options) {
-            this._options = options;
-        },
-        get: function () {
-            return this._options || defaultOptions;
-        }
-    },
-
     allowedTags: {
         value: null
     },
@@ -86,7 +73,7 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
                 options.allowedAttributes = this.allowedAttributes;
             }
 
-            return Object.assign({}, this.options, options);
+            return Object.assign({}, defaultOptions, options);
         }
     },
 
