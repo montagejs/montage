@@ -1,8 +1,6 @@
-html, body, .Main {
+html, body {
     padding: 0;
     margin: 0;
-    height: 100%;
-    width: 100%;
     font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
      -webkit-user-select: none;
     -khtml-user-select: none;
@@ -12,19 +10,25 @@ html, body, .Main {
 }
 
 .Main {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    padding: 20px;
 }
 
 header {
-    padding: 60px 0;
+    padding: 20px 0 60px 0;
     font-size: 2rem;
     text-align: center;
     color: #33495d;
     height: 40px;
+}
+
+h4 {
+    text-align: center;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .List {

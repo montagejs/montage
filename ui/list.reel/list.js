@@ -4,47 +4,72 @@ exports.List = Component.specialize({
 
     templateDidLoad: {
         value: function () {
-            this.addPathChangeListener(
-                "context.selectedObject", this, "handleSelectedObjectChange"
-            );
-
             this.isNavigationEnabled = this.callDelegateMethod(
                 "shouldListEnableNavigation",
                 this,
                 this.isNavigationEnabled,
-                this._repetition.content
-            ) || this.isNavigable;
+                this.data
+            ) || this.isNavigationEnabled;
+
+            this.isSelectionEnabled = this.callDelegateMethod(
+                "shouldListEnableSelection",
+                this,
+                this.isSelectionEnabled,
+                this.data
+            ) || this.isSelectionEnabled;
+
+            this.allowsMultipleSelection = this.callDelegateMethod(
+                "shouldListAllowMultipleSelectionn",
+                this,
+                this.allowsMultipleSelection,
+                this.data
+            ) || this.allowsMultipleSelection;
         }
     },
 
-    isNavigationEnabled: {
-        value: false
-    },
-
     /**
-     Description TODO
-     @private
+     * Description TODO
+     * @private
      */
     _repetition: {
         value: null
     },
 
-    contentController: {
+    /**
+     * Description TODO
+     * @public
+     */
+    userInterfaceDescriptor: {
         value: null
     },
 
     /**
-     Description TODO
-     @public
+     * Description TODO
+     * @public
+     */
+    data: {
+        value: null
+    },
+
+    /**
+     * Description TODO
+     * @public
+     */
+    isNavigationEnabled: {
+        value: false
+    },
+
+     /**
+     * Description TODO
+     * @public
      */
     isSelectionEnabled: {
         value: false
     },
 
     /**
-     FIXME: can't bind a property already bound! 
-     https://github.com/montagejs/montage/issues/1932
-     @public
+     * Description TODO
+     * @public
      */
     allowsMultipleSelection: {
         value: false
@@ -56,27 +81,6 @@ exports.List = Component.specialize({
      */
     delegate: {
         value: null
-    },
-
-    handleSelectedObjectChange: {
-        value: function (value) {
-            if (this._repetition && this._repetition.selection) {
-                if (value) {
-                    if (this._repetition.selection.indexOf(value) === -1) {
-                        this._repetition.selection.clear();
-                        this._repetition.selection.push(value);
-                    }
-                } else if (this._repetition.selection.length) {
-                    this._repetition.selection.clear();
-                }
-            }
-
-            // odd issue although the change is detected the value selectedObject 
-            // is not updated.
-            if (this.data) {
-                this.data.selectedObject = value;
-            }
-        }
     }
 
 });

@@ -10,68 +10,90 @@
                 }
             },
 
-            "contentController": {
-                "prototype": "montage/core/range-controller",
-                "values": {
-                    "content": {"<-": "@owner.content"}
-                }
-            },
-
-            "list": {
-                "prototype": "montage/ui/list.reel",
-                "values": {
-                    "element": {"#": "list"},
-                    "contentController": {"<-": "@contentController"}
-                }
-            },
-
-            "listItem": {
-                "prototype": "montage/ui/list-item.reel",
-                "values": {
-                    "element": {"#": "item"},
-                    "label": {"<-": "@list:iteration.object.lastname + ' ' + @list:iteration.object.firstname"},
-                    "description": {"<-": "@list:iteration.object.department"}
-                }
-            },
-
-            "contentControllerUI": {
-                "prototype": "montage/core/range-controller",
-                "values": {
-                    "content": {"<-": "@owner.content"}
-                }
-            },
-
-            "listUI": {
-                "prototype": "montage/ui/list.reel",
-                "values": {
-                    "element": {"#": "list-ui"},
-                    "contentController": {"<-": "@contentControllerUI"}
-                }
-            },
-
-            "listItemUI": {
-                "prototype": "montage/ui/list-item.reel",
-                "values": {
-                    "element": {"#": "item-ui"},
-                    "data": {"<-": "@listUI:iteration.object"}
-                }
-            },
-
             "allowMultipeSelection": {
                 "prototype": "montage/ui/checkbox.reel",
                 "values": {
-                    "element": {"#": "allowMultipeSelection"},
-                    "checked": {"<->": "!!@contentController.allowsMultipleSelection"},
-                    "checked": {"<->": "!!@contentControllerUI.allowsMultipleSelection"}
+                    "element": {"#": "allowMultipeSelection"}
                 }
             },
 
             "isSelectionEnabled": {
                 "prototype": "montage/ui/checkbox.reel",
                 "values": {
-                    "element": {"#": "isSelectionEnabled"},
-                    "checked": {"<->": "!!@list.isSelectionEnabled"},
-                    "checked": {"<->": "!!@listUI.isSelectionEnabled"}
+                    "element": {"#": "isSelectionEnabled"}
+                }
+            },
+
+            "isNavigationEnabled": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "isNavigationEnabled"}
+                }
+            },
+
+            "list1": {
+                "prototype": "montage/ui/list.reel",
+                "values": {
+                    "element": {"#": "list1"},
+                    "data": {"<-": "@owner.strings"},
+                    "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
+                    "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"},
+                    "isNavigationEnabled": {"<-": "!!@isNavigationEnabled.checked"}
+                }
+            },
+            
+            "list2": {
+                "prototype": "montage/ui/list.reel",
+                "values": {
+                    "element": {"#": "list2"},
+                    "data": {"<-": "@owner.employees"},
+                    "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
+                    "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"},
+                    "isNavigationEnabled": {"<-": "!!@isNavigationEnabled.checked"}
+                }
+            },
+
+            "listItem2": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem2"},
+                    "label": {"<-": "@list2:iteration.object.lastname"},
+                    "description": {"<-": "@list2:iteration.object.department"},
+                    "isNavigationEnabled": {"<-": "@list2.isNavigationEnabled"}
+                }
+            },
+
+            "list3": {
+                "prototype": "montage/ui/list.reel",
+                "values": {
+                    "element": {"#": "list3"},
+                    "data": {"<-": "@owner.employees"},
+                    "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
+                    "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"},
+                    "isNavigationEnabled": {"<-": "!!@isNavigationEnabled.checked"}
+                }
+            },
+
+            "list4": {
+                "prototype": "montage/ui/list.reel",
+                "values": {
+                    "element": {"#": "list4"},
+                    "delegate": {"@": "owner"},
+                    "data": {"<-": "@owner.customers"},
+                    "userInterfaceDescriptor": {"<-": "@owner.customerUIDescriptor"},
+                    "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
+                    "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"}
+                }
+            },
+
+             "list1": {
+                "prototype": "montage/ui/list.reel",
+                "values": {
+                    "element": {"#": "list1"},
+                    "data": {"<-": "@owner.strings"},
+                    "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
+                    "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"},
+                    "isNavigationEnabled": {"<-": "!!@isNavigationEnabled.checked"}
                 }
             }
 
@@ -80,18 +102,9 @@
 </head>
 <body>
     <div data-montage-id="main" class="Main">
-        <header>List Sample</header>
-        <div data-montage-id="list">
-            <div data-montage-id="item"></div>
-        </div>
-
-        <header>List Sample User Interface descriptor</header>
-        <div data-montage-id="list-ui">
-            <div data-montage-id="item-ui"></div>
-        </div>
-
+        <header>List Samples</header>
+        <h4>Options:</h4>
         <div class="options">
-            <h2>Options: </h2>
             <p>
                 <span>Enable Selection: </span>
                 <input type="checkbox" data-montage-id="isSelectionEnabled" />
@@ -100,7 +113,25 @@
                 <span>Allow Multipe Selection: </span>
                 <input type="checkbox" data-montage-id="allowMultipeSelection" />
             </p>
+            <p>
+                <span>Allow Navigation: </span>
+                <input type="checkbox" data-montage-id="isNavigationEnabled" />
+            </p>
         </div>
+
+        <h4>List with default list item</h4>
+        <div data-montage-id="list1"></div>
+
+        <h4>List with injected list item </h4>
+        <div data-montage-id="list2">
+            <div data-montage-id="listItem2"></div>
+        </div>
+
+        <h4>List with default list item and user interface descriptor</h4>
+        <div data-montage-id="list3"></div>
+
+        <h4>List with custom list item from user interface descriptor</h4>
+        <div data-montage-id="list4"></div>
     </div>
 </body>
 </html>

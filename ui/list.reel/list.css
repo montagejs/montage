@@ -20,7 +20,20 @@
     margin: 0;
 }
 
-.List .item.selected,
-.List .item.selected .ListItem {
-    background-color: #d9d9d9;
+.List .item .ListItem {
+    border: none;
+}
+
+.List .List-repetition > .ListItem {
+    border: none;
+    border-bottom: 1px solid #c8c7cc;
+}
+
+.List .item {
+    border-bottom: 1px solid #c8c7cc;
+}
+
+.List .item:last-of-type,
+.List .List-repetition > .ListItem:last-of-type {
+    border: none;
 }
