@@ -6,6 +6,7 @@
     background-size: contain;
     background-repeat: no-repeat;
     display: inline-block;
+    background-position: center; 
 }
 
 .Montage-icon[hidden] {
