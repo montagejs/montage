@@ -67,22 +67,6 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
         }
     },
 
-    _getSanitizerOptions: {
-        value: function () {
-            var options = {};
-
-            if (this.allowedTags) {
-                options.allowedTags = this.allowedTags;
-            }
-
-            if (this.allowedAttributes) {
-                options.allowedAttributes = this.allowedAttributes;
-            }
-
-            return Object.assign({}, defaultOptions, options);
-        }
-    },
-
     _sanitizeNode: {
         value: function (parent, allowedTags, allowedAttributes) {
             if (parent) {
@@ -169,7 +153,7 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
     },
 
     _sanitizeHtml: {
-        value: function (html, options) {
+        value: function (html, allowedTags, allowedAttributes) {
             var doc;
 
             if (window.DOMParser) {
@@ -182,14 +166,14 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
                 if (doc) {
                     this._sanitizeNode(
                         doc.body,
-                        options.allowedTags,
-                        options.allowedAttributes
+                        allowedTags,
+                        allowedAttributes
                     );
 
                     this._sanitizeNode(
                         doc.head,
-                        options.allowedTags,
-                        options.allowedAttributes
+                        allowedTags,
+                        allowedAttributes
                     );
                 }
             }
@@ -202,7 +186,9 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
         value: function () {
             if (this.value && this.needsSanitizeHtml) {
                 var doc = this._sanitizeHtml(
-                    this.value, this._getSanitizerOptions()
+                    this.value,
+                    this.allowedTags || defaultOptions.allowedTags,
+                    this.allowedAttributes || defaultOptions.allowedAttributes
                 );
 
                 if (doc) {
