@@ -35,7 +35,7 @@ exports.ListItem = Component.specialize({
                 "_label": {
                     "<-": "data.defined() && userInterfaceDescriptor.defined() ? " +
                         "(data.path(userInterfaceDescriptor.nameExpression) || " +
-                        "label) : label"
+                        "label) : (label || data)"
                 },
                 "_description": {
                     "<-": "data.defined() && userInterfaceDescriptor.defined() ? " +
