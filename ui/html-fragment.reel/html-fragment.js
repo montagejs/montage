@@ -25,12 +25,6 @@ var Component = require("ui/component").Component,
  */
 var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFragment# */ {
 
-    initWithOptions: {
-        value: function (options) {
-            this.options = options;
-        }
-    },
-
     _value: {
         value: null
     },
@@ -59,6 +53,18 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
 
     allowedAttributes: {
         value: null
+    },
+
+    defaultAllowedTags: {
+        get: function () {
+            return defaultOptions.allowedTags;
+        }
+    },
+
+    defaultAllowedAttributes: {
+        get: function () {
+            return defaultOptions.allowedAttributes;
+        }
     },
 
     _getSanitizerOptions: {
@@ -162,7 +168,7 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
         }
     },
 
-    sanitizeHtml: {
+    _sanitizeHtml: {
         value: function (html, options) {
             var doc;
 
@@ -170,20 +176,22 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
                 try {
                     doc = new DOMParser().parseFromString(html, "text/html");
                 } catch (DOMParserError) {
-                    // Ignore error
+                    console.error(DOMParserError);
                 }
 
-                this._sanitizeNode(
-                    doc.body,
-                    options.allowedTags,
-                    options.allowedAttributes
-                );
+                if (doc) {
+                    this._sanitizeNode(
+                        doc.body,
+                        options.allowedTags,
+                        options.allowedAttributes
+                    );
 
-                this._sanitizeNode(
-                    doc.head,
-                    options.allowedTags,
-                    options.allowedAttributes
-                );
+                    this._sanitizeNode(
+                        doc.head,
+                        options.allowedTags,
+                        options.allowedAttributes
+                    );
+                }
             }
 
             return doc;
@@ -193,7 +201,7 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
     draw: {
         value: function () {
             if (this.value && this.needsSanitizeHtml) {
-                var doc = this.sanitizeHtml(
+                var doc = this._sanitizeHtml(
                     this.value, this._getSanitizerOptions()
                 );
 
