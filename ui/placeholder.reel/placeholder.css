@@ -1,3 +1,4 @@
-.Placeholder[hidden] {
+.Placeholder[hidden], 
+.Placeholder:empty {
     display: none !important;
 }
