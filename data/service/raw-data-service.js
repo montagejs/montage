@@ -284,6 +284,24 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     /**
+     *
+     * Resets the object to its last known state.
+     *
+     * @method
+     * @argument {Object} object   - The object to reset.
+     * @returns {external:Promise} - A promise fulfilled when the object has
+     * been reset to its last known state.
+     *
+     */
+    resetDataObject: {
+        value: function (object) {
+            var snapshot = this.snapshotForObject(object),
+                result = this._mapRawDataToObject(snapshot, object);
+            return result || Promise.resolve(object);
+        }
+    },
+
+    /**
      * Subclasses should override this method to delete a data object when that
      * object's raw data would be useful to perform the deletion.
      *
@@ -758,27 +776,6 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * Convert raw data to data objects of an appropriate type.
      *
      * Subclasses should override this method to map properties of the raw data
-     * to data objects:
-     * @method
-     * @argument {Object} record - An object whose properties' values hold
-     *                             the raw data.
-     * @argument {Object} object - An object whose properties must be set or
-     *                             modified to represent the raw data.
-     * @argument {?} context     - The value that was passed in to the
-     *                             [addRawData()]{@link RawDataService#addRawData}
-     *                             call that invoked this method.
-     */
-
-
-    mapRawDataToObject: {
-        value: function (rawData, object, context) {
-            return this.mapFromRawData(object, rawData, context);
-        }
-    },
-    /**
-     * Convert raw data to data objects of an appropriate type.
-     *
-     * Subclasses should override this method to map properties of the raw data
      * to data objects, as in the following:
      *
      *     mapRawDataToObject: {
@@ -808,6 +805,12 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      *                             [addRawData()]{@link RawDataService#addRawData}
      *                             call that invoked this method.
      */
+     mapRawDataToObject: {
+        value: function (rawData, object, context) {
+            // return this.mapFromRawData(object, record, context);
+        }
+    },
+
     _mapRawDataToObject: {
         value: function (record, object, context) {
             var self = this,

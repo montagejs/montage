@@ -56,7 +56,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     deserializeSelf: {
         value:function (deserializer) {
             var self = this,
-                result = null, 
+                result = null,
                 value;
 
             value = deserializer.getProperty("childServices");
@@ -86,7 +86,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (value) {
                 this.delegate = value;
             }
-            
+
             return result;
         }
     },
@@ -1890,6 +1890,26 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (object) {
             var saved = !this.createdDataObjects.has(object);
             return this._updateDataObject(object, saved && "deleteDataObject");
+        }
+    },
+
+    /**
+     * Resets an object to the last value in the snapshot.
+     * @method
+     * @argument {Object} object - The object who will be reset.
+     * @returns {external:Promise} - A promise fulfilled when the object has
+     * been mapped back to its last known state.
+     */
+    resetDataObject: {
+        value: function (object) {
+            var service = this._getChildServiceForObject(object),
+                promise;
+
+            if (service) {
+                promise = service.resetDataObject(object);
+            }
+
+            return promise;
         }
     },
 
