@@ -24,7 +24,7 @@ var Placeholder = exports.Placeholder = Slot.specialize({
         value: true
     },
 
-    needsFetchingComponent: {
+    _needsFetchingComponent: {
         value: false
     },
 
@@ -38,12 +38,12 @@ var Placeholder = exports.Placeholder = Slot.specialize({
         },
         set: function (value) {
             if (this._componentModule !== value) {
-                this._componentModule = value;
-
                 if (value) {
-                    this.needsFetchingComponent = true;
-                    this.needsDraw = true;
+                    this._needsFetchingComponent = true;
                 }
+
+                this._componentModule = value;
+                this.needsDraw = true;
             }
         }
     },
@@ -58,16 +58,25 @@ var Placeholder = exports.Placeholder = Slot.specialize({
         },
         set: function (data) {
             if (this._data !== data) {
-                this._data = data;
-
-                if (this._componentModule) {
-                    this.needsFetchingComponent = true;
-                    this.needsDraw = true;
+                if (data) {
+                    this._needsFetchingComponent = true;
                 }
+
+                this._data = data;
+                this.needsDraw = true;
             }
         }
     },
 
+    enterDocument: {
+        value: function () {
+            if (this.componentModule && !this.compoennt) {
+                this._needsFetchingComponent = true;
+                this.needsDraw = true;
+            }
+        }
+    },
+    
     exitDocument: {
         value: function () {
             // Reset content to ensure that component is detached from component tree
@@ -78,33 +87,48 @@ var Placeholder = exports.Placeholder = Slot.specialize({
 
     _fetchComponentIfNeeded: {
         value: function () {
-            var promise, moduleId;
+            var self = this,
+                promise, moduleId;
 
             if (this.componentModule &&
                 (moduleId = this.componentModule.id) &&
                 typeof moduleId === "string" && moduleId.length &&
-                this.needsFetchingComponent
+                !this._fetchingComponentPromise && this._needsFetchingComponent
             ) {
-                var self = this,
-                    require = this.componentModule.require;
-
-                this.content = null;
+                var require = this.componentModule.require;
 
                 promise = this._fetchComponentConstructor(moduleId, require)
                     .then(function (componentConstructor) {
                         var component = (self.component = (
-                            new componentConstructor()
-                        ));
+                                new componentConstructor()
+                            )),
+                            oldExitDocument = component.exitDocument;
+                        
                         component.data = self.data;
-                        self.needsFetchingComponent = false;
+                        component.exitDocument = function () {
+                            if (oldExitDocument) {
+                                oldExitDocument.call(component);
+                                oldExitDocument = null;
+                            }
+
+                            component.cancelBindings();
+                        };
+
                         self.content = component;
                     }, function (error) {
-                        self.needsFetchingComponent = false;
+                        self._needsFetchingComponent = false;
                         throw error;
-                } );
+                    });
+                
+                this._fetchingComponentPromise = promise; 
+            } else {
+                promise = this._fetchingComponentPromise || Promise.resolve();
             }
 
-            return promise || Promise.resolve();
+            return promise.then(function () {
+                self._needsFetchingComponent = false;
+                self._fetchingComponentPromise = null;
+            });
         }
     },
 
