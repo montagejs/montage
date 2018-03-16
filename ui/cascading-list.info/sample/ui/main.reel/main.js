@@ -145,41 +145,33 @@ exports.Main = Component.specialize(/** @lends Main# */{
 
     handleSaveAction: {
         value: function (event) {
-            var cascadingListContext = event.detail.get('data');
+            var data = event.detail.get('data');
 
-            if (cascadingListContext &&
-                cascadingListContext.object instanceof Employee &&
-                cascadingListContext.object.firstname &&
-                cascadingListContext.object.lastname &&
-                cascadingListContext.object.department
+            if (data &&
+                data instanceof Employee &&
+                data.firstname &&
+                data.lastname &&
+                data.department
             ) {
-                if (this.root[0].indexOf(cascadingListContext.object) === -1) {
-                    this.root[0].push(cascadingListContext.object);
-                    this.cascadingList.pop();
-                } else {
-                    this.cascadingList.expand(
-                        cascadingListContext.object,
-                        cascadingListContext.columnIndex
-                    );
+                if (this.root[0].indexOf(data) === -1) {
+                    data.isNew = false;
+                    this.root[0].push(data);
                 }
+                
+                this.cascadingList.expand(data);
             }
         }
     },
 
     handleCancelAction: {
         value: function (event) {
-            var cascadingListContext = event.detail.get('data');
+            var data = event.detail.get('data');
 
-            if (cascadingListContext &&
-                cascadingListContext.object instanceof Employee
-            ) {
-                if (this.root[0].indexOf(cascadingListContext.object) === -1) {
+            if (data && data instanceof Employee) {
+                if (this.root[0].indexOf(data) === -1) {
                     this.cascadingList.pop();
                 } else {
-                    this.cascadingList.expand(
-                        cascadingListContext.object,
-                        cascadingListContext.columnIndex
-                    );
+                    this.cascadingList.expand(data);
                 }
             }
         }
