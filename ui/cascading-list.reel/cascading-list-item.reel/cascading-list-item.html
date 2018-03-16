@@ -8,7 +8,7 @@
             "values": {
                 "element": {"#": "owner"},
                 "content": {"@": "content"},
-                "selectedObject": {"<->": "context.selectedObject"}
+                "selection": {"<-": "@owner.content.component.selection"}
             }
         },
 
@@ -55,7 +55,9 @@
             "values": {
                 "element": {"#": "content"},
                 "componentModule": {"<-": "@owner.componentModule"},
-                "data": {"<-": "@owner.context"}
+                "data": {"<-": "@owner.context.object"},
+                "component.userInterfaceDescriptor": {"<-": "@owner.context.userInterfaceDescriptor"},
+                "component.delegate": {"<-": "@owner.delegate"}
             }
         },
 

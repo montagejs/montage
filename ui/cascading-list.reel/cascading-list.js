@@ -26,16 +26,6 @@ var CascadingListContext = exports.CascadingListContext = Montage.specialize({
         value: null
     },
 
-    //TODO: change name to selection
-    //Wait for selection manager
-    selectedObject: {
-        value: null
-    },
-
-    delegate: {
-        value: null
-    },
-
     isEditing: {
         value: false
     }
@@ -80,6 +70,54 @@ exports.CascadingList = Component.specialize({
     exitDocument: {
         value: function () {
             this.popAll();
+        }
+    },
+    
+    _delegate: {
+        value: null
+    },
+
+    delegate: {
+        set: function (delegate) {
+            this._delegate = delegate;
+
+            if (delegate) {
+                if (delegate.shouldListEnableSelection === void 0) {
+                    delegate.shouldListEnableSelection =
+                        this.shouldListEnableSelection.bind(delegate);
+                }
+
+                if (delegate.shouldListEnableNavigation === void 0) {
+                    delegate.shouldListEnableNavigation =
+                        this.shouldListEnableNavigation.bind(delegate);
+                }
+
+                if (delegate.shouldListAllowMultipleSelectionn === void 0) {
+                    delegate.shouldListAllowMultipleSelectionn =
+                        this.shouldListAllowMultipleSelectionn.bind(delegate);
+                }
+            }
+        },
+        get: function () {
+            return this._delegate || this;
+        }
+    },
+
+    shouldListEnableSelection: {
+        value: function () {
+            return true;
+        }
+    },
+
+    shouldListEnableNavigation: {
+        value: function () {
+            return true;
+        }
+    },
+
+    shouldListAllowMultipleSelectionn: {
+        value: function () {
+            return false
         }
     },
 
@@ -170,15 +208,6 @@ exports.CascadingList = Component.specialize({
                 context = this.history.pop();
             
             this._currentIndex--;
-
-            if (this.history[this._currentIndex] &&
-                (cascadingListItem = this.history[this._currentIndex].cascadingListItem)
-            ) {
-                if (object !== cascadingListItem.context.selectedObject) {
-                    cascadingListItem.context.selectedObject = null;
-                }
-            }
-
             context.isEditing = false;
             this.needsDraw = true;
 
@@ -285,7 +314,6 @@ exports.CascadingList = Component.specialize({
             context.object = object;
             context.columnIndex = columnIndex;
             context.cascadingList = this;
-            context.delegate = this.delegate;
 
             return context;
         }

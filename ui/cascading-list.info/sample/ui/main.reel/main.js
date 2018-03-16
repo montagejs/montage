@@ -28,6 +28,13 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
+    shouldListEnableSelection: {
+        value: function (list, isNavigationEnabled, content) {
+            return content !== this.root[2] && content !== this.root[4] &&
+                content !== this.root[3];
+        }
+    },
+
     cascadingListWillUseObjectDescriptorModuleIdForObjectAtColumnIndex: {
         value: function (cascadingList, moduleId, object, columnIndex) {
             if (!moduleId) {

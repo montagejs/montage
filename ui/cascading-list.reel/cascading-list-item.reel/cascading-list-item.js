@@ -73,6 +73,8 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
                         "path(userInterfaceDescriptor.cascadingListItemFooterRightNameExpression || \"''\"))"
                 }
             });
+
+            this.addRangeAtPathChangeListener("selection", this, "_handleSelectionChange");
         }
     },
 
@@ -141,30 +143,17 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
         value: null
     },
 
-    _selectedObject: {
-        value: void 0
+    selection: {
+        value: null
     },
 
-    selectedObject: {
-        get: function () {
-            return this._selectedObject;
-        },
-        set: function (selectedObject) {
-            if (this._selectedObject !== selectedObject) {
-                this._selectedObject = selectedObject;
-
-                if (this.context) {
-                    if (selectedObject) {
-                        this.cascadingList.expand(
-                            selectedObject,
-                            this.context.columnIndex + 1
-                        );
-                    } else if (
-                        this.context.columnIndex < this.cascadingList._currentIndex
-                    ) {
-                        this.cascadingList.popAtIndex(this.context.columnIndex + 1);
-                    }
-                }
+    _handleSelectionChange: {
+        value: function (plus, minus, index) {
+            if (plus && plus.length === 1) {
+                this.cascadingList.expand(
+                    plus[0],
+                    this.context.columnIndex + 1
+                );
             }
         }
     }
