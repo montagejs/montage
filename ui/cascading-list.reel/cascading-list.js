@@ -40,6 +40,10 @@ exports.CascadingList = Component.specialize({
         }
     },
 
+    _currentColumnIndex: {
+        value: 0
+    },
+
     history: {
         value: null
     },
@@ -123,7 +127,7 @@ exports.CascadingList = Component.specialize({
 
     push: {
         value: function (object) {
-            this.expand(object, this._currentIndex + 1);
+            this.expand(object, this._currentColumnIndex + 1);
         }
     },
 
@@ -143,12 +147,12 @@ exports.CascadingList = Component.specialize({
 
     popAtIndex: {
         value: function (index) {
-            if (index <= this._currentIndex && this._currentIndex !== -1) {
+            if (index <= this._currentColumnIndex && this._currentColumnIndex !== -1) {
                 this._pop();
 
-                // the value of the property _currentIndex 
+                // the value of the property _currentColumnIndex 
                 // changed when _pop() has been called.
-                if (index <= this._currentIndex) {
+                if (index <= this._currentColumnIndex) {
                     this.popAtIndex(index);
                 }
             }
@@ -157,23 +161,25 @@ exports.CascadingList = Component.specialize({
 
     expand: {
         value: function (object, columnIndex, isEditing) {
-            columnIndex = columnIndex || 0;
+            columnIndex = columnIndex || this._currentColumnIndex;
 
             if (columnIndex) {
-                var firstIteration = true;
-                
-                for (var i = this.history.length - columnIndex; i > 0; i--) {
-                    this._pop(firstIteration ? object : null);
+                if (columnIndex > 0) {
+                    var parentCascadingListItem = this.cascadingListItemAtIndex(columnIndex - 1);
 
-                    if (firstIteration) {
-                        firstIteration = false;
+                    if (parentCascadingListItem) {
+                        parentCascadingListItem.selectObject(object);
                     }
+                }
+
+                for (var i = this.history.length - columnIndex; i > 0; i--) {
+                    this._pop();
                 }
             } else {
                 this.popAll();
             }
 
-            this._currentIndex = columnIndex;
+            this._currentColumnIndex = columnIndex;
 
             return this._populateColumnWithObjectAndIndex(
                 object, columnIndex, isEditing
@@ -183,11 +189,21 @@ exports.CascadingList = Component.specialize({
 
     cascadingListItemAtIndex: {
         value: function (index) {
-            if (index <= this._currentIndex) {
-                return this.repetition.childComponents[index];
+            if (this.history[index]) {
+                return this.history[index].cascadingListItem;
+            }
+        }
+    },
+
+    findIndexForObject: {
+        value: function (object) {
+            for (var i = this.history.length - 1; i > -1; i--) {
+                if (this.history[i] === object) {
+                    return i;
+                }
             }
 
-            return null;
+            return -1;
         }
     },
 
@@ -203,17 +219,19 @@ exports.CascadingList = Component.specialize({
     },
 
     _pop: {
-        value: function (object) {
+        value: function () {
             var cascadingListItem,
                 context = this.history.pop();
             
-            this._currentIndex--;
+            this._currentColumnIndex--;
             context.isEditing = false;
             this.needsDraw = true;
 
             if (this.shouldDispatchCascadingListEvents) {
                 this.dispatchEventNamed('cascadingListPop', true, true, context);
             }
+
+            return context;
         }
     },
 

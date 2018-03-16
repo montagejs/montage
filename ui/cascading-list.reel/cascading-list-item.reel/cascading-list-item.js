@@ -131,6 +131,18 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
         }
     },
 
+    selectObject: {
+        value: function (object) {
+            if (this.isCollection && this.selection[0] !== object) {
+                this.selection.clear();
+
+                if (this.context.object.indexOf(object) > -1) {
+                    this.selection.push(object);
+                }
+            }
+        }
+    },
+
     shouldHideFooter: {
         value: true,
     },
