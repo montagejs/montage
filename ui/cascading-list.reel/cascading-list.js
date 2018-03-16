@@ -117,7 +117,7 @@ exports.CascadingList = Component.specialize({
 
     shouldListAllowMultipleSelectionn: {
         value: function () {
-            return false
+            return false;
         }
     },
 
