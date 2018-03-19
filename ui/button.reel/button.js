@@ -366,8 +366,11 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                     }
                     //<button> && Custom
                 } else {
-                    if(this.originalElement === this.element && this._label === undefined) {
-                        this._label = this.originalElement.data;
+                    if(this.originalElement === this.element && 
+                        this._label === void 0 &&
+                        this.originalElement.firstChild
+                    ) {
+                        this._label = this.originalElement.firstChild.data;
                     }
                     if (!this.element.firstChild) {
                         this.element.appendChild(document.createTextNode(""));
