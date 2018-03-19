@@ -8,8 +8,11 @@
             flex-direction: column;
     position: relative;
     font-family: 'lato';
+    box-sizing: border-box;
+    overflow: hidden;
+    border-bottom: 1px solid #c8c7cc;
+    border-top: 1px solid #c8c7cc;
     border-right: 1px solid #c8c7cc;
-    box-sizing: center;
 }
 
 .CascadingListItem-header,
@@ -31,7 +34,13 @@
     height:  3rem;
     padding: 0 16px;
     padding: 0 1rem;
+}
+
+.CascadingListItem-header {
     border-bottom: 1px solid #c8c7cc;
+}
+
+.CascadingListItem-footer {
     border-top: 1px solid #c8c7cc;
 }
 
@@ -72,6 +81,7 @@
 }
 
 .CascadingListItem-content {
+    margin-bottom: -1px;
     position: relative;
     display: -webkit-box;
     display: -ms-flexbox;
@@ -87,9 +97,6 @@
 
 .CascadingListItem-content > * {
     position: relative;
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -102,5 +109,5 @@
 }
 
 .CascadingListItem-content .List {
-    border: none;
+    border-width: 0 0 1px 0;
 }

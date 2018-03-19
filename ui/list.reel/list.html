@@ -40,7 +40,8 @@
                     "component.isNavigationEnabled": {"<-": "@owner.isNavigationEnabled"},
                     "component.userInterfaceDescriptor": {"<-": "@owner.userInterfaceDescriptor"},
                     "component.selected": {"<-": "@repetition:iteration.selected"},
-                    "component.active": {"<-": "@repetition:iteration.active"}
+                    "component.active": {"<-": "@repetition:iteration.active"},
+                    "component.classList.has('ListItem')": {"<-": "true"}
                 }
             }          
         }
@@ -48,11 +49,11 @@
 </head>
 <body>
 	<div data-montage-id="list" class="List">
-        <ul data-montage-id="repetition" class="List-repetition">
-            <li data-param="*">
-                <div data-montage-id="placeholder" class="item"></div>
-            </li>
-        </ul>
+        <div data-montage-id="repetition" class="List-repetition">
+            <div data-param="*">
+                <div data-montage-id="placeholder"></div>
+            </div>
+        </div>
 	</div>
 </body>
 </html>

@@ -16,6 +16,7 @@
             flex-direction: column;
     overflow: hidden;
     box-sizing: border-box;
+    border-left: 1px solid #c8c7cc;
 }
 
 .CascadingList-repetition {
