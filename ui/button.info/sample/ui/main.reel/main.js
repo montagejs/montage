@@ -1,5 +1,5 @@
 var Component = require("montage/ui/component").Component,
-    Promise = require('montage/core/promise');
+    Promise = require('montage/core/promise').Promise;
 
 exports.Main = Component.specialize(/** @lends Main# */{
 
