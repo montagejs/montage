@@ -45,28 +45,16 @@
 
 /* States --------------------- */
 
-.montage-toggle.checked {
+.montage-toggle.montage--checked {
     background-color: #32db64;
     border-color: transparent;
-}
-
-.montage-toggle.checked.blue {
-    background-color: #488aff;
-}
-
-.montage-toggle.checked.red {
-    background-color: #f53d3d;
-}
-
-.montage-toggle.checked.yellow {
-    background-color: #ffc527;
 }
 
 .montage-toggle[disabled] {
     opacity: .5;
 }
 
-.montage-toggle.checked .montage-toggle-thumb {
+.montage-toggle.montage--checked .montage-toggle-thumb {
     -webkit-transform: translate3d(70%,0,0);
             transform: translate3d(70%,0,0);
 }

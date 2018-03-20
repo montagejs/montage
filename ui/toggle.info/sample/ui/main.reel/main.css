@@ -31,3 +31,15 @@ header {
 .options {
     margin-top: 60px;
 }
+
+.montage-toggle.montage--checked.blue {
+    background-color: #488aff;
+}
+
+.montage-toggle.montage--checked.red {
+    background-color: #f53d3d;
+}
+
+.montage-toggle.montage--checked.yellow {
+    background-color: #ffc527;
+}
