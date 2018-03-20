@@ -25,7 +25,7 @@ exports.Main = Component.specialize({
             var component = new Foo();
 
             // enable logger to work
-            Montage.getInfoForObject(this).objectName = 'Foo';
+            Montage.getInfoForObject(this).property = 'Foo';
 
             component.identifier = 'Foo' + this.fooCount;
             component.title = component.title + this.fooCount;
@@ -64,7 +64,7 @@ exports.Main = Component.specialize({
             var component = new Bar();
 
             // enable logger to work
-            Montage.getInfoForObject(this).objectName = 'Bar';
+            Montage.getInfoForObject(this).property = 'Bar';
 
             //component.identifier = 'Bar' + this.barCount;
             component.title = component.title + this.barCount;
