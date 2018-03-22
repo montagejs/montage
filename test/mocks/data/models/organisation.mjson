@@ -13,8 +13,10 @@
             "module": {
                 "%": "test/mocks/data/models/organisation"
             },
-            "userInterfaceDescriptorModule": {
-                "%": "test/mocks/data/models/organisation-ui-descriptor.mjson"
+            "userInterfaceDescriptorModules": {
+                "*": {
+                    "%": "test/mocks/data/models/organisation-ui-descriptor.mjson"
+                }
             }
         }
     },

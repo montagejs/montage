@@ -14,8 +14,10 @@
             "module": {
                 "%": "core/model/message"
             },
-            "userInterfaceDescriptorModule": {
-                "%": "core/model/message-ui-descriptor.mjson"
+            "userInterfaceDescriptorModules": {
+                "*": {
+                    "%": "core/model/message-ui-descriptor.mjson"
+                }
             }
         }
     },

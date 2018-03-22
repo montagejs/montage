@@ -82,10 +82,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                 serializer.setProperty("maxAge", this.maxAge);
             }
 
-            if (this.userInterfaceDescriptorModule) {
+            if (this.userInterfaceDescriptorModules) {
                 serializer.setProperty(
-                    "userInterfaceDescriptorModule",
-                    this.userInterfaceDescriptorModule
+                    "userInterfaceDescriptorModules",
+                    this.userInterfaceDescriptorModules
                 );
             }
         }
@@ -139,9 +139,9 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             if (value) {
                 this.maxAge = value;
             }
-            value = deserializer.getProperty("userInterfaceDescriptorModule");
+            value = deserializer.getProperty("userInterfaceDescriptorModules");
             if (value) {
-                this.userInterfaceDescriptorModule = value;
+                this.userInterfaceDescriptorModules = value;
             }
         }
     },
@@ -1003,21 +1003,22 @@ _preparePropertyDescriptorsCache: {
     userInterfaceDescriptor: {
         get: function () {
             if (!this._userInterfaceDescriptor) {
-                if (this.userInterfaceDescriptorModule) {
+                if (this.userInterfaceDescriptorModules &&
+                    this.userInterfaceDescriptorModules["*"]) {
+                    
                     Montage.defineProperty(this, "_userInterfaceDescriptor", {
                         enumerable: false,
-                        value: this.userInterfaceDescriptorModule.require.async(
-                            this.userInterfaceDescriptorModule.id
+                        value: this.userInterfaceDescriptorModules["*"].require.async(
+                            this.userInterfaceDescriptorModules["*"].id
                         ).then(function (userInterfaceDescriptorModule) {
                             return userInterfaceDescriptorModule.montageObject;
                         })
                     });
-                } else {
-                    this._userInterfaceDescriptor = Promise.resolve();
                 }
             }
 
-            return this._userInterfaceDescriptor;
+            return this._userInterfaceDescriptor ||
+                (this._userInterfaceDescriptor = Promise.resolve());
         }
     },
 

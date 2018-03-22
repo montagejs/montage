@@ -14,8 +14,10 @@
             "module": {
                 "%": "test/mocks/data/models/department"
             },
-            "userInterfaceDescriptorModule": {
-                "%": "test/mocks/data/models/department-ui-descriptor.mjson"
+            "userInterfaceDescriptorModules": {
+                "*": {
+                    "%": "test/mocks/data/models/department-ui-descriptor.mjson"
+                }
             }
         }
     },

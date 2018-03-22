@@ -17,8 +17,10 @@
             "module": {
                 "%": "test/mocks/data/models/customer"
             },
-            "userInterfaceDescriptorModule": {
-                "%": "test/mocks/data/models/customer-ui-descriptor.mjson"
+            "userInterfaceDescriptorModules": {
+                "*": {
+                    "%": "test/mocks/data/models/customer-ui-descriptor.mjson"
+                }
             }
         }
     },

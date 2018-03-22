@@ -15,8 +15,10 @@
             "module": {
                 "%": "spec/meta/blueprint/employee"
             },
-            "userInterfaceDescriptorModule": {
-                "%": "spec/meta/blueprint/employee-ui-descriptor.mjson"
+            "userInterfaceDescriptorModules": {
+                "*": {
+                    "%": "spec/meta/blueprint/employee-ui-descriptor.mjson"
+                }
             }
         }
     },

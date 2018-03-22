@@ -281,11 +281,14 @@ exports.CascadingList = Component.specialize({
                 }
 
                 return this._populatePromise.then(function (objectDescriptor) {
-                    var userInterfaceDescriptorModuleId = objectDescriptor &&
-                        objectDescriptor.userInterfaceDescriptorModule ?
-                        objectDescriptor.userInterfaceDescriptorModule.id : null;
+                    var userInterfaceDescriptorModuleId,
+                        userInterfaceDescriptorModuleIdCandidate;
                     
-                    userInterfaceDescriptorModuleId = self.callDelegateMethod(
+                    if (objectDescriptor && objectDescriptor.userInterfaceDescriptorModules) {
+                        userInterfaceDescriptorModuleId = objectDescriptor.userInterfaceDescriptorModules['*'];
+                    }
+                    
+                    userInterfaceDescriptorModuleIdCandidate = self.callDelegateMethod(
                         "cascadingListWillUseUserInterfaceDescriptorIdForObjectAtColumnIndex",
                         self,
                         userInterfaceDescriptorModuleId,
@@ -293,14 +296,14 @@ exports.CascadingList = Component.specialize({
                         columnIndex
                     ) || userInterfaceDescriptorModuleId;
 
-                    if (objectDescriptor && objectDescriptor.userInterfaceDescriptorModule &&
-                        objectDescriptor.userInterfaceDescriptorModule.id === userInterfaceDescriptorModuleId
+                    if (objectDescriptor && userInterfaceDescriptorModuleId &&
+                        userInterfaceDescriptorModuleIdCandidate === userInterfaceDescriptorModuleId
                     ) {
                         return objectDescriptor.userInterfaceDescriptor;
-                    } else if (userInterfaceDescriptorModuleId) {
+                    } else if (userInterfaceDescriptorModuleIdCandidate) {
                         infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
 
-                        return (infoDelegate.require || require).async(userInterfaceDescriptorModuleId)
+                        return (infoDelegate.require || require).async(userInterfaceDescriptorModuleIdCandidate)
                             .then(function (userInterfaceDescriptorModule) {
                                 return userInterfaceDescriptorModule.montageObject;
                             });

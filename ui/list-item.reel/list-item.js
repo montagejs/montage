@@ -317,11 +317,14 @@ exports.ListItem = Component.specialize({
                 }
 
                 promise = promise.then(function (objectDescriptor) {
-                    var userInterfaceDescriptorModuleId = objectDescriptor &&
-                        objectDescriptor.userInterfaceDescriptorModule ?
-                        objectDescriptor.userInterfaceDescriptorModule.id : null;
+                    var userInterfaceDescriptorModuleId,
+                        userInterfaceDescriptorModuleIdCandidate;
+                    
+                    if (objectDescriptor && objectDescriptor.userInterfaceDescriptorModules) {
+                        userInterfaceDescriptorModuleId = objectDescriptor.userInterfaceDescriptorModules['*'];
+                    }
 
-                    userInterfaceDescriptorModuleId = self.callDelegateMethod(
+                    userInterfaceDescriptorModuleIdCandidate = self.callDelegateMethod(
                         "listItemWillUseUserInterfaceDescriptorModuleIdForObjectAtRowIndex",
                         self,
                         userInterfaceDescriptorModuleId,
@@ -330,14 +333,14 @@ exports.ListItem = Component.specialize({
                         self.list
                     ) || userInterfaceDescriptorModuleId;
 
-                    if (objectDescriptor && objectDescriptor.userInterfaceDescriptorModule &&
-                        objectDescriptor.userInterfaceDescriptorModule.id === userInterfaceDescriptorModuleId
+                    if (objectDescriptor && userInterfaceDescriptorModuleId &&
+                        userInterfaceDescriptorModuleIdCandidate === userInterfaceDescriptorModuleId
                     ) {
                         return objectDescriptor.userInterfaceDescriptor;
-                    } else if (userInterfaceDescriptorModuleId) {
+                    } else if (userInterfaceDescriptorModuleIdCandidate) {
                         infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
 
-                        return (infoDelegate.require || require).async(userInterfaceDescriptorModuleId)
+                        return (infoDelegate.require || require).async(userInterfaceDescriptorModuleIdCandidate)
                             .then(function (userInterfaceDescriptorModule) {
                                 return userInterfaceDescriptorModule.montageObject;
                             });

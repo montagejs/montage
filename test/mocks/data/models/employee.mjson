@@ -16,8 +16,10 @@
             "module": {
                 "%": "test/mocks/data/models/employee"
             },
-            "userInterfaceDescriptorModule": {
-                "%": "test/mocks/data/models/employee-ui-descriptor.mjson"
+            "userInterfaceDescriptorModules": {
+                "*": {
+                    "%": "test/mocks/data/models/employee-ui-descriptor.mjson"
+                }
             }
         }
     },
