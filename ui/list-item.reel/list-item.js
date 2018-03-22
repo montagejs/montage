@@ -427,7 +427,7 @@ exports.ListItem = Component.specialize({
                     toggleComponentModuleId !== candidateToggleComponentModuleId && self.delegate
                 ) {
                     infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
-                    self._toggleComponentModule = {
+                    self._defaultToggleComponentModule = {
                         require: infoDelegate.require || require,
                         id: candidateToggleComponentModuleId
                     };
