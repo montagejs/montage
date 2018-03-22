@@ -5,7 +5,7 @@
             "nameExpression": "label",
             "descriptionExpression": "description",
             "valueExpression": "value",
-            "toggleComponentModule": {
+            "listItemToggleComponentModule": {
                 "%": "test/mocks/data/icons/check.reel"
             }
         }

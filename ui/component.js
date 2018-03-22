@@ -12,7 +12,9 @@
  * @requires montage/core/serialization/alias
  * @requires collections/set
  */
-var Montage = require("../core/core").Montage,
+var MontageModule = require("../core/core"),
+    Montage = MontageModule.Montage,
+    getObjectDescriptorWithModuleId = MontageModule.getObjectDescriptorWithModuleId;    
     Target = require("../core/target").Target,
     Template = require("../core/template").Template,
     DocumentResources = require("../core/document-resources").DocumentResources,
@@ -3452,8 +3454,120 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 component.dispose();
             });
         }
+    },
+
+    loadUserInterfaceDescriptor: {
+        value: function (object) {
+            var self = this,
+                objectDescriptorModuleIdCandidate,
+                objectDescriptorModuleId,
+                objectDescriptor,
+                infoDelegate,
+                constructor,
+                promise;
+
+            this.canDrawGate.setField(
+                this.constructor.userInterfaceDescriptorLoadedField,
+                false
+            );
+
+            if (typeof object === "object" &&
+                (constructor = object.constructor) &&
+                constructor.objectDescriptorModuleId
+            ) {
+                objectDescriptorModuleId = constructor.objectDescriptorModuleId;
+            }
+
+            if (typeof this.willLoadObjectDescriptor === 'function') {
+                objectDescriptorModuleIdCandidate = this.willLoadObjectDescriptor(
+                    objectDescriptorModuleId, object
+                );
+            }
+
+            if (objectDescriptorModuleIdCandidate) {
+                infoDelegate = Montage.getInfoForObject(this.delegate);
+                objectDescriptorModuleId = objectDescriptorModuleIdCandidate;
+            }
+
+            if (objectDescriptorModuleId) {
+                if (objectDescriptorModuleIdCandidate) {
+                    objectDescriptor = getObjectDescriptorWithModuleId(
+                        objectDescriptorModuleId,
+                        infoDelegate ? infoDelegate.require : require
+                    );
+                } else {
+                    objectDescriptor = constructor.objectDescriptor;
+                }
+
+                promise = objectDescriptor;
+            } else {
+                promise = Promise.resolve();
+            }
+
+            promise = promise.then(function (objectDescriptor) {
+                var moduleInfo = Montage.getInfoForObject(self),
+                    packageName = moduleInfo.require.packageDescription.name,
+                    moduleId = packageName + "#" + moduleInfo.moduleId,
+                    userInterfaceDescriptorModuleId,
+                    userInterfaceDescriptorModuleIdCandidate;
+                
+                if (objectDescriptor && objectDescriptor.userInterfaceDescriptorModules) {
+                    userInterfaceDescriptorModuleId =
+                        objectDescriptor.userInterfaceDescriptorModules[moduleId];
+
+                    if (!userInterfaceDescriptorModuleId) {
+                        userInterfaceDescriptorModuleId =
+                            objectDescriptor.userInterfaceDescriptorModules['*'];
+                    }
+                }
+
+                if (typeof self.willLoadUserInterfaceDescriptor === 'function') {
+                    userInterfaceDescriptorModuleIdCandidate = self.willLoadUserInterfaceDescriptor(
+                        objectDescriptorModuleId, object
+                    );
+                }
+
+                if (objectDescriptor && userInterfaceDescriptorModuleId &&
+                    (userInterfaceDescriptorModuleIdCandidate === userInterfaceDescriptorModuleId ||
+                        !userInterfaceDescriptorModuleIdCandidate)
+                ) {
+                    if (
+                        userInterfaceDescriptorModuleId === objectDescriptor.userInterfaceDescriptorModules['*']
+                    ) {
+                        return objectDescriptor.userInterfaceDescriptor;
+                    }
+
+                    return objectDescriptor.userInterfaceDescriptors[moduleId];
+                } else if (userInterfaceDescriptorModuleIdCandidate) {
+                    infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
+
+                    return (infoDelegate.require || require).async(userInterfaceDescriptorModuleIdCandidate)
+                        .then(function (userInterfaceDescriptorModule) {
+                            return userInterfaceDescriptorModule.montageObject;
+                        });
+                }
+            });
+
+            return promise.then(function (userInterfaceDescriptor) {
+                if (typeof self.didLoadUserInterfaceDescriptor === 'function') {
+                    return self.didLoadUserInterfaceDescriptor(promise);
+                }
+
+                return userInterfaceDescriptor;
+            }).finally(function () {
+                self.canDrawGate.setField(
+                    self.constructor.userInterfaceDescriptorLoadedField,
+                    true
+                );
+            });
+        }
     }
-},{
+
+}, {
+
+    userInterfaceDescriptorLoadedField: {
+        value: 'userInterfaceDescriptorLoaded'
+    },
     /**
      * Add the specified properties as properties of this component.
      * @function
@@ -4333,7 +4447,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             this._element = document.documentElement;
             this._documentResources = DocumentResources.getInstanceForDocument(document);
         }
-    }
+    }   
 });
  
 exports.__root__ = rootComponent = new RootComponent().init();

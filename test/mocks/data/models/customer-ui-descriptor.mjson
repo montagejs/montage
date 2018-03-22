@@ -7,8 +7,7 @@
             "descriptionExpression": "city",
             "collectionItemComponentModule": {
                 "%": "test/mocks/data/customer-item.reel"
-            },
-            "cascadingListItemFooterMiddleCollectionNameExpression": "length + ' item' + (length == 1 ? '' : 's')"
+            }
         }
     }
 }

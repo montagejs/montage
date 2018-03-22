@@ -7,8 +7,7 @@
             },
             "collectionNameExpression": "'Stores'",
             "nameExpression": "name",
-            "descriptionExpression": "city",
-            "cascadingListItemFooterMiddleCollectionNameExpression": "length + ' item' + (length == 1 ? '' : 's')"
+            "descriptionExpression": "city"
         }
     }
 }

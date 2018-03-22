@@ -17,6 +17,9 @@
             "userInterfaceDescriptorModules": {
                 "*": {
                     "%": "test/mocks/data/models/department-ui-descriptor.mjson"
+                },
+                "montage#ui/cascading-list.reel": {
+                    "%": "test/mocks/data/models/default-cascading-list-ui-descriptor.mjson"
                 }
             }
         }

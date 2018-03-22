@@ -15,7 +15,7 @@ exports.HelloWorld = Component.specialize(/** @lends HelloWorld# */{
                 this._data = data;
 
                 if (data) {
-                    this._getUserInterfaceDescriptor(data);
+                    this.loadUserInterfaceDescriptor(data);
                 }
             }
         }
@@ -25,25 +25,12 @@ exports.HelloWorld = Component.specialize(/** @lends HelloWorld# */{
         value: null
     },
 
-    _getUserInterfaceDescriptor: {
-        value: function (data) {
-            if (data && data.constructor.objectDescriptor) {
-                var self = this;
-
-                this.canDrawGate.setField(this.constructor.CAN_DRAW_FIELD, false);
-
-                return data.constructor.objectDescriptor.then(function (objectDescriptor) {
-                    self.canDrawGate.setField(self.constructor.CAN_DRAW_FIELD, true);
-
-                    if (objectDescriptor) {
-                        objectDescriptor.userInterfaceDescriptor.then(function (userInterfaceDescriptor) {
-                            return (self.userInterfaceDescriptor = userInterfaceDescriptor);
-                        });
-                    }
-                });
-            }
-
-            return Promise.resolve();
+    didLoadUserInterfaceDescriptor: {
+        value: function (promise) {
+            var self = this;
+            return promise.then(function (userInterfaceDescriptor) {
+                return (self.userInterfaceDescriptor = userInterfaceDescriptor);
+            });
         }
     }
 

@@ -14,10 +14,7 @@
             "iconName": "person",
             "collectionNameExpression": "'Employees'",
             "nameExpression": "lastname + ' ' + firstname",
-            "descriptionExpression": "department",
-            "cascadingListItemHeaderRightCollectionNameExpression": "'Add'",
-            "cascadingListItemHeaderRightNameExpression": "isNew ? '' : 'Edit'",
-            "cascadingListItemFooterMiddleCollectionNameExpression": "length + ' item' + (length == 1 ? '' : 's')"
+            "descriptionExpression": "department"
         }
     }
 }

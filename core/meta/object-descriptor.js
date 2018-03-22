@@ -1022,6 +1022,49 @@ _preparePropertyDescriptorsCache: {
         }
     },
 
+    userInterfaceDescriptors: {
+        get: function () {
+            if (!this._userInterfaceDescriptors) {
+                if (this.userInterfaceDescriptorModules) {
+                    var keys = Object.keys(this.userInterfaceDescriptorModules),
+                        length;
+
+                    if ((length = keys.length)) {
+                        var map = {},
+                            key;
+
+                        for (var i = 0; i < length; i++) {
+                            key = keys[i];
+
+                            if (key === '*') {
+                                map[key] = this.userInterfaceDescriptor;
+                            } else {
+                                Montage.defineProperty(map, key, {
+                                    enumerable: false,
+                                    value: Promise.all([
+                                        this.userInterfaceDescriptor,
+                                        this.userInterfaceDescriptorModules[key].require.async(
+                                            this.userInterfaceDescriptorModules[key].id
+                                        )
+                                    ]).spread(function (defaultUserInterfaceDescriptor, userInterfaceDescriptorModule) {
+                                        return Object.assign(
+                                            {},
+                                            defaultUserInterfaceDescriptor,
+                                            userInterfaceDescriptorModule.montageObject
+                                        );
+                                    })
+                                });
+                            }
+                        }
+                    }
+                    this._userInterfaceDescriptors = map;
+                }
+            }
+
+            return this._userInterfaceDescriptors;
+        }
+    },
+
     /**********************************************************************************
      * Deprecated methods.
      */

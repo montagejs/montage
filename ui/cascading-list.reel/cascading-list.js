@@ -1,8 +1,6 @@
 var Component = require("../component").Component,
-    MontageModule = require("../../core/core"),
-    Promise = require('../../core/promise').Promise,
-    Montage = MontageModule.Montage,
-    getObjectDescriptorWithModuleId = MontageModule.getObjectDescriptorWithModuleId;
+    Montage = require("../../core/core").Montage,
+    Promise = require('../../core/promise').Promise;
 
 var CascadingListContext = exports.CascadingListContext = Montage.specialize({
 
@@ -235,80 +233,36 @@ exports.CascadingList = Component.specialize({
         }
     },
 
+    willLoadObjectDescriptor: {
+        value: function (objectDescriptorModuleId, object) {
+            return this.callDelegateMethod(
+                "cascadingListWillUseObjectDescriptorModuleIdForObjectAtColumnIndex",
+                this,
+                objectDescriptorModuleId,
+                object,
+                this._currentColumnIndex
+            );
+        }
+    },
+
+    willLoadUserInterfaceDescriptor: {
+        value: function (userInterfaceDescriptorModuleId, object) {
+            return this.callDelegateMethod(
+                "cascadingListWillUseUserInterfaceDescriptorIdForObjectAtColumnIndex",
+                this,
+                userInterfaceDescriptorModuleId,
+                object,
+                this._currentColumnIndex
+            );
+        }
+    },
+
     _populateColumnWithObjectAndIndex: {
         value: function (object, columnIndex, isEditing) {
             if (!this._populatePromise && object) {
-                var self = this,
-                    objectDescriptorModuleId,
-                    objectDescriptorModuleIdCandidate,
-                    objectDescriptor,
-                    infoDelegate,
-                    constructor;
-
-                if (typeof object === "object" &&
-                    (constructor = object.constructor) &&
-                    constructor.objectDescriptorModuleId
-                ) {
-                    objectDescriptorModuleId = constructor.objectDescriptorModuleId;
-                }
-
-                objectDescriptorModuleIdCandidate = this.callDelegateMethod(
-                    "cascadingListWillUseObjectDescriptorModuleIdForObjectAtColumnIndex",
-                    this,
-                    objectDescriptorModuleId,
-                    object,
-                    columnIndex
-                );
-
-                if (objectDescriptorModuleIdCandidate) {
-                    infoDelegate = Montage.getInfoForObject(this.delegate);
-                    objectDescriptorModuleId = objectDescriptorModuleIdCandidate;
-                }
-
-                if (objectDescriptorModuleId) {
-                    if (objectDescriptorModuleIdCandidate) {
-                        objectDescriptor = getObjectDescriptorWithModuleId(
-                            objectDescriptorModuleId,
-                            infoDelegate ? infoDelegate.require : require
-                        );
-                    } else {
-                        objectDescriptor = constructor.objectDescriptor;
-                    }
-
-                    this._populatePromise = objectDescriptor;
-                } else {
-                    this._populatePromise = Promise.resolve();
-                }
-
-                return this._populatePromise.then(function (objectDescriptor) {
-                    var userInterfaceDescriptorModuleId,
-                        userInterfaceDescriptorModuleIdCandidate;
-                    
-                    if (objectDescriptor && objectDescriptor.userInterfaceDescriptorModules) {
-                        userInterfaceDescriptorModuleId = objectDescriptor.userInterfaceDescriptorModules['*'];
-                    }
-                    
-                    userInterfaceDescriptorModuleIdCandidate = self.callDelegateMethod(
-                        "cascadingListWillUseUserInterfaceDescriptorIdForObjectAtColumnIndex",
-                        self,
-                        userInterfaceDescriptorModuleId,
-                        object,
-                        columnIndex
-                    ) || userInterfaceDescriptorModuleId;
-
-                    if (objectDescriptor && userInterfaceDescriptorModuleId &&
-                        userInterfaceDescriptorModuleIdCandidate === userInterfaceDescriptorModuleId
-                    ) {
-                        return objectDescriptor.userInterfaceDescriptor;
-                    } else if (userInterfaceDescriptorModuleIdCandidate) {
-                        infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
-
-                        return (infoDelegate.require || require).async(userInterfaceDescriptorModuleIdCandidate)
-                            .then(function (userInterfaceDescriptorModule) {
-                                return userInterfaceDescriptorModule.montageObject;
-                            });
-                    }
-                }).then(function (UIDescriptor) {
+                var self = this;
+                
+                this._populatePromise = this.loadUserInterfaceDescriptor(object).then(function (UIDescriptor) {
                     var context = self._createCascadingListContextWithObjectAndColumnIndex(
                         object,
                         columnIndex

@@ -10,8 +10,7 @@
             },
             "iconExpression": "thumbnail",
             "collectionNameExpression": "'Departments'",
-            "nameExpression": "name",
-            "cascadingListItemFooterMiddleCollectionNameExpression": "length + ' item' + (length == 1 ? '' : 's')"
+            "nameExpression": "name"
         }
     }
 }

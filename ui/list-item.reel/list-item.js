@@ -1,9 +1,7 @@
 var Component = require("../component").Component,
     PressComposer = require("../../composer/press-composer").PressComposer,
     assign = require("frb/assign"),
-    MontageModule = require("../../core/core"),
-    Montage = MontageModule.Montage,
-    getObjectDescriptorWithModuleId = MontageModule.getObjectDescriptorWithModuleId;
+    Montage = require("../../core/core").Montage;
 
 /**
  * @class ListItem
@@ -11,7 +9,11 @@ var Component = require("../component").Component,
  */
 exports.ListItem = Component.specialize({
 
-    constructor: {
+    _templateDidLoad: {
+        value: false
+    },
+
+    templateDidLoad: {
         value: function () {
             this.defineBindings({
                 "_iconName": {
@@ -51,19 +53,15 @@ exports.ListItem = Component.specialize({
                 },
                 "_toggleComponentModule": {
                     "<-": "__value.defined() && userInterfaceDescriptor.defined() ? " +
-                        "(userInterfaceDescriptor.toggleComponentModule || " +
+                        "(userInterfaceDescriptor.listItemToggleComponentModule || " +
                         "_defaultToggleComponentModule) : _defaultToggleComponentModule"
+                },
+                "_descriptionPosition": {
+                    "<-": "userInterfaceDescriptor.defined() ? " +
+                        "(userInterfaceDescriptor.listItemDescriptionPosition || " +
+                        "descriptionPosition) : descriptionPosition"
                 }
             });
-        }
-    },
-
-    _templateDidLoad: {
-        value: false
-    },
-
-    templateDidLoad: {
-        value: function () {
             //FIXME: not safe!
             this._templateDidLoad = true;
             this._loadDataUserInterfaceDescriptorIfNeeded();
@@ -262,95 +260,43 @@ exports.ListItem = Component.specialize({
     _loadDataUserInterfaceDescriptorIfNeeded: {
         value: function () {
             if (this.data && this._templateDidLoad) {
-                return this._getUserInterfaceDescriptor(this.data);
+                return this.loadUserInterfaceDescriptor(this.data);
             }  
         }
     },
 
-    _getUserInterfaceDescriptor: {
-        value: function (data) {
-            var self = this,
-                objectDescriptorModuleIdCandidate,    
+    willLoadObjectDescriptor: {
+        value: function (objectDescriptorModuleId, object) {
+            return this.callDelegateMethod(
+                "listItemWillUseObjectDescriptorModuleIdForObjectAtRowIndex",
+                this,
                 objectDescriptorModuleId,
-                objectDescriptor,
-                infoDelegate,
-                constructor,
-                promise;
+                object,
+                this.rowIndex,
+                this.list
+            );
+        }
+    },
 
-            this.canDrawGate.setField(this.constructor.CAN_DRAW_FIELD, false);
+    willLoadUserInterfaceDescriptor: {
+        value: function (userInterfaceDescriptorModuleId, object) {
+            return this.callDelegateMethod(
+                "listItemWillUseUserInterfaceDescriptorModuleIdForObjectAtRowIndex",
+                this,
+                userInterfaceDescriptorModuleId,
+                object,
+                this.rowIndex,
+                this.list
+            );
+        }
+    },
 
-            if (!this.userInterfaceDescriptor) {
-                if (typeof data === "object" &&
-                    (constructor = data.constructor) &&
-                    constructor.objectDescriptorModuleId
-                ) {
-                    objectDescriptorModuleId = constructor.objectDescriptorModuleId;
-                }
+    didLoadUserInterfaceDescriptor: {
+        value: function (userInterfaceDescriptorPromise) {
+            var self = this,
+                infoDelegate;
 
-                objectDescriptorModuleIdCandidate = this.callDelegateMethod(
-                    "listItemWillUseObjectDescriptorModuleIdForObjectAtRowIndex",
-                    this,
-                    objectDescriptorModuleId,
-                    this.data,
-                    this.rowIndex,
-                    this.list
-                );
-
-                if (objectDescriptorModuleIdCandidate) {
-                    infoDelegate = Montage.getInfoForObject(this.delegate);
-                    objectDescriptorModuleId = objectDescriptorModuleIdCandidate;
-                }
-
-                if (objectDescriptorModuleId) {
-                    if (objectDescriptorModuleIdCandidate) {
-                        objectDescriptor = getObjectDescriptorWithModuleId(
-                            objectDescriptorModuleId,
-                            infoDelegate ? infoDelegate.require : require
-                        );
-                    } else {
-                        objectDescriptor = constructor.objectDescriptor;
-                    }
-
-                    promise = objectDescriptor;
-                } else {
-                    promise = Promise.resolve();
-                }
-
-                promise = promise.then(function (objectDescriptor) {
-                    var userInterfaceDescriptorModuleId,
-                        userInterfaceDescriptorModuleIdCandidate;
-                    
-                    if (objectDescriptor && objectDescriptor.userInterfaceDescriptorModules) {
-                        userInterfaceDescriptorModuleId = objectDescriptor.userInterfaceDescriptorModules['*'];
-                    }
-
-                    userInterfaceDescriptorModuleIdCandidate = self.callDelegateMethod(
-                        "listItemWillUseUserInterfaceDescriptorModuleIdForObjectAtRowIndex",
-                        self,
-                        userInterfaceDescriptorModuleId,
-                        self.data,
-                        self.rowIndex,
-                        self.list
-                    ) || userInterfaceDescriptorModuleId;
-
-                    if (objectDescriptor && userInterfaceDescriptorModuleId &&
-                        userInterfaceDescriptorModuleIdCandidate === userInterfaceDescriptorModuleId
-                    ) {
-                        return objectDescriptor.userInterfaceDescriptor;
-                    } else if (userInterfaceDescriptorModuleIdCandidate) {
-                        infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
-
-                        return (infoDelegate.require || require).async(userInterfaceDescriptorModuleIdCandidate)
-                            .then(function (userInterfaceDescriptorModule) {
-                                return userInterfaceDescriptorModule.montageObject;
-                            });
-                    }
-                });
-            } else {
-                promise = Promise.resolve(this.userInterfaceDescriptor);
-            }
-            
-            return promise.then(function (UIDescriptor) {
+            return userInterfaceDescriptorPromise.then(function (UIDescriptor) {
                 self.userInterfaceDescriptor = UIDescriptor || self.userInterfaceDescriptor; // trigger biddings.
 
                 var iconComponentModuleId = self._iconComponentModule ?
@@ -390,7 +336,7 @@ exports.ListItem = Component.specialize({
                 if (candidateIconComponentModuleId &&
                     iconComponentModuleId !== candidateIconComponentModuleId && self.delegate
                 ) {
-                    infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
+                    infoDelegate = Montage.getInfoForObject(self.delegate);
                     self._iconComponentModule = {
                         require: infoDelegate.require || require,
                         id: candidateIconComponentModuleId
@@ -436,14 +382,14 @@ exports.ListItem = Component.specialize({
                     };
                 }
                 
-                self.descriptionPosition = self.callDelegateMethod(
+                self._descriptionPosition = self.callDelegateMethod(
                     "listItemWillUseDescriptionPositionForObjectAtRowIndex",
                     self,
                     self.descriptionPosition,
                     self.data,
                     self.rowIndex,
                     self.list
-                ) || self.descriptionPosition; // default value
+                ) || self._descriptionPosition; // default value
 
                 self.isNavigationEnabled = self.callDelegateMethod(
                     "listItemShouldEnableNavigationForObjectAtRowIndex",
@@ -453,14 +399,8 @@ exports.ListItem = Component.specialize({
                     self.rowIndex,
                     self.list
                 ) || self.isNavigationEnabled; // default value
-
-                self.canDrawGate.setField(self.constructor.CAN_DRAW_FIELD, true);
             });
         }
     }
 
-}, {
-    CAN_DRAW_FIELD: {
-        value: 'userInterfaceDescriptorLoaded'
-    }
 });
