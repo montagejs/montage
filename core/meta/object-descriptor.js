@@ -1030,7 +1030,14 @@ _preparePropertyDescriptorsCache: {
                         length;
 
                     if ((length = keys.length)) {
-                        var map = {},
+                        var promisesHandler = function (defaultUserInterfaceDescriptor, userInterfaceDescriptorModule) {
+                                return Object.assign(
+                                    {},
+                                    defaultUserInterfaceDescriptor,
+                                    userInterfaceDescriptorModule.montageObject
+                                );
+                            },
+                            map = {},
                             key;
 
                         for (var i = 0; i < length; i++) {
@@ -1046,18 +1053,12 @@ _preparePropertyDescriptorsCache: {
                                         this.userInterfaceDescriptorModules[key].require.async(
                                             this.userInterfaceDescriptorModules[key].id
                                         )
-                                    ]).spread(function (defaultUserInterfaceDescriptor, userInterfaceDescriptorModule) {
-                                        return Object.assign(
-                                            {},
-                                            defaultUserInterfaceDescriptor,
-                                            userInterfaceDescriptorModule.montageObject
-                                        );
-                                    })
+                                    ]).spread(promisesHandler)
                                 });
                             }
                         }
+                        this._userInterfaceDescriptors = map;
                     }
-                    this._userInterfaceDescriptors = map;
                 }
             }
 

@@ -14,7 +14,7 @@
  */
 var MontageModule = require("../core/core"),
     Montage = MontageModule.Montage,
-    getObjectDescriptorWithModuleId = MontageModule.getObjectDescriptorWithModuleId;    
+    getObjectDescriptorWithModuleId = MontageModule.getObjectDescriptorWithModuleId,
     Target = require("../core/target").Target,
     Template = require("../core/template").Template,
     DocumentResources = require("../core/document-resources").DocumentResources,
