@@ -4,12 +4,12 @@ exports.List = Component.specialize({
 
     templateDidLoad: {
         value: function () {
-            this.isNavigationEnabled = this.callDelegateMethod(
-                "shouldListEnableNavigation",
+            this.isExpandable = this.callDelegateMethod(
+                "shouldListBeExpandable",
                 this,
-                this.isNavigationEnabled,
+                this.isExpandable,
                 this.data
-            ) || this.isNavigationEnabled;
+            ) || this.isExpandable;
 
             this.isSelectionEnabled = this.callDelegateMethod(
                 "shouldListEnableSelection",

@@ -21,15 +21,15 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
-    shouldListEnableNavigation: {
-        value: function (list, isNavigationEnabled, content) {
+    shouldListBeExpandable: {
+        value: function (list, isExpandable, content) {
             return content !== this.root[2] && content !== this.root[4] &&
                 content !== this.root[3];
         }
     },
 
     shouldListEnableSelection: {
-        value: function (list, isNavigationEnabled, content) {
+        value: function (list, isSelectionEnabled, content) {
             return content !== this.root[2] && content !== this.root[4] &&
                 content !== this.root[3];
         }

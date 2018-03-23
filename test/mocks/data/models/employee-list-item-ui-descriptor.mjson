@@ -2,7 +2,8 @@
     "root": {
         "prototype": "core/meta/user-interface-descriptor",
         "values": {
-            "listItemDescriptionPosition": "bottom"
+            "listItemDescriptionPosition": "bottom",
+            "listItemIsExpandable": true
         }
     }
 }

@@ -60,8 +60,13 @@ exports.ListItem = Component.specialize({
                     "<-": "userInterfaceDescriptor.defined() ? " +
                         "(userInterfaceDescriptor.listItemDescriptionPosition || " +
                         "descriptionPosition) : descriptionPosition"
+                },
+                "_isExpandable": {
+                    "<-": "userInterfaceDescriptor.defined() ? " +
+                        "(userInterfaceDescriptor.listItemIsExpandable || " +
+                        "isExpandable) : isExpandable"
                 }
-            });
+            }); 
             //FIXME: not safe!
             this._templateDidLoad = true;
             this._loadDataUserInterfaceDescriptorIfNeeded();
@@ -81,16 +86,16 @@ exports.ListItem = Component.specialize({
         }
     },
 
-    _isNavigationEnabled: {
+    _isExpandable: {
         value: false
     },
 
-    isNavigationEnabled: {
-        set: function (isNavigationEnabled) {
-            this._isNavigationEnabled = !!isNavigationEnabled;
+    isExpandable: {
+        set: function (isExpandable) {
+            this._isExpandable = !!isExpandable;
         },
         get: function () {
-            return this._isNavigationEnabled;
+            return this._isExpandable;
         }
     },
 
@@ -391,14 +396,14 @@ exports.ListItem = Component.specialize({
                     self.list
                 ) || self._descriptionPosition; // default value
 
-                self.isNavigationEnabled = self.callDelegateMethod(
-                    "listItemShouldEnableNavigationForObjectAtRowIndex",
+                self._isExpandable = self.callDelegateMethod(
+                    "listItemShouldBeExpandableForObjectAtRowIndex",
                     self,
-                    self.isNavigationEnabled,
+                    self._isExpandable,
                     self.data,
                     self.rowIndex,
                     self.list
-                ) || self.isNavigationEnabled; // default value
+                ) || self._isExpandable; // default value
             });
         }
     }

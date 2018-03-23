@@ -24,10 +24,10 @@
                 }
             },
 
-            "isNavigationEnabled": {
+            "isExpandable": {
                 "prototype": "montage/ui/checkbox.reel",
                 "values": {
-                    "element": {"#": "isNavigationEnabled"}
+                    "element": {"#": "isExpandable"}
                 }
             },
 
@@ -38,7 +38,7 @@
                     "data": {"<-": "@owner.strings"},
                     "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
                     "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"},
-                    "isNavigationEnabled": {"<-": "!!@isNavigationEnabled.checked"}
+                    "isExpandable": {"<-": "!!@isExpandable.checked"}
                 }
             },
             
@@ -49,7 +49,7 @@
                     "data": {"<-": "@owner.employees"},
                     "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
                     "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"},
-                    "isNavigationEnabled": {"<-": "!!@isNavigationEnabled.checked"}
+                    "isExpandable": {"<-": "!!@isExpandable.checked"}
                 }
             },
 
@@ -59,7 +59,7 @@
                     "element": {"#": "listItem2"},
                     "label": {"<-": "@list2:iteration.object.lastname"},
                     "description": {"<-": "@list2:iteration.object.department"},
-                    "isNavigationEnabled": {"<-": "@list2.isNavigationEnabled"}
+                    "isExpandable": {"<-": "@list2.isExpandable"}
                 }
             },
 
@@ -70,7 +70,7 @@
                     "data": {"<-": "@owner.employees"},
                     "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
                     "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"},
-                    "isNavigationEnabled": {"<-": "!!@isNavigationEnabled.checked"}
+                    "isExpandable": {"<-": "!!@isExpandable.checked"}
                 }
             },
 
@@ -93,7 +93,7 @@
                     "data": {"<-": "@owner.strings"},
                     "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
                     "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"},
-                    "isNavigationEnabled": {"<-": "!!@isNavigationEnabled.checked"}
+                    "isExpandable": {"<-": "!!@isExpandable.checked"}
                 }
             }
 
@@ -115,7 +115,7 @@
             </p>
             <p>
                 <span>Allow Navigation: </span>
-                <input type="checkbox" data-montage-id="isNavigationEnabled" />
+                <input type="checkbox" data-montage-id="isExpandable" />
             </p>
         </div>
 

@@ -29,7 +29,7 @@
     background-color: #e9e9e9;
 }
 
-.ListItem.navigable:after {
+.ListItem.is-expandable:after {
     content: "\203A";
     position: absolute;
     right: 16px;
@@ -46,15 +46,15 @@
     margin-top: -6px;
 }
 
-.ListItem.navigable .ListItem-text {
+.ListItem.is-expandable .ListItem-text {
     margin-right: 27px;
 }
 
-.ListItem.navigable.has-value .ListItem-text {
+.ListItem.is-expandable.has-value .ListItem-text {
     margin-right: 0;
 }
 
-.ListItem.navigable .ListItem-value {
+.ListItem.is-expandable .ListItem-value {
     font-size: .5em;
     margin-right: 35px;
 }

@@ -23,7 +23,7 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
-    listItemShouldEnableNavigationForObjectAtRowIndex: {
+    listItemShouldBeExpandableForObjectAtRowIndex: {
         value: function (listItem, isNavigationEnabled, object, rowIndex, list) {
             if (object === this.departments[1] || object === this.settings[2]) {
                 return true;

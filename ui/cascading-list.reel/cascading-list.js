@@ -89,9 +89,9 @@ exports.CascadingList = Component.specialize({
                         this.shouldListEnableSelection.bind(delegate);
                 }
 
-                if (delegate.shouldListEnableNavigation === void 0) {
-                    delegate.shouldListEnableNavigation =
-                        this.shouldListEnableNavigation.bind(delegate);
+                if (delegate.shouldListBeExpandable === void 0) {
+                    delegate.shouldListBeExpandable =
+                        this.shouldListBeExpandable.bind(delegate);
                 }
 
                 if (delegate.shouldListAllowMultipleSelectionn === void 0) {
@@ -111,7 +111,7 @@ exports.CascadingList = Component.specialize({
         }
     },
 
-    shouldListEnableNavigation: {
+    shouldListBeExpandable: {
         value: function () {
             return true;
         }
