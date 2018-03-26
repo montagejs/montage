@@ -846,14 +846,18 @@
         }
     };
 
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" || typeof process !== 'undefined') {
         if (global.__MONTAGE_LOADED__) {
             console.warn("Montage already loaded!");
         } else {
-            global.__MONTAGE_LOADED__ = true;
             exports.initMontage();
+            global.__MONTAGE_LOADED__ = true;
+        }
+
+        if (typeof window !== "undefined") {
             exports.initMontageCustomElement();
         }
+
     } else {
         // may cause additional exports to be injected:
         exports.getPlatform();

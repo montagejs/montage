@@ -1,10 +1,23 @@
 {
-    "name": "montage-demo",
+    "name": "demo",
     "version": "1.0.0",
     "dependencies": {
         "montage": "*"
     },
+    "browser": "ui/main/index.js",
+    "main": "index.js",
+    "overlay": {
+	    "browser": {
+	      "main": "ui/main/index.js"
+	    },
+	    "node": {
+	      "main": "node.js"
+	    }
+	  },
      "mappings": {
         "montage": "../"
-    }
+    },
+    "bundle": [
+        "ui/main.reel"
+    ]
 }
