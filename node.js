@@ -27,12 +27,15 @@ function loadFreeModule(/*program, command, args*/) {
 }
 
 function loadPackagedModule(directory, program/*, command, args*/) {
-    return MontageBoot.loadPackage(directory)
+    return loadPackage(directory)
     .then(function (require) {
         var id = program.slice(directory.length + 1);
         return require.async(id);
     });
 }
+
+// Exit code
+var exitCode = 0;
 
 exports.bootstrap = function () {
     var command = process.argv.slice(0, 3);
@@ -42,18 +45,23 @@ exports.bootstrap = function () {
         return findPackage(program)
         .catch(function (error) {
             if (error.message === "Can't find package") {
-                loadFreeModule(program, command, args);
+                return loadFreeModule(program, command, args);
             } else {
                 throw new Error(error);
             }
-        })
-        .then(function (directory) {
+        }).then(function (directory) {
             return loadPackagedModule(directory, program, command, args);
         });
+    }).catch(function (err) {
+        console.error('Error', err, err.stack);
+        exitCode = 1;
+        process.exit(exitCode);
     });
 };
 
-MontageBoot.loadPackage = function (location, config) {
+
+MontageBoot.loadPackage = loadPackage;
+function loadPackage(location, config) {
 
     if (location.slice(location.length - 1, location.length) !== "/") {
         location += "/";
