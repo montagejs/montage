@@ -29,14 +29,6 @@ exports.List = Component.specialize({
 
     /**
      * Description TODO
-     * @private
-     */
-    _repetition: {
-        value: null
-    },
-
-    /**
-     * Description TODO
      * @public
      */
     userInterfaceDescriptor: {
