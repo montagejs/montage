@@ -1,0 +1,40 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+     -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.Main {
+    padding: 20px;
+}
+
+header {
+    margin: 60px 0;
+    font-size: 2rem;
+    text-align: center;
+    color: #33495d;
+    height: 40px;
+}
+
+h4 {
+    font-size: 1rem;
+    color: #33495d;
+    margin: 40px 0;
+}
+
+.options {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.VirtualList {
+    position: relative;
+    width: 480px;
+    height: 225px;
+}
