@@ -21,7 +21,7 @@ var Placeholder = exports.Placeholder = Slot.specialize({
     },
 
     hasTemplate: {
-        value: true
+        value: false
     },
 
     _needsFetchingComponent: {
@@ -154,7 +154,8 @@ var Placeholder = exports.Placeholder = Slot.specialize({
     },
 
     draw: {
-        value: function () {                
+        value: function () {   
+            this.element.classList.add('Placeholder');
             this._fetchComponentIfNeeded();
         }
     }
