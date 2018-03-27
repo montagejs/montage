@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="scroller.css">
+    <script type="text/montage-serialization">
+{
+    "owner": {
+        "values": {
+            "_content": {
+                "#": "content"
+            },
+            "element": {
+                "#": "owner"
+            },
+            "_scrollBars": {
+                "@": "scrollbars"
+            }
+        }
+    },
+    "scrollbars": {
+        "prototype": "./scroll-bars.reel",
+        "values": {
+            "element": {
+                "#": "scrollbars"
+            }
+        }
+    },
+    "translateComposer": {
+        "prototype": "../../composer/translate-composer",
+        "values": {
+            "component": {"@": "owner"},
+            "minTranslateX": 0,
+            "minTranslateY": 0,
+            "invertAxis": true,
+            "listenToWheelEvent": true
+            "translateX": {"<->": "@owner.scrollX"},
+            "translateY": {"<->": "@owner.scrollY"},
+            "maxTranslateX": {"<-": "@owner._maxTranslateX"},
+            "maxTranslateY": {"<-": "@owner._maxTranslateY"},
+            "axis": {"<-": "@owner._translateComposerAxis"},
+            "hasMomentum": {"<-": "@owner.hasMomentum"}
+        },
+        "listeners": [
+            {
+                "type": "translateStart",
+                "listener": {"@": "owner"}
+            },
+            {
+                "type": "translateEnd",
+                "listener": {"@": "owner"}
+            }
+        ]
+    }
+}
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="montage-Scroller">
+        <div data-montage-id="scrollbars"></div>
+        <div data-montage-id="content" class="montage-Scroller-content">
+            <div data-param="*"></div>
+        </div>
+    </div>
+</body>
+</html>
