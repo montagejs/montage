@@ -31,7 +31,7 @@
                 }
             },
 
-            "list1": {
+             "list1": {
                 "prototype": "montage/ui/list.reel",
                 "values": {
                     "element": {"#": "list1"},
@@ -83,17 +83,6 @@
                     "userInterfaceDescriptor": {"<-": "@owner.customerUIDescriptor"},
                     "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
                     "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"}
-                }
-            },
-
-             "list1": {
-                "prototype": "montage/ui/list.reel",
-                "values": {
-                    "element": {"#": "list1"},
-                    "data": {"<-": "@owner.strings"},
-                    "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
-                    "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"},
-                    "isExpandable": {"<-": "!!@isExpandable.checked"}
                 }
             }
 
