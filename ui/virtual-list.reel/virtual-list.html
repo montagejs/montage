@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
     <link rel="stylesheet" href="virtual-list.css">
     <script type="text/montage-serialization">
         {
@@ -10,8 +9,17 @@
                     "element": {"#": "virtual-list"},
                     "flow": {"@": "flow"},
                     "selection": {"<->": "@flow.selection"},
-                    "montageListItemModule": { "%": "../list-item.reel"}
-                } 
+                    "montageListItemModule": { "%": "../list-item.reel"},
+                    "_scrollBars": {"@": "scrollbars"},
+                    "_scroll": {"<->": "@flow.scroll"}
+                }
+            },
+
+            "scrollbars": {
+                "prototype": "../scroller.reel/scroll-bars.reel",
+                "properties": {
+                    "element": {"#": "scrollbars"}
+                }
             },
 
             "flow": {
@@ -71,6 +79,7 @@
 </head>
 <body>
 	<div data-montage-id="virtual-list" class="VirtualList">
+        <div data-montage-id="scrollbars"></div>
         <div data-montage-id="flow" class="VirtualList-flow">
             <div data-param="*">
                 <div data-montage-id="placeholder"></div>

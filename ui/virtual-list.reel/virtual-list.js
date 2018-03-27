@@ -15,12 +15,17 @@ exports.VirtualList = List.specialize({
                     self.flow.didDraw = oldDidDraw;
                 }
             };
+            
+            // initialize scroll bars
+            this._scrollBars.opacity = 0;
         }
     },
 
     enterDocument: {
         value: function (firstTime) {
             this.super(firstTime);
+            this.flow._flowTranslateComposer.addEventListener("translateStart", this, false);
+            this.flow._flowTranslateComposer.addEventListener("translateEnd", this, false);
             window.addEventListener("resize", this, false);
         }
     },
@@ -28,38 +33,45 @@ exports.VirtualList = List.specialize({
     exitDocument: {
         value: function () {
             this.super();
+            this.flow._flowTranslateComposer.removeEventListener("translateStart", this, false);
+            this.flow._flowTranslateComposer.removeEventListener("translateEnd", this, false);
             window.removeEventListener("resize", this, false);
         }
     },
 
+    __scroll: {
+        value: 0
+    },
+
+    _scroll: {
+        get: function () {
+            return this.__scroll;
+        },
+        set: function (value) {
+            this.__scroll = value;
+            this._scrollBars.verticalScroll = this._calculateScrollBarsVerticalScroll(
+                value, this._height, this._rowHeight, this.flow._numberOfIterations, this._scrollBars.verticalLength
+            );
+        }
+    },
+    
     handleResize: {
         value: function () {
             this.needsDraw = true;
         }
     },
 
-    willDraw: {
+    handleTranslateStart: {
         value: function () {
-            this.super();
-
-            if (this.flow._repetition._drawnIterations[0]) {
-                this._width = this._measureWidth();
-                this._height = this._measureHeight();
-                this._rowHeight = this._measureRowHeight();
-                this.flow.linearScrollingVector = this._calculateLinearScrollingVector(
-                    this._height, this._rowHeight
-                );
-                this.flow.paths = this._calculateFlowPath(
-                    this._height, this._rowHeight
-                );
-                this.flow.cameraTargetPoint = this._calculateCameraTargetPoint(
-                    this._width, this._height, this._rowHeight
-                );
-                this.flow.cameraPosition = this._calculateCameraPosition(
-                    this._width, this._height, this._rowHeight
-                );
-                this.flow.cameraFov = 90;
+            if (this._scrollBars.verticalLength < 1) {
+                this._scrollBars.opacity = 0.5;
             }
+        }
+    },
+
+    handleTranslateEnd: {
+        value: function () {
+            this._scrollBars.opacity = 0;
         }
     },
 
@@ -84,6 +96,13 @@ exports.VirtualList = List.specialize({
     _calculateLinearScrollingVector: {
         value: function (height, rowHeight) {
             return [0, (-500 * rowHeight) / height, 0];
+        }
+    },
+
+    _calculateScrollBarsVerticalLength: {
+        value: function (height, rowHeight, numberOfIterations) {
+            var length = (height / rowHeight) / numberOfIterations;
+            return length > 1 ? 1 : length;
         }
     },
 
@@ -146,6 +165,45 @@ exports.VirtualList = List.specialize({
                 height / 2 + rowHeight,
                 0
             ];
+        }
+    },
+
+    _calculateScrollBarsVerticalScroll: {
+        value: function (value, height, rowHeight, numberOfIterations, verticalLength) {
+            if (verticalLength === 1) {
+                return 0;
+            }
+            return (value * (1 - verticalLength)) / (numberOfIterations - (height / rowHeight));
+        }
+    },
+
+    willDraw: {
+        value: function () {
+            this.super();
+
+            if (this.flow._repetition._drawnIterations[0]) {
+                this._width = this._measureWidth();
+                this._height = this._measureHeight();
+                this._rowHeight = this._measureRowHeight();
+                this.flow.linearScrollingVector = this._calculateLinearScrollingVector(
+                    this._height, this._rowHeight
+                );
+                this.flow.paths = this._calculateFlowPath(
+                    this._height, this._rowHeight
+                );
+                this.flow.cameraTargetPoint = this._calculateCameraTargetPoint(
+                    this._width, this._height, this._rowHeight
+                );
+                this.flow.cameraPosition = this._calculateCameraPosition(
+                    this._width, this._height, this._rowHeight
+                );
+                this.flow.cameraFov = 90;
+                this._scrollBars.displayHorizontal = false;
+                this._scrollBars.displayVertical = true;
+                this._scrollBars.verticalLength = this._calculateScrollBarsVerticalLength(
+                    this._height, this._rowHeight, this.flow._numberOfIterations
+                );
+            }
         }
     }
 
