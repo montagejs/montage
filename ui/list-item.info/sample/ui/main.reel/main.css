@@ -1,8 +1,6 @@
 html, body {
     padding: 0;
     margin: 0;
-    height: 100%;
-    width: 100%;
     font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
      -webkit-user-select: none;
     -khtml-user-select: none;
@@ -21,4 +19,10 @@ header {
     text-align: center;
     color: #33495d;
     height: 40px;
+}
+
+h4 {
+    font-size: 1rem;
+    color: #33495d;
+    margin: 40px 0;
 }
