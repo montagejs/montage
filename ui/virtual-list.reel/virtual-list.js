@@ -182,9 +182,12 @@ exports.VirtualList = List.specialize({
             this.super();
 
             if (this.flow._repetition._drawnIterations[0]) {
+                if ((this._rowHeight = this._measureRowHeight()) === 0) {
+                    return;
+                }
+                
                 this._width = this._measureWidth();
                 this._height = this._measureHeight();
-                this._rowHeight = this._measureRowHeight();
                 this.flow.linearScrollingVector = this._calculateLinearScrollingVector(
                     this._height, this._rowHeight
                 );
@@ -203,6 +206,14 @@ exports.VirtualList = List.specialize({
                 this._scrollBars.verticalLength = this._calculateScrollBarsVerticalLength(
                     this._height, this._rowHeight, this.flow._numberOfIterations
                 );
+            }
+        }
+    },
+
+    draw: {
+        value: function () {
+            if (this._rowHeight === 0) {
+                this.needsDraw = true;
             }
         }
     }

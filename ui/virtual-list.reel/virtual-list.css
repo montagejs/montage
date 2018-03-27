@@ -29,7 +29,3 @@ VirtualList-flow {
     border: none;
     border-bottom: 1px solid #c8c7cc;
 }
-
-.VirtualList .montage-Flow-Repetition > div:last-of-type .ListItem {
-    border: none;
-}
