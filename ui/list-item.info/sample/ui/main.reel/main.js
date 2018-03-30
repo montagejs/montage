@@ -1,4 +1,5 @@
 var Component = require("montage/ui/component").Component,
+    ListItem = require("montage/ui/list-item.reel").ListItem,
     MockService = require('montage/test/mocks/data/services/mock-service').MockService;
 
 exports.Main = Component.specialize(/** @lends Main# */{
@@ -31,12 +32,14 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
-    listItemWillUseUserInterfaceDescriptorModuleIdForObjectAtRowIndex: {
-        value: function (listItem, UIDescriptor, object, rowIndex, list) {
-            if (object === this.settings[1] || object === this.settings[2]) {
-                return 'montage/test/mocks/data/models/settings-ui-descriptor.mjson';
-            } else if (object === this.check) {
-                return 'montage/test/mocks/data/models/check-ui-descriptor.mjson';
+    componentWillUseUserInterfaceDescriptorIdForObject: {
+        value: function (component, UIDescriptor, object) {
+            if (component instanceof ListItem) {
+                if (object === this.settings[1] || object === this.settings[2]) {
+                    return 'montage/test/mocks/data/models/settings-ui-descriptor.mjson';
+                } else if (object === this.check) {
+                    return 'montage/test/mocks/data/models/check-ui-descriptor.mjson';
+                }
             }
         }
     },

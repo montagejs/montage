@@ -35,29 +35,33 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
-    cascadingListWillUseObjectDescriptorModuleIdForObjectAtColumnIndex: {
-        value: function (cascadingList, moduleId, object, columnIndex) {
+    componentWillUseObjectDescriptorModuleIdForObject: {
+        value: function (component, moduleId, object) {
             if (!moduleId) {
-                 if (object === this.root[0]) {
-                    return 'montage/test/mocks/data/models/employee.mjson';
-                } else if (object === this.root[1]) {
-                    return 'montage/test/mocks/data/models/department.mjson';
-                 } else if (object === this.root[2]) {
-                     return 'montage/test/mocks/data/models/store.mjson';
-                 }
+                if (component === this.cascadingList) {
+                    if (object === this.root[0]) {
+                        return 'montage/test/mocks/data/models/employee.mjson';
+                    } else if (object === this.root[1]) {
+                        return 'montage/test/mocks/data/models/department.mjson';
+                    } else if (object === this.root[2]) {
+                        return 'montage/test/mocks/data/models/store.mjson';
+                    }
+                }
             }
         }
     },
 
-    cascadingListWillUseUserInterfaceDescriptorIdForObjectAtColumnIndex: {
-        value: function (cascadingList, userInterfaceDescriptorModuleId, object, columnIndex) {
-            if (object === this.root && !userInterfaceDescriptorModuleId) {
-                return 'montage/test/mocks/data/models/organisation-ui-descriptor.mjson';
-            } else if (object === this.root[4]) {
-                return 'montage/test/mocks/data/models/settings-ui-descriptor.mjson';
-            } else if (object === this.root[3]) {
-                return 'montage/test/mocks/data/models/customer-ui-descriptor.mjson';
-            }
+    componentWillUseUserInterfaceDescriptorIdForObject: {
+        value: function (component, userInterfaceDescriptorModuleId, object) {
+            if (component === this.cascadingList) {
+                if (object === this.root && !userInterfaceDescriptorModuleId) {
+                    return 'montage/test/mocks/data/models/organisation-ui-descriptor.mjson';
+                } else if (object === this.root[4]) {
+                    return 'montage/test/mocks/data/models/settings-ui-descriptor.mjson';
+                } else if (object === this.root[3]) {
+                    return 'montage/test/mocks/data/models/customer-ui-descriptor.mjson';
+                }
+            }    
         }
     },
 

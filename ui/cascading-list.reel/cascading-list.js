@@ -233,30 +233,6 @@ exports.CascadingList = Component.specialize({
         }
     },
 
-    willLoadObjectDescriptor: {
-        value: function (objectDescriptorModuleId, object) {
-            return this.callDelegateMethod(
-                "cascadingListWillUseObjectDescriptorModuleIdForObjectAtColumnIndex",
-                this,
-                objectDescriptorModuleId,
-                object,
-                this._currentColumnIndex
-            );
-        }
-    },
-
-    willLoadUserInterfaceDescriptor: {
-        value: function (userInterfaceDescriptorModuleId, object) {
-            return this.callDelegateMethod(
-                "cascadingListWillUseUserInterfaceDescriptorIdForObjectAtColumnIndex",
-                this,
-                userInterfaceDescriptorModuleId,
-                object,
-                this._currentColumnIndex
-            );
-        }
-    },
-
     _populateColumnWithObjectAndIndex: {
         value: function (object, columnIndex, isEditing) {
             if (!this._populatePromise && object) {

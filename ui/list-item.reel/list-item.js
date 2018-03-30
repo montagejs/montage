@@ -265,146 +265,114 @@ exports.ListItem = Component.specialize({
     _loadDataUserInterfaceDescriptorIfNeeded: {
         value: function () {
             if (this.data && this._templateDidLoad) {
-                return this.loadUserInterfaceDescriptor(this.data);
+                var self = this,
+                    infoDelegate;
+                
+                return this.loadUserInterfaceDescriptor(this.data).then(function (UIDescriptor) {
+                    self.userInterfaceDescriptor = UIDescriptor || self.userInterfaceDescriptor; // trigger biddings.
+
+                    var iconComponentModuleId = self._iconComponentModule ?
+                        self._iconComponentModule.id : null,
+                        toggleComponentModuleId = self._toggleComponentModule ?
+                            self._toggleComponentModule.id : null,
+                        candidateToggleComponentModuleId,
+                        candidateIconComponentModuleId;
+
+                    self._label = self.callDelegateMethod(
+                        "listItemWillUseLabelForObjectAtRowIndex",
+                        self,
+                        self._label,
+                        self.data,
+                        self.rowIndex,
+                        self.list
+                    ) || self._label; // defined by a bidding expression
+
+                    self._description = self.callDelegateMethod(
+                        "listItemWillUseDescriptionForObjectAtRowIndex",
+                        self,
+                        self._description,
+                        self.data,
+                        self.rowIndex,
+                        self.list
+                    ) || self._description; // defined by a bidding expression
+
+                    candidateIconComponentModuleId = self.callDelegateMethod(
+                        "listItemWillUseIconComponentModuleIdForObjectAtRowIndex",
+                        self,
+                        iconComponentModuleId,
+                        self.data,
+                        self.rowIndex,
+                        self.list
+                    ) || iconComponentModuleId; // defined by a bidding expression
+
+                    if (candidateIconComponentModuleId &&
+                        iconComponentModuleId !== candidateIconComponentModuleId && self.delegate
+                    ) {
+                        infoDelegate = Montage.getInfoForObject(self.delegate);
+                        self._iconComponentModule = {
+                            require: infoDelegate.require || require,
+                            id: candidateIconComponentModuleId
+                        };
+                    }
+
+                    if (self._iconComponentModule === self._montageIconComponentModule) {
+                        self._iconSrc = self.callDelegateMethod(
+                            "listItemWillUseIconSrcForObjectAtRowIndex",
+                            self,
+                            self._iconSrc,
+                            self.data,
+                            self.rowIndex,
+                            self.list
+                        ) || self._iconSrc; // defined by a bidding expression
+
+                        self._iconName = self.callDelegateMethod(
+                            "listItemWillUseIconNameForObjectAtRowIndex",
+                            self,
+                            self._iconName,
+                            self.data,
+                            self.rowIndex,
+                            self.list
+                        ) || self._iconName; // defined by a bidding expression
+                    }
+
+                    candidateToggleComponentModuleId = self.callDelegateMethod(
+                        "listItemWillUseToggleComponentModuleIdForObjectAtRowIndex",
+                        self,
+                        toggleComponentModuleId,
+                        self.data,
+                        self.rowIndex,
+                        self.list
+                    ) || toggleComponentModuleId; // defined by a bidding expression
+
+                    if (candidateToggleComponentModuleId &&
+                        toggleComponentModuleId !== candidateToggleComponentModuleId && self.delegate
+                    ) {
+                        infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
+                        self._defaultToggleComponentModule = {
+                            require: infoDelegate.require || require,
+                            id: candidateToggleComponentModuleId
+                        };
+                    }
+
+                    self._descriptionPosition = self.callDelegateMethod(
+                        "listItemWillUseDescriptionPositionForObjectAtRowIndex",
+                        self,
+                        self.descriptionPosition,
+                        self.data,
+                        self.rowIndex,
+                        self.list
+                    ) || self._descriptionPosition; // default value
+
+                    self._isExpandable = self.callDelegateMethod(
+                        "listItemShouldBeExpandableForObjectAtRowIndex",
+                        self,
+                        self._isExpandable,
+                        self.data,
+                        self.rowIndex,
+                        self.list
+                    ) || self._isExpandable; // default value
+                });
             }  
-        }
-    },
-
-    willLoadObjectDescriptor: {
-        value: function (objectDescriptorModuleId, object) {
-            return this.callDelegateMethod(
-                "listItemWillUseObjectDescriptorModuleIdForObjectAtRowIndex",
-                this,
-                objectDescriptorModuleId,
-                object,
-                this.rowIndex,
-                this.list
-            );
-        }
-    },
-
-    willLoadUserInterfaceDescriptor: {
-        value: function (userInterfaceDescriptorModuleId, object) {
-            return this.callDelegateMethod(
-                "listItemWillUseUserInterfaceDescriptorModuleIdForObjectAtRowIndex",
-                this,
-                userInterfaceDescriptorModuleId,
-                object,
-                this.rowIndex,
-                this.list
-            );
-        }
-    },
-
-    didLoadUserInterfaceDescriptor: {
-        value: function (userInterfaceDescriptorPromise) {
-            var self = this,
-                infoDelegate;
-
-            return userInterfaceDescriptorPromise.then(function (UIDescriptor) {
-                self.userInterfaceDescriptor = UIDescriptor || self.userInterfaceDescriptor; // trigger biddings.
-
-                var iconComponentModuleId = self._iconComponentModule ?
-                    self._iconComponentModule.id : null,
-                    toggleComponentModuleId = self._toggleComponentModule ?
-                        self._toggleComponentModule.id : null,    
-                    candidateToggleComponentModuleId,    
-                    candidateIconComponentModuleId;
-
-                self._label = self.callDelegateMethod(
-                    "listItemWillUseLabelForObjectAtRowIndex",
-                    self,
-                    self._label,
-                    self.data,
-                    self.rowIndex,
-                    self.list
-                ) || self._label; // defined by a bidding expression
-
-                self._description = self.callDelegateMethod(
-                    "listItemWillUseDescriptionForObjectAtRowIndex",
-                    self,
-                    self._description,
-                    self.data,
-                    self.rowIndex,
-                    self.list
-                ) || self._description; // defined by a bidding expression
-                                
-                candidateIconComponentModuleId = self.callDelegateMethod(
-                    "listItemWillUseIconComponentModuleIdForObjectAtRowIndex",
-                    self,
-                    iconComponentModuleId,
-                    self.data,
-                    self.rowIndex,
-                    self.list
-                ) || iconComponentModuleId; // defined by a bidding expression
-                
-                if (candidateIconComponentModuleId &&
-                    iconComponentModuleId !== candidateIconComponentModuleId && self.delegate
-                ) {
-                    infoDelegate = Montage.getInfoForObject(self.delegate);
-                    self._iconComponentModule = {
-                        require: infoDelegate.require || require,
-                        id: candidateIconComponentModuleId
-                    };
-                }
-
-                if (self._iconComponentModule === self._montageIconComponentModule) {
-                    self._iconSrc = self.callDelegateMethod(
-                        "listItemWillUseIconSrcForObjectAtRowIndex",
-                        self,
-                        self._iconSrc,
-                        self.data,
-                        self.rowIndex,
-                        self.list
-                    ) || self._iconSrc; // defined by a bidding expression
-
-                    self._iconName = self.callDelegateMethod(
-                        "listItemWillUseIconNameForObjectAtRowIndex",
-                        self,
-                        self._iconName,
-                        self.data,
-                        self.rowIndex,
-                        self.list
-                    ) || self._iconName; // defined by a bidding expression
-                }
-
-                candidateToggleComponentModuleId = self.callDelegateMethod(
-                    "listItemWillUseToggleComponentModuleIdForObjectAtRowIndex",
-                    self,
-                    toggleComponentModuleId,
-                    self.data,
-                    self.rowIndex,
-                    self.list
-                ) || toggleComponentModuleId; // defined by a bidding expression
-
-                if (candidateToggleComponentModuleId &&
-                    toggleComponentModuleId !== candidateToggleComponentModuleId && self.delegate
-                ) {
-                    infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
-                    self._defaultToggleComponentModule = {
-                        require: infoDelegate.require || require,
-                        id: candidateToggleComponentModuleId
-                    };
-                }
-                
-                self._descriptionPosition = self.callDelegateMethod(
-                    "listItemWillUseDescriptionPositionForObjectAtRowIndex",
-                    self,
-                    self.descriptionPosition,
-                    self.data,
-                    self.rowIndex,
-                    self.list
-                ) || self._descriptionPosition; // default value
-
-                self._isExpandable = self.callDelegateMethod(
-                    "listItemShouldBeExpandableForObjectAtRowIndex",
-                    self,
-                    self._isExpandable,
-                    self.data,
-                    self.rowIndex,
-                    self.list
-                ) || self._isExpandable; // default value
-            });
         }
     }
 

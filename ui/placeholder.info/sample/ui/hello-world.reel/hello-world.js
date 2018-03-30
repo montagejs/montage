@@ -15,7 +15,11 @@ exports.HelloWorld = Component.specialize(/** @lends HelloWorld# */{
                 this._data = data;
 
                 if (data) {
-                    this.loadUserInterfaceDescriptor(data);
+                    var self = this;
+
+                    this.loadUserInterfaceDescriptor(data).then(function (userInterfaceDescriptor) {
+                        return (self.userInterfaceDescriptor = userInterfaceDescriptor);
+                    });
                 }
             }
         }
@@ -23,15 +27,6 @@ exports.HelloWorld = Component.specialize(/** @lends HelloWorld# */{
 
     userInterfaceDescriptor: {
         value: null
-    },
-
-    didLoadUserInterfaceDescriptor: {
-        value: function (promise) {
-            var self = this;
-            return promise.then(function (userInterfaceDescriptor) {
-                return (self.userInterfaceDescriptor = userInterfaceDescriptor);
-            });
-        }
     }
 
 });

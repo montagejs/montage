@@ -3478,11 +3478,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 objectDescriptorModuleId = constructor.objectDescriptorModuleId;
             }
 
-            if (typeof this.willLoadObjectDescriptor === 'function') {
-                objectDescriptorModuleIdCandidate = this.willLoadObjectDescriptor(
-                    objectDescriptorModuleId, object
-                );
-            }
+            objectDescriptorModuleIdCandidate = this.callDelegateMethod(
+                "componentWillUseObjectDescriptorModuleIdForObject",
+                this,
+                objectDescriptorModuleId,
+                object
+            );
 
             if (objectDescriptorModuleIdCandidate) {
                 infoDelegate = Montage.getInfoForObject(this.delegate);
@@ -3521,11 +3522,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     }
                 }
 
-                if (typeof self.willLoadUserInterfaceDescriptor === 'function') {
-                    userInterfaceDescriptorModuleIdCandidate = self.willLoadUserInterfaceDescriptor(
-                        objectDescriptorModuleId, object
-                    );
-                }
+                userInterfaceDescriptorModuleIdCandidate = self.callDelegateMethod(
+                    "componentWillUseUserInterfaceDescriptorIdForObject",
+                    self,
+                    userInterfaceDescriptorModuleId,
+                    object
+                );
 
                 if (objectDescriptor && userInterfaceDescriptorModuleId &&
                     (userInterfaceDescriptorModuleIdCandidate === userInterfaceDescriptorModuleId ||
@@ -3548,13 +3550,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 }
             });
 
-            return promise.then(function (userInterfaceDescriptor) {
-                if (typeof self.didLoadUserInterfaceDescriptor === 'function') {
-                    return self.didLoadUserInterfaceDescriptor(promise);
-                }
-
-                return userInterfaceDescriptor;
-            }).finally(function () {
+            return promise.finally(function () {
                 self.canDrawGate.setField(
                     self.constructor.userInterfaceDescriptorLoadedField,
                     true
