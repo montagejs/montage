@@ -11,7 +11,6 @@
             "collectionInspectorComponentModule": {
                 "%": "ui/list.reel"
             },
-            "iconName": "person",
             "collectionNameExpression": "'Employees'",
             "nameExpression": "lastname + ' ' + firstname",
             "descriptionExpression": "department"

@@ -89,14 +89,6 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
    
-    listItemWillUseIconNameForObjectAtRowIndex: {
-        value: function (listItem, moduleId, object, rowIndex, list) {
-            if (object === this.root[0]) {
-                return 'people';
-            }
-        }
-    },
-
     listItemWillUseIconComponentModuleIdForObjectAtRowIndex: {
         value: function (listItem, moduleId, object, rowIndex, list) {
             if (object === this.root[1]) {

@@ -81,14 +81,6 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
-    listItemWillUseIconNameForObjectAtRowIndex: {
-        value: function (listItem, iconName, object, rowIndex, list) {
-            if (object === this.employees[4]) {
-                return 'people';
-            }
-        }
-    },
-
     listItemWillUseToggleComponentModuleIdForObjectAtRowIndex: {
         value: function (listItem, toogleComponentModuleId, object, rowIndex, list) {
             if (object === this.settings[1] && listItem === this.listItem38) {

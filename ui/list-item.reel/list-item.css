@@ -62,6 +62,8 @@
 /** Icon **/
 
 .ListItem .ListItem-icon > * {
+    height: 24px;
+    width: 24px;
     margin: 8px;
     display: -webkit-box;
     display: -ms-flexbox;
@@ -69,6 +71,9 @@
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
 }
 
 /** Label + description **/

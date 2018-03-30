@@ -16,11 +16,6 @@ exports.ListItem = Component.specialize({
     templateDidLoad: {
         value: function () {
             this.defineBindings({
-                "_iconName": {
-                    "<-": "data.defined() && userInterfaceDescriptor.defined() ? " +
-                        "(userInterfaceDescriptor.iconName || " +
-                        "iconName) : iconName"
-                },
                 "_iconSrc": {
                     "<-": "data.defined() && userInterfaceDescriptor.defined() ? " +
                         "(data.path(userInterfaceDescriptor.iconExpression || null) || " +
@@ -134,10 +129,6 @@ exports.ListItem = Component.specialize({
     },
 
     toggleComponentModule: {
-        value: null
-    },
-
-    iconName: {
         value: null
     },
 
@@ -324,15 +315,6 @@ exports.ListItem = Component.specialize({
                             self.rowIndex,
                             self.list
                         ) || self._iconSrc; // defined by a bidding expression
-
-                        self._iconName = self.callDelegateMethod(
-                            "listItemWillUseIconNameForObjectAtRowIndex",
-                            self,
-                            self._iconName,
-                            self.data,
-                            self.rowIndex,
-                            self.list
-                        ) || self._iconName; // defined by a bidding expression
                     }
 
                     candidateToggleComponentModuleId = self.callDelegateMethod(
