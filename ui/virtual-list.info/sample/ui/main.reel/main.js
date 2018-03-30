@@ -8,6 +8,7 @@ exports.Main = Component.specialize(/** @lends Main# */{
         value: function () {
             this.mockService = new MockService();
             var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+                length,    
                 strings = [],    
                 text;
 
