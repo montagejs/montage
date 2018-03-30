@@ -96,26 +96,6 @@ body {
     background: black;
 }
 
-.flow1 .montage-Flow-Repetition > div {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    width: auto;
-    height: auto;
-}
-
-.flow2 .montage-Flow-Repetition > div {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    width: auto;
-    height: auto;
-}
-
 .flow2 .slide {
     height: 65px;
     font-size: 30px;
