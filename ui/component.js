@@ -3507,7 +3507,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             promise = promise.then(function (objectDescriptor) {
                 var moduleInfo = Montage.getInfoForObject(self),
                     packageName = moduleInfo.require.packageDescription.name,
-                    moduleId = packageName + "#" + moduleInfo.moduleId,
+                    moduleId = packageName + "/" + moduleInfo.moduleId,
                     userInterfaceDescriptorModuleId,
                     userInterfaceDescriptorModuleIdCandidate;
                 

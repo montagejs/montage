@@ -20,10 +20,10 @@
                 "*": {
                     "%": "test/mocks/data/models/employee-ui-descriptor.mjson"
                 },
-                "montage#ui/list-item.reel": {
+                "montage/ui/list-item.reel": {
                     "%": "test/mocks/data/models/employee-list-item-ui-descriptor.mjson"
                 },
-                "montage#ui/cascading-list.reel": {
+                "montage/ui/cascading-list.reel": {
                     "%": "test/mocks/data/models/employee-cascading-list-ui-descriptor.mjson"
                 }
             }
