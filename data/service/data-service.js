@@ -1,6 +1,7 @@
 var Montage = require("core/core").Montage,
     AuthorizationManager = require("data/service/authorization-manager").AuthorizationManager,
     AuthorizationPolicy = require("data/service/authorization-policy").AuthorizationPolicy,
+    DataMapping = require("data/service/data-mapping").DataMapping,
     DataObjectDescriptor = require("data/model/data-object-descriptor").DataObjectDescriptor,
     DataQuery = require("data/model/data-query").DataQuery,
     DataStream = require("data/service/data-stream").DataStream,
@@ -1453,6 +1454,30 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    addOneRawData: {
+        value: function (stream, rawData, context) {
+            var type = this._descriptorForParentAndRawData(stream.query.type, rawData),
+                object = this.objectForTypeRawData(type, rawData, context),
+                result = this._mapRawDataToObject(rawData, object, context);
+
+            if (result && result instanceof Promise) {
+                result = result.then(function () {
+                    stream.addData(object);
+                    return object;
+                });
+            } else {
+                stream.addData(rawData);
+                result = Promise.resolve(object);
+            }
+            // this._addMapDataPromiseForStream(result, stream);
+
+            if (object) {
+                this.callDelegateMethod("rawDataServiceDidAddOneRawData", this, stream, rawData, object);
+            }
+            return this.nullPromise;
+        }
+    },
+
     isUniquing: {
         value: false
     },
@@ -1780,7 +1805,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 //the service to answer that to itself
                 if (self.parentService && self.parentService.childServiceForType(query.type) === self && typeof self.fetchRawData === "function") {
                     service = self;
-                    service._fetchRawData(stream);
+                    var rawDataStream = new DataStream();
+                    rawDataStream.query = query;
+                    stream.dataExpression = query.selectExpression;
+                    service._fetchRawData(rawDataStream).then(function (rawData) {
+                        
+                    });
                 } else {
 
                     // Use a child service to fetch the data.
@@ -1830,6 +1860,56 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     stream.query = streamSelector;
                 });
             }
+        }
+    },
+
+    _mapRawDataToObject: {
+        value: function (record, object, context) {
+            var self = this,
+                mapping = this.mappingForObject(object),
+                result;
+
+            if (mapping) {
+                result = mapping.mapRawDataToObject(record, object, context);
+                if (result) {
+                    result = result.then(function () {
+                        return self.mapRawDataToObject(record, object, context);
+                    });
+                } else {
+                    result = this.mapRawDataToObject(record, object, context);
+                }
+            } else {
+                result = this.mapRawDataToObject(record, object, context);
+            }
+
+            return result;
+
+        }
+    },
+
+    
+
+    /**
+     * Retrieve DataMapping for this object.
+     *
+     * @method
+     * @argument {Object} object - An object whose object descriptor has a DataMapping
+     */
+    mappingForObject: {
+        value: function (object) {
+            var objectDescriptor = this.objectDescriptorForObject(object),
+                mapping = objectDescriptor && this.mappingWithType(objectDescriptor);
+
+
+            if (!mapping && objectDescriptor) {
+                mapping = this._objectDescriptorMappings.get(objectDescriptor);
+                if (!mapping) {
+                    mapping = DataMapping.withObjectDescriptor(objectDescriptor);
+                    this._objectDescriptorMappings.set(objectDescriptor, mapping);
+                }
+            }
+
+            return mapping;
         }
     },
 

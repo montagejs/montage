@@ -466,25 +466,25 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
     addOneRawData: {
         value: function (stream, rawData, context) {
-            var type = this._descriptorForParentAndRawData(stream.query.type, rawData),
-                object = this.objectForTypeRawData(type, rawData, context),
-                result = this._mapRawDataToObject(rawData, object, context);
+            // var type = this._descriptorForParentAndRawData(stream.query.type, rawData),
+            //     object = this.objectForTypeRawData(type, rawData, context),
+            //     result = this._mapRawDataToObject(rawData, object, context);
 
-            if (result && result instanceof Promise) {
-                result = result.then(function () {
-                    stream.addData(object);
-                    return object;
-                });
-            } else {
-                stream.addData(object);
-                result = Promise.resolve(object);
-            }
-            this._addMapDataPromiseForStream(result, stream);
+            // if (result && result instanceof Promise) {
+            //     result = result.then(function () {
+            //         stream.addData(object);
+            //         return object;
+            //     });
+            // } else {
+                stream.addData(rawData);
+            //     result = Promise.resolve(object);
+            // // }
+            // // this._addMapDataPromiseForStream(result, stream);
 
-            if (object) {
-                this.callDelegateMethod("rawDataServiceDidAddOneRawData", this, stream, rawData, object);
-            }
-            return result;
+            // if (object) {
+            //     this.callDelegateMethod("rawDataServiceDidAddOneRawData", this, stream, rawData, object);
+            // }
+            return this.nullPromise;
         }
     },
 
