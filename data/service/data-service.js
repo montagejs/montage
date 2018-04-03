@@ -1422,6 +1422,37 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    addRawData: {
+        value: function (stream, records, context) {
+            var offline, i, n,
+                streamSelectorType = stream.query.type,
+                iRecord;
+            // Record fetched raw data for offline use if appropriate.
+            offline = records && !this.isOffline && this._streamRawData.get(stream);
+            if (offline) {
+                offline.push.apply(offline, records);
+            } else if (records && !this.isOffline) {
+                //Do we really need to make a shallow copy of the array for bookeeping?
+                //this._streamRawData.set(stream, records.slice());
+                this._streamRawData.set(stream, records);
+            }
+            // Convert the raw data to appropriate data objects. The conversion
+            // will be done in place to avoid creating any unnecessary array.
+            for (i = 0, n = records && records.length; i < n; i++) {
+                /*jshint -W083*/
+                // Turning off jshint's function within loop warning because the
+                // only "outer scoped variable" we're accessing here is stream,
+                // which is a constant reference and won't cause unexpected
+                // behavior due to iteration.
+                // if (streamSelectorType.name && streamSelectorType.name.toUpperCase().indexOf("BSP") !== -1) {
+                //     debugger;
+                // }
+                this.addOneRawData(stream, records[i], context, streamSelectorType);
+                /*jshint +W083*/
+            }
+        }
+    },
+
     isUniquing: {
         value: false
     },
