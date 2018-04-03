@@ -54,7 +54,8 @@ exports.RotationComposer = Composer.specialize(/** @lends RotationComposer# */ {
         value: function RotationComposer() {
             this.super();
             this._translateComposer = new TranslateComposer();
-            this._translateComposer.hasMomentum = false;
+            this.hasMomentum = false;
+            this._translateComposer.listenToWheelEvent = true;
             this._translateComposer.hasBouncing = false;
         }
     },

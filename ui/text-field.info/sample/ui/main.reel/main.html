@@ -15,6 +15,31 @@
             "values": {
                 "element": {"#": "text-field-native"}
             }
+        },
+
+        "numberField": {
+            "prototype": "montage/ui/text-field.reel",
+            "values": {
+                "element": {"#": "number-field"},
+                "value":100,
+                "converter":  {"@": "numberConverter"}
+
+            }
+        },
+
+        "numberConverter": {
+            "prototype": "montage/core/converter/number-converter",
+            "values": {
+                "allowPartialConversion":true
+            }
+        },
+
+        "numberFieldValue": {
+            "prototype": "montage/ui/text.reel",
+            "values": {
+                "element": {"#": "number-field-value"},
+                "value": {"<-":"@numberField.value"}
+            }
         }
 
     }
@@ -25,7 +50,12 @@
         <header>Text Field Sample</header>
 
         <section class="text-fields">
-            <input type="text" data-montage-id="text-field-native" class="text-field native"/>
+
+            <label>HTNML5 Textfield + Number Pattern: <input type="text" pattern="[0-9]+"/></label>
+
+            <label>Basic Textfield: <input type="text" data-montage-id="text-field-native" class="text-field native"/></label>
+            <label>Enter a Number: <input type="text" data-montage-id="number-field" class="text-field native"/></label>
+            <label>Your Number is: <span data-montage-id="number-field-value" class="text-field native"/></label>
 
             <!-- @benoit add a custom one with content editable set to true ?-->
 
