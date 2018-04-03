@@ -1,6 +1,5 @@
 var ExpressionDataMapping = require("montage/data/service/expression-data-mapping").ExpressionDataMapping,
     CategoryService = require("spec/data/logic/service/category-service").CategoryService,
-    CountryService = require("spec/data/logic/service/country-service").CountryService,
     DataService = require("montage/data/service/data-service").DataService,
     DateConverter = require("montage/core/converter/date-converter").DateConverter,
     ModuleObjectDescriptor = require("montage/core/meta/module-object-descriptor").ModuleObjectDescriptor,
@@ -8,13 +7,7 @@ var ExpressionDataMapping = require("montage/data/service/expression-data-mappin
     Promise = require("montage/core/promise").Promise,
     PropertyDescriptor = require("montage/core/meta/property-descriptor").PropertyDescriptor,
     RawDataService = require("montage/data/service/raw-data-service").RawDataService,
-    RawDataTypeMapping = require("montage/data/service/raw-data-type-mapping").RawDataTypeMapping,
     RawPropertyValueToObjectConverter = require("montage/data/converter/raw-property-value-to-object-converter").RawPropertyValueToObjectConverter;
-
-
-var Movie = require("spec/data/logic/model/movie").Movie,
-    Category = require("spec/data/logic/model/category").Category,
-    ActionMovie = require("spec/data/logic/model/action-movie").ActionMovie;
 
 describe("An Expression Data Mapping", function() {
 
@@ -24,12 +17,6 @@ describe("An Expression Data Mapping", function() {
         categoryObjectDescriptor,
         categoryPropertyDescriptor,
         categoryService,
-        countryConverter,
-        countryMapping,
-        countryModuleReference,
-        countryObjectDescriptor,
-        countryPropertyDescriptor,
-        countryService,
         dateConverter,
         mainService,
         isFeaturedPropertyDescriptor,
@@ -41,18 +28,13 @@ describe("An Expression Data Mapping", function() {
         movieSchema,
         movieSchemaModuleReference,
         movieService,
-        actionMovieMapping,
-        actionMovieModuleReference,
-        actionMovieObjectDescriptor,
-        actionMovieRawDataTypeMapping,
         plotSummaryModuleReference,
         plotSummaryObjectDescriptor,
         plotSummaryPropertyDescriptor,
         registrationPromise,
         schemaBudgetPropertyDescriptor,
         schemaIsFeaturedPropertyDescriptor,
-        schemaReleaseDatePropertyDescriptor,
-        
+        schemaReleaseDatePropertyDescriptor;
 
 
     dateConverter = Object.create({}, {
@@ -84,28 +66,14 @@ describe("An Expression Data Mapping", function() {
     movieObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("title", movieObjectDescriptor, 1));
     movieSchemaModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/schema/logic/movie", require);
     movieSchema = new ModuleObjectDescriptor().initWithModuleAndExportName(movieSchemaModuleReference, "Movie");
-
-    actionMovieModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/action-movie", require);
-    actionMovieObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(actionMovieModuleReference, "ActionMovie");
-    actionMovieObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("rating", actionMovieObjectDescriptor, 1));
-    actionMovieObjectDescriptor.parent = movieObjectDescriptor;
-
     categoryService = new CategoryService();
+
     categoryModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category", require);
     categoryObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(categoryModuleReference, "Category");
     categoryObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("name", categoryObjectDescriptor, 1));
     categoryPropertyDescriptor = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("category", movieObjectDescriptor, 1);
     categoryPropertyDescriptor.valueDescriptor = categoryObjectDescriptor;
     movieObjectDescriptor.addPropertyDescriptor(categoryPropertyDescriptor);
-    
-
-    countryService = new CountryService();
-    countryModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/country", require);
-    countryObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(countryModuleReference, "Country");
-    countryObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("name", countryObjectDescriptor, 1));
-    countryPropertyDescriptor = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("country", countryObjectDescriptor, 1);
-    countryPropertyDescriptor.valueDescriptor = countryObjectDescriptor;
-    actionMovieObjectDescriptor.addPropertyDescriptor(countryPropertyDescriptor);
 
     plotSummaryModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/plot-summary", require);
     plotSummaryObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(plotSummaryModuleReference, "PlotSummary");
@@ -113,7 +81,6 @@ describe("An Expression Data Mapping", function() {
     plotSummaryPropertyDescriptor = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("plotSummary", movieObjectDescriptor, 1);
     plotSummaryPropertyDescriptor.valueDescriptor = plotSummaryObjectDescriptor;
     movieObjectDescriptor.addPropertyDescriptor(plotSummaryPropertyDescriptor);
-
 
     schemaBudgetPropertyDescriptor = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("budget", movieSchema, 1);
     movieSchema.addPropertyDescriptor(schemaBudgetPropertyDescriptor);
@@ -137,14 +104,9 @@ describe("An Expression Data Mapping", function() {
 
     categoryConverter = new RawPropertyValueToObjectConverter().initWithConvertExpression("category_id == $");
     categoryConverter.service = categoryService;
-    categoryConverter.revertExpression = "id";
-    categoryConverter.owner = movieMapping;
     movieMapping.addObjectMappingRule("category", {
         "<-": "{categoryID: category_id}",
         converter: categoryConverter
-    });
-    movieMapping.addRawDataMappingRule("category_id", {
-        "<-": "category.id"
     });
     movieMapping.addObjectMappingRule("releaseDate", {
         "<->": "release_date",
@@ -160,27 +122,13 @@ describe("An Expression Data Mapping", function() {
     categoryMapping.addRequisitePropertyName("name");
     categoryService.addMappingForType(categoryMapping, categoryObjectDescriptor);
 
-    actionMovieMapping = new ExpressionDataMapping().initWithServiceObjectDescriptorAndSchema(movieService, actionMovieObjectDescriptor);
-    actionMovieMapping.addObjectMappingRule("rating", {"<-": "fcc_rating.toUpperCase()"});
-    actionMovieMapping.addRequisitePropertyName("country", "rating");
-    countryConverter = new RawPropertyValueToObjectConverter().initWithConvertExpression("category_id");
-    countryConverter.revertExpression = "id";
-    countryConverter.owner = actionMovieMapping;
-    actionMovieMapping.addObjectMappingRule("country", {
-        "<->": "country_id",
-        converter: countryConverter
+    it("can be created", function () {
+        expect(new ExpressionDataMapping()).toBeDefined();
     });
-    movieService.addMappingForType(actionMovieMapping, actionMovieObjectDescriptor);
-
-
-    // it("can be created", function () {
-    //     expect(new ExpressionDataMapping()).toBeDefined();
-    // });
 
     registrationPromise = Promise.all([
-        mainService.registerChildService(movieService, [movieObjectDescriptor, actionMovieObjectDescriptor]),
-        mainService.registerChildService(categoryService, categoryObjectDescriptor),
-        mainService.registerChildService(countryService, countryObjectDescriptor)
+        mainService.registerChildService(movieService, movieObjectDescriptor),
+        mainService.registerChildService(categoryService, categoryObjectDescriptor)
     ]);
 
     it("properly registers the object descriptor type to the mapping object in a service", function (done) {
@@ -193,7 +141,7 @@ describe("An Expression Data Mapping", function() {
 
     it("can create the correct number of mapping rules", function () {
         expect(Object.keys(movieMapping._compiledObjectMappingRules).length).toBe(5);
-        expect(Object.keys(movieMapping._compiledRawDataMappingRules).length).toBe(5);
+        expect(Object.keys(movieMapping._compiledRawDataMappingRules).length).toBe(4);
     });
 
     it("can map raw data to object properties", function (done) {
@@ -230,13 +178,9 @@ describe("An Expression Data Mapping", function() {
 
                 };
             return movieMapping.mapRawDataToObject(data, movie).then(function () {
-                console.log("budget", typeof movie.budget);
                 expect(typeof movie.budget === "number").toBeTruthy();
-                console.log("category", typeof movie.category);
                 expect(typeof movie.category === "object").toBeTruthy();
-                console.log("isFeatured", typeof movie.isFeatured);
                 expect(typeof movie.isFeatured === "boolean").toBeTruthy();
-                console.log("title", typeof movie.title);
                 expect(typeof movie.title === "string").toBeTruthy();
                 done();
             });
@@ -244,27 +188,6 @@ describe("An Expression Data Mapping", function() {
     });
 
     it("can map objects to raw data", function (done) {
-        var category = new Category(),
-            movie = new Movie(),
-            data = {};
-        category.name = "Action";
-        category.id = 1;
-        movie.title = "Star Wars";
-        movie.budget = 14000000.00;
-        movie.isFeatured = true;
-        movie.releaseDate = new Date(1977, 4, 25);
-        movie.category = category;
-        movieMapping.mapObjectToRawData(movie, data).then(function () {
-            expect(data.name).toBe("Star Wars");
-            expect(data.budget).toBe("14000000");
-            expect(data.is_featured).toBe("true");
-            expect(data.release_date).toBe("05/25/1977");
-            expect(data.category_id).toBe(1);
-            done();
-        });
-    });
-
-    it("can map objects to raw data with inheritance", function (done) {
         var movie = {
                 title: "Star Wars",
                 budget: 14000000.00,

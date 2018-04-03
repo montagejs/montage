@@ -1,8 +1,0 @@
-{
-    "root": {
-        "prototype": "montage",
-        "values": {
-            "name": "RootObjectDescriptor2"
-        }
-    }
-}

@@ -155,26 +155,6 @@ exports.Custom = Montage.specialize( {
     }
 });
 
-exports.SelfDeserializer = Montage.specialize({
-
-    deserializeSelf: {
-        value: function (deserializer) {
-            var value = deserializer.getProperty("objectProperty");
-            this.objectProperty = value;
-
-            value = deserializer.getProperty("array");
-            this.array = value;
-
-            value = deserializer.getProperty("stringProperty");
-            this.stringProperty = value;
-
-            value = deserializer.getProperty("referenceProperty");
-            this.referenceProperty = value;
-        }
-    }
-
-});
-
 exports.CustomDeserialization = exports.TwoProps.specialize();
 
 exports.TestobjectsV2 = exports.Empty.specialize();
@@ -196,6 +176,5 @@ exports.objects = {
     Comp: exports.Comp,
     Custom: exports.Custom,
     CustomDeserialization: exports.CustomDeserialization,
-    TestobjectsV2: exports.TestobjectsV2,
-    SelfDeserializer: exports.SelfDeserializer
+    TestobjectsV2: exports.TestobjectsV2
 };

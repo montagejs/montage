@@ -389,7 +389,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 self._registerTypesByModuleId(objectDescriptors);
                 return self._registerChildServiceMappings(child, mappings);
             }).then(function () {
-                return self._makePrototypesForTypes(child, objectDescriptors);
+                return self._makePrototypesForTypes(objectDescriptors);
             }).then(function () {
                 self.addChildService(child, types);
                 return null;
@@ -435,22 +435,22 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     _makePrototypesForTypes: {
-        value: function (childService, types) {
+        value: function (types) {
             var self = this;
             return Promise.all(types.map(function (objectDescriptor) {
-                return self._makePrototypeForType(childService, objectDescriptor);
+                return self._makePrototypeForType(objectDescriptor);
             }));
         }
     },
 
     _makePrototypeForType: {
-        value: function (childService, objectDescriptor) {
+        value: function (objectDescriptor) {
             var self = this,
                 module = objectDescriptor.module;
             return module.require.async(module.id).then(function (exports) {
                 var constructor = exports[objectDescriptor.exportName],
                     prototype = Object.create(constructor.prototype),
-                    mapping = childService.mappingWithType(objectDescriptor),
+                    mapping = self.mappingWithType(objectDescriptor),
                     requisitePropertyNames = mapping && mapping.requisitePropertyNames || new Set(),
                     dataTriggers = DataTrigger.addTriggers(self, objectDescriptor, prototype, requisitePropertyNames);
                 self._dataObjectPrototypes.set(constructor, prototype);
@@ -682,7 +682,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     addMappingForType: {
         value: function (mapping, type) {
-            mapping.service = mapping.service || this;
             this._mappingByType.set(type, mapping);
         }
     },
@@ -699,39 +698,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             type = this._objectDescriptorForType(type);
             mapping = this._mappingByType.has(type) && this._mappingByType.get(type);
             return mapping || null;
-        }
-    },
-    
-
-    /**
-     * Return the mapping associated with each type on the 
-     * provided type's inheritance tree, starting at the root.
-     * @param {ObjectDescriptor} type.
-     * @returns {Array<DataMapping>|null} returns the specified mappings or null
-     * if no mappings are defined for the specified type.
-     */
-    mappingsWithType: {
-        value: function (type) {
-            var mappings = null,
-                mapping;
-            
-            type = this._objectDescriptorForType(type);
-            mapping = this._mappingByType.has(type) && this._mappingByType.get(type);
-
-            if (mapping) {
-                mappings = [mapping];
-            }
-
-            while (type.parent) {
-                type = type.parent;
-                mapping = this._mappingByType.has(type) && this._mappingByType.get(type);
-                mappings = mappings || [];
-                if (mapping) {
-                    mappings.unshift(mapping);
-                }
-            }
-            
-            return mappings;
         }
     },
 
@@ -1309,6 +1275,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 delegateFunction = !useDelegate && isHandler && this._delegateFunctionForPropertyName(propertyName),
                 propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
                 childService = !isHandler && this._getChildServiceForObject(object);
+
 
             return  useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
                     delegateFunction ?                  delegateFunction.call(this, object) :
