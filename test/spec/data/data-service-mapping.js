@@ -1,0 +1,65 @@
+var ExpressionDataMapping = require("montage/data/service/expression-data-mapping").ExpressionDataMapping,
+    MainPersonService = require("spec/data/logic/service/main-person-service").MainPersonService,
+    RawPersonService = require("spec/data/logic/service/raw-person-service").RawPersonService,
+    ModuleObjectDescriptor = require("montage/core/meta/module-object-descriptor").ModuleObjectDescriptor,
+    ModuleReference = require("montage/core/module-reference").ModuleReference,
+    PropertyDescriptor = require("montage/core/meta/property-descriptor").PropertyDescriptor,
+    DateConverter = require("montage/core/converter/date-converter").DateConverter;
+
+var DataMapping = require("montage/data/service/data-mapping").DataMapping;
+
+describe("A DataMapping at the DataService level", function() {
+    var mainService = new MainPersonService(),
+        rawService = new RawPersonService(),
+        registrationPromise,
+        personMapping, personReference, personDescriptor;
+
+    var dateConverter = Object.create({}, {
+            convert: {
+                value: function (rawValue) {
+                    return new Date(rawValue);
+                }
+            },
+            revert: {
+                value: function (date) {
+                    return date.getTime();
+                }
+            }
+        });
+
+    // rawService
+    personReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/person", require);
+    personDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(personReference, "Person");
+    personDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("name", personDescriptor, 1));
+    personDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("birthday", personDescriptor, 1));
+    personDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("location", personDescriptor, 1));
+
+    personMapping = new ExpressionDataMapping().initWithServiceObjectDescriptorAndSchema(rawService, personDescriptor);
+    personMapping.addRequisitePropertyName("name", "birthday");
+    personMapping.addObjectMappingRule("name", {
+        "<->": "name"
+    });
+    personMapping.addObjectMappingRule("birthday", {
+        "<->": "birth_date",
+        converter: dateConverter
+    });
+
+    rawService.addMappingForType(personMapping, personDescriptor);
+    mainService.addChildService(rawService);
+
+    registrationPromise = Promise.all([
+        mainService.registerChildService(rawService, [personDescriptor]),
+    ]);
+
+    it("can be created", function (done) {
+        registrationPromise.then(function () {
+            mainService.fetchData(personDescriptor).then(function (results) {
+                console.log("DataServiceMapping.results", results);
+                expect(results).toBeDefined();
+                done();
+            });
+        });
+    });
+
+
+});
