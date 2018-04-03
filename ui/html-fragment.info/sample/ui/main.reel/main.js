@@ -2,9 +2,9 @@ var Component = require("montage/ui/component").Component;
 
 exports.Main = Component.specialize({
 
-    htmlFragmentWillUseAttributeValueForAttributeNameFromNode: {
-        value: function (htmlFragment, value, name, node) {            
-            if (htmlFragment === this._fragment8 && name === 'data-name') {
+    htmlFragmentWillUseValueForNodeAttribute: {
+        value: function (htmlFragment, value, node, attributeName) {            
+            if (htmlFragment === this._fragment8 && attributeName === 'data-name') {
                 return 'Bob';
             }
         }

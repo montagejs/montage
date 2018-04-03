@@ -110,10 +110,10 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
 
                                 if (shouldRemoveAttribute) {
                                     delegateResponse = this.callDelegateMethod(
-                                        'htmlFragmentWillRemoveAttributeFromNode',
+                                        'htmlFragmentWillRemoveNodeAttribute',
                                         this,
-                                        attribute,
-                                        child
+                                        child,
+                                        attribute
                                     );
 
                                     if (typeof delegateResponse === 'boolean') {
@@ -127,11 +127,11 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
                                     }
                                 } else {
                                     delegateResponse = this.callDelegateMethod(
-                                        'htmlFragmentWillUseAttributeValueForAttributeNameFromNode',
+                                        'htmlFragmentWillUseValueForNodeAttribute',
                                         this,
                                         attributeValue,
-                                        attributeName,
-                                        child
+                                        child,
+                                        attributeName
                                     );
 
                                     if (typeof delegateResponse === 'string') {
