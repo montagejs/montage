@@ -335,7 +335,7 @@
                 var application;
 
                 exports.MontageDeserializer = MontageDeserializer;
-                exports.Require.delegate = self;
+                exports.Require.delegate = exports;
 
                 // montageWillLoad is mostly for testing purposes
                 if (typeof global.montageWillLoad === "function") {
@@ -375,13 +375,13 @@
                     });
                 });
             });
-        },
-
-        compileMJSONFile: function (mjson, require, moduleId) {
-            var deserializer = new exports.MontageDeserializer();
-            deserializer.init(mjson, require, void 0, require.location + moduleId);
-            return deserializer.deserializeObject();
         }
+    };
+
+    exports.compileMJSONFile = function (mjson, require, moduleId) {
+        var deserializer = new exports.MontageDeserializer();
+        deserializer.init(mjson, require, void 0, require.location + moduleId);
+        return deserializer.deserializeObject();
     };
     
     exports.initMontageCustomElement = function () {
