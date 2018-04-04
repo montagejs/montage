@@ -466,8 +466,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (mapping, child) {
             var service = this;
             return Promise.all([
-                mapping.objectDescriptorReference,
-                mapping.schemaDescriptorReference
+                mapping.objectDescriptor,
+                mapping.schemaDescriptor
             ]).spread(function (objectDescriptor, schemaDescriptor) {
                 // TODO -- remove looking up by string to unique.
                 var type = [objectDescriptor.module.id, objectDescriptor.name].join("/");
