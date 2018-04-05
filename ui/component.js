@@ -589,7 +589,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             return this._element;
         },
         set: function (value) {
-            if (value === null || value === undefined) {
+            if (!(value instanceof Element)) {
                 console.warn("Tried to set element of ", this, " to ", value);
                 return;
             }
