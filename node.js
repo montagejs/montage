@@ -6,6 +6,7 @@ var Require = require("mr");
 var URL = require("url");
 var htmlparser = require("htmlparser2");
 var DomUtils = htmlparser.DomUtils;
+var PATH = require("path");
 
 function findPackage(path) {
     var directory = FS.directory(path);
@@ -66,7 +67,34 @@ MontageBoot.loadPackage = function (location, config) {
     return Require.loadPackage(config.location, config);
 };
 
+function getMontageMontageDeserializer() {
+    if (getMontageMontageDeserializer._promise) {
+        return getMontageMontageDeserializer._promise;
+    }
 
+    return (getMontageMontageDeserializer._promise = MontageBoot.loadPackage(
+            PATH.join(__dirname, "."), {mainPackageLocation: PATH.join(__dirname, "../")})
+        .then(function (mr) {
+            return mr.async("./core/serialization/deserializer/montage-deserializer")
+            .then(function (MontageDeserializerModule) {
+                return (MontageBoot.MontageDeserializer = 
+                    MontageDeserializerModule.MontageDeserializer
+                );
+            });
+    }));
+}
+
+exports.compileMJSONFile = function (mjson, require, moduleId) {
+    if (MontageBoot.MontageDeserializer) {
+        return MontageBoot.compileMJSONFile(mjson, require, moduleId);
+    } else {
+        return getMontageMontageDeserializer().then(function () {
+            return MontageBoot.compileMJSONFile(mjson, require, moduleId);
+        });
+    }
+};
+
+Require.delegate = exports;
 
 function parseHtml(html) {
     var dom, error;
@@ -163,7 +191,8 @@ function parseHtmlDependencies(text/*, location*/) {
 MontageBoot.TemplateLoader = function (config, load) {
     return function (id, module) {
         var html = id.match(/(.*\/)?(?=[^\/]+\.html$)/);
-        var serialization = id.match(/(?=[^\/]+\.(?:json|mjson|meta)$)/); // XXX this is not necessarily a strong indicator of a serialization alone
+        var serialization = id.match(/(?=[^\/]+\.json$)/); // XXX this is not necessarily a strong indicator of a serialization alone
+        var meta = id.match(/(?=[^\/]+\.(?:mjson|meta)$)/);
         var reelModule = id.match(/(.*\/)?([^\/]+)\.reel\/\2$/);
         if (html) {
             return load(id, module)
@@ -177,6 +206,8 @@ MontageBoot.TemplateLoader = function (config, load) {
                 module.dependencies = collectSerializationDependencies(module.text, []);
                 return module;
             });
+        } else if (meta) {
+            return load(id, module);
         } else if (reelModule) {
             return load(id, module)
             .then(function () {
