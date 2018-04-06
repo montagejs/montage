@@ -1,6 +1,12 @@
 var Montage = require("montage").Montage,
     Checkbox = require("montage/ui/checkbox.reel").Checkbox;
 
+function createCheckBoxElement() {
+    var element = document.createElement('input');
+    element.setAttribute('type', 'checkbox');
+    return element;
+}
+
 describe("test/ui/checkbox-spec", function () {
 
     describe("properties", function () {
@@ -8,12 +14,13 @@ describe("test/ui/checkbox-spec", function () {
 
         beforeEach(function () {
             aCheckbox = new Checkbox();
-            aCheckbox.element = document.createElement('div');
+            aCheckbox.element = createCheckBoxElement();
         });
 
         describe("checked", function () {
             beforeEach(function () {
                 aCheckbox = new Checkbox();
+                // Need to fake check
                 aCheckbox.element = document.createElement('div');
                 aCheckbox.prepareForActivationEvents();
             });
@@ -50,14 +57,14 @@ describe("test/ui/checkbox-spec", function () {
 
             it("should add the corresponding class name to classList when checked", function () {
                 aCheckbox.checked = true;
-                expect(aCheckbox.classList.contains("montage-Checkbox--checked")).toBe(true);
+                expect(aCheckbox.classList.contains("montage--checked")).toBe(true);
             });
         });
 
         describe("enabled", function () {
             beforeEach(function () {
                 aCheckbox = new Checkbox();
-                aCheckbox.element = document.createElement('div');
+                aCheckbox.element = createCheckBoxElement();
                 aCheckbox.checked = false;
                 aCheckbox.prepareForActivationEvents();
             });
@@ -86,7 +93,6 @@ describe("test/ui/checkbox-spec", function () {
 
             it("should add the corresponding class name to classList when enabled is false", function () {
                 aCheckbox.enabled = false;
-
                 expect(aCheckbox.classList.contains("montage--disabled")).toBe(true);
             });
         });
@@ -94,12 +100,14 @@ describe("test/ui/checkbox-spec", function () {
         describe("active", function () {
             beforeEach(function () {
                 aCheckbox = new Checkbox();
-                aCheckbox.element = document.createElement('div');
+                aCheckbox.element = createCheckBoxElement();
                 aCheckbox.checked = false;
                 aCheckbox.prepareForActivationEvents();
             });
 
             it("should be true when the PressComposer fires a pressStart", function () {
+                aCheckbox.element = document.createElement('div'); // need to fake check
+
                 aCheckbox._pressComposer.dispatchEventNamed("pressStart");
                 expect(aCheckbox.active).toBe(true);
             });
@@ -134,12 +142,11 @@ describe("test/ui/checkbox-spec", function () {
     });
 
     describe("draw", function () {
-        var Checkbox = Checkbox.specialize( {}),
-            aCheckbox;
+        var aCheckbox;
 
         beforeEach(function () {
             aCheckbox = new Checkbox();
-            aCheckbox.element = document.createElement('div');
+            aCheckbox.element = createCheckBoxElement();
         });
 
         it("should be requested after enabled state is changed", function () {
@@ -153,12 +160,11 @@ describe("test/ui/checkbox-spec", function () {
     });
 
     describe("events", function () {
-        var Checkbox = Checkbox.specialize( {}),
-            aCheckbox, anElement, listener;
+        var aCheckbox, anElement, listener;
 
         beforeEach(function () {
             aCheckbox = new Checkbox();
-            anElement = document.createElement('div');
+            aCheckbox.element = createCheckBoxElement();
             listener = {
                 handleEvent: function () {}
             };
@@ -183,14 +189,15 @@ describe("test/ui/checkbox-spec", function () {
                 aCheckbox.prepareForActivationEvents();
             });
             it("should fire an 'action' event when the PressComposer fires a pressStart + press", function () {
+                aCheckbox.element = document.createElement('div');
+
                 var callback = jasmine.createSpy().and.callFake(function (event) {
                     expect(event.type).toEqual("action");
                 });
                 aCheckbox.addEventListener("action", callback, false);
-
                 aCheckbox._pressComposer.dispatchEventNamed("pressStart");
                 aCheckbox._pressComposer.dispatchEventNamed("press");
-
+                
                 expect(callback).toHaveBeenCalled();
             });
 
@@ -207,6 +214,8 @@ describe("test/ui/checkbox-spec", function () {
             });
 
             it("should fire an 'action' event with the contents of the detail property", function () {
+                aCheckbox.element = document.createElement('div');
+
                 var callback = jasmine.createSpy().and.callFake(function (event) {
                     expect(event.detail.get("foo")).toEqual("bar");
                 });
@@ -222,12 +231,11 @@ describe("test/ui/checkbox-spec", function () {
     });
 
     describe("aria", function () {
-        var Checkbox = Checkbox.specialize( {}),
-            aCheckbox;
+        var aCheckbox;
 
         beforeEach(function () {
             aCheckbox = new Checkbox();
-            aCheckbox.element = document.createElement('div');
+            aCheckbox.element = createCheckBoxElement();
         });
 
         it("should have the checkbox role", function () {

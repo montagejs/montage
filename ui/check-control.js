@@ -14,6 +14,7 @@ var Control = require("ui/control").Control,
 exports.CheckControl =  Control.specialize({
     constructor: {
         value: function CheckControl() {
+            this.super();
 
             this.defineBindings({
                 "classList.has('montage--checked')": {
@@ -114,8 +115,7 @@ exports.CheckControl =  Control.specialize({
         value: function(event) {
             if (this.hasStandardElement){
                 this._shouldFakeCheck = event.defaultPrevented;
-            }
-            else {
+            } else {
                 this.active = true;
 
                 if (event.touch) {
@@ -139,9 +139,7 @@ exports.CheckControl =  Control.specialize({
             if (!this.hasStandardElement) {
                 this.active = false;
                 this.toggleChecked();
-
             }
-
         }
     },
 
