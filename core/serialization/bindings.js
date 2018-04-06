@@ -5,7 +5,6 @@ var Bindings = require("frb"),
     expand = require("frb/expand"),
     Scope = require("frb/scope"),
     Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
-    Deserializer = require("../serialization/deserializer/montage-deserializer").MontageDeserializer,
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
     TWO_WAY = "<->";
@@ -113,6 +112,3 @@ var deserializeObjectBindings = exports.deserializeObjectBindings = function (de
         }
     }
 };
-
-//deprecated
-Deserializer.defineDeserializationUnit("bindings", deserializeObjectBindings);
