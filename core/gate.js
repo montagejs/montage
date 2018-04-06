@@ -194,9 +194,13 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate.prototype # */ {
                 i,
                 iField,
                 result = "";
-            for (i = 0; (iField = fieldNames[i]); i++) {
-                result += iField + "[" + (this._value & fieldNames[iField]) + "], ";
+
+            if (fieldNames) {
+                for (i = 0; (iField = fieldNames[i]); i++) {
+                    result += iField + "[" + (this._value & fieldNames[iField]) + "], ";
+                }
             }
+            
             return result;
         }
     }
