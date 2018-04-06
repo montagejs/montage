@@ -27,8 +27,7 @@ describe("test/ui/button-spec", function () {
                 expect(aButton.label).toEqual("");
             });
             it("should update the value if isInputElement is true", function () {
-                aButton.element.tagName = "INPUT";
-                // aButton.isInputElement = true;
+                aButton.element = document.createElement('input');
                 aButton.label = "hello";
                 aButton.draw();
                 expect(aButton.element.value).toEqual( "hello");
@@ -115,8 +114,7 @@ describe("test/ui/button-spec", function () {
         describe("converter", function () {
             beforeEach(function () {
                 aButton = new Button();
-                aButton.element = document.createElement('div');
-                aButton.element.tagName = "INPUT";
+                aButton.element = document.createElement('input');
                 aButton.originalElement = aButton.element;
                 aButton.element.firstChild = document.createElement('div');
                 aButton.converter = {
