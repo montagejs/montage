@@ -1,11 +1,6 @@
 var Montage = require("montage").Montage,
     URL = require("montage/core/mini-url");
 
-/*
-var MockDOM = require("mocks/dom"),    
-    _document = MockDOM.document();
-*/
-// TODO MockDOM
 var _document = document;
 
 describe("core/extras/url", function () {

@@ -1,6 +1,5 @@
 var Montage = require("montage").Montage,
-    TextInput = require("montage/ui/text-input").TextInput,
-    MockDOM = require("mocks/dom");
+    TextInput = require("montage/ui/text-input").TextInput;
 
 describe("test/ui/text-input-spec", function () {
 
@@ -27,13 +26,13 @@ describe("test/ui/text-input-spec", function () {
 
         beforeEach(function () {
             aTextField = new TextField();
-            aTextField.element = MockDOM.element();
+            aTextField.element = document.createElement('div');
         });
 
         describe("value", function () {
             beforeEach(function () {
                 aTextField = new TextField();
-                aTextField.element = MockDOM.element();
+                aTextField.element = document.createElement('div');
                 aTextField.enterDocument(true);
                 aTextField.prepareForActivationEvents();
             });
@@ -76,7 +75,7 @@ describe("test/ui/text-input-spec", function () {
         describe("enabled", function () {
             beforeEach(function () {
                 aTextField = new TextInput();
-                aTextField.element = MockDOM.element();
+                aTextField.element = document.createElement('div');
                 aTextField.prepareForActivationEvents();
             });
 
@@ -94,7 +93,7 @@ describe("test/ui/text-input-spec", function () {
 
         beforeEach(function () {
             aTextField = new TextField();
-            aTextField.element = MockDOM.element();
+            aTextField.element = document.createElement('div');
         });
 
         it("should be requested after enabled state is changed", function () {
@@ -183,7 +182,7 @@ describe("test/ui/text-input-spec", function () {
 
         beforeEach(function () {
             aTextField = new TextField();
-            anElement = MockDOM.element();
+            anElement = document.createElement('div');
             listener = {
                 handleEvent: function () {}
             };
@@ -211,7 +210,7 @@ describe("test/ui/text-input-spec", function () {
 
         beforeEach(function () {
             aTextField = new TextField();
-            aTextField.element = MockDOM.element();
+            aTextField.element = document.createElement('div');
             aTextFieldDelegate = {};
             aTextField.delegate = aTextFieldDelegate;
         });

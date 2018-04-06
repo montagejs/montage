@@ -2,8 +2,6 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Overlay = require("montage/ui/overlay.reel").Overlay,
-    MockDOM = require("mocks/dom"),
-    Event = require("mocks/event"),
     defaultEventManager = require("montage/core/event/event-manager").defaultEventManager;
     defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager;
 
@@ -14,8 +12,8 @@ describe("ui/overlay-spec", function () {
         defaultEventManager._activeTarget = null;
         anOverlay = new Overlay();
         anOverlay.hasTemplate = false;
-        anOverlay.element = MockDOM.element();
-        anOverlay.modalMaskElement = MockDOM.element();
+        anOverlay.element = document.createElement('div');
+        anOverlay.modalMaskElement = document.createElement('div');
 
         anOverlay._firstDraw = false;
 
@@ -157,7 +155,7 @@ describe("ui/overlay-spec", function () {
             it("should hide the overlay when a pressStart is fired outside the overlay and it returns true", function () {
                 delegate.shouldDismissOverlay = jasmine.createSpy().and.returnValue(true);
 
-                var event = Event.event();
+                var event = new Event("mockEvent");
 
                 anOverlay.enterDocument(true);
 
@@ -166,7 +164,7 @@ describe("ui/overlay-spec", function () {
                 anOverlay.draw();
 
                 event.target = anOverlay;
-                event.target = MockDOM.element();
+                event.target = document.createElement('div');
                 anOverlay._pressComposer._dispatchPressStart(event);
                 expect(anOverlay._isShown).toBe(false);
 
@@ -176,14 +174,14 @@ describe("ui/overlay-spec", function () {
             it("should not be called when a pressStart is fired inside the overlay", function () {
                 delegate.shouldDismissOverlay = jasmine.createSpy().and.returnValue(true);
 
-                var event = Event.event();
+                var event = new Event("mockEvent");
 
                 anOverlay.dismissOnExternalInteraction = true;
                 anOverlay.enterDocument(true);
 
                 anOverlay._isShown = true;
                 event.target = anOverlay;
-                event.target = MockDOM.element();
+                event.target = document.createElement('div');
                 anOverlay.element.appendChild(event.target);
 
                 anOverlay._pressComposer._dispatchPressStart(event);
@@ -195,14 +193,14 @@ describe("ui/overlay-spec", function () {
             it("should not hide the overlay when a pressStart is fired outside the overlay and it returns false", function () {
                 delegate.shouldDismissOverlay = jasmine.createSpy().and.returnValue(false);
 
-                var event = Event.event();
+                var event = new Event("mockEvent");
 
                 anOverlay.enterDocument(true);
 
                 anOverlay.show();
                 anOverlay.willDraw();
                 anOverlay.draw();
-                event.target = MockDOM.element();
+                event.target = document.createElement('div');
                 anOverlay._pressComposer._dispatchPressStart(event);
 
                 expect(anOverlay._isShown).toBe(true);
@@ -218,10 +216,10 @@ describe("ui/overlay-spec", function () {
                 anOverlay.willDraw();
                 anOverlay.draw();
 
-                var event = Event.event();
+                var event = new Event("mockEvent");
                 event.type = "keyPress";
                 event.identifier = "escape";
-                event.targetElement = MockDOM.element();
+                event.targetElement = document.createElement('div');
                 anOverlay.handleKeyPress(event);
 
                 expect(anOverlay._isShown).toBe(false);
@@ -236,11 +234,11 @@ describe("ui/overlay-spec", function () {
                 anOverlay.willDraw();
                 anOverlay.draw();
 
-                var event = Event.event();
+                var event = new Event("mockEvent");
                 event.type = "keyPress";
                 event.target = anOverlay;
                 event.identifier = "escape";
-                event.targetElement = MockDOM.element();
+                event.targetElement = document.createElement('div');
                 anOverlay.dispatchEvent(event);
                 anOverlay.handleKeyPress(event);
 
@@ -294,7 +292,7 @@ describe("ui/overlay-spec", function () {
 
     describe("dismissOnExternalInteraction", function () {
         it("should hide the overlay when a pressStart is fired outside the overlay and dismissOnExternalInteraction is true", function () {
-            var event = Event.event();
+            var event = new Event("mockEvent");
 
             anOverlay.dismissOnExternalInteraction = true;
             anOverlay.enterDocument(true);
@@ -302,13 +300,13 @@ describe("ui/overlay-spec", function () {
             anOverlay.show();
             anOverlay.willDraw();
             anOverlay.draw();
-            event.target = MockDOM.element();
+            event.target = document.createElement('div');
             anOverlay._pressComposer._dispatchPressStart(event);
             expect(anOverlay._isShown).toBe(false);
         });
 
         it("should not hide the overlay when a pressStart is fired inside the overlay and dismissOnExternalInteraction is true", function () {
-            var event = Event.event();
+            var event = new Event("mockEvent");
 
             anOverlay.dismissOnExternalInteraction = true;
             anOverlay.enterDocument(true);
@@ -316,7 +314,7 @@ describe("ui/overlay-spec", function () {
             anOverlay.show();
             anOverlay.willDraw();
             anOverlay.draw();
-            event.target = MockDOM.element();
+            event.target = document.createElement('div');
             anOverlay.element.appendChild(event.target);
 
             anOverlay._pressComposer._dispatchPressStart(event);
@@ -324,7 +322,7 @@ describe("ui/overlay-spec", function () {
         });
 
         it("should not hide the overlay when a pressStart is fired outside the overlay and dismissOnExternalInteraction is false", function () {
-            var event = Event.event();
+            var event = new Event("mockEvent");
 
             anOverlay.dismissOnExternalInteraction = false;
             anOverlay.enterDocument(true);
@@ -332,7 +330,7 @@ describe("ui/overlay-spec", function () {
             anOverlay.show();
             anOverlay.willDraw();
             anOverlay.draw();
-            event.target = MockDOM.element();
+            event.target = document.createElement('div');
             anOverlay._pressComposer._dispatchPressStart(event);
 
             expect(anOverlay._isShown).toBe(true);
@@ -421,21 +419,21 @@ describe("ui/overlay-spec", function () {
 
     describe("dismissal", function () {
         it("should hide the overlay when a pressStart is fired outside the overlay", function () {
-            var event = Event.event();
+            var event = new Event("mockEvent");
 
             anOverlay.show();
             anOverlay.willDraw();
             anOverlay.draw();
-            event.target = MockDOM.element();
+            event.target = document.createElement('div');
             anOverlay._pressComposer._dispatchPressStart(event);
             expect(anOverlay._isShown).toBe(false);
         });
 
         it("should not hide the overlay when a pressStart is fired inside the overlay", function () {
-            var event = Event.event();
+            var event = new Event("mockEvent");
 
             anOverlay._isShown = true;
-            event.target = MockDOM.element();
+            event.target = document.createElement('div');
             anOverlay.element.appendChild(event.target);
 
             anOverlay._pressComposer._dispatchPressStart(event);
@@ -446,10 +444,10 @@ describe("ui/overlay-spec", function () {
             anOverlay.enterDocument(true);
             anOverlay.show();
 
-            var event = Event.event();
+            var event = new Event("mockEvent");
             event.type = "keyPress";
             event.identifier = "escape";
-            event.targetElement = MockDOM.element();
+            event.targetElement = document.createElement('div');
             anOverlay.handleKeyPress(event);
 
             expect(anOverlay._isShown).toBe(false);
@@ -484,13 +482,13 @@ describe("ui/overlay-spec", function () {
 
     describe("events", function () {
         it("should fire dismiss event when overlay is dismissed", function () {
-            var event = Event.event(),
+            var event = new Event("mockEvent"),
                 callback = jasmine.createSpy();
 
             anOverlay.show();
             anOverlay.willDraw();
             anOverlay.draw();
-            event.target = MockDOM.element();
+            event.target = document.createElement('div');
 
             anOverlay.addEventListener("dismiss", callback, false);
 
@@ -526,7 +524,7 @@ describe("ui/overlay-spec", function () {
         it("should enter the document", function () {
             var componentA = new Component();
             componentA.hasTemplate = false;
-            componentA.element = MockDOM.element();
+            componentA.element = document.createElement('div');
             componentA.element.appendChild(anOverlay.element);
 
             anOverlay.show();

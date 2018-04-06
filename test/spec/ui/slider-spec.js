@@ -1,7 +1,6 @@
 /*global describe, it, expect */
 var Montage = require("montage").Montage;
 var Slider = require("montage/ui/slider.reel").Slider;
-var MockEvent = require("mocks/event");
 
 describe("test/ui/slider-spec", function () {
     describe("creation", function () {
@@ -73,7 +72,7 @@ describe("test/ui/slider-spec", function () {
             it("should be true after translateStart", function () {
                 //Incomplete sequence...
                 try {
-                    aSlider.handleTranslateStart(MockEvent.event());
+                    aSlider.handleTranslateStart(new Event("mockEvent"));
                 }
                 catch (e) {};
                 expect(aSlider.active).toBeTruthy();
@@ -81,7 +80,7 @@ describe("test/ui/slider-spec", function () {
             it("should be false after translateEnd", function () {
                 //Incomplete sequence...
                 try {
-                    aSlider.handleTranslateEnd(MockEvent.event());
+                    aSlider.handleTranslateEnd(new Event("mockEvent"));
                 }
                 catch (e) {};
                 expect(aSlider.active).toBeFalsy();
@@ -216,165 +215,6 @@ describe("test/ui/slider-spec", function () {
                 });
             });
         });
-        /*
-        //This needs to be done on an actual document
-        describe("after enterDocument", function () {
-            var aSlider, anElement;
-            beforeEach(function () {
-                aSlider = new Slider();
-                anElement = MockDOM.element();
-                aSlider.element = anElement;
-            });
-            describe("it should continue to work", function () {
-                beforeEach(function () {
-                    aSlider.enterDocument(true);
-                });
-                it("should allow value to change", function () {
-                    expect(function () {
-                        aSlider.value = 30;
-                    }).not.toThrow();
-                    expect(aSlider.value).toEqual(30);
-                });
-            });
-            describe("it should correctly initialize defaults from the placeholder element", function () {
-                describe("when the properties are not set", function () {
-                    beforeEach(function () {
-                        anElement.setAttribute("value", 80);
-                        anElement.setAttribute("min", -100);
-                        anElement.setAttribute("max", 999);
-                        anElement.setAttribute("step", 10);
-                        aSlider.enterDocument(true);
-                    });
-                    it("should get the value from the placeholder element", function () {
-                        expect(aSlider.value).toEqual(80);
-                    });
-                    it("should get the min from the placeholder element", function () {
-                        expect(aSlider.min).toEqual(-100);
-                    });
-                    it("should get the max from the placeholder element", function () {
-                        expect(aSlider.max).toEqual(999);
-                    });
-                    it("should get the step from the placeholder element", function () {
-                        expect(aSlider.step).toEqual(10);
-                    });
-                });
-                describe("when the properties are set beforehand", function () {
-                    beforeEach(function () {
-                        anElement.setAttribute("value", 80);
-                        anElement.setAttribute("min", -100);
-                        anElement.setAttribute("max", 999);
-                        anElement.setAttribute("step", 10);
-                        aSlider.value = 85;
-                        aSlider.min = -105;
-                        aSlider.max = 888;
-                        aSlider.step = 5;
-                        aSlider.enterDocument(true);
-                    });
-                    it("should not get the value from the placeholder element", function () {
-                        expect(aSlider.value).toEqual(85);
-                    });
-                    it("should not get the min from the placeholder element", function () {
-                        expect(aSlider.min).toEqual(-105);
-                    });
-                    it("should not get the max from the placeholder element", function () {
-                        expect(aSlider.max).toEqual(888);
-                    });
-                    it("should not get the step from the placeholder element", function () {
-                        expect(aSlider.step).toEqual(5);
-                    });
-                    it("should delete _propertyNamesUsed after enterDocument", function () {
-                        expect(aSlider._propertyNamesUsed).not.toBeDefined();
-                    });
-                });
-            });
-
-        });
-        */
-
-        /*
-        //This needs to be done on an actual document
-
-        describe("draw", function () {
-            var aSlider;
-            beforeEach(function () {
-                aSlider = new Slider();
-                aSlider.element = MockDOM.element();
-            });
-
-            it("should be requested after enabled state is changed", function () {
-                aSlider.enabled = ! aSlider.enabled;
-                expect(aSlider.needsDraw).toBeTruthy();
-            });
-            it("should be requested after value is changed", function () {
-                aSlider.value = "random";
-                expect(aSlider.needsDraw).toBeTruthy();
-            });
-            it("should be requested after min is changed", function () {
-                aSlider.min = true;
-                expect(aSlider.needsDraw).toBeTruthy();
-            });
-            it("should be requested after max is changed", function () {
-                aSlider.max = true;
-                expect(aSlider.needsDraw).toBeTruthy();
-            });
-        });
-        describe("events", function () {
-            var aSlider, anElement, listener;
-            beforeEach(function () {
-                aSlider = new Slider();
-                anElement = MockDOM.element();
-                aSlider.element = anElement;
-                listener = {
-                    handleEvent: function () {}
-                };
-            });
-            it("should listen for translateStart only after prepareForActivationEvents", function () {
-                var listeners,
-                    em = aSlider.eventManager;
-                aSlider._sliderThumbElement = anElement;
-
-                aSlider.enterDocument(true);
-
-                listeners = em.registeredEventListenersForEventType_onTarget_("translateStart", aSlider._translateComposer);
-                expect(listeners).toBeNull();
-
-                aSlider.prepareForActivationEvents();
-
-                listeners = em.registeredEventListenersForEventType_onTarget_("translateStart", aSlider._translateComposer);
-                expect(listeners[aSlider.uuid].listener).toBe(aSlider);
-            });
-            it("should listen for translate only after prepareForActivationEvents", function () {
-                var listeners,
-                    em = aSlider.eventManager;
-                aSlider._sliderThumbElement = anElement;
-
-                aSlider.enterDocument(true);
-
-                listeners = em.registeredEventListenersForEventType_onTarget_("translate", aSlider._translateComposer);
-                expect(listeners).toBeNull();
-
-                aSlider.prepareForActivationEvents();
-
-                listeners = em.registeredEventListenersForEventType_onTarget_("translate", aSlider._translateComposer);
-                expect(listeners[aSlider.uuid].listener).toBe(aSlider);
-            });
-            it("should listen for translateEnd only after prepareForActivationEvents", function () {
-                var listeners,
-                    em = aSlider.eventManager;
-                aSlider._sliderThumbElement = anElement;
-
-                aSlider.enterDocument(true);
-
-                listeners = em.registeredEventListenersForEventType_onTarget_("translateEnd", aSlider._translateComposer);
-                expect(listeners).toBeNull();
-
-                aSlider.prepareForActivationEvents();
-
-                listeners = em.registeredEventListenersForEventType_onTarget_("translateEnd", aSlider._translateComposer);
-                expect(listeners[aSlider.uuid].listener).toBe(aSlider);
-            });
-        });
-        */
     });
     describe("objectDescriptor", function () {
         it("can be created", function (done) {
