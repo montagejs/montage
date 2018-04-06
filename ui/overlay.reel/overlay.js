@@ -302,10 +302,19 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
     dismissOverlay: {
         value: function (event) {
             var shouldDismissOverlay = false;
-            if (this._isShown) {
-                shouldDismissOverlay = this.callDelegateMethod("shouldDismissOverlay", this, event.targetElement, event.type);
 
-                if (shouldDismissOverlay === void 0 || shouldDismissOverlay) {
+            if (this._isShown) {
+                shouldDismissOverlay = true;
+
+                var shouldDismissOverlayResponse = this.callDelegateMethod(
+                    "shouldDismissOverlay", this, event.targetElement, event.type
+                );
+
+                if (shouldDismissOverlayResponse !== void 0) {
+                    shouldDismissOverlay = !!shouldDismissOverlayResponse;
+                }
+
+                if (shouldDismissOverlay) {
                     this.hide();
                     this._dispatchDismissEvent();
                 }
