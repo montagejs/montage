@@ -1,6 +1,7 @@
 var ExpressionDataMapping = require("montage/data/service/expression-data-mapping").ExpressionDataMapping,
     MainPersonService = require("spec/data/logic/service/main-person-service").MainPersonService,
     RawPersonService = require("spec/data/logic/service/raw-person-service").RawPersonService,
+    RawPersonService2 = require("spec/data/logic/service/raw-person-service-b").RawPersonServiceB,
     ModuleObjectDescriptor = require("montage/core/meta/module-object-descriptor").ModuleObjectDescriptor,
     ModuleReference = require("montage/core/module-reference").ModuleReference,
     PropertyDescriptor = require("montage/core/meta/property-descriptor").PropertyDescriptor,
@@ -11,6 +12,7 @@ var DataMapping = require("montage/data/service/data-mapping").DataMapping;
 describe("A DataMapping at the DataService level", function() {
     var mainService = new MainPersonService(),
         rawService = new RawPersonService(),
+        rawService2 = new RawPersonService2(),
         registrationPromise,
         personMapping, personReference, personDescriptor;
 
@@ -44,18 +46,62 @@ describe("A DataMapping at the DataService level", function() {
         converter: dateConverter
     });
 
+
+    person2Reference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/person-b", require);
+    person2Descriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(person2Reference, "PersonB");
+    person2Descriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("name", person2Descriptor, 1));
+    person2Descriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("birthday", person2Descriptor, 1));
+
+    mainService.addMappingForType(personMapping, personDescriptor);
     rawService.addMappingForType(personMapping, personDescriptor);
     mainService.addChildService(rawService);
 
     registrationPromise = Promise.all([
         mainService.registerChildService(rawService, [personDescriptor]),
+        mainService.registerChildService(rawService2, [person2Descriptor]),
     ]);
 
-    it("can be created", function (done) {
+    it("can map properties with mapping in MainService", function (done) {
         registrationPromise.then(function () {
             mainService.fetchData(personDescriptor).then(function (results) {
-                console.log("DataServiceMapping.results", results);
+                var person;
                 expect(results).toBeDefined();
+                person = results[0];
+                expect(person.name).toBeDefined();
+                expect(person.birthday).toBeDefined();
+                expect(person.birthday instanceof Date).toBe(true);
+                person = results[1];
+                expect(person.name).toBeDefined();
+                expect(person.birthday).toBeDefined();
+                expect(person.birthday instanceof Date).toBe(true);
+                person = results[2];
+                expect(person.name).toBeDefined();
+                expect(person.birthday).toBeDefined();
+                expect(person.birthday instanceof Date).toBe(true);
+                expect(Array.isArray(results)).toBeTruthy();
+                done();
+            });
+        });
+    });
+
+    it("can map properties with method in RawService", function (done) {
+        registrationPromise.then(function () {
+            mainService.fetchData(person2Descriptor).then(function (results) {
+                var person;
+                expect(results).toBeDefined();
+                person = results[0];
+                expect(person.name).toBeDefined();
+                expect(person.birthday).toBeDefined();
+                expect(person.birthday instanceof Date).toBe(true);
+                person = results[1];
+                expect(person.name).toBeDefined();
+                expect(person.birthday).toBeDefined();
+                expect(person.birthday instanceof Date).toBe(true);
+                person = results[2];
+                expect(person.name).toBeDefined();
+                expect(person.birthday).toBeDefined();
+                expect(person.birthday instanceof Date).toBe(true);
+                expect(Array.isArray(results)).toBeTruthy();
                 done();
             });
         });
