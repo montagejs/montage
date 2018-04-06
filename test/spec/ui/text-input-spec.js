@@ -21,48 +21,51 @@ describe("test/ui/text-input-spec", function () {
     });
 
     describe("properties", function () {
-        var TextField = TextInput.specialize( {}),
-            aTextField;
+        var aTextField;
 
         beforeEach(function () {
-            aTextField = new TextField();
-            aTextField.element = document.createElement('div');
+            aTextField = new TextInput();
+            aTextField.element = document.createElement('input');
         });
 
         describe("value", function () {
             beforeEach(function () {
-                aTextField = new TextField();
-                aTextField.element = document.createElement('div');
+                aTextField = new TextInput();
+                aTextField.element = document.createElement('input');
+                document.body.appendChild(aTextField.element);
                 aTextField.enterDocument(true);
                 aTextField.prepareForActivationEvents();
             });
 
             it("should be the value of the element when input is fired", function () {
                 aTextField.element.value = "A text";
-
-                var anEvent = document.createEvent("CustomEvent");
-                anEvent.initCustomEvent("input", true, true, null);
+                var anEvent = new Event('input');
                 aTextField.element.dispatchEvent(anEvent);
-
+                aTextField.draw();
                 expect(aTextField.value).toBe("A text");
             });
 
             it("should be the value of the element when change is fired", function () {
                 aTextField.element.value = "A text";
-
-                var anEvent = document.createEvent("CustomEvent");
-                anEvent.initCustomEvent("change", true, true, null);
+                var anEvent = new Event('input');
                 aTextField.element.dispatchEvent(anEvent);
-
+                aTextField.draw();
                 expect(aTextField.value).toBe("A text");
             });
 
             it("should set value when field not selected", function () {
                 aTextField._value = "initial";
                 aTextField.value = "updated";
+                aTextField.draw();
                 expect(aTextField.value).toBe("updated");
             });
 
+            afterEach(function() {
+                if (aTextField && aTextField.element) {
+                    aTextField.element.remove();
+                }
+            });
+        
             //Benoit: Deactivating, not sure this is right
             // it("should not set value when field selected", function () {
             //     aTextField._value = "initial";
@@ -75,7 +78,7 @@ describe("test/ui/text-input-spec", function () {
         describe("enabled", function () {
             beforeEach(function () {
                 aTextField = new TextInput();
-                aTextField.element = document.createElement('div');
+                aTextField.element = document.createElement('input');
                 aTextField.prepareForActivationEvents();
             });
 
@@ -88,12 +91,11 @@ describe("test/ui/text-input-spec", function () {
     });
 
     describe("draw", function () {
-        var TextField = TextInput.specialize( {}),
-            aTextField;
+        var  aTextField;
 
         beforeEach(function () {
-            aTextField = new TextField();
-            aTextField.element = document.createElement('div');
+            aTextField = new TextInput();
+            aTextField.element = document.createElement('input');
         });
 
         it("should be requested after enabled state is changed", function () {
@@ -177,40 +179,50 @@ describe("test/ui/text-input-spec", function () {
     });
 
     describe("events", function () {
-        var TextField = TextInput.specialize( {}),
-            aTextField, anElement, listener;
+        var aTextField, anElement, listener;
 
         beforeEach(function () {
-            aTextField = new TextField();
-            anElement = document.createElement('div');
+            aTextField = new TextInput();
+            aTextField.element = document.createElement('input');
+            document.body.appendChild(aTextField.element);
+            aTextField.enterDocument(true);
             listener = {
                 handleEvent: function () {}
             };
         });
 
         it("should listen for element input after enterDocument", function () {
-            aTextField.element = anElement;
-            aTextField.enterDocument(true);
+            spyOn(aTextField, 'handleInput');
 
-            expect(aTextField.element.hasEventListener("input", aTextField)).toBe(true);
+            var anEvent = new Event('input');
+                aTextField.element.dispatchEvent(anEvent);
+
+            expect(aTextField.handleInput).toHaveBeenCalled();
         });
 
         it("should listen for element change after enterDocument", function () {
-            aTextField.element = anElement;
-            aTextField.enterDocument(true);
+            spyOn(aTextField, 'handleChange');
 
-            expect(aTextField.element.hasEventListener("change", aTextField)).toBe(true);
+            var anEvent = new Event('change');
+                aTextField.element.dispatchEvent(anEvent);
+
+            expect(aTextField.handleChange).toHaveBeenCalled();
+        });
+
+        afterEach(function() {
+            if (aTextField && aTextField.element) {
+                aTextField.element.remove();
+            }
         });
 
     });
 
     describe("delegate methods", function () {
-        var TextField = TextInput.specialize( {}),
-            aTextField, aTextFieldDelegate;
+        var aTextField, aTextFieldDelegate;
 
         beforeEach(function () {
-            aTextField = new TextField();
-            aTextField.element = document.createElement('div');
+            aTextField = new TextInput();
+            aTextField.element = document.createElement('input');
             aTextFieldDelegate = {};
             aTextField.delegate = aTextFieldDelegate;
         });
