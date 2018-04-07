@@ -476,6 +476,8 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                     data = object[propertyDescriptor.name];
                 if (Array.isArray(data) && propertyDescriptor) {
                     self._setObjectsValueForPropertyDescriptor(data, object, inversePropertyDescriptor);
+                } else if (data && propertyDescriptor) {
+                    self._setObjectValueForPropertyDescriptor(data, object, inversePropertyDescriptor);
                 }
                 return null;
             });
