@@ -1384,6 +1384,15 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
         }
     },
 
+    resolvedPromise: {
+        get: function () {
+            if (!TemplateResources._resolvedPromise) {
+                TemplateResources._resolvedPromise = Promise.resolve();
+            }
+            return TemplateResources._resolvedPromise;
+        }
+    },
+
     initWithTemplate: {
         value: function (template) {
             this.template = template;
@@ -1456,7 +1465,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
                 return Promise.all(promises);
             }
 
-            return Promise.resolve();
+            return this.resolvedPromise;
         }
     },
 
@@ -1532,17 +1541,15 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
 
     loadStyle: {
         value: function (element, targetDocument) {
-            var url,
+            var url = element.getAttribute("href"),
                 documentResources;
-
-            url = element.getAttribute("href");
 
             if (url) {
                 documentResources = DocumentResources.getInstanceForDocument(targetDocument);
                 return documentResources.preloadResource(url);
-            } else {
-                return Promise.resolve();
             }
+            
+            return this.resolvedPromise;
         }
     },
 
