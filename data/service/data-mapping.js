@@ -59,6 +59,25 @@ exports.DataMapping = Montage.specialize(/** @lends DataMapping.prototype */ {
     },
 
     /**
+     * Maps the value of a single raw data property onto the model object
+     *
+     * @method
+     * @argument {Object} data           - An object whose properties' values
+     *                                     hold the raw data.
+     * @argument {Object} object         - The object on which to assign the property
+     * @argument {string} propertyName   - The name of the model property to which
+     *                                     to assign the value(s).
+     * @returns {DataStream|Promise|?}   - Either the value or a "promise" for it
+     *
+     */
+    mapRawDataToObjectProperty: {
+        value: function (data, object, propertyName) {
+            // TO DO: Provide a default mapping based on object descriptor and prpoerty name
+            // For now, subclasses must override this.
+        }
+    },
+
+    /**
      * @todo Document.
      */
     mapObjectToRawData: {

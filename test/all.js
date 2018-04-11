@@ -125,17 +125,18 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/data/object-descriptor"},
     {name: "spec/data/property-descriptor"},
     {name: "spec/data/raw-data-service"},
-    {name: "spec/data/raw-data-type-mapping-spec"},
+    {name: "spec/data/raw-data-type-mapping-spec", node: false},
     {name: "spec/data/integration", node: false},
+    {name: "spec/data/data-service-mapping", node: false},
 
     // // Meta
-    // { name: "spec/meta/converter-object-descriptor-spec", node: false},
-    // { name: "spec/meta/module-object-descriptor-spec", node: false},
-    // {name: "spec/meta/build-in-component-object-descriptor-spec", node: false},
-    // {name: "spec/meta/component-object-descriptor-spec", node: false},
-    // {name: "spec/meta/controller-object-descriptor-spec", node: false},
-    // {name: "spec/meta/event-descriptor-spec", node: false},
-    // { name: "spec/meta/object-descriptor-spec", node: false}
+    { name: "spec/meta/converter-object-descriptor-spec", node: false},
+    { name: "spec/meta/module-object-descriptor-spec", node: false},
+    {name: "spec/meta/build-in-component-object-descriptor-spec", node: false},
+    {name: "spec/meta/component-object-descriptor-spec", node: false},
+    {name: "spec/meta/controller-object-descriptor-spec", node: false},
+    {name: "spec/meta/event-descriptor-spec", node: false},
+    { name: "spec/meta/object-descriptor-spec", node: false}
 ]).then(function () {
     console.log('montage-testing', 'End');
 }, function (err) {

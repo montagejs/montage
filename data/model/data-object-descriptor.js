@@ -1,5 +1,6 @@
 var ObjectDescriptor = require("./object-descriptor").ObjectDescriptor,
-    DataPropertyDescriptor = require("./data-property-descriptor").DataPropertyDescriptor;
+    DataPropertyDescriptor = require("./data-property-descriptor").DataPropertyDescriptor,
+    deprecate = require("core/deprecate");
 
 /**
  * Extends an object descriptor with the additional object information needed by
@@ -10,7 +11,7 @@ var ObjectDescriptor = require("./object-descriptor").ObjectDescriptor,
  * @extends ObjectDescriptor
  */
 exports.DataObjectDescriptor = ObjectDescriptor.specialize(/** @lends DataObjectDescriptor.prototype */ {
-
+    
     /**
      * The names of the properties containing the identifier for this type of
      * data object.

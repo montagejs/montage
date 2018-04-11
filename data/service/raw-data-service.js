@@ -71,8 +71,6 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     deserializeSelf: {
         value:function (deserializer) {
             this.super(deserializer);
-            var value = deserializer.getProperty("rawDataTypeMappings");
-            this._registerRawDataTypeMappings(value || []);
         }
     },
 
