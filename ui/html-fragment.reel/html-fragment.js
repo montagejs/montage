@@ -32,7 +32,7 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
     value: {
         set: function (value) {
             if (this._value !== value) {
-                if (typeof value === 'string') {
+                if (value !== void 0 && value !== null) {
                     this._value = value;
                 } else {
                     this._value = null;
