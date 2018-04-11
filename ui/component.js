@@ -12,9 +12,8 @@
  * @requires montage/core/serialization/alias
  * @requires collections/set
  */
-var MontageModule = require("../core/core"),
-    Montage = MontageModule.Montage,
-    getObjectDescriptorWithModuleId = MontageModule.getObjectDescriptorWithModuleId,
+var Montage = require("../core/core").Montage,
+    getObjectDescriptorWithModuleId = require("../core/meta/module-object-descriptor").ModuleObjectDescriptor.getObjectDescriptorWithModuleId,
     Target = require("../core/target").Target,
     Template = require("../core/template").Template,
     DocumentResources = require("../core/document-resources").DocumentResources,
