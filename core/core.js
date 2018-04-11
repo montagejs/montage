@@ -23,7 +23,6 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     PROTO = "__proto__",
     VALUE = "value",
     ENUMERABLE = "enumerable",
-    DISTINCT = "distinct",
     SERIALIZABLE = "serializable",
     FUNCTION = "function",
     UNDERSCORE_UNICODE = 95,
@@ -398,7 +397,6 @@ function __clearSuperDepencies(obj, prop, replacingDescriptor) {
  *  - `writable` is `true` by default, but `false` if the `name` begins with
  *    an underscore, `_`.
  *  - `configurable` is `true` by default
- *  - `distinct` is deprecated, but conveys the intention that the `value`
  *    should be duplicated for each instance, but the means of cloning is
  *    ill-defined and temperamental.
  *
@@ -421,13 +419,8 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
         if (! (typeof obj === "object" || typeof obj === FUNCTION) || obj === null) {
             throw new TypeError("Object must be an object, not '" + obj + "'");
         }
-
+        
         var isValueDescriptor = (VALUE in descriptor);
-
-        if (DISTINCT in descriptor && !isValueDescriptor) {
-            throw new TypeError("Cannot use distinct attribute on non-value property '" + prop + "'");
-        }
-
 
         // reset defaults appropriately for framework.
         if (PROTO in descriptor) {
