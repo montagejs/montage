@@ -1,0 +1,8 @@
+{
+    "root": {
+        "prototype": "montage/core/meta/user-interface-descriptor",
+        "values": {
+            "nameExpression": "value"
+        }
+    }
+}

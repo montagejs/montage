@@ -1,0 +1,11 @@
+{
+    "name": "cascading-list-samples",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "montage": "*"
+    },
+    "mappings": {
+        "montage": "../../../"
+    }
+}

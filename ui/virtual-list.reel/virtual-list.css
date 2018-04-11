@@ -1,0 +1,31 @@
+.VirtualList {
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    font-size: 16px;
+    font-size: 1rem;
+    color: hsla(0,0%,0%,.5);
+    list-style: none;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #c8c7cc;
+    box-sizing: border-box;
+}
+
+VirtualList-flow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.VirtualList .montage-Flow-Repetition > div {
+    left: 50%;
+    right: -50%;
+    width: auto;
+}
+
+.VirtualList .montage-Flow-Repetition .ListItem {
+    border: none;
+    border-bottom: 1px solid #c8c7cc;
+}

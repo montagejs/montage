@@ -1,0 +1,16 @@
+{
+    "root": {
+        "prototype": "core/meta/user-interface-descriptor",
+        "values": {
+            "inspectorComponentModule": {
+                "%": "test/mocks/data/inspectors/department.reel"
+            },
+            "creatorInspectorComponentModule": {
+                "%": "test/mocks/data/inspectors/department.reel"
+            },
+            "iconExpression": "thumbnail",
+            "collectionNameExpression": "'Departments'",
+            "nameExpression": "name"
+        }
+    }
+}

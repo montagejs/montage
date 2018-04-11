@@ -27,6 +27,14 @@ describe("test/ui/button-spec", function () {
                 aButton.label = "";
                 expect(aButton.label).toEqual("");
             });
+            it("should have a default value", function () {
+                aButton.label = "";
+                expect(aButton.label).toEqual("");
+                aButton.label = void 0;
+                expect(aButton.label).toEqual("Button");
+                aButton.label = null;
+                expect(aButton.label).toEqual("Button");
+            });
             it("should update the value if isInputElement is true", function () {
                 aButton.element.tagName = "INPUT";
                 // aButton.isInputElement = true;

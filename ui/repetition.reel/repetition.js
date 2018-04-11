@@ -1458,39 +1458,41 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // in the iteration template.
             while (template.hasParameters()) {
                 owner = owner.ownerComponent;
-                argumentsTemplate = owner._ownerDocumentPart.template;
-                objects = owner._ownerDocumentPart.objects;
-
                 expansionResult = template.expandParameters(owner);
 
-                // Associate the new external objects with the objects in the
-                // instantiation of argumentsTemplate.
-                externalLabels = template.getSerialization()
-                    .getExternalObjectLabels();
-                instances = template.getInstances();
+                if (owner._ownerDocumentPart) {
+                    argumentsTemplate = owner._ownerDocumentPart.template;
+                    objects = owner._ownerDocumentPart.objects;
 
-                labels = expansionResult.labels;
-                collisionTable = expansionResult.labelsCollisions;
+                    // Associate the new external objects with the objects in the
+                    // instantiation of argumentsTemplate.
+                    externalLabels = template.getSerialization()
+                        .getExternalObjectLabels();
+                    instances = template.getInstances();
 
-                for (var i = 0, label; (label = labels[i]); i++) {
-                    if (collisionTable && label in collisionTable) {
-                        newLabel = collisionTable[label];
-                    } else {
-                        newLabel = label;
-                    }
+                    labels = expansionResult.labels;
+                    collisionTable = expansionResult.labelsCollisions;
 
-                    // Setup external objects and configure the correct require,
-                    // label and owner for the objects that came from the
-                    // template arguments.
-                    if (externalLabels.indexOf(newLabel) >= 0) {
-                        instances[newLabel] = objects[label];
-                    } else {
-                        metadata = argumentsTemplate.getObjectMetadata(label);
-                        if (!metadata.owner) {
-                            metadata.owner = objects.owner;
+                    for (var i = 0, label; (label = labels[i]); i++) {
+                        if (collisionTable && label in collisionTable) {
+                            newLabel = collisionTable[label];
+                        } else {
+                            newLabel = label;
                         }
-                        template.setObjectMetadata(newLabel, metadata.require,
-                            metadata.label, metadata.owner);
+
+                        // Setup external objects and configure the correct require,
+                        // label and owner for the objects that came from the
+                        // template arguments.
+                        if (externalLabels.indexOf(newLabel) >= 0) {
+                            instances[newLabel] = objects[label];
+                        } else {
+                            metadata = argumentsTemplate.getObjectMetadata(label);
+                            if (!metadata.owner) {
+                                metadata.owner = objects.owner;
+                            }
+                            template.setObjectMetadata(newLabel, metadata.require,
+                                metadata.label, metadata.owner);
+                        }
                     }
                 }
             }

@@ -160,7 +160,7 @@ exports.CheckControl =  Control.specialize({
             if (!this._pressComposer || this._pressComposer.state !== PressComposer.CANCELLED) {
                 Object.getPropertyDescriptor(this, "checked").set.call(this,
                     this.element.checked, true);
-                this._dispatchActionEvent();
+                this.dispatchActionEvent();
             }
         }
     }

@@ -1,0 +1,12 @@
+{
+    "root": {
+        "prototype": "core/meta/user-interface-descriptor",
+        "values": {
+            "collectionNameExpression": "'Settings'",
+            "nameExpression": "label",
+            "descriptionExpression": "description",
+            "valueExpression": "value",
+            "cascadingListItemFooterMiddleCollectionNameExpression": "length + ' item' + (length == 1 ? '' : 's')"
+        }
+    }
+}

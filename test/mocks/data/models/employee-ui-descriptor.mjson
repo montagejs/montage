@@ -1,0 +1,19 @@
+{
+    "root": {
+        "prototype": "core/meta/user-interface-descriptor",
+        "values": {
+            "inspectorComponentModule": {
+                "%": "test/mocks/data/inspectors/employee.reel"
+            },
+            "creatorInspectorComponentModule": {
+                "%": "test/mocks/data/creators/employee.reel"
+            },
+            "collectionInspectorComponentModule": {
+                "%": "ui/list.reel"
+            },
+            "collectionNameExpression": "'Employees'",
+            "nameExpression": "lastname + ' ' + firstname",
+            "descriptionExpression": "department"
+        }
+    }
+}

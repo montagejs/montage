@@ -1,0 +1,10 @@
+{
+    "root": {
+        "prototype": "core/meta/user-interface-descriptor",
+        "values": {
+            "cascadingListItemHeaderRightCollectionNameExpression": "'Add'",
+            "cascadingListItemHeaderRightNameExpression": "isNew ? '' : 'Edit'",
+            "cascadingListItemFooterMiddleCollectionNameExpression": "length + ' item' + (length == 1 ? '' : 's')"
+        }
+    }
+}

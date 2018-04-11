@@ -81,6 +81,13 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             if (typeof this.maxAge === "number") {
                 serializer.setProperty("maxAge", this.maxAge);
             }
+
+            if (this.userInterfaceDescriptorModules) {
+                serializer.setProperty(
+                    "userInterfaceDescriptorModules",
+                    this.userInterfaceDescriptorModules
+                );
+            }
         }
     },
 
@@ -131,6 +138,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             value = deserializer.getProperty("maxAge");
             if (value) {
                 this.maxAge = value;
+            }
+            value = deserializer.getProperty("userInterfaceDescriptorModules");
+            if (value) {
+                this.userInterfaceDescriptorModules = value;
             }
         }
     },
@@ -988,6 +999,72 @@ _preparePropertyDescriptorsCache: {
 
     objectDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
     objectDescriptor: require("../core")._objectDescriptorDescriptor,
+
+    userInterfaceDescriptor: {
+        get: function () {
+            if (!this._userInterfaceDescriptor) {
+                if (this.userInterfaceDescriptorModules &&
+                    this.userInterfaceDescriptorModules["*"]) {
+                    
+                    Montage.defineProperty(this, "_userInterfaceDescriptor", {
+                        enumerable: false,
+                        value: this.userInterfaceDescriptorModules["*"].require.async(
+                            this.userInterfaceDescriptorModules["*"].id
+                        ).then(function (userInterfaceDescriptorModule) {
+                            return userInterfaceDescriptorModule.montageObject;
+                        })
+                    });
+                }
+            }
+
+            return this._userInterfaceDescriptor ||
+                (this._userInterfaceDescriptor = Promise.resolve());
+        }
+    },
+
+    userInterfaceDescriptors: {
+        get: function () {
+            if (!this._userInterfaceDescriptors) {
+                if (this.userInterfaceDescriptorModules) {
+                    var keys = Object.keys(this.userInterfaceDescriptorModules),
+                        length;
+
+                    if ((length = keys.length)) {
+                        var promisesHandler = function (defaultUserInterfaceDescriptor, userInterfaceDescriptorModule) {
+                                return Object.assign(
+                                    {},
+                                    defaultUserInterfaceDescriptor,
+                                    userInterfaceDescriptorModule.montageObject
+                                );
+                            },
+                            map = {},
+                            key;
+
+                        for (var i = 0; i < length; i++) {
+                            key = keys[i];
+
+                            if (key === '*') {
+                                map[key] = this.userInterfaceDescriptor;
+                            } else {
+                                Montage.defineProperty(map, key, {
+                                    enumerable: false,
+                                    value: Promise.all([
+                                        this.userInterfaceDescriptor,
+                                        this.userInterfaceDescriptorModules[key].require.async(
+                                            this.userInterfaceDescriptorModules[key].id
+                                        )
+                                    ]).spread(promisesHandler)
+                                });
+                            }
+                        }
+                        this._userInterfaceDescriptors = map;
+                    }
+                }
+            }
+
+            return this._userInterfaceDescriptors;
+        }
+    },
 
     /**********************************************************************************
      * Deprecated methods.

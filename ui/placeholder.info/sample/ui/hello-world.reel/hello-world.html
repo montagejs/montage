@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="hello-world.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "owner"}
+                }
+            },
+
+            "message": {
+                "prototype": "montage/ui/text.reel",
+                "values": {
+                    "element": {"#": "message"},
+                    "value": {"<-": "@owner.data.defined() && @owner.userInterfaceDescriptor.defined() ? @owner.data.path(@owner.userInterfaceDescriptor.nameExpression) : 'Hello World!'"}
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner">
+        <div data-montage-id="message" ></div>
+    </div>
+</body>
+</html>

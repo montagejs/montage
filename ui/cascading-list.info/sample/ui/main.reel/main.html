@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"},
+                    "cascadingList": {"@": "cascadingList"}
+                }
+            },
+
+            "cascadingList": {
+                "prototype": "montage/ui/cascading-list.reel",
+                "values": {
+                    "element": {"#": "cascadingList"},
+                    "delegate": {"<-": "@owner"},
+                    "root": {"<-": "@owner.root"},
+                    "shouldDispatchCascadingListEvents": true
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>Cascading List Sample</header>
+        <section>
+            <div data-montage-id="cascadingList"></div>
+        </section>
+    </div>
+</body>
+</html>
