@@ -53,7 +53,7 @@ describe("A DataMapping at the DataService level", function() {
     person2Descriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("birthday", person2Descriptor, 1));
 
     mainService.addMappingForType(personMapping, personDescriptor);
-    rawService.addMappingForType(personMapping, personDescriptor);
+    // rawService.addMappingForType(personMapping, personDescriptor);
     mainService.addChildService(rawService);
 
     registrationPromise = Promise.all([

@@ -7,6 +7,7 @@ var Montage = require("core/core").Montage,
     DataQuery = require("data/model/data-query").DataQuery,
     DataStream = require("data/service/data-stream").DataStream,
     DataTrigger = require("data/service/data-trigger").DataTrigger,
+    deprecate = require("core/deprecate"),
     Map = require("collections/map"),
     Promise = require("core/promise").Promise,
     ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor,
@@ -93,6 +94,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 this.delegate = value;
             }
 
+
             if (this._childServiceRegistrationPromise) {
                 this._childServiceRegistrationPromise = this._childServiceRegistrationPromise.then(function () {
                     return self.registerSelf();
@@ -100,6 +102,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             } else {
                 this._childServiceRegistrationPromise = this.registerSelf();
             }
+
+            value = deserializer.getProperty("rawDataTypeMappings");
+            this._registerRawDataTypeMappings(value || []);
             
             return result;
         }
@@ -363,6 +368,21 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
+     * Get the first child service that can handle the specified object,
+     * or `null` if no such child service exists.
+     *
+     * @deprecated
+     * @method
+     * @argument {Object} object
+     * @returns DataService
+     */
+    _getChildServiceForObject: {
+        value: deprecate.deprecateMethod(void 0, function (object) {
+            return this._childServiceForObject(object);
+        }, "_getChildServiceForObject", "_childServiceForObject", true)
+    },
+
+    /**
      * An array of the data types handled by all child services of this service.
      *
      * The contents of this map should not be modified outside of
@@ -545,11 +565,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     childServiceForType: {
         value: function (type) {
             var services;
-            type = type instanceof ObjectDescriptor ? type : this._objectDescriptorForType(type);
+            type = this._isObjectDescriptor(type) ? type : this._objectDescriptorForType(type);
             services = this._childServicesByType.get(type) || this._childServicesByType.get(null);
             return services && services[0] || null;
         }
     },
+
+    
 
     /**
      * Convenience method to assess if a dataService is the rootService
@@ -775,6 +797,22 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
 
     /**
+     * Map from a parent class to the mappings used by the service to
+     * determine what subclass to create an instance of for a particular
+     * rawData object
+     *
+     * For example, say a class 'Person' has 2 subclasses 'Employee' & 'Customer'.
+     * RawDataService would evaluate each person rawData object against each item
+     * in _rawDataTypeMappings and determine if that rawData should be an instance
+     * of 'Employee' or 'Customer'.
+     * @type {Map<ObjectDescpriptor:RawDataTypeMapping>}
+     */
+
+    _descriptorToRawDataTypeMappings: {
+        value: undefined
+    },
+
+    /**
      * @todo Document.
      * @todo Make this method overridable by type name with methods like
      * `mapHazardToRawData()` and `mapProductToRawData()`.
@@ -875,6 +913,28 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /**
+     * Adds each mapping passed in to _descriptorToRawDataTypeMappings
+     *
+     * @method
+     * @param {Array<RawDataTypeMapping>} mappings
+     */
+    _registerRawDataTypeMappings: {
+        value: function (mappings) {
+            var mapping, parentType,
+                i, n;
+
+            for (i = 0, n = mappings ? mappings.length : 0; i < n; i++) {
+                mapping = mappings[i];
+                parentType = mapping.type.parent;
+                if (!this._descriptorToRawDataTypeMappings.has(parentType)) {
+                    this._descriptorToRawDataTypeMappings.set(parentType, []);
+                }
+                this._descriptorToRawDataTypeMappings.get(parentType).push(mapping);
+            }
+        }
+    },
+
     _streamMappingPromises: {
         get: function () {
             if (!this.__streamMappingPromises) {
@@ -954,8 +1014,14 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     mapObjectToRawData: {
         value: function (object, record, context) {
-            // this.mapToRawData(object, record, context);
+            //Overridden in child classes
         }
+    },
+
+    mapToRawData: {
+        value: deprecate.deprecateMethod(undefined, function (rawData, object, context) {
+            //Overridden in child classes
+        }, "mapToRawData", "mapObjectToRawData", true)
     },
 
     /**
@@ -978,6 +1044,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (rawData, object, context) {
             //Overridden in child classes
         }
+    },
+
+    mapFromRawData: {
+        value: deprecate.deprecateMethod(undefined, function (rawData, object, context) {
+            //Overridden in child classes
+        }, "mapFromRawData", "mapRawDataToObject", true)
     },
 
     /***************************************************************************
@@ -1014,7 +1086,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 objectName = objectInfo.objectName,
                 module, exportName, i, n, objectDescriptor;
 
-            objectDescriptor = this._moduleIdToObjectDescriptorMap.get(moduleId);
+            if (object.constructor.TYPE instanceof DataObjectDescriptor) {
+                objectDescriptor = object.constructor.TYPE;
+            } else {
+                objectDescriptor = this._moduleIdToObjectDescriptorMap.get(moduleId);
+            }
 
             for (i = 0, n = types.length; i < n && !objectDescriptor; i += 1) {
                 module = types[i].module;
@@ -1028,6 +1104,23 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             return objectDescriptor;
         }
     },
+
+    // _getObjectType: {
+    //     value: function (object) {
+    //         var type = this._typeRegistry.get(object),
+    //             moduleId = typeof object === "string" ? object : this._getModuleIdForObject(object);
+    //         while (!type && object) {
+    //             if (object.constructor.TYPE instanceof DataObjectDescriptor) {
+    //                 type = object.constructor.TYPE;
+    //             } else if (this._moduleIdToObjectDescriptorMap[moduleId]) {
+    //                 type = this._moduleIdToObjectDescriptorMap[moduleId];
+    //             } else {
+    //                 object = Object.getPrototypeOf(object);
+    //             }
+    //         }
+    //         return type;
+    //     }
+    // },
 
     _objectDescriptorForType: {
         value: function (type) {
@@ -1242,7 +1335,46 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     /***************************************************************************
      * Data Object Properties
      */
+
+    _delegateFunctionForPropertyName: {
+        value: function (propertyName) {
+            var capitalized = propertyName.charAt(0).toUpperCase() + propertyName.slice(1),
+                functionName = "fetch" + capitalized + "Property";
+            return typeof this[functionName] === "function" && this[functionName];
+        }
+    },
     
+    _fetchObjectPropertyWithPropertyDescriptor: {
+        value: function (object, propertyName, propertyDescriptor) {
+            var self = this,
+                objectDescriptor = propertyDescriptor.owner,
+                mapping = objectDescriptor && this.mappingWithType(objectDescriptor),
+                data = {},
+                result;
+
+            if (mapping) {
+                Object.assign(data, this.snapshotForObject(object));
+                if (typeof mapping.mapObjectToCriteriaSourceForProperty !== "function") {
+                    // console.log(mapping);
+                    // debugger;
+                    result = mapping.mapRawDataToObjectProperty(data, object, propertyName);
+                    if (!result || typeof result.then !== "function") {
+                        result = Promise.resolve(result);
+                    }
+                } else {
+                    result = mapping.mapObjectToCriteriaSourceForProperty(object, data, propertyName).then(function() {
+                        Object.assign(data, self.snapshotForObject(object));
+                        return mapping.mapRawDataToObjectProperty(data, object, propertyName);
+                    });
+                }
+            } else {
+                result = this.nullPromise;
+            }
+
+            return result;
+        }
+    },
+
     /**
      * @private
      * @method
@@ -1385,11 +1517,16 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
                 childService = !isHandler && this._childServiceForObject(object);
 
-            return  useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
-                    delegateFunction ?                  delegateFunction.call(this, object) :
-                    isHandler && propertyDescriptor ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor) :
-                    childService ?                      childService.fetchObjectProperty(object, propertyName) :
-                                                        this.nullPromise;
+            var result = useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
+            delegateFunction ?                  delegateFunction.call(this, object) :
+            isHandler && propertyDescriptor ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor) :
+            childService ?                      childService.fetchObjectProperty(object, propertyName) :
+                                                this.nullPromise;
+            if (!result) {
+                debugger;
+            }
+
+            return result;
         }
     },
 
@@ -2897,7 +3034,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-    
+    _isObjectDescriptor: {
+        value: function (type) {
+            return type instanceof ObjectDescriptor || type instanceof DataObjectDescriptor;
+        }
+    },
 
     /**
      * @todo Document.
