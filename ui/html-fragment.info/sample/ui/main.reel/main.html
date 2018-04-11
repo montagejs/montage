@@ -107,6 +107,29 @@
                     "element": {"#": "fragment9"},
                     "value": "Plain Text should work"
                 }
+            },
+
+            "checkbox": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "checkbox"}
+                }
+            },
+
+            "repetition": {
+                "prototype": "montage/ui/repetition.reel",
+                "values": {
+                    "element": {"#": "repetition"},
+                    "content": {"<-": "@checkbox.checked ? @owner.content2 : @owner.content1"}
+                }
+            },
+
+            "fragment10": {
+                "prototype": "montage/ui/html-fragment.reel",
+                "values": {
+                    "element": {"#": "fragment10"},
+                    "value": {"<-": "@repetition:iteration.object"}
+                }
             }
 
         }
@@ -125,6 +148,13 @@
             <div data-montage-id="fragment7" class="html-fragment"></div>
             <div data-montage-id="fragment8" class="html-fragment"></div>
             <div data-montage-id="fragment9" class="html-fragment"></div>
+            <div>
+                <label for="checkbox">Switch content </label>
+                <input id="checkbox" data-montage-id="checkbox" type="checkbox" />
+            </div>
+            <div data-montage-id="repetition">
+                <div data-montage-id="fragment10" class="html-fragment"></div>
+            </div>
         </div>
     </div>
 </body>

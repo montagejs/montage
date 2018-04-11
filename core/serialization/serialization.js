@@ -719,7 +719,7 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
                 parseTree,
                 modified = false;
 
-            sourcePath = object["<-"] || object["<->"];
+            sourcePath = object["<-"] || object["<->"] || object["="] ;
             parseTree = Object.clone(parse(sourcePath));
             this._walksBindingReferences(parseTree, function (syntax) {
                 var value = {
@@ -736,8 +736,10 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
             if (modified) {
                 if ("<-" in object) {
                     object["<-"] = stringify(parseTree);
-                } else {
+                } else if ("<->" in object) {
                     object["<->"] = stringify(parseTree);
+                } else {
+                    object["="] = stringify(parseTree);
                 }
             }
 
