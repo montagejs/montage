@@ -32,7 +32,7 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
-    componentWillUseUserInterfaceDescriptorIdForObject: {
+    componentWillUseUserInterfaceDescriptorModuleIdForObject: {
         value: function (component, UIDescriptor, object) {
             if (component instanceof ListItem) {
                 if (object === this.settings[1] || object === this.settings[2]) {

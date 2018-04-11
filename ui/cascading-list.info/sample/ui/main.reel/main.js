@@ -51,7 +51,7 @@ exports.Main = Component.specialize(/** @lends Main# */{
         }
     },
 
-    componentWillUseUserInterfaceDescriptorIdForObject: {
+    componentWillUseUserInterfaceDescriptorModuleIdForObject: {
         value: function (component, userInterfaceDescriptorModuleId, object) {
             if (component === this.cascadingList) {
                 if (object === this.root && !userInterfaceDescriptorModuleId) {

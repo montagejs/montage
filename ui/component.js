@@ -3523,7 +3523,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 }
 
                 userInterfaceDescriptorModuleIdCandidate = self.callDelegateMethod(
-                    "componentWillUseUserInterfaceDescriptorIdForObject",
+                    "componentWillUseUserInterfaceDescriptorModuleIdForObject",
                     self,
                     userInterfaceDescriptorModuleId,
                     object
