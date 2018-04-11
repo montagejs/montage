@@ -199,7 +199,7 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
                         range.selectNodeContents(doc.body);
                         this.element.appendChild(range.extractContents());
                         range.selectNodeContents(doc.head);
-                        document.head.appendChild(range.extractContents());
+                        this.element.appendChild(range.extractContents());
                     }
                 }
             }
