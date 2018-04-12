@@ -883,8 +883,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     _mapRawDataToObject: {
         value: function (record, object, context) {
             var self = this,
-                mapping = this.mappingForObject(object),
+                mapping = this.mappingForObject(object, !!this.parentService),
                 result;
+            
             
             if (mapping) {
                 result = mapping.mapRawDataToObject(record, object, context);
@@ -935,6 +936,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    _streamMapDataPromises: {
+        get: deprecate.deprecateMethod(void 0, function () {
+            return this._streamMappingPromises;
+        }, "_streamMapDataPromises", "_streamMappingPromises")
+    },
+
     _streamMappingPromises: {
         get: function () {
             if (!this.__streamMappingPromises) {
@@ -964,12 +971,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * @argument {Object} object - An object whose object descriptor has a DataMapping
      */
     mappingForObject: {
-        value: function (object) {
+        value: function (object, canReturnNull) {
             var objectDescriptor = this.objectDescriptorForObject(object),
                 mapping = objectDescriptor && this.mappingWithType(objectDescriptor);
 
 
-            if (!mapping && objectDescriptor) {
+            if (!mapping && objectDescriptor && !canReturnNull) {
                 mapping = this._objectDescriptorToMappingMap.get(objectDescriptor);
                 if (!mapping) {
                     mapping = DataMapping.withObjectDescriptor(objectDescriptor);
@@ -1355,8 +1362,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (mapping) {
                 Object.assign(data, this.snapshotForObject(object));
                 if (typeof mapping.mapObjectToCriteriaSourceForProperty !== "function") {
-                    // console.log(mapping);
-                    // debugger;
                     result = mapping.mapRawDataToObjectProperty(data, object, propertyName);
                     if (!result || typeof result.then !== "function") {
                         result = Promise.resolve(result);
@@ -1522,10 +1527,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             isHandler && propertyDescriptor ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor) :
             childService ?                      childService.fetchObjectProperty(object, propertyName) :
                                                 this.nullPromise;
-            if (!result) {
-                debugger;
-            }
-
             return result;
         }
     },
@@ -1996,22 +1997,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-    /**
-     * Map from a parent class to the mappings used by the service to
-     * determine what subclass to create an instance of for a particular
-     * rawData object
-     *
-     * For example, say a class 'Person' has 2 subclasses 'Employee' & 'Customer'.
-     * RawDataService would evaluate each person rawData object against each item
-     * in _rawDataTypeMappings and determine if that rawData should be an instance
-     * of 'Employee' or 'Customer'.
-     * @type {Map<ObjectDescpriptor:RawDataTypeMapping>}
-     */
-
-    _descriptorToRawDataTypeMappings: {
-        value: undefined
-    },
-
     _serviceIdentifierForQuery: {
         value: function (query) {
             var parameters = query.criteria.parameters,
@@ -2069,27 +2054,35 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      *
      */
     addOneRawData: {
-        value: function (stream, rawData, context) {
+        value: function (stream, rawData, context, shouldMap) {
             var type = this._descriptorForParentAndRawData(stream.query.type, rawData),
-                object = this.objectForTypeRawData(type, rawData, context),
-                result = this._mapRawDataToObject(rawData, object, context);
-            
+                objectDescriptor = this.objectDescriptorForObject(rawData),
+                object, result;
 
-            if (result && result instanceof Promise) {
-                result = result.then(function () {
+            if (shouldMap && !objectDescriptor) {
+                object = this.objectForTypeRawData(type, rawData, context);
+                result = this._mapRawDataToObject(rawData, object, context);
+                if (result && result instanceof Promise) {
+                    result = result.then(function () {
+                        stream.addData(object);
+                        return object;
+                    });
+                } else {
                     stream.addData(object);
-                    return object;
-                });
+                    result = Promise.resolve(object);
+                }
             } else {
-                stream.addData(object);
-                result = Promise.resolve(object);
+                stream.addData(rawData);
+                result = this.nullPromise;
             }
-            // this._addMappingPromiseForStream(result, stream);
+
+            this._addMappingPromiseForStream(result, stream);
 
             if (object) {
                 this.callDelegateMethod("rawDataServiceDidAddOneRawData", this, stream, rawData, object);
             }
-            return this.nullPromise;
+            
+            return result;
         }
     },
 
@@ -2129,7 +2122,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     addRawData: {
         value: function (stream, records, context) {
             var offline, i, n,
-                streamSelectorType = stream.query.type,
+                streamQueryType = stream.query.type,
+                hasParent = this.parentService,
+                ownMapping = this.mappingWithType(streamQueryType),
+                serviceID = this._serviceIdentifierForQuery(stream.query),
+                shouldMap = (ownMapping || this._implementsMapRawDataToObject || !hasParent) && !serviceID,
                 iRecord;
             // Record fetched raw data for offline use if appropriate.
             offline = records && !this.isOffline && this._streamRawData.get(stream);
@@ -2140,6 +2137,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 //this._streamRawData.set(stream, records.slice());
                 this._streamRawData.set(stream, records);
             }
+
             // Convert the raw data to appropriate data objects. The conversion
             // will be done in place to avoid creating any unnecessary array.
             for (i = 0, n = records && records.length; i < n; i++) {
@@ -2148,12 +2146,16 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 // only "outer scoped variable" we're accessing here is stream,
                 // which is a constant reference and won't cause unexpected
                 // behavior due to iteration.
-                // if (streamSelectorType.name && streamSelectorType.name.toUpperCase().indexOf("BSP") !== -1) {
-                //     debugger;
-                // }
-                this.addOneRawData(stream, records[i], context, streamSelectorType);
+
+                this.addOneRawData(stream, records[i], context, shouldMap);
                 /*jshint +W083*/
             }
+        }
+    },
+
+    _implementsMapRawDataToObject: {
+        get: function () {
+            return exports.DataService.prototype.mapRawDataToObject !== this.mapRawDataToObject;
         }
     },
 
@@ -2212,7 +2214,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     dataIdentifier = dataIdentifierMap.get(primaryKey);
                 }
 
-                if(!dataIdentifier) {
+                if (!dataIdentifier) {
                     var typeName = type.typeName /*DataDescriptor*/ || type.name;
                         //This should be done by ObjectDescriptor/blueprint using primaryProperties
                         //and extract the corresponsing values from rawData
