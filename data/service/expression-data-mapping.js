@@ -769,7 +769,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 converter.expression = converter.expression || rule.expression;
                 converter.foreignDescriptor = converter.foreignDescriptor || propertyDescriptor.valueDescriptor;
                 converter.objectDescriptor = this.objectDescriptor;
-                converter.serviceIdentifier = rule.serviceIdentifier;
+                converter.serviceIdentifier = converter.serviceIdentifier || rule.serviceIdentifier;
             }
         }
     },
