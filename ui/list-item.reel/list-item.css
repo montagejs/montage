@@ -12,11 +12,18 @@
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+        flex: 1;
     overflow: hidden;
     border: 1px solid #c8c7cc;
     box-sizing: border-box;
     -webkit-transition: background-color .2s linear;
     transition: background-color .2s linear;
+}
+
+.ListItem + .ListItem {
+    border-top: none;
 }
 
 /** States **/
