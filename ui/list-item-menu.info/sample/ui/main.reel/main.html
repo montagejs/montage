@@ -266,6 +266,37 @@
                 "values": {
                     "element": {"#": "delete-8"}
                 }
+            },
+
+            "listItemMenu9": {
+                "prototype": "montage/ui/list-item-menu.reel",
+                "values": {
+                    "element": {"#": "list-item-menu-9"},
+                    "data": "Item 9 (no action)"
+                }
+            },
+
+            "repetition": {
+                "prototype": "montage/ui/repetition.reel",
+                "values": {
+                    "element": {"#": "repetition"},
+                    "content": ["item 10", "Item 11"]
+                }
+            },
+
+            "listItemMenuRepeat": {
+                "prototype": "montage/ui/list-item-menu.reel",
+                "values": {
+                    "element": {"#": "list-item-menu-repeat"},
+                    "data": {"<-": "@repetition:iteration.object"}
+                }
+            },
+
+            "deleteRepeat": {
+                "prototype": "montage/ui/button.reel",
+                "values": {
+                    "element": {"#": "delete-repeat"}
+                }
             }
 
         }
@@ -389,6 +420,14 @@
                     </button>
                 </div>
                 <div data-arg="content">Item 8 (injected)</div>
+            </div>
+            <div data-montage-id="list-item-menu-9"></div>
+            <div data-montage-id="repetition">
+                <div data-montage-id="list-item-menu-repeat">
+                    <div data-arg="options-right">
+                        <button data-montage-id="delete-repeat" class="delete"></button>
+                    </div>
+                </div>
             </div>
         </section>
     </div>

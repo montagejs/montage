@@ -11,6 +11,16 @@ var Component = require("../component").Component,
  */
 var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListItemMenu.prototype */{
 
+    constructor: {
+        value: function Control () {
+            this.defineBindings({
+                "classList.has('montage--disabled')": {
+                    "<-": "disabled"
+                }
+            });
+        }
+    },
+
     _distance: {
         value: 0
     },
@@ -403,7 +413,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
     willDraw: {
         value: function () {
-            if (!this._dragElementRect) {
+            if (!this._dragElementRect || this._dragElementRect.width == 0) {
                 this._dragElementRect = this.dragElement.getBoundingClientRect();
                 this._leftButtons = this.leftOptionsElement.querySelectorAll('button');
                 this._rightButtons = this.rightOptionsElement.querySelectorAll('button');
@@ -414,6 +424,9 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     throw new Error('list item menu doesn\'t support more' +
                         'than 3 buttons per side');
                 }
+
+                this.disabled = this._rightButtons && !this._rightButtons.length && 
+                    this._leftButtons && !this._leftButtons.length;
             }
 
             this._setButtonBoundaries(this._rightButtons, 'marginLeft');
@@ -443,7 +456,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
     draw: {
         value: function () {
-            if (this.__translateComposer) {
+            if (this.__translateComposer && !this.disabled) {
                 var translateX = this._translateX,
                     dragElementWidth = this._dragElementRect.width,
                     dragElementStyle = this.dragElement.style,
