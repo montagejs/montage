@@ -5,6 +5,7 @@
     width: 100%;
     height: 42px;
     border: 1px solid #c8c7cc;
+    background-color: #fff;
     box-sizing: border-box;
     overflow: hidden;
     -webkit-user-select: none;
@@ -15,6 +16,18 @@
 
 .ListItemMenu + .ListItemMenu {
     border-top: none;
+}
+
+.ListItemMenu .ListItem {
+    background: transparent;
+}
+
+.ListItemMenu.selected {
+    background-color: #d9d9d9;
+}
+
+.ListItemMenu.active {
+    background-color: #e9e9e9;
 }
 
 .ListItemMenu .ListItemMenu-wrapper {
@@ -106,4 +119,8 @@
     transform: translate3d(0, 0, 0);
     position: relative;
     display: inline-block;
+}
+
+.ListItemMenu button.delete {
+    background-color: #e74c3c;
 }
