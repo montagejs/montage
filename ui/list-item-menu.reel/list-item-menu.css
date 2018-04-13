@@ -4,12 +4,17 @@
     left: 0;
     width: 100%;
     height: 42px;
+    border: 1px solid #c8c7cc;
     box-sizing: border-box;
     overflow: hidden;
     -webkit-user-select: none;
        -moz-user-select: none;
         -ms-user-select: none;
             user-select: none;
+}
+
+.ListItemMenu + .ListItemMenu {
+    border-top: none;
 }
 
 .ListItemMenu .ListItemMenu-wrapper {
@@ -56,8 +61,8 @@
             align-items: center;
 }
 
-.ListItemMenu .ListItemMenu-content {
-    text-indent: 6px;
+.ListItemMenu .ListItemMenu-content .ListItem {
+    border: none;
 }
 
 .ListItemMenu .ListItemMenu-zone.left .ListItemMenu-options {
