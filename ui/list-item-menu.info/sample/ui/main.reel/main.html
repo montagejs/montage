@@ -20,7 +20,8 @@
             "listItemMenu": {
                 "prototype": "montage/ui/list-item-menu.reel",
                 "values": {
-                    "element": {"#": "list-item-menu"}
+                    "element": {"#": "list-item-menu"},
+                    "data": "Item 1"
                 }
             },
 
@@ -43,7 +44,8 @@
             "listItemMenu2": {
                 "prototype": "montage/ui/list-item-menu.reel",
                 "values": {
-                    "element": {"#": "list-item-menu-2"}
+                    "element": {"#": "list-item-menu-2"},
+                    "data": "Item 2"
                 }
             },
 
@@ -58,7 +60,8 @@
             "listItemMenu3": {
                 "prototype": "montage/ui/list-item-menu.reel",
                 "values": {
-                    "element": {"#": "list-item-menu-3"}
+                    "element": {"#": "list-item-menu-3"},
+                    "data": "Item 3"
                 }
             },
 
@@ -73,7 +76,8 @@
             "listItemMenu4": {
                 "prototype": "montage/ui/list-item-menu.reel",
                 "values": {
-                    "element": {"#": "list-item-menu-4"}
+                    "element": {"#": "list-item-menu-4"},
+                    "data": "Item 4"
                 }
             },
 
@@ -96,7 +100,8 @@
             "listItemMenu5": {
                 "prototype": "montage/ui/list-item-menu.reel",
                 "values": {
-                    "element": {"#": "list-item-menu-5"}
+                    "element": {"#": "list-item-menu-5"},
+                    "data": "Item 5"
                 }
             },
 
@@ -134,7 +139,8 @@
             "listItemMenu6": {
                 "prototype": "montage/ui/list-item-menu.reel",
                 "values": {
-                    "element": {"#": "list-item-menu-6"}
+                    "element": {"#": "list-item-menu-6"},
+                    "data": "Item 6"
                 }
             },
 
@@ -180,7 +186,8 @@
             "listItemMenu7": {
                 "prototype": "montage/ui/list-item-menu.reel",
                 "values": {
-                    "element": {"#": "list-item-menu-7"}
+                    "element": {"#": "list-item-menu-7"},
+                    "data": "Item 7"
                 }
             },
 
@@ -272,14 +279,12 @@
                 <div data-arg="options-left">
                     <button data-montage-id="archive" class="archive"></button>
                 </div>
-                <div data-arg="content">Item 1</div>
                 <div data-arg="options-right">
                     <button data-montage-id="delete" class="delete"></button>
                 </div>
             </div>
 
             <div data-montage-id="list-item-menu-2" >
-                <div data-arg="content">Item 2</div>
                 <div data-arg="options-right">
                     <button data-montage-id="delete-2" class="delete"></button>
                 </div>
@@ -289,7 +294,6 @@
                 <div data-arg="options-left">
                     <button data-montage-id="archive-3" class="archive"></button>
                 </div>
-                <div data-arg="content">Item 3</div>
             </div>
 
             <div data-montage-id="list-item-menu-4" >
@@ -297,7 +301,6 @@
                     <button data-montage-id="move" class="move"></button>
                     <button data-montage-id="delete-4" class="delete"></button>
                 </div>
-                <div data-arg="content">Item 4</div>
             </div>
 
             <div data-montage-id="list-item-menu-5" >
@@ -315,7 +318,6 @@
                     <button data-montage-id="move-5" class="move"></button>
                     <button data-montage-id="delete-5" class="delete"></button>
                 </div>
-                <div data-arg="content">Item 5</div>
             </div>
 
             <div data-montage-id="list-item-menu-6" >
@@ -334,7 +336,6 @@
                     <button data-montage-id="move-6" class="move"></button>
                     <button data-montage-id="delete-6" class="delete"></button>
                 </div>
-                <div data-arg="content">Item 6</div>
             </div>
 
             <div data-montage-id="list-item-menu-7" >
@@ -361,7 +362,6 @@
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </button>
                 </div>
-                <div data-arg="content">Item 7</div>
             </div>
 
             <div data-montage-id="list-item-menu-8" class="gray">
@@ -388,7 +388,7 @@
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </button>
                 </div>
-                <div data-arg="content">Item 8</div>
+                <div data-arg="content">Item 8 (injected)</div>
             </div>
         </section>
     </div>
