@@ -11,6 +11,14 @@
                 "leftOptionsElement": {"#": "leftOptions"},
                 "rightOptionsElement": {"#": "rightOptions"}
             }
+        },
+
+        "listItem": {
+            "prototype": "../list-item.reel",
+            "values": {
+                "element": {"#": "list-item"},
+                "data": {"<-": "@owner.data"}
+            }
         }
     }
     </script>
@@ -22,7 +30,9 @@
                 <div data-param="options-left" class="ListItemMenu-options"></div>
             </div>
             <div class="ListItemMenu-zone">
-                <div data-param="content" class="ListItemMenu-content"></div>
+                <div data-param="content" class="ListItemMenu-content">
+                    <div data-montage-id="list-item"></div>
+                </div>
             </div>
             <div data-montage-id="rightOptions" class="ListItemMenu-zone right">
                 <div data-param="options-right" class="ListItemMenu-options"></div>
