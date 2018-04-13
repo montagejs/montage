@@ -31,7 +31,7 @@
                 }
             },
 
-             "list1": {
+            "list1": {
                 "prototype": "montage/ui/list.reel",
                 "values": {
                     "element": {"#": "list1"},
@@ -84,6 +84,25 @@
                     "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
                     "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"}
                 }
+            },
+
+            "list5": {
+                "prototype": "montage/ui/list.reel",
+                "values": {
+                    "element": {"#": "list5"},
+                    "data": {"<-": "@owner.employees"},
+                    "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
+                    "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"}
+                }
+            },
+
+            "listItemMenu5": {
+                "prototype": "montage/ui/list-item-menu.reel",
+                "values": {
+                    "element": {"#": "list-item-menu-5"},
+                    "data": {"<-": "@list5:iteration.object"},
+                    "isExpandable": {"<-": "!!@isExpandable.checked"}
+                }
             }
 
         }
@@ -121,6 +140,11 @@
 
         <h4>List with custom list item from user interface descriptor</h4>
         <div data-montage-id="list4"></div>
+
+        <h4>List with custom list item menu</h4>
+        <div data-montage-id="list5">
+            <div data-montage-id="list-item-menu-5"></div>
+        </div>
     </div>
 </body>
 </html>
