@@ -2,41 +2,31 @@ html, body, .Main {
     padding: 0;
     margin: 0;
     height: 100%;
-    width: 100%;
     font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
-.Main, .items {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
+.Main {
+    padding: 20px;
 }
 
 header {
-    margin-top: 20px;
-    font-size: 42px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 40px;
+    margin: 60px 0;
+    font-size: 2rem;
+    text-align: center;
+    color: #33495d;
+    height: 40px;
 }
 
 .items {
     height: 500px;
     width: 300px;
-    border: 1px solid #bdc3c7;
-}
-
-.ListItemMenu {
-    border-bottom: 1px solid #bdc3c7;
 }
 
 .ListItemMenu.gray .ListItemMenu-options button {
@@ -61,15 +51,15 @@ header {
     background-color: #2C82C9;
 }
 
-.delete {
+.ListItemMenu .delete {
     background-color: #e74c3c;
 }
 
-.more {
+.ListItemMenu .more {
     background-color: #9E9D9B;
 }
 
-.dot {
+.ListItemMenu .dot {
     height: 5px;
     width: 5px;
     background-color: white;
@@ -77,10 +67,10 @@ header {
     display: inline-block;
 }
 
-.move {
+.ListItemMenu .move {
     background-color: #5659C9;
 }
 
-.pin {
+.ListItemMenu .pin {
     background-color: #2CC990;
 }
