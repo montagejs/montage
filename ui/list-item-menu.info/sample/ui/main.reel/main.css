@@ -74,3 +74,8 @@ header {
 .ListItemMenu .pin {
     background-color: #2CC990;
 }
+
+.ListItemMenu[data-montage-id='list-item-menu-8'] .ListItemMenu-content {
+    padding-left: 16px;
+    padding-right: 16px;
+}
