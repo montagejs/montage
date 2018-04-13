@@ -55,7 +55,7 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
 
     /**
      * The criteria that qualifies objects this operation applies to.
-     * For a create operation it may not apply.
+     * For a create operation it may not apply.... NOT ideal, missing something?
      * For a read operation it would be the criteria of the DataQuery.
      * For an update, it describes the set of objects to receive the changes
      * carried in this operation. It could be an "or" of primary keys to a more
