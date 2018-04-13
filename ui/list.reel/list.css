@@ -17,11 +17,13 @@
     margin: 0;
 }
 
-.List .List-repetition .ListItem {
+.List .List-repetition .ListItem,
+.List .List-repetition .ListItemMenu {
     border: none;
     border-bottom: 1px solid #c8c7cc;
 }
 
-.List .List-repetition .Placeholder:last-of-type .ListItem {
+.List .List-repetition .Placeholder:last-of-type .ListItem,
+.List .List-repetition .Placeholder:last-of-type .ListItemMenu {
     border: none;
 }
