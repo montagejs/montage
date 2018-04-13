@@ -20,6 +20,13 @@
                 "data": {"<-": "@owner.data"},
                 "isExpandable": {"<-": "@owner.isExpandable"}
             }
+        },
+
+        "listItemButton": {
+            "prototype": "../button.reel",
+            "values": {
+                "element": {"#": "button"}
+            }
         }
     }
     </script>
@@ -36,7 +43,9 @@
                 </div>
             </div>
             <div data-montage-id="rightOptions" class="ListItemMenu-zone right">
-                <div data-param="options-right" class="ListItemMenu-options"></div>
+                <div data-param="options-right" class="ListItemMenu-options">
+                    <button data-montage-id="button" class="delete"></button>
+                </div>
             </div>
         </div>
     </div>
