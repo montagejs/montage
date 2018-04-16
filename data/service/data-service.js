@@ -426,7 +426,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 objectDescriptors;
             return this._resolveAsynchronousTypes(types).then(function (descriptors) {
                 objectDescriptors = descriptors;
-                self._registerTypesByModuleId(objectDescriptors);
+                self._registerObjectDescriptorsByModuleId(objectDescriptors);
                 return self._registerChildServiceMappings(child, mappings);
             }).then(function () {
                 return self._makePrototypesForTypes(child, objectDescriptors);
@@ -1119,14 +1119,36 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * Model / Types / Object Descriptors
      */
 
+    /**
+     * Map from constructor to ObjectDescriptor. 
+     * Used to allow fetches with the constructor. e.g.
+     * 
+     * var Foo = require("logic/model/foo").Foo;
+     * mainService.fetchData(Foo);
+     * 
+     * @private
+     * @property <Map<Function:ObjectDescriptor>>
+     */
     _constructorToObjectDescriptorMap: {
         value: new Map()
     },
 
+    /**
+     * Map from moduleID to ObjectDescriptor.
+     *
+     * @private
+     * @property <Map<String:ObjectDescriptor>>
+     */
     _moduleIdToObjectDescriptorMap: {
         value: new Map()
     },
 
+    /**
+     * Map from data object to ObjectDescriptor.
+     *
+     * @private
+     * @property <WeakMap<Object:ObjectDescriptor>>
+     */
     _objectToObjectDescriptorMap: {
         value: new WeakMap()
     },
@@ -1166,6 +1188,14 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /**
+     * Returns an object descriptor for a type where type is 
+     * a module id, constructor, or an object descriptor. 
+     *
+     * @param {Function|String|ObjectDescriptor} type
+     * @returns {ObjectDescriptor|null} if an object descriptor is not found this
+     * method will return null.
+     */
     _objectDescriptorForType: {
         value: function (type) {
             return  this._constructorToObjectDescriptorMap.get(type) ||
@@ -1174,6 +1204,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /**
+     * Adds DataMappings to a child DataService 
+     *
+     * @param {DataService} child
+     * @param {Array<DataMapping>} mappings
+     * @returns {Promise} 
+     */
     _registerChildServiceMappings: {
         value: function (child, mappings) {
             var self = this;
@@ -1201,7 +1238,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-    _registerTypesByModuleId: {
+    /**
+     * Register ObjectDescriptors by module ID
+     *
+     * @param {Array<ObjectDescriptor>} mappings
+     * @returns {Promise} 
+     */
+    _registerObjectDescriptorsByModuleId: {
         value: function (types) {
             var map = this._moduleIdToObjectDescriptorMap;
             types.forEach(function (objectDescriptor) {
@@ -1212,6 +1255,19 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    _registerTypesByModuleId: {
+        value: deprecate.deprecateMethod(void 0, function (types) {
+            return this._registerObjectDescriptorsByModuleId(types);
+        }, "_registerTypesByModuleId", "_registerObjectDescriptorsByModuleId", true)
+    },
+
+     /**
+     * Resolve mixed array of Promises and ObjectDescriptors down to 
+     * a single Promise that returns array of ObjectDescriptors
+     *
+     * @param {Array<ObjectDescriptor|Promise>} mappings
+     * @returns {Promise} 
+     */
     _resolveAsynchronousTypes: {
         value: function (types) {
             var self = this;
@@ -1306,6 +1362,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /**
+     * Map of object descriptors to their prototypes
+     *
+     * @type {Map<ObjectDescriptor|Function:Function>} 
+     */
     _objectPrototypes: {
         get: function () {
             if (!this.__objectPrototypes){
@@ -1315,6 +1376,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /**
+     * Map of object descriptors to their prototypes
+     *
+     * @type {Map<ObjectDescriptor|Function:Object<String:DataTrigger>} 
+     */
     _objectTriggers: {
         get: function () {
             if (!this.__objectTriggers){
