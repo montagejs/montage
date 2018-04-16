@@ -16,9 +16,47 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             this.defineBindings({
                 "classList.has('montage--disabled')": {
                     "<-": "disabled"
+                },
+                "_deleteLabel": {
+                    "<-": "data.defined() && userInterfaceDescriptor.defined() ? " +
+                        "(data.path(userInterfaceDescriptor.listItemMenuDeleteNameExpression || \"''\") || " +
+                        "path(userInterfaceDescriptor.listItemMenuDeleteNameExpression || \"''\") || deleteLabel)" +
+                        " : deleteLabel"
                 }
             });
         }
+    },
+
+    _data: {
+        value: null
+    },
+
+    data: {
+        get: function () {
+            return this._data;
+        },
+        set: function(data) {
+            if (this._data !== data) {
+                this._data = data;
+                this._loadDataUserInterfaceDescriptorIfNeeded();
+            }
+        }
+    },
+
+    rowIndex: {
+        value: -1
+    },
+
+    list: {
+        value: null
+    },
+
+    userInterfaceDescriptor: {
+        value: null
+    },
+
+    deleteLabel: {
+        value: null
     },
 
     _distance: {
@@ -87,13 +125,14 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 this._isOpened = opened;
 
                 if (opened) {
-                    this._pressComposer.load();
-                    this._pressComposer.addEventListener('press', this);
+                    this.application.addEventListener('press', this);
                     this._pressComposer.addEventListener('pressStart', this);
+                    this._pressComposer.load();
                     this._previousDirection = this._direction;
                 } else {
+                    this.application.removeEventListener('press', this);
+                    this.application.removeEventListener('translateEnd', this);
                     this._pressComposer.removeEventListener('pressStart', this);
-                    this._pressComposer.removeEventListener('press', this);
                     this._pressComposer.unload();
                     this._previousDirection = null;
                 }
@@ -102,6 +141,10 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         get: function () {
             return this._isOpened;
         }
+    },
+
+    selected: {
+        value: false
     },
 
     __translateComposer: {
@@ -199,6 +242,28 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
      * Private Methods
      */
 
+    _loadDataUserInterfaceDescriptorIfNeeded: {
+        value: function () {
+            if (this.data && this._templateDidLoad) {
+                var self = this,
+                    infoDelegate;
+                debugger
+                return this.loadUserInterfaceDescriptor(this.data).then(function (UIDescriptor) {
+                    self.userInterfaceDescriptor = UIDescriptor || self.userInterfaceDescriptor; // trigger biddings.
+
+                    self._deleteLabel = self.callDelegateMethod(
+                        "listItemMenuWillUseDeleteLabelForObjectAtRowIndex",
+                        self,
+                        self._deleteLabel,
+                        self.data,
+                        self.rowIndex,
+                        self.list
+                    ) || self._deleteLabel; // defined by a bidding expression
+                });
+            }
+        }
+    },
+
     _open: {
         value: function (side) {
             if (side === ListItemMenu.DIRECTION.RIGHT ||
@@ -263,6 +328,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
     handleTranslateStart: {
         value: function (event) {
+            this.application.addEventListener('translateEnd', this);
             this._startPositionX = this.__translateComposer.translateX;
             this._isDragging = true;
             this._startTimestamp = event.timeStamp;
@@ -322,41 +388,47 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
     handleTranslateEnd: {
         value: function (event) {
-            if (this._hasReachEnd) {
-                var actionEvent = document.createEvent("CustomEvent"),
-                    direction = this._direction || this._previousDirection;
-                
-                actionEvent.initCustomEvent("action", true, true, {
-                    side: direction === ListItemMenu.DIRECTION.LEFT ?
-                        ListItemMenu.DIRECTION.RIGHT :
-                        ListItemMenu.DIRECTION.LEFT
-                });
+            var target = event.targetElement || event.target;
 
-                this.dispatchEvent(actionEvent);
-                this._shouldClose = true;
-            } else {
-                var velocity = this._findVelocity(
-                    event.timeStamp - this._startTimestamp
-                );
-
-                if (velocity > 0.15 &&
-                    Math.abs(this._deltaX) > this._dragElementRect.width * 0.05
-                ) {
-                    if (this._deltaX > 0) { // right
-                        this._shouldOpen = this._isOpened &&
-                            this._openedSide === ListItemMenu.DIRECTION.RIGHT ?
-                            false : true;
-                    } else { // left
-                        this._shouldOpen = this._isOpened &&
-                            this._openedSide === ListItemMenu.DIRECTION.LEFT ?
-                            false : true;
+            if (target === this.element || this.element.contains(target)) {
+                if (this._hasReachEnd) {
+                    var actionEvent = document.createEvent("CustomEvent"),
+                        direction = this._direction || this._previousDirection;
+                    
+                    actionEvent.initCustomEvent("action", true, true, {
+                        side: direction === ListItemMenu.DIRECTION.LEFT ?
+                            ListItemMenu.DIRECTION.RIGHT :
+                            ListItemMenu.DIRECTION.LEFT
+                    });
+    
+                    this.dispatchEvent(actionEvent);
+                    this._shouldClose = true;
+                } else {
+                    var velocity = this._findVelocity(
+                        event.timeStamp - this._startTimestamp
+                    );
+    
+                    if (velocity > 0.15 &&
+                        Math.abs(this._deltaX) > this._dragElementRect.width * 0.05
+                    ) {
+                        if (this._deltaX > 0) { // right
+                            this._shouldOpen = this._isOpened &&
+                                this._openedSide === ListItemMenu.DIRECTION.RIGHT ?
+                                false : true;
+                        } else { // left
+                            this._shouldOpen = this._isOpened &&
+                                this._openedSide === ListItemMenu.DIRECTION.LEFT ?
+                                false : true;
+                        }
+                    } else if (this._hasReachMinDistance()) {
+                        this._shouldOpen = true;
                     }
-                } else if (this._hasReachMinDistance()) {
-                    this._shouldOpen = true;
                 }
+    
+                this._resetTranslateContext();
+            } else {
+                this._closeIfNeeded();
             }
-
-            this._resetTranslateContext();
         }
     },
 
@@ -378,6 +450,12 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
     handlePress: {
         value: function () {
+            this._closeIfNeeded();
+        }
+    },
+
+    _closeIfNeeded: {
+        value: function () {
             if (this.isOpened && !this._isDragging) {
                 this.close();
             }
@@ -387,7 +465,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     _addDragEventListeners: {
         value: function () {
             this._translateComposer.addEventListener('translate', this);
-            this._translateComposer.addEventListener('translateEnd', this);
             this._translateComposer.addEventListener('translateCancel', this);
         }
     },
@@ -395,7 +472,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     _removeDragEventListeners: {
         value: function () {
             this._translateComposer.removeEventListener('translate', this);
-            this._translateComposer.removeEventListener('translateEnd', this);
             this._translateComposer.removeEventListener('translateCancel', this);
         }
     },

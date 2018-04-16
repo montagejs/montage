@@ -18,6 +18,9 @@
             "values": {
                 "element": {"#": "list-item"},
                 "data": {"<-": "@owner.data"},
+                "rowIndex": {"<-": "@owner.rowIndex"},
+                "list": {"<-": "@owner.list"},
+                "selected": {"<-": "@owner.selected"},
                 "isExpandable": {"<-": "@owner.isExpandable"}
             }
         },
@@ -25,7 +28,8 @@
         "listItemButton": {
             "prototype": "../button.reel",
             "values": {
-                "element": {"#": "button"}
+                "element": {"#": "button"},
+                "label": {"<-": "@owner._deleteLabel"}
             }
         }
     }

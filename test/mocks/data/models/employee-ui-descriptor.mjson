@@ -13,7 +13,10 @@
             },
             "collectionNameExpression": "'Employees'",
             "nameExpression": "lastname + ' ' + firstname",
-            "descriptionExpression": "department"
+            "descriptionExpression": "department",
+            "collectionItemComponentModule": {
+                "%": "ui/list-item-menu.reel"
+            }
         }
     }
 }
