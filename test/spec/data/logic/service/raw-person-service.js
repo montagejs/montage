@@ -1,4 +1,5 @@
-var RawDataService = require("montage/data/service/raw-data-service").RawDataService;
+var RawDataService = require("montage/data/service/raw-data-service").RawDataService,
+    Person = require("spec/data/logic/model/person").Person;
 
 exports.RawPersonService = RawDataService.specialize({
     
@@ -7,6 +8,12 @@ exports.RawPersonService = RawDataService.specialize({
         value: function (stream) {
             this.addRawData(stream, MOCK_DATA);
             this.rawDataDone(stream);
+        }
+    },
+
+    saveRawData: {
+        value: function (rawData, object) {
+            return Promise.resolve(rawData); // Return mapped RawData so it can be validated in spec
         }
     }
     

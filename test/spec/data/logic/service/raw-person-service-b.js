@@ -15,8 +15,21 @@ exports.RawPersonServiceB = RawDataService.specialize({
             object.name = rawData.name;
             object.birthday = new Date(rawData.birth_date);
         }
+    },
+
+    mapObjectToRawData: {
+        value: function (object, rawData) {
+            rawData.name = object.name;
+            rawData.birth_date = object.birthday.getTime();
+        }
+    },
+
+    saveRawData: {
+        value: function (rawData, object) {
+            
+            return Promise.resolve(rawData); // Return mapped RawData so it can be validated in spec
+        }
     }
-    
 
 });
 
