@@ -1333,6 +1333,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             translateStartEvent.initCustomEvent("translateStart", true, true, null);
             translateStartEvent.translateX = x;
             translateStartEvent.translateY = y;
+            translateStartEvent.targetElement = this.element;
             // Event needs to be the same shape as the one in flow-translate-composer
             translateStartEvent.scroll = 0;
             translateStartEvent.pointer = this._observedPointer;
@@ -1347,6 +1348,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             translateEndEvent.initCustomEvent("translateEnd", true, true, null);
             translateEndEvent.translateX = this._translateX;
             translateEndEvent.translateY = this._translateY;
+            translateEndEvent.targetElement = this.element;
             // Event needs to be the same shape as the one in flow-translate-composer
             translateEndEvent.scroll = 0;
             translateEndEvent.pointer = this._observedPointer;
@@ -1361,6 +1363,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             translateCancelEvent.initCustomEvent("translateCancel", true, true, null);
             translateCancelEvent.translateX = this._translateX;
             translateCancelEvent.translateY = this._translateY;
+            translateCancelEvent.targetElement = this.element;
             // Event needs to be the same shape as the one in flow-translate-composer
             translateCancelEvent.scroll = 0;
             translateCancelEvent.pointer = this._observedPointer;
@@ -1374,6 +1377,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             translateEvent.initCustomEvent("translate", true, true, null);
             translateEvent.translateX = this._translateX;
             translateEvent.translateY = this._translateY;
+            translateEvent.targetElement = this.element;
             // Event needs to be the same shape as the one in flow-translate-composer
             translateEvent.scroll = 0;
             translateEvent.pointer = this._observedPointer;
