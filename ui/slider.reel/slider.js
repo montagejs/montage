@@ -830,7 +830,7 @@ Should introduce a validate method
 /**
     Description TODO
     @function
-    @param {Event Handler} event TODO
+    @param {EventHandler} event TODO
     */
     handleChange: {
         enumerable: false,

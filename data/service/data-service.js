@@ -135,7 +135,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * A service's types must not be changed after it is added as a child of
      * another service.
      *
-     * @type {Array.<DataObjectDescriptor>}
+     * @type {Array.<ObjectDescriptor>}
      */
     types: {
         get: function () {
@@ -315,7 +315,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * [removeChildService()]{@link DataService#removeChildService}.
      *
      * @private
-     * @type {Map<DataObjectDescriptor, Array.<DataService>>}
+     * @type {Map<ObjectDescriptor, Array.<DataService>>}
      */
     _childServicesByType: {
         get: function () {
@@ -373,7 +373,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * [removeChildService()]{@link DataService#removeChildService}.
      *
      * @private
-     * @type {Array.<DataObjectDescriptor>}
+     * @type {Array.<ObjectDescriptor>}
      */
     _childServiceTypes: {
         get: function() {
@@ -472,7 +472,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      *
      * @private
      * @method
-     * @argument {DataObjectDescriptor} type
+     * @argument {ObjectDescriptor} type
      * @returns {Set.<DataService,number>}
      */
     childServiceForType: {
@@ -656,9 +656,14 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
 
      /**
-     * @todo Document.
+     * Add Promise generated from mapRawDataToObject for the DataStream associated
+     * to this fetch. The resulting array of promises is used to determine when the 
+     * DataStream is ready to be resolved with cooked objects.
      *
      * @method
+     * @argument {Promise}     - promise
+     * @argument {DataStream}  - stream
+     * @return {void}
      */
     _addMappingPromiseForStream: {
         value: function (promise, stream) {
@@ -671,9 +676,14 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
-     * @todo Document.
+     * Resolves the object descriptor and schema descriptor 
+     * references for a mapping and adds that mapping to
+     * a child service with those descriptors
      *
      * @method
+     * @argument {DataMapping}  - mapping
+     * @argument {DataService}  - child
+     * @return {Promise}
      */
     _addMappingToService: {
         value: function (mapping, child) {
@@ -695,9 +705,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
-     * @todo Document.
+     * The DataMappings for this service and all of it's children
      *
-     * @method
+     * @property {Array<DataMapping>}
      */
     _childServiceMappings: {
         get: function () {
@@ -720,17 +730,22 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * of 'Employee' or 'Customer'.
      * @type {Map<ObjectDescpriptor:RawDataTypeMapping>}
      */
-
     _descriptorToRawDataTypeMappings: {
         value: undefined
     },
 
     /**
-     * @todo Document.
+     * Map cooked object to rawData for use in write operations such as 
+     * create, delete, save and update.
+     * 
      * @todo Make this method overridable by type name with methods like
      * `mapHazardToRawData()` and `mapProductToRawData()`.
      *
      * @method
+     * @argument {Object} object - object  
+     * @argument {Object} record - record
+     * @argument {?}
+     * 
      */
     _mapObjectToRawData: {
         value: function (object, record, context) {
@@ -792,7 +807,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      *                             [addRawData()]{@link RawDataService#addRawData}
      *                             call that invoked this method.
      */
-
     _mapRawDataToObject: {
         value: function (record, object, context) {
             var self = this,
@@ -818,6 +832,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /**
+     *
+     * @method
+     * @param {Map<ObjectDescriptor:DataMapping>}
+     */
     _objectDescriptorToMappingMap: {
         get: function () {
             if (!this.__objectDescriptorToMappingMap) {
@@ -831,7 +850,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * Adds each mapping passed in to _descriptorToRawDataTypeMappings
      *
      * @method
-     * @param {Array<RawDataTypeMapping>} mappings
+     * @argument {Array<RawDataTypeMapping>} mappings
      */
     _registerRawDataTypeMappings: {
         value: function (mappings) {
@@ -855,6 +874,14 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }, "_streamMapDataPromises", "_streamMappingPromises")
     },
 
+
+    /**
+     * Map of DataStreams to Array of Promises which will
+     * be resolved when the raw-data-to-object mapping is 
+     * complete
+     *
+     * @property {Map<DataStream:Array<Promise>>}
+     */
     _streamMappingPromises: {
         get: function () {
             if (!this.__streamMappingPromises) {
@@ -877,18 +904,33 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-    implementsMapRawDataToObject: {
-        get: function () {
-            return exports.DataService.prototype.mapRawDataToObject !== this.mapRawDataToObject;
-        }
-    },
 
+    /**
+     * Indicates whether this service implements mapObjectToRawData. Allows 
+     * [saveDataObject()]{@link DataService#saveDataObject} to determine whether this file
+     * is responsible for data mapping or not.
+     *
+     *
+     * @property {Boolean}
+     */
     implementsMapObjectToRawData: {
         get: function () {
             return exports.DataService.prototype.mapObjectToRawData !== this.mapObjectToRawData;
         }
     },
 
+    /**
+     * Indicates whether this service implements mapRawDataToObject. Allows 
+     * [fetchData()]{@link DataService#fetchData} to determine whether this file
+     * is responsible for data mapping or not.
+     *
+     * @property {Boolean}
+     */
+    implementsMapRawDataToObject: {
+        get: function () {
+            return exports.DataService.prototype.mapRawDataToObject !== this.mapRawDataToObject;
+        }
+    },
 
     /**
      * Retrieve DataMapping for this object.
@@ -993,8 +1035,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: new Map()
     },
 
-    
-
     _moduleIdToObjectDescriptorMap: {
         value: new Map()
     },
@@ -1038,23 +1078,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-    // _getObjectType: {
-    //     value: function (object) {
-    //         var type = this._typeRegistry.get(object),
-    //             moduleId = typeof object === "string" ? object : this._getModuleIdForObject(object);
-    //         while (!type && object) {
-    //             if (object.constructor.TYPE instanceof DataObjectDescriptor) {
-    //                 type = object.constructor.TYPE;
-    //             } else if (this._moduleIdToObjectDescriptorMap[moduleId]) {
-    //                 type = this._moduleIdToObjectDescriptorMap[moduleId];
-    //             } else {
-    //                 object = Object.getPrototypeOf(object);
-    //             }
-    //         }
-    //         return type;
-    //     }
-    // },
-
     _objectDescriptorForType: {
         value: function (type) {
             return  this._constructorToObjectDescriptorMap.get(type) ||
@@ -1068,8 +1091,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             var self = this;
             return Promise.all(mappings.map(function (mapping) {
                 return Promise.all([
-                    self._addMappingToService(mapping, child),
-                    self._addMappingToService(mapping, self)
+                    self._addMappingToService(mapping, child)
                 ]);
             }));
         }
@@ -1081,7 +1103,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * @private
      * @method
      * @argument {Object} object
-     * @argument {DataObjectDescriptor} type
+     * @argument {ObjectDescriptor} objectDescriptor
      */
     _registerObjectWithObjectDescriptor: {
         value: function (object, objectDescriptor) {
@@ -1155,7 +1177,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
 
      
-
     _makePrototypesForTypes: {
         value: function (childService, types) {
             var self = this;
@@ -1165,6 +1186,18 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /**
+     * Builds a prototype that includes DataTriggers on the properties defined 
+     * on the ObjectDescriptor and registers it with the DataService.
+     * 
+     * 
+     * @method
+     * @argument {DataService} childService          - The childService that controls the mapping
+     *                                                 for this objectDescriptor.
+     * @argument {ObjectDescriptor} objectDescriptor - ObjectDescriptor with the propertyDescriptors for which 
+     *                                                 DataTriggers will be added on the prototype
+     * @returns {Promise}
+     */
     _makePrototypeForType: {
         value: function (childService, objectDescriptor) {
             var self = this,
@@ -1222,7 +1255,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (type && !prototype) {
                 prototype = Object.create(type.objectPrototype || Montage.prototype);
                 this._objectPrototypes.set(type, prototype);
-                if (type instanceof ObjectDescriptor || type instanceof DataObjectDescriptor) {
+                if (this._isObjectDescriptor(type)) {
                     triggers = DataTrigger.addTriggers(this, type, prototype);
                 } else {
                     info = Montage.getInfoForObject(type.prototype);
@@ -1270,6 +1303,20 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * Data Object Properties
      */
 
+     /**
+     * Returns the delegate method for a given property.
+     * E.g. 
+     * propertyName: features
+     *      returns: fetchFeaturesProperty()
+     * 
+     * propertyName: location
+     *      returns: fetchLocationProperty()
+     *
+     * @private
+     * @method
+     * @argument {String} propertyName
+     * @returns {Function}
+     */
     _delegateFunctionForPropertyName: {
         value: function (propertyName) {
             var capitalized = propertyName.charAt(0).toUpperCase() + propertyName.slice(1),
@@ -1308,8 +1355,16 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
+     * Retrieve the DataTriggers for object properties and get the property values
+     * softly or forcefully depending on whether this is an update
+     * 
      * @private
      * @method
+     * @argument {Object} object       - the object whose properties will be fetched
+     * @argument {Array<String>} names - the property names to fetch
+     * @argument {Integer} start       - index of the names array at which to start looping
+     * @argument {Boolean} isUpdate    - whether or not the properties should be forcefully retrieved
+     * @returns  {Array<Promise>} 
      */
     _getOrUpdateObjectProperties: {
         value: function (object, names, start, isUpdate) {
@@ -1337,9 +1392,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     }
                 }
             }
-            // if (names.indexOf("geometryType")) {
-            //
-            // }
+
             // Return a promise that will be fulfilled only when all of the
             // requested data has been set on the object. If possible do this
             // without creating any additional promises.
@@ -1350,6 +1403,20 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
     
 
+    /**
+     * Recursively resolve all properties along a path from a given starting object. 
+     * E.g. to get a property named user.employer.location.city,
+     * 
+     *              object = user
+     * propertiesToRequest = ["employer", "location", "city"]
+     * 
+     * 
+     * @private
+     * @method
+     * @argument {Object} object                     - the object whose properties will be fetched
+     * @argument {Array<String>} propertiesToRequest - the property names to fetch
+     * @returns  {Promise} 
+     */
     _getPropertiesOnPath: {
         value: function (object, propertiesToRequest) {
             var self = this,
@@ -1414,7 +1481,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * child services, or does nothing but return a fulfilled promise for `null`
      * if no child service can be found to handle the specified object.
      *
-     * [Raw data service]{@link RawDataService} subclasses should override
+     * [Data service]{@link DataService} subclasses should override
      * this method to perform any fetch or other operation required to get the
      * requested data. The subclass implementations of this method should use
      * only [fetchData()]{@link DataService#fetchData} calls to fetch data.
@@ -1514,6 +1581,27 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /**
+     * Request possibly asynchronous values of a data object's properties defined as 
+     * as frb expressions.
+     *
+     *     myService.getObjectPropertyExpressions(myObject, "x.a", "y.b").then(function () {
+     *         someFunction(myObject.x.a, myObject.y.b);
+     *     }
+     *
+     * @method
+     * @argument {object} object          - The object whose property values are
+     *                                      being requested.
+     * @argument {string[]} propertyValueExpressions - The expressions defining the properties
+     *                                                 whose values are being requested.
+     *                                                 These can be provided as an array of
+     *                                                 strings or as a list of string
+     *                                                 arguments following the object
+     *                                                 argument.
+     * @returns {external:Promise} - A promise fulfilled when all of the
+     * requested data has been received and set on the specified properties of
+     * the passed in object.
+     */
     getObjectPropertyExpressions: {
         value: function (object, propertyValueExpressions) {
             if (this.isRootService) {
@@ -1527,18 +1615,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
                 expressions.forEach(function (expression) {
                     var split = expression.split(".");
-                    // if (split.length == 1) {
-                    //     promises.push(self.getObjectProperties(object, split[0]));
-                    // } else {
                         promises.push(self._getPropertiesOnPath(object, split));
-                    // }
-
                 });
 
 
                 return Promise.all(promises);
-
-
             } else {
                 return this.rootService.getObjectPropertyExpressions(object, propertyValueExpressions);
             }
@@ -1601,7 +1682,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      *
      * @private
      * @method
-     * @argument {DataObjectDescriptor} type - The type of object to create.
+     * @argument {ObjectDescriptor} type - The type of object to create.
      * @returns {Object}                     - The created object.
      */
     _createDataObject: {
@@ -1609,17 +1690,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             var objectDescriptor = this._objectDescriptorForType(type),
                 object = Object.create(this._prototypeForType(objectDescriptor));
             if (object) {
-
                 //This needs to be done before a user-land code can attempt to do
                 //anyting inside its constructor, like creating a binding on a relationships
                 //causing a trigger to fire, not knowing about the match between identifier
                 //and object... If that's feels like a real situation, it is.
                 this.registerUniqueObjectWithDataIdentifier(object, dataIdentifier);
-                // if (dataIdentifier && this.isUniquing) {
-                //     this.recordDataIdentifierForObject(dataIdentifier, object);
-                //     this.recordObjectForDataIdentifier(object, dataIdentifier);
-                // }
-
                 object = object.constructor.call(object) || object;
                 if (object) {
                     this._registerObjectWithObjectDescriptor(object, objectDescriptor);
@@ -1661,7 +1736,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 return this._changedDataObjects;
             }
             else {
-                return this.rootService.changedDataObjects();
+                return this.rootService.changedDataObjects;
             }
         }
     },
@@ -1674,7 +1749,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * override this method to call their root service's implementation of it.
      *
      * @method
-     * @argument {DataObjectDescriptor} type - The type of object to create.
+     * @argument {ObjectDescriptor} type - The type of object to create.
      * @returns {Object}                     - The created object.
      */
     //TODO add the creation of a temporary identifier to pass to _createDataObject
@@ -1743,15 +1818,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * override this method to call their root service's implementation of it.
      *
      * @method
-     * @argument {DataObjectDescriptor} type - The type of object to find or
+     * @argument {ObjectDescriptor} type - The type of object to find or
      *                                         create.
      * @argument {Object} data               - An object whose property values
      *                                         hold the object's raw data. That
      *                                         data will be used to determine
      *                                         the object's unique identifier.
      * @argument {?} context                 - A value, usually passed in to a
-     *                                         [raw data service's]{@link RawDataService}
-     *                                         [addRawData()]{@link RawDataService#addRawData}
+     *                                         [data service's]{@link DataServoce}
+     *                                         [addRawData()]{@link DataServoce#addRawData}
      *                                         method, that can help in getting
      *                                         or creating the object.
      * @returns {Object} - The existing object with the unique identifier
@@ -1762,7 +1837,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (type, data, context, dataIdentifier) {
             if (this.isRootService) {
                 var dataObject;
-                // TODO [Charles]: Object uniquing.
                 if (this.isUniquing && dataIdentifier) {
                     dataObject = this.objectForDataIdentifier(dataIdentifier);
                 }
@@ -1779,6 +1853,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /**
+     * Flag determining whether objects will be stored be registered and identified by
+     * a dataIdentifier. This is required for relationships to work properly.
+     * 
+     *
+     * @property {Boolean}
+     */
     isUniquing: {
         value: false
     },
@@ -1799,32 +1880,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
-     * Records an object's DataIdentifier
-     *
-     * @method
-     * @argument {object} object                        - an Object.
-     * @argument {DataIdentifier} dataIdentifier        - The object whose property values are
-     */
-    recordDataIdentifierForObject: {
-        value: function(dataIdentifier, object) {
-            this._dataIdentifierByObject.set(object, dataIdentifier);
-        }
-    },
-
-    /**
-     * Records an object's DataIdentifier
-     *
-     * @method
-     * @argument {DataIdentifier} dataIdentifier    - DataIdentifier
-     * @argument {object} object                    - object represented by dataIdentifier
-     */
-    recordObjectForDataIdentifier: {
-        value: function(object, dataIdentifier) {
-            this._objectByDataIdentifier.set(dataIdentifier, object);
-        }
-    },
-
-    /**
      * Register an object with its dataIdentifier for uniquing reasons
      *
      * @private
@@ -1836,8 +1891,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
    registerUniqueObjectWithDataIdentifier: {
         value: function(object, dataIdentifier) {
             if (object && dataIdentifier && this.isRootService && this.isUniquing) {
-                this.recordDataIdentifierForObject(dataIdentifier, object);
-                this.recordObjectForDataIdentifier(object, dataIdentifier);
+                this._dataIdentifierByObject.set(object, dataIdentifier);
+                this._objectByDataIdentifier.set(dataIdentifier, object);
             }
         }
     },
@@ -1877,6 +1932,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /**
+     * Return the child service that should handle this query. 
+     * The service is identified by the serviceIdentifier query
+     * parameter, if it exists, or the query.type.
+     *
+     * @method
+     * @argument {DataQuery} query         - a DataQuery
+     * @returns {DataService}
+     */
     _childServiceForQuery: {
         value: function (query) {
             var serviceModuleID = this._serviceIdentifierForQuery(query),
@@ -1892,8 +1956,46 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /**
+     * Get or make a DataIdentifier for an ObjectDescriptor and a primary key
+     *
+     * @method
+     * @argument {ObjectDescriptor} [type] - ObjectDescriptor for the type that this rawData represents
+     * @argument {String} [primaryKey]     - The primaryKey for the rawData for which the method will 
+     *                                       build a dataIdentifier.
+     * 
+     * @returns {DataIdentifier}
+     */
+    _dataIdentifierForTypeAndPrimaryKey: {
+        value: function (type, primaryKey) {
+            var typeName = type.typeName /*DataDescriptor*/ || type.name,
+                dataIdentifierMap = this._typeIdentifierMap.get(type),
+                dataIdentifier;
+
+            if (!dataIdentifierMap) {
+                this._typeIdentifierMap.set(type,(dataIdentifierMap = new Map()));
+            }
+
+            dataIdentifier = dataIdentifierMap.get(primaryKey);
+            if (!dataIdentifier) {
+                //This should be done by ObjectDescriptor/blueprint using primaryProperties
+                //and extract the corresponsing values from rawData
+                //For now we know here that MileZero objects have an "id" attribute.
+                dataIdentifier = new DataIdentifier();
+                dataIdentifier.objectDescriptor = type;
+                dataIdentifier.dataService = this;
+                dataIdentifier.typeName = type.name;
+                dataIdentifier._identifier = dataIdentifier.primaryKey = primaryKey;
+
+                dataIdentifierMap.set(primaryKey, dataIdentifier);
+            }
+
+            return dataIdentifier;
+        }
+    },
+
     _dataServiceByDataStream: {
-        get: function() {
+        get: function () {
             return this.__dataServiceByDataStream || (this.__dataServiceByDataStream = new WeakMap());
         }
     },
@@ -1924,6 +2026,16 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+
+    /**
+     * Return the module id for the DataService for this query.
+     * The module id is defined either on the query parameters or
+     * or on the mapping rule for this property.
+     *
+     * @method
+     * @argument {DataQuery} query         - a DataQuery
+     * @return {String} serviceModuleID    - Module ID of a data service
+     */
     _serviceIdentifierForQuery: {
         value: function (query) {
             var parameters = query.criteria.parameters,
@@ -1972,11 +2084,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      *                             values hold the raw data. This array
      *                             will be modified by this method.
      * @argument {?} context     - An arbitrary value that will be passed to
-     *                             [getDataObject()]{@link RawDataService#getDataObject}
+     *                             [getDataObject()]{@link DataService#getDataObject}
      *                             and
-     *                             [mapRawDataToObject()]{@link RawDataService#mapRawDataToObject}
+     *                             [mapRawDataToObject()]{@link DataService#mapRawDataToObject}
      *                             if it is provided.
-     *
+     * @argument {Boolean} shouldMap - Indicate whether this service is eligible to map 
+     *                                 the rawData.
      * @returns {Promise<MappedObject>} - A promise resolving to the mapped object.
      *
      */
@@ -1986,6 +2099,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 objectDescriptor = rawData && this.objectDescriptorForObject(rawData),
                 object, result;
 
+            
             if (shouldMap && !objectDescriptor) {
                 object = this.objectForTypeRawData(type, rawData, context);
                 result = this._mapRawDataToObject(rawData, object, context);
@@ -2015,7 +2129,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     /**
      * To be called by [fetchData()]{@link DataService#fetchData} or
-     * [fetchRawData()]{@link RawDataService#fetchRawData} when raw data records
+     * [fetchRawData()]{@link DataService#fetchRawData} when raw data records
      * are received. This method should never be called outside of those
      * methods.
      *
@@ -2023,14 +2137,14 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * will represent the raw records with repeated calls to
      * [getDataObject()]{@link DataService#getDataObject}, maps
      * the raw data to those objects with repeated calls to
-     * [mapRawDataToObject()]{@link RawDataService#mapRawDataToObject},
+     * [mapRawDataToObject()]{@link DataService#mapRawDataToObject},
      * and then adds those objects to the specified stream.
      *
      * Subclasses should not override this method and instead override their
      * [getDataObject()]{@link DataService#getDataObject} method, their
-     * [mapRawDataToObject()]{@link RawDataService#mapRawDataToObject} method,
-     * their [mapping]{@link RawDataService#mapping}'s
-     * [mapRawDataToObject()]{@link RawDataMapping#mapRawDataToObject} method,
+     * [mapRawDataToObject()]{@link DataService#mapRawDataToObject} method,
+     * their [mapping]{@link DataService#mapping}'s
+     * [mapRawDataToObject()]{@link DataService#mapRawDataToObject} method,
      * or several of these.
      *
      * @method
@@ -2041,9 +2155,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      *                             values hold the raw data. This array
      *                             will be modified by this method.
      * @argument {?} context     - An arbitrary value that will be passed to
-     *                             [getDataObject()]{@link RawDataService#getDataObject}
+     *                             [getDataObject()]{@link DataService#getDataObject}
      *                             and
-     *                             [mapRawDataToObject()]{@link RawDataService#mapRawDataToObject}
+     *                             [mapRawDataToObject()]{@link DataService#mapRawDataToObject}
      *                             if it is provided.
      */
     addRawData: {
@@ -2108,47 +2222,44 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-    //This should belong on the
-    //Gives us an indirection layer to deal with backward compatibility.
+    
+    /**
+     * To be called to indicates that the consumer has lost interest in the passed DataStream.
+     * This will allow the RawDataService feeding the stream to take appropriate measures.
+     *
+     * @method
+     * @argument {ObjectDescriptor} [type] - ObjectDescriptor for the type that this rawData represents
+     * @argument {Object} [rawData] - An anonymnous object whose properties'
+     *                                values hold the raw data.
+     *
+     */
     dataIdentifierForTypeRawData: {
         value: function (type, rawData) {
             var mapping = this.mappingWithType(type),
                 rawDataPrimaryKeys = mapping ? mapping.rawDataPrimaryKeyExpressions : null,
                 scope = new Scope(rawData),
                 rawDataPrimaryKeysValues,
-                dataIdentifier, dataIdentifierMap, primaryKey;
+                dataIdentifier, dataIdentifierMap, primaryKey,
+                expression, i;
 
-            if(rawDataPrimaryKeys && rawDataPrimaryKeys.length) {
+            if (rawDataPrimaryKeys && rawDataPrimaryKeys.length) {
 
                 dataIdentifierMap = this._typeIdentifierMap.get(type);
 
-                if(!dataIdentifierMap) {
+                if (!dataIdentifierMap) {
                     this._typeIdentifierMap.set(type,(dataIdentifierMap = new Map()));
                 }
 
-                for(var i=0, expression; (expression = rawDataPrimaryKeys[i]); i++) {
+                for (i = 0; (expression = rawDataPrimaryKeys[i]); i++) {
                     rawDataPrimaryKeysValues = rawDataPrimaryKeysValues || [];
                     rawDataPrimaryKeysValues[i] = expression(scope);
                 }
-                if(rawDataPrimaryKeysValues) {
+                if (rawDataPrimaryKeysValues) {
                     primaryKey = rawDataPrimaryKeysValues.join("/");
-                    dataIdentifier = dataIdentifierMap.get(primaryKey);
+                    
                 }
 
-                if (!dataIdentifier) {
-                    var typeName = type.typeName /*DataDescriptor*/ || type.name;
-                        //This should be done by ObjectDescriptor/blueprint using primaryProperties
-                        //and extract the corresponsing values from rawData
-                        //For now we know here that MileZero objects have an "id" attribute.
-                        dataIdentifier = new DataIdentifier();
-                        dataIdentifier.objectDescriptor = type;
-                        dataIdentifier.dataService = this;
-                        dataIdentifier.typeName = type.name;
-                        dataIdentifier._identifier = dataIdentifier.primaryKey = primaryKey;
-
-                        dataIdentifierMap.set(primaryKey,dataIdentifier);
-                }
-                return dataIdentifier;
+                return this._dataIdentifierForTypeAndPrimaryKey(type, primaryKey);
             }
             return undefined;
         }
@@ -2163,7 +2274,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     /**
      * Fetch data from the service using its child services.
      *
-     * This method accept [types]{@link DataObjectDescriptor} as alternatives to
+     * This method accept [types]{@link ObjectDescriptor} as alternatives to
      * [queries]{@link DataQuery}, and its [stream]{DataStream} argument is
      * optional, but when it calls its child services it will provide them with
      * a [query]{@link DataQuery}, it provide them with a
@@ -2231,7 +2342,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 var service;
                 //This is a workaround, we should clean that up so we don't
                 //have to go up to answer that question. The difference between
-                //.TYPE and Objectdescriptor still creeps-in when it comes to
+                //.TYPE and ObjectDescriptor still creeps-in when it comes to
                 //the service to answer that to itself
                 if (self.parentService && self.parentService.childServiceForType(query.type) === self && typeof self.fetchRawData === "function") {
                     service = self;
@@ -2268,9 +2379,21 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+
+    /**
+     * Return cooked object for this ObjectDescriptor and rawData.
+     *
+     * @method
+     * @argument {ObjectDescriptor} [type] - ObjectDescriptor for the type that this rawData represents
+     * @argument {Object} [rawData] - An anonymnous object whose properties'
+     *                                values hold the raw data.
+     * @argument {Object} [context] - An anonymnous object whose properties'
+     *                                values hold the raw data.
+     *
+     */
     objectForTypeRawData: {
         value:function(type, rawData, context) {
-            var dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData);
+            var dataIdentifier = this.dataIdentifierForTypeRawData(type, rawData);
                 //Record snapshot before we may create an object
             this.recordSnapshot(dataIdentifier, rawData);
             //iDataIdentifier argument should be all we need later on
@@ -2279,8 +2402,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
-     * To be called once for each [fetchData()]{@link RawDataService#fetchData}
-     * or [fetchRawData()]{@link RawDataService#fetchRawData} call received to
+     * To be called once for each [fetchData()]{@link DataService#fetchData}
+     * or [fetchRawData()]{@link DataService#fetchRawData} call received to
      * indicate that all the raw data meant for the specified stream has been
      * added to that stream.
      *
@@ -2291,7 +2414,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      *                                 corresponding to the raw data have been
      *                                 added.
      * @argument {?} context         - An arbitrary value that will be passed to
-     *                                 [writeOfflineData()]{@link RawDataService#writeOfflineData}
+     *                                 [writeOfflineData()]{@link DataService#writeOfflineData}
      *                                 if it is provided.
      */
     rawDataDone: {
@@ -2332,7 +2455,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * object's raw data wouldn't be useful to perform the deletion.
      *
      * The default implementation maps the data object to raw data and calls
-     * [deleteRawData()]{@link RawDataService#deleteRawData} with the data
+     * [deleteRawData()]{@link DataService#deleteRawData} with the data
      * object passed in as the `context` argument of that method.
      *
      * @method
@@ -2370,7 +2493,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * @returns {external:Promise} - A promise fulfilled when all of the data in
      * the changed object has been saved.
      */
-
     _saveDataObject: {
         value: function (object) {
             var record = {};
@@ -3007,7 +3129,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
-     * @todo Document.
+     * Convenience property to return a Promise that resolves to an 
+     * empty array.
+     * 
+     * @property
+     * @return {Promise}
      */
     emptyArrayPromise: {
         get: function () {
