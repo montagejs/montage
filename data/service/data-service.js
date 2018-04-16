@@ -877,6 +877,19 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    implementsMapRawDataToObject: {
+        get: function () {
+            return exports.DataService.prototype.mapRawDataToObject !== this.mapRawDataToObject;
+        }
+    },
+
+    implementsMapObjectToRawData: {
+        get: function () {
+            return exports.DataService.prototype.mapObjectToRawData !== this.mapObjectToRawData;
+        }
+    },
+
+
     /**
      * Retrieve DataMapping for this object.
      *
@@ -2040,7 +2053,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 hasParent = this.parentService,
                 ownMapping = this.mappingWithType(streamQueryType),
                 serviceID = this._serviceIdentifierForQuery(stream.query),
-                shouldMap = (ownMapping || this._implementsMapRawDataToObject || !hasParent) && !serviceID,
+                shouldMap = (ownMapping || this.implementsMapRawDataToObject || !hasParent) && !serviceID,
                 iRecord;
             // Record fetched raw data for offline use if appropriate.
             offline = records && !this.isOffline && this._streamRawData.get(stream);
@@ -2064,18 +2077,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 this.addOneRawData(stream, records[i], context, shouldMap);
                 /*jshint +W083*/
             }
-        }
-    },
-
-    _implementsMapRawDataToObject: {
-        get: function () {
-            return exports.DataService.prototype.mapRawDataToObject !== this.mapRawDataToObject;
-        }
-    },
-
-    implementsMapObjectToRawData: {
-        get: function () {
-            return exports.DataService.prototype.mapObjectToRawData !== this.mapObjectToRawData;
         }
     },
 
@@ -2359,6 +2360,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
     
+    
+
     /**
      * Save changes made to a data object.
      *
@@ -2373,6 +2376,27 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             var record = {};
             this._mapObjectToRawData(object, record);
             return this.saveRawData(record, object);
+        }
+    },
+
+    _saveRawData: {
+        value: function (rawData, object) {
+            var self = this,
+                service,
+                promise = this.nullPromise,
+                shouldSaveRawData = !!(this.parentService && this.parentService._childServiceForObject(object) === this),
+                mappingPromise;
+
+            if (shouldSaveRawData) {
+                return self.saveRawData(rawData, object);
+            } else {
+                service = this._childServiceForObject(object);
+                if (service) {
+                    return service._saveRawData(rawData, object);
+                } else {
+                    return promise;
+                }
+            }
         }
     },
 
@@ -2422,6 +2446,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    implementsSaveDataObject: {
+        get: function () {
+            return exports.DataService.prototype.saveDataObject !== this.saveDataObject;
+        }
+    },
 
     /**
      * Save a data object.
@@ -2463,33 +2492,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 return service.saveDataObject(object);
             } else {
                 return promise;
-            }
-        }
-    },
-
-    implementsSaveDataObject: {
-        get: function () {
-            return exports.DataService.prototype.saveDataObject !== this.saveDataObject;
-        }
-    },
-
-    _saveRawData: {
-        value: function (rawData, object) {
-            var self = this,
-                service,
-                promise = this.nullPromise,
-                shouldSaveRawData = !!(this.parentService && this.parentService._childServiceForObject(object) === this),
-                mappingPromise;
-
-            if (shouldSaveRawData) {
-                return self.saveRawData(rawData, object);
-            } else {
-                service = this._childServiceForObject(object);
-                if (service) {
-                    return service._saveRawData(rawData, object);
-                } else {
-                    return promise;
-                }
             }
         }
     },
