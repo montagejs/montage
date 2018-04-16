@@ -1479,6 +1479,17 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
     
+
+    /**
+     * Fetch a property on an object using an objectDescriptor mapping and a propertyDescriptor
+     *
+     * @private
+     * @method
+     * @argument {Object} object
+     * @argument {String} propertyName
+     * @argument {PropertyDescriptor} propertyDescriptor
+     * @returns {Promise}
+     */
     _fetchObjectPropertyWithPropertyDescriptor: {
         value: function (object, propertyName, propertyDescriptor) {
             var self = this,
@@ -2148,6 +2159,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /**
+     * Cache storing which service owns each DataStream
+     *
+     * @private
+     * @property {WeakMap<DataStream:DataService>>}
+     */
     _dataServiceByDataStream: {
         get: function () {
             return this.__dataServiceByDataStream || (this.__dataServiceByDataStream = new WeakMap());
@@ -2419,6 +2436,14 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+
+    /**
+     * Return the DataService responsible for a DataStream
+     *
+     * @method
+     * @argument {DataStream} dataStream
+     * @returns {DataService} 
+     */
     dataServiceForDataStream: {
         get: function(dataStream) {
             return this._dataServiceByDataStream.get(dataStream);
