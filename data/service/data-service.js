@@ -50,6 +50,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             exports.DataService.mainService = exports.DataService.mainService || this;
             this._initializeAuthorization();
             this._initializeOffline();
+            this._typeIdentifierMap = new Map();
             this._descriptorToRawDataTypeMappings = new Map();
         }
     },
@@ -1249,6 +1250,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     mapping = childService.mappingWithType(objectDescriptor),
                     requisitePropertyNames = mapping && mapping.requisitePropertyNames || new Set(),
                     dataTriggers = DataTrigger.addTriggers(self, objectDescriptor, prototype, requisitePropertyNames);
+                
                 self._objectPrototypes.set(constructor, prototype);
                 self._objectPrototypes.set(objectDescriptor, prototype);
                 self._objectTriggers.set(objectDescriptor, dataTriggers);
@@ -2056,7 +2058,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     addOneRawData: {
         value: function (stream, rawData, context, shouldMap) {
             var type = this._descriptorForParentAndRawData(stream.query.type, rawData),
-                objectDescriptor = this.objectDescriptorForObject(rawData),
+                objectDescriptor = rawData && this.objectDescriptorForObject(rawData),
                 object, result;
 
             if (shouldMap && !objectDescriptor) {
@@ -2156,6 +2158,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     _implementsMapRawDataToObject: {
         get: function () {
             return exports.DataService.prototype.mapRawDataToObject !== this.mapRawDataToObject;
+        }
+    },
+
+    implementsMapObjectToRawData: {
+        get: function () {
+            return exports.DataService.prototype.mapObjectToRawData !== this.mapObjectToRawData;
         }
     },
 
@@ -2503,40 +2511,83 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+
+    /**
+     * Save a data object.
+     *
+     * 
+     * Navigate the service tree to the service responsible for mapping the object. 
+     * 
+     * Upon mapping completion, navigate service tree from the root to the service 
+     * responsible for saving this rawData
+     * 
+     * @method
+     * @argument {Object} object - The object whose data should be deleted.
+     * @returns {external:Promise} - A promise fulfilled when the object has
+     * been saved
+     */
     saveDataObject: {
         value: function (object) {
-            //return this._updateDataObject(object, "saveDataObject");
+            var self = this,
+                promise = this.nullPromise,
+                ownMapping = this.mappingForObject(object, true),
+                hasParent = !!this.parentService,
+                service = this._childServiceForObject(object),
+                childHasMapping = service && service.implementsMapObjectToRawData,
+                shouldMap = !!(ownMapping || this.implementsMapObjectToRawData || !hasParent) && !childHasMapping,
+                childHasSaveDataObject = !!(service && service.implementsSaveDataObject),
+                mappingPromise;
+            
 
+            if (shouldMap) {
+                var record = {};
+                mappingPromise =  this._mapObjectToRawData(object, record) || this.nullPromise;
+                return mappingPromise.then(function () {
+                    return self.rootService._saveRawData(record, object).then(function (result) {
+                        self.rootService.createdDataObjects.delete(object);
+                        return result;
+                    });
+                 });
+            } else if (service) {
+                return service.saveDataObject(object);
+            } else {
+                return promise;
+            }
+        }
+    },
+
+    implementsSaveDataObject: {
+        get: function () {
+            return exports.DataService.prototype.saveDataObject !== this.saveDataObject;
+        }
+    },
+
+    _saveRawData: {
+        value: function (rawData, object) {
             var self = this,
                 service,
                 promise = this.nullPromise,
+                shouldSaveRawData = !!(this.parentService && this.parentService._childServiceForObject(object) === this),
                 mappingPromise;
 
-            if (this.parentService && this.parentService._childServiceForObject(object) === this) {
-                var record = {};
-                mappingPromise =  this._mapObjectToRawData(object, record);
-                if (!mappingPromise) {
-                    mappingPromise = this.nullPromise;
-                }
-                return mappingPromise.then(function () {
-                        return self.saveRawData(record, object).then(function () {
-                            self.rootService.createdDataObjects.delete(object);
-                            return null;
-                        });
-                 });
-            }
-            else {
+            if (shouldSaveRawData) {
+                return self.saveRawData(rawData, object);
+            } else {
                 service = this._childServiceForObject(object);
                 if (service) {
-                    return service.saveDataObject(object);
-                }
-                else {
+                    return service._saveRawData(rawData, object);
+                } else {
                     return promise;
                 }
             }
         }
     },
 
+    saveRawData: {
+        value: function () {
+            return this.nullPromise;
+        }
+    },
 
     /***************************************************************************
      * Offline

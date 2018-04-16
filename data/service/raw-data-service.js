@@ -43,8 +43,6 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     constructor: {
         value: function RawDataService() {
             DataService.call(this);
-            this._typeIdentifierMap = new Map();
-            this._descriptorToRawDataTypeMappings = new Map();
         }
     },
 

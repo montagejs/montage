@@ -1,5 +1,7 @@
 var ExpressionDataMapping = require("montage/data/service/expression-data-mapping").ExpressionDataMapping,
     MainPersonService = require("spec/data/logic/service/main-person-service").MainPersonService,
+    Person = require("spec/data/logic/model/person").Person,
+    PersonB = require("spec/data/logic/model/person-b").PersonB,
     RawPersonService = require("spec/data/logic/service/raw-person-service").RawPersonService,
     RawPersonServiceB = require("spec/data/logic/service/raw-person-service-b").RawPersonServiceB,
     RawPersonServiceC = require("spec/data/logic/service/raw-person-service-c").RawPersonServiceC,
@@ -13,7 +15,7 @@ var ExpressionDataMapping = require("montage/data/service/expression-data-mappin
 
 var DataMapping = require("montage/data/service/data-mapping").DataMapping;
 
-describe("A DataMapping at the DataService level", function() {
+describe("DataMapping in the MainService", function() {
     var mainService = new MainPersonService(),
         rawService = new RawPersonService(),
         rawServiceB = new RawPersonServiceB(),
@@ -134,82 +136,129 @@ describe("A DataMapping at the DataService level", function() {
         mainService.registerChildService(rawServiceD, [personDDescriptor]),
     ]);
 
-    it("can map properties with mapping in MainService", function (done) {
-        registrationPromise.then(function () {
-            mainService.fetchData(personDescriptor).then(function (results) {
-                var test  = function (person) {
-                    expect(person.name).toBeDefined();
-                    expect(person.birthday).toBeDefined();
-                    expect(person.birthday instanceof Date).toBe(true);
-                    expect(person.birth_date).toBeUndefined();
-                }
-                console.log("results.1", results);
-                expect(results).toBeDefined();
-                expect(Array.isArray(results)).toBeTruthy();
-                results.forEach(test);
-                done();
+
+    describe("can map RawData to Object", function () {
+
+        it("with mapping in MainService", function (done) {
+            registrationPromise.then(function () {
+                mainService.fetchData(personDescriptor).then(function (results) {
+                    var test  = function (person) {
+                        expect(person.name).toBeDefined();
+                        expect(person.birthday).toBeDefined();
+                        expect(person.birthday instanceof Date).toBe(true);
+                        expect(person.birth_date).toBeUndefined();
+                    }
+    
+                    expect(results).toBeDefined();
+                    expect(Array.isArray(results)).toBeTruthy();
+                    results.forEach(test);
+                    done();
+                });
+            });
+        });
+
+        it("with method in RawDataService", function (done) {
+            registrationPromise.then(function () {
+                mainService.fetchData(personBDescriptor).then(function (results) {
+                    var test  = function (person) {
+                        expect(person.name).toBeDefined();
+                        expect(person.birthday).toBeDefined();
+                        expect(person.birthday instanceof Date).toBe(true);
+                        expect(person.birth_date).toBeUndefined();
+                    };
+    
+                    expect(results).toBeDefined();
+                    expect(Array.isArray(results)).toBeTruthy();
+                    results.forEach(test);
+                    done();
+                });
+            });
+        });
+    
+        it("can map raw data returned from child of rawData service", function (done) {
+            registrationPromise.then(function () {
+                mainService.fetchData(personDDescriptor).then(function (results) {
+                    var test = function (person) {
+                        expect(person.name).toBeDefined();
+                        expect(person.person_name).toBeUndefined();
+                        expect(person.birthday instanceof Date).toBe(true);
+                        expect(person.birth_date).toBeUndefined();
+                        expect(person.employer).toBeTruthy();
+                        expect(person.position).toBeTruthy();
+                    }
+    
+                    expect(results).toBeDefined();
+                    expect(Array.isArray(results)).toBeTruthy();
+                    results.forEach(test);
+                    done();
+                });
             });
         });
     });
 
-    it("can map properties with method in RawService", function (done) {
-        registrationPromise.then(function () {
-            mainService.fetchData(personBDescriptor).then(function (results) {
-                var test  = function (person) {
-                    expect(person.name).toBeDefined();
-                    expect(person.birthday).toBeDefined();
-                    expect(person.birthday instanceof Date).toBe(true);
-                    expect(person.birth_date).toBeUndefined();
-                }
-                console.log("results.2", results);
-                expect(results).toBeDefined();
-                expect(Array.isArray(results)).toBeTruthy();
-                results.forEach(test);
-                done();
+
+    describe("can return already mapped Data", function () {
+        it("from rawDataService", function (done) {
+            registrationPromise.then(function () {
+                mainService.fetchData(personCDescriptor).then(function (results) {
+                    var test  = function (person) {
+                        expect(person.name).toBeDefined();
+                        expect(person.person_name).toBeUndefined();
+                        expect(person.birthday).toBeDefined();
+                        expect(person.birthday instanceof Date).toBe(true);
+                        expect(person.birth_date).toBeUndefined();
+                    }
+    
+                    expect(results).toBeDefined();
+                    expect(Array.isArray(results)).toBeTruthy();
+                    results.forEach(test);
+                    done();
+                });
             });
         });
     });
+    
 
-    it("can return mapped data from rawDataService", function (done) {
-        registrationPromise.then(function () {
-            mainService.fetchData(personCDescriptor).then(function (results) {
-                var test  = function (person) {
-                    expect(person.name).toBeDefined();
-                    expect(person.person_name).toBeUndefined();
-                    expect(person.birthday).toBeDefined();
-                    expect(person.birthday instanceof Date).toBe(true);
-                    expect(person.birth_date).toBeUndefined();
-                }
+    describe("can map Object to RawData", function () {
 
-                console.log("results.3", results);
-                expect(results).toBeDefined();
-                expect(Array.isArray(results)).toBeTruthy();
-                results.forEach(test);
-                done();
+        it("can map properties to rawData with mapping in MainService", function (done) {
+            registrationPromise.then(function () {
+                var person = mainService.createDataObject(Person),
+                    date = new Date(),
+                    dateMS;
+                
+                date.setFullYear(1994);
+                date.setMonth(2);
+                date.setDate(7);
+                dateMS = date.getTime();
+                person.name = "Andre The Giant";
+                person.birthday = date;
+                mainService.saveDataObject(person).then(function (result) {
+                    expect(result.name).toBe("Andre The Giant");
+                    expect(result.birth_date).toBe(dateMS);
+                    done();
+                });
+            });
+        });
+    
+        it("can map properties to rawData with method in RawDataService", function (done) {
+            registrationPromise.then(function () {
+                var person = mainService.createDataObject(PersonB),
+                    date = new Date(),
+                    dateMS;
+                
+                date.setFullYear(1984);
+                date.setMonth(4);
+                date.setDate(10);
+                dateMS = date.getTime();
+                person.name = "Hulk Hogan";
+                person.birthday = date;
+                mainService.saveDataObject(person).then(function (result) {
+                    expect(result.name).toBe("Hulk Hogan");
+                    expect(result.birth_date).toBe(dateMS);
+                    done();
+                });
             });
         });
     });
-
-    it("can map raw data returned from child of rawData serviced", function (done) {
-        registrationPromise.then(function () {
-            mainService.fetchData(personDDescriptor).then(function (results) {
-
-                var test  = function (person) {
-                    expect(person.name).toBeDefined();
-                    expect(person.person_name).toBeUndefined();
-                    expect(person.birthday instanceof Date).toBe(true);
-                    expect(person.birth_date).toBeUndefined();
-                    expect(person.employer).toBeTruthy();
-                    expect(person.position).toBeTruthy();
-                }
-
-                console.log("results.4", results);
-                expect(results).toBeDefined();
-                expect(Array.isArray(results)).toBeTruthy();
-                results.forEach(test);
-                done();
-            });
-        });
-    });
-
 });

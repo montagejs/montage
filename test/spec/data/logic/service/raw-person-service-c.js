@@ -25,6 +25,12 @@ exports.RawPersonServiceC = RawDataService.specialize({
             }
             return this.__mockData;
         }
+    },
+
+    saveDataObject: {
+        value: function (object) {
+            return this.nullPromise;
+        }
     }
 
 });
