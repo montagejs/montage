@@ -247,7 +247,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             if (this.data && this._templateDidLoad) {
                 var self = this,
                     infoDelegate;
-                debugger
+
                 return this.loadUserInterfaceDescriptor(this.data).then(function (UIDescriptor) {
                     self.userInterfaceDescriptor = UIDescriptor || self.userInterfaceDescriptor; // trigger biddings.
 
