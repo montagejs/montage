@@ -95,6 +95,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
             value = deserializer.getProperty("rawDataTypeMappings");
             this._registerRawDataTypeMappings(value || []);
+
+            value = deserializer.getProperty("batchAddsDataToStream");
+            this.batchAddsDataToStream = !!value;
             
             return result;
         }
@@ -2111,6 +2114,42 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
 
     /**
+     * Get cooked object for this ObjectDescriptor and rawData and 
+     * map the rawData to it. 
+     * 
+     * This is in contrast to the synchronous objectForTypeRawData which
+     * will not map the rawData to the object.
+     * 
+     * Returns the same object in memory for rawData with matching primaryKeys.
+     *
+     * @method
+     * @argument {ObjectDescriptor} [type] - ObjectDescriptor for the type that this rawData represents
+     * @argument {Object} [rawData] - An anonymnous object whose properties'
+     *                                values hold the raw data.
+     * @argument {Object} [context] - An anonymnous object whose properties'
+     *                                values hold the raw data.
+     * @returns  {Promise<Object>}  - object fully mapped with the rawData
+     */
+    _mappedObjectForTypeAndRawData: {
+        value: function (type, rawData, context) {
+            var object = this.objectForTypeRawData(type, rawData, context),
+                mapResult = this._mapRawDataToObject(rawData, object, context),
+                result;
+
+            if (mapResult instanceof Promise) {
+                result = mapResult.then(function () {
+                    return object;
+                });
+            } else {
+                result = Promise.resolve(object);
+            }
+
+            return result;
+        }
+    },
+
+
+    /**
      * Return the module id for the DataService for this query.
      * The module id is defined either on the query parameters or
      * or on the mapping rule for this property.
@@ -2185,21 +2224,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 // calls to addOneRawData without canMap expect 
                 // the function to perform the mapping
                 shouldMap = arguments.length < 4 || (canMap && !objectDescriptor), 
-                object, result;
+                object = true, result;
 
 
             if (shouldMap) {
-                object = this.objectForTypeRawData(type, rawData, context);
-                result = this._mapRawDataToObject(rawData, object, context);
-                if (result && result instanceof Promise) {
-                    result = result.then(function () {
-                        stream.addData(object);
-                        return object;
-                    });
-                } else {
+                result = this._mappedObjectForTypeAndRawData(type, rawData, context).then(function (object) {
                     stream.addData(object);
-                    result = Promise.resolve(object);
-                }
+                });
             } else {
                 stream.addData(rawData);
                 result = this.nullPromise;
@@ -2214,6 +2245,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             return result;
         }
     },
+    
 
     /**
      * To be called by [fetchData()]{@link DataService#fetchData} or
@@ -2267,19 +2299,67 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 this._streamRawData.set(stream, records);
             }
 
-            // Convert the raw data to appropriate data objects. The conversion
-            // will be done in place to avoid creating any unnecessary array.
-            for (i = 0, n = records && records.length; i < n; i++) {
-                /*jshint -W083*/
-                // Turning off jshint's function within loop warning because the
-                // only "outer scoped variable" we're accessing here is stream,
-                // which is a constant reference and won't cause unexpected
-                // behavior due to iteration.
-
-                this.addOneRawData(stream, records[i], context, canMap);
-                /*jshint +W083*/
+            if (this.batchAddsDataToStream && canMap) {
+                var promises = [],
+                    promise;
+                for (i = 0, n = records && records.length; i < n; i++) {
+                    promise = this._mappedObjectForTypeAndRawData(stream.query.type, records[i], context);
+                    promises.push(promise);
+                    this._addMappingPromiseForStream(promise, stream);
+                }
+                Promise.all(promises).then(function (objects) {
+                    // console.log("objects", objects);
+                    stream.addData(objects);
+                });
+            } else {
+                for (i = 0, n = records && records.length; i < n; i++) {
+                    this.addOneRawData(stream, records[i], context, canMap);
+                }
             }
         }
+    },
+
+    /**
+     * Determines whether rawData passed to addRawData is added to the 
+     * stream one-by-one or with the entire array. 
+     * 
+     * E.g. This rawData
+     *              
+     *      [{id: 1}, {id: 2}, {id: 3}, {id: 4}]
+     * 
+     * can be mapped to the cooked object in these amounts of time:
+     *       ID     TIME
+     *       1      100ms
+     *       2      50ms
+     *       3      300ms
+     *       4      200ms
+     * 
+     * 
+     * Note that mappings are done in parallel. 
+     * 
+     * If batchAddsDataToStream is false, each item will be 
+     * added to the stream as soon as it is mapped. The following 
+     * timeline shows when mapping and stream add occur:
+     *  50ms: item 2 finished mapping. item 2 is added
+     * 100ms: item 1 finished mapping. item 1 is added
+     * 200ms: item 4 finished mapping. item 4 is added
+     * 300ms: item 3 finished mapping. item 3 is added
+     * 
+     * 
+     * If batchAddsDataToStream is true, all items will be 
+     * added to the stream only once the last item is mapped.
+     * The following timeline shows when mapping and stream 
+     * add occur:
+     *  50ms: item 2 finished mapping. 
+     * 100ms: item 1 finished mapping. 
+     * 200ms: item 4 finished mapping. 
+     * 300ms: item 3 finished mapping. items 1, 2, 3, & 4 are added
+     * 
+     * @property {Boolean} 
+     *
+     */
+    batchAddsDataToStream: {
+        value: false
     },
 
     /**
@@ -2477,20 +2557,25 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
 
     /**
-     * Return cooked object for this ObjectDescriptor and rawData.
+     * Return cooked, unmapped object for this ObjectDescriptor and rawData. 
+     * 
+     * Returns the same object in memory for rawData with matching primaryKeys.
      *
+     * This is in contrast to the asynchronous _mappedObjectForTypeAndRawData 
+     * which will also map the rawData to the object
+     * 
      * @method
      * @argument {ObjectDescriptor} [type] - ObjectDescriptor for the type that this rawData represents
      * @argument {Object} [rawData] - An anonymnous object whose properties'
      *                                values hold the raw data.
      * @argument {Object} [context] - An anonymnous object whose properties'
      *                                values hold the raw data.
-     *
+     * @returns  {Object}           - object representing the dataIdentifier 
      */
     objectForTypeRawData: {
         value:function(type, rawData, context) {
             var dataIdentifier = this.dataIdentifierForTypeRawData(type, rawData);
-                //Record snapshot before we may create an object
+            //Record snapshot before we may create an object
             this.recordSnapshot(dataIdentifier, rawData);
             //iDataIdentifier argument should be all we need later on
             return this.getDataObject(type, rawData, context, dataIdentifier);
