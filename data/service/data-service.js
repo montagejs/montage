@@ -2171,19 +2171,24 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      *                             and
      *                             [mapRawDataToObject()]{@link DataService#mapRawDataToObject}
      *                             if it is provided.
-     * @argument {Boolean} shouldMap - Indicate whether this service is eligible to map 
-     *                                 the rawData.
+     * @argument {Boolean} canMap - Indicate whether this service is eligible to map 
+     *                              the rawData.
      * @returns {Promise<MappedObject>} - A promise resolving to the mapped object.
      *
      */
     addOneRawData: {
-        value: function (stream, rawData, context, shouldMap) {
+        value: function (stream, rawData, context, canMap) {
             var type = this._descriptorForParentAndRawData(stream.query.type, rawData),
                 objectDescriptor = rawData && this.objectDescriptorForObject(rawData),
+                // canMap is a new argument. 
+                // To support backwards compatibility, we assume that 
+                // calls to addOneRawData without canMap expect 
+                // the function to perform the mapping
+                shouldMap = arguments.length < 4 || (canMap && !objectDescriptor), 
                 object, result;
 
-            
-            if (shouldMap && !objectDescriptor) {
+
+            if (shouldMap) {
                 object = this.objectForTypeRawData(type, rawData, context);
                 result = this._mapRawDataToObject(rawData, object, context);
                 if (result && result instanceof Promise) {
@@ -2247,11 +2252,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (stream, records, context) {
             var offline, i, n,
                 streamQueryType = stream.query.type,
-                hasParent = this.parentService,
                 ownMapping = this.mappingWithType(streamQueryType),
                 serviceID = this._serviceIdentifierForQuery(stream.query),
-                shouldMap = (ownMapping || this.implementsMapRawDataToObject || !hasParent) && !serviceID,
+                canMap = (ownMapping || this.implementsMapRawDataToObject || this.isRootService) && !serviceID,
                 iRecord;
+
             // Record fetched raw data for offline use if appropriate.
             offline = records && !this.isOffline && this._streamRawData.get(stream);
             if (offline) {
@@ -2271,7 +2276,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 // which is a constant reference and won't cause unexpected
                 // behavior due to iteration.
 
-                this.addOneRawData(stream, records[i], context, shouldMap);
+                this.addOneRawData(stream, records[i], context, canMap);
                 /*jshint +W083*/
             }
         }
@@ -2525,8 +2530,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
             dataReadyPromise.then(function (results) {
                 //TODO Figure out if writeOfflineData needs to be handled in DataService
-                // return dataToPersist ? self.writeOfflineData(dataToPersist, stream.query, context) : null;
-                return null;
+                return dataToPersist ? self.writeOfflineData(dataToPersist, stream.query, context) : null;
+                // return null;
             }).then(function () {
                 stream.dataDone();
                 return null;
@@ -3094,6 +3099,38 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             });
             return promises ? Promise.all(promises).then(function () { return array; }) :
                               this.emptyArrayPromise;
+        }
+    },
+
+    /**
+     * Called with all the data passed to
+     * [addRawData()]{@link RawDataService#addRawData} to allow storing of that
+     * data for offline use.
+     *
+     * The default implementation does nothing. This is appropriate for
+     * subclasses that do not support offline operation or which operate the
+     * same way when offline as when online.
+     *
+     * Other subclasses may override this method to store data fetched when
+     * online so [fetchData]{@link RawDataSource#fetchData} can use that data
+     * when offline.
+     *
+     * @method
+     * @argument {Object} records  - An array of objects whose properties' values
+     *                               hold the raw data.
+     * @argument {?DataQuery} selector
+     *                             - Describes how the raw data was selected.
+     * @argument {?} context       - The value that was passed in to the
+     *                               [rawDataDone()]{@link RawDataService#rawDataDone}
+     *                               call that invoked this method.
+     * @returns {external:Promise} - A promise fulfilled when the raw data has
+     * been saved. The promise's fulfillment value is not significant and will
+     * usually be `null`.
+     */
+    writeOfflineData: {
+        value: function (records, selector, context) {
+            // Subclasses should override this to do something useful.
+            return this.nullPromise;
         }
     },
 
