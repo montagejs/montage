@@ -95,6 +95,33 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
 
     /**
+     * Return the child service that should handle this query. 
+     * The service is identified by the serviceIdentifier query
+     * parameter, if it exists, or the query.type.
+     *
+     * @method
+     * @argument {DataQuery} query         - a DataQuery
+     * @returns {DataService}
+     */
+    _childServiceForQuery: {
+        value: function (query) {
+            var serviceModuleID = this._serviceIdentifierForQuery(query),
+                service = serviceModuleID && this._childServicesByIdentifier.get(serviceModuleID),
+                descriptor = this._objectDescriptorForType(query.type);
+
+
+            if (!service && this._childServicesByObjectDescriptor.has(descriptor)) {
+                service = this._childServicesByObjectDescriptor.get(descriptor);
+                service = service && service[0];
+            }
+
+            return service || null;
+        }
+    },
+
+
+
+    /**
      * Fetch the raw data of this service.
      *
      * This method should not be called directly from anyone other than this
