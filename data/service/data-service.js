@@ -248,10 +248,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
             for (i = 0, n = types && types.length || nIfEmpty; i < n; i += 1) {
                 type = types && types.length && types[i] || null;
-                children = this._childServicesByType.get(type) || [];
+                children = this._childServicesByObjectDescriptor.get(type) || [];
                 children.push(child);
                 if (children.length === 1) {
-                    this._childServicesByType.set(type, children);
+                    this._childServicesByObjectDescriptor.set(type, children);
                     if (type) {
                         this._childServiceTypes.push(type);
                     }
@@ -321,11 +321,17 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * @type {Map<ObjectDescriptor, Array.<DataService>>}
      */
     _childServicesByType: {
+        get: deprecate.deprecateMethod(void 0, function () {
+            return this._childServicesByObjectDescriptor;
+        }, "_childServicesByType", "_childServicesByObjectDescriptor")
+    },
+
+    _childServicesByObjectDescriptor: {
         get: function () {
-            if (!this.__childServicesByType) {
-                this.__childServicesByType = new Map();
+            if (!this.__childServicesByObjectDescriptor) {
+                this.__childServicesByObjectDescriptor = new Map();
             }
-            return this.__childServicesByType;
+            return this.__childServicesByObjectDescriptor;
         }
     },
 
@@ -414,7 +420,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 self._registerObjectDescriptorsByModuleId(objectDescriptors);
                 return self._registerChildServiceMappings(child, mappings);
             }).then(function () {
-                return self._makePrototypesForTypes(child, objectDescriptors);
+                return self._prototypesForModuleObjectDescriptors(objectDescriptors);
             }).then(function () {
                 self.addChildService(child, types);
                 return null;
@@ -473,20 +479,18 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * Get the first child service that can handle data of the specified type,
      * or `null` if no such child service exists.
      *
-     * @private
      * @method
-     * @argument {ObjectDescriptor} type
-     * @returns {Set.<DataService,number>}
+     * @argument {ObjectDescriptor|Function|String} type - ObjectDescriptor, constructor, or moduleId of a type
+     * @returns {DataService}
      */
     childServiceForType: {
         value: function (type) {
-            var services;
-            type = this._isObjectDescriptor(type) ? type : this._objectDescriptorForType(type);
-            services = this._childServicesByType.get(type) || this._childServicesByType.get(null);
+            var descriptor = this._objectDescriptorForType(type),
+                services = this._childServicesByObjectDescriptor.get(descriptor) || this._childServicesByObjectDescriptor.get(null)
+
             return services && services[0] || null;
         }
     },
-
     
 
     /**
@@ -608,12 +612,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             // remove.
             for (i = 0, n = types && types.length || 1; i < n; i += 1) {
                 type = types && types.length && types[i] || null;
-                chidren = this._childServicesByType.get(type);
+                type = type && this._objectDescriptorForType(type);
+                chidren = this._childServicesByObjectDescriptor.get(type);
                 index = chidren ? chidren.indexOf(child) : -1;
                 if (index >= 0 && chidren.length > 1) {
                     chidren.splice(index, 1);
                 } else if (index === 0) {
-                    this._childServicesByType.delete(type);
+                    this._childServicesByObjectDescriptor.delete(type);
                     index = type ? this._childServiceTypes.indexOf(type) : -1;
                     if (index >= 0) {
                         this._childServiceTypes.splice(index, 1);
@@ -902,8 +907,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     addMappingForType: {
         value: function (mapping, type) {
+            var descriptor = this._objectDescriptorForType(type);
             mapping.service = mapping.service || this;
-            this._objectDescriptorToMappingMap.set(type, mapping);
+            this._objectDescriptorToMappingMap.set(descriptor, mapping);
         }
     },
 
@@ -967,9 +973,14 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     mappingWithType: {
         value: function (type) {
-            var mapping;
-            type = this._objectDescriptorForType(type);
-            mapping = this._objectDescriptorToMappingMap.has(type) && this._objectDescriptorToMappingMap.get(type);
+            var descriptor = this._objectDescriptorForType(type),
+                service = this.rootService.childServiceForType(descriptor),
+                mapping;
+            if (service === this) {
+                mapping = this._objectDescriptorToMappingMap.has(type) && this._objectDescriptorToMappingMap.get(type);
+            } else if (service) {
+                mapping = service.mappingWithType(type);
+            }
             return mapping || null;
         }
     },
@@ -1236,11 +1247,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
 
      
-    _makePrototypesForTypes: {
-        value: function (childService, types) {
+    _prototypesForModuleObjectDescriptors: {
+        value: function (objectDescriptors) {
             var self = this;
-            return Promise.all(types.map(function (objectDescriptor) {
-                return self._makePrototypeForType(childService, objectDescriptor);
+            return Promise.all(objectDescriptors.map(function (objectDescriptor) {
+                return self._prototypeForModuleObjectDescriptor(objectDescriptor);
             }));
         }
     },
@@ -1257,21 +1268,14 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      *                                                 DataTriggers will be added on the prototype
      * @returns {Promise}
      */
-    _makePrototypeForType: {
-        value: function (childService, objectDescriptor) {
+    _prototypeForModuleObjectDescriptor: {
+        value: function (objectDescriptor) {
             var self = this,
                 module = objectDescriptor.module;
+
             return module.require.async(module.id).then(function (exports) {
                 var constructor = exports[objectDescriptor.exportName],
-                    prototype = Object.create(constructor.prototype),
-                    mapping = childService.mappingWithType(objectDescriptor),
-                    requisitePropertyNames = mapping && mapping.requisitePropertyNames || new Set(),
-                    dataTriggers = DataTrigger.addTriggers(self, objectDescriptor, prototype, requisitePropertyNames);
-                
-                self._objectPrototypes.set(constructor, prototype);
-                self._objectPrototypes.set(objectDescriptor, prototype);
-                self._objectTriggers.set(objectDescriptor, dataTriggers);
-                self._constructorToObjectDescriptorMap.set(constructor, objectDescriptor);
+                    prototype = self._prototypeForType(objectDescriptor, constructor);
                 return null;
             });
         }
@@ -1317,36 +1321,31 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * @returns {Object}
      */
     _prototypeForType: {
-        value: function (type) {
-            var info, triggers, prototype;
-            type = this._objectDescriptorForType(type);
-            prototype = this._objectPrototypes.get(type);
-            if (type && !prototype) {
-                prototype = Object.create(type.objectPrototype || Montage.prototype);
-                this._objectPrototypes.set(type, prototype);
-                if (this._isObjectDescriptor(type)) {
-                    triggers = DataTrigger.addTriggers(this, type, prototype);
+        value: function (type, constructor) {
+            var descriptor = this._objectDescriptorForType(type),
+                prototype = this._objectPrototypes.get(descriptor),
+                info, mapping, triggers, requisites;
+
+            if (descriptor && !prototype) {
+                prototype = constructor           ? constructor.prototype :
+                            type.objectPrototype  ? type.objectPrototype :
+                                                    Montage.prototype;
+                prototype = Object.create(prototype);
+                if (this._isObjectDescriptor(descriptor)) {
+                    mapping = this.mappingWithType(descriptor);
+                    requisites = mapping ? mapping.requisitePropertyNames : new Set();
+                    triggers = DataTrigger.addTriggers(this, descriptor, prototype, requisites);
                 } else {
-                    info = Montage.getInfoForObject(type.prototype);
+                    info = Montage.getInfoForObject(descriptor.prototype);
                     console.warn("Data Triggers cannot be created for this type. (" + (info && info.objectName) + ") is not an ObjectDescriptor");
                     triggers = [];
                 }
-                this._objectTriggers.set(type, triggers);
-                //We add a property that returns an object's snapshot
-                //We add a property that returns an object's primaryKey
-                //Let's postponed this for now and revisit when we need
-                //add more properties/logic to automatically track changes
-                //on objects
-
-                // Object.defineProperties(prototype, {
-                //      "montageDataSnapshot": {
-                //          get: this.__object__snapshotMethodImplementation
-                //      },
-                //      "montageDataPrimaryKey": {
-                //          get: this.__object_primaryKeyMethodImplementation
-                //      }
-                //  });
-
+                if (constructor) {
+                    this._objectPrototypes.set(constructor, prototype);
+                    this._constructorToObjectDescriptorMap.set(constructor, descriptor);
+                }
+                this._objectPrototypes.set(descriptor, prototype);
+                this._objectTriggers.set(descriptor, triggers);
             }
             return prototype;
         }
@@ -2013,30 +2012,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
-     * Return the child service that should handle this query. 
-     * The service is identified by the serviceIdentifier query
-     * parameter, if it exists, or the query.type.
-     *
-     * @method
-     * @argument {DataQuery} query         - a DataQuery
-     * @returns {DataService}
-     */
-    _childServiceForQuery: {
-        value: function (query) {
-            var serviceModuleID = this._serviceIdentifierForQuery(query),
-                service = serviceModuleID && this._childServicesByIdentifier.get(serviceModuleID);
-
-
-            if (!service && this._childServicesByType.has(query.type)) {
-                service = this._childServicesByType.get(query.type);
-                service = service && service[0];
-            }
-
-            return service || null;
-        }
-    },
-
-    /**
      * Get or make a DataIdentifier for an ObjectDescriptor and a primary key
      *
      * @method
@@ -2281,7 +2256,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      *                             if it is provided.
      */
     addRawData: {
-        value: function (stream, records, context) {
+        value: function (stream, records, context, shouldBatch) {
             var offline, i, n,
                 streamQueryType = stream.query.type,
                 ownMapping = this.mappingWithType(streamQueryType),
@@ -2299,23 +2274,29 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 this._streamRawData.set(stream, records);
             }
 
-            if (this.batchAddsDataToStream && canMap) {
-                var promises = [],
-                    promise;
-                for (i = 0, n = records && records.length; i < n; i++) {
-                    promise = this._mappedObjectForTypeAndRawData(stream.query.type, records[i], context);
-                    promises.push(promise);
-                    this._addMappingPromiseForStream(promise, stream);
-                }
-                Promise.all(promises).then(function (objects) {
-                    // console.log("objects", objects);
-                    stream.addData(objects);
-                });
+            if ((this.batchAddsDataToStream || shouldBatch) && canMap) {
+                this._addAllRawData(stream, records, context);
             } else {
                 for (i = 0, n = records && records.length; i < n; i++) {
                     this.addOneRawData(stream, records[i], context, canMap);
                 }
             }
+        }
+    },
+
+    _addAllRawData: {
+        value: function (stream, records, context) {
+            var promises = [],
+                promise, i, n;
+        
+            for (i = 0, n = records && records.length; i < n; i++) {
+                promise = this._mappedObjectForTypeAndRawData(stream.query.type, records[i], context);
+                promises.push(promise);
+                this._addMappingPromiseForStream(promise, stream);
+            }
+            Promise.all(promises).then(function (objects) {
+                stream.addData(objects);
+            });
         }
     },
 
@@ -2537,7 +2518,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                             rawDataStream = service.fetchData(query, rawDataStream) || rawDataStream;
                             self._dataServiceByDataStream.set(rawDataStream, service);
                             rawDataStream.then(function (rawData) {
-                                self.addRawData(stream, rawData);
+                                self.addRawData(stream, rawData, null, service.batchAddsDataToStream);
                                 self.rawDataDone(stream);
                             });
                         } else {
