@@ -12,10 +12,19 @@ var Component = require("../component").Component,
 var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListItemMenu.prototype */{
 
     constructor: {
-        value: function Control () {
+        value: function () {
             this.defineBindings({
                 "classList.has('montage--disabled')": {
                     "<-": "disabled"
+                },
+                "classList.has('is-opened')": {
+                    "<-": "isOpened"
+                },
+                "classList.has('has-options-left')": {
+                    "<-": "_leftButtons.defined() && _leftButtons.length > 0"
+                },
+                "classList.has('has-options-right')": {
+                    "<-": "_rightButtons.defined() && _rightButtons.length > 0"
                 },
                 "_deleteLabel": {
                     "<-": "data.defined() && userInterfaceDescriptor.defined() ? " +
@@ -31,11 +40,17 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: null
     },
 
+    /**
+     * @public
+     * @type {Object}
+     * @default null
+     * @description Represents the list item menu data
+     */
     data: {
         get: function () {
             return this._data;
         },
-        set: function(data) {
+        set: function (data) {
             if (this._data !== data) {
                 this._data = data;
                 this._loadDataUserInterfaceDescriptorIfNeeded();
@@ -43,22 +58,76 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     },
 
-    rowIndex: {
-        value: -1
-    },
-
+    /**
+     * @public
+     * @typedef {Object} List
+     * @default null
+     * @description Represents the list item menu
+     * parent's list component
+     */
     list: {
         value: null
     },
 
+    /**
+     * @public
+     * @type {boolean}
+     * @default false
+     * @description Indicates if the list item menu is selected
+     */
+    selected: {
+        value: false
+    },
+
+    /**
+     * @public
+     * @type {Number}
+     * @default -1
+     * @description Represents the list item menu position within 
+     * its parent's list component
+     */
+    rowIndex: {
+        value: -1
+    },
+
+    /**
+     * @public
+     * @typedef {Object} UserInterfaceDescriptor
+     * @default null
+     * @description Represents the list item menu
+     * user interface descriptor
+     */
     userInterfaceDescriptor: {
         value: null
     },
 
+    /**
+     * @public
+     * @type {string}
+     * @default 'Button'
+     * @description Default value for the label of delete button.
+     */
     deleteLabel: {
         value: null
     },
 
+    /**
+     * @private
+     * @type {boolean}
+     * @default false
+     * @description Indicates if the list item is currently slidding
+     */
+    _isTranslating: {
+        value: false
+    },
+
+    /**
+     * @private
+     * @type {Number}
+     * @default 0
+     * @description Represents the distance traveled by the list item 
+     * from the start position.
+     */
     _distance: {
         value: 0
     },
@@ -71,6 +140,12 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: false
     },
 
+    /**
+     * @private
+     * @type {boolean}
+     * @default false
+     * @description Indicates if the list item menu should open itself
+     */
     _shouldOpen: {
         set: function (should) {
             should = !!should;
@@ -85,6 +160,12 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     },
 
+    /**
+     * @private
+     * @type {boolean}
+     * @default false
+     * @description Indicates if the list item menu should close itself
+     */
     _shouldClose: {
         set: function (should) {
             should = !!should;
@@ -99,19 +180,23 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     },
 
+    /**
+     * @private
+     * @typedef {string} ListItemMenu.DIRECTION
+     * @default null
+     * @description Represents the current translating direction
+     */
     _direction: {
         value: null
     },
 
+    /**
+     * @private
+     * @typedef {string} ListItemMenu.DIRECTION
+     * @default null
+     * @description Represents the current opened side.
+     */
     _openedSide: {
-        get: function () {
-            return this._previousDirection ? 
-                this._previousDirection === ListItemMenu.DIRECTION.LEFT ?
-                ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT : null;
-        }
-    },
-
-    _previousDirection: {
         value: null
     },
 
@@ -119,6 +204,12 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: false
     },
 
+    /**
+     * @private
+     * @type {boolean}
+     * @default false
+     * @description Indicates if the list item menu is opened
+     */
     isOpened: {
         set: function (opened) {
             if (opened !== this._opened) {
@@ -128,23 +219,17 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     this.application.addEventListener('press', this);
                     this._pressComposer.addEventListener('pressStart', this);
                     this._pressComposer.load();
-                    this._previousDirection = this._direction;
                 } else {
                     this.application.removeEventListener('press', this);
                     this.application.removeEventListener('translateEnd', this);
                     this._pressComposer.removeEventListener('pressStart', this);
                     this._pressComposer.unload();
-                    this._previousDirection = null;
                 }
             }
         },
         get: function () {
             return this._isOpened;
         }
-    },
-
-    selected: {
-        value: false
     },
 
     __translateComposer: {
@@ -205,6 +290,31 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     prepareForActivationEvents: {
         value: function () {
             this._startListeningToTranslate();
+            this.classList.add("animation-enabled");
+
+            var self = this;
+
+            this.element.addEventListener("transitionend", function (event) {
+                if (event.target === self.dragElement) {
+                    if (self._isTranslating) {
+                        self._isTranslating = false;
+                    }
+
+                    if (self._shouldClose) {
+                        self.__shouldClose = false;
+                        self.isOpened = false;
+                        self._openedSide = null;
+
+                    } else if (self._shouldOpen) {
+                        self.__shouldOpen = false;
+                        self.isOpened = true;
+                        self._openedSide = self._direction === ListItemMenu.DIRECTION.LEFT ?
+                            ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT;
+                    }
+
+                    self._direction = null;
+                }
+            }, false);
         }
     },
 
@@ -230,17 +340,29 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     },
 
-
     close: {
         value: function () {
-            this._shouldClose = true;
-            this.needsDraw = true;
+            if (this.isOpened) {
+                this._shouldClose = true;
+                this.needsDraw = true;
+            }
         }
     },
 
-    /**
-     * Private Methods
-     */
+    _open: {
+        value: function (side) {
+            if (!this.isOpened) {
+                if (side === ListItemMenu.DIRECTION.RIGHT ||
+                    side === ListItemMenu.DIRECTION.LEFT
+                ) {
+                    this._direction = side === ListItemMenu.DIRECTION.LEFT ?
+                        ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT;
+                    this._shouldOpen = true;
+                    this.needsDraw = true;
+                }
+            }
+        }
+    },
 
     _loadDataUserInterfaceDescriptorIfNeeded: {
         value: function () {
@@ -264,19 +386,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     },
 
-    _open: {
-        value: function (side) {
-            if (side === ListItemMenu.DIRECTION.RIGHT ||
-                side === ListItemMenu.DIRECTION.LEFT
-            ) {
-                this._direction = side === ListItemMenu.DIRECTION.LEFT ?
-                    ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT;
-                this._shouldOpen = true;
-                this.needsDraw = true;
-            }
-        }
-    },
-    
     _hasReachMinDistance: {
         value: function () {
             return this._distance >= this._dragElementRect.width * 0.15;
@@ -288,7 +397,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             return this._distance >= this._dragElementRect.width * 0.85;
         }
     },
-
 
     _findVelocity: {
         value: function (deltaTime) {
@@ -330,7 +438,10 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: function (event) {
             this.application.addEventListener('translateEnd', this);
             this._startPositionX = this.__translateComposer.translateX;
-            this._isDragging = true;
+            this._isTranslating = true;
+            this.__shouldClose = false;
+            this.__shouldOpen = false;
+            this._direction = null;
             this._startTimestamp = event.timeStamp;
             this._addDragEventListeners();
         }
@@ -341,14 +452,16 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             this._translateX = event.translateX;
             this._deltaX = this._translateX - this._startPositionX;
 
-            if (!this.isOpened && !this._direction) {
-                this._direction = this._deltaX > 0 ?
-                    ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT;
-                
-                if ((this._direction === ListItemMenu.DIRECTION.LEFT &&
-                    (!this._rightButtons || !this._rightButtons.length)) ||
-                    (this._direction === ListItemMenu.DIRECTION.RIGHT &&
-                        (!this._leftButtons || !this._leftButtons.length))
+            if (!this._direction) {
+                this._direction = this._deltaX > 2 ?
+                    ListItemMenu.DIRECTION.RIGHT : this._deltaX < - 2 ?
+                        ListItemMenu.DIRECTION.LEFT : null;
+
+                if (!this.isOpened &&
+                    ((this._direction === ListItemMenu.DIRECTION.LEFT &&
+                        (!this._rightButtons || !this._rightButtons.length)) ||
+                        (this._direction === ListItemMenu.DIRECTION.RIGHT &&
+                            (!this._leftButtons || !this._leftButtons.length)))
                 ) {
                     // cancel translate if there are no options to show
                     this._translateComposer._cancel();
@@ -356,33 +469,37 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 }
             }
 
-            var dragElementWidth = this._dragElementRect.width,
-                distance = this._translateX + dragElementWidth,
-                direction = this._direction || this._previousDirection,
-                openedSide = direction === ListItemMenu.DIRECTION.LEFT ?
-                    ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT,
-                listButtons = openedSide === ListItemMenu.DIRECTION.RIGHT ?
-                    this._rightButtons : this._leftButtons;
+            var direction = this._direction;
 
-            if (direction === ListItemMenu.DIRECTION.LEFT && distance > 0 ||
-                direction === ListItemMenu.DIRECTION.RIGHT && distance < 0
-            ) {
-                distance = 0;
+            if (direction) {
+                var dragElementWidth = this._dragElementRect.width,
+                    distance = this._translateX + dragElementWidth,
+                    openedSide = direction === ListItemMenu.DIRECTION.LEFT ?
+                        ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT,
+                    listButtons = openedSide === ListItemMenu.DIRECTION.RIGHT ?
+                        this._rightButtons : this._leftButtons;
+
+                if (direction === ListItemMenu.DIRECTION.LEFT && distance > 0 ||
+                    direction === ListItemMenu.DIRECTION.RIGHT && distance < 0
+                ) {
+                    distance = 0;
+                }
+
+                distance = Math.abs(distance);
+
+                if (distance > dragElementWidth) {
+                    distance = dragElementWidth;
+                }
+
+                this._distance = distance;
+                this._hasReachEnd = !!(
+                    listButtons &&
+                    listButtons.length === 1 &&
+                    this._hasReachMaxDistance()
+                );
+
+                this.needsDraw = true;
             }
-
-            distance = Math.abs(distance);
-
-            if (distance > dragElementWidth) {
-                distance = dragElementWidth;
-            }
-
-            this._distance = distance;
-            this._hasReachEnd = !!(
-                listButtons &&
-                listButtons.length === 1 &&
-                this._hasReachMaxDistance()
-            );
-            this.needsDraw = true;
         }
     },
 
@@ -391,40 +508,52 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             var target = event.targetElement || event.target;
 
             if (target === this.element || this.element.contains(target)) {
-                if (this._hasReachEnd) {
-                    var actionEvent = document.createEvent("CustomEvent"),
-                        direction = this._direction || this._previousDirection;
-                    
-                    actionEvent.initCustomEvent("action", true, true, {
-                        side: direction === ListItemMenu.DIRECTION.LEFT ?
-                            ListItemMenu.DIRECTION.RIGHT :
-                            ListItemMenu.DIRECTION.LEFT
-                    });
-    
-                    this.dispatchEvent(actionEvent);
-                    this._shouldClose = true;
-                } else {
-                    var velocity = this._findVelocity(
-                        event.timeStamp - this._startTimestamp
-                    );
-    
-                    if (velocity > 0.15 &&
-                        Math.abs(this._deltaX) > this._dragElementRect.width * 0.05
-                    ) {
-                        if (this._deltaX > 0) { // right
-                            this._shouldOpen = this._isOpened &&
-                                this._openedSide === ListItemMenu.DIRECTION.RIGHT ?
-                                false : true;
-                        } else { // left
-                            this._shouldOpen = this._isOpened &&
-                                this._openedSide === ListItemMenu.DIRECTION.LEFT ?
-                                false : true;
+                var direction = this._direction;
+
+                if (direction) {
+                    if (this._hasReachEnd) {
+                        // Dispatches an action event and close the list item menu
+                        // when a user reached the maximum distance
+                        var actionEvent = document.createEvent("CustomEvent");
+
+                        actionEvent.initCustomEvent("action", true, true, {
+                            side: direction === ListItemMenu.DIRECTION.LEFT ?
+                                ListItemMenu.DIRECTION.RIGHT :
+                                ListItemMenu.DIRECTION.LEFT
+                        });
+
+                        this.dispatchEvent(actionEvent);
+                        this._shouldClose = true;
+                    } else {
+                        var velocity = this._findVelocity(
+                            event.timeStamp - this._startTimestamp
+                        ),
+                            hasReachMinDistance = this._hasReachMinDistance();
+
+                        if (hasReachMinDistance && velocity > 0.15 &&
+                            Math.abs(this._deltaX) > this._dragElementRect.width * 0.05
+                        ) { // should open a side if we detect a good swipe
+                            if (this._deltaX > 0) {
+                                // should open right side if not already opened
+                                this._shouldOpen = this._isOpened &&
+                                    this._openedSide === ListItemMenu.DIRECTION.RIGHT ?
+                                    false : true;
+                            } else {
+                                // should open left side if not already opened
+                                this._shouldOpen = this._isOpened &&
+                                    this._openedSide === ListItemMenu.DIRECTION.LEFT ?
+                                    false : true;
+                            }
+                        } else if (hasReachMinDistance) {
+                            // should open a side if the minimum distance has been reached.
+                            this._shouldOpen = true;
+                        } else {
+                            // should close a side if the minimum distance has not been reached.
+                            this._shouldClose = true;
                         }
-                    } else if (this._hasReachMinDistance()) {
-                        this._shouldOpen = true;
                     }
                 }
-    
+
                 this._resetTranslateContext();
             } else {
                 this._closeIfNeeded();
@@ -435,13 +564,15 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     handleTranslateCancel: {
         value: function () {
             this._resetTranslateContext();
+            this._isTranslating = false;
+            this._direction = null;
         }
     },
 
     handlePressStart: {
         value: function (event) {
             var target = event.targetElement;
-            
+
             if (this.element !== target && !this.element.contains(target)) {
                 this.close();
             }
@@ -456,7 +587,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
     _closeIfNeeded: {
         value: function () {
-            if (this.isOpened && !this._isDragging) {
+            if (this.isOpened && !this._isTranslating) {
                 this.close();
             }
         }
@@ -481,7 +612,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             this._removeDragEventListeners();
             this._startTimestamp = 0;
             this._distance = 0;
-            this._isDragging = false;
             this._hasReachEnd = false;
             this.needsDraw = true;
         }
@@ -497,11 +627,13 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 if ((this._rightButtons && this._rightButtons.length > 3) ||
                     (this._leftButtons && this._leftButtons.length > 3)
                 ) {
-                    throw new Error('list item menu doesn\'t support more' +
-                        'than 3 buttons per side');
+                    throw new Error(
+                        'the list item menu component doesn\'t support' +
+                        'more than 3 buttons per slidding side'
+                    );
                 }
 
-                this.disabled = this._rightButtons && !this._rightButtons.length && 
+                this.disabled = this._rightButtons && !this._rightButtons.length &&
                     this._leftButtons && !this._leftButtons.length;
             }
 
@@ -533,19 +665,20 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     draw: {
         value: function () {
             if (this.__translateComposer && !this.disabled) {
-                var translateX = this._translateX,
-                    dragElementWidth = this._dragElementRect.width,
+                var dragElementWidth = this._dragElementRect.width,
                     dragElementStyle = this.dragElement.style,
                     elementClassList = this.element.classList,
                     leftOptionsElementClassList = this.leftOptionsElement.classList,
                     rightOptionsElementClassList = this.rightOptionsElement.classList,
-                    direction = this._direction || this._previousDirection,
-                    isDirectionLeft = direction === ListItemMenu.DIRECTION.LEFT,
                     buttonList = isDirectionLeft ?
                         this._rightButtons : this._leftButtons,
-                    length, buttonPosition, openedSide;
+                    direction = this._direction,
+                    isDirectionLeft = direction === ListItemMenu.DIRECTION.LEFT,
+                    length, translateX;
 
-                if (this._isDragging) {
+                if (this._isTranslating && !this._shouldOpen && !this._shouldClose) {
+                    // logic when a user is translating the list item
+                    translateX = this._translateX;
                     dragElementStyle[ListItemMenu.cssTransition] = 'none';
 
                     if (!this.isOpened) {
@@ -574,109 +707,57 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     if (translateX < dragElementWidth * -2) {
                         translateX = dragElementWidth * -2;
                     }
-                    
-                    if (buttonList && (length = buttonList.length)) {
-                        buttonPosition = (Math.abs(
-                            Math.abs(translateX) - dragElementWidth) / length
-                        );
 
+                    if (buttonList && (length = buttonList.length)) {
                         this._translateButtons(
                             buttonList,
-                            buttonPosition,
+                            (Math.abs(
+                                Math.abs(translateX) - dragElementWidth) / length
+                            ),
                             'none',
                             isDirectionLeft
-                        );                    
+                        );
                     }
-                } else if (this._direction || this._shouldClose) {
+                } else if (this._shouldOpen || this._shouldClose) {
                     if (this._shouldOpen) {
-                        translateX = dragElementWidth *
-                            (isDirectionLeft ? -1.5 : -0.5);
-
-                        if (buttonList && (length = buttonList.length)) {
-                            this._translateButtons(
-                                buttonList,
-                                dragElementWidth / 2 / length,
-                                ListItemMenu.DEFAULT_TRANSITION,
-                                isDirectionLeft
-                            );
-                        }
-
-                        this.__translateComposer.translateX = translateX;
-                        this.isOpened = true;
-                    } else {
+                        translateX = this.__translateComposer.translateX = (
+                            dragElementWidth * (isDirectionLeft ? -1.5 : -0.5)
+                        );
+                    } else if (this._shouldClose) {
                         translateX = this.__translateComposer.translateX = (
                             - dragElementWidth
                         );
-                        this.isOpened = false;
+                    }
+
+                    if (buttonList && (length = buttonList.length)) {
+                        this._translateButtons(
+                            buttonList,
+                            dragElementWidth / 2 / length,
+                            ListItemMenu.DEFAULT_TRANSITION,
+                            isDirectionLeft
+                        );
                     }
 
                     dragElementStyle[ListItemMenu.cssTransition] = (
                         ListItemMenu.DEFAULT_TRANSITION
                     );
-
-                    this._shouldClose = false;
-                    this._shouldOpen = false;
-                    this._direction = null;
-                } else {
-                    translateX = - dragElementWidth;
-
-                    if (this.isOpened) {
-                        dragElementStyle[ListItemMenu.cssTransition] = (
-                            ListItemMenu.DEFAULT_TRANSITION
-                        );
-
-                        if ((this._delta < 0 || this._shouldOpen) &&
-                            this._previousDirection === ListItemMenu.DIRECTION.LEFT
-                        ) {
-                            translateX = dragElementWidth * -1.5;
-                        } else if ((this._delta > 0 || this._shouldOpen) &&
-                            this._previousDirection === ListItemMenu.DIRECTION.RIGHT
-                        ) {
-                            translateX = dragElementWidth * -0.5;
-                        } else {
-                            this.isOpened = false;
-                        }
-
-                        this._shouldOpen = false;
-
-                        if (this.isOpened) {
-                            if (buttonList && (length = buttonList.length)) {
-                                this._translateButtons(
-                                    buttonList,
-                                    dragElementWidth / 2 / length,
-                                    ListItemMenu.DEFAULT_TRANSITION,
-                                    isDirectionLeft
-                                );
-                            }
-                        }
-                    }
-
-                    this.__translateComposer.translateX = translateX;
                 }
 
-                dragElementStyle[ListItemMenu.cssTransform] = (
-                    "translate3d(" + translateX + "px,0,0)"
-                );
-
-                if (direction) {
-                    openedSide = this._openedSide || (
-                        direction === ListItemMenu.DIRECTION.LEFT ?
-                            ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT
+                if (translateX != void 0) {
+                    dragElementStyle[ListItemMenu.cssTransform] = (
+                        "translate3d(" + translateX + "px,0,0)"
                     );
                 }
 
-                if ((openedSide && this.isOpened) || this._distance > 0) {
-                    elementClassList.add('is-opened');
-                    elementClassList.add(openedSide.toLowerCase() + '-side');
+                if (this._openedSide) {
+                    elementClassList.add(this._openedSide.toLowerCase() + '-side');
                 } else {
-                    elementClassList.remove('is-opened');
                     elementClassList.remove('left-side');
                     elementClassList.remove('right-side');
                 }
 
-
                 if (this._hasReachEnd) {
-                    if (openedSide === ListItemMenu.DIRECTION.LEFT) {
+                    if (this._openedSide === ListItemMenu.DIRECTION.LEFT) {
                         leftOptionsElementClassList.add('has-reach-end');
                     } else {
                         rightOptionsElementClassList.add('has-reach-end');
@@ -685,7 +766,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     leftOptionsElementClassList.remove('has-reach-end');
                     rightOptionsElementClassList.remove('has-reach-end');
                 }
-            }            
+            }
         }
     },
 
@@ -708,7 +789,8 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
                 buttonStyle[ListItemMenu.cssTransition] = transition;
                 buttonStyle[ListItemMenu.cssTransform] = (
-                    "translate3d(" + translate + "px,0,0)");
+                    "translate3d(" + translate + "px,0,0)"
+                );
             }
         }
     }
@@ -720,7 +802,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 RIGHT: 'RIGHT'
             }
         },
-        
+
         DEFAULT_TRANSITION: {
             value: 'transform .3s cubic-bezier(0, 0, 0.58, 1)'
         }
