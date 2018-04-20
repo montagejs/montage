@@ -15,6 +15,7 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
      * @type {DataObjectDescriptor}
      */
     type: {
+        serializable: "value",
         value: undefined
     },
 
