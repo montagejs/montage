@@ -149,11 +149,8 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     _shouldOpen: {
         set: function (should) {
             should = !!should;
-
-            if (should !== this.__shouldOpen) {
-                this.__shouldOpen = should;
-                this.__shouldClose = !should;
-            }
+            this.__shouldOpen = should;
+            this.__shouldClose = !should;
         },
         get: function () {
             return this.__shouldOpen;
@@ -169,11 +166,8 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     _shouldClose: {
         set: function (should) {
             should = !!should;
-
-            if (should !== this.__shouldClose) {
-                this.__shouldClose = should;
-                this.__shouldOpen = !should;
-            }
+            this.__shouldClose = should;
+            this.__shouldOpen = !should;
         },
         get: function () {
             return this.__shouldClose;
@@ -438,7 +432,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: function (event) {
             this.application.addEventListener('translateEnd', this);
             this._startPositionX = this.__translateComposer.translateX;
-            this._isTranslating = true;
+            this._isTranslating = false;
             this.__shouldClose = false;
             this.__shouldOpen = false;
             this._direction = null;
@@ -472,6 +466,8 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             var direction = this._direction;
 
             if (direction) {
+                this._isTranslating = true;
+
                 var dragElementWidth = this._dragElementRect.width,
                     distance = this._translateX + dragElementWidth,
                     openedSide = direction === ListItemMenu.DIRECTION.LEFT ?
@@ -533,18 +529,25 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         if (hasReachMinDistance && velocity > 0.15 &&
                             Math.abs(this._deltaX) > this._dragElementRect.width * 0.05
                         ) { // should open a side if we detect a good swipe
+                            console.log("swipe detected")
+
                             if (this._deltaX > 0) {
                                 // should open right side if not already opened
                                 this._shouldOpen = this._isOpened &&
                                     this._openedSide === ListItemMenu.DIRECTION.RIGHT ?
                                     false : true;
+                                console.log("swipe right detected", this._shouldOpen, this._shouldClose)
+
                             } else {
                                 // should open left side if not already opened
                                 this._shouldOpen = this._isOpened &&
                                     this._openedSide === ListItemMenu.DIRECTION.LEFT ?
                                     false : true;
+                                console.log("swipe left detected", this._shouldOpen, this._shouldClose)
+
                             }
-                        } else if (hasReachMinDistance) {
+                        } else if (hasReachMinDistance && !this._isOpened) {
+                            console.log(hasReachMinDistance)
                             // should open a side if the minimum distance has been reached.
                             this._shouldOpen = true;
                         } else {
@@ -670,10 +673,10 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     elementClassList = this.element.classList,
                     leftOptionsElementClassList = this.leftOptionsElement.classList,
                     rightOptionsElementClassList = this.rightOptionsElement.classList,
-                    buttonList = isDirectionLeft ?
-                        this._rightButtons : this._leftButtons,
                     direction = this._direction,
                     isDirectionLeft = direction === ListItemMenu.DIRECTION.LEFT,
+                    buttonList = isDirectionLeft ?
+                        this._rightButtons : this._leftButtons,
                     length, translateX;
 
                 if (this._isTranslating && !this._shouldOpen && !this._shouldClose) {
@@ -694,7 +697,9 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
                     // Block any translation when we reach the edges of a side.
                     if (this._direction &&
-                        Math.abs(this._deltaX) > dragElementWidth
+                        Math.abs(
+                            !this.isOpened ? this._deltaX : this._deltaX / 2
+                        ) > dragElementWidth
                     ) {
                         translateX = isDirectionLeft && this._deltaX < 0 ?
                             dragElementWidth * -2 : 0;
