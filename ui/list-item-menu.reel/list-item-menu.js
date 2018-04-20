@@ -20,6 +20,9 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 "classList.has('is-opened')": {
                     "<-": "isOpened"
                 },
+                "classList.has('is-translating')": {
+                    "<-": "_isTranslating"
+                },
                 "classList.has('has-options-left')": {
                     "<-": "_leftButtons.defined() && _leftButtons.length > 0"
                 },
@@ -529,25 +532,20 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         if (hasReachMinDistance && velocity > 0.15 &&
                             Math.abs(this._deltaX) > this._dragElementRect.width * 0.05
                         ) { // should open a side if we detect a good swipe
-                            console.log("swipe detected")
 
                             if (this._deltaX > 0) {
                                 // should open right side if not already opened
                                 this._shouldOpen = this._isOpened &&
                                     this._openedSide === ListItemMenu.DIRECTION.RIGHT ?
                                     false : true;
-                                console.log("swipe right detected", this._shouldOpen, this._shouldClose)
 
                             } else {
                                 // should open left side if not already opened
                                 this._shouldOpen = this._isOpened &&
                                     this._openedSide === ListItemMenu.DIRECTION.LEFT ?
                                     false : true;
-                                console.log("swipe left detected", this._shouldOpen, this._shouldClose)
-
                             }
                         } else if (hasReachMinDistance && !this._isOpened) {
-                            console.log(hasReachMinDistance)
                             // should open a side if the minimum distance has been reached.
                             this._shouldOpen = true;
                         } else {

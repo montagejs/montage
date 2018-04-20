@@ -25,6 +25,7 @@ header {
 }
 
 .items {
+    margin: auto;
     height: 500px;
     width: 300px;
 }
