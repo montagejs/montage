@@ -280,13 +280,13 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 }
             }
 
-            this._startListeningToTranslateIfNeeded();
+            this._startListeningToInitialInteractionsIfNeeded();
         }
     },
 
     prepareForActivationEvents: {
         value: function () {
-            this._startListeningToTranslate();
+            this._startListeningToInitialInteractions();
             this.classList.add("animation-enabled");
 
             var self = this;
@@ -317,7 +317,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
     exitDocument: {
         value: function () {
-            this._stopListeningToTranslateIfNeeded();
+            this._stopListeningToInitialInteractions();
         }
     },
 
@@ -409,24 +409,94 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     * Event Listeners
     */
 
-    _startListeningToTranslateIfNeeded: {
+    _startListeningToInitialInteractionsIfNeeded: {
         value: function () {
             if (this.preparedForActivationEvents) {
-                this._startListeningToTranslate();
+                this._startListeningToInitialInteractions();
             }
         }
     },
 
-    _startListeningToTranslate: {
+    _startListeningToInitialInteractions: {
         value: function () {
             this._translateComposer.addEventListener('translateStart', this);
+
+            if (window.PointerEvent) {
+                this.element.addEventListener('pointerenter', this);
+            } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                this._element.removeEventListener("MSPointerEnter", this);
+            } else {
+                this.element.addEventListener('mouseenter', this);
+            }
         }
     },
 
-    _stopListeningToTranslateIfNeeded: {
+    _stopListeningToInitialInteractions: {
         value: function () {
             if (this.preparedForActivationEvents) {
                 this._translateComposer.removeEventListener('translateStart', this);
+
+                if (window.PointerEvent) {
+                    this.element.removeEventListener('pointerenter', this);
+                } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                    this._element.removeEventListener("MSPointerEnter", this);
+                } else {
+                    this.element.removeEventListener('mouseenter', this);
+                }
+            }
+        }
+    },
+
+    handlePointerenter: {
+        value: function () {
+            if (window.PointerEvent) {
+                this.element.addEventListener('pointermove', this);
+                this.element.addEventListener('pointerleave', this);
+            } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                this.element.addEventListener('MSPointerMove', this);
+                this.element.addEventListener('MSPointerLeave', this);
+            } else {
+                this.element.addEventListener('mousemove', this);
+                this.element.addEventListener('mouseleave', this);
+            }
+
+            this._handlePointerOver();
+        }
+    },
+
+    _handlePointerOver: {
+        value: function () {
+            if (!this.isOpened && !this._isTranslating) {
+                if (this._shouldFoldItem !== true) {
+                    this._shouldFoldItem = true;
+                    this.needsDraw = true;
+                }
+            } else {
+                this._shouldFoldItem = false;
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    handlePointerleave: {
+        value: function () {
+            if (window.PointerEvent) {
+                this.element.removeEventListener('pointermove', this);
+                this.element.removeEventListener('pointerleave', this);
+            } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                this.element.removeEventListener('MSPointerMove', this);
+                this.element.removeEventListener('MSPointerLeave', this);
+            } else {
+                this.element.removeEventListener('mousemove', this);
+                this.element.removeEventListener('mouseleave', this);
+            }
+
+            if (!this.isOpened && !this._isTranslating &&
+                this._shouldFoldItem !== false
+            ) {
+                this._shouldFoldItem = false;
+                this._shouldUnfoldItem = true;
+                this.needsDraw = true;
             }
         }
     },
@@ -620,7 +690,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
     willDraw: {
         value: function () {
-            if (!this._dragElementRect || this._dragElementRect.width == 0) {
+            if (!this._dragElementRect || this._dragElementRect.width === 0) {
                 this._dragElementRect = this.dragElement.getBoundingClientRect();
                 this._leftButtons = this.leftOptionsElement.querySelectorAll('button');
                 this._rightButtons = this.rightOptionsElement.querySelectorAll('button');
@@ -746,7 +816,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     );
                 }
 
-                if (translateX != void 0) {
+                if (translateX !== void 0) {
                     dragElementStyle[ListItemMenu.cssTransform] = (
                         "translate3d(" + translateX + "px,0,0)"
                     );
@@ -768,6 +838,17 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 } else {
                     leftOptionsElementClassList.remove('has-reach-end');
                     rightOptionsElementClassList.remove('has-reach-end');
+                }
+
+                if (this._shouldFoldItem) {
+                    elementClassList.add('fold');
+                } else {
+                    elementClassList.remove('fold');
+                }
+
+                if (this._shouldUnfoldItem) {
+                    elementClassList.add('unfold');
+                    this._shouldUnfoldItem = false;
                 }
             }
         }
@@ -811,3 +892,11 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     }
 );
+
+ListItemMenu.prototype.handlePointermove = ListItemMenu.prototype._handlePointerOver;
+ListItemMenu.prototype.handleMSPointerEnter = ListItemMenu.prototype.handlePointerenter;
+ListItemMenu.prototype.handleMSPointerMove = ListItemMenu.prototype._handlePointerOver;
+ListItemMenu.prototype.handleMSPointerLeave = ListItemMenu.prototype.handlePointerleave;
+ListItemMenu.prototype.handleMouseenter = ListItemMenu.prototype.handlePointerenter;
+ListItemMenu.prototype.handleMousemove = ListItemMenu.prototype._handlePointerOver;
+ListItemMenu.prototype.handleMouseleave = ListItemMenu.prototype.handlePointerleave;
