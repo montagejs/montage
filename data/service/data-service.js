@@ -483,9 +483,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     _objectDescriptorForType: {
         value: function (type) {
-            return  this._constructorToObjectDescriptorMap.get(type) ||
-                    typeof type === "string" && this._moduleIdToObjectDescriptorMap[type] ||
-                    type;
+            var descriptor = this._constructorToObjectDescriptorMap.get(type) ||
+                             typeof type === "string" && this._moduleIdToObjectDescriptorMap[type];
+            if (!descriptor && type instanceof ObjectDescriptor) {
+                descriptor = this._moduleIdToObjectDescriptorMap[[type.module.id, type.name].join("/")];
+            }
+            
+            return  descriptor;
         }
     },
 

@@ -9,6 +9,8 @@ var Criteria = require("montage/core/criteria").Criteria,
     serialize = require("montage/core/serialization/serializer/montage-serializer").serialize,
     deserialize = require("montage/core/serialization/deserializer/montage-deserializer").deserialize;
 
+var movieDescriptor = require("spec/data/logic/model/movie.mjson").montageObject;
+
 describe("A DataQuery", function() {
 
     it("can be created", function () {
@@ -53,7 +55,7 @@ describe("A DataQuery", function() {
             city: 'San-Francisco',
             country: 'us',
             unit: 'imperial'
-        }, dataType, dataCriteria, dataQuerySource, dataQueryJson;
+        }, dataType, dataCriteria, dataQuerySource, dataQueryJson, dataQueryJsonObj;
 
         it("with constructor as type", function (done) {
     
@@ -83,7 +85,7 @@ describe("A DataQuery", function() {
             }
         });
 
-        it("with objectDescriptor as type", function (done) {
+        it("with programmatic objectDescriptor as type", function (done) {
 
             var weatherReportReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/weather-report", require),
                 weatherReportDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(weatherReportReference, "WeatherReport");
@@ -95,25 +97,51 @@ describe("A DataQuery", function() {
     
             dataQuerySource  = DataQuery.withTypeAndCriteria(dataType, dataCriteria);
             dataQueryJson = serialize(dataQuerySource, require);
-    
             try {
                 expect(dataQueryJson).toBeDefined();
                 var dataQueryJsonObj = JSON.parse(dataQueryJson);
-                console.log("DataQuery.1", dataQueryJsonObj);
                 expect(dataQueryJsonObj.objectDescriptor_weatherreport).toBeDefined();
                 expect(dataQueryJsonObj.objectDescriptor_weatherreport.prototype).toBeDefined();
                 // expect(dataQueryJsonObj.weatherreport.object).toBe('spec/data/logic/model/weather-report');
     
                 expect(dataQueryJsonObj.criteria).toBeDefined();
                 expect(dataQueryJsonObj.criteria.prototype).toBe('montage/core/criteria');
-                done();
-                // var dataQuery = deserialize(dataQueryJson, require).then(function (dataQueryFromJson) {
-                //     console.log("DataQuery.2", dataQueryFromJson);
-                //     expect(dataQueryJson).toBeDefined();
-                //     done();
-                // }, function (err) {
-                //     fail(err);
-                // });
+
+                deserialize(dataQueryJson, require).then(function (dataQueryFromJson) {
+                    expect(dataQueryFromJson).toBeDefined();
+                    done();
+                }, function (err) {
+                    fail(err);
+                });
+    
+            } catch (err) {
+                fail(err);
+            }
+
+        });
+
+        it("with mjson objectDescriptor as type", function (done) {
+            dataType = movieDescriptor;
+            dataCriteria = new Criteria().initWithExpression(dataExpression, dataParameters);
+    
+            dataQuerySource  = DataQuery.withTypeAndCriteria(dataType, dataCriteria);
+            dataQueryJson = serialize(dataQuerySource, require);
+
+            try {
+                expect(dataQueryJson).toBeDefined();
+                dataQueryJsonObj = JSON.parse(dataQueryJson);
+                expect(dataQueryJsonObj.root.values.typeModule["%"]).toBe(movieDescriptor.objectDescriptorInstanceModule.id);
+    
+                expect(dataQueryJsonObj.criteria).toBeDefined();
+                expect(dataQueryJsonObj.criteria.prototype).toBe('montage/core/criteria');
+
+                deserialize(dataQueryJson, require).then(function (dataQueryFromJson) {
+                    expect(dataQueryFromJson).toBeDefined();
+                    expect(dataQueryFromJson.type).toBe(movieDescriptor);
+                    done();
+                }, function (err) {
+                    fail(err);
+                });
     
             } catch (err) {
                 fail(err);
