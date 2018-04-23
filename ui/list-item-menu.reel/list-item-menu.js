@@ -424,6 +424,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: function () {
             this._translateComposer.addEventListener('translateStart', this);
             this.element.addEventListener("transitionend", this);
+            window.addEventListener("resize", this);
 
             if (window.PointerEvent) {
                 this.element.addEventListener('pointerenter', this);
@@ -440,6 +441,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             if (this.preparedForActivationEvents) {
                 this._translateComposer.removeEventListener('translateStart', this);
                 this.element.removeEventListener("transitionend", this);
+                window.removeEventListener("resize", this);
 
                 if (window.PointerEvent) {
                     this.element.removeEventListener('pointerenter', this);
@@ -449,6 +451,13 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     this.element.removeEventListener('mouseenter', this);
                 }
             }
+        }
+    },
+
+    handleResize: {
+        value: function () {
+            this._forceComputingBoundaries = true;
+            this.needsDraw = true;
         }
     },
 
@@ -723,7 +732,11 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
     willDraw: {
         value: function () {
-            if (!this._dragElementRect || this._dragElementRect.width === 0) {
+            if (
+                !this._dragElementRect ||
+                this._dragElementRect.width === 0 ||
+                this._forceComputingBoundaries
+            ) {
                 this._dragElementRect = this.dragElement.getBoundingClientRect();
                 this._hotCornersElementRect = this.hotCornersElement.getBoundingClientRect();
                 this._leftButtons = this.leftOptionsElement.querySelectorAll('button');
