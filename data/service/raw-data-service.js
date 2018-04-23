@@ -163,10 +163,6 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 childService = this._childServiceForQuery(stream.query),
                 query = stream.query;
 
-            //TODO [TJ] Determine purpose of this check...
-            // if (childService && childService.identifier.indexOf("offline-service") === -1) {
-            //     childService._fetchRawData(stream);
-            // } else
             if (childService) {
                 childService._fetchRawData(stream);
             } else if (query.authorization) {

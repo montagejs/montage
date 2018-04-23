@@ -80,8 +80,8 @@ module.exports = require("montage-testing").run(require, [
     "spec/serialization/serialization-inspector-spec",
     "spec/serialization/serialization-merger-spec",
     {name: "spec/serialization/montage-serializer-spec"},
-    { name: "spec/serialization/montage-deserializer-spec" },
     {name: "spec/serialization/montage-serializer-element-spec", node: false},
+    { name: "spec/serialization/montage-deserializer-spec", node: false },
     { name: "spec/serialization/montage-deserializer-element-spec", node: false },
     // Trigger
     {name: "spec/trigger/trigger-spec", node: false},
@@ -106,7 +106,7 @@ module.exports = require("montage-testing").run(require, [
     // Reel
     {name: "spec/reel/template-spec", node: false, karma: true},
     // UI - repetition
-    {name: "spec/ui/repetition-spec", node: false, karma: false},
+    { name: "spec/ui/repetition-spec", node: false, karma: false},
     {name: "spec/ui/repetition-selection-spec", node: false, karma: false},
     {name: "spec/ui/repetition-binding-spec", node: false},
     {name: "spec/core/localizer-spec", node: false, karma: false},
@@ -130,13 +130,13 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/data/data-service-mapping", node: false},
 
     // // Meta
-    // { name: "spec/meta/converter-object-descriptor-spec", node: false},
-    // { name: "spec/meta/module-object-descriptor-spec", node: false},
-    // {name: "spec/meta/build-in-component-object-descriptor-spec", node: false},
-    // {name: "spec/meta/component-object-descriptor-spec", node: false},
-    // {name: "spec/meta/controller-object-descriptor-spec", node: false},
-    // {name: "spec/meta/event-descriptor-spec", node: false},
-    // { name: "spec/meta/object-descriptor-spec", node: false}
+    { name: "spec/meta/converter-object-descriptor-spec", node: false},
+    { name: "spec/meta/module-object-descriptor-spec", node: false},
+    {name: "spec/meta/build-in-component-object-descriptor-spec", node: false},
+    {name: "spec/meta/component-object-descriptor-spec", node: false},
+    {name: "spec/meta/controller-object-descriptor-spec", node: false},
+    {name: "spec/meta/event-descriptor-spec", node: false},
+    { name: "spec/meta/object-descriptor-spec", node: false}
 ]).then(function () {
     console.log('montage-testing', 'End');
 }, function (err) {
