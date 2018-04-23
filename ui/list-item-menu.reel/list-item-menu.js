@@ -584,14 +584,15 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 this._isTranslating = true;
 
                 var dragElementWidth = this._dragElementRect.width,
-                    distance = this._translateX + dragElementWidth;
+                    distance = this._translateX + dragElementWidth,
+                    buttonList;
 
                 if (this._openedSide) {
                     buttonList = this._openedSide === ListItemMenu.DIRECTION.RIGHT ?
                         this._rightButtons : this._leftButtons;
                 } else {
                     buttonList = direction === ListItemMenu.DIRECTION.LEFT ?
-                        this._rightButtons : this._leftButtons
+                        this._rightButtons : this._leftButtons;
                 }
 
                 if (direction === ListItemMenu.DIRECTION.LEFT && distance > 0 ||
