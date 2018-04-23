@@ -488,11 +488,15 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     handlePointerenter: {
         value: function (event) {
             if (window.PointerEvent) {
-                this.element.addEventListener('pointermove', this);
-                this.element.addEventListener('pointerleave', this);
+                if (event.pointerType === this._MOUSE_POINTER) {
+                    this.element.addEventListener('pointermove', this);
+                    this.element.addEventListener('pointerleave', this);
+                }
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
-                this.element.addEventListener('MSPointerMove', this);
-                this.element.addEventListener('MSPointerLeave', this);
+                if (event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE) {
+                    this.element.addEventListener('MSPointerMove', this);
+                    this.element.addEventListener('MSPointerLeave', this);
+                }
             } else {
                 this.element.addEventListener('mousemove', this);
                 this.element.addEventListener('mouseleave', this);
