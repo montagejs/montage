@@ -574,7 +574,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     childServiceForType: {
         value: function (type) {
             var descriptor = this._objectDescriptorForType(type),
-                services = this._childServicesByObjectDescriptor.get(descriptor) || this._childServicesByObjectDescriptor.get(null)
+                services = this._childServicesByObjectDescriptor.get(descriptor) || this._childServicesByObjectDescriptor.get(null);
 
             return services && services[0] || null;
         }
