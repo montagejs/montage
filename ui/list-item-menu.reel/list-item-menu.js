@@ -543,11 +543,15 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 this._isTranslating = true;
 
                 var dragElementWidth = this._dragElementRect.width,
-                    distance = this._translateX + dragElementWidth,
-                    openedSide = direction === ListItemMenu.DIRECTION.LEFT ?
-                        ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT,
-                    listButtons = openedSide === ListItemMenu.DIRECTION.RIGHT ?
+                    distance = this._translateX + dragElementWidth;
+
+                if (this._openedSide) {
+                    buttonList = this._openedSide === ListItemMenu.DIRECTION.RIGHT ?
                         this._rightButtons : this._leftButtons;
+                } else {
+                    buttonList = direction === ListItemMenu.DIRECTION.LEFT ?
+                        this._rightButtons : this._leftButtons
+                }
 
                 if (direction === ListItemMenu.DIRECTION.LEFT && distance > 0 ||
                     direction === ListItemMenu.DIRECTION.RIGHT && distance < 0
@@ -563,8 +567,8 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
                 this._distance = distance;
                 this._hasReachEnd = !!(
-                    listButtons &&
-                    listButtons.length === 1 &&
+                    buttonList &&
+                    buttonList.length === 1 &&
                     this._hasReachMaxDistance()
                 );
 
@@ -706,8 +710,18 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     );
                 }
 
-                this.disabled = this._rightButtons && !this._rightButtons.length &&
-                    this._leftButtons && !this._leftButtons.length;
+                var hasLeftButtons = this._leftButtons && this._leftButtons.length > 0,
+                    hasRightButtons = this._rightButtons && this._rightButtons.length > 0;
+
+                if (hasRightButtons) {
+                    this._translateButtons(this._rightButtons, 0, 'none', false);
+                }
+
+                if (hasLeftButtons) {
+                    this._translateButtons(this._leftButtons, 0, 'none', true);
+                }
+
+                this.disabled = !hasLeftButtons && !hasRightButtons;
             }
 
             this._setButtonBoundaries(this._rightButtons, 'marginLeft');
@@ -745,8 +759,11 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     rightOptionsElementClassList = this.rightOptionsElement.classList,
                     direction = this._direction,
                     isDirectionLeft = direction === ListItemMenu.DIRECTION.LEFT,
-                    buttonList = isDirectionLeft ?
+                    openedSide = this._openedSide || (isDirectionLeft ?
+                        ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT),
+                    buttonList = openedSide === ListItemMenu.DIRECTION.RIGHT ?
                         this._rightButtons : this._leftButtons,
+                    isLeftSideOpened = openedSide === ListItemMenu.DIRECTION.LEFT,
                     length, translateX;
 
                 if (this._isTranslating && !this._shouldOpen && !this._shouldClose) {
@@ -790,7 +807,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                                 Math.abs(translateX) - dragElementWidth) / length
                             ),
                             'none',
-                            isDirectionLeft
+                            isLeftSideOpened
                         );
                     }
                 } else if (this._shouldOpen || this._shouldClose) {
@@ -807,9 +824,9 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     if (buttonList && (length = buttonList.length)) {
                         this._translateButtons(
                             buttonList,
-                            dragElementWidth / 2 / length,
+                            this._shouldClose ? 0 : dragElementWidth / 2 / length,
                             ListItemMenu.DEFAULT_TRANSITION,
-                            isDirectionLeft
+                            isLeftSideOpened
                         );
                     }
 
@@ -817,8 +834,10 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         ListItemMenu.DEFAULT_TRANSITION
                     );
                 } else {
-                    rightOptionsElementClassList.remove('hide');
-                    leftOptionsElementClassList.remove('hide');
+                    if (!this.isOpened) {
+                        rightOptionsElementClassList.remove('hide');
+                        leftOptionsElementClassList.remove('hide');
+                    }
                 }
 
                 if (translateX !== void 0) {
@@ -890,20 +909,19 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     },
 
     _translateButtons: {
-        value: function (buttonList, initialPosition, transition, isDirectionLeft) {
+        value: function (buttonList, position, transition, isLeftSide) {
             var button, buttonStyle, translate;
 
             for (var i = 0, length = buttonList.length; i < length; i++) {
                 button = buttonList[i];
                 buttonStyle = button.style;
 
-                if (isDirectionLeft) {
-                    buttonStyle.zIndex = i;
-                    translate = i * initialPosition;
-
-                } else {
+                if (isLeftSide) {
                     buttonStyle.zIndex = length - i;
-                    translate = -((length - i - 1) * initialPosition);
+                    translate = -((length - i - 1) * position);
+                } else {
+                    buttonStyle.zIndex = i;
+                    translate = i * position;
                 }
 
                 buttonStyle[ListItemMenu.cssTransition] = transition;
