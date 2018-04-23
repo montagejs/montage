@@ -448,7 +448,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     },
 
     handlePointerenter: {
-        value: function () {
+        value: function (event) {
             if (window.PointerEvent) {
                 this.element.addEventListener('pointermove', this);
                 this.element.addEventListener('pointerleave', this);
@@ -460,18 +460,17 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 this.element.addEventListener('mouseleave', this);
             }
 
-            this._handlePointerOver();
+            this._handlePointerOver(event);
         }
     },
 
     _handlePointerOver: {
-        value: function () {
+        value: function (event) {
             if (!this.isOpened && !this._isTranslating) {
-                if (this._shouldFoldItem !== true) {
-                    this._shouldFoldItem = true;
-                    this.needsDraw = true;
-                }
+                this._overPositionX = event.clientX;
+                this.needsDraw = true;
             } else {
+                this._overPositionX = null;
                 this._shouldFoldItem = false;
                 this.needsDraw = true;
             }
@@ -498,6 +497,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 this._shouldUnfoldItem = true;
                 this.needsDraw = true;
             }
+            this._overPositionX = null;
         }
     },
 
@@ -692,6 +692,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: function () {
             if (!this._dragElementRect || this._dragElementRect.width === 0) {
                 this._dragElementRect = this.dragElement.getBoundingClientRect();
+                this._hotCornersElementRect = this.hotCornersElement.getBoundingClientRect();
                 this._leftButtons = this.leftOptionsElement.querySelectorAll('button');
                 this._rightButtons = this.rightOptionsElement.querySelectorAll('button');
 
@@ -840,15 +841,43 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     rightOptionsElementClassList.remove('has-reach-end');
                 }
 
-                if (this._shouldFoldItem) {
-                    elementClassList.add('fold');
-                } else {
-                    elementClassList.remove('fold');
+                if (this._overPositionX !== null) {
+                    var threshold = dragElementWidth * 0.25;
+
+                    if (
+                        this._overPositionX >= this._hotCornersElementRect.left &&
+                        this._overPositionX <= this._hotCornersElementRect.left + threshold
+                    ) {
+                        this._foldSide = ListItemMenu.DIRECTION.LEFT;
+                        this._shouldFoldItem = true;
+                    } else if (
+                        this._overPositionX >= this._hotCornersElementRect.right - threshold &&
+                        this._overPositionX <= this._hotCornersElementRect.right
+                    ) {
+                        this._shouldFoldItem = true;
+                        this._foldSide = ListItemMenu.DIRECTION.RIGHT;
+                    } else {
+                        if (this._shouldFoldItem) {
+                            this._shouldUnfoldItem = true;
+                        }
+
+                        this._shouldFoldItem = false;
+                    }
                 }
 
-                if (this._shouldUnfoldItem) {
-                    elementClassList.add('unfold');
+                if (this._shouldFoldItem) {
+                    elementClassList.add('fold-' + this._foldSide.toLowerCase());
+                    elementClassList.remove('unfold-right');
+                    elementClassList.remove('unfold-left');
+                } else {
+                    elementClassList.remove('fold-right');
+                    elementClassList.remove('fold-left');
+                }
+
+                if (this._shouldUnfoldItem && this._foldSide) {
+                    elementClassList.add('unfold-' + this._foldSide.toLowerCase());
                     this._shouldUnfoldItem = false;
+                    this._foldSide = null;
                 }
             }
         }

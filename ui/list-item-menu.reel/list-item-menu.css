@@ -13,7 +13,16 @@
             user-select: none;
 }
 
-.ListItemMenu::before {
+.ListItemMenu .hot-corners {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.ListItemMenu .hot-corners::before,
+.ListItemMenu .hot-corners::after {
     content: "";
     animation-name: none;
     animation-timing-function: linear;
@@ -22,39 +31,70 @@
     border-color: #e9e9e9 transparent;
     position: absolute;
     bottom: -1px;
-    right: -1px;
     border-width: 0;
     border-radius: 0;
     z-index: 2;
     box-sizing: border-box;
 }
 
-.ListItemMenu.unfold::before {
-    animation-name: fold-item-out;
-    animation-duration: 0.15s;
-    animation-delay: 0s;
+.ListItemMenu .hot-corners::after {
+    right: -1px;
 }
 
-.ListItemMenu.fold::before {
+.ListItemMenu .hot-corners::before {
+    left: -1px;
+}
+
+.ListItemMenu.fold-left .hot-corners::before,
+.ListItemMenu.fold-right .hot-corners::after {
     box-shadow: -1px -1px 3px #c8c7cc;
-    animation-name: fold-item-in;
     animation-duration: 0.3s;
-    animation-delay: .5s;
+}
+
+.ListItemMenu.fold-left .hot-corners::before {
+    animation-name: fold-item-left;
+}
+
+.ListItemMenu.fold-right .hot-corners::after {
+    animation-name: fold-item-right;
+}
+
+.ListItemMenu.unfold-left .hot-corners::before,
+.ListItemMenu.unfold-right .hot-corners::after {
+    animation-duration: 0.15s;
+}
+
+.ListItemMenu.unfold-right .hot-corners::after {
+    animation-name: unfold-item-right;
+}
+
+.ListItemMenu.unfold-left .hot-corners::before {
+    animation-name: unfold-item-left;
 }
  
-/* @keyframes fold-options-right-in {
+/* @keyframes move-options-right-in {
     0%   {transform: translate3d(0px, 42px, 0);}
     100% {transform: translate3d(-14px, 27px, 0);}
 } */
 
-@keyframes fold-item-out {
+@keyframes fold-item-right {
+    0%   {border-width: 0px}
+    100% {border-width: 15px 15px 0 0;}
+}
+
+@keyframes unfold-item-right {
     0% {border-width: 15px 15px 0 0;}
     100%   {border-width: 0px}
 }
 
-@keyframes fold-item-in {
+@keyframes fold-item-left {
     0%   {border-width: 0px}
-    100% {border-width: 15px 15px 0 0;}
+    100% {border-width: 15px 0 0 15px;}
+}
+
+@keyframes unfold-item-left {
+    0% {border-width: 15px 0 0 15px;}
+    100%   {border-width: 0px}
 }
 
 .ListItemMenu + .ListItemMenu {
