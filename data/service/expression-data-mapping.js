@@ -535,7 +535,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         }
     },
     
-    
     _resolveProperty: {
         value: function (object, propertyDescriptor, rule, scope) {
             var result = rule.evaluate(scope),
@@ -616,7 +615,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             if (isRelationship && rule.converter) {
                 this._prepareObjectToRawDataRule(rule);
                 result = this._revertRelationshipToRawData(data, propertyDescriptor, rule, scope);
-            } else if (rule.converter) {
+            } else if (rule.converter || rule.reverter) {
                 result = this._revertPropertyToRawData(data, propertyName, rule, scope);
             } else /*if (propertyDescriptor)*/ { //relaxing this for now
                 data[propertyName] = rule.expression(scope);
@@ -1030,8 +1029,19 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 rule = MappingRule.withRawRuleAndPropertyName(rawRule, propertyName, addOneWayBindings);
 
             rule.propertyDescriptor = propertyDescriptor;
-            rule.converter = rawRule.converter || this._defaultConverter(rule.sourcePath, rule.targetPath, isObjectMappingRule);
-            rule.isReverter = !addOneWayBindings;
+            if (rawRule.converter && addOneWayBindings) {
+                rule.converter = rawRule.converter;
+            } else if (rawRule.converter && !addOneWayBindings) {
+                rule.reverter = rawRule.converter;
+            } else if (rawRule.reverter && addOneWayBindings) {
+                rule.reverter = rawRule.reverter;
+            } else if (rawRule.reverter && !addOneWayBindings) {
+                rule.converter = rawRule.reverter;
+            } else if (addOneWayBindings) {
+                rule.converter = this._defaultConverter(rule.sourcePath, rule.targetPath, isObjectMappingRule);
+            } else {
+                rule.reverter = this._defaultConverter(rule.sourcePath, rule.targetPath, isObjectMappingRule);
+            }
             return rule;
         }
     },

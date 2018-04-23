@@ -49,18 +49,6 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
         value: undefined
     },
 
-
-    /**
-     * Flag defining the direction of the conversion. If true, .expression
-     * will be evaluated in reverse (evaluate the expression against the
-     * destination & assign it to the source).
-     * @type {boolean}
-     */
-    isReverter: {
-        value: undefined
-    },
-
-
     /**
      * The descriptor for the property that this rule applies to
      * @type {PropertyDescriptor}
@@ -86,6 +74,17 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
             }
             return this._requirements;
         }
+    },
+
+    /**
+     * A converter that takes in the the output of #expression and returns the destination value.
+     * When a reverter is specified the conversion use the revert method when mapping from
+     * right to left.
+     * 
+     * @type {Converter}
+     */
+    reverter: {
+        value: undefined
     },
 
     _parseRequirementsFromSyntax: {
@@ -169,9 +168,9 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
     evaluate: {
         value: function (scope) {
             var value = this.expression(scope);
-            return this.converter ? this.isReverter ?
-                                    this.converter.revert(value) :
-                                    this.converter.convert(value) :
+            return this.converter ? this.converter.convert(value) :
+                                    this.reverter ? 
+                                    this.reverter.revert(value) :
                                     value;
         }
     },
