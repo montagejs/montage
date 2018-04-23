@@ -18,7 +18,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     "<-": "disabled"
                 },
                 "classList.has('is-opened')": {
-                    "<-": "isOpened"
+                    "<-": "__isOpened"
                 },
                 "classList.has('is-translating')": {
                     "<-": "_isTranslating"
@@ -36,6 +36,182 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                         " : deleteLabel"
                 }
             });
+        }
+    },
+
+    /**
+     * @private
+     * @type {boolean}
+     * @default false
+     * @description Indicates if the list item is currently slidding
+     */
+    _isTranslating: {
+        value: false
+    },
+
+    /**
+     * @private
+     * @type {Number}
+     * @default 0
+     * @description Represents the distance traveled by the list item 
+     * from the start position.
+     */
+    _distance: {
+        value: 0
+    },
+
+    __shouldOpen: {
+        value: false
+    },
+
+    __shouldClose: {
+        value: false
+    },
+
+    /**
+     * @private
+     * @type {boolean}
+     * @default false
+     * @description Indicates if the list item menu should open itself
+     */
+    _shouldOpen: {
+        set: function (should) {
+            should = !!should;
+            this.__shouldOpen = should;
+            this.__shouldClose = !should;
+        },
+        get: function () {
+            return this.__shouldOpen;
+        }
+    },
+
+    /**
+     * @private
+     * @type {boolean}
+     * @default false
+     * @description Indicates if the list item menu should close itself
+     */
+    _shouldClose: {
+        set: function (should) {
+            should = !!should;
+            this.__shouldClose = should;
+            this.__shouldOpen = !should;
+        },
+        get: function () {
+            return this.__shouldClose;
+        }
+    },
+
+    /**
+     * @private
+     * @typedef {string} ListItemMenu.DIRECTION
+     * @default null
+     * @description Represents the current translating direction
+     */
+    _direction: {
+        value: null
+    },
+
+    __translateComposer: {
+        value: null
+    },
+
+    /**
+     * @private
+     * @typedef {Object} TranslateComposer
+     * @readOnly
+     * @default null
+     * @description List item menu's translate composer
+     */
+    _translateComposer: {
+        get: function () {
+            if (!this.__translateComposer) {
+                this.__translateComposer = new TranslateComposer();
+                this.__translateComposer.hasMomentum = false;
+                this.__translateComposer.axis = "horizontal";
+                this.__translateComposer.translateX = - this._dragElementRect.width;
+                this.addComposer(this.__translateComposer);
+            }
+
+            return this.__translateComposer;
+        }
+    },
+
+    __pressComposer: {
+        value: null
+    },
+
+    /**
+     * @private
+     * @typedef {Object} PressComposer
+     * @readOnly
+     * @default null
+     * @description List item menu's press composer
+     */
+    _pressComposer: {
+        get: function () {
+            if (!this.__pressComposer) {
+                this.__pressComposer = new PressComposer();
+                this.addComposerForElement(this.__pressComposer, document);
+            }
+
+            return this.__pressComposer;
+        }
+    },
+
+    _openedSide: {
+        value: null
+    },
+
+    /**
+     * @public
+     * @typedef {string} ListItemMenu.DIRECTION
+     * @readOnly
+     * @default null
+     * @description Represents the current opened side.
+     */
+    openedSide: {
+        get: function () {
+            return this._openedSide;
+        }
+    },
+
+    __isOpened: {
+        value: false
+    },
+
+    _isOpened: {
+        set: function (opened) {
+            if (opened !== this._opened) {
+                this.__isOpened = opened;
+
+                if (opened) {
+                    this.application.addEventListener('press', this);
+                    this._pressComposer.addEventListener('pressStart', this);
+                    this._pressComposer.load();
+                } else {
+                    this.application.removeEventListener('press', this);
+                    this.application.removeEventListener('translateEnd', this);
+                    this._pressComposer.removeEventListener('pressStart', this);
+                    this._pressComposer.unload();
+                }
+            }
+        },
+        get: function () {
+            return this.__isOpened;
+        }
+    },
+
+    /**
+     * @public
+     * @type {boolean}
+     * @default false
+     * @readonly
+     * @description Indicates if the list item menu is opened
+     */
+    isOpened: {
+        get: function () {
+            return this.__isOpened;
         }
     },
 
@@ -112,154 +288,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
      */
     deleteLabel: {
         value: null
-    },
-
-    /**
-     * @private
-     * @type {boolean}
-     * @default false
-     * @description Indicates if the list item is currently slidding
-     */
-    _isTranslating: {
-        value: false
-    },
-
-    /**
-     * @private
-     * @type {Number}
-     * @default 0
-     * @description Represents the distance traveled by the list item 
-     * from the start position.
-     */
-    _distance: {
-        value: 0
-    },
-
-    __shouldOpen: {
-        value: false
-    },
-
-    __shouldClose: {
-        value: false
-    },
-
-    /**
-     * @private
-     * @type {boolean}
-     * @default false
-     * @description Indicates if the list item menu should open itself
-     */
-    _shouldOpen: {
-        set: function (should) {
-            should = !!should;
-            this.__shouldOpen = should;
-            this.__shouldClose = !should;
-        },
-        get: function () {
-            return this.__shouldOpen;
-        }
-    },
-
-    /**
-     * @private
-     * @type {boolean}
-     * @default false
-     * @description Indicates if the list item menu should close itself
-     */
-    _shouldClose: {
-        set: function (should) {
-            should = !!should;
-            this.__shouldClose = should;
-            this.__shouldOpen = !should;
-        },
-        get: function () {
-            return this.__shouldClose;
-        }
-    },
-
-    /**
-     * @private
-     * @typedef {string} ListItemMenu.DIRECTION
-     * @default null
-     * @description Represents the current translating direction
-     */
-    _direction: {
-        value: null
-    },
-
-    /**
-     * @private
-     * @typedef {string} ListItemMenu.DIRECTION
-     * @default null
-     * @description Represents the current opened side.
-     */
-    _openedSide: {
-        value: null
-    },
-
-    _isOpened: {
-        value: false
-    },
-
-    /**
-     * @private
-     * @type {boolean}
-     * @default false
-     * @description Indicates if the list item menu is opened
-     */
-    isOpened: {
-        set: function (opened) {
-            if (opened !== this._opened) {
-                this._isOpened = opened;
-
-                if (opened) {
-                    this.application.addEventListener('press', this);
-                    this._pressComposer.addEventListener('pressStart', this);
-                    this._pressComposer.load();
-                } else {
-                    this.application.removeEventListener('press', this);
-                    this.application.removeEventListener('translateEnd', this);
-                    this._pressComposer.removeEventListener('pressStart', this);
-                    this._pressComposer.unload();
-                }
-            }
-        },
-        get: function () {
-            return this._isOpened;
-        }
-    },
-
-    __translateComposer: {
-        value: null
-    },
-
-    _translateComposer: {
-        get: function () {
-            if (!this.__translateComposer) {
-                this.__translateComposer = new TranslateComposer();
-                this.__translateComposer.hasMomentum = false;
-                this.__translateComposer.axis = "horizontal";
-                this.__translateComposer.translateX = - this._dragElementRect.width;
-                this.addComposer(this.__translateComposer);
-            }
-
-            return this.__translateComposer;
-        }
-    },
-
-    __pressComposer: {
-        value: null
-    },
-
-    _pressComposer: {
-        get: function () {
-            if (!this.__pressComposer) {
-                this.__pressComposer = new PressComposer();
-                this.addComposerForElement(this.__pressComposer, document);
-            }
-
-            return this.__pressComposer;
-        }
     },
 
     enterDocument: {
@@ -433,12 +461,12 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
                 if (this._shouldClose) {
                     this.__shouldClose = false;
-                    this.isOpened = false;
+                    this._isOpened = false;
                     this._openedSide = null;
 
                 } else if (this._shouldOpen) {
                     this.__shouldOpen = false;
-                    this.isOpened = true;
+                    this._isOpened = true;
                     this._openedSide = this._direction === ListItemMenu.DIRECTION.LEFT ?
                         ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT;
                 }
@@ -610,17 +638,17 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
                             if (this._deltaX > 0) {
                                 // should open right side if not already opened
-                                this._shouldOpen = this._isOpened &&
+                                this._shouldOpen = this.isOpened &&
                                     this._openedSide === ListItemMenu.DIRECTION.RIGHT ?
                                     false : true;
 
                             } else {
                                 // should open left side if not already opened
-                                this._shouldOpen = this._isOpened &&
+                                this._shouldOpen = this.isOpened &&
                                     this._openedSide === ListItemMenu.DIRECTION.LEFT ?
                                     false : true;
                             }
-                        } else if (hasReachMinDistance && !this._isOpened) {
+                        } else if (hasReachMinDistance && !this.isOpened) {
                             // should open a side if the minimum distance has been reached.
                             this._shouldOpen = true;
                         } else {
