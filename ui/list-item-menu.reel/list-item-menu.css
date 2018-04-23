@@ -45,37 +45,57 @@
     left: -1px;
 }
 
-.ListItemMenu.fold-left .hot-corners::before,
-.ListItemMenu.fold-right .hot-corners::after {
+.ListItemMenu.has-options-left.fold-left .hot-corners::before,
+.ListItemMenu.has-options-right.fold-right .hot-corners::after {
     box-shadow: -1px -1px 3px #c8c7cc;
     animation-duration: 0.3s;
 }
 
-.ListItemMenu.fold-left .hot-corners::before {
+.ListItemMenu.has-options-left.fold-left .ListItemMenu-zone.left,
+.ListItemMenu.has-options-right.fold-right .ListItemMenu-zone.right {
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+    animation-duration: 0.3s;
+}
+
+.ListItemMenu.has-options-left.fold-left .hot-corners::before {
     animation-name: fold-item-left;
 }
 
-.ListItemMenu.fold-right .hot-corners::after {
+.ListItemMenu.has-options-left.fold-left .ListItemMenu-zone.left {
+    animation-name: fold-options-left;
+}
+
+.ListItemMenu.has-options-right.fold-right .hot-corners::after {
     animation-name: fold-item-right;
 }
 
-.ListItemMenu.unfold-left .hot-corners::before,
-.ListItemMenu.unfold-right .hot-corners::after {
+.ListItemMenu.has-options-right.fold-right .ListItemMenu-zone.right {
+    animation-name: fold-options-right;
+}
+
+.ListItemMenu.has-options-left.unfold-left .hot-corners::before,
+.ListItemMenu.has-options-right.unfold-right .hot-corners::after {
     animation-duration: 0.15s;
 }
 
-.ListItemMenu.unfold-right .hot-corners::after {
+.ListItemMenu.has-options-right.unfold-right .hot-corners::after {
     animation-name: unfold-item-right;
 }
 
-.ListItemMenu.unfold-left .hot-corners::before {
+.ListItemMenu.has-options-left.unfold-left .hot-corners::before {
     animation-name: unfold-item-left;
 }
  
-/* @keyframes move-options-right-in {
+@keyframes fold-options-right {
     0%   {transform: translate3d(0px, 42px, 0);}
     100% {transform: translate3d(-14px, 27px, 0);}
-} */
+}
+
+@keyframes fold-options-left {
+    0%   {transform: translate3d(0px, 42px, 0);}
+    100% {transform: translate3d(14px, 27px, 0);}
+}
 
 @keyframes fold-item-right {
     0%   {border-width: 0px}
