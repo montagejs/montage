@@ -816,6 +816,9 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     dragElementStyle[ListItemMenu.cssTransition] = (
                         ListItemMenu.DEFAULT_TRANSITION
                     );
+                } else {
+                    rightOptionsElementClassList.remove('hide');
+                    leftOptionsElementClassList.remove('hide');
                 }
 
                 if (translateX !== void 0) {
@@ -846,12 +849,14 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     var threshold = dragElementWidth * 0.25;
 
                     if (
+                        this._leftButtons.length &&
                         this._overPositionX >= this._hotCornersElementRect.left &&
                         this._overPositionX <= this._hotCornersElementRect.left + threshold
                     ) {
                         this._foldSide = ListItemMenu.DIRECTION.LEFT;
                         this._shouldFoldItem = true;
                     } else if (
+                        this._rightButtons.length &&
                         this._overPositionX >= this._hotCornersElementRect.right - threshold &&
                         this._overPositionX <= this._hotCornersElementRect.right
                     ) {
