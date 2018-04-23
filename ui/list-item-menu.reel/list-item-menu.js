@@ -287,31 +287,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     prepareForActivationEvents: {
         value: function () {
             this._startListeningToInitialInteractions();
-            this.classList.add("animation-enabled");
-
-            var self = this;
-
-            this.element.addEventListener("transitionend", function (event) {
-                if (event.target === self.dragElement) {
-                    if (self._isTranslating) {
-                        self._isTranslating = false;
-                    }
-
-                    if (self._shouldClose) {
-                        self.__shouldClose = false;
-                        self.isOpened = false;
-                        self._openedSide = null;
-
-                    } else if (self._shouldOpen) {
-                        self.__shouldOpen = false;
-                        self.isOpened = true;
-                        self._openedSide = self._direction === ListItemMenu.DIRECTION.LEFT ?
-                            ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT;
-                    }
-
-                    self._direction = null;
-                }
-            }, false);
         }
     },
 
@@ -420,6 +395,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     _startListeningToInitialInteractions: {
         value: function () {
             this._translateComposer.addEventListener('translateStart', this);
+            this.element.addEventListener("transitionend", this);
 
             if (window.PointerEvent) {
                 this.element.addEventListener('pointerenter', this);
@@ -435,6 +411,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: function () {
             if (this.preparedForActivationEvents) {
                 this._translateComposer.removeEventListener('translateStart', this);
+                this.element.removeEventListener("transitionend", this);
 
                 if (window.PointerEvent) {
                     this.element.removeEventListener('pointerenter', this);
@@ -443,6 +420,30 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 } else {
                     this.element.removeEventListener('mouseenter', this);
                 }
+            }
+        }
+    },
+
+    handleTransitionend: {
+        value: function (event) {
+            if (event.target === this.dragElement) {
+                if (this._isTranslating) {
+                    this._isTranslating = false;
+                }
+
+                if (this._shouldClose) {
+                    this.__shouldClose = false;
+                    this.isOpened = false;
+                    this._openedSide = null;
+
+                } else if (this._shouldOpen) {
+                    this.__shouldOpen = false;
+                    this.isOpened = true;
+                    this._openedSide = this._direction === ListItemMenu.DIRECTION.LEFT ?
+                        ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT;
+                }
+
+                this._direction = null;
             }
         }
     },
