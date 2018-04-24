@@ -57,7 +57,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
      * from the start position.
      */
     _distance: {
-        value: 0
+        value: null
     },
 
     __shouldOpen: {
@@ -128,6 +128,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             if (!this.__translateComposer) {
                 this.__translateComposer = new TranslateComposer();
                 this.__translateComposer.hasMomentum = false;
+                this.__translateComposer.allowFloats = false;
                 this.__translateComposer.axis = "horizontal";
                 this.__translateComposer.translateX = - this._dragElementRect.width;
                 this.addComposer(this.__translateComposer);
@@ -386,28 +387,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     },
 
-    _hasReachMinDistance: {
-        value: function () {
-            return this._distance >= this._dragElementRect.width * 0.15;
-        }
-    },
-
-    _hasReachMaxDistance: {
-        value: function () {
-            return this._distance >= this._dragElementRect.width * 0.85;
-        }
-    },
-
-    _findVelocity: {
-        value: function (deltaTime) {
-            if (deltaTime > 300) {
-                return 0;
-            }
-
-            return Math.sqrt(this._deltaX * this._deltaX) / deltaTime;
-        }
-    },
-
     /**
     * Event Listeners
     */
@@ -545,77 +524,112 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
     handleTranslateStart: {
         value: function (event) {
-            this.application.addEventListener('translateEnd', this);
             this._startPositionX = this.__translateComposer.translateX;
             this._isTranslating = false;
             this.__shouldClose = false;
             this.__shouldOpen = false;
             this._direction = null;
             this._startTimestamp = event.timeStamp;
+            this.application.addEventListener('translateEnd', this);
             this._addDragEventListeners();
         }
     },
 
     handleTranslate: {
         value: function (event) {
-            this._translateX = event.translateX;
-            this._deltaX = this._translateX - this._startPositionX;
+            var translateX = event.translateX,
+                deltaX = translateX - this._startPositionX;
 
             if (!this._direction) {
-                this._direction = this._deltaX > 2 ?
-                    ListItemMenu.DIRECTION.RIGHT : this._deltaX < - 2 ?
+                this._direction = deltaX > 2 ?
+                    ListItemMenu.DIRECTION.RIGHT : deltaX < - 2 ?
                         ListItemMenu.DIRECTION.LEFT : null;
-
-                if (!this.isOpened &&
-                    ((this._direction === ListItemMenu.DIRECTION.LEFT &&
-                        (!this._rightButtons || !this._rightButtons.length)) ||
-                        (this._direction === ListItemMenu.DIRECTION.RIGHT &&
-                            (!this._leftButtons || !this._leftButtons.length)))
-                ) {
-                    // cancel translate if there are no options to show
-                    this._translateComposer._cancel();
-                    return void 0;
-                }
             }
 
-            var direction = this._direction;
+            var direction = this._direction,
+                distance;
 
-            if (direction) {
-                this._isTranslating = true;
+            if (!direction && !this._isTranslating) {
+                // wait for a "real" translate.
+                return void 0;
+            }
 
-                var dragElementWidth = this._dragElementRect.width,
-                    distance = this._translateX + dragElementWidth,
-                    buttonList;
+            if (!this._openedSide &&
+                ((direction === ListItemMenu.DIRECTION.LEFT &&
+                    (!this._rightButtons || !this._rightButtons.length)) ||
+                    (direction === ListItemMenu.DIRECTION.RIGHT &&
+                        (!this._leftButtons || !this._leftButtons.length)))
+            ) {
+                // Cancel translating if there are no options to show
+                this._translateComposer._cancel();
+                return void 0;
+            }
 
-                if (this._openedSide) {
-                    buttonList = this._openedSide === ListItemMenu.DIRECTION.RIGHT ?
-                        this._rightButtons : this._leftButtons;
+            // Defines the opened side at the first "real" translate.
+            if (!this._openedSide) {
+                this._openedSide = direction === ListItemMenu.DIRECTION.RIGHT ?
+                    ListItemMenu.DIRECTION.LEFT : ListItemMenu.DIRECTION.RIGHT;
+            }
+
+            if (this._distance === null) {
+                // Define initial distance.
+                if (this._openedSide === ListItemMenu.DIRECTION.LEFT) {
+                    distance = (
+                        this.leftOptionsElement.getBoundingClientRect().right -
+                        this._hotCornersElementRect.left
+                    );
                 } else {
-                    buttonList = direction === ListItemMenu.DIRECTION.LEFT ?
-                        this._rightButtons : this._leftButtons;
+                    distance = (
+                        this._hotCornersElementRect.right -
+                        this.rightOptionsElement.getBoundingClientRect().left
+                    );
                 }
+            } else {
+                var deltaTranslateX = Math.abs(this._translateX) - Math.abs(translateX);
+                direction = deltaTranslateX > 0 ? ListItemMenu.DIRECTION.RIGHT :
+                    deltaTranslateX < 0 ? ListItemMenu.DIRECTION.LEFT : this._direction;
 
-                if (direction === ListItemMenu.DIRECTION.LEFT && distance > 0 ||
-                    direction === ListItemMenu.DIRECTION.RIGHT && distance < 0
-                ) {
-                    distance = 0;
+                if (this._openedSide === ListItemMenu.DIRECTION.RIGHT) {
+                    distance = this._distance - deltaTranslateX;
+                } else {
+                    distance = this._distance + deltaTranslateX;
                 }
-
-                distance = Math.abs(distance);
-
-                if (distance > dragElementWidth) {
-                    distance = dragElementWidth;
-                }
-
-                this._distance = distance;
-                this._hasReachEnd = !!(
-                    buttonList &&
-                    buttonList.length === 1 &&
-                    this._hasReachMaxDistance()
-                );
-
-                this.needsDraw = true;
             }
+
+            if (this._openedSide === ListItemMenu.DIRECTION.LEFT) {
+                // block distance if the left options reach the right side
+                if (translateX > 0) {
+                    distance = this._hotCornersElementRect.width;
+                }
+            } else {
+                // block distance if the right options reach the left side
+                if (
+                    translateX < - this._hotCornersElementRect.width &&
+                    Math.abs(translateX) / 2 > this._hotCornersElementRect.width
+                ) {
+                    distance = this._hotCornersElementRect.width;
+                }
+            }
+
+            if (distance < 0) {
+                distance = 0
+            }
+
+            var buttonList = this._openedSide === ListItemMenu.DIRECTION.RIGHT ?
+                this._rightButtons : this._leftButtons;
+
+            this._hasReachEnd = !!(
+                buttonList &&
+                buttonList.length === 1 &&
+                this._hasReachMaxDistance()
+            );
+
+            this._direction = direction;
+            this._translateX = translateX;
+            this._deltaX = translateX - this._startPositionX;
+            this._isTranslating = true;
+            this._distance = distance;
+            this.needsDraw = true;
         }
     },
 
@@ -662,10 +676,12 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                                     this._openedSide === ListItemMenu.DIRECTION.LEFT ?
                                     false : true;
                             }
-                        } else if (hasReachMinDistance && !this.isOpened) {
+                        } else if (hasReachMinDistance) {
+                            console.log(hasReachMinDistance)
                             // should open a side if the minimum distance has been reached.
                             this._shouldOpen = true;
                         } else {
+                            console.log("should close", this._distance)
                             // should close a side if the minimum distance has not been reached.
                             this._shouldClose = true;
                         }
@@ -729,7 +745,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: function () {
             this._removeDragEventListeners();
             this._startTimestamp = 0;
-            this._distance = 0;
+            this._distance = null;
             this._hasReachEnd = false;
             this.needsDraw = true;
         }
@@ -768,6 +784,28 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     },
 
+    _hasReachMinDistance: {
+        value: function () {
+            return this._distance >= this._dragElementRect.width * 0.15;
+        }
+    },
+
+    _hasReachMaxDistance: {
+        value: function () {
+            return this._distance >= this._dragElementRect.width * 0.85;
+        }
+    },
+
+    _findVelocity: {
+        value: function (deltaTime) {
+            if (deltaTime > 300) {
+                return 0;
+            }
+
+            return Math.sqrt(this._deltaX * this._deltaX) / deltaTime;
+        }
+    },
+
     _setButtonBoundaries: {
         value: function (buttonList, marginSide) {
             var i, length, button, label, labelRect, buttonWidth;
@@ -796,13 +834,10 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     elementClassList = this.element.classList,
                     leftOptionsElementClassList = this.leftOptionsElement.classList,
                     rightOptionsElementClassList = this.rightOptionsElement.classList,
-                    direction = this._direction,
-                    isDirectionLeft = direction === ListItemMenu.DIRECTION.LEFT,
-                    openedSide = this._openedSide || (isDirectionLeft ?
-                        ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT),
+                    direction = this._direction, openedSide = this._openedSide,
                     buttonList = openedSide === ListItemMenu.DIRECTION.RIGHT ?
                         this._rightButtons : this._leftButtons,
-                    isLeftSideOpened = openedSide === ListItemMenu.DIRECTION.LEFT,
+                    isLeftSideOpened = this._openedSide === ListItemMenu.DIRECTION.LEFT,
                     length, translateX;
 
                 if (this._isTranslating && !this._shouldOpen && !this._shouldClose) {
@@ -810,33 +845,28 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     translateX = this._translateX;
                     dragElementStyle[ListItemMenu.cssTransition] = 'none';
 
-                    if (!this.isOpened) {
-                        // Hide not sliding options.
-                        if (isDirectionLeft) {
-                            rightOptionsElementClassList.remove('hide');
-                            leftOptionsElementClassList.add('hide');
-                        } else {
-                            rightOptionsElementClassList.add('hide');
-                            leftOptionsElementClassList.remove('hide');
+                    // Hide not sliding options.
+                    if (isLeftSideOpened) {
+                        rightOptionsElementClassList.add('hide');
+                        leftOptionsElementClassList.remove('hide');
+                    } else {
+                        rightOptionsElementClassList.remove('hide');
+                        leftOptionsElementClassList.add('hide');
+                    }
+
+                    if (isLeftSideOpened) {
+                        // block translate if the left options reach the right side
+                        if (translateX > 0) {
+                            translateX = 0;
                         }
-                    }
-
-                    // Block any translation when we reach the edges of a side.
-                    if (this._direction &&
-                        Math.abs(
-                            !this.isOpened ? this._deltaX : this._deltaX / 2
-                        ) > dragElementWidth
-                    ) {
-                        translateX = isDirectionLeft && this._deltaX < 0 ?
-                            dragElementWidth * -2 : 0;
-                    }
-
-                    if (translateX > 0) {
-                        translateX = 0;
-                    }
-
-                    if (translateX < dragElementWidth * -2) {
-                        translateX = dragElementWidth * -2;
+                    } else {
+                        // block translate if the right options reach the left side
+                        if (
+                            translateX < -dragElementWidth &&
+                            Math.abs(translateX) / 2 > dragElementWidth
+                        ) {
+                            translateX = dragElementWidth * -2;
+                        }
                     }
 
                     if (buttonList && (length = buttonList.length)) {
@@ -852,7 +882,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 } else if (this._shouldOpen || this._shouldClose) {
                     if (this._shouldOpen) {
                         translateX = this.__translateComposer.translateX = (
-                            dragElementWidth * (isDirectionLeft ? -1.5 : -0.5)
+                            dragElementWidth * (isLeftSideOpened ? -0.5 : -1.5)
                         );
                     } else if (this._shouldClose) {
                         translateX = this.__translateComposer.translateX = (
