@@ -488,7 +488,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     handlePointerenter: {
         value: function (event) {
             if (window.PointerEvent) {
-                if (event.pointerType === this._MOUSE_POINTER) {
+                if (event.pointerType === "mouse") {
                     this.element.addEventListener('pointermove', this);
                     this.element.addEventListener('pointerleave', this);
                 }
