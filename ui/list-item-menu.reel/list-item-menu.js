@@ -759,14 +759,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 var hasLeftButtons = this._leftButtons && this._leftButtons.length > 0,
                     hasRightButtons = this._rightButtons && this._rightButtons.length > 0;
 
-                if (hasRightButtons) {
-                    this._translateButtons(this._rightButtons, 0, 'none', false);
-                }
-
-                if (hasLeftButtons) {
-                    this._translateButtons(this._leftButtons, 0, 'none', true);
-                }
-
+                this._updateButtonPositions();
                 this.disabled = !hasLeftButtons && !hasRightButtons;
             }
 
@@ -950,6 +943,23 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     this._shouldUnfoldItem = false;
                     this._foldSide = null;
                 }
+
+                if (this._forceComputingBoundaries) {
+                    this._updateButtonPositions();
+                    this._forceComputingBoundaries = false;
+                }
+            }
+        }
+    },
+
+    _updateButtonPositions: {
+        value: function () {
+            if (this._leftButtons && this._leftButtons.length > 0) {
+                this._translateButtons(this._rightButtons, 0, 'none', false);
+            }
+
+            if (this._rightButtons && this._rightButtons.length > 0) {
+                this._translateButtons(this._leftButtons, 0, 'none', true);
             }
         }
     },
