@@ -89,12 +89,12 @@
  
 @keyframes fold-options-right {
     0%   {transform: translate3d(0px, 42px, 0);}
-    100% {transform: translate3d(-14px, 27px, 0);}
+    100% {transform: translate3d(-14px, 29px, 0);}
 }
 
 @keyframes fold-options-left {
     0%   {transform: translate3d(0px, 42px, 0);}
-    100% {transform: translate3d(14px, 27px, 0);}
+    100% {transform: translate3d(14px, 29px, 0);}
 }
 
 @keyframes fold-item-right {
