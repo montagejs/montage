@@ -600,6 +600,12 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 // block distance if the left options reach the right side
                 if (translateX > 0) {
                     distance = this._hotCornersElementRect.width;
+                } else if (
+                    this._hotCornersElementRect.width + translateX <= 0
+                ) {
+                    // Reset the distance to 0 when a list item menu
+                    // is translating above it's edges.
+                    distance = 0;
                 }
             } else {
                 // block distance if the right options reach the left side
@@ -608,6 +614,12 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                     Math.abs(translateX) / 2 > this._hotCornersElementRect.width
                 ) {
                     distance = this._hotCornersElementRect.width;
+                } else if (
+                    this._hotCornersElementRect.width + translateX >= 0
+                ) {
+                    // Reset the distance to 0 when a list item menu
+                    // is translating above it's edges.
+                    distance = 0;
                 }
             }
 
