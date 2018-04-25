@@ -39,15 +39,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     },
 
-    /**
-     * @private
-     * @type {boolean}
-     * @default false
-     * @description Indicates if the list item is currently slidding
-     */
-    _isTranslating: {
-        value: false
-    },
+
 
     /**
      * @private
@@ -157,6 +149,22 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             }
 
             return this.__pressComposer;
+        }
+    },
+
+    /**
+     * @public
+     * @type {boolean}
+     * @default false
+     * @description Indicates if the list item is currently slidding
+     */
+    _isTranslating: {
+        value: false
+    },
+
+    isTranslating: {
+        get: function () {
+            return this._isTranslating;
         }
     },
 
