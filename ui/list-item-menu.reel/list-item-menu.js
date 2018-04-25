@@ -677,11 +677,9 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                                     false : true;
                             }
                         } else if (hasReachMinDistance) {
-                            console.log(hasReachMinDistance)
                             // should open a side if the minimum distance has been reached.
                             this._shouldOpen = true;
                         } else {
-                            console.log("should close", this._distance)
                             // should close a side if the minimum distance has not been reached.
                             this._shouldClose = true;
                         }
