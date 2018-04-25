@@ -709,7 +709,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             }
 
             if (distance < 0) {
-                distance = 0
+                distance = 0;
             }
 
             var buttonList = this._openedSide === ListItemMenu.DIRECTION.RIGHT ?
@@ -766,7 +766,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                                 this._shouldOpen = this.isOpened &&
                                     this._openedSide === ListItemMenu.DIRECTION.RIGHT ?
                                     false : true;
-
                             } else {
                                 // should open left side if not already opened
                                 this._shouldOpen = this.isOpened &&
