@@ -223,6 +223,57 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     },
 
+    _minDistanceBeforeOpen: {
+        value: null
+    },
+
+    /**
+     * @public
+     * @type {Number}
+     * @default 15% of the list item menu width.
+     * @description Represents the minimum distance before 
+     * automatically open a list item once a user end 
+     * to translate the list item menu.
+     */
+    minDistanceBeforeOpen: {
+        set: function (minDistanceBeforeOpen) {
+            this._minDistanceBeforeOpen = +minDistanceBeforeOpen;
+        },
+        get: function () {
+            if (this._minDistanceBeforeOpen === null && this._dragElementRect) {
+                this._minDistanceBeforeOpen = this._dragElementRect.width * 0.15;
+            }
+
+            return this._minDistanceBeforeOpen;
+        }
+    },
+
+    _minDistanceBeforeClose: {
+        value: null
+    },
+
+    /**
+     * @public
+     * @type {Number}
+     * @default 85
+     * @default 85% of the list item menu width.
+     * @description Represents the minimum distance before
+     * automatically open a list item once a user end
+     * to translate the list item menu.
+     */
+    minDistanceBeforeClose: {
+        set: function (minDistanceBeforeClose) {
+            this._minDistanceBeforeClose = +minDistanceBeforeClose;
+        },
+        get: function () {
+            if (this._minDistanceBeforeClose === null && this._dragElementRect) {
+                this._minDistanceBeforeClose = this._dragElementRect.width * 0.85;
+            }
+
+            return this._minDistanceBeforeClose;
+        }
+    },
+
     _data: {
         value: null
     },
@@ -404,7 +455,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     */
     _hasReachMinDistance: {
         value: function () {
-            return this._distance >= this._dragElementRect.width * 0.15;
+            return this._distance >= this.minDistanceBeforeOpen;
         }
     },
 
@@ -418,7 +469,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
     */
     _hasReachMaxDistance: {
         value: function () {
-            return this._distance >= this._dragElementRect.width * 0.85;
+            return this._distance >= this.minDistanceBeforeClose;
         }
     },
 
