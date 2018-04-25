@@ -39,8 +39,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     },
 
-
-
     /**
      * @private
      * @type {Number}
@@ -152,16 +150,17 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     },
 
-    /**
-     * @public
-     * @type {boolean}
-     * @default false
-     * @description Indicates if the list item is currently slidding
-     */
     _isTranslating: {
         value: false
     },
 
+    /**
+     * @public
+     * @type {boolean}
+     * @readOnly
+     * @default false
+     * @description Indicates if the list item is currently slidding
+     */
     isTranslating: {
         get: function () {
             return this._isTranslating;
@@ -299,9 +298,155 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         value: null
     },
 
+    /**
+     * @public
+     * @function openLeft
+     * @description Open the left side
+     */
+    openLeft: {
+        value: function () {
+            this._open(ListItemMenu.DIRECTION.LEFT);
+        }
+    },
+
+    /**
+     * @public
+     * @function openRight
+     * @description Open the right side
+     */
+    openRight: {
+        value: function () {
+            this._open(ListItemMenu.DIRECTION.RIGHT);
+        }
+    },
+
+    /**
+     * @public
+     * @function close
+     * @description Close the current opened side
+     */
+    close: {
+        value: function () {
+            if (this.isOpened) {
+                this._shouldClose = true;
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    /**
+    * @private
+    * @function _open
+    * @param {string} ListItemMenu.DIRECTION
+    * @description Open the given side
+    */
+    _open: {
+        value: function (side) {
+            if (!this.isOpened) {
+                if (side === ListItemMenu.DIRECTION.RIGHT ||
+                    side === ListItemMenu.DIRECTION.LEFT
+                ) {
+                    this._openedSide = side;
+                    this._shouldOpen = true;
+                    this.needsDraw = true;
+                }
+            }
+        }
+    },
+
+    /**
+    * @private
+    * @function _loadDataUserInterfaceDescriptorIfNeeded
+    * @description Gets the user interface descriptor 
+    * related to the `data` property
+    */
+    _loadDataUserInterfaceDescriptorIfNeeded: {
+        value: function () {
+            if (this.data && this._templateDidLoad) {
+                var self = this,
+                    infoDelegate;
+
+                this.loadUserInterfaceDescriptor(this.data).then(function (UIDescriptor) {
+                    self.userInterfaceDescriptor = UIDescriptor || self.userInterfaceDescriptor; // trigger biddings.
+
+                    self._deleteLabel = self.callDelegateMethod(
+                        "listItemMenuWillUseDeleteLabelForObjectAtRowIndex",
+                        self,
+                        self._deleteLabel,
+                        self.data,
+                        self.rowIndex,
+                        self.list
+                    ) || self._deleteLabel; // defined by a bidding expression
+                });
+            }
+        }
+    },
+
+    /**
+    * @private
+    * @function _closeIfNeeded
+    * @description Close the current opened side if not translating.
+    */
+    _closeIfNeeded: {
+        value: function () {
+            if (!this._isTranslating) {
+                this.close();
+            }
+        }
+    },
+
+    /**
+    * @private
+    * @function _hasReachMinDistance
+    * @description Cheks if the minimum distance has been reach
+    * in order to automatically open a list item menu
+    * @return boolean
+    */
+    _hasReachMinDistance: {
+        value: function () {
+            return this._distance >= this._dragElementRect.width * 0.15;
+        }
+    },
+
+    /**
+    * @private
+    * @function _hasReachMaxDistance
+    * @description Cheks if the minimum distance has been reach
+    * in order to automatically close a list item menu and disptach 
+    * an action event.
+    * @return boolean
+    */
+    _hasReachMaxDistance: {
+        value: function () {
+            return this._distance >= this._dragElementRect.width * 0.85;
+        }
+    },
+
+    /**
+    * @private
+    * @function _findVelocity
+    * @description Find the velocity of a swipe gesture
+    * @returns Number
+    */
+    _findVelocity: {
+        value: function (deltaTime) {
+            if (deltaTime > 300) {
+                return 0;
+            }
+
+            return Math.sqrt(this._deltaX * this._deltaX) / deltaTime;
+        }
+    },
+
+    /**  
+     * 
+     *  Events cycle management
+     *
+     */
+
     enterDocument: {
         value: function (firstTime) {
-            if (firstTime && !ListItemMenu.cssTransform) {
+            if (!ListItemMenu.cssTransform) {
                 if ("webkitTransform" in this._element.style) {
                     ListItemMenu.cssTransform = "webkitTransform";
                     ListItemMenu.cssTransition = "webkitTransition";
@@ -332,71 +477,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             this._stopListeningToInitialInteractions();
         }
     },
-
-    /**
-     * Plublic Apis
-     */
-
-    openLeft: {
-        value: function () {
-            this._open(ListItemMenu.DIRECTION.LEFT);
-        }
-    },
-
-    openRight: {
-        value: function () {
-            this._open(ListItemMenu.DIRECTION.RIGHT);
-        }
-    },
-
-    close: {
-        value: function () {
-            if (this.isOpened) {
-                this._shouldClose = true;
-                this.needsDraw = true;
-            }
-        }
-    },
-
-    _open: {
-        value: function (side) {
-            if (!this.isOpened) {
-                if (side === ListItemMenu.DIRECTION.RIGHT ||
-                    side === ListItemMenu.DIRECTION.LEFT
-                ) {
-                    this._openedSide = side;
-                    this._shouldOpen = true;
-                    this.needsDraw = true;
-                }
-            }
-        }
-    },
-
-    _loadDataUserInterfaceDescriptorIfNeeded: {
-        value: function () {
-            if (this.data && this._templateDidLoad) {
-                var self = this,
-                    infoDelegate;
-
-                return this.loadUserInterfaceDescriptor(this.data).then(function (UIDescriptor) {
-                    self.userInterfaceDescriptor = UIDescriptor || self.userInterfaceDescriptor; // trigger biddings.
-
-                    self._deleteLabel = self.callDelegateMethod(
-                        "listItemMenuWillUseDeleteLabelForObjectAtRowIndex",
-                        self,
-                        self._deleteLabel,
-                        self.data,
-                        self.rowIndex,
-                        self.list
-                    ) || self._deleteLabel; // defined by a bidding expression
-                });
-            }
-        }
-    },
-
-    /**
-    * Event Listeners
-    */
 
     _startListeningToInitialInteractionsIfNeeded: {
         value: function () {
@@ -734,14 +814,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     },
 
-    _closeIfNeeded: {
-        value: function () {
-            if (this.isOpened && !this._isTranslating) {
-                this.close();
-            }
-        }
-    },
-
     _addDragEventListeners: {
         value: function () {
             this._translateComposer.addEventListener('translate', this);
@@ -765,6 +837,12 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
             this.needsDraw = true;
         }
     },
+
+    /**  
+     * 
+     *  Draw cycle management 
+     * 
+     */
 
     willDraw: {
         value: function () {
@@ -796,28 +874,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
             this._setButtonBoundaries(this._rightButtons, 'marginLeft');
             this._setButtonBoundaries(this._leftButtons, 'marginRight');
-        }
-    },
-
-    _hasReachMinDistance: {
-        value: function () {
-            return this._distance >= this._dragElementRect.width * 0.15;
-        }
-    },
-
-    _hasReachMaxDistance: {
-        value: function () {
-            return this._distance >= this._dragElementRect.width * 0.85;
-        }
-    },
-
-    _findVelocity: {
-        value: function (deltaTime) {
-            if (deltaTime > 300) {
-                return 0;
-            }
-
-            return Math.sqrt(this._deltaX * this._deltaX) / deltaTime;
         }
     },
 
