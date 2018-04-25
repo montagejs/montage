@@ -356,8 +356,7 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 if (side === ListItemMenu.DIRECTION.RIGHT ||
                     side === ListItemMenu.DIRECTION.LEFT
                 ) {
-                    this._direction = side === ListItemMenu.DIRECTION.LEFT ?
-                        ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT;
+                    this._openedSide = side;
                     this._shouldOpen = true;
                     this.needsDraw = true;
                 }
