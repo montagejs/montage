@@ -455,8 +455,6 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
                 } else if (this._shouldOpen) {
                     this.__shouldOpen = false;
                     this._isOpened = true;
-                    this._openedSide = this._direction === ListItemMenu.DIRECTION.LEFT ?
-                        ListItemMenu.DIRECTION.RIGHT : ListItemMenu.DIRECTION.LEFT;
                 }
 
                 this._direction = null;
