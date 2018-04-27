@@ -1370,8 +1370,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         set: function (value) {
             var components,
                 componentsToAdd = [],
-                i,
-                component;
+                i, component;
 
             if (!this._elementsToAppend) {
                 this._elementsToAppend = [];
@@ -1389,35 +1388,62 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
             // cleanup current content
             components = this.childComponents;
+            var currentDomContent = this.domContent;
+
             if (value) {
+                var isArray;
+
+                if (value instanceof Element) {
+                    if (currentDomContent.indexOf(value) === -1) {
+                        this._elementsToAppend.push(value);
+                        this._findAndDetachComponents(value, componentsToAdd);
+                    }
+                } else if ((isArray = Array.isArray(value))) {
+                    var element;
+
+                    for (i = 0; i < value.length; i++) {
+                        element = value[i];
+
+                        if (currentDomContent.indexOf(element) === -1) {
+                            this._elementsToAppend.push(element);
+                            this._findAndDetachComponents(element, componentsToAdd);
+                        }
+                    }
+                }
+
                 if (!this._componentsPendingBuildOut) {
                     this._componentsPendingBuildOut = [];
                 }
+
+                var componentsPendingBuildOut = this._componentsPendingBuildOut;
+
                 for (i = components.length - 1; i >= 0; i--) {
-                    if (this._componentsPendingBuildOut.indexOf(components[i]) === -1) {
-                        this._componentsPendingBuildOut.push(components[i]);
+                    component = components[i];
+
+                    if (
+                        componentsPendingBuildOut.indexOf(component) === -1 && ((
+                            component.element && isArray &&
+                            value.indexOf(component.element) === -1
+                        ) || !component.element || !isArray)
+                    ) {
+                        componentsPendingBuildOut.push(component);
                     }
                 }
             } else {
                 this._componentsPendingBuildOut = [];
+
                 for (i = components.length - 1; i >= 0; i--) {
                     components[i]._shouldBuildOut = true;
                 }
             }
-            if (value instanceof Element) {
-                this._elementsToAppend.push(value);
-                this._findAndDetachComponents(value, componentsToAdd);
-            } else if (value && value[0]) {
-                for (i = 0; i < value.length; i++) {
-                    this._elementsToAppend.push(value[i]);
-                    this._findAndDetachComponents(value[i], componentsToAdd);
-                }
-            }
 
-            // not sure if I can rely on _parentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
+            // not sure if I can rely on _parentComponent to detach the nodes 
+            // instead of doing one loop for dettach and another to attach...
             for (i = 0; (component = componentsToAdd[i]); i++) {
                 this.addChildComponent(component);
             }
+
+            this.needsDraw = true;
         }
     },
 
@@ -2098,9 +2124,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     childComponent = oldDrawList[i];
                     childComponent._addedToDrawList = false;
                     if (childComponent.canDraw()) { // TODO if canDraw is false when does needsDraw get reset?
-                        childComponent._drawIfNeeded(level+1);
+                        childComponent._drawIfNeeded(level + 1);
                     } else if (drawLogger.isDebug) {
                         drawLogger.debug(loggerToString(childComponent) + " can't draw.");
+                    }
+
+                    if ((componentsPendingBuildOut = childComponent._componentsPendingBuildOut)) {
+                        while (componentsPendingBuildOut.length) {
+                            componentsPendingBuildOut.pop()._shouldBuildOut = true;
+                        }
                     }
                 }
                 this._disposeArray(oldDrawList);

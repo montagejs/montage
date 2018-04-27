@@ -1,7 +1,7 @@
 /**
  * @module "montage/ui/succession.reel"
  */
-var Component = require("ui/component").Component;
+var Component = require("../component").Component;
 
 /**
  * Subclasses Component for its `domContent` behavior.
@@ -112,20 +112,62 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
      * @param {Component} content
      */
     _updateDomContentWith: {
-        value: function (content) {
-            if (content) {
-                var element;
-                if (!content.element) {
-                    element = document.createElement("div");
-                    element.id = content.identifier || "appendDiv";
-                    content.element = element;
+        value: function (content, isPush) {
+            if (!this.isFlat) {
+                if (content) {
+                    var element;
+                    if (!content.element) {
+                        element = document.createElement("div");
+                        element.id = content.identifier || "appendDiv";
+                        content.element = element;
+                    } else {
+                        element = content.element;
+                    }
+                    this.domContent = element;
+                    content.needsDraw = true;
                 } else {
-                    element = content.element;
+                    this.domContent = null;
                 }
-                this.domContent = element;
-                content.needsDraw = true;
             } else {
-                this.domContent = null;
+                if (content) {
+                    var isArray = Array.isArray(content),
+                        domContent = this.domContent,
+                        element, index, component;
+
+                    if (isArray) {
+                        for (var i = 0; i < content.length; i++) {
+                            component = content[i];
+
+                            if (!component.element) {
+                                element = document.createElement("div");
+                                element.id = content.identifier;
+                                content.element = element;
+                            }
+
+                            if ((index = domContent.indexOf(component.element)) > -1) {
+                                domContent.splice(index, 1);
+                            } else {
+                                domContent.push(component.element);
+                            }
+                        }
+                    } else {
+                        if (!content.element) {
+                            element = document.createElement("div");
+                            element.id = content.identifier;
+                            content.element = element;
+                        }
+
+                        if (domContent.indexOf(content.element) === -1) {
+                            domContent.push(content.element);
+                        } else {
+                            domContent.slice(domContent.indexOf(content.element), 1);
+                        }
+                    }
+
+                    this.domContent = domContent
+                } else {
+                    this.domContent = null;
+                }
             }
         }
     },
@@ -155,20 +197,29 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
             var length = this.history ? this.history.length : 0,
                 isChanged = plus.length || minus.length,
                 isChangeVisible = isChanged && index + plus.length === length,
-                isPush = isChangeVisible && !minus.length && index,
+                isPush = isChangeVisible && !minus.length && index >= 0,
                 isPop = isChangeVisible && !plus.length && length,
                 isReplace = isChangeVisible && !isPush && !isPop && length,
                 isClear = isChangeVisible && !length;
-            // Set appropriate classes and update the succession if necessary.
-            if (isChangeVisible) {
-                this.classList[isPush ? "add" : "remove"]("montage-Succession--push");
-                this.classList[isPop ? "add" : "remove"]("montage-Succession--pop");
-                this.classList[isReplace ? "add" : "remove"]("montage-Succession--replace");
-                this.classList[isClear ? "add" : "remove"]("montage-Succession--clear");
-                this._prepareForBuild(this.content);
-                this.dispatchBeforeOwnPropertyChange("content", this.content);
-                this._updateDomContentWith(this.content);
-                this.dispatchOwnPropertyChange("content", this.content);
+
+            if (!this.isFlat) {
+                // Set appropriate classes and update the succession if necessary.
+                if (isChangeVisible) {
+                    this.classList[isPush ? "add" : "remove"]("montage-Succession--push");
+                    this.classList[isPop ? "add" : "remove"]("montage-Succession--pop");
+                    this.classList[isReplace ? "add" : "remove"]("montage-Succession--replace");
+                    this.classList[isClear ? "add" : "remove"]("montage-Succession--clear");
+                    this._prepareForBuild(this.content);
+                    this.dispatchBeforeOwnPropertyChange("content", this.content);
+                    this._updateDomContentWith(this.content);
+                    this.dispatchOwnPropertyChange("content", this.content);
+                }
+            } else {
+                if (isChangeVisible) {
+                    this.dispatchBeforeOwnPropertyChange("content", this.content);
+                    this._updateDomContentWith(!!isPush ? plus : minus);
+                    this.dispatchOwnPropertyChange("content", this.content);
+                }
             }
         }
     },

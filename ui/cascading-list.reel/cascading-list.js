@@ -1,4 +1,5 @@
 var Component = require("../component").Component,
+    CascadingListItem = require("./cascading-list-item.reel").CascadingListItem,
     Montage = require("../../core/core").Montage,
     Promise = require('../../core/promise').Promise;
 
@@ -32,18 +33,15 @@ var CascadingListContext = exports.CascadingListContext = Montage.specialize({
 
 exports.CascadingList = Component.specialize({
 
-    constructor: {
-        value: function () {
-            this.history = [];
-        }
-    },
-
     _currentColumnIndex: {
         value: 0
     },
 
     history: {
-        value: null
+        get: function () {
+            return this.succession && this.succession.history ?
+                this.succession.history : [];
+        }
     },
 
     _root: {
@@ -74,7 +72,7 @@ exports.CascadingList = Component.specialize({
             this.popAll();
         }
     },
-    
+
     _delegate: {
         value: null
     },
@@ -188,7 +186,7 @@ exports.CascadingList = Component.specialize({
     cascadingListItemAtIndex: {
         value: function (index) {
             if (this.history[index]) {
-                return this.history[index].cascadingListItem;
+                return this.history[index];
             }
         }
     },
@@ -196,7 +194,7 @@ exports.CascadingList = Component.specialize({
     findIndexForObject: {
         value: function (object) {
             for (var i = this.history.length - 1; i > -1; i--) {
-                if (this.history[i] === object) {
+                if (this.history[i].context === object) {
                     return i;
                 }
             }
@@ -207,11 +205,22 @@ exports.CascadingList = Component.specialize({
 
     _push: {
         value: function (context) {
-            this.history.splice(context.columnIndex, 1, context);
-            this.needsDraw = true;
+            var cascadingListItem = new CascadingListItem();
+            cascadingListItem.element = document.createElement("div");
+            cascadingListItem.cascadingList = this;
+            cascadingListItem.delegate = this.delegate;
+            cascadingListItem.context = context;
+            cascadingListItem.isMobile = this.isMobile;
+            cascadingListItem.needsDraw = true;
+            this.history.splice(context.columnIndex, 1, cascadingListItem);
 
             if (this.shouldDispatchCascadingListEvents) {
-                this.dispatchEventNamed('cascadingListPush', true, true, context);
+                this.dispatchEventNamed(
+                    'cascadingListPush',
+                    true,
+                    true,
+                    cascadingListItem
+                );
             }
         }
     },
@@ -220,7 +229,7 @@ exports.CascadingList = Component.specialize({
         value: function () {
             var cascadingListItem,
                 context = this.history.pop();
-            
+
             this._currentColumnIndex--;
             context.isEditing = false;
             this.needsDraw = true;
@@ -237,7 +246,7 @@ exports.CascadingList = Component.specialize({
         value: function (object, columnIndex, isEditing) {
             if (!this._populatePromise && object) {
                 var self = this;
-                
+
                 this._populatePromise = this.loadUserInterfaceDescriptor(object).then(function (UIDescriptor) {
                     var context = self._createCascadingListContextWithObjectAndColumnIndex(
                         object,
@@ -267,6 +276,23 @@ exports.CascadingList = Component.specialize({
             context.cascadingList = this;
 
             return context;
+        }
+    },
+
+    handleBackAction: {
+        value: function () {
+            this._pop();
+        }
+    },
+
+    willDraw: {
+        value: function () {
+            this.isMobile = window.innerWidth <= 768;
+
+            for (var i = 0; i < this.history.length; i++) {
+                var item = this.history[i];
+                item.isMobile = true;
+            }
         }
     }
 

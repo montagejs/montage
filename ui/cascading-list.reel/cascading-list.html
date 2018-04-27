@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <link rel="stylesheet" type="text/css" href="cascading-list.css">
     <script type="text/montage-serialization">
@@ -8,36 +9,39 @@
         "owner": {
             "values": {
                 "element": {"#": "owner"},
-                "repetition": {"@": "repetition"}
+                "succession": {"@": "succession"}
             }
         },
 
-        "repetition": {
-            "prototype": "../repetition.reel",
+        "succession": {
+            "prototype": "../succession.reel",
             "values": {
-                "element": {"#": "repetition"},
-                "content": {"<-": "@owner.history"}
-            }
-        },
-
-        "item": {
-            "prototype": "./cascading-list-item.reel",
-            "values": {
-                "element": {"#": "item"},
-                "cascadingList": {"@": "owner"},
-                "delegate": {"<-": "@owner.delegate"},
-                "context": {"<-": "@repetition:iteration.object"}
-            }
+                "element": {"#": "succession"}
+            },
+            "listeners": [
+                {
+                    "type": "buildInEnd",
+                    "listener": {"@": "owner"}
+                },
+                {
+                    "type": "buildOutEnd",
+                    "listener": {"@": "owner"}
+                },
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
         }
 
     }
     </script>
 </head>
+
 <body>
     <div data-montage-id="owner" class="CascadingList">
-        <div data-montage-id="repetition" class="CascadingList-repetition">
-            <div data-montage-id="item"></div>
-        </div>
+        <div data-montage-id="succession" class="CascadingList-repetition"></div>
     </div>
 </body>
+
 </html>
