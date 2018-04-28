@@ -48,17 +48,17 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             this._initializeOffline();
         }
     },
-
     /***************************************************************************
      * Serialization
      */
 
     deserializeSelf: {
-        value:function (deserializer) {
+        value: function (deserializer) {
             var self = this,
                 result = null, 
                 value;
 
+            console.log("DataService.deserializeSelf", this.isRawDataWorker, this.identifier, deserializer);
             value = deserializer.getProperty("childServices");
             if (value) {
                 this.registerChildServices(value);
@@ -82,19 +82,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 Array.prototype.push.apply(this._childServiceMappings, value);
             }
 
-            this.registerSelf();
-
             value = deserializer.getProperty("delegate");
             if (value) {
                 this.delegate = value;
-            }
-
-            if (this._childServiceRegistrationPromise) {
-                this._childServiceRegistrationPromise = this._childServiceRegistrationPromise.then(function () {
-                    return self.registerSelf();
-                });
-            } else {
-                this._childServiceRegistrationPromise = this.registerSelf();
             }
             
             return result;
@@ -291,15 +281,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             // types or to the "all types" service array identified by the
             // `null` type, and add each of the new child's types to the array
             // of child types if they're not already there.
-            this._cacheServiceWithTypes(child, types);
-            // Set the new child service's parent.
-            child._parentService = this;
-        }
-    },
-
-    _cacheServiceWithTypes: {
-        value: function (child, types) {
-            var children, type, i, n, nIfEmpty = 1;
 
             for (i = 0, n = types && types.length || nIfEmpty; i < n; i += 1) {
                 type = types && types.length && types[i] || null;
@@ -312,6 +293,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     }
                 }
             }
+            // Set the new child service's parent.
+            child._parentService = this;
         }
     },
 
@@ -403,54 +386,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 objectDescriptors;
             return this._resolveAsynchronousTypes(types).then(function (descriptors) {
                 objectDescriptors = descriptors;
+            
                 self._registerTypesByModuleId(objectDescriptors);
                 return self._registerChildServiceMappings(child, mappings);
             }).then(function () {
                 return self._makePrototypesForTypes(child, objectDescriptors);
             }).then(function () {
                 self.addChildService(child, types);
-                return null;
-            });
-        }
-    },
-
-    registerSelf: {
-        value: function () {
-            var self = this,
-                mappings = this.mappings || [],
-                types;
-
-            // possible types
-            // -- types is passed in as an array or a single type.
-            // -- a model is set on the child.
-            // -- types is set on the child.
-            // any type can be asychronous or synchronous.
-            types = types && Array.isArray(types) && types ||
-                    types && [types] ||
-                    this.model && this.model.objectDescriptors ||
-                    this.types && Array.isArray(this.types) && this.types ||
-                    this.types && [this.types] ||
-                    [];
-
-            return this._registerOwnTypesAndMappings(types, mappings).then(function () {
-                self._cacheServiceWithTypes(self, types);
-                return self;
-            });
-        }
-    },
-
-    _registerOwnTypesAndMappings: {
-        value: function (types, mappings) {
-            var self = this,
-                objectDescriptors;
-            return this._resolveAsynchronousTypes(types).then(function (descriptors) {
-                objectDescriptors = descriptors;
-                self._registerTypesByModuleId(objectDescriptors);
-                return self._registerChildServiceMappings(self, mappings);
-            }).then(function () {
-                return self._makePrototypesForTypes(self, objectDescriptors);
-            }).then(function () {
-                // self.addChildService(child, types);
                 return null;
             });
         }
@@ -544,6 +486,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (type) {
             var descriptor = this._constructorToObjectDescriptorMap.get(type) ||
                              typeof type === "string" && this._moduleIdToObjectDescriptorMap[type];
+
             
             return  descriptor || type;
         }
@@ -705,7 +648,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * @argument {Object} object
      * @returns DataService
      */
-    _getChildServiceForObject: {
+    _childServiceForObject: {
         value: function (object) {
             return this.childServiceForType(this.rootService._getObjectType(object));
         }
@@ -718,7 +661,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * @private
      * @method
      * @argument {DataObjectDescriptor} type
-     * @returns {Set.<DataService,number>}
+     * @returns {DataService}
      */
     childServiceForType: {
         value: function (type) {
@@ -726,6 +669,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             type = type instanceof ObjectDescriptor ? type : this._objectDescriptorForType(type);
             services = this._childServicesByType.get(type) || this._childServicesByType.get(null);
             return services && services[0] || null;
+        }
+    },
+
+    asyncChildServiceForType: {
+        value: function (type) {
+            var service = this.parentService ? this.parentService.asyncChildServiceForType(type) : 
+                                               this.childServiceForType(type);
+
+            return service instanceof Promise ? service : Promise.resolve(service);
         }
     },
 
@@ -764,12 +716,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
 
     _mappingByType: {
-        get: function () {
-            if (!this.__mappingByType) {
-                this.__mappingByType = new Map();
-            }
-            return this.__mappingByType;
-        }
+        // get: function () {
+        //     if (!this.__mappingByType) {
+        //         this.__mappingByType = new Map();
+        //     }
+        //     return this.__mappingByType;
+        // }
+        value: new Map()
     },
 
     __mappingByType: {
@@ -1059,7 +1012,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     // __object__snapshotMethodImplementation: {
     //     value: function() {
     //         debugger;
-    //         return exports.DataService.mainService._getChildServiceForObject(this).snapshotForObject(this);
+    //         return exports.DataService.mainService._childServiceForObject(this).snapshotForObject(this);
     //     }
     // },
     // __object_primaryKeyMethodImplementation: {
@@ -1237,7 +1190,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             var self = this,
                 propertyName = propertiesToRequest.shift(),
                 promise = this.getObjectProperties(object, propertyName);
-            
+
             if (promise) {
                 return promise.then(function () {
                     var result = null;
@@ -1333,11 +1286,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     fetchObjectProperty: {
         value: function (object, propertyName) {
-            var isHandler = this.parentService && this.parentService._getChildServiceForObject(object) === this,
+            var isHandler = this.parentService && this.parentService._childServiceForObject(object) === this,
                 useDelegate = isHandler && typeof this.fetchRawObjectProperty === "function",
                 delegateFunction = !useDelegate && isHandler && this._delegateFunctionForPropertyName(propertyName),
                 propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
-                childService = !isHandler && this._getChildServiceForObject(object);
+                childService = !isHandler && this._childServiceForObject(object);
 
             return  useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
                     delegateFunction ?                  delegateFunction.call(this, object) :
@@ -1355,40 +1308,29 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-    _isAsync: {
-        value: function (object) {
-            return object && object.then && typeof object.then === "function";
-        }
-    },
-
     _fetchObjectPropertyWithPropertyDescriptor: {
         value: function (object, propertyName, propertyDescriptor) {
             var self = this,
                 objectDescriptor = propertyDescriptor.owner,
                 mapping = objectDescriptor && this.mappingWithType(objectDescriptor),
-                data = {},
-                result;
-            
+                data = {};
 
             if (mapping) {
+
                 Object.assign(data, this.snapshotForObject(object));
-                result = mapping.mapObjectToCriteriaSourceForProperty(object, data, propertyName);
-                if (this._isAsync(result)) {
-                    return result.then(function() {
-                        Object.assign(data, self.snapshotForObject(object));
-                        return mapping.mapRawDataToObjectProperty(data, object, propertyName);
-                    });
-                } else {
+
+                return mapping.mapObjectToCriteriaSourceForProperty(object, data, propertyName).then(function() {
                     Object.assign(data, self.snapshotForObject(object));
-                    result = mapping.mapRawDataToObjectProperty(data, object, propertyName);
-                    if (!this._isAsync(result)) {
-                        result = this.nullPromise;
-                    }
-                    return result;
-                }
+                    return mapping.mapRawDataToObjectProperty(data, object, propertyName);
+                });
             } else {
                 return this.nullPromise;
             }
+
+
+            //return mapping.
+            // (object,{}, propertyName);
+
         }
     },
 
@@ -1422,7 +1364,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     }
                 }
             }
-
+            // if (names.indexOf("geometryType")) {
+            //
+            // }
             // Return a promise that will be fulfilled only when all of the
             // requested data has been set on the object. If possible do this
             // without creating any additional promises.
@@ -1800,37 +1744,42 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             stream.query = query;
             stream.dataExpression = query.selectExpression;
 
-            this._dataServiceByDataStream.set(stream, this._childServiceRegistrationPromise.then(function() {
+            this._dataServiceByDataStream.set(stream, this._fetchDataWhenReady(stream));
+            // Return the passed in or created stream.
+            return stream;
+        }
+    },
+
+    //Wait for child service registration promise and then perform fetch logic
+    _fetchDataWhenReady: {
+        value: function (stream) {
+            var self = this, 
+                query = stream.query,
+                type = query.type;
+
+            return this._childServiceRegistrationPromise.then(function() {
                 var service;
                 //This is a workaround, we should clean that up so we don't
                 //have to go up to answer that question. The difference between
                 //.TYPE and Objectdescriptor still creeps-in when it comes to
                 //the service to answer that to itself
-                service = self.parentService ? self.parentService.childServiceForType(query.type) : self.childServiceForType(query.type);
+                service = self.childServiceForType(query.type);
+                // self.asyncChildServiceForType(query.type).then(function (service) {
                 if (service === self && typeof self.fetchRawData === "function") {
                     service = self;
                     service._fetchRawData(stream);
                 } else {
-
-                    // Use a child service to fetch the data.
-                    try {
-
-                        service = self.childServiceForType(query.type);
-                        if (service) {
-                            stream = service.fetchData(query, stream) || stream;
-                            self._dataServiceByDataStream.set(stream, service);
-                        } else {
-                            throw new Error("Can't fetch data of unknown type - " + (query.type.typeName || query.type.name) + "/" + query.type.uuid);
-                        }
-                    } catch (e) {
-                        stream.dataError(e);
+                    if (service) {
+                        stream = service.fetchData(query, stream) || stream;
+                        self._dataServiceByDataStream.set(stream, service);
+                    } else {
+                        throw new Error("Can't fetch data of unknown type - " + (query.type.typeName || query.type.name) + "/" + query.type.uuid);
                     }
                 }
+                // });
 
                 return service;
-            }));
-            // Return the passed in or created stream.
-            return stream;
+            });
         }
     },
 
@@ -1973,92 +1922,82 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     saveDataObject: {
         value: function (object) {
-            //return this._updateDataObject(object, "saveDataObject");
-
             var self = this,
                 service,
-                promise = this.nullPromise,
+                serviceResult,
                 mappingPromise;
 
-            if (this.parentService && this.parentService._getChildServiceForObject(object) === this) {
-                var record = {};
-                mappingPromise =  this._mapObjectToRawData(object, record);
-                if (!mappingPromise) {
-                    mappingPromise = this.nullPromise;
-                }
-                return mappingPromise.then(function () {
-                        return self.saveRawData(record, object)
-                            .then(function (data) {
-                                self.rootService.createdDataObjects.delete(object);
-                                return data;
-                            });
-                 });
-            }
-            else {
-                service = this._getChildServiceForObject(object);
-                if (service) {
+            return this._asyncChildServiceForObject(object).then(function (service) {
+                if (service === self) {
+                    var record = {};
+                    mappingPromise =  self._mapObjectToRawData(object, record) || self.nullPromise;
+                    return mappingPromise.then(function () {
+                            return self.saveRawData(record, object);
+                    }).then(function () {
+                        self.rootService.createdDataObjects.delete(object);
+                        return null;
+                    });
+                } else if (service) {
                     return service.saveDataObject(object);
                 }
-                else {
-                    return promise;
-                }
-            }
+            });
         }
     },
+
 
 
     _updateDataObject: {
         value: function (object, action) {
             var self = this,
                 service,
-                promise = this.nullPromise;
+                promise = this.nullPromise,
+                mappingPromise,
+                serviceResult;
 
-            if (this.parentService && this.parentService._getChildServiceForObject(object) === this) {
-                service = action && this;
-            }
-            else {
-                service = action && this._getChildServiceForObject(object);
-                if (service) {
-                    return service._updateDataObject(object, action);
+            return this._asyncChildServiceForObject(object).then(function (service) {
+                var result = null;
+                if (service === self) {
+                    service = action && this;
                 }
-            }
 
-            if (!action) {
-                self.createdDataObjects.delete(object);
-            } else if (service) {
-                promise = service[action](object).then(function () {
+                if (!action) {
                     self.createdDataObjects.delete(object);
-                    return null;
-                });
-            }
-            return promise;
+                } else if (service) {
+                    result = service[action](object).then(function () {
+                        self.createdDataObjects.delete(object);
+                        return null;
+                    });
+                }
+                return result;
+            });
+        }
+    },
+
+    _asyncChildServiceForObject: {
+        value: function (object) {
+            var service = this.parentService ? this.parentService._asyncChildServiceForObject(object) : 
+                                               this._childServiceForObject(object);
+
+            return service instanceof Promise ? service : Promise.resolve(service);
         }
     },
 
     _saveDataObject: {
         value: function (object) {
-            var record = {};
-            this._mapObjectToRawData(object, record);
-            return this.saveRawData(record, object);
+            var self = this, 
+                record = {},
+                mappingPromise = this._mapObjectToRawData(object, record);
+            if (!mappingPromise) {
+                mappingPromise = this.nullPromise;
+            }
+            return mappingPromise.then(function () {
+                return self.saveRawData(record, object);
+            }).then(function () {
+                self.rootService.createdDataObjects.delete(object);
+                return null;
+            });
         }
     },
-    // _updateDataObject: {
-    //     value: function (object, action) {
-    //         var self = this,
-    //             service = action && this._getChildServiceForObject(object),
-    //             promise = this.nullPromise;
-
-    //         if (!action) {
-    //             self.createdDataObjects.delete(object);
-    //         } else if (service) {
-    //             promise = service[action](object).then(function () {
-    //                 self.createdDataObjects.delete(object);
-    //                 return null;
-    //             });
-    //         }
-    //         return promise;
-    //     }
-    // },
 
     /***************************************************************************
      * Offline
