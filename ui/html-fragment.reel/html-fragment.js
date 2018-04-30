@@ -32,7 +32,7 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
     value: {
         set: function (value) {
             if (this._value !== value) {
-                if (typeof value === 'string') {
+                if (value !== void 0 && value !== null) {
                     this._value = value;
                 } else {
                     this._value = null;
@@ -184,27 +184,25 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
 
     draw: {
         value: function () {
-            if (this.value && this.needsSanitizeHtml) {
-                var doc = this._sanitizeHtml(
-                    this.value,
-                    this.allowedTags || defaultOptions.allowedTags,
-                    this.allowedAttributes || defaultOptions.allowedAttributes
-                );
-
-                if (doc) {
-                    var range = doc.createRange();
-                    range.selectNodeContents(doc.body);
-                    this.element.appendChild(range.extractContents());
-                    range.selectNodeContents(doc.head);
-                    document.head.appendChild(range.extractContents());
-                } else {
-                    this.element.innerHTML = '';
-                }                
-            } else {
+            if (this.needsSanitizeHtml) {
                 this.element.innerHTML = '';
-            }
 
-            this.needsSanitizeHtml = false;
+                if (this.value) {
+                    var doc = this._sanitizeHtml(
+                        this.value,
+                        this.allowedTags || defaultOptions.allowedTags,
+                        this.allowedAttributes || defaultOptions.allowedAttributes
+                    );
+    
+                    if (doc) {
+                        var range = doc.createRange();
+                        range.selectNodeContents(doc.body);
+                        this.element.appendChild(range.extractContents());
+                        range.selectNodeContents(doc.head);
+                        this.element.appendChild(range.extractContents());
+                    }
+                }
+            }
         }
     }
   
