@@ -1398,7 +1398,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         this._elementsToAppend.push(value);
                         this._findAndDetachComponents(value, componentsToAdd);
                     }
-                } else if ((isArray = Array.isArray(value))) {
+                } else if ((isArray = (Array.isArray(value) || value instanceof NodeList))) {
                     var element;
 
                     for (i = 0; i < value.length; i++) {
