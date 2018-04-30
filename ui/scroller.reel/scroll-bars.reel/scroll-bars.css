@@ -1,0 +1,80 @@
+
+.montage-ScrollBars {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    pointer-events: none;
+}
+.montage-ScrollBars .montage-ScrollBars-top {
+    position: absolute;
+    right: 2px;
+    background: black;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.27);
+    width: 5px;
+    height: 3px;
+    border-radius: 4px 4px 0 0;
+    opacity: 0;
+    clip: rect(-1px, 6px, 3px, -1px);
+    -webkit-transform: translateZ(0);
+    -moz-transform:translateZ(0);
+    -ms-transform:translateZ(0);
+    transform:translateZ(0);
+}
+.montage-ScrollBars .montage-ScrollBars-bottom {
+    background: black;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.27);
+    width: 5px;
+    border-radius: 0 0 4px 4px;
+    opacity: 0;
+    -webkit-transform: translateZ(0);
+    -moz-transform:translateZ(0);
+    -ms-transform:translateZ(0);
+    transform:translateZ(0);
+}
+.montage-ScrollBars .montage-ScrollBars-bottomClip {
+    position: absolute;
+    right: 2px;
+    width: 5px;
+    -webkit-transform: translateZ(0);
+    -moz-transform:translateZ(0);
+    -ms-transform:translateZ(0);
+    transform:translateZ(0);
+}
+.montage-ScrollBars .montage-ScrollBars-left {
+    position: absolute;
+    bottom: 2px;
+    background: black;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.27);
+    width: 3px;
+    height: 5px;
+    border-radius: 4px 0 0 4px;
+    opacity: 0;
+    clip: rect(-1px, 3px, 6px, -1px);
+    -webkit-transform: translateZ(0);
+    -moz-transform:translateZ(0);
+    -ms-transform:translateZ(0);
+    transform:translateZ(0);
+}
+.montage-ScrollBars .montage-ScrollBars-right {
+    background: black;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.27);
+    height: 5px;
+    border-radius: 0 4px 4px 0;
+    opacity: 0;
+    -webkit-transform: translateZ(0);
+    -moz-transform:translateZ(0);
+    -ms-transform:translateZ(0);
+    transform:translateZ(0);
+}
+.montage-ScrollBars .montage-ScrollBars-rightClip {
+    position: absolute;
+    bottom: 2px;
+    height: 5px;
+    -webkit-transform: translateZ(0);
+    -moz-transform:translateZ(0);
+    -ms-transform:translateZ(0);
+    transform:translateZ(0);
+}

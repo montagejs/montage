@@ -1,0 +1,12 @@
+{
+    "root": {
+        "prototype": "core/meta/user-interface-descriptor",
+        "values": {
+            "collectionNameExpression": "'Organisation'",
+            "collectionInspectorComponentModule": {
+                "%": "ui/list.reel"
+            },
+            "nameExpression": "companyName"
+        }
+    }
+}

@@ -13,6 +13,7 @@
  * @requires collections/set
  */
 var Montage = require("../core/core").Montage,
+    getObjectDescriptorWithModuleId = require("../core/meta/module-object-descriptor").ModuleObjectDescriptor.getObjectDescriptorWithModuleId,
     Target = require("../core/target").Target,
     Template = require("../core/template").Template,
     DocumentResources = require("../core/document-resources").DocumentResources,
@@ -451,30 +452,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     },
 
     /**
-     * Dispatch the actionEvent this component is configured to emit upon interaction
-     * @private
-     */
-    _dispatchActionEvent: {
-        value: function () {
-            this.dispatchEvent(this.createActionEvent());
-        },
-        enumerable: false
-    },
-
-    /**
-     * Convenience to create a custom event named "action"
-     * @function
-     * @returns and event to dispatch upon interaction
-     */
-    createActionEvent: {
-        value: function () {
-            var actionEvent = document.createEvent("CustomEvent");
-            actionEvent.initCustomEvent("action", true, true, null);
-            return actionEvent;
-        }
-    },
-
-    /**
      * The gate controlling the canDraw() response of the component.
      * @type {Gate}
      * @private
@@ -773,33 +750,35 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     getTemplateArgumentElement: {
         value: function (argumentName) {
-            var ownerModuleId, element, range, argument, label,
-                template = this._ownerDocumentPart.template;
+            if (this._ownerDocumentPart) {
+                var ownerModuleId, element, range, argument, label,
+                    template = this._ownerDocumentPart.template;
 
-            if (global._montage_le_flag) {
-                ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
-                label = this._montage_metadata.label;
-            }
-
-            if (argumentName === "*") {
-                element = template.getElementById(this.getElementId());
-
-                range = template.document.createRange();
-                range.selectNodeContents(element);
-                argument = range.cloneContents();
-                if (global._montage_le_flag && element.children.length > 0) {
-                    this._leTagStarArgument(ownerModuleId, label, argument);
-                }
-            } else {
-                argument = this._getTemplateDomArgument(argumentName).cloneNode(true);
-                argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
                 if (global._montage_le_flag) {
-                    this._leTagNamedArgument(ownerModuleId, label, argument,
-                        argumentName);
+                    ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
+                    label = this._montage_metadata.label;
                 }
-            }
 
-            return argument;
+                if (argumentName === "*") {
+                    element = template.getElementById(this.getElementId());
+
+                    range = template.document.createRange();
+                    range.selectNodeContents(element);
+                    argument = range.cloneContents();
+                    if (global._montage_le_flag && element.children.length > 0) {
+                        this._leTagStarArgument(ownerModuleId, label, argument);
+                    }
+                } else {
+                    argument = this._getTemplateDomArgument(argumentName).cloneNode(true);
+                    argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
+                    if (global._montage_le_flag) {
+                        this._leTagNamedArgument(ownerModuleId, label, argument,
+                            argumentName);
+                    }
+                }
+
+                return argument;
+            }
         }
     },
 
@@ -3474,8 +3453,116 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 component.dispose();
             });
         }
+    },
+
+    loadUserInterfaceDescriptor: {
+        value: function (object) {
+            var self = this,
+                objectDescriptorModuleIdCandidate,
+                objectDescriptorModuleId,
+                objectDescriptor,
+                infoDelegate,
+                constructor,
+                promise;
+
+            this.canDrawGate.setField(
+                this.constructor.userInterfaceDescriptorLoadedField,
+                false
+            );
+
+            if (typeof object === "object" &&
+                (constructor = object.constructor) &&
+                constructor.objectDescriptorModuleId
+            ) {
+                objectDescriptorModuleId = constructor.objectDescriptorModuleId;
+            }
+
+            objectDescriptorModuleIdCandidate = this.callDelegateMethod(
+                "componentWillUseObjectDescriptorModuleIdForObject",
+                this,
+                objectDescriptorModuleId,
+                object
+            );
+
+            if (objectDescriptorModuleIdCandidate) {
+                infoDelegate = Montage.getInfoForObject(this.delegate);
+                objectDescriptorModuleId = objectDescriptorModuleIdCandidate;
+            }
+
+            if (objectDescriptorModuleId) {
+                if (objectDescriptorModuleIdCandidate) {
+                    objectDescriptor = getObjectDescriptorWithModuleId(
+                        objectDescriptorModuleId,
+                        infoDelegate ? infoDelegate.require : require
+                    );
+                } else {
+                    objectDescriptor = constructor.objectDescriptor;
+                }
+
+                promise = objectDescriptor;
+            } else {
+                promise = Promise.resolve();
+            }
+
+            promise = promise.then(function (objectDescriptor) {
+                var moduleInfo = Montage.getInfoForObject(self),
+                    packageName = moduleInfo.require.packageDescription.name,
+                    moduleId = packageName + "/" + moduleInfo.moduleId,
+                    userInterfaceDescriptorModuleId,
+                    userInterfaceDescriptorModuleIdCandidate;
+                
+                if (objectDescriptor && objectDescriptor.userInterfaceDescriptorModules) {
+                    userInterfaceDescriptorModuleId =
+                        objectDescriptor.userInterfaceDescriptorModules[moduleId];
+
+                    if (!userInterfaceDescriptorModuleId) {
+                        userInterfaceDescriptorModuleId =
+                            objectDescriptor.userInterfaceDescriptorModules['*'];
+                    }
+                }
+
+                userInterfaceDescriptorModuleIdCandidate = self.callDelegateMethod(
+                    "componentWillUseUserInterfaceDescriptorModuleIdForObject",
+                    self,
+                    userInterfaceDescriptorModuleId,
+                    object
+                );
+
+                if (objectDescriptor && userInterfaceDescriptorModuleId &&
+                    (userInterfaceDescriptorModuleIdCandidate === userInterfaceDescriptorModuleId ||
+                        !userInterfaceDescriptorModuleIdCandidate)
+                ) {
+                    if (
+                        userInterfaceDescriptorModuleId === objectDescriptor.userInterfaceDescriptorModules['*']
+                    ) {
+                        return objectDescriptor.userInterfaceDescriptor;
+                    }
+
+                    return objectDescriptor.userInterfaceDescriptors[moduleId];
+                } else if (userInterfaceDescriptorModuleIdCandidate) {
+                    infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
+
+                    return (infoDelegate.require || require).async(userInterfaceDescriptorModuleIdCandidate)
+                        .then(function (userInterfaceDescriptorModule) {
+                            return userInterfaceDescriptorModule.montageObject;
+                        });
+                }
+            });
+
+            return promise.finally(function () {
+                self.canDrawGate.setField(
+                    self.constructor.userInterfaceDescriptorLoadedField,
+                    true
+                );
+            });
+        }
     }
-},{
+
+}, {
+
+    userInterfaceDescriptorLoadedField: {
+        value: 'userInterfaceDescriptorLoaded'
+    },
     /**
      * Add the specified properties as properties of this component.
      * @function
@@ -4355,7 +4442,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             this._element = document.documentElement;
             this._documentResources = DocumentResources.getInstanceForDocument(document);
         }
-    }
+    }   
 });
  
 exports.__root__ = rootComponent = new RootComponent().init();

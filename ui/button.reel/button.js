@@ -92,7 +92,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     _labelNode: {value:undefined, enumerable: false},
 
     _label: { value: undefined, enumerable: false },
-    _emptyLabel: { value: "", enumerable: false },
+    defaultLabel: { value: "Button", enumerable: false },
 
     /**
         The displayed text on the button. In an &lt;input> element this is taken from the element's <code>value</code> attribute. On any other element (including &lt;button>) this is the first child node which is a text node. If one isn't found then it will be created.
@@ -119,7 +119,8 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 }
             }
 
-            this._label = String(value);
+            this._label = value !== void 0 && value !== null ?
+                String(value) : this.defaultLabel;
 
             if (this.isInputElement) {
                 this._value = value;
@@ -237,7 +238,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
             if (mutableEvent._event.identifier === "space" ||
                 mutableEvent._event.identifier === "enter") {
                 this.active = false;
-                this._dispatchActionEvent();
+                this.dispatchActionEvent();
             }
         }
     },
@@ -293,7 +294,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         value: function (event) {
             if (!this._promise){
                 this.active = false;
-                this._dispatchActionEvent();
+                this.dispatchActionEvent();
                 this._removeEventListeners();
             }
         }
@@ -366,8 +367,11 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                     }
                     //<button> && Custom
                 } else {
-                    if(this.originalElement === this.element && this._label === undefined) {
-                        this._label = this.originalElement.data;
+                    if(this.originalElement === this.element && 
+                        this._label === void 0 &&
+                        this.originalElement.firstChild
+                    ) {
+                        this._label = this.originalElement.firstChild.data;
                     }
                     if (!this.element.firstChild) {
                         this.element.appendChild(document.createTextNode(""));
@@ -395,7 +399,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         enumerable: false,
         value: function (value) {
             if(typeof value !== "string") {
-                value = this._emptyLabel;
+                value = this.defaultLabel;
             }
             if (this.isInputElement) {
                 this._element.value = value;

@@ -5,6 +5,7 @@ All Rights Reserved.
 var Montage = require("montage").Montage,
     TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Template = require("montage/core/template").Template,
+    DocumentPart = require("montage/core/document-part").DocumentPart,
     TemplateResources = require("montage/core/template").TemplateResources,
     Component = require("montage/ui/component").Component,
     MontageLabeler = require("montage/core/serialization/serializer/montage-labeler").MontageLabeler,
@@ -1579,6 +1580,8 @@ describe("spec/reel/template-spec", function () {
                     argumentsTemplate.getElementById("objects-no-collision"));
                 return range.extractContents();
             };
+
+            argumentsProvider._ownerDocumentPart = new DocumentPart();
 
             Promise.all([
                 parametersTemplate.initWithHtml(parametersHtml),

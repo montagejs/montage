@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="list-item.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "owner"},
+                "_valuePlaceholderComponent": {"@": "placeholderValue"},
+                "_montageIconComponentModule": {"%": "../image.reel"},
+                "_montageToogleComponentModule": {"%": "../toggle.reel"},
+                "classList.has('has-value')": {"<-": "@owner.__value.defined()"},
+                "classList.has('active')": {"<-": "@owner.active"},
+                "classList.has('selected')": {"<-": "@owner.selected"},
+                "classList.has('is-expandable')": {"<-": "@owner._isExpandable"},
+                "classList.has('description-bottom')": {"<-": "@owner._descriptionPosition == 'bottom'"}
+            }
+        },
+
+        "placeholder": {
+            "prototype": "../placeholder.reel",
+            "values": {
+                "element": {"#": "icon"},
+                "componentModule": {"<-": "@owner._montageIconComponentModule.id == @owner._iconComponentModule.id && !@owner._iconSrc ? null : @owner._iconComponentModule"},
+                "component.src": {"<-": "@owner._iconSrc"}
+            }
+        },
+
+        "label": {
+            "prototype": "../text.reel",
+            "values": {
+                "element": {"#": "label"},
+                "value": {"<-": "@owner._label"}
+            }
+        },
+
+        "description": {
+            "prototype": "../text.reel",
+            "values": {
+                "element": {"#": "description"},
+                "value": {"<-": "@owner._description"},
+                "hidden": {"<-": "!@owner._description"}
+            }
+        },
+
+        "placeholderValue": {
+            "prototype": "../placeholder.reel",
+            "values": {
+                "element": {"#": "value"},
+                "componentModule": {"<-": "@owner.__value.defined() ? @owner._toggleComponentModule : null"},
+                "component.checked": {"<-": "@owner.__value"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="ListItem">
+        <div data-montage-id="icon" class="ListItem-icon"></div>
+        <div class="ListItem-text">
+            <div data-montage-id="label" class="ListItem-label"></div>
+            <div data-montage-id="description" class="ListItem-description"></div>
+        </div>
+        <div data-montage-id="value" class="ListItem-value"></div>
+    </div>
+</body>
+</html>

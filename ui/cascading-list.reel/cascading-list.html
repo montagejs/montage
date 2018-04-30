@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="cascading-list.css">
+    <script type="text/montage-serialization">
+    {
+
+        "owner": {
+            "values": {
+                "element": {"#": "owner"},
+                "repetition": {"@": "repetition"}
+            }
+        },
+
+        "repetition": {
+            "prototype": "../repetition.reel",
+            "values": {
+                "element": {"#": "repetition"},
+                "content": {"<-": "@owner.history"}
+            }
+        },
+
+        "item": {
+            "prototype": "./cascading-list-item.reel",
+            "values": {
+                "element": {"#": "item"},
+                "cascadingList": {"@": "owner"},
+                "delegate": {"<-": "@owner.delegate"},
+                "context": {"<-": "@repetition:iteration.object"}
+            }
+        }
+
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="CascadingList">
+        <div data-montage-id="repetition" class="CascadingList-repetition">
+            <div data-montage-id="item"></div>
+        </div>
+    </div>
+</body>
+</html>

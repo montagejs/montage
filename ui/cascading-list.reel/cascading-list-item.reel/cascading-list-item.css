@@ -1,0 +1,113 @@
+.CascadingListItem {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    position: relative;
+    font-family: 'lato';
+    box-sizing: border-box;
+    overflow: hidden;
+    border-bottom: 1px solid #c8c7cc;
+    border-top: 1px solid #c8c7cc;
+    border-right: 1px solid #c8c7cc;
+}
+
+.CascadingListItem-header,
+.CascadingListItem-footer {
+    position: relative;
+    z-index: 1;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -ms-flex-negative: 0;
+        flex-shrink: 0;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    height: 48px;
+    height:  3rem;
+    padding: 0 16px;
+    padding: 0 1rem;
+}
+
+.CascadingListItem-header {
+    border-bottom: 1px solid #c8c7cc;
+}
+
+.CascadingListItem-footer {
+    border-top: 1px solid #c8c7cc;
+}
+
+.CascadingListItem-footer[hidden] {
+    display: none;
+}
+
+.CascadingListItemAction {
+    outline: none;
+}
+
+.CascadingListItemAction.invisible {
+    visibility: hidden;
+}
+
+.CascadingListItemAction.left,
+.CascadingListItemAction.right {
+    color: #0076FF;
+}
+
+.CascadingListItemAction-header.middle,
+.CascadingListItemAction-footer.middle {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.CascadingListItemAction-footer.middle {
+    color: #030303;
+    font-size: 12px;
+    font-size: .75rem;
+}
+
+.CascadingListItemAction-header.middle {
+    font-size: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.CascadingListItem-content {
+    margin-bottom: -1px;
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+            flex-grow: 1;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+}
+
+.CascadingListItem-content > * {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    min-width: 256px;
+    min-width: 16rem;
+}
+
+.CascadingListItem-content .List {
+    border-width: 0 0 1px 0;
+}

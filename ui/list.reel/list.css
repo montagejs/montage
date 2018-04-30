@@ -1,0 +1,27 @@
+.List {
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    font-size: 16px;
+    font-size: 1rem;
+    color: hsla(0,0%,0%,.5);
+    list-style: none;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid #c8c7cc;
+    box-sizing: border-box;
+}
+
+.List .List-repetition {
+    padding: 0;
+    margin: 0;
+}
+
+.List .List-repetition .ListItem {
+    border: none;
+    border-bottom: 1px solid #c8c7cc;
+}
+
+.List .List-repetition .Placeholder:last-of-type .ListItem {
+    border: none;
+}

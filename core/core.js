@@ -23,7 +23,6 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     PROTO = "__proto__",
     VALUE = "value",
     ENUMERABLE = "enumerable",
-    DISTINCT = "distinct",
     SERIALIZABLE = "serializable",
     FUNCTION = "function",
     UNDERSCORE_UNICODE = 95,
@@ -398,7 +397,6 @@ function __clearSuperDepencies(obj, prop, replacingDescriptor) {
  *  - `writable` is `true` by default, but `false` if the `name` begins with
  *    an underscore, `_`.
  *  - `configurable` is `true` by default
- *  - `distinct` is deprecated, but conveys the intention that the `value`
  *    should be duplicated for each instance, but the means of cloning is
  *    ill-defined and temperamental.
  *
@@ -421,13 +419,8 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
         if (! (typeof obj === "object" || typeof obj === FUNCTION) || obj === null) {
             throw new TypeError("Object must be an object, not '" + obj + "'");
         }
-
+        
         var isValueDescriptor = (VALUE in descriptor);
-
-        if (DISTINCT in descriptor && !isValueDescriptor) {
-            throw new TypeError("Cannot use distinct attribute on non-value property '" + prop + "'");
-        }
-
 
         // reset defaults appropriately for framework.
         if (PROTO in descriptor) {
@@ -1667,22 +1660,33 @@ exports._blueprintModuleIdDescriptor = {
 exports._objectDescriptorDescriptor = {
     serializable:false,
     enumerable: false,
-    get:function () {
-        var info = Montage.getInfoForObject(this);
-        var self = info && !info.isInstance ? this : this.constructor;
-        if (!Object.getOwnPropertyDescriptor(self, "_objectDescriptor") || !self._objectDescriptor) {
+    get: function () {
+        var info = Montage.getInfoForObject(this),
+            self = info && !info.isInstance ? this : this.constructor;
+        
+        if (!Object.getOwnPropertyDescriptor(self, "_objectDescriptor") ||
+            !self._objectDescriptor
+        ) {
             var objectDescriptorModuleId = self.objectDescriptorModuleId || self.blueprintModuleId;
+
             if (!objectDescriptorModuleId) {
-                throw new TypeError("ObjectDescriptor moduleId undefined for the module '" + JSON.stringify(self) + "'");
+                throw new TypeError(
+                    "ObjectDescriptor moduleId undefined for the module '" +
+                    JSON.stringify(self) + "'"
+                );
             }
+
             if (!exports._objectDescriptorDescriptor.ObjectDescriptorModulePromise) {
-                exports._objectDescriptorDescriptor.ObjectDescriptorModulePromise = require.async("core/meta/module-object-descriptor").get("ModuleObjectDescriptor");
+                exports._objectDescriptorDescriptor.ObjectDescriptorModulePromise = (
+                    require.async("./meta/module-object-descriptor").get("ModuleObjectDescriptor")
+                );
             }
+
+            info = Montage.getInfoForObject(self);
+
             Montage.defineProperty(self, "_objectDescriptor", {
                 enumerable: false,
                 value: exports._objectDescriptorDescriptor.ObjectDescriptorModulePromise.then(function (ObjectDescriptor) {
-                    var info = Montage.getInfoForObject(self);
-
                     return ObjectDescriptor.getObjectDescriptorWithModuleId(objectDescriptorModuleId, info.require)
                         .catch(function (error) {
                             // FIXME only generate object descriptor if the moduleId
@@ -1699,6 +1703,7 @@ exports._objectDescriptorDescriptor = {
                 })
             });
         }
+
         return self._objectDescriptor;
     },
     set:function (value) {

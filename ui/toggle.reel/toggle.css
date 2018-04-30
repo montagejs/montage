@@ -1,0 +1,60 @@
+.montage-toggle {
+    position: relative;
+    display: inline-block;
+    box-sizing: border-box;
+    background-color: #fff;
+    width: 3.125em;
+    height: 2em;
+    border-radius: 1em;
+    vertical-align: middle;
+    border: 2px solid #e6e6e6;
+    cursor: pointer;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-transition: background-color .3s cubic-bezier(.5,.15,.2,1);
+    transition: background-color .3s cubic-bezier(.5,.15,.2,1);
+}
+
+
+/* Thumb --------------------- */
+
+.montage-toggle-thumb {
+    position: absolute;
+    box-sizing: border-box;
+    display: inline-block;
+    left: 0;
+    margin: -1px;
+    border-radius: 1em;
+    width: 1.75em;
+    height: 1.75em;
+    border: 1px solid #e6e6e6;
+    background-clip: content-box;
+    background-color: #fff;
+    box-shadow: 0 3px 12px rgba(0,0,0,.16), 0 3px 1px rgba(0,0,0,.1);
+    -webkit-transition: -webkit-transform .2s cubic-bezier(.5,.15,.2,1);
+    transition: -webkit-transform .2s cubic-bezier(.5,.15,.2,1);
+    transition: transform .2s cubic-bezier(.5,.15,.2,1);
+    transition: transform .2s cubic-bezier(.5,.15,.2,1), -webkit-transform .2s cubic-bezier(.5,.15,.2,1);
+    -webkit-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
+}
+
+
+/* States --------------------- */
+
+.montage-toggle.montage--checked {
+    background-color: #32db64;
+    border-color: transparent;
+}
+
+.montage-toggle[disabled] {
+    opacity: .5;
+}
+
+.montage-toggle.montage--checked .montage-toggle-thumb {
+    -webkit-transform: translate3d(70%,0,0);
+            transform: translate3d(70%,0,0);
+}

@@ -1,0 +1,64 @@
+{
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "Employee",
+            "exportName": "Employee",
+            "propertyDescriptors": [
+                {"@": "id"},
+                {"@": "firstname"},
+                {"@": "lastname"},
+                {"@": "department"}
+            ],
+            "objectDescriptorModule": {
+                "%": "test/mocks/data/models/employee.mjson"
+            },
+            "module": {
+                "%": "test/mocks/data/models/employee"
+            },
+            "userInterfaceDescriptorModules": {
+                "*": {
+                    "%": "test/mocks/data/models/employee-ui-descriptor.mjson"
+                },
+                "montage/ui/list-item.reel": {
+                    "%": "test/mocks/data/models/employee-list-item-ui-descriptor.mjson"
+                },
+                "montage/ui/cascading-list.reel": {
+                    "%": "test/mocks/data/models/employee-cascading-list-ui-descriptor.mjson"
+                }
+            }
+        }
+    },
+
+    "id": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "id",
+            "valueType": "number"
+        }
+    },
+
+    "firstname": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "firstname",
+            "valueType": "string"
+        }
+    },
+
+    "lastname": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "lastname",
+            "valueType": "string"
+        }
+    },
+
+    "department": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "department",
+            "valueType": "string"
+        }
+    }
+}

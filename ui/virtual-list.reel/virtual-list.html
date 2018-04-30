@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="virtual-list.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "virtual-list"},
+                    "flow": {"@": "flow"},
+                    "selection": {"<->": "@flow.selection"},
+                    "montageListItemModule": { "%": "../list-item.reel"},
+                    "_scrollBars": {"@": "scrollbars"},
+                    "_scroll": {"<->": "@flow.scroll"}
+                }
+            },
+
+            "scrollbars": {
+                "prototype": "../scroller.reel/scroll-bars.reel",
+                "values": {
+                    "element": {"#": "scrollbars"}
+                }
+            },
+
+            "flow": {
+                "prototype": "../flow.reel",
+                "values": {
+                    "element": {"#": "flow"},
+                    "paths": [{
+                        "knots": [
+                            {
+                                "knotPosition": [0, 0, 0],
+                                "nextHandlerPosition": [0, 0, 0],
+                                "nextDensity": 1,
+                                "previousDensity": 1,
+                                "opacity": 0
+                            },
+                            {
+                                "knotPosition": [0, 0, 0],
+                                "previousHandlerPosition": [0, 0, 0],
+                                "nextDensity": 1,
+                                "previousDensity": 1,
+                                "opacity": 0
+                            }
+                        ],
+                        "units": {
+                            "opacity": ""
+                        },
+                        "headOffset": 0,
+                        "tailOffset": 0
+                    }],
+                    "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"},
+                    "allowsMultipleSelection": {"<-": "@owner.allowsMultipleSelection"},
+                    "content": {"<-": "@owner.data"}
+                }
+            },
+            ":iteration": {
+                "alias": "@flow:iteration"
+            },
+
+            "placeholder": {
+                "prototype": "../placeholder.reel",
+                "values": {
+                    "element": {"#": "placeholder"},
+                    "data": {"<-": "@flow:iteration.object"},
+                    "componentModule": {"<-": "@owner.userInterfaceDescriptor.collectionItemComponentModule || @owner.montageListItemModule"},
+                    "component.list": {"<-": "@owner"},
+                    "component.delegate": {"<-": "@owner.delegate"},
+                    "component.rowIndex": {"<-": "@flow:iteration.index"},
+                    "component.isExpandable": {"<-": "@owner.isExpandable"},
+                    "component.userInterfaceDescriptor": {"<-": "@owner.userInterfaceDescriptor"},
+                    "component.selected": {"<-": "@flow:iteration.selected"},
+                    "component.active": {"<-": "@flow:iteration.active"},
+                    "component.classList.has('ListItem')": {"<-": "true"}
+                }
+            }          
+        }
+    </script>
+</head>
+<body>
+	<div data-montage-id="virtual-list" class="VirtualList">
+        <div data-montage-id="scrollbars"></div>
+        <div data-montage-id="flow" class="VirtualList-flow">
+            <div data-param="*">
+                <div data-montage-id="placeholder"></div>
+            </div>
+        </div>
+	</div>
+</body>
+</html>
