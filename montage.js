@@ -675,6 +675,7 @@
             
             // Exports mrRequire as Require
             exports.Require = mrRequire;
+            exports.Require.delegate = exports;
 
             // execute the preloading plan and stall the fallback module loader
             // until it has finished
@@ -879,9 +880,9 @@
                         var MontageDeserializer = montageRequire("core/serialization/deserializer/montage-deserializer").MontageDeserializer;    
                         var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                         var logger = montageRequire("core/logger").logger;
-                        
-                        exports.MontageDeserializer = MontageDeserializer;
-                        exports.Require.delegate = exports;
+                            
+
+                        exports.MontageDeserializer = new MontageDeserializer; // Create instance once only
 
                         // montageWillLoad is mostly for testing purposes
                         if (typeof global.montageWillLoad === "function") {
@@ -928,10 +929,36 @@
         });
     };
 
+    exports.getMontageDeserializer = function getMontageDeserializer() {
+
+        // Existing instance
+        if (!exports.MontageDeserializer) {
+            return mrPromise.resolve(exports.MontageDeserializer);
+        }
+
+        // Pending instance
+        if (getMontageDeserializer._promise) {
+            return getMontageDeserializer._promise;
+        }
+
+        // Load instance
+        var platform = exports.getPlatform(),
+            params = platform.getParams();
+
+        return (getMontageDeserializer._promise = exports.loadPackage(params.montageLocation, {
+            mainPackageLocation: params.location
+        }).then(function (mr) {
+            return mr.async("./core/serialization/deserializer/montage-deserializer").then(function (module) {
+                return (exports.MontageDeserializer = new module.MontageDeserializer());
+            });
+        }));
+    }
+
     exports.compileMJSONFile = function (mjson, require, moduleId) {
-        var deserializer = new exports.MontageDeserializer();
-        deserializer.init(mjson, require, void 0, require.location + moduleId);
-        return deserializer.deserializeObject();
+        return exports.getMontageDeserializer().then(function (deserializer) {
+            deserializer.init(mjson, require, void 0, require.location + moduleId);
+            return deserializer.deserializeObject();  
+        });
     };
 
     if (
