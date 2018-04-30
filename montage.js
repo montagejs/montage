@@ -932,7 +932,7 @@
     exports.getMontageDeserializer = function getMontageDeserializer() {
 
         // Existing instance
-        if (!exports.MontageDeserializer) {
+        if (exports.MontageDeserializer) {
             return mrPromise.resolve(exports.MontageDeserializer);
         }
 
