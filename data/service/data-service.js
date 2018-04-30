@@ -1176,7 +1176,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             var self = this,
                 propertyName = propertiesToRequest.shift(),
                 promise = this.getObjectProperties(object, propertyName);
-
+            
             if (promise) {
                 return promise.then(function () {
                     var result = null;
@@ -1294,29 +1294,40 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    _isAsync: {
+        value: function (object) {
+            return object && object.then && typeof object.then === "function";
+        }
+    },
+
     _fetchObjectPropertyWithPropertyDescriptor: {
         value: function (object, propertyName, propertyDescriptor) {
             var self = this,
                 objectDescriptor = propertyDescriptor.owner,
                 mapping = objectDescriptor && this.mappingWithType(objectDescriptor),
-                data = {};
+                data = {},
+                result;
+            
 
             if (mapping) {
-
                 Object.assign(data, this.snapshotForObject(object));
-
-                return mapping.mapObjectToCriteriaSourceForProperty(object, data, propertyName).then(function() {
+                result = mapping.mapObjectToCriteriaSourceForProperty(object, data, propertyName);
+                if (this._isAsync(result)) {
+                    return result.then(function() {
+                        Object.assign(data, self.snapshotForObject(object));
+                        return mapping.mapRawDataToObjectProperty(data, object, propertyName);
+                    });
+                } else {
                     Object.assign(data, self.snapshotForObject(object));
-                    return mapping.mapRawDataToObjectProperty(data, object, propertyName);
-                });
+                    result = mapping.mapRawDataToObjectProperty(data, object, propertyName);
+                    if (!this._isAsync(result)) {
+                        result = this.nullPromise;
+                    }
+                    return result;
+                }
             } else {
                 return this.nullPromise;
             }
-
-
-            //return mapping.
-            // (object,{}, propertyName);
-
         }
     },
 
@@ -1350,9 +1361,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     }
                 }
             }
-            // if (names.indexOf("geometryType")) {
-            //
-            // }
+
             // Return a promise that will be fulfilled only when all of the
             // requested data has been set on the object. If possible do this
             // without creating any additional promises.
@@ -1917,9 +1926,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 }
                 return mappingPromise.then(function () {
                         return self.saveRawData(record, object)
-                            .then(function () {
+                            .then(function (data) {
                                 self.rootService.createdDataObjects.delete(object);
-                                return null;
+                                return data;
                             });
                  });
             }
