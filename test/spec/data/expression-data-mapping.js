@@ -84,6 +84,7 @@ describe("An Expression Data Mapping", function() {
     movieModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/movie", require);
     movieObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(movieModuleReference, "Movie");
     movieObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("title", movieObjectDescriptor, 1));
+    movieObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("id", movieObjectDescriptor, 1));
     movieSchemaModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/schema/logic/movie", require);
     movieSchema = new ModuleObjectDescriptor().initWithModuleAndExportName(movieSchemaModuleReference, "MovieSchema");
     
@@ -139,8 +140,11 @@ describe("An Expression Data Mapping", function() {
     movieSchema.addPropertyDescriptor(schemaIsFeaturedPropertyDescriptor);
 
     movieMapping = new ExpressionDataMapping().initWithServiceObjectDescriptorAndSchema(movieService, movieObjectDescriptor, movieSchema);
-    movieMapping.addRequisitePropertyName("title", "category", "budget", "isFeatured", "releaseDate");
+    movieMapping.addRequisitePropertyName( "title", "category", "budget", "isFeatured", "releaseDate", "id");
     movieMapping.addObjectMappingRule("title", {"<->": "name"});
+    
+    movieMapping.addObjectMappingRule("id", {"<->": "id"});
+
 
     categoryConverter = new RawPropertyValueToObjectConverter().initWithConvertExpression("category_id == $");
     categoryConverter.service = categoryService;
@@ -190,9 +194,9 @@ describe("An Expression Data Mapping", function() {
     movieService.addMappingForType(actionMovieMapping, actionMovieObjectDescriptor);
 
 
-    // it("can be created", function () {
-    //     expect(new ExpressionDataMapping()).toBeDefined();
-    // });
+    it("can be created", function () {
+        expect(new ExpressionDataMapping()).toBeDefined();
+    });
 
     registrationPromise = Promise.all([
         mainService.registerChildService(movieService, [movieObjectDescriptor, actionMovieObjectDescriptor]),
@@ -210,8 +214,8 @@ describe("An Expression Data Mapping", function() {
     });
 
     it("can create the correct number of mapping rules", function () {
-        expect(movieMapping.objectMappingRules.size).toBe(6);
-        expect(movieMapping.rawDataMappingRules.size).toBe(6);
+        expect(movieMapping.objectMappingRules.size).toBe(7);
+        expect(movieMapping.rawDataMappingRules.size).toBe(7);
     });
 
     it("can inherit rawDataPrimaryKeys", function () {
@@ -288,7 +292,7 @@ describe("An Expression Data Mapping", function() {
 
     it("can map objects to raw data", function (done) {
         var category = new Category(),
-            movie = new Movie(),
+            movie = mainService.createDataObject(movieObjectDescriptor),
             data = {};
         category.name = "Action";
         category.id = 1;
@@ -315,8 +319,29 @@ describe("An Expression Data Mapping", function() {
             movie = movieService.getDataObject(movieObjectDescriptor, data);
 
         movieMapping.mapObjectToRawData(movie, data).then(function () {
-            console.log(movie, data);
             expect(data.summary).toBeDefined();
+            done();
+        });
+    });
+
+    it("can map objects to raw data with tripped trigger", function (done) {
+        var snapshot = {
+                id: 1
+            },
+            movie = movieService.rootService.createDataObject(movieObjectDescriptor),
+            category = new Category(),
+            movieTitle = "The Social Network";
+        
+        
+        var title = movie.title; //Trigger Title Getter 
+        movie.title = movieTitle;
+        movie.id = 2;
+        category.name = "A Category";
+        category.id = 4;
+        // movie.category = category;
+
+        movieService.saveDataObject(movie).then(function (data) {
+            expect(movie.title).toBe(movieTitle);
             done();
         });
     });
