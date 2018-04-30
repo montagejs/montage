@@ -54,8 +54,18 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     },
 
     /**
+     *  BENOIT: the module for the DataService that is associated with that operation. It's expected to be the main service for Operations and a specific RawDataService for RawOperation
+
+     * @type {DataOperation.Type.CREATE|DataOperation.Type.READ|DataOperation.Type.UPDATE|DataOperation.Type.DELETE}
+     */
+
+    dataServiceModule: {
+        value: undefined
+    },
+
+    /**
      * The criteria that qualifies objects this operation applies to.
-     * For a create operation it may not apply.... NOT ideal, missing something?
+     * For a create operation it may not apply? missing something?
      * For a read operation it would be the criteria of the DataQuery.
      * For an update, it describes the set of objects to receive the changes
      * carried in this operation. It could be an "or" of primary keys to a more
@@ -63,6 +73,8 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      * For a delete, it would describes objects to delete.
      * Expected to be a boolean expression to be applied to data
      * objects to determine whether they should be impacted by this operation or not.
+     *
+     * "hazard_ID = #12AS7507"
      *
      * @type {Criteria}
      */
@@ -81,9 +93,9 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
 
 
     /**
-     * BENOIT: should it be called timestamp instead?
+     * creationTime
      * A number used to order operations according to when they were created.
-     *
+     * // Add deprecation of "time" bellow
      * This is initialized when an operation is created to the value of
      * [Date.now()]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now}.
      * The value can then be changed, but it should only be changed to values
@@ -96,7 +108,7 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      *
      * @type {number}
      */
-    time: {
+    creationTime: {
         value: undefined
     },
 
@@ -105,16 +117,16 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      *
      * @type {DataOperation}
      */
-    referer: {
+    referrer: {
         value: undefined
     },
 
     /**
-     * A way to uniquely express the client/agent that created the operation.
+     * Models the agent that created the operation.
      *
      * @type {Object}
      */
-    origin: {
+    creator: {
         value: undefined
     },
 
@@ -128,6 +140,10 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     },
 
     /**
+     * Deprecate?  Make programatic, so that users doesn't have to worry about it.
+     *
+     * Meant to be unique per agent only
+     *
      * A number that is greater than the index values of all operations created
      * before this one in the current application session and less than the
      * index values of all operations created after this one in the current
@@ -151,6 +167,8 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      * same `index` value, so sorting operations as described above will
      * correctly sort them according to when they were created.
      *
+     * SHOULD be READ ONLY
+     *
      * @type {number}
      */
     index: {
@@ -172,9 +190,14 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     /**
      * Benoit: I don't think this is needed as it's covered in a more generic
      * way by the criteria property. Remove?
+     *
+     * //DataIdentifier:
+     * montage-data://environment/type/#12AS7507"
+     *
+     * 0r just the value: #12AS7507"
      * @type {Object}
      */
-    dataID: {
+    dataIdentifier: {
         value: undefined
     },
 
@@ -183,9 +206,78 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     },
 
     /**
+     * data is designed to carry the "meat" of an operation's specifics. For a create, it would be all properties
+     * of a new object (I'm assuming a create operation is modeling only 1 object's creation).
+     * For an update, it has to carry the new values, but also including values replaced,
+     * or the values of some key properties that are considered important for the integrity/unicity of an object.
+     *
+     * Besides new/soon-to-be-previous-values for cardinality:1 properties, relationships (cardinality:n)
+     * modifications should additionally support add/remove | (plus/minus in our range change callbacks)
+     * on top of replace.  If we use a single DataOperation class for all operation types, this property may
+     * end up having various format depending on the operation's type (CRUD,Lock, RPC...)
+     *
+     * This property also touches on the difference between object-level operation and raw-data operations.
+     *
+     * //Update
+     * {
+     *      criteria: "primeryKey = 1234",
+     *      type: "moduleId-of-object-desxcriptor"
+     *      foo:{
+     *          "minus": "Blah Blah",
+     *          "plus": "Bleh"
+     *      },
+     *      "toMany": {
+     *          "minus": [object1,object2],
+     *          "plus": [object3]
+     *      }
+     * }
+     *
+     * //Create
+     * {
+     *      foo:{
+     *          "plus": "Bleh"
+     *      },
+     *      "toMany": {
+     *          "plus": [object1,object2]
+     *      }
+     * }
+     *
+     *
+     * Or go more for a serialization-like approach:
+     * {
+     *         "root": {
+     *             "prototype": "package/data/main.datareel/model/custom-type",
+     *            "values": {
+     *               "foo": "Bleh",
+     *               "toMany": [
+     *                   {"@": "object1"},
+     *                   {"@": "object2"}
+     *               ]
+     *           },
+     *          //for update
+     *          "previousValues": {
+     *                  "foo": "Blah Blah",
+     *                  "toMany": []
+     *          }
+     *       },
+     *
+     *       "object1": {
+     *           "object": "object1-data-identifier"
+     *       },
+     *
+     *       "object2": {
+     *           "object": "object2-data-identifier"
+     *       }
+     *    }
+     *
+     *
      * @type {Object}
      */
     data: {
+        value: undefined
+    },
+
+    snapshotData: {
         value: undefined
     },
 
@@ -219,6 +311,11 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
 
 }, /** @lends DataOperation */ {
 
+
+    /* Explore the opportunity to add more XHR-like API with events matching the semantic of possible sytmetric operations
+        and also promise API that would resolve to the matching operation success/failed
+    */
+
     Type: {
         value: {
             Create: {isCreate: true},
@@ -233,7 +330,7 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
             /* ReadProgress / ReadUpdate / ReadSeek is used to instruct server that more data is required for a "live" read / query
                 Need a better name, and a symetric? Or is ReadUpdated enough if it referes to previous operation
             */
-            ReadProgress: {isRead: true},
+            ReadProgress: {isRead: true}, //ReadUpdated
 
             /* ReadCancel is the operation that instructs baclkend that client isn't interested by a read operastion anymore */
             ReadCancel: {isRead: true},
@@ -247,17 +344,18 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
             ReadCompleted: {isRead: true},
             Update: {isUpdate: true},
             UpdateCompleted: {isUpdate: true},
+            UpdateFailed: {isUpdate: true},
             Delete: {isDelete: true},
             DeleteCompleted: {isDelete: true},
             DeleteFailed: {isDelete: true},
             /* Lock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
-            Lock: {isLock true},
-            LockCompleted: {isLock true},
-            LockFailed: {isLock true},
+            Lock: {isLock: true},
+            LockCompleted: {isLock: true},
+            LockFailed: {isLock: true},
             /* RemmoteProcedureCall models the ability to invoke code logic on the server-side, being a DB StoredProcedure, or an method/function in a service */
-            RemmoteProcedureCall: {isLock true},
-            RemmoteProcedureCallCompleted: {isLock true},
-            RemmoteProcedureCallFailed: {isLock true}
+            RemoteProcedureCall: {isRemoteProcedureCall: true},
+            RemoteProcedureCallCompleted: {isRemoteProcedureCall: true},
+            RemoteProcedureCallFailed: {isRemoteProcedureCall: true}
         }
     }
 
