@@ -67,8 +67,15 @@ exports.CascadingList = Component.specialize({
         value: false
     },
 
+    enterDocument: {
+        value: function () {
+            this.element.addEventListener("resize", this);    
+        }
+    },
+
     exitDocument: {
         value: function () {
+            this.element.removeEventListener("resize", this);    
             this.popAll();
         }
     },
@@ -285,13 +292,19 @@ exports.CascadingList = Component.specialize({
         }
     },
 
+    handleResize: {
+        value: function () {
+            this.needsDraw = true;
+        }
+    },
+
     willDraw: {
         value: function () {
             this.isMobile = window.innerWidth <= 768;
 
             for (var i = 0; i < this.history.length; i++) {
                 var item = this.history[i];
-                item.isMobile = true;
+                item.isMobile = this.isMobile;
             }
         }
     }
