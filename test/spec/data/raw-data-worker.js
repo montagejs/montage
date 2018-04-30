@@ -92,16 +92,32 @@ describe("A RawDataWorker", function() {
     describe("can handle basic ", function () {
         worker = new RawDataWorker();
 
-        xit("create operation", function (done) {
-            //TODO
+        it("create operation", function (done) {
+            var rawData = {
+                name: "Comedy"
+            };
+            serviceReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/service/category-service.mjson", require);
+            typeReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
+            operation = {
+               data: rawData,
+               objectDescriptorModule: typeReference,
+               serviceModule: serviceReference,
+               type: OperationType.CREATE
+            };
+
+            worker.handleOperation(operation).then(function (data) {
+                expect(Array.isArray(data)).toBe(true);
+                expect(data[1]).toBe(rawData.name);
+                done();
+            });
         });
 
         it("read operation", function (done) {
             serviceReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/service/category-service.mjson", require);
             typeReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
             operation = {
-               serviceModule: serviceReference,
                objectDescriptorModule: typeReference,
+               serviceModule: serviceReference,
                type: OperationType.READ
             };
 
@@ -112,20 +128,73 @@ describe("A RawDataWorker", function() {
             });
         });
 
-        xit("update operation", function (done) {
-            //TODO
+        it("update operation", function (done) {
+            var rawData = {
+                name: "Science Fiction",
+                categoryID: 1
+            };
+            serviceReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/service/category-service.mjson", require);
+            typeReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
+            operation = {
+               data: rawData,
+               objectDescriptorModule: typeReference,
+               serviceModule: serviceReference,
+               type: OperationType.UPDATE
+            };
+
+            worker.handleOperation(operation).then(function (data) {
+                expect(Array.isArray(data)).toBe(true);
+                expect(data[1]).toBe(rawData.name);
+                done();
+            });
         });
 
         
-        xit("delete operation", function (done) {
-            //TODO
+        it("delete operation", function (done) {
+            var rawData = {
+                name: "Science Fiction",
+                categoryID: 1
+            };
+            serviceReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/service/category-service.mjson", require);
+            typeReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
+            operation = {
+               data: rawData,
+               objectDescriptorModule: typeReference,
+               serviceModule: serviceReference,
+               type: OperationType.DELETE
+            };
+
+            worker.handleOperation(operation).then(function (data) {
+                expect(Array.isArray(data)).toBe(true);
+                expect(data.length).toBe(1);
+                done();
+            });
         });
     });
 
     describe("can handle read operation", function () {
+        worker = new RawDataWorker();
 
-        xit("with criteria", function (done) {
-            //TODO
+        it("with criteria", function (done) {
+            serviceReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/service/category-service.mjson", require);
+            typeReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
+            criteria = new Criteria().initWithExpression("id == $.id", {
+                categoryID: 1
+            });
+            operation = {
+               criteria: criteria,
+               objectDescriptorModule: typeReference,
+               serviceModule: serviceReference,
+               type: OperationType.READ
+            };
+
+            worker.handleOperation(operation).then(function (data) {
+                expect(Array.isArray(data)).toBe(true);
+                expect(data.length).toBe(1);
+                expect(data[0].name).toBe("Action");
+                done();
+            });
+
         });
 
     });

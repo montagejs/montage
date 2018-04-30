@@ -52,14 +52,29 @@ exports.RawDataWorker = Montage.specialize({
         }
     },
 
+    _performCreateOperation: {
+        value: function (rawOperation, service, objectDescriptor) {
+            return service.saveRawData(rawOperation.data);
+        }
+    },
+
+    _performDeleteOperation: {
+        value: function (rawOperation, service, objectDescriptor) {
+            return service.deleteRawData(rawOperation.data);
+        }
+    },
+
     _performReadOperation: {
         value: function (rawOperation, service, objectDescriptor) {
-            var criteria = new Criteria().initWithExpression("", {}),
+            var criteria = rawOperation.criteria || new Criteria().initWithExpression("", {}),
                 query = DataQuery.withTypeAndCriteria(objectDescriptor, criteria);
-            
-            return service.fetchData(query).then(function (data) {
-                return data;
-            });
+            return service.fetchData(query);
+        }
+    },
+
+    _performUpdateOperation: {
+        value: function (rawOperation, service, objectDescriptor) {
+            return service.saveRawData(rawOperation.data);
         }
     },
 

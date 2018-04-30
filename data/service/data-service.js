@@ -1987,6 +1987,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     mappingPromise = this.nullPromise;
                 }
                 return mappingPromise.then(function () {
+                    console.log("MappingPromise.done...");
                         return self.saveRawData(record, object)
                             .then(function (data) {
                                 self.rootService.createdDataObjects.delete(object);

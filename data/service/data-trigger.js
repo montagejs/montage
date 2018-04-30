@@ -218,6 +218,9 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
             
             // Search the prototype chain for a getter for this property,
             // starting just after the prototype that called this method.
+            if (this._propertyName === "id") {
+                console.log("getValue", object.__realID);
+            }
             prototype = Object.getPrototypeOf(this._objectPrototype);
             while (prototype) {
                 descriptor = Object.getOwnPropertyDescriptor(prototype, this._propertyName);
@@ -244,6 +247,12 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
         configurable: true,
         writable: true,
         value: function (object, value) {
+            // if (this._propertyName === "id") {
+            //     console.log("_setValue", object.__realID, value);
+            //     if (!value) {
+            //         debugger;
+            //     }
+            // }
             var status, prototype, descriptor, getter, setter, writable;
             // Get the value's current status and update that status to indicate
             // the value has been obtained. This way if the setter called below
@@ -319,6 +328,10 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
         value: function (object) {
             var self = this,
                 status = this._getValueStatus(object) || {};
+            // if (this._propertyName === "id") {
+            //     console.log("updateObjectProperty", object.__realID);
+            //     debugger;
+            // }
             if (!status.promise) {
                 this._setValueStatus(object, status);
                 status.promise = new Promise(function (resolve, reject) {
