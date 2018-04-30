@@ -1368,81 +1368,49 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             }
         },
         set: function (value) {
-            var components,
-                componentsToAdd = [],
-                i, component;
-
-            if (!this._elementsToAppend) {
-                this._elementsToAppend = [];
-            }
-            this._newDomContent = value;
-            this.needsDraw = true;
-
-            if (this._newDomContent === null) {
-                this._shouldClearDomContentOnNextDraw = true;
-            }
-
-            if (typeof this.contentWillChange === "function") {
-                this.contentWillChange(value);
-            }
-
-            // cleanup current content
-            components = this.childComponents;
-            var currentDomContent = this.domContent;
+            var componentsToAdd = [],
+                elementsToAppend =
+                    this._elementsToAppend = [],
+                componentsPendingBuildOut =
+                    this._componentsPendingBuildOut = [],
+                currentDomContent = this.domContent,
+                childComponents = this.childComponents,
+                i, length, childComponent, element, isArray, index;
 
             if (value) {
-                var isArray;
-
                 if (value instanceof Element) {
                     if (currentDomContent.indexOf(value) === -1) {
-                        this._elementsToAppend.push(value);
-                        this._findAndDetachComponents(value, componentsToAdd);
+                        elementsToAppend.push(value);
                     }
-                } else if ((isArray = (Array.isArray(value) || value instanceof NodeList))) {
-                    var element;
-
+                } else if ((isArray =
+                    (Array.isArray(value) || value instanceof NodeList)
+                )) {
                     for (i = 0; i < value.length; i++) {
                         element = value[i];
 
                         if (currentDomContent.indexOf(element) === -1) {
-                            this._elementsToAppend.push(element);
-                            this._findAndDetachComponents(element, componentsToAdd);
+                            elementsToAppend.push(element);
                         }
                     }
                 }
 
-                if (!this._componentsPendingBuildOut) {
-                    this._componentsPendingBuildOut = [];
-                }
+                for (i = childComponents.length - 1; i >= 0; i--) {
+                    childComponent = childComponents[i];
 
-                var componentsPendingBuildOut = this._componentsPendingBuildOut;
-
-                for (i = components.length - 1; i >= 0; i--) {
-                    component = components[i];
-
-                    if (
-                        componentsPendingBuildOut.indexOf(component) === -1 && ((
-                            component.element && isArray &&
-                            value.indexOf(component.element) === -1
-                        ) || !component.element || !isArray)
+                    if ((isArray && value.indexOf(childComponent.element) === -1) ||
+                        !isArray && elementsToAppend.length
                     ) {
-                        componentsPendingBuildOut.push(component);
+                        componentsPendingBuildOut.push(childComponent);
                     }
                 }
             } else {
-                this._componentsPendingBuildOut = [];
-
-                for (i = components.length - 1; i >= 0; i--) {
-                    components[i]._shouldBuildOut = true;
+                for (i = childComponents.length - 1; i >= 0; i--) {
+                    componentsPendingBuildOut.push(childComponents[i]);
                 }
             }
 
-            // not sure if I can rely on _parentComponent to detach the nodes 
-            // instead of doing one loop for dettach and another to attach...
-            for (i = 0; (component = componentsToAdd[i]); i++) {
-                this.addChildComponent(component);
-            }
-
+            this._newDomContent = value;
+            this._shouldClearDomContentOnNextDraw = this._newDomContent === null;
             this.needsDraw = true;
         }
     },
@@ -1642,6 +1610,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         }
                         self.canDrawGate.setField("componentTreeLoaded", true);
 
+                        return self;
                     }).catch(function (error) {
                         console.error(error);
                     });
@@ -2504,6 +2473,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             if (contents || this._shouldClearDomContentOnNextDraw) {
                 element = this._element;
 
+                if (typeof this.contentWillChange === "function") {
+                    this.contentWillChange(contents);
+                }
+
                 // Setting the innerHTML to clear the children will not work on
                 // IE because it modifies the underlying child nodes. Here's the
                 // test case that shows this issue: http://jsfiddle.net/89X6F/
@@ -2514,18 +2487,28 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 }
 
                 if (this._elementsToAppend) {
+                    var componentsToAdd = [];
+
                     while (this._elementsToAppend.length) {
                         elementToAppend = this._elementsToAppend.shift();
+
                         if (!element.contains(elementToAppend)) {
+                            this._findAndDetachComponents(elementToAppend, componentsToAdd);
                             element.appendChild(elementToAppend);
                         }
+                    }
+
+                    for (i = 0; (component = componentsToAdd[i]); i++) {
+                        this.addChildComponent(component);
                     }
                 }
 
                 this._newDomContent = null;
+
                 if (typeof this.contentDidChange === "function") {
                     this.contentDidChange();
                 }
+                
                 this._shouldClearDomContentOnNextDraw = false;
             }
         }

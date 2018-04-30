@@ -131,9 +131,9 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
             } else {
                 if (content) {
                     var isArray = Array.isArray(content),
-                        domContent = this.domContent,
+                        domContent = [],    
                         element, index, component;
-
+                    
                     if (isArray) {
                         for (var i = 0; i < content.length; i++) {
                             component = content[i];
@@ -143,28 +143,20 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
                                 element.id = content.identifier;
                                 content.element = element;
                             }
-
-                            if ((index = domContent.indexOf(component.element)) > -1) {
-                                domContent.splice(index, 1);
-                            } else {
-                                domContent.push(component.element);
-                            }
                         }
                     } else {
                         if (!content.element) {
                             element = document.createElement("div");
                             element.id = content.identifier;
                             content.element = element;
-                        }
-
-                        if (domContent.indexOf(content.element) === -1) {
-                            domContent.push(content.element);
-                        } else {
-                            domContent.slice(domContent.indexOf(content.element), 1);
-                        }
+                        }                       
                     }
 
-                    this.domContent = domContent
+                    for (var i = 0; i < this.history.length; i++) {
+                        domContent.push(this.history[i].element);
+                    }
+
+                    this.domContent = domContent;
                 } else {
                     this.domContent = null;
                 }
