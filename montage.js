@@ -286,6 +286,9 @@
                         miniURL = bootModule("mini-url"),
                         mrRequire = bootModule("require");
 
+                    mrRequire.delegate = exports;
+                    exports.mrPromise = mrPromise;
+                    
                     callback(mrRequire, mrPromise, miniURL);
                 }
 
@@ -426,6 +429,7 @@
                     params = self.getParams();
 
                 mr.delegate = exports;
+                exports.mrPromise = Promise;
 
                 if (params.package) {
                     callback(mr, Promise, miniURL);
@@ -934,7 +938,7 @@
 
         // Existing instance
         if (exports.MontageDeserializer) {
-            return Promise.resolve(exports.MontageDeserializer);
+            return exports.mrPromise.resolve(exports.MontageDeserializer);
         }
 
         // Pending instance
