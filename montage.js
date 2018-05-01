@@ -425,6 +425,8 @@
                 var self = this,
                     params = self.getParams();
 
+                mr.delegate = exports;
+
                 if (params.package) {
                     callback(mr, Promise, miniURL);
                 }
@@ -675,7 +677,6 @@
             
             // Exports mrRequire as Require
             exports.Require = mrRequire;
-            exports.Require.delegate = exports;
 
             // execute the preloading plan and stall the fallback module loader
             // until it has finished
@@ -933,7 +934,7 @@
 
         // Existing instance
         if (exports.MontageDeserializer) {
-            return mrPromise.resolve(exports.MontageDeserializer);
+            return Promise.resolve(exports.MontageDeserializer);
         }
 
         // Pending instance
