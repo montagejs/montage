@@ -953,7 +953,7 @@
                 return (exports.MontageDeserializer = new module.MontageDeserializer());
             });
         }));
-    }
+    };
 
     exports.compileMJSONFile = function (mjson, require, moduleId) {
         return exports.getMontageDeserializer().then(function (deserializer) {
