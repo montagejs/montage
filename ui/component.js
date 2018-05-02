@@ -1375,6 +1375,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     this._componentsPendingBuildOut = [],
                 currentDomContent = this.domContent,
                 childComponents = this.childComponents,
+                isArray = false,
                 i, length, childComponent, element, isArray, index;
 
             if (value) {
@@ -1397,7 +1398,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 for (i = childComponents.length - 1; i >= 0; i--) {
                     childComponent = childComponents[i];
 
-                    if ((isArray && value.indexOf(childComponent.element) === -1) ||
+                    if ((isArray && Array.prototype.indexOf.call(value, childComponent.element) === -1) ||
                         !isArray && elementsToAppend.length
                     ) {
                         componentsPendingBuildOut.push(childComponent);
