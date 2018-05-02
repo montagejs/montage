@@ -34,19 +34,6 @@ exports.Condition = Component.specialize( /** @lends Condition.prototype # */ {
     },
 
     _content: {
-        set: function (content) {
-            if (!this._content) {
-                this.__content = Array.from(content);
-            } else {
-                this.__content.clear();
-
-                if (content) {
-                    for (var i = 0, length = content.length; i < length; i++) {
-                        this.__content.push(content[i]);
-                    }
-                }
-            }
-        },
         get: function () {
             if (!this.__content && this.element) {
                 this.__content = Array.from(this.element.childNodes);
@@ -66,6 +53,8 @@ exports.Condition = Component.specialize( /** @lends Condition.prototype # */ {
      */
     condition: {
         set: function (value) {
+            value = !!value;
+            
             if (value === this._condition) {
                 return;
             }
@@ -90,8 +79,11 @@ exports.Condition = Component.specialize( /** @lends Condition.prototype # */ {
 
     _clearDomContent: {
         value: function () {
-            if (this.removalStrategy === "remove" && !this._condition) {
-                this._content = this.element.childNodes;
+            if (
+                this.removalStrategy === "remove" &&
+                !this._condition &&
+                this._content
+            ) {
                 this.domContent = null;
             }
         }
