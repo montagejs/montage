@@ -137,10 +137,6 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
         }
     },
 
-    _drawnSwitchValue: {
-        value: null
-    },
-
     _switchValue: {
         value: null
     },
@@ -193,6 +189,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
                 // In the future the DrawManager will handle adding and
                 // removing nodes from the DOM at any time before draw().
                 this._updateComponentDom();
+                this.addEventListener("firstDraw", this);
             }
         }
     },
@@ -205,19 +202,6 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
             if ((typeOfValue === "string" || typeOfValue === "number") && !this._switchComponentTreeLoaded[value]) {
                 this._loadSwitchComponentTree(value);
             }
-        }
-    },
-
-    contentDidChange: {
-        value: function (newContent, oldContent) {
-            Slot.prototype.contentDidChange.call(this, newContent, oldContent);
-
-            if (this._drawnSwitchValue) {
-                if (this._switchComponents[this._drawnSwitchValue]) {
-                    this._switchElements[this._drawnSwitchValue] = this._switchComponents[this._drawnSwitchValue].element;
-                }
-            }
-            this._drawnSwitchValue = this._switchValue;
         }
     },
 
@@ -258,7 +242,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
             if (promises.length > 0) {
                 canDrawGate.setField(value + "ComponentTreeLoaded", false);
 
-                Promise.all(promises).then(function () {
+                Promise.all(promises).then(function (components) {
                     self._switchComponentTreeLoaded[value] = true;
                     canDrawGate.setField(value + "ComponentTreeLoaded", true);
                     self._canDraw = true;
@@ -336,5 +320,22 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
 
     transition: {
         value: null
+    },
+
+    handleFirstDraw: {
+        value: function (event) {
+            if (
+                this._allChildComponents.indexOf(event.target) > -1 &&
+                this._switchValue &&
+                this._switchComponents[this._switchValue]
+            ) {
+                this._switchElements[this._switchValue] =
+                    this._switchComponents[this._switchValue].element;
+                
+                if (this._content !== this._switchElements[this._switchValue]) {
+                    this.content = this._switchElements[this._switchValue];
+                }
+            }
+        }
     }
 });
