@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"}
+                }
+            },
+
+            "condition1": {
+                "prototype": "montage/ui/condition.reel",
+                "values": {
+                    "element": {"#": "condition1"},
+                    "condition": true
+                }
+            },
+
+            "condition2": {
+                "prototype": "montage/ui/condition.reel",
+                "values": {
+                    "element": {"#": "condition2"},
+                    "condition": false
+                }
+            },
+
+            "condition3": {
+                "prototype": "montage/ui/condition.reel",
+                "values": {
+                    "element": {"#": "condition3"},
+                    "condition": true,
+                    "removalStrategy": "hide"
+                }
+            },
+
+            "condition4": {
+                "prototype": "montage/ui/condition.reel",
+                "values": {
+                    "element": {"#": "condition4"},
+                    "condition": false,
+                    "removalStrategy": "hide"
+                }
+            }
+           
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>Condition Sample</header>
+        <div class="content">
+            <h4>Condition 2: [removalStrategy:remove] [condition=true]</h4>
+            <div data-montage-id="condition1" class="Condition">
+                <span>Hello Montage</span>
+            </div>
+            <h4>Condition 2: [removalStrategy:remove] [condition=false]</h4>
+            <div data-montage-id="condition2" class="Condition">
+                <span>Hello Montage</span>
+            </div>
+            <h4>Condition 3: [removalStrategy:hide] [condition=true]</h4>
+            <div data-montage-id="condition3" class="Condition">
+                <span>Hello Montage</span>
+            </div>
+            <h4>Condition 4: [removalStrategy:hide] [condition=false]</h4>
+            <div data-montage-id="condition4" class="Condition">
+                <span>Hello Montage</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
