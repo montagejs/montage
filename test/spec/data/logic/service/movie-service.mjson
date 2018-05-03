@@ -9,7 +9,7 @@
     },
 
     "root": {
-        "prototype": "montage/data/service/raw-data-service",
+        "prototype": "spec/data/logic/service/movie-service",
         "properties": {
             "name": "RawDataService",
             "types": [

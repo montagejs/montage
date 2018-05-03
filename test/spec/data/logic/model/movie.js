@@ -6,6 +6,14 @@ var Montage = require("montage").Montage;
  */
 exports.Movie = Montage.specialize({
 
+    category: {
+        value: undefined
+    },
+
+    id: {
+        value: undefined
+    },
+
     /**
      * @type {boolean}
      */
