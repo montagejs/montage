@@ -526,7 +526,6 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
                         }
                     });
                 }
-
             }
             return trigger;
         }
