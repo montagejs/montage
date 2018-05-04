@@ -113,9 +113,10 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
      */
     _updateDomContentWith: {
         value: function (content, isPush) {
+            var element;
+
             if (!this.isFlat) {
                 if (content) {
-                    var element;
                     if (!content.element) {
                         element = document.createElement("div");
                         element.id = content.identifier || "appendDiv";
@@ -131,11 +132,10 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
             } else {
                 if (content) {
                     var isArray = Array.isArray(content),
-                        domContent = [],    
-                        element, index, component;
+                        domContent = [], i, index, component;
                     
                     if (isArray) {
-                        for (var i = 0; i < content.length; i++) {
+                        for (i = 0; i < content.length; i++) {
                             component = content[i];
 
                             if (!component.element) {
@@ -152,7 +152,7 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
                         }                       
                     }
 
-                    for (var i = 0; i < this.history.length; i++) {
+                    for (i = 0; i < this.history.length; i++) {
                         domContent.push(this.history[i].element);
                     }
 

@@ -1376,7 +1376,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 currentDomContent = this.domContent,
                 childComponents = this.childComponents,
                 isArray = false, i, length, childComponent,
-                component, element, isArray, index;
+                component, element, index;
 
             if (value) {
                 if (value instanceof Element) {
@@ -2107,7 +2107,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         drawLogger.debug(loggerToString(childComponent) + " can't draw.");
                     }
 
-                    if ((componentsPendingBuildOut = childComponent._componentsPendingBuildOut)) {
+                    var componentsPendingBuildOut = childComponent._componentsPendingBuildOut;
+
+                    if (componentsPendingBuildOut) {
                         while (componentsPendingBuildOut.length) {
                             componentsPendingBuildOut.pop()._shouldBuildOut = true;
                         }
@@ -2496,7 +2498,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 }
 
                 if (this._elementsToAppend) {
-                    var componentsToAdd = [];
+                    var componentsToAdd = [],
+                        component;
 
                     while (this._elementsToAppend.length) {
                         elementToAppend = this._elementsToAppend.shift();
