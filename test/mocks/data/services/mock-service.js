@@ -127,9 +127,9 @@ exports.MockService = Montage.specialize({
                 new Store('store 2', 'Paris'),
                 new Store('store 3', 'Montreal'),
                 new Store('store 4', 'New York'),
-                new Store('store 4', 'London'),
-                new Store('store 4', 'Tokyo'),
-                new Store('store 4', 'Shanghai')
+                new Store('store 5', 'London'),
+                new Store('store 6', 'Tokyo'),
+                new Store('store 7', 'Shanghai')
             ];
         }
     },
