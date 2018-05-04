@@ -1375,8 +1375,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     this._componentsPendingBuildOut = [],
                 currentDomContent = this.domContent,
                 childComponents = this.childComponents,
-                isArray = false,
-                i, length, childComponent, element, isArray, index;
+                isArray = false, i, length, childComponent,
+                component, element, isArray, index;
 
             if (value) {
                 if (value instanceof Element) {
@@ -1391,6 +1391,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
                         if (currentDomContent.indexOf(element) === -1) {
                             elementsToAppend.push(element);
+
+                            if ( // Clean up possible transplanted components
+                                (component = element.component) &&
+                                component._addedToDrawList &&
+                                component.parentComponent
+                            ) {
+                                component.parentComponent._removeToDrawList(component);
+                            }
                         }
                     }
                 }
@@ -2599,6 +2607,50 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 } else if (this.drawListLogger.isDebug) {
                         this.drawListLogger.debug(this, "parentComponent is null");
                 }
+            }
+        }
+    },
+
+    _removeToParentsDrawList: {
+        enumerable: false,
+        value: function () {
+            if (this._addedToDrawList) {
+                var parentComponent = this._parentComponent;
+
+                if (parentComponent) {
+                    parentComponent._removeToDrawList(this);
+                }
+            }
+        }
+    },
+
+    __removeToDrawList: {
+        enumerable: false,
+        value: function (childComponent) {
+            var index;
+
+            if (
+                this._drawList &&
+                (index = this._drawList.indexOf(childComponent)) > -1
+            ) {
+                this._drawList.splice(index, 1);
+                childComponent._addedToDrawList = false;
+            }
+        }
+    },
+
+    /**
+     * Adds the passed in child component to the drawList
+     * If the current instance isn't added to the drawList of its parentComponent, then it adds itself.
+     * @private
+     */
+    _removeToDrawList: {
+        enumerable: false,
+        value: function (childComponent) {
+            this.__removeToDrawList(childComponent);
+            
+            if (this._drawList && !this._drawList.length) {
+                this._removeToParentsDrawList();
             }
         }
     },
