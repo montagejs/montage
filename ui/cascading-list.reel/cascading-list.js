@@ -39,7 +39,7 @@ exports.CascadingList = Component.specialize({
 
     history: {
         get: function () {
-            return this.succession && this.succession.history ?
+            return this.succession ?
                 this.succession.history : [];
         }
     },
@@ -56,7 +56,7 @@ exports.CascadingList = Component.specialize({
             if (this._root !== root) {
                 this._root = root;
 
-                if (root) {
+                if (root && !this.isDeserializing) {
                     this.expand(root);
                 }
             }
@@ -69,7 +69,11 @@ exports.CascadingList = Component.specialize({
 
     enterDocument: {
         value: function () {
-            this.element.addEventListener("resize", this);    
+            this.element.addEventListener("resize", this);
+
+            if (this._root) {
+                this.expand(this._root);
+            }
         }
     },
 
