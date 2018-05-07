@@ -155,13 +155,36 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
         value: null
     },
 
-    selection: {
+    _selection: {
         value: null
+    },
+
+    selection: {
+        get: function () {
+            return this._selection;
+        },
+        set: function (selection) {
+            if (selection !== this._selection) {
+                this._selection = selection;
+
+                if (
+                    this.isCollection && selection &&
+                    this.context.columnIndex < this.cascadingList.currentColumnIndex &&
+                    !selection.length
+                ) {
+                    var nextCascadingListItem = this.cascadingList.cascadingListItemAtIndex(this.context.columnIndex + 1);
+                    this.selection.push(nextCascadingListItem.context.object);
+                }
+            }
+        }
     },
 
     _handleSelectionChange: {
         value: function (plus, minus, index) {
-            if (plus && plus.length === 1) {
+            if (
+                plus && plus.length === 1 &&
+                this.context.columnIndex === this.cascadingList.currentColumnIndex
+            ) {
                 this.cascadingList.expand(
                     plus[0],
                     this.context.columnIndex + 1

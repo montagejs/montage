@@ -37,6 +37,12 @@ exports.CascadingList = Component.specialize({
         value: 0
     },
 
+    currentColumnIndex: {
+        get: function () {
+            return this._currentColumnIndex;
+        }
+    },
+
     history: {
         get: function () {
             return this.succession ?
@@ -250,18 +256,22 @@ exports.CascadingList = Component.specialize({
 
     _pop: {
         value: function () {
-            var cascadingListItem,
-                context = this.history.pop();
+            var cascadingListItem = this.history.pop();
 
             this._currentColumnIndex--;
-            context.isEditing = false;
+            cascadingListItem.context.isEditing = false;
             this.needsDraw = true;
 
             if (this.shouldDispatchCascadingListEvents) {
-                this.dispatchEventNamed('cascadingListPop', true, true, context);
+                this.dispatchEventNamed(
+                    'cascadingListPop',
+                    true,
+                    true,
+                    cascadingListItem
+                );
             }
 
-            return context;
+            return cascadingListItem;
         }
     },
 
