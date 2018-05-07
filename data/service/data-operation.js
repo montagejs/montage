@@ -16,12 +16,12 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     constructor: {
         value: function DataOperation() {
             this.time = Date.now();
-            this._index = exports.DataOperation.prototype._currentIndex + 1 || 0;
-            exports.DataOperation.prototype._currentIndex = this._index;
+            this.creationIndex = exports.DataOperation.prototype._currentIndex + 1 || 0;
+            exports.DataOperation.prototype._currentIndex = this.creationIndex;
         }
     },
 
-    _currentIndex: {
+    creationIndex: {
         value: undefined
     },
 
@@ -30,6 +30,8 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      */
 
     /**
+     * //Benoit, I think this should be a uuid
+     *
      * @type {number}
      */
     id: {
@@ -61,6 +63,18 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
 
     dataServiceModule: {
         value: undefined
+    },
+
+     /**
+     * returns the data service associated with the operation
+     *
+     * @type {Promnise}
+     */
+
+    dataService: {
+        get: function() {
+
+        }
     },
 
     /**
