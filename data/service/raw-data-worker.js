@@ -77,10 +77,12 @@ exports.RawDataWorker = Montage.specialize({
     _performReadOperation: {
         value: function (rawOperation, service, objectDescriptor) {
             var criteria = rawOperation.criteria || rawOperation.data,
-                query;
+                query, parameters, expression;
             
             if (!(criteria instanceof Criteria)) {
-                criteria = new Criteria().initWithExpression(criteria.expression, criteria.parameters);
+                parameters = criteria ? criteria.parameters : {};
+                expression = criteria ? criteria.expression : "";
+                criteria = new Criteria().initWithExpression(expression, parameters);
             }
             query = DataQuery.withTypeAndCriteria(objectDescriptor, criteria);
             

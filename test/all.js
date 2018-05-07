@@ -112,12 +112,11 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/core/localizer-spec", node: false, karma: false},
     {name: "spec/core/localizer/serialization-spec", node: false, karma: false},
     // Data
-    {name: "spec/data/data-selector"},
     {name: "spec/data/data-mapping"},
     {name: "spec/data/data-object-descriptor"},
     {name: "spec/data/data-property-descriptor"},
     {name: "spec/data/data-provider"},
-    {name: "spec/data/data-selector"},
+    {name: "spec/data/data-query"},
     {name: "spec/data/data-service"},
     {name: "spec/data/data-stream"},
     {name: "spec/data/expression-data-mapping"},
