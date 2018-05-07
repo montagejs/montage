@@ -173,6 +173,7 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
                     !selection.length
                 ) {
                     var nextCascadingListItem = this.cascadingList.cascadingListItemAtIndex(this.context.columnIndex + 1);
+                    this._muteSelectionChange = true;
                     this.selection.push(nextCascadingListItem.context.object);
                 }
             }
@@ -183,13 +184,15 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
         value: function (plus, minus, index) {
             if (
                 plus && plus.length === 1 &&
-                this.context.columnIndex === this.cascadingList.currentColumnIndex
+                !this._muteSelectionChange
             ) {
                 this.cascadingList.expand(
                     plus[0],
                     this.context.columnIndex + 1
                 );
             }
+            
+            this._muteSelectionChange = false;
         }
     }
 
