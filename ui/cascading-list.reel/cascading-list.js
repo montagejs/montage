@@ -44,6 +44,18 @@ exports.CascadingList = Component.specialize({
         }
     },
 
+    isFlat: {
+        value: false
+    },
+
+    isResponsive: {
+        value: true
+    },
+
+    shrinkForWidth: {
+        value: 768 // px
+    },
+
     _root: {
         value: null
     },
@@ -69,7 +81,7 @@ exports.CascadingList = Component.specialize({
 
     enterDocument: {
         value: function () {
-            this.element.addEventListener("resize", this);
+           window.addEventListener("resize", this);
 
             if (this._root) {
                 this.expand(this._root);
@@ -79,7 +91,7 @@ exports.CascadingList = Component.specialize({
 
     exitDocument: {
         value: function () {
-            this.element.removeEventListener("resize", this);    
+            window.removeEventListener("resize", this);    
             this.popAll();
         }
     },
@@ -221,7 +233,7 @@ exports.CascadingList = Component.specialize({
             cascadingListItem.cascadingList = this;
             cascadingListItem.delegate = this.delegate;
             cascadingListItem.context = context;
-            cascadingListItem.isMobile = this.isMobile;
+            cascadingListItem.isFlat = this.isFlat;
             cascadingListItem.needsDraw = true;
             this.history.splice(context.columnIndex, 1, cascadingListItem);
 
@@ -304,11 +316,13 @@ exports.CascadingList = Component.specialize({
 
     willDraw: {
         value: function () {
-            this.isMobile = window.innerWidth <= 768;
+            if (this.isResponsive) {
+                this.isFlat = window.innerWidth >= this.shrinkForWidth;
 
-            for (var i = 0; i < this.history.length; i++) {
-                var item = this.history[i];
-                item.isMobile = this.isMobile;
+                for (var i = 0; i < this.history.length; i++) {
+                    var item = this.history[i];
+                    item.isFlat = this.isFlat;
+                }
             }
         }
     }

@@ -1371,26 +1371,41 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             var componentsToAdd = [],
                 elementsToAppend =
                     this._elementsToAppend = [],
+                elementsToAppendBefore =
+                    this._elementsToAppendBefore = [],
                 componentsPendingBuildOut =
                     this._componentsPendingBuildOut = [],
                 currentDomContent = this.domContent,
                 childComponents = this.childComponents,
-                isArray = false, i, length, childComponent,
-                component, element, index;
+                isArray = false, index = -1,
+                i, length, childComponent,
+                component, element;
 
             if (value) {
                 if (value instanceof Element) {
-                    if (currentDomContent.indexOf(value) === -1) {
+                    if (currentDomContent.length <= 1) {
+                        if (currentDomContent.indexOf(value) === -1) {
+                            elementsToAppend.push(value);
+                        }
+                    } else {
                         elementsToAppend.push(value);
                     }
                 } else if ((isArray =
                     (Array.isArray(value) || value instanceof NodeList)
                 )) {
+                    if (currentDomContent.length === 1) {
+                        index = Array.prototype.indexOf.call(value, currentDomContent[0]);
+                    }
+
                     for (i = 0; i < value.length; i++) {
                         element = value[i];
 
                         if (currentDomContent.indexOf(element) === -1) {
-                            elementsToAppend.push(element);
+                            if (i > index) {
+                                elementsToAppend.push(element);
+                            } else {
+                                elementsToAppendBefore.push(element);
+                            }
 
                             if ( // Clean up possible transplanted components
                                 (component = element.component) &&
@@ -1406,8 +1421,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 for (i = childComponents.length - 1; i >= 0; i--) {
                     childComponent = childComponents[i];
 
-                    if ((isArray && Array.prototype.indexOf.call(value, childComponent.element) === -1) ||
-                        !isArray && elementsToAppend.length
+                    if (
+                        (isArray && Array.prototype.indexOf.call(value, childComponent.element) === -1) ||
+                        (!isArray && elementsToAppend.length && elementsToAppend.indexOf(childComponent.element) === -1)
                     ) {
                         componentsPendingBuildOut.push(childComponent);
                     }
@@ -2477,9 +2493,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     _performDomContentChanges: {
         value: function () {
             var contents = this._newDomContent,
-                element,
-                elementToAppend,
-                i;
+                componentsToAdd, component, referenceNode,
+                element, elementToAppend, i;
 
             if (contents || this._shouldClearDomContentOnNextDraw) {
                 element = this._element;
@@ -2497,9 +2512,31 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     }
                 }
 
-                if (this._elementsToAppend) {
-                    var componentsToAdd = [],
-                        component;
+                if (this._elementsToAppendBefore && this._elementsToAppendBefore.length) {
+                    componentsToAdd = [];
+                    referenceNode = element.firstElementChild;
+
+                    while (this._elementsToAppendBefore.length) {
+                        elementToAppend = this._elementsToAppendBefore.shift();
+
+                        if (!element.contains(elementToAppend)) {
+                            this._findAndDetachComponents(elementToAppend, componentsToAdd);
+
+                            if (referenceNode) {
+                                element.insertBefore(elementToAppend, referenceNode);
+                            } else {
+                                element.appendChild(elementToAppend);
+                            }
+                        }
+                    }
+
+                    for (i = 0; (component = componentsToAdd[i]); i++) {
+                        this.addChildComponent(component);
+                    }
+                }
+
+                if (this._elementsToAppend && this._elementsToAppend.length) {
+                    componentsToAdd = [];
 
                     while (this._elementsToAppend.length) {
                         elementToAppend = this._elementsToAppend.shift();

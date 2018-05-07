@@ -25,7 +25,7 @@
             "values": {
                 "element": {"#": "header-left"},
                 "defaultLabel": "",
-                "label": {"<-": "@owner.isMobile && @owner.context.columnIndex > 0 ? 'back' : @owner.headerBackLabel"},
+                "label": {"<-": "!@owner.isFlat && @owner.context.columnIndex > 0 ? 'back' : @owner.headerBackLabel"},
                 "detail.get('context')": {"<-": "@owner.context"}
             }
         },
