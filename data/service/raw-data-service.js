@@ -867,7 +867,6 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 result;
 
             if (mapping) {
-                console.log("_mapObjectToRawData", object.__realID);
                 result = mapping.mapObjectToRawData(object, record, context);
             }
 

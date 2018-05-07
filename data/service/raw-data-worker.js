@@ -33,22 +33,32 @@ exports.RawDataWorker = Montage.specialize({
     _handlerNameForOperationType: {
         value: function (operationType) {
             var name = "_perform";
-            name += this._operationTypeNameByOperationType.get(operationType);
+            name += this._operationTypeNameByOperationType(operationType);
             return name + "Operation";
         }
     },
 
+    // _operationTypeNameByOperationType: {
+    //     get: function () {
+    //         if (!this.__operationTypeNameByOperationType) {
+    //             this.__operationTypeNameByOperationType = new Map([
+    //                 [OperationType.CREATE, "Create"],
+    //                 [OperationType.READ, "Read"],
+    //                 [OperationType.UPDATE, "Update"],
+    //                 [OperationType.DELETE, "Delete"]
+    //             ]);
+    //         }
+    //         return this.__operationTypeNameByOperationType;
+    //     }
+    // },
+
     _operationTypeNameByOperationType: {
-        get: function () {
-            if (!this.__operationTypeNameByOperationType) {
-                this.__operationTypeNameByOperationType = new Map([
-                    [OperationType.CREATE, "Create"],
-                    [OperationType.READ, "Read"],
-                    [OperationType.UPDATE, "Update"],
-                    [OperationType.DELETE, "Delete"]
-                ]);
-            }
-            return this.__operationTypeNameByOperationType;
+        value: function (operationType) {
+            return operationType.isCreate ? "Create" : 
+                   operationType.isRead ? "Read" : 
+                   operationType.isUpdate ? "Update" : 
+                   operationType.isDelete ? "Delete" : 
+                                            null;
         }
     },
 
@@ -66,8 +76,14 @@ exports.RawDataWorker = Montage.specialize({
 
     _performReadOperation: {
         value: function (rawOperation, service, objectDescriptor) {
-            var criteria = rawOperation.criteria || new Criteria().initWithExpression("", {}),
-                query = DataQuery.withTypeAndCriteria(objectDescriptor, criteria);
+            var criteria = rawOperation.criteria || rawOperation.data,
+                query;
+            
+            if (!(criteria instanceof Criteria)) {
+                criteria = new Criteria().initWithExpression(criteria.expression, criteria.parameters);
+            }
+            query = DataQuery.withTypeAndCriteria(objectDescriptor, criteria);
+            
             return service.fetchData(query);
         }
     },
