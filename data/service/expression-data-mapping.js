@@ -76,9 +76,12 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 this.objectDescriptor = value;
             }
 
-            this.schemaReference = deserializer.getProperty("schema");
-            if (this.schemaReference) {
+            value = deserializer.getProperty("schema");
+            if (value instanceof ObjectDescriptorReference) {
+                this.schemaDescriptorReference = value;
                 hasReferences = true;
+            } else {
+                this.schemaDescriptor = value;
             }
 
             value = deserializer.getProperty("requisitePropertyNames");
@@ -192,7 +195,9 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         },
         set: function (value) {
             this._objectDescriptor = value;
-            this._objectDescriptorReference = new ObjectDescriptorReference().initWithValue(value);
+            if (value) {
+                this._objectDescriptorReference = new ObjectDescriptorReference().initWithValue(value);
+            }
         }
     },
 
@@ -357,7 +362,9 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         },
         set: function (value) {
             this._schemaDescriptor = value;
-            this._schemaDescriptorReference = new ObjectDescriptorReference().initWithValue(value);
+            if (value) {
+                this._schemaDescriptorReference = new ObjectDescriptorReference().initWithValue(value);
+            }
         }
     },
 
