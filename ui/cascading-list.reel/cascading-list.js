@@ -62,6 +62,20 @@ exports.CascadingList = Component.specialize({
         value: 768 // px
     },
 
+    _contentBuildOutAnimation: {
+        value: {
+            cssClass: "buildOut",
+            toCssClass: "buildOutTo"
+        }
+    },
+
+    _contentBuildInAnimation: {
+        value: {
+            fromCssClass: "buildInFrom",
+            cssClass: "buildIn"
+        }
+    },
+
     _root: {
         value: null
     },
@@ -87,7 +101,8 @@ exports.CascadingList = Component.specialize({
 
     enterDocument: {
         value: function () {
-           window.addEventListener("resize", this);
+            window.addEventListener("resize", this);
+            this.addEventListener("cascadingListItemLoaded", this);
 
             if (this._root) {
                 this.expand(this._root);
@@ -97,7 +112,10 @@ exports.CascadingList = Component.specialize({
 
     exitDocument: {
         value: function () {
-            window.removeEventListener("resize", this);    
+            window.removeEventListener("resize", this);
+            this.removeEventListener("cascadingListItemLoaded", this);
+            this.classList.remove('animated');
+
             this.popAll();
         }
     },
@@ -315,6 +333,20 @@ exports.CascadingList = Component.specialize({
     handleBackAction: {
         value: function () {
             this._pop();
+            this._isBackTransition = true;
+        }
+    },
+
+    handleBuildOutEnd: {
+        value: function (event) {
+            this._isBackTransition = false;
+        }
+    },
+
+    handleCascadingListItemLoaded: {
+        value: function () {
+            this.classList.add('animated');
+            this.removeEventListener('cascadingListItemLoaded', this);
         }
     },
 

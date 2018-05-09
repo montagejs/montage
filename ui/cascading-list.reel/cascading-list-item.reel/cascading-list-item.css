@@ -10,9 +10,7 @@
     font-family: 'lato';
     box-sizing: border-box;
     overflow: hidden;
-    border-bottom: 1px solid #c8c7cc;
-    border-top: 1px solid #c8c7cc;
-    border-right: 1px solid #c8c7cc;
+    width: 256px;
 }
 
 .CascadingListItem-header,
@@ -105,7 +103,6 @@
         -ms-flex-direction: column;
             flex-direction: column;
     min-width: 256px;
-    min-width: 16rem;
 }
 
 .CascadingListItem-content .List {

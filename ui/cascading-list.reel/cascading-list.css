@@ -2,16 +2,16 @@
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
         -ms-flex-direction: column;
             flex-direction: column;
+    position: relative;
     overflow: hidden;
-    box-sizing: border-box;
-    border-left: 1px solid #c8c7cc;
+    border: 1px solid #c8c7cc;
+    min-width: 256px;
+    max-width: 256px;
+    overflow: hidden;
 }
 
 .CascadingList-succession {
@@ -23,4 +23,57 @@
     -webkit-box-flex: 1;
         -ms-flex: 1;
             flex: 1;
+    width: 200%;
+}
+
+.CascadingList.isFlat {
+    overflow: visible;
+    min-width: inherit;
+    max-width: inherit;
+}
+
+.CascadingList.isFlat .CascadingListItem {
+    border-left: 1px solid #c8c7cc;
+}
+
+.CascadingList.isFlat .CascadingListItem:first-of-type {
+    border-left: none;
+}
+
+.CascadingList.isFlat .CascadingList-succession {
+    width: 100%;
+}
+
+.CascadingList.animated .CascadingList-succession .buildInFrom {
+    transform: translateX(0%);
+}
+
+.CascadingList.animated .CascadingList-succession .buildIn {
+    transition: transform .25s ease-in-out;
+    transform: translateX(-100%);
+}
+
+.CascadingList.animated .CascadingList-succession .buildOut {
+    transition: transform .25s ease-in-out;
+}
+
+.CascadingList.animated .CascadingList-succession .buildOutTo {
+    transform: translateX(-100%);
+}
+
+.CascadingList.animated .CascadingList-succession.back-transition .buildInFrom {
+    transform: translateX(-200%);
+}
+
+.CascadingList.animated .CascadingList-succession.back-transition .buildIn {
+    transition: transform .25s ease-in-out;
+    transform: translateX(-100%);
+}
+
+.CascadingList.animated .CascadingList-succession.back-transition .buildOut {
+    transition: transform .25s ease-in-out;
+}
+
+.CascadingList.animated .CascadingList-succession.back-transition .buildOutTo {
+    transform: translateX(100%);
 }

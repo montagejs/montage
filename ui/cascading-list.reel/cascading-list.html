@@ -9,7 +9,8 @@
         "owner": {
             "values": {
                 "element": {"#": "owner"},
-                "succession": {"@": "succession"}
+                "succession": {"@": "succession"},
+                "classList.has('isFlat')": {"<-": "@owner.isFlat"}
             }
         },
 
@@ -17,19 +18,18 @@
             "prototype": "../succession.reel",
             "values": {
                 "element": {"#": "succession"},
-                "isFlat": {"<-": "@owner.isFlat"}
+                "isFlat": {"<-": "@owner.isFlat"},
+                "contentBuildInAnimation":{"<-": "!@owner.isFlat && @owner._isComponentTreeLoaded ? @owner._contentBuildInAnimation : null" },
+                "contentBuildOutAnimation":{"<-": "!@owner.isFlat && @owner._isComponentTreeLoaded ? @owner._contentBuildOutAnimation : null" },
+                "classList.has('back-transition')": {"<-": "@owner._isBackTransition"}
             },
             "listeners": [
                 {
-                    "type": "buildInEnd",
+                    "type": "action",
                     "listener": {"@": "owner"}
                 },
                 {
                     "type": "buildOutEnd",
-                    "listener": {"@": "owner"}
-                },
-                {
-                    "type": "action",
                     "listener": {"@": "owner"}
                 }
             ]

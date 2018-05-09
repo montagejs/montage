@@ -194,6 +194,14 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
             
             this._muteSelectionChange = false;
         }
+    },
+
+    didDraw: {
+        value: function () {
+            if (this.context && this.content.component) {
+                this.dispatchEventNamed('cascadingListItemLoaded', true, true);
+            }
+        }
     }
 
 }, {
