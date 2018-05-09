@@ -583,6 +583,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     rootService: {
         get: function () {
+
             return this.parentService ? this.parentService.rootService : this;
         }
     },
@@ -1657,17 +1658,20 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     fetchObjectProperty: {
         value: function (object, propertyName) {
-            var isHandler = this.parentService && this.parentService._childServiceForObject(object) === this,
+            var isHandler = this.parentService ? this.parentService._childServiceForObject(object) === this : this._childServiceForObject(object) === this,
                 useDelegate = isHandler && typeof this.fetchRawObjectProperty === "function",
                 delegateFunction = !useDelegate && isHandler && this._delegateFunctionForPropertyName(propertyName),
                 propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
                 childService = !isHandler && this._childServiceForObject(object);
 
+                console.log("isHandler", this.identifier, propertyName, isHandler);
+            
+
             var result = useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
-            delegateFunction ?                  delegateFunction.call(this, object) :
-            isHandler && propertyDescriptor ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor) :
-            childService ?                      childService.fetchObjectProperty(object, propertyName) :
-                                                this.nullPromise;
+                        delegateFunction ?                  delegateFunction.call(this, object) :
+                        isHandler && propertyDescriptor ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor) :
+                        childService ?                      childService.fetchObjectProperty(object, propertyName) :
+                                                            this.nullPromise;
             return result;
         }
     },
@@ -2739,8 +2743,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             var self = this,
                 service,
                 promise = this.nullPromise,
-                shouldSaveRawData = !!(this.parentService && this.parentService._childServiceForObject(object) === this),
+                sibling = this.parentService && this.parentService._childServiceForObject(object),
+                child = sibling || this._childServiceForObject(object),
+                shouldSaveRawData = child === this,
                 mappingPromise;
+
 
             if (shouldSaveRawData) {
                 return self.saveRawData(rawData, object);
@@ -2758,17 +2765,16 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     _updateDataObject: {
         value: function (object, action) {
             var self = this,
-                service,
+                child = this.parentService && this.parentService._childServiceForObject(object),
+                service = child || this._childServiceForObject(object),
+                shouldUpdateDataObject = service === this,
                 promise = this.nullPromise;
 
-            if (this.parentService && this.parentService._childServiceForObject(object) === this) {
+            if (shouldUpdateDataObject) {
                 service = action && this;
                 action = "_" + action;
-            } else {
-                service = action && this._childServiceForObject(object);
-                if (service) {
-                    return service._updateDataObject(object, action);
-                }
+            } else if (action && service) {
+                return service._updateDataObject(object, action);
             }
 
             if (!action) {
