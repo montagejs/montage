@@ -1659,20 +1659,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     fetchObjectProperty: {
         value: function (object, propertyName) {
             var isHandler = this.parentService ? this.parentService._childServiceForObject(object) === this : this._childServiceForObject(object) === this,
-                useDelegate = isHandler && typeof this.fetchRawObjectProperty === "function",
-                delegateFunction = !useDelegate && isHandler && this._delegateFunctionForPropertyName(propertyName),
-                propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
-                childService = !isHandler && this._childServiceForObject(object);
-
-                console.log("isHandler", this.identifier, propertyName, isHandler);
+                delegateFunction = isHandler && this.fetchRawObjectProperty || this._delegateFunctionForPropertyName(propertyName),
+                propertyDescriptor = !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
+                childService = !isHandler && this._childServiceForObject(object),
+                fetchWithDescriptor = isHandler && propertyDescriptor;
             
-
-            var result = useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
-                        delegateFunction ?                  delegateFunction.call(this, object) :
-                        isHandler && propertyDescriptor ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor) :
-                        childService ?                      childService.fetchObjectProperty(object, propertyName) :
-                                                            this.nullPromise;
-            return result;
+            return delegateFunction ?    delegateFunction.call(this, object) :
+                   fetchWithDescriptor ?      this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor) :
+                   childService ?      childService.fetchObjectProperty(object, propertyName) :
+                                      this.nullPromise;
         }
     },
 
