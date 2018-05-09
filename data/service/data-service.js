@@ -481,7 +481,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 self._registerTypesByModuleId(objectDescriptors);
                 return self._registerChildServiceMappings(self, mappings);
             }).then(function () {
-                return self._makePrototypesForTypes(self, objectDescriptors);
+                return self._prototypesForModuleObjectDescriptors(objectDescriptors);
             }).then(function () {
                 // self.addChildService(child, types);
                 return null;
