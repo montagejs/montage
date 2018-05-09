@@ -447,75 +447,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
 
-    registerSelf: {
-        value: function () {
-            var self = this,
-                mappings = this.mappings || [],
-                types;
 
-            // possible types
-            // -- types is passed in as an array or a single type.
-            // -- a model is set on the child.
-            // -- types is set on the child.
-            // any type can be asychronous or synchronous.
-            types = types && Array.isArray(types) && types ||
-                    types && [types] ||
-                    this.model && this.model.objectDescriptors ||
-                    this.types && Array.isArray(this.types) && this.types ||
-                    this.types && [this.types] ||
-                    [];
 
-            return this._registerOwnTypesAndMappings(types, mappings).then(function () {
-                self._cacheServiceWithTypes(self, types);
-                return self;
-            });
-        }
-    },
-
-    _registerOwnTypesAndMappings: {
-        value: function (types, mappings) {
-            var self = this,
-                objectDescriptors;
-            return this._resolveAsynchronousTypes(types).then(function (descriptors) {
-                objectDescriptors = descriptors;
-                self._registerTypesByModuleId(objectDescriptors);
-                return self._registerChildServiceMappings(self, mappings);
-            }).then(function () {
-                return self._prototypesForModuleObjectDescriptors(objectDescriptors);
-            }).then(function () {
-                // self.addChildService(child, types);
-                return null;
-            });
-        }
-    },
-
-    _resolveAsynchronousTypes: {
-        value: function (types) {
-            var self = this;
-            return Promise.all(this._flattenArray(types).map(function (type) {
-                return type instanceof Promise ? type : Promise.resolve(type);
-            })).then(function (descriptors) {
-                return self._flattenArray(descriptors);
-            });
-        }
-    },
-
-    _flattenArray: {
-        value: function (array) {
-            return Array.prototype.concat.apply([], array);
-        }
-    },
-
-    _registerTypesByModuleId: {
-        value: function (types) {
-            var map = this._moduleIdToObjectDescriptorMap;
-            types.forEach(function (objectDescriptor) {
-                var module = objectDescriptor.module,
-                    moduleId = [module.id, objectDescriptor.exportName].join("/");
-                map[moduleId] = objectDescriptor;
-            });
-        }
-    },
     /**
      * Adds a raw data service as a child of this data service and set it to
      * handle data of the types defined by its [types]{@link DataService#types}
@@ -608,6 +541,36 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     parentService: {
         get: function () {
             return this._parentService;
+        }
+    },
+
+    /**
+     * Resolve and add own objectDescriptors & mappings to childServiceTypes
+     * @method
+     * @return {Promise}
+     */
+    registerSelf: {
+        value: function () {
+            var self = this,
+                mappings = this.mappings || [],
+                types;
+
+            // possible types
+            // -- types is passed in as an array or a single type.
+            // -- a model is set on the child.
+            // -- types is set on the child.
+            // any type can be asychronous or synchronous.
+            types = types && Array.isArray(types) && types ||
+                    types && [types] ||
+                    this.model && this.model.objectDescriptors ||
+                    this.types && Array.isArray(this.types) && this.types ||
+                    this.types && [this.types] ||
+                    [];
+
+            return this._registerOwnTypesAndMappings(types, mappings).then(function () {
+                self._cacheServiceWithTypes(self, types);
+                return self;
+            });
         }
     },
     
@@ -1265,6 +1228,23 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 var module = objectDescriptor.module,
                     moduleId = [module.id, objectDescriptor.exportName].join("/");
                 map.set(moduleId, objectDescriptor);
+            });
+        }
+    },
+
+    _registerOwnTypesAndMappings: {
+        value: function (types, mappings) {
+            var self = this,
+                objectDescriptors;
+            return this._resolveAsynchronousTypes(types).then(function (descriptors) {
+                objectDescriptors = descriptors;
+                self._registerTypesByModuleId(objectDescriptors);
+                return self._registerChildServiceMappings(self, mappings);
+            }).then(function () {
+                return self._prototypesForModuleObjectDescriptors(objectDescriptors);
+            }).then(function () {
+                // self.addChildService(child, types);
+                return null;
             });
         }
     },
@@ -2352,6 +2332,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 canMap = (ownMapping || this.implementsMapRawDataToObject || this.isRootService) && !serviceID,
                 iRecord;
 
+            // console.log("DataService.addRawData", this.identifier, streamQueryType && streamQueryType.name);
+            // debugger;
             // Record fetched raw data for offline use if appropriate.
             offline = records && !this.isOffline && this._streamRawData.get(stream);
             if (offline) {
