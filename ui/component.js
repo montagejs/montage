@@ -3694,11 +3694,21 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 false
             );
 
-            if (typeof object === "object" &&
-                (constructor = object.constructor) &&
-                constructor.objectDescriptorModuleId
-            ) {
-                objectDescriptorModuleId = constructor.objectDescriptorModuleId;
+            if (object && typeof object === "object") {
+                if (
+                    (constructor = object.constructor) &&
+                    constructor.objectDescriptorModuleId
+                ) {
+                    objectDescriptorModuleId = constructor.objectDescriptorModuleId;
+                }
+
+                if (!objectDescriptorModuleId && Array.isArray(object) &&
+                    object.length && object[0] && typeof object[0] === "object" &&
+                    !Array.isArray(object[0]) && (constructor = object[0].constructor) &&
+                    constructor.objectDescriptorModuleId
+                ) { // Try with the first object of the array.
+                    objectDescriptorModuleId = constructor.objectDescriptorModuleId;
+                }
             }
 
             objectDescriptorModuleIdCandidate = this.callDelegateMethod(
