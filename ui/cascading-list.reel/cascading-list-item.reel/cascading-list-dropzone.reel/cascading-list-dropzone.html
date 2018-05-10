@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="cascading-list-dropzone.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "owner"},
+                "classList.has('is-open')": {"<-": "@owner._isOpened"}
+            }
+        },
+
+        "close": {
+            "prototype": "../../../button.reel",
+            "values": {
+                "element": {"#": "close"},
+                "defaultLabel": ""
+            }
+        }
+
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="CascadingListDropzone">
+        <div data-montage-id="close" class="CascadingListDropzone-close"></div>
+    </div>
+</body>
+</html>

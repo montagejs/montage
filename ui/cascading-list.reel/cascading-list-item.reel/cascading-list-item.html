@@ -9,6 +9,7 @@
             "values": {
                 "element": {"#": "owner"},
                 "content": {"@": "content"},
+                "shelf": {"@": "dropzone"},
                 "selection": {"<-": "@owner.content.component.selection"}
             }
         },
@@ -51,7 +52,7 @@
             }
         },
 
-        "content": {
+         "content": {
             "prototype": "../../placeholder.reel",
             "values": {
                 "element": {"#": "content"},
@@ -59,6 +60,14 @@
                 "data": {"<-": "@owner.context.object"},
                 "component.userInterfaceDescriptor": {"<-": "@owner.context.userInterfaceDescriptor"},
                 "component.delegate": {"<-": "@owner.delegate"}
+            }
+        },
+
+        "dropzone": {
+            "prototype": "./cascading-list-dropzone.reel",
+            "values": {
+                "element": {"#": "dropzone"},
+                "delegate": {"<-": "@owner.delegate"}
             }
         },
 
@@ -109,6 +118,7 @@
             <div data-montage-id="header-middle" class="CascadingListItemAction CascadingListItemAction-header middle"></div>
             <div data-montage-id="header-right" class="CascadingListItemAction CascadingListItemAction-header right"></div>
         </div>
+        <div data-montage-id="dropzone"></div>
         <div data-montage-id="content" class="CascadingListItem-content"></div>
         <div data-montage-id="footer" class="CascadingListItem-footer">
             <div data-montage-id="footer-left" class="CascadingListItemAction CascadingListItemAction-footer left"></div>
