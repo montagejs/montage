@@ -2020,7 +2020,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
             if (this._ignoreSelectionAfterLongPress !== ignoreSelectionAfterLongPress) {
                 this._ignoreSelectionAfterLongPress = ignoreSelectionAfterLongPress;
-                this.listenToLongPress = ignoreSelectionAfterLongPress;
+                
+                if (!this.listenToLongPress && ignoreSelectionAfterLongPress) {
+                    this.listenToLongPress = true;
+                }
             }
         },
         get: function () {
@@ -2108,7 +2111,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         value: function () {
             if (this.ignoreSelectionAfterLongPress) {
                 this._ignoreSelection();
-            }
+            }                   
         }
     },
 
