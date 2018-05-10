@@ -28,6 +28,11 @@ exports.List = Component.specialize({
                     "<-": "userInterfaceDescriptor.defined() ? " +
                         "(userInterfaceDescriptor.listAllowsMultipleSelection || " +
                         "allowsMultipleSelection) : allowsMultipleSelection"
+                },
+                "_dispatchLongPress": {
+                    "<-": "userInterfaceDescriptor.defined() ? " +
+                        "(userInterfaceDescriptor.listDispatchLongPress || " +
+                        "dispatchLongPress) : dispatchLongPress"
                 }
             });
 
@@ -35,6 +40,18 @@ exports.List = Component.specialize({
             // https://github.com/montagejs/montage/issues/1977
             this._templateDidLoad = true;
             this._loadDataUserInterfaceDescriptorIfNeeded();
+        }
+    },
+
+    enterDocument: {
+        value: function () {
+            this.repetition._pressComposer.addEventListener("longPress", this);
+        }
+    },
+
+    exitDocument: {
+        value: function () {
+            this.repetition._pressComposer.removeEventListener("longPress", this);
         }
     },
 
@@ -98,6 +115,27 @@ exports.List = Component.specialize({
         value: null
     },
 
+    dispatchLongPress: {
+        value: false
+    },
+
+    handleLongPress: {
+        value: function (event) {
+            if (this._dispatchLongPress) {
+                var iteration = this.repetition._findIterationContainingElement(event.targetElement);
+
+                if (iteration) {
+                    this.dispatchEventNamed(
+                        "listIterationLongPress",
+                        true,
+                        true,
+                        iteration
+                    );
+                }
+            }
+        }
+    },
+
     _loadDataUserInterfaceDescriptorIfNeeded: {
         value: function () {
             if (this.data && this._templateDidLoad) {
@@ -132,7 +170,14 @@ exports.List = Component.specialize({
                         self,
                         self._ignoreSelectionAfterLongPress,
                         self.data
-                    ) || self._ignoreSelectionAfterLongPress;
+                    ) || self._ignoreSelectionAfterLongPress; 
+
+                    self._dispatchLongPress = self.callDelegateMethod(
+                        "shouldListDispatchLongPress",
+                        self,
+                        self._dispatchLongPress,
+                        self.data
+                    ) || self._dispatchLongPress;
                 });
             }
         }
