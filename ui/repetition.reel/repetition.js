@@ -2010,6 +2010,53 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         }
     },
 
+    _ignoreSelectionAfterLongPress: {
+        value: false
+    },
+
+    ignoreSelectionAfterLongPress: {
+        set: function (ignoreSelectionAfterLongPress) {
+            ignoreSelectionAfterLongPress = !!ignoreSelectionAfterLongPress;
+
+            if (this._ignoreSelectionAfterLongPress !== ignoreSelectionAfterLongPress) {
+                this._ignoreSelectionAfterLongPress = ignoreSelectionAfterLongPress;
+                this.listenToLongPress = ignoreSelectionAfterLongPress;
+            }
+        },
+        get: function () {
+            return this._ignoreSelectionAfterLongPress;
+        }
+    },
+
+    _listenToLongPress: {
+        value: false
+    },
+
+    listenToLongPress: {
+        set: function (listenToLongPress) {
+            listenToLongPress = !!listenToLongPress;
+
+            if (this._listenToLongPress !== listenToLongPress) {
+                this._listenToLongPress = listenToLongPress;
+
+                if (this.isSelectionEnabled) {
+                    if (listenToLongPress) {
+                        this._pressComposer.addEventListener(
+                            "longPress", this, false
+                        );
+                    } else {
+                        this._pressComposer.removeEventListener(
+                            "longPress", this, false
+                        );
+                    }
+                }
+            }            
+        },
+        get: function () {
+            return this._listenToLongPress;
+        }
+    },
+
     /**
      * @private
      */
@@ -2018,6 +2065,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     _enableSelectionTracking: {
         value: function () {
             this._pressComposer.addEventListener("pressStart", this, false);
+
+            if (this.listenToLongPress) {
+                this._pressComposer.addEventListener("longPress", this, false);
+            }
         }
     },
 
@@ -2029,6 +2080,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     _disableSelectionTracking: {
         value: function () {
             this._pressComposer.removeEventListener("pressStart", this, false);
+
+            if (this.listenToLongPress) {
+                this._pressComposer.removeEventListener("longPress", this, false);
+            }
         }
     },
 
@@ -2049,6 +2104,13 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         }
     },
 
+    handleLongPress: {
+        value: function () {
+            if (this.ignoreSelectionAfterLongPress) {
+                this._ignoreSelection();
+            }
+        }
+    },
 
     /**
      * @private
