@@ -62,7 +62,8 @@ exports.ListItem = Component.specialize({
                         "isExpandable) : isExpandable"
                 }
             }); 
-            //FIXME: not safe!
+            // FIXME: not safe!
+            // https://github.com/montagejs/montage/issues/1977
             this._templateDidLoad = true;
             this._loadDataUserInterfaceDescriptorIfNeeded();
         }

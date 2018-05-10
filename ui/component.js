@@ -1838,6 +1838,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 }
 
                 instances.owner = self;
+
+                // FIXME: should be set after the instantiateWithInstances call...
+                // https://github.com/montagejs/montage/issues/1977
                 self._isTemplateInstantiated = true;
 
                 return template.instantiateWithInstances(instances, _document).then(function (documentPart) {
