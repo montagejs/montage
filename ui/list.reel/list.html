@@ -17,8 +17,9 @@
                 "prototype": "../repetition.reel",
                 "values": {
                     "element": {"#": "repetition"},
-                    "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"},
-                    "allowsMultipleSelection": {"<-": "@owner.allowsMultipleSelection"},
+                    "isSelectionEnabled": {"<-": "@owner._isSelectionEnabled"},
+                    "ignoreSelectionAfterLongPress": {"<-": "@owner._ignoreSelectionAfterLongPress"},
+                    "allowsMultipleSelection": {"<-": "@owner._allowsMultipleSelection"},
                     "content": {"<-": "@owner.data"}
                 }
             },
@@ -36,7 +37,7 @@
                     "component.list": {"<-": "@owner"},
                     "component.delegate": {"<-": "@owner.delegate"},
                     "component.rowIndex": {"<-": "@repetition:iteration.index"},
-                    "component.isExpandable": {"<-": "@owner.isExpandable"},
+                    "component.isExpandable": {"<-": "@owner._isExpandable"},
                     "component.userInterfaceDescriptor": {"<-": "@owner.userInterfaceDescriptor"},
                     "component.selected": {"<-": "@repetition:iteration.selected"},
                     "component.active": {"<-": "@repetition:iteration.active"},
