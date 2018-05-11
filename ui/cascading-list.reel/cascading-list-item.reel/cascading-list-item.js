@@ -159,6 +159,10 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
         value: null
     },
 
+    _ignoreSelectionChange: {
+        value: false
+    },
+
     selection: {
         get: function () {
             return this._selection;
@@ -173,7 +177,7 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
                     !selection.length
                 ) {
                     var nextCascadingListItem = this.cascadingList.cascadingListItemAtIndex(this.context.columnIndex + 1);
-                    this._muteSelectionChange = true;
+                    this._ignoreSelectionChange = true;
                     this.selection.push(nextCascadingListItem.context.object);
                 }
             }
@@ -184,7 +188,7 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
         value: function (plus, minus, index) {
             if (
                 plus && plus.length === 1 &&
-                !this._muteSelectionChange
+                !this._ignoreSelectionChange
             ) {
                 this.cascadingList.expand(
                     plus[0],
@@ -192,7 +196,7 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
                 );
             }
             
-            this._muteSelectionChange = false;
+            this._ignoreSelectionChange = false;
         }
     },
 
