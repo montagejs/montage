@@ -99,6 +99,10 @@ exports.List = Component.specialize({
 
     handleLongPress: {
         value: function (event) {
+            if (this.enableReorderModeAfterLongPress) {
+                this.isReorderModeEnabled = !this.isReorderModeEnabled;
+            }
+
             if (this._dispatchLongPress) {
                 var iteration = this.repetition._findIterationContainingElement(event.targetElement);
 
@@ -111,6 +115,28 @@ exports.List = Component.specialize({
                     );
                 }
             }
+        }
+    },
+
+    isReorderModeEnabled: {
+        value: false
+    },
+
+    _enableReorderModeAfterLongPress: {
+        value: false
+    },
+
+    enableReorderModeAfterLongPress: {
+        set: function (enableReorderModeAfterLongPress) {
+            enableReorderModeAfterLongPress = !!enableReorderModeAfterLongPress;
+
+            if (this._enableReorderModeAfterLongPress !== enableReorderModeAfterLongPress) {
+                this._enableReorderModeAfterLongPress = enableReorderModeAfterLongPress;
+                this.repetition.ignoreSelectionAfterLongPress = enableReorderModeAfterLongPress;
+            }
+        },
+        get: function () {
+            return this._enableReorderModeAfterLongPress;
         }
     },
 

@@ -31,12 +31,20 @@
                 }
             },
 
-             "list1": {
+            "isReorderable": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "isReorderable"}
+                }
+            },
+
+            "list1": {
                 "prototype": "montage/ui/list.reel",
                 "values": {
                     "element": {"#": "list1"},
                     "data": {"<-": "@owner.strings"},
                     "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
+                    "enableReorderModeAfterLongPress": {"<-": "!!@isReorderable.checked"},
                     "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"},
                     "isExpandable": {"<-": "!!@isExpandable.checked"}
                 }
@@ -48,6 +56,7 @@
                     "element": {"#": "list2"},
                     "data": {"<-": "@owner.employees"},
                     "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
+                    "enableReorderModeAfterLongPress": {"<-": "!!@isReorderable.checked"},
                     "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"},
                     "isExpandable": {"<-": "!!@isExpandable.checked"}
                 }
@@ -69,6 +78,7 @@
                     "element": {"#": "list3"},
                     "data": {"<-": "@owner.employees"},
                     "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
+                    "enableReorderModeAfterLongPress": {"<-": "!!@isReorderable.checked"},
                     "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"},
                     "isExpandable": {"<-": "!!@isExpandable.checked"}
                 }
@@ -105,6 +115,10 @@
             <p>
                 <span>Allow Navigation: </span>
                 <input type="checkbox" data-montage-id="isExpandable" />
+            </p>
+            <p>
+                <span>Reorder after long press: </span>
+                <input type="checkbox" data-montage-id="isReorderable" />
             </p>
         </div>
 

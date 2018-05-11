@@ -164,6 +164,10 @@ exports.ListItem = Component.specialize({
     userInterfaceDescriptor: {
         value: null
     },
+    
+    showHandle: {
+        value: false
+    },
 
     __pressComposer: {
         value: null

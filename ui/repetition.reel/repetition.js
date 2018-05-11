@@ -2049,16 +2049,14 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             if (this._listenToLongPress !== listenToLongPress) {
                 this._listenToLongPress = listenToLongPress;
 
-                if (this.isSelectionEnabled) {
-                    if (listenToLongPress) {
-                        this._pressComposer.addEventListener(
-                            "longPress", this, false
-                        );
-                    } else {
-                        this._pressComposer.removeEventListener(
-                            "longPress", this, false
-                        );
-                    }
+                if (listenToLongPress) {
+                    this._pressComposer.addEventListener(
+                        "longPress", this, false
+                    );
+                } else if (!this.ignoreSelectionAfterLongPress) {
+                    this._pressComposer.removeEventListener(
+                        "longPress", this, false
+                    );
                 }
             }            
         },
@@ -2118,6 +2116,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         value: function () {
             if (this.ignoreSelectionAfterLongPress) {
                 this._ignoreSelection();
+                this.selection.clear();
             }                   
         }
     },
