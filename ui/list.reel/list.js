@@ -8,34 +8,8 @@ exports.List = Component.specialize({
 
     templateDidLoad: {
         value: function () {
-            this.defineBindings({
-                "_ignoreSelectionAfterLongPress": {
-                    "<-": "userInterfaceDescriptor.defined() ? " +
-                        "(userInterfaceDescriptor.listIgnoreSelectionAfterLongPress || " +
-                        "ignoreSelectionAfterLongPress) : ignoreSelectionAfterLongPress"
-                },
-                "_isExpandable": {
-                    "<-": "userInterfaceDescriptor.defined() ? " +
-                        "(userInterfaceDescriptor.listIsExpandable || " +
-                        "isExpandable) : isExpandable"
-                },
-                "_isSelectionEnabled": {
-                    "<-": "userInterfaceDescriptor.defined() ? " +
-                        "(userInterfaceDescriptor.listIsSelectionEnabled || " +
-                        "isSelectionEnabled) : isSelectionEnabled"
-                },
-                "_allowsMultipleSelection": {
-                    "<-": "userInterfaceDescriptor.defined() ? " +
-                        "(userInterfaceDescriptor.listAllowsMultipleSelection || " +
-                        "allowsMultipleSelection) : allowsMultipleSelection"
-                },
-                "_dispatchLongPress": {
-                    "<-": "userInterfaceDescriptor.defined() ? " +
-                        "(userInterfaceDescriptor.listDispatchLongPress || " +
-                        "dispatchLongPress) : dispatchLongPress"
-                }
-            });
-
+            this._definesBindings();
+            
             // FIXME: not safe!
             // https://github.com/montagejs/montage/issues/1977
             this._templateDidLoad = true;
@@ -73,6 +47,10 @@ exports.List = Component.specialize({
                 this._loadDataUserInterfaceDescriptorIfNeeded();
             }
         }
+    },
+
+    _isSelectionEnabled: {
+        value: false
     },
 
     /**
@@ -180,6 +158,38 @@ exports.List = Component.specialize({
                     ) || self._dispatchLongPress;
                 });
             }
+        }
+    },
+
+    _definesBindings: {
+        value: function () {
+            this.defineBindings({
+                "_ignoreSelectionAfterLongPress": {
+                    "<-": "userInterfaceDescriptor.defined() ? " +
+                        "(userInterfaceDescriptor.listIgnoreSelectionAfterLongPress || " +
+                        "ignoreSelectionAfterLongPress) : ignoreSelectionAfterLongPress"
+                },
+                "_isExpandable": {
+                    "<-": "userInterfaceDescriptor.defined() ? " +
+                        "(userInterfaceDescriptor.listIsExpandable || " +
+                        "isExpandable) : isExpandable"
+                },
+                "_isSelectionEnabled": {
+                    "<-": "userInterfaceDescriptor.defined() ? " +
+                        "(userInterfaceDescriptor.listIsSelectionEnabled ?? " +
+                        "isSelectionEnabled) : isSelectionEnabled"
+                },
+                "_allowsMultipleSelection": {
+                    "<-": "userInterfaceDescriptor.defined() ? " +
+                        "(userInterfaceDescriptor.listAllowsMultipleSelection || " +
+                        "allowsMultipleSelection) : allowsMultipleSelection"
+                },
+                "_dispatchLongPress": {
+                    "<-": "userInterfaceDescriptor.defined() ? " +
+                        "(userInterfaceDescriptor.listDispatchLongPress || " +
+                        "dispatchLongPress) : dispatchLongPress"
+                }
+            });
         }
     }
 
