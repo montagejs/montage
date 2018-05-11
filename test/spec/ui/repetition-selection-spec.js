@@ -47,11 +47,15 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function (t
                 var listElementToSelect = querySelectorAll("ul>li")[0];
                 nameController.selection = [nameController.organizedContent[0]];
 
-                testPage.mouseEvent({target: listElementToSelect}, "mousedown", function () {
-                    testPage.mouseEvent({target: listElementToSelect}, "mouseup", function () {
-                        expect(nameController.selection[0]).toBe(nameController.organizedContent[0]);
-                        expect(repetition.selectedIndexes).toEqual([0]);
-                        done();
+                testPage.mouseEvent({ target: listElementToSelect }, "mousedown", function () {
+                    testPage.mouseEvent({ target: listElementToSelect }, "mouseup", function () {
+                        return testPage.waitForDraw().then(function () {
+                            expect(nameController.selection[0]).toBe(nameController.organizedContent[0]);
+                            expect(repetition.selectedIndexes).toEqual([0]);
+                            done();
+                        }).catch(function (error) {
+                            done.fail(error);
+                        });
                     });
                 });
             });
@@ -60,10 +64,15 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function (t
                 var listElementToSelect = querySelectorAll("ul>li")[1];
                 nameController.selection = [nameController.organizedContent[1]];
                 testPage.mouseEvent({target: listElementToSelect}, "mousedown", function () {
-                    testPage.mouseEvent({target: listElementToSelect}, "mouseup", function () {
-                        expect(listElementToSelect.classList.contains("selected")).toBeTruthy();
-                        expect(repetition.selectedIndexes).toEqual([1]);
-                        done();
+                    testPage.mouseEvent({ target: listElementToSelect }, "mouseup", function () {
+                        return testPage.waitForDraw().then(function () {
+
+                            expect(listElementToSelect.classList.contains("selected")).toBeTruthy();
+                            expect(repetition.selectedIndexes).toEqual([1]);
+                            done();
+                        }).catch(function (error) {
+                            done.fail(error);
+                        });  
                     });
                 });
             });
@@ -71,17 +80,22 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function (t
             it("should not deselect the representative element if clicked again", function (done) {
                 var listElementToSelect = querySelectorAll("ul>li")[1];
                 nameController.selection = [nameController.organizedContent[1]];
-                testPage.mouseEvent({target: listElementToSelect}, "mousedown", function () {
-                    testPage.mouseEvent({target: listElementToSelect}, "mouseup", function () {
-                        expect(listElementToSelect.classList.contains("selected")).toBeTruthy();
-                        expect(repetition.selectedIndexes).toEqual([1]);
 
-                        testPage.mouseEvent({target: listElementToSelect}, "mousedown", function () {
-                            testPage.mouseEvent({target: listElementToSelect}, "mouseup", function () {
-                                expect(listElementToSelect.classList.contains("selected")).toBeTruthy();
-                                expect(repetition.selectedIndexes).toEqual([1]);
-                                done();
+                testPage.mouseEvent({ target: listElementToSelect }, "mousedown", function () {
+                    testPage.mouseEvent({ target: listElementToSelect }, "mouseup", function () {
+                        return testPage.waitForDraw().then(function () {
+                            expect(listElementToSelect.classList.contains("selected")).toBeTruthy();
+                            expect(repetition.selectedIndexes).toEqual([1]);
+
+                            testPage.mouseEvent({ target: listElementToSelect }, "mousedown", function () {
+                                testPage.mouseEvent({ target: listElementToSelect }, "mouseup", function () {
+                                    expect(listElementToSelect.classList.contains("selected")).toBeTruthy();
+                                    expect(repetition.selectedIndexes).toEqual([1]);
+                                    done();
+                                });
                             });
+                        }).catch(function (error) {
+                            done.fail(error);
                         });
                     });
                 });
@@ -181,21 +195,29 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function (t
                     }
                 });
 
-                it("should properly update the iterations selected property after disabling the selection", function () {
+                it("should properly update the iterations selected property after disabling the selection", function (done) {
                     var i;
 
                     repetition.contentController.selection = [];
-                    for (i = 0; i < 6; i++) {
+                    
+                    for (i = 0; i < repetition.contentController.length; i++) {
                         expect(repetition.iterations[i].selected).toBeFalsy();
                     }
 
                     repetition.contentController.selection = [repetition.iterations[0].object];
                     expect(repetition.iterations[0].selected).toBeTruthy();
+                    
                    
                     repetition.isSelectionEnabled = false;
-                    for (i = 0; i < 6; i++) {
-                        expect(repetition.iterations[i].selected).toBeFalsy();
-                    }
+
+                    testPage.waitForDraw().then(function () {
+                        for (i = 0; i < repetition.contentController.length; i++) {
+                            expect(repetition.iterations[i].selected).toBeFalsy();
+                        }
+                        done();
+                    }).catch(function (error) {
+                        done.fail(error);
+                    });
                 });
             });
 
