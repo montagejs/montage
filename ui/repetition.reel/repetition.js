@@ -1879,6 +1879,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 this._initialContentDrawn = true;
             }
 
+            if (!this.isSelectionEnabled && this.selection.length) {
+                this.selection.clear();
+            }
+
             // Synchronize iterations and _drawnIterations
 
             // Retract iterations that should no longer be visible
@@ -2004,8 +2008,11 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             if (selectionTracking) {
                 this._enableSelectionTracking();
             } else {
-                this.selection.clear();
                 this._disableSelectionTracking();
+            }
+            
+            if (!this.isDeserializing) {
+                this.needsDraw = true;
             }
         }
     },
