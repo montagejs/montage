@@ -115,6 +115,7 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/data/data-query"},
     {name: "spec/data/data-mapping"},
     {name: "spec/data/data-object-descriptor"},
+    {name: "spec/data/data-operation"},
     {name: "spec/data/data-property-descriptor"},
     {name: "spec/data/data-provider"},
     {name: "spec/data/data-service"},

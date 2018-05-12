@@ -1,5 +1,5 @@
 var Montage = require("core/core").Montage,
-    Criteria = require("montage/core/criteria").Criteria;
+    Criteria = require("core/criteria").Criteria;
 
 /**
  * Represents
