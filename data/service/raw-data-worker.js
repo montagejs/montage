@@ -158,23 +158,22 @@ exports.RawDataWorker = Montage.specialize({
      */
 
     handleOperation: {
-        value: function (rawOperation) {
+        value: function (operation) {
             var self = this,
                 objectDescriptor, service;
 
             return this._serviceReferenceRegistrationPromise.then(function () {
-                return self._objectDescriptorForOperation(rawOperation);
+                return self._objectDescriptorForOperation(operation);
             }).then(function (descriptor) {
                 objectDescriptor = descriptor;
                 return self._serviceForObjectDescriptor(descriptor);
             }).then(function (service) {
-                var handlerName = self._handlerNameForOperationType(rawOperation.type);
+                var handlerName = self._handlerNameForOperationType(operation.type);
                 if (!service) {
-                    console.log(rawOperation, self, objectDescriptor);
-                    debugger;
+                    // console.log(operation, self, objectDescriptor);
                     throw new Error("No service available to handle operation with type (" + (objectDescriptor && objectDescriptor.name) + ")");
                 }
-                return self[handlerName](rawOperation, service, objectDescriptor);
+                return self[handlerName](operation, service, objectDescriptor);
             });
         }
     },
@@ -198,20 +197,20 @@ exports.RawDataWorker = Montage.specialize({
     },
 
     _performCreateOperation: {
-        value: function (rawOperation, service, objectDescriptor) {
-            return service.saveRawData(rawOperation.data);
+        value: function (operation, service, objectDescriptor) {
+            return service.saveRawData(operation.data);
         }
     },
 
     _performDeleteOperation: {
-        value: function (rawOperation, service, objectDescriptor) {
-            return service.deleteRawData(rawOperation.data);
+        value: function (operation, service, objectDescriptor) {
+            return service.deleteRawData(operation.data);
         }
     },
 
     _performReadOperation: {
-        value: function (rawOperation, service, objectDescriptor) {
-            var criteria = rawOperation.criteria || rawOperation.data,
+        value: function (operation, service, objectDescriptor) {
+            var criteria = operation.criteria || operation.data,
                 query, parameters, expression;
             
             if (!(criteria instanceof Criteria)) {
@@ -226,8 +225,8 @@ exports.RawDataWorker = Montage.specialize({
     },
 
     _performUpdateOperation: {
-        value: function (rawOperation, service, objectDescriptor) {
-            return service.saveRawData(rawOperation.data);
+        value: function (operation, service, objectDescriptor) {
+            return service.saveRawData(operation.data);
         }
     },
 
@@ -267,20 +266,19 @@ exports.RawDataWorker = Montage.specialize({
     },
 
     _objectDescriptorForOperation: {
-        value: function (rawOperation) {
+        value: function (operation) {
             var self = this,
-                module = rawOperation.objectDescriptorModule,
-                descriptor = this.objectDescriptorsByModuleID.get(module.id);
+                descriptor = operation.dataType,
+                module = descriptor.module,
+                moduleId = [module.id, descriptor.exportName].join("/");
+            
+            if (!this.objectDescriptorsByModuleID.has(moduleId)) {
+                this.objectDescriptorsByModuleID.set(moduleId, descriptor);
+            } else {
+                descriptor = this.objectDescriptorsByModuleID.get(moduleId, descriptor);
+            }
 
-
-            return descriptor ? Promise.resolve(descriptor) : 
-                                module.exports.then(function (exports) {
-                                    var instance = exports.montageObject,
-                                        moduleId = [module.id, instance.exportName].join("/");
-                                    self.objectDescriptorsByModuleID.set(module.id, instance);
-                                    self.objectDescriptorsByModuleID.set(moduleId, instance);
-                                    return instance;                
-                                });
+            return Promise.resolve(descriptor);
         }
     },
 

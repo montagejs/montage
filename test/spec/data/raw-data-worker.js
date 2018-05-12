@@ -1,4 +1,5 @@
 var RawDataWorker = require("montage/data/service/raw-data-worker").RawDataWorker,
+    DataOperation = require("montage/data/service/data-operation").DataOperation,
     OperationType = require("montage/data/service/data-operation").DataOperation.Type,
     Category = require("spec/data/logic/model/category").Category,
     CategoryDescriptor = require("spec/data/logic/model/category.mjson").montageObject,
@@ -10,6 +11,7 @@ var RawDataWorker = require("montage/data/service/raw-data-worker").RawDataWorke
     DataObjectDescriptor = require("montage/data/model/data-object-descriptor").DataObjectDescriptor,
     ObjectDescriptor = require("montage/core/meta/object-descriptor").ObjectDescriptor,
     ModuleReference = require("montage/core/module-reference").ModuleReference,
+    MovieDescriptor = require("spec/data/logic/model/movie.mjson").montageObject,
     RawDataTypeMapping = require("montage/data/service/raw-data-type-mapping").RawDataTypeMapping;
 
 var Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer,
@@ -20,10 +22,18 @@ describe("A RawDataWorker", function() {
         typeReference,
         operation;
 
+    function makeOperation(operationType, dataType, data, criteria) {
+        var newOperation = new DataOperation();
+        newOperation.type = operationType;
+        newOperation.dataType = dataType;
+        newOperation.data = data;
+        newOperation.criteria = criteria;
+        return newOperation;
+    }
+
     it("can be created", function () {
         expect(new RawDataWorker()).toBeDefined();
     });
-
 
     it("can register service references", function (done) {
         var serviceID = "spec/data/logic/service/category-service.mjson",
@@ -41,16 +51,10 @@ describe("A RawDataWorker", function() {
     describe("can lazily", function () {
 
         it("register type for RawOperation", function (done) {
-            var movieDescriptor, typeReference2, operation2;
-            // worker = new RawDataWorker();
-            typeReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
-            typeReference2 = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
-            operation = {
-                objectDescriptorModule: typeReference
-            };
-            operation2 = {
-                objectDescriptorModule: typeReference
-            };
+            var movieDescriptor, operation2;
+
+            operation = makeOperation(null, CategoryDescriptor);
+            operation2 = makeOperation(null, CategoryDescriptor);
             worker._objectDescriptorForOperation(operation).then(function (descriptor) {
                 expect(descriptor).toBeDefined();
                 movieDescriptor = descriptor;
@@ -71,12 +75,7 @@ describe("A RawDataWorker", function() {
             var rawData = {
                 name: "Comedy"
             };
-            typeReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
-            operation = {
-               data: rawData,
-               objectDescriptorModule: typeReference,
-               type: OperationType.CREATE
-            };
+            operation = makeOperation(OperationType.Create, CategoryDescriptor, rawData);
 
             worker.handleOperation(operation).then(function (data) {
                 expect(Array.isArray(data)).toBe(true);
@@ -86,11 +85,8 @@ describe("A RawDataWorker", function() {
         });
 
         it("read operation", function (done) {
-            typeReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
-            operation = {
-               objectDescriptorModule: typeReference,
-               type: OperationType.READ
-            };
+
+            operation = makeOperation(OperationType.Read, CategoryDescriptor);
 
             worker.handleOperation(operation).then(function (data) {
                 expect(Array.isArray(data)).toBe(true);
@@ -104,12 +100,8 @@ describe("A RawDataWorker", function() {
                 name: "Science Fiction",
                 categoryID: 1
             };
-            typeReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
-            operation = {
-               data: rawData,
-               objectDescriptorModule: typeReference,
-               type: OperationType.UPDATE
-            };
+            //Should use criteria to identify which object to update
+            operation = makeOperation(OperationType.Update, CategoryDescriptor, rawData);
 
             worker.handleOperation(operation).then(function (data) {
                 expect(Array.isArray(data)).toBe(true);
@@ -124,12 +116,7 @@ describe("A RawDataWorker", function() {
                 name: "Science Fiction",
                 categoryID: 1
             };
-            typeReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
-            operation = {
-               data: rawData,
-               objectDescriptorModule: typeReference,
-               type: OperationType.DELETE
-            };
+            operation = makeOperation(OperationType.Delete, CategoryDescriptor, rawData);            
 
             worker.handleOperation(operation).then(function (data) {
                 expect(Array.isArray(data)).toBe(true);
@@ -143,15 +130,10 @@ describe("A RawDataWorker", function() {
         worker = new RawDataWorker();
 
         it("with criteria", function (done) {
-            typeReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
             criteria = new Criteria().initWithExpression("id == $.id", {
                 categoryID: 1
             });
-            operation = {
-               criteria: criteria,
-               objectDescriptorModule: typeReference,
-               type: OperationType.READ
-            };
+            operation = makeOperation(OperationType.Read, CategoryDescriptor, null, criteria);
 
             worker.handleOperation(operation).then(function (data) {
                 expect(Array.isArray(data)).toBe(true);
@@ -209,16 +191,8 @@ describe("A RawDataWorker", function() {
                     }
                 },
                 serializationString = JSON.stringify(serialization),
-                typeReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
-                type2Reference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/movie.mjson", require);
-                operation = {
-                   objectDescriptorModule: typeReference,
-                   type: OperationType.READ
-                },
-                operation2 = {
-                    objectDescriptorModule: type2Reference,
-                    type: OperationType.READ
-                 };
+                operation = makeOperation(OperationType.Read, CategoryDescriptor);
+                operation2 = makeOperation(OperationType.Read, MovieDescriptor);
     
             deserializer.init(serializationString, require);
             deserializer.deserializeObject().then(function (root) {
