@@ -52,7 +52,8 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      * @type {DataOperation.Type.CREATE|DataOperation.Type.READ|DataOperation.Type.UPDATE|DataOperation.Type.DELETE}
      */
     type: {
-        value: undefined
+        value: undefined,
+        serializable: "value"
     },
 
     /**
@@ -216,7 +217,8 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     },
 
     dataType: {
-        value: undefined
+        value: undefined,
+        serializable: "value"
     },
 
     /**
@@ -288,7 +290,8 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      * @type {Object}
      */
     data: {
-        value: undefined
+        value: undefined,
+        serializable: "value"
     },
 
     snapshotData: {

@@ -2,6 +2,7 @@ var Montage = require("montage").Montage,
     Criteria = require("core/criteria").Criteria,
     DataQuery = require("data/model/data-query").DataQuery,
     Map = require("collections/map"),
+    ModuleReference = require("core/module-reference").ModuleReference,
     ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor,
     OperationType = require("data/service/data-operation").DataOperation.Type,
     Promise = require("core/promise").Promise;
@@ -268,17 +269,39 @@ exports.RawDataWorker = Montage.specialize({
     _objectDescriptorForOperation: {
         value: function (operation) {
             var self = this,
-                descriptor = operation.dataType,
-                module = descriptor.module,
-                moduleId = [module.id, descriptor.exportName].join("/");
-            
-            if (!this.objectDescriptorsByModuleID.has(moduleId)) {
-                this.objectDescriptorsByModuleID.set(moduleId, descriptor);
-            } else {
-                descriptor = this.objectDescriptorsByModuleID.get(moduleId, descriptor);
-            }
+                descriptorOrModule = operation.dataType,
+                module, descriptor, result, moduleId;
 
-            return Promise.resolve(descriptor);
+            if (descriptorOrModule instanceof ModuleReference) {
+                module = descriptorOrModule;
+                descriptor = this.objectDescriptorsByModuleID.get(module.id);
+                if (descriptor) {
+                    result = Promise.resolve(descriptor);
+                } else {
+                    result = module.exports.then(function (exports) {
+                        var instance = exports.montageObject,
+                            moduleId = [module.id, instance.exportName].join("/");
+                        self.objectDescriptorsByModuleID.set(module.id, instance);
+                        self.objectDescriptorsByModuleID.set(moduleId, instance);
+                        return instance;                
+                    });
+                }
+            } else if (descriptorOrModule instanceof ObjectDescriptor){
+                descriptor = descriptorOrModule;
+                module = descriptor.module;
+                moduleId = [module.id, descriptor.exportName].join("/");
+                if (!this.objectDescriptorsByModuleID.has(moduleId)) {
+                    this.objectDescriptorsByModuleID.set(moduleId, descriptor);
+                } else {
+                    descriptor = this.objectDescriptorsByModuleID.get(moduleId);
+                }
+                result = Promise.resolve(descriptor);
+            }
+                
+            
+            
+
+            return result;
         }
     },
 

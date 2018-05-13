@@ -50,10 +50,58 @@ describe("A RawDataWorker", function() {
 
     describe("can lazily", function () {
 
-        it("register type for RawOperation", function (done) {
+        it("register type for DataOperation with descriptor", function (done) {
             var movieDescriptor, operation2;
 
             operation = makeOperation(null, CategoryDescriptor);
+            operation2 = makeOperation(null, CategoryDescriptor);
+            worker._objectDescriptorForOperation(operation).then(function (descriptor) {
+                expect(descriptor).toBeDefined();
+                movieDescriptor = descriptor;
+                return worker._objectDescriptorForOperation(operation2);
+            }).then(function (descriptor) {
+                expect(descriptor).toBeDefined();
+                expect(descriptor).toBe(movieDescriptor);
+                done();
+            });
+        });
+
+        it("register type for DataOperation with reference", function (done) {
+            var movieDescriptor, operation2;
+            typeReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
+            operation = makeOperation(null, typeReference);
+            operation2 = makeOperation(null, typeReference);
+            worker._objectDescriptorForOperation(operation).then(function (descriptor) {
+                expect(descriptor).toBeDefined();
+                movieDescriptor = descriptor;
+                return worker._objectDescriptorForOperation(operation2);
+            }).then(function (descriptor) {
+                expect(descriptor).toBeDefined();
+                expect(descriptor).toBe(movieDescriptor);
+                done();
+            });
+        });
+
+        it("register type for DataOperation with descriptor & reference", function (done) {
+            var movieDescriptor, operation2;
+            typeReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
+            operation = makeOperation(null, CategoryDescriptor);
+            operation2 = makeOperation(null, typeReference);
+            worker._objectDescriptorForOperation(operation).then(function (descriptor) {
+                expect(descriptor).toBeDefined();
+                movieDescriptor = descriptor;
+                return worker._objectDescriptorForOperation(operation2);
+            }).then(function (descriptor) {
+                expect(descriptor).toBeDefined();
+                expect(descriptor).toBe(movieDescriptor);
+                done();
+            });
+        });
+
+        it("register type for DataOperation with reference & descriptor", function (done) {
+            var movieDescriptor, operation2;
+            typeReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/category.mjson", require);
+            operation = makeOperation(null, typeReference);
             operation2 = makeOperation(null, CategoryDescriptor);
             worker._objectDescriptorForOperation(operation).then(function (descriptor) {
                 expect(descriptor).toBeDefined();
