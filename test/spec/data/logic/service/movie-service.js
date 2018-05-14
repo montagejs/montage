@@ -7,6 +7,16 @@ exports.MovieService = RawDataService.specialize(/** @lends MovieService.prototy
         value: function (record, object) {
             return Promise.resolve(record);
         }
+    },
+
+
+    fetchRawData: {
+        value: function (stream) {
+            this.addRawData(stream, [{
+                name: "Bill and Ted's Excellent Adventure"
+            }]);
+            this.rawDataDone(stream);
+        }
     }
 
 });

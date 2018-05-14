@@ -1,0 +1,17 @@
+{
+    "root": {
+        "prototype": "montage/data/service/data-service-reference",
+        "properties": {
+            "module": {"%": "spec/data/logic/service/category-service.mjson"},
+            "serviceName": "CategoryService",
+            "prototypeName": "CategoryService",
+            "types": [
+                {"@": "CategoryDescriptor"}
+            ]
+        }
+    },
+
+    "CategoryDescriptor": {
+        "object": "spec/data/logic/model/category.mjson"
+    }
+}

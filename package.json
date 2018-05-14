@@ -52,14 +52,14 @@
     "collections": "~5.0.x",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
-    "q-io": "^1.13.3",
-    "mr": "^17.0.11",
-    "weak-map": "^1.0.5",
-    "lodash.kebabcase": "^4.1.1",
     "lodash.camelcase": "^4.3.0",
-    "lodash.trim": "^4.5.1",
+    "lodash.kebabcase": "^4.1.1",
     "lodash.snakecase": "^4.1.1",
-    "proxy-polyfill": "~0.1.7"
+    "lodash.trim": "^4.5.1",
+    "mr": "montagejs/mr#features/dirIndex",
+    "proxy-polyfill": "~0.1.7",
+    "q-io": "^1.13.3",
+    "weak-map": "^1.0.5"
   },
   "devDependencies": {
     "concurrently": "^3.4.0",
