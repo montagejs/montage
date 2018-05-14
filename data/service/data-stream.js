@@ -248,7 +248,7 @@ exports.DataStream = DataProvider.specialize(/** @lends DataStream.prototype */ 
             }
         }
     },
-
+    
     /**
      * To be called when all the data expected by this stream has been added
      * to its [data]{@link DataStream#data} array. After this is called

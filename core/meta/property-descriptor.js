@@ -125,11 +125,16 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             if (value !== void 0) {
                 this._owner = value;
             }
-            
+
             this._overridePropertyWithDefaults(deserializer, "cardinality");
-            
+
             if (this.cardinality === -1) {
                 this.cardinality = Infinity;
+            }
+
+            value = deserializer.getProperty("isDerived");
+            if (value !== void 0) {
+                this._isDerived = value;
             }
             
             this._overridePropertyWithDefaults(deserializer, "mandatory");
@@ -303,7 +308,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      */
     isDerived: {
         get: function () {
-            return false;
+            return this._isDerived || false;
         }
     },
     
