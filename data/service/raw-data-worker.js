@@ -24,8 +24,6 @@ exports.RawDataWorker = Montage.specialize({
     deserializeSelf: {
         value: function (deserializer) {
             var references = deserializer.getProperty("childServices") || [];
-
-            console.log("RawDataWorker.deserializeSelf", references);
             this.registerServiceReferences(references);
         }
     },
