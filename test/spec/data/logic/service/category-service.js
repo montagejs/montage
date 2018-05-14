@@ -8,7 +8,6 @@ exports.CategoryService = RawDataService.specialize(/** @lends CategoryService.p
             var categoryId = stream.query.criteria.parameters.categoryID || -1,
                 isValidCategory = categoryId > 0 && CategoryNames.length >= categoryId,
                 categoryName = isValidCategory && CategoryNames[categoryId - 1] || "Unknown";
-            
             this.addRawData(stream, [{
                 name: categoryName
             }]);
