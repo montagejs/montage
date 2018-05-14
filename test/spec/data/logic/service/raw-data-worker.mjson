@@ -1,0 +1,20 @@
+{
+    "root": {
+        "prototype": "montage/data/service/raw-data-worker",
+        "values": {
+            "name": "RawDataWorker",
+            "childServices": [
+                {"@": "categoryService"},
+                {"@": "movieService"}
+            ]
+        }
+    },
+
+    "categoryService": {
+        "object": "spec/data/logic/service/category-service-reference.mjson"
+    },
+
+    "movieService": {
+        "object": "spec/data/logic/service/movie-service-reference.mjson"
+    }
+}

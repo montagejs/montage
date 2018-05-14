@@ -88,6 +88,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 Array.prototype.push.apply(this._childServiceMappings, value);
             }
 
+            this.registerSelf();
+
             value = deserializer.getProperty("delegate");
             if (value) {
                 this.delegate = value;
@@ -98,6 +100,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
             value = deserializer.getProperty("batchAddsDataToStream");
             this.batchAddsDataToStream = !!value;
+            if (this._childServiceRegistrationPromise) {
+                this._childServiceRegistrationPromise = this._childServiceRegistrationPromise.then(function () {
+                    return self.registerSelf();
+                });
+            } else {
+                this._childServiceRegistrationPromise = this.registerSelf();
+            }
             
             return result;
         }
@@ -245,6 +254,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             // types or to the "all types" service array identified by the
             // `null` type, and add each of the new child's types to the array
             // of child types if they're not already there.
+            this._cacheServiceWithTypes(child, types);
+            // Set the new child service's parent.
+            child._parentService = this;
+        }
+    },
+
+    _cacheServiceWithTypes: {
+        value: function (child, types) {
+            var children, type, i, n, nIfEmpty = 1;
 
             for (i = 0, n = types && types.length || nIfEmpty; i < n; i += 1) {
                 type = types && types.length && types[i] || null;
@@ -257,8 +275,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     }
                 }
             }
-            // Set the new child service's parent.
-            child._parentService = this;
         }
     },
 
@@ -428,6 +444,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+
     /**
      * Adds a raw data service as a child of this data service and set it to
      * handle data of the types defined by its [types]{@link DataService#types}
@@ -452,6 +469,48 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 console.warn("Cannot add child -", child);
                 console.warn("Children must be instances of DataService subclasses.");
             }
+        }
+    },
+
+    registerSelf: {
+        value: function () {
+            var self = this,
+                mappings = this.mappings || [],
+                types;
+
+            // possible types
+            // -- types is passed in as an array or a single type.
+            // -- a model is set on the child.
+            // -- types is set on the child.
+            // any type can be asychronous or synchronous.
+            types = types && Array.isArray(types) && types ||
+                    types && [types] ||
+                    this.model && this.model.objectDescriptors ||
+                    this.types && Array.isArray(this.types) && this.types ||
+                    this.types && [this.types] ||
+                    [];
+
+            return this._registerOwnTypesAndMappings(types, mappings).then(function () {
+                self._cacheServiceWithTypes(self, types);
+                return self;
+            });
+        }
+    },
+
+    _registerOwnTypesAndMappings: {
+        value: function (types, mappings) {
+            var self = this,
+                objectDescriptors;
+            return this._resolveAsynchronousTypes(types).then(function (descriptors) {
+                objectDescriptors = descriptors;
+                self._registerTypesByModuleId(objectDescriptors);
+                return self._registerChildServiceMappings(self, mappings);
+            }).then(function () {
+                return self._makePrototypesForTypes(self, objectDescriptors);
+            }).then(function () {
+                // self.addChildService(child, types);
+                return null;
+            });
         }
     },
 
@@ -2501,7 +2560,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 //have to go up to answer that question. The difference between
                 //.TYPE and ObjectDescriptor still creeps-in when it comes to
                 //the service to answer that to itself
-                if (self.parentService && self.parentService.childServiceForType(query.type) === self && typeof self.fetchRawData === "function") {
+                service = self.parentService ? self.parentService.childServiceForType(query.type) : self.childServiceForType(query.type);
+                if (service === self && typeof self.fetchRawData === "function") {
                     service = self;
                     service._fetchRawData(stream);
                 } else {
@@ -2522,6 +2582,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                                 self.rawDataDone(stream);
                             });
                         } else {
+                            debugger;
                             throw new Error("Can't fetch data of unknown type - " + (query.type.typeName || query.type.name) + "/" + query.type.uuid);
                         }
                     } catch (e) {
