@@ -22,6 +22,12 @@ var Montage = require("core/core").Montage;
  *
  * Exact details are not exposed and may vary per specific DataService or RawDataService
  *
+ * Note, a dataService's identifier is by default it's moduleId.
+ *
+ * "montage-data://[this.dataService.identifier]/[this.dataService.connectionDescriptor.name]/[this.objectDescriptor.name]/[this.primaryKey]
+ *
+ * "montage-data://twitter-service/production/user/14DS9ZT459EF44305UI
+
  * @class
  * @extends external:Montage
  */
