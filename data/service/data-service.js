@@ -2582,7 +2582,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                                 self.rawDataDone(stream);
                             });
                         } else {
-                            debugger;
                             throw new Error("Can't fetch data of unknown type - " + (query.type.typeName || query.type.name) + "/" + query.type.uuid);
                         }
                     } catch (e) {
