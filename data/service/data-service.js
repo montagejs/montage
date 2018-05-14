@@ -88,8 +88,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 Array.prototype.push.apply(this._childServiceMappings, value);
             }
 
-            this.registerSelf();
-
             value = deserializer.getProperty("delegate");
             if (value) {
                 this.delegate = value;
@@ -270,7 +268,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 children.push(child);
                 if (children.length === 1) {
                     this._childServicesByObjectDescriptor.set(type, children);
-                    if (type) {
+                    if (type && this._childServiceTypes.indexOf(type) === -1) {
                         this._childServiceTypes.push(type);
                     }
                 }
@@ -1648,18 +1646,19 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     fetchObjectProperty: {
         value: function (object, propertyName) {
-            var isHandler = this.parentService && this.parentService._childServiceForObject(object) === this,
+            var handler = this.parentService ? this.parentService._childServiceForObject(object) : this._childServiceForObject(object),
+                isHandler = handler === this,
                 useDelegate = isHandler && typeof this.fetchRawObjectProperty === "function",
                 delegateFunction = !useDelegate && isHandler && this._delegateFunctionForPropertyName(propertyName),
                 propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
                 childService = !isHandler && this._childServiceForObject(object);
 
-            var result = useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
-            delegateFunction ?                  delegateFunction.call(this, object) :
-            isHandler && propertyDescriptor ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor) :
-            childService ?                      childService.fetchObjectProperty(object, propertyName) :
-                                                this.nullPromise;
-            return result;
+            
+            return useDelegate ?                    this.fetchRawObjectProperty(object, propertyName) :
+                   delegateFunction ?                  delegateFunction.call(this, object) :
+                   isHandler && propertyDescriptor ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor) :
+                    childService ?                      childService.fetchObjectProperty(object, propertyName) :
+                                                        this.nullPromise;
         }
     },
 
@@ -1827,6 +1826,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (type, dataIdentifier) {
             var objectDescriptor = this._objectDescriptorForType(type),
                 object = Object.create(this._prototypeForType(objectDescriptor));
+
             if (object) {
                 //This needs to be done before a user-land code can attempt to do
                 //anyting inside its constructor, like creating a binding on a relationships
@@ -2726,20 +2726,16 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     _saveRawData: {
         value: function (rawData, object) {
             var self = this,
-                service,
-                promise = this.nullPromise,
-                shouldSaveRawData = !!(this.parentService && this.parentService._childServiceForObject(object) === this),
+                service = this.parentService ? this.parentService._childServiceForObject(object) : this._childServiceForObject(object),
+                shouldSaveRawData = service === this,
                 mappingPromise;
 
             if (shouldSaveRawData) {
                 return self.saveRawData(rawData, object);
+            } else if (service) {
+                return service._saveRawData(rawData, object);
             } else {
-                service = this._childServiceForObject(object);
-                if (service) {
-                    return service._saveRawData(rawData, object);
-                } else {
-                    return promise;
-                }
+                return this.nullPromise;
             }
         }
     },
@@ -2747,17 +2743,14 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     _updateDataObject: {
         value: function (object, action) {
             var self = this,
-                service,
+                service = this.parentService ? this.parentService._childServiceForObject(object) : this._childServiceForObject(object),
                 promise = this.nullPromise;
 
-            if (this.parentService && this.parentService._childServiceForObject(object) === this) {
+            if (service === this) {
                 service = action && this;
                 action = "_" + action;
-            } else {
-                service = action && this._childServiceForObject(object);
-                if (service) {
-                    return service._updateDataObject(object, action);
-                }
+            } else if (service) {
+                return service._updateDataObject(object, action);
             }
 
             if (!action) {
