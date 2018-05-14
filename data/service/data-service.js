@@ -503,10 +503,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 objectDescriptors;
             return this._resolveAsynchronousTypes(types).then(function (descriptors) {
                 objectDescriptors = descriptors;
-                self._registerTypesByModuleId(objectDescriptors);
+                self._registerObjectDescriptorsByModuleId(objectDescriptors);
                 return self._registerChildServiceMappings(self, mappings);
             }).then(function () {
-                return self._makePrototypesForTypes(self, objectDescriptors);
+                return self._prototypesForModuleObjectDescriptors(objectDescriptors);
             }).then(function () {
                 // self.addChildService(child, types);
                 return null;
