@@ -1,5 +1,6 @@
 var Component = require("ui/component").Component,
-    AuthorizationManager = require("data/service/authorization-manager").AuthorizationManager,
+    AuthorizationManager = require("data/service/authorization-manager").defaultAuthorizationManager,
+    AuthorizationManagerPanel = require("ui/authorization-manager-panel.reel").AuthorizationManagerPanel,
     deprecate = require("core/deprecate");
 
 /**
@@ -23,7 +24,7 @@ exports.AuthorizationPanel = Component.specialize({
 
     authorizationManagerPanel: {
         get: function() {
-            return AuthorizationManager.authorizationManagerPanel;
+            return AuthorizationManagerPanel.instance;
         }
     }
 
