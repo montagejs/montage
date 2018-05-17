@@ -14,6 +14,8 @@ var RawDataWorker = require("montage/data/service/raw-data-worker").RawDataWorke
     MovieDescriptor = require("spec/data/logic/model/movie.mjson").montageObject,
     RawDataTypeMapping = require("montage/data/service/raw-data-type-mapping").RawDataTypeMapping;
 
+
+
 var Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     deserialize = require("montage/core/serialization/deserializer/montage-deserializer").deserialize;
 
@@ -224,19 +226,30 @@ describe("A RawDataWorker", function() {
                         "prototype": "montage/data/service/raw-data-worker",
                         "values": {
                             "name": "RawDataWorker",
-                            "childServices": [
-                                {"@": "categoryService"},
-                                {"@": "movieService"}
+                            "childServices": {"@": "ChildServicesMap"}
+                        }
+                    },
+                    "ChildServicesMap": {
+                        "prototype": "collections/map[Map]",
+                        "values": {
+                            "keys": [
+                                {"@": "Category"},
+                                {"@": "Movie"}
+                            ],
+                            "values": [
+                                {"%": "spec/data/logic/service/category-service.mjson"},
+                                {"%": "spec/data/logic/service/movie-service.mjson"}
                             ]
                         }
                     },
-                    "categoryService": {
-                        "object": "spec/data/logic/service/category-service-reference.mjson"
+
+                    "Category": {
+                        "object": "spec/data/logic/model/category.mjson"
                     },
                 
-                    "movieService": {
-                        "object": "spec/data/logic/service/movie-service-reference.mjson"
-                    }
+                    "Movie": {
+                        "object": "spec/data/logic/model/category.mjson"
+                    },
                 },
                 serializationString = JSON.stringify(serialization),
                 operation = makeOperation(OperationType.Read, CategoryDescriptor);
@@ -261,6 +274,7 @@ describe("A RawDataWorker", function() {
             }).finally(function () {
                 done();
             });
-        })
+
+        });
     });
 })

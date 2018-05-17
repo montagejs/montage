@@ -24,7 +24,43 @@ exports.RawDataWorker = Montage.specialize({
     deserializeSelf: {
         value: function (deserializer) {
             var references = deserializer.getProperty("childServices") || [];
-            this.registerServiceReferences(references);
+
+            // this.registerServiceReferences(references);
+
+            var value = deserializer.getProperty("childServicesMap") || [];
+            this.registerServiceReferencesMap(value);
+
+            value = deserializer.getProperty("childServicesArrays") || [];
+            this.registerServiceReferencesArray(value);
+        }
+    },
+
+    registerServiceReferencesArray: {
+        value: function (references) {
+            var map = new Map(),
+                keys = references.keys,
+                values = references.values,
+                i, n;
+            
+            for (i = 0, n = keys.length; i < n; i++) {
+                map.set(keys[i], values[i]);
+            }
+
+            this._childServicesArrays = map;
+        }
+    },
+
+
+    registerServiceReferencesMap: {
+        value: function (references) {
+            var map = new Map(),
+                i, n;
+            
+            for (i = 0, n = references.length; i < n; i++) {
+                map.set(references[i].key, references[i].value);
+            }
+
+            this._childServicesMap = map;
         }
     },
 
