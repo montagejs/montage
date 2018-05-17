@@ -37,14 +37,14 @@ var MontageVisitor = Montage.specialize({
                 return "Module";
             } else if (object instanceof Alias) {
                 return "Alias";
-            } else if (this._isSerializableNativeObject(object)) {
-                return "NativeObject";
             } else if ("getInfoForObject" in object || "getInfoForObject" in object.constructor) {
                 return "MontageObject";
             } else if (object.thisIsAReferenceCreatedByMontageSerializer) {
                 return "MontageReference";
             } else if (typeof Element !== "undefined" && Element.isElement(object)) {
                 return "Element";
+            } else if (this._isSerializableNativeObject(object)) {
+                return "NativeObject";
             }
         }
     },
