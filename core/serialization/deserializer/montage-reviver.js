@@ -454,7 +454,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     (locationId.endsWith(".mjson") || locationId.endsWith(".meta"))),
                 module, locationDesc, location, objectName;
 
-            if (locationId) {
+            if (global[locationId] && typeof global[locationId] === "function") {
+                module = global;
+                objectName = locationId;
+            } else if (locationId) {
                 locationDesc = MontageReviver.parseObjectLocationId(locationId);
                 module = this.moduleLoader.getModule(locationDesc.moduleId, label);
                 objectName = locationDesc.objectName;

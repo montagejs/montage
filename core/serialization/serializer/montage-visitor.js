@@ -43,7 +43,20 @@ var MontageVisitor = Montage.specialize({
                 return "MontageReference";
             } else if (typeof Element !== "undefined" && Element.isElement(object)) {
                 return "Element";
+            } else if (this._isSerializableNativeObject(object)) {
+                return "NativeObject";
             }
+        }
+    },
+
+    _isSerializableNativeObject: {
+        value: function (object) {
+            var typeName = object.constructor.name,
+                nativeType = global[typeName],
+                isNative = typeof nativeType === "function",
+                isSerializeable = isNative && typeof object.serializeSelf === "function";
+
+            return isNative && isSerializeable;
         }
     },
 
@@ -118,6 +131,34 @@ var MontageVisitor = Montage.specialize({
             this.setObjectSerialization(object, builderObject);
 
             substituteObject = this.serializeMontageObject(malker, object, builderObject);
+
+            if (substituteObject) {
+                this.serializeSubstituteObject(malker, object, name, builderObject, substituteObject);
+            } else {
+                builderObject.setLabel(this.labeler.getObjectLabel(object));
+                this.builder.top.setProperty(name, builderObject);
+            }
+        }
+    },
+
+    visitNativeObject: {
+        value: function (malker, object, name) {
+            if (this.isObjectSerialized(object)) {
+                this.serializeReferenceToMontageObject(malker, object, name);
+            } else {
+                this.handleNativeObject(malker, object, name);
+            }
+        }
+    },
+
+    handleNativeObject: {
+        value: function (malker, object, name) {
+            var builderObject = this.builder.createCustomObject(),
+                substituteObject;
+
+            this.setObjectSerialization(object, builderObject);
+
+            substituteObject = this.serializeNativeObject(malker, object, builderObject);
 
             if (substituteObject) {
                 this.serializeSubstituteObject(malker, object, name, builderObject, substituteObject);
@@ -219,6 +260,35 @@ var MontageVisitor = Montage.specialize({
                 this.setObjectBindings(malker, object);
                 this.setObjectCustomUnits(malker, object);
             }
+
+            this.builder.pop();
+
+            // Remove the values unit in case none was serialized,
+            // we need to add it before any other units to make sure that
+            // it's the first unit to show up in the serialization, since we
+            // don't have a way to order the property names in a serialization.
+            if (valuesBuilderObject.getPropertyNames().length === 0) {
+                builderObject.clearProperty("values");
+            }
+
+            return substituteObject;
+        }
+    },
+
+    serializeNativeObject: {
+        value: function (malker, object, builderObject) {
+            var selfSerializer,
+                substituteObject,
+                valuesBuilderObject = this.builder.createObjectLiteral();
+                
+            builderObject.setProperty("prototype", object.constructor.name);
+            builderObject.setProperty("values", valuesBuilderObject);
+
+            this.builder.push(builderObject);
+            selfSerializer = new SelfSerializer().
+                initWithMalkerAndVisitorAndObject(
+                    malker, this, object, builderObject);
+            substituteObject = object.serializeSelf(selfSerializer);
 
             this.builder.pop();
 
