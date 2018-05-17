@@ -6,7 +6,6 @@ var RawDataWorker = require("montage/data/service/raw-data-worker").RawDataWorke
     Criteria = require("montage/core/criteria").Criteria,
     DataMapping = require("montage/data/service/data-mapping").DataMapping,
     DataService = require("montage/data/service/data-service").DataService,
-    DataServiceReference = require("montage/data/service/data-service-reference").DataServiceReference,
     DataStream = require("montage/data/service/data-stream").DataStream,
     DataObjectDescriptor = require("montage/data/model/data-object-descriptor").DataObjectDescriptor,
     ObjectDescriptor = require("montage/core/meta/object-descriptor").ObjectDescriptor,
@@ -40,13 +39,12 @@ describe("A RawDataWorker", function() {
     it("can register service references", function (done) {
         var serviceID = "spec/data/logic/service/category-service.mjson",
             types = [CategoryDescriptor],
-            serviceReference = new DataServiceReference().initWithIdTypesAndRequire(serviceID, types, require);
-        worker = new RawDataWorker();
+            serviceReference = new ModuleReference().initWithIdAndRequire(serviceID, require);
 
-        worker.registerServiceReference(serviceReference).then(function () {
-            expect(worker.serviceReferences.size).toBe(1);
-            done();
-        });
+        worker = new RawDataWorker();
+        worker.registerServiceForTypes(serviceReference, types);
+        expect(worker.serviceReferences.size).toBe(1);
+        done();
     });
 
 
@@ -197,7 +195,7 @@ describe("A RawDataWorker", function() {
     });
 
     describe("can deserialize", function () {
-        it("without childServices", function (done) {
+        it("without types", function (done) {
             var deserializer = new Deserializer();
                 serialization = {
                     "root": {
@@ -219,18 +217,18 @@ describe("A RawDataWorker", function() {
             });
         });
 
-        it("with childServices", function (done) {
+        it("with types", function (done) {
             var deserializer = new Deserializer();
                 serialization = {
                     "root": {
                         "prototype": "montage/data/service/raw-data-worker",
                         "values": {
                             "name": "RawDataWorker",
-                            "childServices": {"@": "ChildServicesMap"}
+                            "types": {"@": "TypeToChildServiceMap"}
                         }
                     },
-                    "ChildServicesMap": {
-                        "prototype": "collections/map[Map]",
+                    "TypeToChildServiceMap": {
+                        "prototype": "Map",
                         "values": {
                             "keys": [
                                 {"@": "Category"},
@@ -248,7 +246,7 @@ describe("A RawDataWorker", function() {
                     },
                 
                     "Movie": {
-                        "object": "spec/data/logic/model/category.mjson"
+                        "object": "spec/data/logic/model/movie.mjson"
                     },
                 },
                 serializationString = JSON.stringify(serialization),

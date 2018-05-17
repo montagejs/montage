@@ -23,61 +23,15 @@ exports.RawDataWorker = Montage.specialize({
 
     deserializeSelf: {
         value: function (deserializer) {
-            var references = deserializer.getProperty("childServices") || [];
-
-            // this.registerServiceReferences(references);
-
-            var value = deserializer.getProperty("childServicesMap") || [];
-            this.registerServiceReferencesMap(value);
-
-            value = deserializer.getProperty("childServicesArrays") || [];
-            this.registerServiceReferencesArray(value);
+            var value = deserializer.getProperty("types") || new Map();
+            this.serviceReferenceByObjectDescriptor = value;
+            this.registerTypes(value);
         }
     },
-
-    registerServiceReferencesArray: {
-        value: function (references) {
-            var map = new Map(),
-                keys = references.keys,
-                values = references.values,
-                i, n;
-            
-            for (i = 0, n = keys.length; i < n; i++) {
-                map.set(keys[i], values[i]);
-            }
-
-            this._childServicesArrays = map;
-        }
-    },
-
-
-    registerServiceReferencesMap: {
-        value: function (references) {
-            var map = new Map(),
-                i, n;
-            
-            for (i = 0, n = references.length; i < n; i++) {
-                map.set(references[i].key, references[i].value);
-            }
-
-            this._childServicesMap = map;
-        }
-    },
-
 
     /***************************************************************************
      * Service Tree
      */
-
-
-    _serviceReferenceRegistrationPromise: {
-        get: function () {
-            if (!this.__serviceReferenceRegistrationPromise) {
-                this.__serviceReferenceRegistrationPromise = Promise.resolve(null);
-            }
-            return this.__serviceReferenceRegistrationPromise;
-        }
-    },
 
     serviceReferences: {
         get: function() {
@@ -94,6 +48,9 @@ exports.RawDataWorker = Montage.specialize({
                 this._serviceReferenceByObjectDescriptor = new Map();
             }
             return this._serviceReferenceByObjectDescriptor;
+        },
+        set: function (value) {
+            this._serviceReferenceByObjectDescriptor = value;
         }
     },
 
@@ -106,52 +63,50 @@ exports.RawDataWorker = Montage.specialize({
         }
     },
 
-    registerServiceReferences: {
-        value: function (serviceReferences) {
-            var self;
-            if (!this.__serviceReferenceRegistrationPromise) {
-                self = this;
-                this.__serviceReferenceRegistrationPromise = Promise.all(serviceReferences.map(function (service) {
-                    return self.registerServiceReference(service);
-                }));
-            }
+    /**
+     * @method
+     * @param {Map<ObjectDescriptor:ModuleReference>|Array<ObjectDescriptor>} types Map of types to a module-reference of 
+     *                                                                              the service handling that type
+     */
+    registerTypes: {
+        value: function (types) {
+            var self = this;
+            types.forEach(function (reference, type) {
+                self.registerServiceForTypes(reference, type);
+            });            
         }
     },
 
-    registerServiceReference: {
-        value: function (service, types) {
+    /**
+     * @method
+     * @param {ModuleReference}         service module reference 
+     * @param {Array<ObjectDescriptor>} types   Array of types to be handled by the service 
+     */
+    registerServiceForTypes: {
+        value: function (reference, types) {
             var self = this;
             // possible types
             // -- types is passed in as an array or a single type.
             // -- a model is set on the service.
             // -- types is set on the service.
             // any type can be asychronous or synchronous.
-                types = types && Array.isArray(types) && types ||
-                        types && [types] ||
-                        service.model && service.model.objectDescriptors ||
-                        service.types && Array.isArray(service.types) && service.types ||
-                        service.types && [service.types] ||
-                        [];
+            types = types && Array.isArray(types) && types ||
+                    types && [types] ||
+                    [];
 
-            return this._registerServiceReferenceObjectDescriptors(service, types);
-        }
-    },
-
-    _registerServiceReferenceObjectDescriptors: {
-        value: function (service, types) {
-            this._addServiceReference(service, types);
+            
+            this._addServiceReference(reference, types);
             this._registerObjectDescriptorsByModuleId(types);
-            return this.nullPromise;
         }
     },
 
     _addServiceReference: {
-        value: function (service, types) {
-            var serviceReference, type, i, n, nIfEmpty = 1;
-            types = types || service.model && service.model.objectDescriptors || service.types;
+        value: function (serviceReference, types) {
+            var type, i, n, nIfEmpty = 1;
+            types = types || serviceReference.model && serviceReference.model.objectDescriptors || serviceReference.types;
             
             // Add the new service to this service's serviceren set.
-            this.serviceReferences.add(service);
+            this.serviceReferences.add(serviceReference);
 
             // Add the new service service to the services array of each of its
             // types or to the "all types" service array identified by the
@@ -159,9 +114,7 @@ exports.RawDataWorker = Montage.specialize({
             // of service types if they're not already there.
             for (i = 0, n = types && types.length || nIfEmpty; i < n; i += 1) {
                 type = types && types.length && types[i] || null;
-                serviceReference = this.serviceReferenceByObjectDescriptor.get(type) || [];
-                serviceReference.push(service);
-                if (serviceReference.length === 1) {
+                if (!this.serviceReferenceByObjectDescriptor.has(type)) {
                     this.serviceReferenceByObjectDescriptor.set(type, serviceReference);
                 }
             }
@@ -197,9 +150,7 @@ exports.RawDataWorker = Montage.specialize({
             var self = this,
                 objectDescriptor, service;
 
-            return this._serviceReferenceRegistrationPromise.then(function () {
-                return self._objectDescriptorForOperation(operation);
-            }).then(function (descriptor) {
+            return self._objectDescriptorForOperation(operation).then(function (descriptor) {
                 objectDescriptor = descriptor;
                 return self._serviceForObjectDescriptor(descriptor);
             }).then(function (service) {
@@ -277,9 +228,9 @@ exports.RawDataWorker = Montage.specialize({
 
     _serviceReferenceForObjectDescriptor: {
         value: function (objectDescriptor) {
-            var services = this.serviceReferenceByObjectDescriptor.get(objectDescriptor);
-            services = services || this.serviceReferenceByObjectDescriptor.get(null);
-            return services && services[0] || null;
+            var service = this.serviceReferenceByObjectDescriptor.get(objectDescriptor);
+            service = service || this.serviceReferenceByObjectDescriptor.get(null);
+            return service || null;
         }
     },
 
@@ -293,9 +244,9 @@ exports.RawDataWorker = Montage.specialize({
             
             return !serviceReference ? Promise.resolve(null) : 
                    service           ? Promise.resolve(service) : 
-                                        serviceReference.promise.then(function (service) {
-                                            self._servicesByModuleID.set(serviceReference.moduleId, service);
-                                            return service;                
+                                       serviceReference.exports.then(function (exports) {
+                                            self._servicesByModuleID.set(serviceReference.id, exports.montageObject);
+                                            return exports.montageObject;                
                                         });
         }
     },
