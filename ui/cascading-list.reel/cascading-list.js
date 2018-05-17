@@ -334,21 +334,16 @@ var CascadingList = exports.CascadingList = Component.specialize({
 
     openShelf: {
         value: function (noTransition) {
-            if (!this.shelf.isOpened) {
+            if (!this.shelf.isOpened && !this.isFlat) {
                 this.shelf.open(noTransition);
-                this._pressComposer.addEventListener("press", this);
-                this._translateComposer.addEventListener("translateStart", this);
             }
         }
     },
 
     closeShelf: {
         value: function (noTransition) {
-            if (this.shelf.isOpened) {
+            if (this.shelf.isOpened && !this.isFlat) {
                 this.shelf.close(noTransition);
-                this.addEventListener("cascadingListShelfClose", this);
-                this._pressComposer.removeEventListener("press", this);
-                this._translateComposer.removeEventListener("translateStart", this);
             }
         }
     },
@@ -391,7 +386,9 @@ var CascadingList = exports.CascadingList = Component.specialize({
 
     handleListIterationLongPress: {
         value: function (event) {
-            this.openShelf();
+            if (!this.isFlat) {
+                this.openShelf();
+            }
         }
     },
 
@@ -442,12 +439,16 @@ var CascadingList = exports.CascadingList = Component.specialize({
     handleCascadingListShelfOpen: {
         value: function (event) {
             this.isShelfOpened = true;
+            this._pressComposer.addEventListener("press", this);
+            this._translateComposer.addEventListener("translateStart", this);
         }
     },
 
     handleCascadingListShelfClose: {
         value: function (event) {
             this.isShelfOpened = false;
+            this._pressComposer.removeEventListener("press", this);
+            this._translateComposer.removeEventListener("translateStart", this);
         }
     },
 
@@ -658,7 +659,7 @@ var CascadingList = exports.CascadingList = Component.specialize({
                 }
             }
 
-            if (this._isDragging && !this.isFlat) {
+            if (this._isDragging) {
                 if (!this._shelfBoundingRect) {
                     this._shelfBoundingRect = this.shelf.element.getBoundingClientRect();
                 }
