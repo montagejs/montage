@@ -446,10 +446,6 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         }
     },
 
-    _nativePrototypes: {
-        value: new Set(["Map", "Set", "WeakMap"])
-    },
-
     reviveMontageObject: {
         value: function (value, context, label) {
             var self = this,
@@ -458,7 +454,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     (locationId.endsWith(".mjson") || locationId.endsWith(".meta"))),
                 module, locationDesc, location, objectName;
 
-            if (this._nativePrototypes.has(locationId)) {
+            if (global[locationId] && typeof global[locationId] === "function") {
                 module = global;
                 objectName = locationId;
             } else if (locationId) {
