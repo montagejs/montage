@@ -1,6 +1,7 @@
 var Montage = require("montage").Montage,
     Criteria = require("core/criteria").Criteria,
     DataQuery = require("data/model/data-query").DataQuery,
+    DataStream = require("data/service/data-stream").DataStream,    
     Map = require("collections/map"),
     ModuleReference = require("core/module-reference").ModuleReference,
     ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor,
@@ -197,6 +198,7 @@ exports.RawDataWorker = Montage.specialize({
     _performReadOperation: {
         value: function (operation, service, objectDescriptor) {
             var criteria = operation.criteria || operation.data,
+                stream = new DataStream(),
                 query, parameters, expression;
             
             if (!(criteria instanceof Criteria)) {
@@ -204,9 +206,9 @@ exports.RawDataWorker = Montage.specialize({
                 expression = criteria ? criteria.expression : "";
                 criteria = new Criteria().initWithExpression(expression, parameters);
             }
-            query = DataQuery.withTypeAndCriteria(objectDescriptor, criteria);
-            
-            return service.fetchData(query);
+            stream.query = DataQuery.withTypeAndCriteria(objectDescriptor, criteria);
+            service.fetchRawData(stream);
+            return stream;
         }
     },
 
@@ -245,11 +247,15 @@ exports.RawDataWorker = Montage.specialize({
             return !serviceReference ? Promise.resolve(null) : 
                    service           ? Promise.resolve(service) : 
                                        serviceReference.exports.then(function (exports) {
-                                            self._servicesByModuleID.set(serviceReference.id, exports.montageObject);
-                                            return exports.montageObject;                
+                                            service = exports.montageObject;
+                                            service._parentService = self;
+                                            self._servicesByModuleID.set(serviceReference.id, service);
+                                            return service;
                                         });
         }
     },
+
+    
 
     _objectDescriptorForOperation: {
         value: function (operation) {
@@ -309,6 +315,31 @@ exports.RawDataWorker = Montage.specialize({
                 this._objectDescriptorsByModuleID = new Map();
             }
             return this._objectDescriptorsByModuleID;
+        }
+    },
+
+
+
+    /***************************************************************************
+     * Used by RawDataServices to inspect the service tree
+     */
+
+    childServiceForType: {
+        value: function (objectDescriptor) {
+            var serviceReference = this._serviceReferenceForObjectDescriptor(objectDescriptor);
+            return serviceReference && this.servicesByModuleID.get(serviceReference.moduleId);
+        }
+    },
+
+    rootService: {
+        get: function () {
+            return this.parentService ? this.parentService.rootService : this;
+        }
+    },
+
+    objectDescriptorForObject: {
+        value: function () {
+            return null;
         }
     }
 
