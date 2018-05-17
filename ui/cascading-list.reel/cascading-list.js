@@ -300,6 +300,8 @@ var CascadingList = exports.CascadingList = Component.specialize({
 
             this._currentColumnIndex = columnIndex;
 
+            this._closeShelfIfNeeded();
+
             return this._populateColumnWithObjectAndIndex(
                 object, columnIndex, isEditing
             );
@@ -455,6 +457,7 @@ var CascadingList = exports.CascadingList = Component.specialize({
     handleBackAction: {
         value: function () {
             this._pop();
+            this._closeShelfIfNeeded();
             this._isBackTransition = true;
         }
     },
@@ -481,6 +484,14 @@ var CascadingList = exports.CascadingList = Component.specialize({
      /**
      * Private Method
      */
+
+    _closeShelfIfNeeded: {
+        value: function () {
+            if (this.shelf.isOpened && !this.shelfContent.length) {
+                this.closeShelf(true);
+            }
+        }
+    },
     
     _push: {
         value: function (context) {

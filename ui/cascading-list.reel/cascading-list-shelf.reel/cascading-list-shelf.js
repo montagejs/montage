@@ -105,9 +105,9 @@ exports.CascadingListShelf = Component.specialize({
 
     draw: {
         value: function () {
-            if (!this._noTransition) {
-                var currentCascadingListItem;
+            var currentCascadingListItem;
 
+            if (!this._noTransition) {
                 if (this._shouldOpen) {
                     this.classList.add('open-transition');
                     currentCascadingListItem = this.cascadingList.getCurrentCascadingListItem();
@@ -131,11 +131,18 @@ exports.CascadingListShelf = Component.specialize({
                 if (this._shouldOpen) {
                     this.addEventListener("action", this);
                     this.isOpened = true;
+                    currentCascadingListItem = this.cascadingList.getCurrentCascadingListItem();
+                    currentCascadingListItem.content.classList.remove('close-transition');
+                    this.dispatchEventNamed("cascadingListShelfOpen", true, true, this);
 
                 } else if (this._shouldClose) {
                     this.isOpened = false;
-                    this.cascadingList.clearShelf();
+                    currentCascadingListItem = this.cascadingList.getCurrentCascadingListItem();
+                    currentCascadingListItem.content.classList.remove('open-transition');
+                    this.cascadingList.clearShelfContent();
                     this.removeEventListener("action", this);
+                    this.dispatchEventNamed("cascadingListShelfClose", true, true, this);
+
                 }
             }
         }
