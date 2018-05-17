@@ -38,6 +38,20 @@
     border-bottom: 1px solid #c8c7cc;
 }
 
+.CascadingList.is-shelf-opened .CascadingListItem-content,
+.CascadingListItem-content.open-transition {
+    margin-top: 64px;
+}
+
+.CascadingListItem-content.open-transition {
+    transition: .3s margin-top ease-in-out;
+}
+
+.CascadingListItem-content.close-transition {
+    margin-top: 0px !important;
+    transition: .3s margin-top ease-in-out;
+}
+
 .CascadingListItem-footer {
     border-top: 1px solid #c8c7cc;
 }

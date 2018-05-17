@@ -9,13 +9,13 @@
             "values": {
                 "element": {"#": "owner"},
                 "content": {"@": "content"},
-                "shelf": {"@": "dropzone"},
+                "shelf": {"<-": "@owner.cascadingList.shelf"},
                 "selection": {"<-": "@owner.content.component.selection"}
             }
         },
 
         "header": {
-            "value": {"#": "header"},
+            "value": {"#": "cascading-list-header"},
             "values": {
                 "hidden": {"<-": "@owner.shouldHideHeader"}
             }
@@ -52,7 +52,7 @@
             }
         },
 
-         "content": {
+        "content": {
             "prototype": "../../placeholder.reel",
             "values": {
                 "element": {"#": "content"},
@@ -60,14 +60,6 @@
                 "data": {"<-": "@owner.context.object"},
                 "component.userInterfaceDescriptor": {"<-": "@owner.context.userInterfaceDescriptor"},
                 "component.delegate": {"<-": "@owner.delegate"}
-            }
-        },
-
-        "dropzone": {
-            "prototype": "./cascading-list-dropzone.reel",
-            "values": {
-                "element": {"#": "dropzone"},
-                "delegate": {"<-": "@owner.delegate"}
             }
         },
 
@@ -113,12 +105,11 @@
 
 <body>
     <div data-montage-id="owner" class="CascadingListItem">
-        <div data-montage-id="header" class="CascadingListItem-header">
+        <div data-montage-id="cascading-list-header" class="CascadingListItem-header">
             <div data-montage-id="header-left" class="CascadingListItemAction CascadingListItemAction-header left"></div>
             <div data-montage-id="header-middle" class="CascadingListItemAction CascadingListItemAction-header middle"></div>
             <div data-montage-id="header-right" class="CascadingListItemAction CascadingListItemAction-header right"></div>
         </div>
-        <div data-montage-id="dropzone"></div>
         <div data-montage-id="content" class="CascadingListItem-content"></div>
         <div data-montage-id="footer" class="CascadingListItem-footer">
             <div data-montage-id="footer-left" class="CascadingListItemAction CascadingListItemAction-footer left"></div>

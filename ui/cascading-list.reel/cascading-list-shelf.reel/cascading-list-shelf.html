@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="cascading-list-shelf.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "owner"},
+                "content": {"<-": "@owner.cascadingList.shelfContent"},
+                "isEmpty": {"<-": "@owner.content.defined() && @owner.content.length > 0 ? false : true"},
+                "classList.has('is-open')": {"<-": "@owner.isOpened"},
+                "classList.has('is-empty')": {"<-": "@owner.isEmpty"}
+            }
+        },
+
+        "title": {
+            "prototype": "../../text.reel",
+            "values": {
+                "element": {"#": "title"},
+                "value": {"<-": "!@owner.isEmpty ? @owner.content.length > 1 ? @owner.content.length + ' Items:' : '1 Item:' : '' "}
+            }
+        },
+
+        "close": {
+            "prototype": "../../button.reel",
+            "values": {
+                "element": {"#": "close"},
+                "defaultLabel": ""
+            }
+        },
+
+        "repetition": {
+            "prototype": "../../repetition.reel",
+            "values": {
+                "element": {"#": "repetition"},
+                "content": {"<-": "@owner.content"}
+            }
+        },
+
+        "item": {
+            "prototype": "./cascading-list-shelf-item.reel",
+            "values": {
+                "element": {"#": "item"},
+                "data": {"<-": "@repetition:iteration.object"},
+                "cascadingList": {"<-": "@owner.cascadingList"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="CascadingListShelf">
+        <div class="CascadingListShelf-options">
+            <span data-montage-id="title" class="CascadingListShelf-title"></span>
+            <span data-montage-id="close" class="CascadingListShelf-close"></span>
+        </div>
+       <div class="CascadingListShelf-items">
+            <div data-montage-id="repetition" class="CascadingListShelf-repetition">
+                <div data-montage-id="item"></div>
+            </div>
+       </div>
+    </div>
+</body>
+</html>

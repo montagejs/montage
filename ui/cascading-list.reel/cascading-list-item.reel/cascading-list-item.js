@@ -1,5 +1,4 @@
-var Component = require("../../component").Component,
-    PressComposer = require("../../../composer/press-composer").PressComposer;
+var Component = require("../../component").Component;
 
 /**
  * @class CascadingListItem
@@ -181,70 +180,6 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
                     this._ignoreSelectionChange = true;
                     this.selection.push(nextCascadingListItem.context.object);
                 }
-            }
-        }
-    },
-
-    __pressComposer: {
-        value: null
-    },
-
-    _pressComposer: {
-        get: function () {
-            if (!this.__pressComposer) {
-                this.__pressComposer = new PressComposer();
-                this.__pressComposer.delegate = this;
-                this.addComposerForElement(
-                    this.__pressComposer,
-                    this.element.ownerDocument
-                );
-            }
-
-            return this.__pressComposer;
-        }
-    },
-
-    enterDocument: {
-        value: function () {
-            this.addEventListener("listIterationLongPress", this);
-        }
-    },
-
-    exitDocument: {
-        value: function () {
-            this.removeEventListener("listIterationLongPress", this);
-            this._closeShelf(true);
-        }
-    },
-
-    handleListIterationLongPress: {
-        value: function (event) {
-            this._openShelf();
-        }
-    },
-
-    handlePress: {
-        value: function (event) {
-            if (!this.element.contains(event.targetElement)) {
-                this._closeShelf();
-            }
-        }
-    },
-
-    _openShelf: {
-        value: function (noTransition) {
-            if (!this.shelf.isOpened) {
-                this.shelf.open(noTransition);
-                this._pressComposer.addEventListener("press", this);
-            }
-        }
-    },
-
-    _closeShelf: {
-        value: function (noTransition) {
-            if (this.shelf.isOpened) {
-                this.shelf.close(noTransition);
-                this._pressComposer.removeEventListener("press", this);
             }
         }
     },

@@ -1,20 +1,18 @@
 /**
  * @module "ui/cascading-list-dropzone.reel"
  */
-var Component = require("../../../component").Component;
+var Component = require("../../component").Component;
 
 /**
- * @class CascadingListDropzone
+ * @class CascadingListShelf
  * @extends Component
  * 
  * TODO:
  * 
  * - Add a visible drawer or not
- * - Dispatch open and close event
  * - swipe up to close it or down if there is a visible drawer
- * - long press could also be used for re-organize mode
  */
-exports.CascadingListDropzone = Component.specialize({
+exports.CascadingListShelf = Component.specialize({
 
     enterDocument: {
         value: function () {
@@ -28,19 +26,13 @@ exports.CascadingListDropzone = Component.specialize({
         }
     },
 
-    _isOpened: {
-        value: false
-    },
-
     isOpened: {
-        get: function () {
-            return this._isOpened;
-        }
+        value: false
     },
 
     open: {
         value: function (noTransition) {
-            if (!this._isOpened) {
+            if (!this.isOpened) {
                 this._noTransition = !!noTransition;
                 this._shouldOpen = true;
                 this._shouldClose = false;
@@ -51,7 +43,7 @@ exports.CascadingListDropzone = Component.specialize({
 
     close: {
         value: function (noTransition) {
-            if (this._isOpened) {
+            if (this.isOpened) {
                 this._noTransition = !!noTransition;
                 this._shouldClose = true;
                 this._shouldOpen = false;
@@ -69,19 +61,43 @@ exports.CascadingListDropzone = Component.specialize({
     handleTransitionend: {
         value: function (event) {
             if (event.target === this.element) {
+                var currentCascadingListItem ;
+
                 if (this._shouldClose) {
                     this.removeEventListener("action", this);
                     this._noTransition = false;
                     this._shouldClose = false;
-                    this._isOpened = false;
+                    this.isOpened = false;
+                    this.cascadingList.clearShelfContent();
+                    this.dispatchEventNamed("cascadingListShelfClose", true, true, this);
+                    currentCascadingListItem = this.cascadingList.getCurrentCascadingListItem();
+                    currentCascadingListItem.content.classList.remove('close-transition');
                     this.needsDraw = true;
 
                 } else if (this._shouldOpen) {
                     this.addEventListener("action", this);
                     this._noTransition = false;
                     this._shouldOpen = false;
-                    this._isOpened = true;
+                    this.isOpened = true;
+                    this.dispatchEventNamed("cascadingListShelfOpen", true, true, this);
+                    currentCascadingListItem = this.cascadingList.getCurrentCascadingListItem();
+                    currentCascadingListItem.content.classList.remove('open-transition');
                     this.needsDraw = true;
+                }
+            }
+        }
+    },
+
+    willDraw: {
+        value: function () {
+            if (!this._anchorBoundingRect && this._shouldOpen) {
+                this._cascadingListHeaderElement = this.parentComponent.element.querySelector(
+                    '[data-montage-id="cascading-list-header"]'
+                );
+
+                if (this._cascadingListHeaderElement) {
+                    this._anchorBoundingRect = this._cascadingListHeaderElement.getBoundingClientRect();
+                    this.element.style.top = this._cascadingListHeaderElement.offsetHeight + "px";
                 }
             }
         }
@@ -90,14 +106,21 @@ exports.CascadingListDropzone = Component.specialize({
     draw: {
         value: function () {
             if (!this._noTransition) {
+                var currentCascadingListItem;
+
                 if (this._shouldOpen) {
                     this.classList.add('open-transition');
+                    currentCascadingListItem = this.cascadingList.getCurrentCascadingListItem();
+                    currentCascadingListItem.content.classList.add('open-transition');
+
                 } else {
                     this.classList.remove('open-transition');
                 }
 
                 if (this._shouldClose) {
                     this.classList.add('close-transition');
+                    currentCascadingListItem = this.cascadingList.getCurrentCascadingListItem();
+                    currentCascadingListItem.content.classList.add('close-transition');
                 } else {
                     this.classList.remove('close-transition');
                 }
@@ -107,9 +130,11 @@ exports.CascadingListDropzone = Component.specialize({
 
                 if (this._shouldOpen) {
                     this.addEventListener("action", this);
-                    this._isOpened = true;
+                    this.isOpened = true;
+
                 } else if (this._shouldClose) {
-                    this._isOpened = false;
+                    this.isOpened = false;
+                    this.cascadingList.clearShelf();
                     this.removeEventListener("action", this);
                 }
             }

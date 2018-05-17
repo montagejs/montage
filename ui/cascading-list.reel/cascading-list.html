@@ -10,7 +10,18 @@
             "values": {
                 "element": {"#": "owner"},
                 "succession": {"@": "succession"},
-                "classList.has('isFlat')": {"<-": "@owner.isFlat"}
+                "shelf": {"@": "shelf"},
+                "classList.has('isFlat')": {"<-": "@owner.isFlat"},
+                "classList.has('is-shelf-opened')": {"<-": "@owner.isShelfOpened"}
+            }
+        },
+
+        "shelf": {
+            "prototype": "./cascading-list-shelf.reel",
+            "values": {
+                "element": {"#": "shelf"},
+                "delegate": {"<-": "@owner.delegate"},
+                "cascadingList": {"<-": "@owner"}
             }
         },
 
@@ -41,6 +52,7 @@
 
 <body>
     <div data-montage-id="owner" class="CascadingList">
+        <div data-montage-id="shelf"></div>
         <div data-montage-id="succession" class="CascadingList-succession"></div>
     </div>
 </body>

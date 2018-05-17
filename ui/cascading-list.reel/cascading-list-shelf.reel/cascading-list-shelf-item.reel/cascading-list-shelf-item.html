@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="cascading-list-shelf-item.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "owner"}
+            }
+        },
+
+        "label": {
+            "prototype": "../../../text.reel",
+            "values": {
+                "element": {"#": "label"},
+                "value": {"<-": "@owner._label"}
+            }
+        },
+
+        "delete": {
+            "prototype": "../../../button.reel",
+            "values": {
+                "element": {"#": "delete"},
+                "defaultLabel": ""
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="CascadingListShelfItem">
+        <span data-montage-id="delete" class="CascadingListShelfItem-delete"></span>
+        <span data-montage-id="label" class="CascadingListShelfItem-label"></span>
+    </div>
+</body>
+</html>

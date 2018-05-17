@@ -1,0 +1,76 @@
+.CascadingListShelf {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background-color: #E8E8E8;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 0px;
+    overflow: hidden;
+    font-family: 'lato';
+}
+
+.CascadingListShelf.is-empty {
+    background-image: url("drop.svg");
+}
+
+.CascadingListShelf.is-open,
+.CascadingListShelf.open-transition {
+    border-bottom: 1px solid #c8c7cc;
+    height: 64px;
+}
+
+.CascadingListShelf.open-transition {
+    transition: .3s height ease-in-out;
+}
+
+.CascadingListShelf.close-transition {
+    height: 0px;
+    transition: .3s height ease-in-out;
+}
+
+.CascadingListShelf-options {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 16px;
+    padding: 4px;
+    display: flex;
+} 
+
+.CascadingListShelf-title {
+    padding-right: 8px;
+    color: #0076FF;
+    font-weight: 600;
+}
+
+.CascadingListShelf-close {
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+    background-image: url("times.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    outline: none;
+    margin-left: auto;
+}
+
+.CascadingListShelf-close:hover {
+    cursor: pointer;
+}
+
+.CascadingListShelf-items {
+    position: absolute;
+    top: 24px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.CascadingListShelf-repetition {
+    max-height: 100%;
+    overflow: auto;
+}
