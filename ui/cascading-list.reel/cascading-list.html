@@ -21,7 +21,8 @@
             "values": {
                 "element": {"#": "shelf"},
                 "delegate": {"<-": "@owner.delegate"},
-                "cascadingList": {"<-": "@owner"}
+                "cascadingList": {"<-": "@owner"},
+                "classList.has('is-item-drag-over')": {"<-": "@owner._isItemDragOverShelf"}
             }
         },
 

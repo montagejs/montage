@@ -424,14 +424,14 @@ var CascadingList = exports.CascadingList = Component.specialize({
         value: function (event) {
             this._translateX = event.translateX;
             this._translateY = event.translateY;
-            this._isOverShelf = this._isListItemOverShelf();
+            this._isItemDragOverShelf = this._isListItemOverShelf();
             this.needsDraw = true;
         }
     },
 
     handleTranslateEnd: {
         value: function () {
-            if (this._isOverShelf) {
+            if (this._isItemDragOverShelf) {
                 this.addObjectToShelf(this._draggingDataObject);
             }
 
@@ -605,6 +605,7 @@ var CascadingList = exports.CascadingList = Component.specialize({
             this.__translateComposer.translateX = 0;
             this.__translateComposer.translateY = 0;
             this._draggingElementBoundingRect = null;
+            this._isItemDragOverShelf = false;
             this.needsDraw = true;
         }
     },

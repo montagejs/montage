@@ -4,15 +4,10 @@
     right: 0;
     z-index: 10;
     background-color: #E8E8E8;
-    background-repeat: no-repeat;
-    background-position: center;
     height: 0px;
     overflow: hidden;
     font-family: 'lato';
-}
-
-.CascadingListShelf.is-empty {
-    background-image: url("drop.svg");
+    box-sizing: border-box;
 }
 
 .CascadingListShelf.is-open,
@@ -30,6 +25,49 @@
     transition: .3s height ease-in-out;
 }
 
+.CascadingListShelf .CascadingListShelf-background {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.CascadingListShelf .CascadingListShelf-background > svg {
+    display: none;
+}
+
+.CascadingListShelf.is-empty .CascadingListShelf-background > svg,
+.CascadingListShelf.is-item-drag-over .CascadingListShelf-background > svg {
+    display: block;
+}
+
+.CascadingListShelf .CascadingListShelf-background .drop {
+    stroke: #858585;
+}
+
+.CascadingList.is-dragging-item .CascadingListShelf .CascadingListShelf-background {
+    border: 2px dashed #0076FF;
+}
+
+.CascadingList.is-dragging-item .CascadingListShelf.is-item-drag-over .CascadingListShelf-background {
+    display: flex;
+    border: 2px solid #0076FF;
+}
+
+.CascadingListShelf.is-item-drag-over .CascadingListShelf-background .drop {
+    stroke: #0076FF;
+}
+
+.CascadingListShelf.is-item-drag-over .CascadingListShelf-options,
+.CascadingListShelf.is-item-drag-over .CascadingListShelf-items {
+    display: none;
+}
+
 .CascadingListShelf-options {
     position: absolute;
     top: 0;
@@ -38,6 +76,7 @@
     height: 16px;
     padding: 4px;
     display: flex;
+    z-index: 11;
 } 
 
 .CascadingListShelf-title {
@@ -68,6 +107,7 @@
     left: 0;
     right: 0;
     bottom: 0;
+    z-index: 11;
 }
 
 .CascadingListShelf-repetition {
