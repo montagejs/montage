@@ -3,9 +3,9 @@ var Deserializer = require("montage/core/serialization/deserializer/montage-dese
 
 require("montage");
 
-describe("core/extras/map", function () {
+describe("core/extras/weak-map", function () {
 
-    describe("Map#deserializeSelf", function () {
+    describe("WeakMap#deserializeSelf", function () {
 
         it("can deserialize with entries", function (done) {
             
@@ -13,7 +13,7 @@ describe("core/extras/map", function () {
                 entries = [],
                 serialization = {
                     "root": {
-                        "prototype": "Map",
+                        "prototype": "WeakMap",
                         "values": {
                             "entries": entries
                         }
@@ -22,13 +22,13 @@ describe("core/extras/map", function () {
                 string, i;
 
             for (i = 0; i < 5000; ++i) {
-                entries.push({key: i, value:{name: i}});
+                entries.push({key: {id: i}, value:{name: i}});
             }
 
             string = JSON.stringify(serialization);
             deserializer.init(string, require);
             return deserializer.deserializeObject().then(function (root) {
-                expect(root instanceof Map).toBeTruthy();
+                expect(root instanceof WeakMap).toBeTruthy();
                 done();
             }).catch(function(reason) {
                 console.warn(reason);
@@ -43,7 +43,7 @@ describe("core/extras/map", function () {
                 values = [],
                 serialization = {
                     "root": {
-                        "prototype": "Map",
+                        "prototype": "WeakMap",
                         "values": {
                             "keys": keys,
                             "values": values
@@ -53,13 +53,13 @@ describe("core/extras/map", function () {
                 string, i;
 
             for (i = 0; i < 5000; ++i) {
-                keys.push(i);
+                keys.push({id: i});
                 values.push({name: i});
             }
             string = JSON.stringify(serialization);
             deserializer.init(string, require);
             return deserializer.deserializeObject().then(function (root) {
-                expect(root instanceof Map).toBeTruthy();
+                expect(root instanceof WeakMap).toBeTruthy();
                 done();
             }).catch(function(reason) {
                 console.warn(reason);
@@ -71,7 +71,8 @@ describe("core/extras/map", function () {
 
     });
 
-    describe("Map#serializeSelf", function () {
+    describe("WeakMap#serializeSelf", function () {
+
         var serializer;
 
         beforeEach(function () {
@@ -80,7 +81,7 @@ describe("core/extras/map", function () {
             serializer = new Serializer().initWithRequire(require);
             serializer.setSerializationIndentation(4);
         });
-    
+
         it("can serialize", function () {
             var map = new Map(),
                 serialization;

@@ -3,6 +3,8 @@ console.log('montage-testing', 'Start');
 module.exports = require("montage-testing").run(require, [
 
     {name: "spec/core/extras/map"},
+    {name: "spec/core/extras/weak-map"},
+    {name: "spec/core/extras/set"},
     {name: "spec/data/raw-data-worker"},
     {name: "spec/data/data-service-mapping"},
     {name: "spec/data/raw-data-service"},
