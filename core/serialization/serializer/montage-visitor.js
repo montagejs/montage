@@ -29,10 +29,6 @@ var MontageVisitor = Montage.specialize({
         }
     },
 
-    _nativePrototypes: {
-        value: new Set(["Map", "Set", "WeakMap"])
-    },
-
     getTypeOf: {
         value: function (object) {
             // Module and Alias are MontageObject's too so they need to be
@@ -41,7 +37,7 @@ var MontageVisitor = Montage.specialize({
                 return "Module";
             } else if (object instanceof Alias) {
                 return "Alias";
-            } else if (this._nativePrototypes.has(object.constructor.name)) {
+            } else if (this._isSerializableNativeObject(object)) {
                 return "NativeObject";
             } else if ("getInfoForObject" in object || "getInfoForObject" in object.constructor) {
                 return "MontageObject";
@@ -50,6 +46,17 @@ var MontageVisitor = Montage.specialize({
             } else if (typeof Element !== "undefined" && Element.isElement(object)) {
                 return "Element";
             }
+        }
+    },
+
+    _isSerializableNativeObject: {
+        value: function (object) {
+            var typeName = object.constructor.name,
+                nativeType = global[typeName],
+                isNative = typeof nativeType === "function",
+                isSerializeable = isNative && typeof object.serializeSelf === "function";
+
+            return isNative && isSerializeable;
         }
     },
 
@@ -274,22 +281,14 @@ var MontageVisitor = Montage.specialize({
                 substituteObject,
                 valuesBuilderObject = this.builder.createObjectLiteral();
                 
-            // this.setObjectType(object, builderObject);
             builderObject.setProperty("prototype", object.constructor.name);
             builderObject.setProperty("values", valuesBuilderObject);
 
             this.builder.push(builderObject);
-
-            if (typeof object.serializeSelf === "function") {
-                selfSerializer = new SelfSerializer().
-                    initWithMalkerAndVisitorAndObject(
-                        malker, this, object, builderObject);
-                substituteObject = object.serializeSelf(selfSerializer);
-            } else {
-                this.setObjectValues(malker, object);
-                this.setObjectBindings(malker, object);
-                this.setObjectCustomUnits(malker, object);
-            }
+            selfSerializer = new SelfSerializer().
+                initWithMalkerAndVisitorAndObject(
+                    malker, this, object, builderObject);
+            substituteObject = object.serializeSelf(selfSerializer);
 
             this.builder.pop();
 
