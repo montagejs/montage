@@ -12,6 +12,8 @@ require("./extras/function");
 require("./extras/map");
 require("./extras/regexp");
 require("./extras/string");
+require("./extras/set");
+require("./extras/weak-map");
 require("proxy-polyfill/proxy.min");
 
 
