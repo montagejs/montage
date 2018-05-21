@@ -1,6 +1,7 @@
-var TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
+var CascadingListShelfItem = require("./cascading-list-shelf.reel/cascading-list-shelf-item.reel").CascadingListShelfItem,
+    TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
     CascadingListItem = require("./cascading-list-item.reel").CascadingListItem,
-    PressComposer = require("../../composer/press-composer").PressComposer,
+    PressComposer = require("../../composer/press-composer").PressComposer,    
     ListItem = require("../list-item.reel").ListItem,
     Promise = require('../../core/promise').Promise,
     Component = require("../component").Component,
@@ -425,7 +426,7 @@ var CascadingList = exports.CascadingList = Component.specialize({
                     this._startPositionY = startPosition.pageY;
 
                     // Add delegate method
-                    this._draggingListItem = this._findListItemFromElement(startPosition.target);
+                    this._draggingComponent = this._findDraggingComponentFromElement(startPosition.target);
                     this._draggingDataObject = dataObject;
                     this._isDragging = true;
                     this._shouldShelfAcceptDrop = delegateResponse === void 0 ?
@@ -591,7 +592,7 @@ var CascadingList = exports.CascadingList = Component.specialize({
         }
     },
 
-    _findListItemFromElement: {
+    _findDraggingComponentFromElement: {
         value: function (element) {
             var component;
 
@@ -599,7 +600,10 @@ var CascadingList = exports.CascadingList = Component.specialize({
                 element = element.parentElement;
             }
 
-            while (component && !(component instanceof ListItem)) {
+            while (component && !(
+                component instanceof ListItem ||
+                component instanceof CascadingListShelfItem
+            )) {
                 component = component.parentComponent;
             }
 
@@ -694,8 +698,8 @@ var CascadingList = exports.CascadingList = Component.specialize({
                     this._shelfBoundingRect = this.shelf.element.getBoundingClientRect();
                 }
 
-                if (this._draggingListItem && !this._draggingElementBoundingRect) {
-                    this._draggingElementBoundingRect = this._draggingListItem.element.getBoundingClientRect();
+                if (this._draggingComponent && !this._draggingElementBoundingRect) {
+                    this._draggingElementBoundingRect = this._draggingComponent.element.getBoundingClientRect();
                 }
             }
         }
@@ -707,8 +711,8 @@ var CascadingList = exports.CascadingList = Component.specialize({
                 this.element.classList.add('is-dragging-item');
 
                 if (!this._ghostElement) {
-                    this._ghostElement = this._draggingListItem.element.cloneNode(true);
-                    this._ghostElement.classList.add("montage-cascadingList-ghostImage");
+                    this._ghostElement = this._draggingComponent.element.cloneNode(true);
+                    this._ghostElement.classList.add("montage-ghostImage");
                     this._ghostElement.style.visibility = "hidden";
                     this._ghostElement.style.position = "absolute";
                     this._ghostElement.style.zIndex = 999999;
