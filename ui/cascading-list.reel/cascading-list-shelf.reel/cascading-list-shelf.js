@@ -30,6 +30,14 @@ exports.CascadingListShelf = Component.specialize({
         value: false
     },
 
+    acceptDrop: {
+        value: false
+    },
+
+    willDrop: {
+        value: false
+    },
+
     open: {
         value: function (noTransition) {
             if (!this.isOpened) {

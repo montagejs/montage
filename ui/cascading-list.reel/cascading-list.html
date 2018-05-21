@@ -22,7 +22,8 @@
                 "element": {"#": "shelf"},
                 "delegate": {"<-": "@owner.delegate"},
                 "cascadingList": {"<-": "@owner"},
-                "classList.has('is-item-drag-over')": {"<-": "@owner._isItemDragOverShelf"}
+                "willDrop": {"<-": "@owner._isShelfWillAcceptDrop"},
+                "acceptDrop": {"<-": "@owner._shouldShelfAcceptDrop"}
             }
         },
 

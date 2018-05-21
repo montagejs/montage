@@ -10,7 +10,9 @@
                 "content": {"<-": "@owner.cascadingList.shelfContent"},
                 "isEmpty": {"<-": "@owner.content.defined() && @owner.content.length > 0 ? false : true"},
                 "classList.has('is-open')": {"<-": "@owner.isOpened"},
-                "classList.has('is-empty')": {"<-": "@owner.isEmpty"}
+                "classList.has('is-empty')": {"<-": "@owner.isEmpty"},
+                "classList.has('accept-drop')": {"<-": "@owner.acceptDrop"},
+                "classList.has('will-drop')": {"<-": "@owner.willDrop"}
             }
         },
 

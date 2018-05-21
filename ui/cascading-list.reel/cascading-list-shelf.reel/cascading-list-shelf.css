@@ -42,7 +42,7 @@
 }
 
 .CascadingListShelf.is-empty .CascadingListShelf-background > svg,
-.CascadingListShelf.is-item-drag-over .CascadingListShelf-background > svg {
+.CascadingListShelf.accept-drop.will-drop .CascadingListShelf-background > svg {
     display: block;
 }
 
@@ -50,21 +50,21 @@
     stroke: #858585;
 }
 
-.CascadingList.is-dragging-item .CascadingListShelf .CascadingListShelf-background {
+.CascadingList.is-dragging-item .CascadingListShelf.accept-drop .CascadingListShelf-background {
     border: 2px dashed #0076FF;
 }
 
-.CascadingList.is-dragging-item .CascadingListShelf.is-item-drag-over .CascadingListShelf-background {
+.CascadingList.is-dragging-item .CascadingListShelf.accept-drop.will-drop .CascadingListShelf-background {
     display: flex;
     border: 2px solid #0076FF;
 }
 
-.CascadingListShelf.is-item-drag-over .CascadingListShelf-background .drop {
+.CascadingListShelf.accept-drop.will-drop .CascadingListShelf-background .drop {
     stroke: #0076FF;
 }
 
-.CascadingListShelf.is-item-drag-over .CascadingListShelf-options,
-.CascadingListShelf.is-item-drag-over .CascadingListShelf-items {
+.CascadingListShelf.accept-drop.will-drop .CascadingListShelf-options,
+.CascadingListShelf.accept-drop.will-drop .CascadingListShelf-items {
     display: none;
 }
 

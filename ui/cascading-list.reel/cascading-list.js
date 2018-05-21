@@ -362,7 +362,7 @@ var CascadingList = exports.CascadingList = Component.specialize({
 
     addObjectToShelf: {
         value: function (object) {
-            if (this.shelfContent.indexOf(object) === -1) {
+            if (!this.shelfHasDataObject(object)) {
                 this.shelfContent.push(object);
             }
         }
@@ -371,6 +371,12 @@ var CascadingList = exports.CascadingList = Component.specialize({
     clearShelfContent: {
         value: function () {
             this.shelfContent.clear();
+        }
+    },
+
+    shelfHasDataObject: {
+        value: function (object) {
+            return !!(this.shelfContent.indexOf(object) > -1);
         }
     },
 
@@ -402,17 +408,29 @@ var CascadingList = exports.CascadingList = Component.specialize({
             if (dataObject) {
                 var delegateResponse = this.callDelegateMethod(
                     'cascadingListCanDragObject', this, dataObject, true
-                ),
-                    canDrag = delegateResponse === void 0 ? true : delegateResponse;
+                    ),
+                    canDrag = delegateResponse === void 0 ?
+                        true : delegateResponse;
 
                 if (canDrag) {
+                    var shouldCascadingListShelfAcceptDrop = !this.shelfHasDataObject(dataObject);
+                    delegateResponse = this.callDelegateMethod(
+                        'cascadingListShelfShouldAcceptDataObject',
+                        this,
+                        dataObject,
+                        shouldCascadingListShelfAcceptDrop
+                    );
+                    
                     this._startPositionX = startPosition.pageX;
                     this._startPositionY = startPosition.pageY;
+
                     // Add delegate method
                     this._draggingListItem = this._findListItemFromElement(startPosition.target);
                     this._draggingDataObject = dataObject;
                     this._isDragging = true;
-
+                    this._shouldShelfAcceptDrop = delegateResponse === void 0 ?
+                        shouldCascadingListShelfAcceptDrop : delegateResponse;
+                    
                     this._addDragEventListeners();
                 }
             }
@@ -423,14 +441,14 @@ var CascadingList = exports.CascadingList = Component.specialize({
         value: function (event) {
             this._translateX = event.translateX;
             this._translateY = event.translateY;
-            this._isItemDragOverShelf = this._isListItemOverShelf();
+            this._isShelfWillAcceptDrop = this._isListItemOverShelf();
             this.needsDraw = true;
         }
     },
 
     handleTranslateEnd: {
         value: function () {
-            if (this._isItemDragOverShelf) {
+            if (this._isShelfWillAcceptDrop) {
                 this.addObjectToShelf(this._draggingDataObject);
             }
 
@@ -617,7 +635,8 @@ var CascadingList = exports.CascadingList = Component.specialize({
             this.__translateComposer.translateX = 0;
             this.__translateComposer.translateY = 0;
             this._draggingElementBoundingRect = null;
-            this._isItemDragOverShelf = false;
+            this._isShelfWillAcceptDrop = false;
+            this._shouldShelfAcceptDrop = false;
             this.needsDraw = true;
         }
     },
