@@ -30,3 +30,7 @@
 .CascadingListShelfItem-delete:hover {
     cursor: pointer;
 }
+
+.CascadingListShelfItem.montage-ghostImage .CascadingListShelfItem-delete {
+    visibility: hidden;
+}
