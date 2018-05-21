@@ -76,6 +76,13 @@
             justify-content: center;
 }
 
+.ListItem .ListItem-icon .montage-image {
+    position: relative;
+    height: 24px;
+    width: 24px;
+    display: inline-block;
+}
+
 /** Label + description **/
 
 .ListItem .ListItem-text {
