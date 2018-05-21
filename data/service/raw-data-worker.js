@@ -168,18 +168,8 @@ exports.RawDataWorker = Montage.specialize({
     _handlerNameForOperationType: {
         value: function (operationType) {
             var name = "_perform";
-            name += this._operationTypeNameByOperationType(operationType);
+            name += operationType.action;
             return name + "Operation";
-        }
-    },
-
-    _operationTypeNameByOperationType: {
-        value: function (operationType) {
-            return operationType.isCreate ? "Create" : 
-                   operationType.isRead   ? "Read" : 
-                   operationType.isUpdate ? "Update" : 
-                   operationType.isDelete ? "Delete" : 
-                                            null;
         }
     },
 

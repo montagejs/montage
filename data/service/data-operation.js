@@ -9,6 +9,28 @@ var Montage = require("core/core").Montage,
  */
 exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */ {
 
+
+    serializeSelf: {
+        value: function (serializer) {
+
+            serializer.addObject(this.type);
+            serializer.setProperty("type", this.type);
+
+            serializer.setProperty("authorization", this.authorization);
+            serializer.setProperty("context", this.context);
+            serializer.setProperty("creationIndex", this.creationIndex);
+            serializer.setProperty("creator", this.creator);
+            serializer.setProperty("criteria", this.criteria);
+            serializer.setProperty("data", this.data);
+            serializer.setProperty("dataIdentifier", this.dataIdentifier);
+            serializer.setProperty("dataType", this.dataType);
+            serializer.setProperty("index", this.index);
+            serializer.setProperty("lastModified", this.lastModified);
+            serializer.setProperty("referrer", this.referrer);
+            serializer.setProperty("time", this.time);
+        }
+    },
+
     /***************************************************************************
      * Constructor
      */
@@ -334,49 +356,39 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     */
 
     Type: {
-        value: {
-            Create: {isCreate: true},
-            CreateFailed: {isCreate: true},
-            CreateCompleted: {isCreate: true},
-            /* Read is the first operation that mnodels a query */
-            Read: {isRead: true},
-
-            /* ReadUpdated is pushed by server when a query's result changes due to data changes from others */
-            ReadUpdated: {isRead: true},
-
-            /* ReadProgress / ReadUpdate / ReadSeek is used to instruct server that more data is required for a "live" read / query
-                Need a better name, and a symetric? Or is ReadUpdated enough if it referes to previous operation
-            */
-            ReadProgress: {isRead: true}, //ReadUpdated
-
-            /* ReadCancel is the operation that instructs baclkend that client isn't interested by a read operastion anymore */
-            ReadCancel: {isRead: true},
-
-            /* ReadCanceled is the operation that instructs the client that a read operation is canceled */
-            ReadCanceled: {isRead: true},
-
-             /* ReadFailed is the operation that instructs the client that a read operation has failed canceled */
-            ReadFailed: {isRead: true},
-            /* ReadCompleted is the operation that instructs the client that a read operation has returned all available data */
-            ReadCompleted: {isRead: true},
-            Update: {isUpdate: true},
-            UpdateCompleted: {isUpdate: true},
-            UpdateFailed: {isUpdate: true},
-            Delete: {isDelete: true},
-            DeleteCompleted: {isDelete: true},
-            DeleteFailed: {isDelete: true},
-            /* Lock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
-            Lock: {isLock: true},
-            LockCompleted: {isLock: true},
-            LockFailed: {isLock: true},
-            /* RemmoteProcedureCall models the ability to invoke code logic on the server-side, being a DB StoredProcedure, or an method/function in a service */
-            RemoteProcedureCall: {isRemoteProcedureCall: true},
-            RemoteProcedureCallCompleted: {isRemoteProcedureCall: true},
-            RemoteProcedureCallFailed: {isRemoteProcedureCall: true}
-        }
+        value: undefined // Will be exports.DataOperationType
     }
+});
 
-    /*
+exports.DataOperationType = Montage.specialize(/** @lends DataOperation.prototype */ {
+        
+        identifier: {
+            get: function () {
+                return "operationType_" + (this.action ? this.action : "Unknown");
+            }
+        },
+
+        action: {
+            value: undefined
+        },
+
+        isCreate: {
+            value: false
+        },
+
+        isRead: {
+            value: false
+        },
+
+        isUpdate: {
+            value: false
+        },
+
+        isDelete: {
+            value: false
+        }
+
+        /*
         For update, needs to model:
             - property value changed, needed for properties with cardinality 1 or n
             - property added / removed for properties with cardinality n
@@ -384,5 +396,59 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
             - snapshot of known values that changed?
     */
 
+    }, {
+        
+        withNames: {
+            value: function (name, umbrellaName) {
+                var type = new this(),
+                    flagName = "is" + umbrellaName;
+                type.uuid = Math.random();
+                type.action = name;
+                type[flagName] = true;
+                this[name] = type;
+                exports[name + "OperationType"] = type;
+            }
+        }
+
 });
 
+exports.DataOperationType.withNames("Create", "Create");
+exports.DataOperationType.withNames("CreateFailed", "Create");
+exports.DataOperationType.withNames("CreateCompleted", "Create");
+
+/* Read is the first operation that mnodels a query */
+exports.DataOperationType.withNames("Read", "Read");
+/* ReadFailed is the operation that instructs the client that a read operation has failed canceled */
+exports.DataOperationType.withNames("ReadFailed", "Read");
+/* ReadUpdated is pushed by server when a query's result changes due to data changes from others */
+exports.DataOperationType.withNames("ReadUpdated", "Read");
+/* ReadProgress / ReadUpdate / ReadSeek is used to instruct server that more data is required for a "live" read / query
+    //             Need a better name, and a symetric? Or is ReadUpdated enough if it referes to previous operation
+    //         */
+exports.DataOperationType.withNames("ReadProgress",  "Read");
+/* ReadCancel is the operation that instructs baclkend that client isn't interested by a read operastion anymore */
+exports.DataOperationType.withNames("ReadCancel", "Read");
+/* ReadCanceled is the operation that instructs the client that a read operation is canceled */
+exports.DataOperationType.withNames("ReadCanceled", "Read");
+/* ReadCompleted is the operation that instructs the client that a read operation has returned all available data */
+exports.DataOperationType.withNames("ReadCompleted", "Read");
+
+exports.DataOperationType.withNames("Update", "Update");
+exports.DataOperationType.withNames("UpdateFailed", "Update");
+exports.DataOperationType.withNames("UpdateCompleted", "Update");
+
+exports.DataOperationType.withNames("Delete", "Delete");
+exports.DataOperationType.withNames("DeleteFailed", "Delete");
+exports.DataOperationType.withNames("DeleteCompleted", "Delete");
+
+/* Lock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
+exports.DataOperationType.withNames("Lock", "Lock");
+exports.DataOperationType.withNames("LockFailed", "Lock");
+exports.DataOperationType.withNames("LockCompleted", "Lock");
+
+/* RemmoteProcedureCall models the ability to invoke code logic on the server-side, being a DB StoredProcedure, or an method/function in a service */
+exports.DataOperationType.withNames("RemoteProcedureCall", "RemoteProcedureCall");
+exports.DataOperationType.withNames("RemoteProcedureCallCompleted", "RemoteProcedureCall");
+exports.DataOperationType.withNames("RemoteProcedureCallFailed", "RemoteProcedureCall");
+
+exports.DataOperation.Type = exports.DataOperationType;

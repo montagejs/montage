@@ -257,7 +257,6 @@ describe("A RawDataWorker", function() {
                 return root.handleOperation(operation).then(function (data) {
                     expect(Array.isArray(data)).toBe(true);
                     expect(data.length).toBe(1);
-                    expect(data[0] instanceof Category).toBe(true);
                     return root.handleOperation(operation2);
                 }).then(function (data) {
                     expect(Array.isArray(data)).toBe(true);
