@@ -77,6 +77,22 @@ var CascadingList = exports.CascadingList = Component.specialize({
         }
     },
 
+    __registeredRoutesComponents: {
+        value: null
+    },
+
+    _registeredRoutesComponents: {
+        get: function () {
+            if (!this.__registeredRoutesComponents) {
+                this.__registeredRoutesComponents = new Map();
+                this._registeredRoutesComponents.set("back", []);
+                this._registeredRoutesComponents.set("next", []);
+            }
+
+            return this.__registeredRoutesComponents;
+        }
+    },
+
     _currentColumnIndex: {
         value: 0
     },
@@ -318,7 +334,7 @@ var CascadingList = exports.CascadingList = Component.specialize({
     },
 
     getCurrentCascadingListItem: {
-        value: function (index) {
+        value: function () {
             return this.cascadingListItemAtIndex(this._currentColumnIndex);
         }
     },
@@ -377,7 +393,32 @@ var CascadingList = exports.CascadingList = Component.specialize({
 
     shelfHasDataObject: {
         value: function (object) {
-            return !!(this.shelfContent.indexOf(object) > -1);
+            return this.shelfContent.indexOf(object) > -1;
+        }
+    },
+
+    registerComponentForBackRoute: {
+        value: function (component) {
+            if (component) {
+                var backRoutes = this._registeredRoutesComponents.get("back");
+
+                if (backRoutes.indexOf(component) === -1) {
+                    backRoutes.push(component);
+                }
+            }
+        }
+    },
+
+    unregisterComponentForBackRoute: {
+        value: function (component) {
+            if (component) {
+                var backRoutes = this._registeredRoutesComponents.get("back"),
+                    index;
+
+                if ((index = backRoutes.indexOf(component)) > -1) {
+                    backRoutes.splice(index, 1);
+                }
+            }    
         }
     },
 
@@ -405,6 +446,8 @@ var CascadingList = exports.CascadingList = Component.specialize({
         value: function (event) {
             var startPosition = this._translateComposer.pointerStartEventPosition,
                 dataObject = this._findDataObjectFromElement(startPosition.target);
+            
+            this._resetTranslateContext();
 
             if (dataObject) {
                 var delegateResponse = this.callDelegateMethod(
@@ -442,7 +485,28 @@ var CascadingList = exports.CascadingList = Component.specialize({
         value: function (event) {
             this._translateX = event.translateX;
             this._translateY = event.translateY;
-            this._isShelfWillAcceptDrop = this._isListItemOverShelf();
+
+            var positionX = this._startPositionX + this._translateX,
+                positionY = this._startPositionY + this._translateY;
+
+            this._isShelfWillAcceptDrop = this._isDraggingComponentOverShelf();
+
+            //FIXME: need to used a radius before canceling the back navigation
+            clearTimeout(this._timeout);
+
+            if (!this._isShelfWillAcceptDrop && !this._isBackTransition) {
+                this._shouldNaviguateBack = this._isDraggingComponentOverBackRoute(positionX, positionY);
+
+                if (this._shouldNaviguateBack) {
+                    var self = this;
+
+                    this._timeout = setTimeout(function () {
+                        self._navigateBack();
+                    }, 50);
+                }
+            }
+
+
             this.needsDraw = true;
         }
     },
@@ -453,6 +517,13 @@ var CascadingList = exports.CascadingList = Component.specialize({
                 this.addObjectToShelf(this._draggingDataObject);
             }
 
+            this._resetTranslateContext();
+        }
+    },
+
+
+    handleTranslateCancel: {
+        value: function () {
             this._resetTranslateContext();
         }
     },
@@ -475,9 +546,7 @@ var CascadingList = exports.CascadingList = Component.specialize({
 
     handleBackAction: {
         value: function () {
-            this._pop();
-            this._closeShelfIfNeeded();
-            this._isBackTransition = true;
+            this._navigateBack();
         }
     },
 
@@ -503,6 +572,14 @@ var CascadingList = exports.CascadingList = Component.specialize({
      /**
      * Private Method
      */
+
+    _navigateBack: {
+        value: function () {
+            this._pop();
+            this._closeShelfIfNeeded();
+            this._isBackTransition = true;
+        }
+    },
 
     _closeShelfIfNeeded: {
         value: function () {
@@ -661,14 +738,36 @@ var CascadingList = exports.CascadingList = Component.specialize({
         }
     },
 
-    _isListItemOverShelf: {
+    _isDraggingComponentOverShelf: {
         value: function () {
-            if (this._shelfBoundingRect) {
+            if (this._shelfBoundingRect && this.shelf.isOpened) {
                 var x = this._startPositionX + this._translateX,
                     y = this._startPositionY + this._translateY;
 
                 if (x >= this._shelfBoundingRect.left && x <= this._shelfBoundingRect.right &&
                     y >= this._shelfBoundingRect.top && y <= this._shelfBoundingRect.bottom
+                ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    },
+
+    _isDraggingComponentOverBackRoute: {
+        value: function (positionX, positionY) {
+            var backRoutes = this._registeredRoutesComponents.get("back"),
+                component,    
+                rect;
+
+            for (var i = 0, length = backRoutes.length; i < length; i++) {
+                component = backRoutes[i];
+                //FIXME: need to be optimized
+                rect = component.element.getBoundingClientRect();
+
+                if (positionX > rect.x && positionX < (rect.x + rect.width) && 
+                    positionY > rect.y && positionY < (rect.y + rect.height)
                 ) {
                     return true;
                 }

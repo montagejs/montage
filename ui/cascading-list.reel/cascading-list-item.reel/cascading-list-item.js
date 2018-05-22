@@ -184,6 +184,20 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
         }
     },
 
+    enterDocument: {
+        value: function () {
+            this.context.cascadingList.registerComponentForBackRoute(this.backButton);
+        }
+    },
+
+    exitDocument: {
+        value: function () {
+            if (this.context) {
+                this.context.cascadingList.unregisterComponentForBackRoute(this.backButton);
+            }
+        }
+    },
+
     _handleSelectionChange: {
         value: function (plus, minus, index) {
             if (
@@ -203,6 +217,8 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
     didDraw: {
         value: function () {
             if (this.context && this.content.component) {
+                // FIXME: Should be dispatched from the content placeholder.
+                // and then we dispatch a cascadingListItemLoaded event
                 this.dispatchEventNamed('cascadingListItemLoaded', true, true);
             }
         }

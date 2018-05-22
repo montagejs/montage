@@ -137,20 +137,21 @@ exports.CascadingListShelf = Component.specialize({
                 this.classList.remove('close-transition');
 
                 if (this._shouldOpen) {
-                    this.addEventListener("action", this);
+                    this._shouldOpen = false;
                     this.isOpened = true;
+                    this.addEventListener("action", this);
                     currentCascadingListItem = this.cascadingList.getCurrentCascadingListItem();
                     currentCascadingListItem.content.classList.remove('close-transition');
                     this.dispatchEventNamed("cascadingListShelfOpen", true, true, this);
-
+                    
                 } else if (this._shouldClose) {
                     this.isOpened = false;
+                    this._shouldClose = false;
                     currentCascadingListItem = this.cascadingList.getCurrentCascadingListItem();
                     currentCascadingListItem.content.classList.remove('open-transition');
                     this.cascadingList.clearShelfContent();
                     this.removeEventListener("action", this);
                     this.dispatchEventNamed("cascadingListShelfClose", true, true, this);
-
                 }
             }
         }
