@@ -489,10 +489,24 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     _resolveRelationship: {
         value: function (object, propertyDescriptor, rule, scope) {
             var self = this;
-            return rule.evaluate(scope).then(function (data) {
-                self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor);
-                return null;
-            });
+            var result = rule.evaluate(scope);
+
+            // if (!result || !result.then) {
+            //     debugger;
+            // }
+            if (this._isAsync(result)) {
+                return result.then(function (data) {
+                    self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor);
+                    return null;
+                });
+            } else {
+                self._setObjectValueForPropertyDescriptor(object, result, propertyDescriptor);
+                return Promise.resolve(null);
+            }
+            // return result.then(function (data) {
+            //     self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor);
+            //     return null;
+            // });
         }
     },
 

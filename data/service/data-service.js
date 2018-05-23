@@ -754,10 +754,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (mapping, child) {
             var service = this;
             return Promise.all([
-                mapping.objectDescriptorReference,
-                mapping.schemaDescriptorReference
+                mapping.objectDescriptorReference || mapping.objectDescriptor,
+                mapping.schemaDescriptorReference || mapping.schemaDescriptor
             ]).spread(function (objectDescriptor, schemaDescriptor) {
                 // TODO -- remove looking up by string to unique.
+                
                 var type = [objectDescriptor.module.id, objectDescriptor.name].join("/");
                 objectDescriptor = service._moduleIdToObjectDescriptorMap.get(type);
                 mapping.objectDescriptor = objectDescriptor;
@@ -1451,6 +1452,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
     
 
+    _isAsync: {
+        value: function (object) {
+            return object && object.then && typeof object.then === "function";
+        }
+    },
+
     /**
      * Fetch a property on an object using an objectDescriptor mapping and a propertyDescriptor
      *
@@ -1477,16 +1484,22 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                         result = Promise.resolve(result);
                     }
                 } else {
-                    result = mapping.mapObjectToCriteriaSourceForProperty(object, data, propertyName).then(function() {
+                    result = mapping.mapObjectToCriteriaSourceForProperty(object, data, propertyName);
+                    if (this._isAsync(result)) {
+                        result = result.then(function() {
+                            Object.assign(data, self.snapshotForObject(object));
+                            return mapping.mapRawDataToObjectProperty(data, object, propertyName);
+                        });
+                    } else {
                         Object.assign(data, self.snapshotForObject(object));
-                        return mapping.mapRawDataToObjectProperty(data, object, propertyName);
-                    });
+                        mapping.mapRawDataToObjectProperty(data, object, propertyName);
+                    }
                 }
             } else {
                 result = this.nullPromise;
             }
 
-            return result;
+            return result || this.nullPromise;
         }
     },
 
@@ -1657,7 +1670,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             return useDelegate ?                    this.fetchRawObjectProperty(object, propertyName) :
                    delegateFunction ?                  delegateFunction.call(this, object) :
                    isHandler && propertyDescriptor ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor) :
-                    childService ?                      childService.fetchObjectProperty(object, propertyName) :
+                   childService ?                      childService.fetchObjectProperty(object, propertyName) :
                                                         this.nullPromise;
         }
     },
@@ -2582,6 +2595,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                                 self.rawDataDone(stream);
                             });
                         } else {
+                            debugger;
                             throw new Error("Can't fetch data of unknown type - " + (query.type.typeName || query.type.name) + "/" + query.type.uuid);
                         }
                     } catch (e) {

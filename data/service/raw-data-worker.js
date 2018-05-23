@@ -12,7 +12,10 @@ var Montage = require("montage").Montage,
 exports.RawDataWorker = Montage.specialize({
 
     
-    
+    identifier: {
+        value: "logic/service/raw-data-worker"
+    },
+
      /***************************************************************************
      * Serialization 
      */ 
@@ -197,7 +200,7 @@ exports.RawDataWorker = Montage.specialize({
                 criteria = new Criteria().initWithExpression(expression, parameters);
             }
             stream.query = DataQuery.withTypeAndCriteria(objectDescriptor, criteria);
-            service.fetchRawData(stream);
+            service._fetchRawData(stream);
             return stream;
         }
     },
@@ -251,7 +254,8 @@ exports.RawDataWorker = Montage.specialize({
         value: function (operation) {
             var self = this,
                 descriptorOrModule = operation.dataType,
-                module, descriptor, result, moduleId;
+                result = Promise.resolve(null),
+                module, descriptor, moduleId;
 
             if (descriptorOrModule instanceof ModuleReference) {
                 module = descriptorOrModule;

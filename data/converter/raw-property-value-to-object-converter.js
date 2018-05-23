@@ -126,7 +126,10 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
     
     convertSyntax: {
         get: function() {
-            return this._convertSyntax || (this._convertSyntax = parse(this.convertExpression));
+            if (!this._convertSyntax && this.convertExpression) {
+                this._convertSyntax = parse(this.convertExpression);
+            }
+            return this._convertSyntax;
         }
     },
     
