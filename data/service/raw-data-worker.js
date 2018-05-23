@@ -251,7 +251,8 @@ exports.RawDataWorker = Montage.specialize({
         value: function (operation) {
             var self = this,
                 descriptorOrModule = operation.dataType,
-                module, descriptor, result, moduleId;
+                result = Promise.resolve(null),
+                module, descriptor, moduleId;
 
             if (descriptorOrModule instanceof ModuleReference) {
                 module = descriptorOrModule;
