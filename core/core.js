@@ -422,7 +422,7 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
         if (! (typeof obj === "object" || typeof obj === FUNCTION) || obj === null) {
             throw new TypeError("Object must be an object, not '" + obj + "'");
         }
-        
+
         var isValueDescriptor = (VALUE in descriptor);
 
         // reset defaults appropriately for framework.

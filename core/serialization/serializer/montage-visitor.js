@@ -128,6 +128,7 @@ var MontageVisitor = Montage.specialize({
             var builderObject = this.builder.createCustomObject(),
                 substituteObject;
 
+            
             this.setObjectSerialization(object, builderObject);
 
             substituteObject = this.serializeMontageObject(malker, object, builderObject);
@@ -250,6 +251,10 @@ var MontageVisitor = Montage.specialize({
 
             this.builder.push(builderObject);
 
+            // if (object.constructor.name === "HazardLayer") {
+            //     console.log(object.constructor.name, object.id);
+            //     debugger;
+            // }
             if (typeof object.serializeSelf === "function") {
                 selfSerializer = new SelfSerializer().
                     initWithMalkerAndVisitorAndObject(
@@ -349,7 +354,10 @@ var MontageVisitor = Montage.specialize({
             if (!malker.legacyMode) {
                 var unitSerializer = new UnitSerializer()
                     .initWithMalkerAndVisitorAndObject(malker, this, object),
-                    bindings = Bindings.serializeObjectBindings(unitSerializer, object);
+                    bindings = Bindings.serializeObjectBindings(unitSerializer, object),
+                    propertyNames = new Set(Montage.getSerializablePropertyNames(object));
+
+                
 
                 if (bindings) {
                     var valuesObject = this.builder.top.getProperty("values");
@@ -357,7 +365,7 @@ var MontageVisitor = Montage.specialize({
 
                     
                     /* jshint forin: true */
-                    for (var key in bindings) {
+                    for (var key in bindings && propertyNames.has(key)) {
                     /* jshint forin: false */
                         this.builder.top.setProperty(key, bindings[key]);
                     }
@@ -416,8 +424,13 @@ var MontageVisitor = Montage.specialize({
                 propertyNames = Montage.getSerializablePropertyNames(object),
                 propertyNamesCount = propertyNames.length;
 
+
             for (var i = 0; i < propertyNamesCount; i++) {
                 propertyName = propertyNames[i];
+                // if (object.constructor.name === "MapService" && object.id === "PDC_HP_Public_XML" && propertyName === "layers") {
+                //     debugger;
+                // }
+                
                 type = Montage.getPropertyAttribute(object, propertyName, "serializable");
                 this.setProperty(malker, propertyName, object[propertyName], type);
             }
