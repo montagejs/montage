@@ -21,7 +21,7 @@ var Montage = require("../core/core").Montage,
     Promise = require("../core/promise").Promise,
     defaultEventManager = require("../core/event/event-manager").defaultEventManager,
     Alias = require("../core/serialization/alias").Alias,
-
+    DragManager = require("../core/drag/drag-manager").DragManager,
     logger = require("../core/logger").logger("component"),
     drawPerformanceLogger = require("../core/logger").logger("Drawing performance").color.green(),
     drawListLogger = require("../core/logger").logger("drawing list").color.blue(),
@@ -39,7 +39,8 @@ var Montage = require("../core/core").Montage,
 var ATTR_LE_COMPONENT = "data-montage-le-component",
     ATTR_LE_ARG = "data-montage-le-arg",
     ATTR_LE_ARG_BEGIN = "data-montage-le-arg-begin",
-    ATTR_LE_ARG_END = "data-montage-le-arg-end";
+    ATTR_LE_ARG_END = "data-montage-le-arg-end",
+    _defaultDragManager;
 
 
 function loggerToString (object) {
@@ -741,6 +742,13 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 }
                 return candidate;
             }
+        }
+    },
+
+    dragManager: {
+        get: function () {
+            return _defaultDragManager || 
+            ((_defaultDragManager = new DragManager()).initWithComponent(this.rootComponent));
         }
     },
 
@@ -2904,6 +2912,199 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
+    // Drag & Drop operations
+
+    /**
+     * Register a component for beeing a dragging source.
+     */
+    registerForDragSource: {
+        value: function (draggingOperationType) {
+            this.dragManager.registerForDragSource(this);
+        }
+    },
+
+    /**
+     * unregister a component for beeing a dragging source.
+     */
+    unregisterForDragSource: {
+        value: function () {
+            this.dragManager.unregisterForDragSource(this);
+        }
+    },
+
+    /**
+     * Register a component for beeing a drop destination.
+     */
+    registerForDragDestination: {
+        value: function () {
+            this.dragManager.registerForDragDestination(this);
+            this.classList.add("montage-drag-destination");
+        }
+    },
+
+    /**
+     * Unregister a component for beeing a drop destination.
+     */
+    unregisterForDragDestination: {
+        value: function () {
+            this.dragManager.unregisterForDragDestination(this);
+            this.classList.remove("montage-drag-destination");
+        }
+    },
+
+    /**
+     * Called on the source when the drag operation starts.
+     */
+    _beginDraggingOperation: {
+        value: function (draggingOperationInfo) {
+            if (typeof this.beginDraggingOperation === "function") {
+                this.beginDraggingOperation(draggingOperationInfo);
+            }
+        }
+    },
+
+    /**
+     * Called on the source when the dragged image is moving.
+     */
+    _updateDraggingOperation: {
+        value: function (draggingOperationInfo) {
+            if (typeof this.updateDraggingOperation === "function") {
+                this.updateDraggingOperation(draggingOperationInfo);
+            }
+        }
+    },
+
+    /**
+     * Called on the source when the drag operation ends.
+     */
+    _endDraggingOperation: {
+        value: function (draggingOperationInfo) {
+            if (typeof this.endDraggingOperation === "function") {
+                this.endDraggingOperation(draggingOperationInfo);
+            }
+        }
+    },
+
+    /**
+     * Called when the drag operation start,
+     * allowing the receivers to agree to or refuse the drag operation.
+     * By default all receivers will not accept any drag operation.
+     * The method `draggingStarted` should return a boolean value.
+     */
+    _draggingStarted: {
+        value: function (draggingOperationInfo) {
+            var acceptDragOperation = false,
+                acceptDragOperationDelegate = this.callDelegateMethod(
+                    "dragDestinationShouldAcceptDraggingOperation",
+                    this,
+                    draggingOperationInfo
+                );
+
+            if (acceptDragOperationDelegate !== void 0) {
+                acceptDragOperation = acceptDragOperationDelegate;
+
+            } else if (typeof this.draggingStarted === "function") {
+                acceptDragOperation = this.draggingStarted(draggingOperationInfo);
+                acceptDragOperation = acceptDragOperation === void 0 ? 
+                false : !!acceptDragOperation;
+            }
+
+            if (acceptDragOperation) {
+                this.classList.add('accept-dragging-image');
+            }
+
+            this.acceptDragOperation = acceptDragOperation;
+        }
+    },
+
+    /**
+     * Called when the drag operation end,
+     * allowing the receivers to perform any necessary clean-up
+     */
+    _draggingEnded: {
+        value: function (draggingOperationInfo) {
+            this.classList.remove('accept-dragging-image');
+
+            if (typeof this.draggingEnded === "function") {
+                this.draggingEnded(draggingOperationInfo);
+            }
+        }
+    },
+
+    /**
+     * Called when the dragged image enters 
+     * the destination’s bounds rectangle
+     */
+    _draggingEntered: {
+        value: function (draggingOperationInfo) {
+            this.classList.add("dragging-image-entered");
+
+            if (typeof this.draggingEntered === "function") {
+                this.draggingEntered(draggingOperationInfo);
+            }
+        }
+    },
+
+    /**
+     * Called periodically when the dragged image is held within 
+     * the destination’s bounds rectangle
+     */
+    _draggingUpdated: {
+        value: function (draggingOperationInfo) {
+            this.classList.add("dragging-image-over");
+
+            if (typeof this.draggingUpdated === "function") {
+                this.draggingUpdated(draggingOperationInfo);
+            }
+        }
+    },
+
+    /**
+     * Called when the dragged image exits 
+     * the destination’s bounds rectangle
+     */
+    _draggingExited: {
+        value: function (draggingOperationInfo) {
+            this.classList.remove("dragging-image-entered");
+            this.classList.remove("dragging-image-over");
+
+            if (typeof this.draggingExited === "function") {
+                this.draggingExited(draggingOperationInfo);
+            }
+        }
+    },
+
+    /**
+     * Called after the released image has been removed from the screen, 
+     * allowing the receiver to import the data.
+     */
+    _performDropOperation: {
+        value: function (draggingOperationInfo) {
+            if (this.acceptDragOperation) {
+                if (typeof this.performDropOperation === "function") {
+                    this.performDropOperation(draggingOperationInfo);
+                }
+            }
+        }
+    },
+
+    /**
+     * Called when the dropping operation is complete, 
+     * allowing the receiver to perform any necessary clean-up.
+     */
+    _concludeDropOperation: {
+        value: function (draggingOperationInfo) {
+            if (this.acceptDragOperation) {
+                this.classList.remove("dragging-image-entered");
+                this.classList.remove("dragging-image-over");
+
+                if (typeof this.concludeDropOperation === "function") {
+                    this.concludeDropOperation(draggingOperationInfo);
+                }
+            }
+        }
+    },
+
     //
     // Attribute Handling
     //
@@ -4442,7 +4643,21 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             this._element = document.documentElement;
             this._documentResources = DocumentResources.getInstanceForDocument(document);
         }
-    }   
+    },
+
+    willDraw: {
+        value: function () {
+            this.dragManager.willDraw();
+        }
+    },
+
+    draw: {
+        value: function () {
+            this.dragManager.draw();
+        }
+    }
+
+
 });
  
 exports.__root__ = rootComponent = new RootComponent().init();

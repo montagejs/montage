@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"}
+                }
+            },
+
+            "enableVisiblePlaceholder": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "enableVisiblePlaceholder"}
+                }
+            },
+
+            "enableMoveOperation": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "enableMoveOperation"}
+                }
+            },
+
+            "repetition": {
+                "prototype": "montage/ui/repetition.reel",
+                "values": {
+                    "element": {"#": "repetition"},
+                    "content":  {"<-": "@owner.data"}
+                }
+            },
+
+            "square": {
+                "prototype": "../square.reel",
+                "values": {
+                    "element": {"#": "square"},
+                    "identifier": {"<-": "'square ' + @repetition:iteration.object"},
+                    "value": {"<-": "@repetition:iteration.object"},
+                    "secret": {"<-": "'secret' + @repetition:iteration.object"},
+                    "enableVisiblePlaceholder": {"<-": "!!@enableVisiblePlaceholder.checked"},
+                    "enableMoveOperation": {"<-": "!!@enableMoveOperation.checked"}
+                }
+            },
+
+            "drop": {
+                "prototype": "../drop.reel",
+                "values": {
+                    "element": {"#": "drop"},
+                    "dataSource": {"<-": "@owner.data"}
+                }
+            },
+
+            "drop2": {
+                "prototype": "../drop.reel",
+                "values": {
+                    "element": {"#": "drop2"},
+                    "delegate": {"@": "owner"}
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>Drag & Drop Samples</header>
+        
+        <div class="options">
+            <h4>Options: </h4>
+            <p>
+                <span>Enable Visible Placeholder</span>
+                <input type="checkbox" data-montage-id="enableVisiblePlaceholder" />
+            </p>
+            <p>
+                <span>Enable Move operation</span>
+                <input type="checkbox" data-montage-id="enableMoveOperation" />
+            </p>
+        </div>
+
+        <div class="samples">
+            <h4>Simple drag&Drop</h4>
+            <div data-montage-id="repetition" class="squares flex flex-row list">
+                <div data-montage-id="square"></div>
+            </div>
+            <div class="flex flex-row list">
+                <div data-montage-id="drop"></div>
+                <div data-montage-id="drop2"></div>
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>
