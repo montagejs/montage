@@ -163,7 +163,6 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
                 return provider.authorize();
             }).then(function (authorization) {
                 return authorization || self._authorizeProviderWithManagerPanel(provider);
-
             });
         }
     },
@@ -259,8 +258,6 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
      * @method
      * @argument {DataService} dataService - A dataService for which to get an authorization
      */
-
-
     authorizeService: {
         value: function (dataService, didFailAuthorization) {
             var self = this,
@@ -356,6 +353,28 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
         value: function(dataService) {
             var info = Montage.getInfoForObject(dataService);
             this._providersByModuleID.set(info.moduleId, dataService);
+        }
+    },
+
+
+
+    clearAuthorizationForService: {
+        value: function (dataService) {
+            var dataServiceInfo = Montage.getInfoForObject(dataService),
+                moduleID, i, n;
+
+            for (i = 0, n = dataService.authorizationServices.length; i < n; ++i) {
+                moduleID = dataService.authorizationServices[i];
+                if (this._authorizationsByProviderModuleID.has(moduleID)) {
+                    this._authorizationsByProviderModuleID.delete(moduleID);
+                }
+            }
+        }
+    },
+
+    _clearAuthorizationCacheForProvider: {
+        value: function (moduleID) {
+             
         }
     }
 
