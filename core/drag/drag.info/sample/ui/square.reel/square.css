@@ -20,7 +20,7 @@
 }
 
 .Square:hover {
-    cursor: pointer;
+    cursor: move;
 }
 
 .Square.hide {

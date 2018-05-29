@@ -545,7 +545,15 @@ var DragManager = exports.DragManager = Montage.specialize({
                     this._draggingOperationInfo.deltaX + "px," + 
                     this._draggingOperationInfo.deltaY + "px,0)";
 
+                if (this._droppingDestination && 
+                    draggingOperationInfo.draggingOperationType === DragManager.DragOperationCopy
+                ) {
+                    this._rootComponent.element.style.cursor = 'copy';
+                } else {
+                    this._rootComponent.element.style.cursor = 'move';
+                }
             } else if (this._willTerminateDraggingOperation) {
+                this._rootComponent.element.style.cursor = 'default';
                 document.body.removeChild(draggingOperationInfo.draggingImage);
 
                 if (this._droppingDestination) {
