@@ -1234,6 +1234,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             types.forEach(function (objectDescriptor) {
                 var module = objectDescriptor.module,
                     moduleId = [module.id, objectDescriptor.exportName].join("/");
+                map.set(module.id, objectDescriptor);
                 map.set(moduleId, objectDescriptor);
             });
         }
@@ -2336,6 +2337,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 canMap = (ownMapping || this.implementsMapRawDataToObject || this.isRootService) && !serviceID,
                 iRecord;
 
+
+            // if (streamQueryType.name === "GeometryType") {
+            //     debugger;
+            // }
             // Record fetched raw data for offline use if appropriate.
             offline = records && !this.isOffline && this._streamRawData.get(stream);
             if (offline) {

@@ -1,4 +1,5 @@
 var DataOperation = require("montage/data/service/data-operation").DataOperation,
+    DataOperationType = require("montage/data/service/data-operation-type").DataOperationType,
     Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     deserialize = require("montage/core/serialization/deserializer/montage-deserializer").deserialize,
     Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer,
@@ -16,11 +17,11 @@ describe("A DataOperation", function() {
             serializer = new Serializer().initWithRequire(require),
             serialization, serializationObject;
 
-        operation.type = DataOperation.Type.Read;
+        operation.type = DataOperationType.Read;
         serialization = serializer.serializeObject(operation);
         serializationObject = JSON.parse(serialization);
         serializedType = serializationObject.root.values.type;
-        expect(serializationObject.operationType_Read.object).toBe("montage/data/service/data-operation[ReadOperationType]");
+        expect(serializationObject.operationType_Read.object).toBe("montage/data/service/data-operation-type[Read]");
     });
 
     it("can be deserialized", function (done) {
@@ -28,11 +29,11 @@ describe("A DataOperation", function() {
             root: {
                 prototype: "montage/data/service/data-operation",
                 values: {
-                    type: {"@": "readOperationType"}
+                    type: {"@": "createOperationType"}
                 }
             },
-            readOperationType: {
-                object: "montage/data/service/data-operation[CreateOperationType]"
+            createOperationType: {
+                object: "montage/data/service/data-operation-type[Create]"
             }
         },
         deserializer = new Deserializer().init(serialization, require),
