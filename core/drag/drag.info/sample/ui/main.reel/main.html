@@ -24,12 +24,20 @@
                 }
             },
 
+            "switchDraggedImage": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "switchDraggedImage"}
+                }
+            },
+
             "square1": {
                 "prototype": "../square.reel",
                 "values": {
                     "element": {"#": "square1"},
                     "value": "drag me",
                     "enableVisiblePlaceholder": {"<-": "!!@enableVisiblePlaceholder.checked"},
+                    "switchDraggedImage": {"<-": "!!@switchDraggedImage.checked"},
                     "enableMoveOperation": {"<-": "!!@enableMoveOperation.checked"}
                 }
             },
@@ -41,6 +49,7 @@
                     "value": "drag me",
                     "container": {"#": "container1"},
                     "enableVisiblePlaceholder": {"<-": "!!@enableVisiblePlaceholder.checked"},
+                    "switchDraggedImage": {"<-": "!!@switchDraggedImage.checked"},
                     "enableMoveOperation": {"<-": "!!@enableMoveOperation.checked"}
                 }
             },
@@ -60,6 +69,7 @@
                     "identifier": {"<-": "'square ' + @repetition:iteration.object"},
                     "value": {"<-": "@repetition:iteration.object"},
                     "secret": {"<-": "'secret' + @repetition:iteration.object"},
+                    "switchDraggedImage": {"<-": "!!@switchDraggedImage.checked"},
                     "enableVisiblePlaceholder": {"<-": "!!@enableVisiblePlaceholder.checked"},
                     "enableMoveOperation": {"<-": "!!@enableMoveOperation.checked"}
                 }
@@ -100,6 +110,7 @@
                 "values": {
                     "element": {"#": "square4"},
                     "value": "drag me",
+                    "switchDraggedImage": {"<-": "!!@switchDraggedImage.checked"},
                     "enableVisiblePlaceholder": {"<-": "!!@enableVisiblePlaceholder.checked"},
                     "enableMoveOperation": {"<-": "!!@enableMoveOperation.checked"}
                 }
@@ -121,6 +132,11 @@
             <p>
                 <span>Enable Move operation</span>
                 <input type="checkbox" data-montage-id="enableMoveOperation" />
+            </p>
+
+            <p>
+                <span>Switch Dragged Image</span>
+                <input type="checkbox" data-montage-id="switchDraggedImage" />
             </p>
         </div>
 

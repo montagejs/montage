@@ -176,25 +176,28 @@ var DragManager = exports.DragManager = Montage.specialize({
 
     _createDraggingOperationInfoWithSourceAndPosition: {
         value: function (source, startPosition) {
-            var draggingOperationInfo = new DraggingOperationInfo(),
-                draggingImage = source.element.cloneNode(true);
-            
-            draggingImage.classList.add("montage-dragging-image");
-            draggingImage.style.visibility = "hidden";
-            draggingImage.style.position = "absolute";
-            draggingImage.style.pointerEvents = "none";
-            draggingImage.style.boxSizing = "border-box";
-            draggingImage.style.zIndex = 999999;
-            draggingImage.style.opacity = 0.95;
-
+            var draggingOperationInfo = new DraggingOperationInfo();
             draggingOperationInfo.source = source;
-            draggingOperationInfo.draggingImage = draggingImage;
             draggingOperationInfo.startPositionX = startPosition.pageX;
             draggingOperationInfo.startPositionY = startPosition.pageY;
             draggingOperationInfo.positionX = startPosition.pageX;
             draggingOperationInfo.positionY = startPosition.pageY;
 
             return draggingOperationInfo;
+        }
+    },
+
+    _sanitizeDraggedImage: {
+        value: function (draggedImage) {
+            draggedImage.classList.add("montage-dragging-image");
+            draggedImage.style.visibility = "hidden";
+            draggedImage.style.position = "absolute";
+            draggedImage.style.pointerEvents = "none";
+            draggedImage.style.boxSizing = "border-box";
+            draggedImage.style.zIndex = 999999;
+            draggedImage.style.opacity = 0.95;
+
+            return draggedImage;
         }
     },
 
@@ -417,7 +420,8 @@ var DragManager = exports.DragManager = Montage.specialize({
                 sourceComponent = this._findDraggingSourceAtPosition(
                     startPosition.pageX,
                     startPosition.pageY
-                );
+                ),
+                draggedImage;
 
             if (sourceComponent) {
                 this._draggingOperationInfo = this._createDraggingOperationInfoWithSourceAndPosition(
@@ -430,6 +434,17 @@ var DragManager = exports.DragManager = Montage.specialize({
                 );
 
                 sourceComponent._beginDraggingOperation(this._draggingOperationInfo);
+                
+                if (!this._draggingOperationInfo.draggedImage) {
+                    draggedImage = sourceComponent.element.cloneNode(true);
+                } else {
+                    draggedImage = this._draggingOperationInfo.draggedImage;
+                }
+
+                this._draggingOperationInfo.draggedImage = this._sanitizeDraggedImage(
+                    draggedImage
+                );
+
                 this._dispatchDraggingOperationStart(this._draggingOperationInfo);
                 this._isDragging = true;
                 this._rootComponent.needsDraw = true;
@@ -511,16 +526,16 @@ var DragManager = exports.DragManager = Montage.specialize({
             var draggingOperationInfo = this._draggingOperationInfo;
 
             if (this._isDragging && !this._willTerminateDraggingOperation) {
-                var draggingImage = draggingOperationInfo.draggingImage,
-                    translateX = this._draggingOperationInfo.deltaX,
-                    translateY = this._draggingOperationInfo.deltaY;
+                var draggedImage = draggingOperationInfo.draggedImage,
+                    translateX = draggingOperationInfo.deltaX,
+                    translateY = draggingOperationInfo.deltaY;
 
-                if (!draggingImage.parentElement) {
-                    draggingImage.style.top = this._draggingImageBoundingRect.top + "px";
-                    draggingImage.style.left = this._draggingImageBoundingRect.left + "px";
-                    draggingImage.style.width = this._draggingImageBoundingRect.width + "px";
-                    draggingImage.style.height = this._draggingImageBoundingRect.height + "px";
-                    document.body.appendChild(draggingImage);
+                if (!draggedImage.parentElement) {
+                    draggedImage.style.top = this._draggingImageBoundingRect.top + "px";
+                    draggedImage.style.left = this._draggingImageBoundingRect.left + "px";
+                    draggedImage.style.width = this._draggingImageBoundingRect.width + "px";
+                    draggedImage.style.height = this._draggingImageBoundingRect.height + "px";
+                    document.body.appendChild(draggedImage);
 
                     if (draggingOperationInfo.draggingOperationType === DragManager.DragOperationMove) {
                         this._oldSourceDisplayStyle = draggingOperationInfo.source.element.style.display;
@@ -540,11 +555,12 @@ var DragManager = exports.DragManager = Montage.specialize({
                         }
                     }
 
+                    draggingOperationInfo.isDragging = true;
                     this._needsToWaitforGhostElementBoundaries = true;
                 }
 
                 if (!this._needsToWaitforGhostElementBoundaries) {
-                    draggingImage.style.visibility = "visible";
+                    draggedImage.style.visibility = "visible";
                 } else {
                     this._needsToWaitforGhostElementBoundaries = false;
                 }
@@ -575,7 +591,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                     }
                 }
 
-                draggingImage.style[DragManager.cssTransform] = "translate3d(" +
+                draggedImage.style[DragManager.cssTransform] = "translate3d(" +
                     translateX + "px," + translateY + "px,0)";
 
                 if (this._droppingDestination && 
@@ -587,7 +603,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                 }
             } else if (this._willTerminateDraggingOperation) {
                 this._rootComponent.element.style.cursor = 'default';
-                document.body.removeChild(draggingOperationInfo.draggingImage);
+                document.body.removeChild(draggingOperationInfo.draggedImage);
 
                 if (this._droppingDestination) {
                     draggingOperationInfo.hasBeenDrop = true;
