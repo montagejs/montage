@@ -40,6 +40,10 @@ exports.Square = Component.specialize(/** @lends Square# */ {
                 draggingOperationInfo.draggingOperationType = DragManager.DragOperationMove;
             }
 
+            if (this.container) {
+                draggingOperationInfo.draggingSourceContainer = this.container;
+            }
+
             if (this.enableVisiblePlaceholder) {
                 draggingOperationInfo.draggingSourcePlaceholderStrategy = (
                     DragManager.DraggingSourcePlaceholderStrategyVisible

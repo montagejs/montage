@@ -355,6 +355,7 @@ var DragManager = exports.DragManager = Montage.specialize({
             this.__translateComposer.translateX = 0;
             this.__translateComposer.translateY = 0;
             this._draggingImageBoundingRect = null;
+            this._draggingSourceContainerBoundingRect = null;
             this._willTerminateDraggingOperation = false;
             this._needsToWaitforGhostElementBoundaries = false;
         }
@@ -497,6 +498,10 @@ var DragManager = exports.DragManager = Montage.specialize({
         value: function () {
             if (this._isDragging && this._draggingOperationInfo && !this._draggingImageBoundingRect) {
                 this._draggingImageBoundingRect = this._draggingOperationInfo.source.element.getBoundingClientRect();
+
+                if (this._draggingOperationInfo.draggingSourceContainer) {
+                    this._draggingSourceContainerBoundingRect = this._draggingOperationInfo.draggingSourceContainer.getBoundingClientRect();
+                }
             }
         }
     },
@@ -506,7 +511,9 @@ var DragManager = exports.DragManager = Montage.specialize({
             var draggingOperationInfo = this._draggingOperationInfo;
 
             if (this._isDragging && !this._willTerminateDraggingOperation) {
-                var draggingImage = draggingOperationInfo.draggingImage;
+                var draggingImage = draggingOperationInfo.draggingImage,
+                    translateX = this._draggingOperationInfo.deltaX,
+                    translateY = this._draggingOperationInfo.deltaY;
 
                 if (!draggingImage.parentElement) {
                     draggingImage.style.top = this._draggingImageBoundingRect.top + "px";
@@ -542,9 +549,34 @@ var DragManager = exports.DragManager = Montage.specialize({
                     this._needsToWaitforGhostElementBoundaries = false;
                 }
 
+                if (this._draggingSourceContainerBoundingRect) {
+                    var rect = this._draggingSourceContainerBoundingRect,
+                        deltaPointerLeft, deltaPointerRight,
+                        deltaPointerTop, deltaPointerBottom;
+
+                    if (draggingOperationInfo.positionX - (
+                        deltaPointerLeft = draggingOperationInfo.startPositionX - this._draggingImageBoundingRect.left
+                    ) < rect.left) {
+                        translateX = rect.left - draggingOperationInfo.startPositionX + deltaPointerLeft;
+                    } else if (draggingOperationInfo.positionX + (
+                        deltaPointerRight = this._draggingImageBoundingRect.right - draggingOperationInfo.startPositionX
+                    ) > rect.right) {
+                        translateX = rect.right - draggingOperationInfo.startPositionX - deltaPointerRight;
+                    }
+                    
+                    if (draggingOperationInfo.positionY - (
+                        deltaPointerTop = draggingOperationInfo.startPositionY - this._draggingImageBoundingRect.top
+                    ) < rect.top) {
+                        translateY = rect.top - draggingOperationInfo.startPositionY + deltaPointerTop;
+                    } else if (draggingOperationInfo.positionY + (
+                        deltaPointerBottom = this._draggingImageBoundingRect.bottom - draggingOperationInfo.startPositionY
+                    ) > rect.bottom) {
+                        translateY = rect.bottom - draggingOperationInfo.startPositionY - deltaPointerBottom;
+                    }
+                }
+
                 draggingImage.style[DragManager.cssTransform] = "translate3d(" +
-                    this._draggingOperationInfo.deltaX + "px," + 
-                    this._draggingOperationInfo.deltaY + "px,0)";
+                    translateX + "px," + translateY + "px,0)";
 
                 if (this._droppingDestination && 
                     draggingOperationInfo.draggingOperationType === DragManager.DragOperationCopy

@@ -43,6 +43,23 @@ exports.DraggingOperationInfo = Montage.specialize({
         value: 0 // default DragOperationCopy
     },
 
+    _draggingSourceContainer: {
+        value: null
+    },
+
+    draggingSourceContainer: {
+        set: function (element) {
+            if (element instanceof Element) {
+                this._draggingSourceContainer = element;
+            } else if (element.element instanceof Element) {
+                this._draggingSourceContainer = element.element;
+            }
+        },
+        get: function () {
+            return this._draggingSourceContainer;
+        }
+    },
+
     _data: {
         value: null
     },
