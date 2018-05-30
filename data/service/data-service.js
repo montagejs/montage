@@ -1234,6 +1234,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             types.forEach(function (objectDescriptor) {
                 var module = objectDescriptor.module,
                     moduleId = [module.id, objectDescriptor.exportName].join("/");
+                map.set(module.id, objectDescriptor);
                 map.set(moduleId, objectDescriptor);
             });
         }
@@ -1385,10 +1386,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 info, mapping, triggers, requisites;
 
             if (descriptor && !prototype) {
+
                 prototype = constructor           ? constructor.prototype :
                             type.objectPrototype  ? type.objectPrototype :
                                                     Montage.prototype;
                 prototype = Object.create(prototype);
+                
                 if (this._isObjectDescriptor(descriptor)) {
                     mapping = this.mappingWithType(descriptor);
                     requisites = mapping ? mapping.requisitePropertyNames : new Set();
@@ -1665,7 +1668,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 delegateFunction = !useDelegate && isHandler && this._delegateFunctionForPropertyName(propertyName),
                 propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
                 childService = !isHandler && this._childServiceForObject(object);
-
+            // if (propertyName === "allFeatures" || propertyName === "visibleFeatures") {
+            //     console.log(object.name);
+            //     debugger;
+            // }
             
             return useDelegate ?                    this.fetchRawObjectProperty(object, propertyName) :
                    delegateFunction ?                  delegateFunction.call(this, object) :
@@ -2336,6 +2342,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 canMap = (ownMapping || this.implementsMapRawDataToObject || this.isRootService) && !serviceID,
                 iRecord;
 
+
+            // if (streamQueryType.name === "GeometryType") {
+            //     debugger;
+            // }
             // Record fetched raw data for offline use if appropriate.
             offline = records && !this.isOffline && this._streamRawData.get(stream);
             if (offline) {

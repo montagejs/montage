@@ -496,6 +496,9 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             // }
             if (this._isAsync(result)) {
                 return result.then(function (data) {
+                    // if (propertyDescriptor.name === "geometryType") {
+                    //     console.log(data);
+                    // }
                     self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor);
                     return null;
                 });
