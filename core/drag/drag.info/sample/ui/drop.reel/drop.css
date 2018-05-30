@@ -17,6 +17,7 @@
     -webkit-tap-highlight-color: rgba(0,0,0,0);
     touch-action: none;
     box-sizing: border-box;
+    position: relative;
 }
 
 .Drop .drop-placeholder {

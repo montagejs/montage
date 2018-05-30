@@ -34,7 +34,8 @@ exports.Drop = Component.specialize(/** @lends Drop# */ {
     draggingStarted: {
         value: function (draggingOperationInfo) {
             var value = draggingOperationInfo.source.value;
-            return value && this.data.indexOf(value) === -1;
+            return value && this.data.indexOf(value) === -1 && 
+                this.dataSource.indexOf(value) > -1;
         }
     },
 

@@ -28,7 +28,7 @@
                 "prototype": "../square.reel",
                 "values": {
                     "element": {"#": "square1"},
-                    "value": {"<-": "'drag me'"},
+                    "value": "drag me",
                     "enableVisiblePlaceholder": {"<-": "!!@enableVisiblePlaceholder.checked"},
                     "enableMoveOperation": {"<-": "!!@enableMoveOperation.checked"}
                 }
@@ -38,7 +38,7 @@
                 "prototype": "../square.reel",
                 "values": {
                     "element": {"#": "square2"},
-                    "value": {"<-": "'drag me'"},
+                    "value": "drag me",
                     "container": {"#": "container1"},
                     "enableVisiblePlaceholder": {"<-": "!!@enableVisiblePlaceholder.checked"},
                     "enableMoveOperation": {"<-": "!!@enableMoveOperation.checked"}
@@ -78,6 +78,30 @@
                 "values": {
                     "element": {"#": "drop2"},
                     "delegate": {"@": "owner"}
+                }
+            },
+
+            "drop3": {
+                "prototype": "../drop-outer.reel",
+                "values": {
+                    "element": {"#": "drop3"}
+                }
+            },
+
+            "drop4": {
+                "prototype": "../drop-inner.reel",
+                "values": {
+                    "element": {"#": "drop4"}
+                }
+            },
+
+            "square4": {
+                "prototype": "../square.reel",
+                "values": {
+                    "element": {"#": "square4"},
+                    "value": "drag me",
+                    "enableVisiblePlaceholder": {"<-": "!!@enableVisiblePlaceholder.checked"},
+                    "enableMoveOperation": {"<-": "!!@enableMoveOperation.checked"}
                 }
             }
 
@@ -120,6 +144,12 @@
                 <div data-montage-id="drop2">
                     <div data-arg="placeholder">Drop not allowed</div>
                 </div>
+            </div>
+
+            <h4>inner Dropzone</h4>
+            <div data-montage-id="square4"></div>
+            <div data-montage-id="drop3">
+                <div data-montage-id="drop4"></div>
             </div>
             
         </div>
