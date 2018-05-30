@@ -185,6 +185,7 @@ var DragManager = exports.DragManager = Montage.specialize({
             draggingImage.style.pointerEvents = "none";
             draggingImage.style.boxSizing = "border-box";
             draggingImage.style.zIndex = 999999;
+            draggingImage.style.opacity = 0.95;
 
             draggingOperationInfo.source = source;
             draggingOperationInfo.draggingImage = draggingImage;
