@@ -19,16 +19,36 @@
     box-sizing: border-box;
 }
 
+.Drop .drop-placeholder {
+    display: none;
+    color: #34495e;
+}
+
+.Drop.is-empty .drop-placeholder {
+    display: block;
+}
+
 .Drop.accept-dragging-image {
     border: 4px dashed #3498db25;
     animation: blink 1.5s linear infinite alternate;
 }
 
-@keyframes blink { 
-    50% { border-color: #3498db;} 
- }
+.Drop.accept-dragging-image.is-empty .drop-placeholder {
+    color:#3498db25;
+    animation: blink 1.5s linear infinite alternate;
+}
+
+.Drop.dragging-image-over.is-empty .drop-placeholder {
+    color:#3498db;
+    animation: none;
+}
 
 .Drop.dragging-image-over {
     border: 4px solid #3498db;
     animation: none;
 }
+
+@keyframes blink { 
+    50% { border-color: #3498db; color: #3498db } 
+ }
+

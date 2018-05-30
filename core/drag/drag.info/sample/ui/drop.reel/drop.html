@@ -6,7 +6,8 @@
     {
         "owner": {
             "values": {
-                "element": {"#": "owner"}
+                "element": {"#": "owner"},
+                "classList.has('is-empty')":  {"<-": "@owner.data.length == 0"}
             }
         },
 
@@ -32,6 +33,7 @@
 </head>
 <body>
     <div data-montage-id="owner" class="Drop">
+        <div data-param="placeholder" class="drop-placeholder"></div>
         <div data-montage-id="repetition" class="flex row list">
             <div data-montage-id="square"></div>
         </div>

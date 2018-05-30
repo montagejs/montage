@@ -24,6 +24,27 @@
                 }
             },
 
+            "square1": {
+                "prototype": "../square.reel",
+                "values": {
+                    "element": {"#": "square1"},
+                    "value": {"<-": "'drag me'"},
+                    "enableVisiblePlaceholder": {"<-": "!!@enableVisiblePlaceholder.checked"},
+                    "enableMoveOperation": {"<-": "!!@enableMoveOperation.checked"}
+                }
+            },
+
+            "square2": {
+                "prototype": "../square.reel",
+                "values": {
+                    "element": {"#": "square2"},
+                    "value": {"<-": "'drag me'"},
+                    "container": {"#": "container1"},
+                    "enableVisiblePlaceholder": {"<-": "!!@enableVisiblePlaceholder.checked"},
+                    "enableMoveOperation": {"<-": "!!@enableMoveOperation.checked"}
+                }
+            },
+
             "repetition": {
                 "prototype": "montage/ui/repetition.reel",
                 "values": {
@@ -32,10 +53,10 @@
                 }
             },
 
-            "square": {
+            "square3": {
                 "prototype": "../square.reel",
                 "values": {
-                    "element": {"#": "square"},
+                    "element": {"#": "square3"},
                     "identifier": {"<-": "'square ' + @repetition:iteration.object"},
                     "value": {"<-": "@repetition:iteration.object"},
                     "secret": {"<-": "'secret' + @repetition:iteration.object"},
@@ -80,13 +101,25 @@
         </div>
 
         <div class="samples">
-            <h4>Simple drag&Drop</h4>
+            <h4>Simple drag</h4>
+            <div data-montage-id="square1"></div>
+
+            <h4>Drag within a container</h4>
+            <div data-montage-id="container1" class="container Drop">
+                <div data-montage-id="square2"></div>
+            </div>
+
+            <h4>Drag&Drop</h4>
             <div data-montage-id="repetition" class="squares flex flex-row list">
-                <div data-montage-id="square"></div>
+                <div data-montage-id="square3"></div>
             </div>
             <div class="flex flex-row list">
-                <div data-montage-id="drop"></div>
-                <div data-montage-id="drop2"></div>
+                <div data-montage-id="drop">
+                    <div data-arg="placeholder">Drop Here</div>
+                </div>
+                <div data-montage-id="drop2">
+                    <div data-arg="placeholder">Drop not allowed</div>
+                </div>
             </div>
             
         </div>
