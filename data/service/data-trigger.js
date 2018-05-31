@@ -483,7 +483,7 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
             trigger._objectPrototype = prototype;
             trigger._propertyName = name;
             trigger._isGlobal = propertyDescriptor.isGlobal;
-            if(!serviceTriggers) {
+            if (!serviceTriggers) {
                 serviceTriggers = {};
                 service._dataObjectTriggers.set(objectDescriptor,serviceTriggers);
             }
@@ -513,10 +513,10 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
                         set: function (value) {
                             trigger._setValue(this, value);
                             // (trigger||(trigger = DataTrigger._createTrigger(service, objectDescriptor, prototype, name,descriptor)))._setValue(this, value);
-                        }
+                        },
+                        serializable: serializable
                     });
                 } else {
-                    console.log("Serializable", name, serializable);
                     Montage.defineProperty(prototype, name, {
                         get: function () {
                             return trigger._getValue(this);
@@ -525,7 +525,8 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
                         set: function (value) {
                             trigger._setValue(this, value);
                             // (trigger||(trigger = DataTrigger._createTrigger(service, objectDescriptor, prototype, name,descriptor)))._setValue(this, value);
-                        }
+                        },
+                        serializable: serializable
                     });
                 }
             }
