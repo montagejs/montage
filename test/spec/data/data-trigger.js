@@ -7,7 +7,8 @@ var DataTrigger = require("montage/data/service/data-trigger").DataTrigger,
 
 
 var ModelObject = Montage.specialize({
-
+    // Only ancestors, favoriteAunts, & siblings should be serializable.
+    // Each property has a comment explaining why it is or is not serializable.
 
     //Serializable (has get & set)
     ancestors: {
@@ -74,10 +75,26 @@ var ModelObject = Montage.specialize({
             return this._uncles;
         },
         serializable: false
+    },
+
+
+    /** 
+     * Derived Properties
+     */
+    //Serializable
+    favoriteAunts: {
+        value: undefined
+    },
+
+    //NOT Serializable (serializable attribute is false)
+    favoriteUncles: {
+        value: undefined,
+        serializable: false
     }
 });
 
-var ModelDescriptor = new ObjectDescriptor().initWithName("ModelObject");
+var ModelDescriptor = new ObjectDescriptor().initWithName("ModelObject"),
+    derived;
 ModelDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("ancestors", ModelDescriptor, Infinity));
 ModelDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("children", ModelDescriptor, Infinity));
 
@@ -88,6 +105,14 @@ ModelDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjec
 ModelDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("aunts", ModelDescriptor, Infinity));
 ModelDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("uncles", ModelDescriptor, Infinity));
 
+derived = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("favoriteAunts", ModelDescriptor, Infinity);
+derived.definition = "aunts.filter{ isFavorite }";
+ModelDescriptor.addPropertyDescriptor(derived);
+
+derived = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("favoriteUncles", ModelDescriptor, Infinity);
+derived.definition = "uncles.filter{ isFavorite }";
+ModelDescriptor.addPropertyDescriptor(derived);
+
 describe("A DataTrigger", function() {
     
     it("can respect serializable property", function () {
@@ -95,29 +120,26 @@ describe("A DataTrigger", function() {
         var prototype = Object.create(ModelObject.prototype),
             requisites = new Set(),
             service = new DataService(),
-            cleanInstanceObjectCreate, cleanObjectCreatePropertyNames,
-            cleanInstanceConstructor, cleanInstancePropertyNames,
+            cleanObjectCreateInstance, cleanObjectCreatePropertyNames,
+            cleanConstructorInstance, cleanConstructorInstancePropertyNames,
             triggerInstance, triggerPropertyNames,
             propertyNames;
     
         DataTrigger.addTriggers(service, ModelDescriptor, prototype, requisites);
 
+    
+        cleanConstructorInstance = new ModelObject();
+        cleanConstructorInstancePropertyNames = Montage.getSerializablePropertyNames(cleanConstructorInstance);        
+        
+        cleanObjectCreateInstance = Object.create(ModelObject.prototype);
+        cleanObjectCreatePropertyNames = Montage.getSerializablePropertyNames(cleanObjectCreateInstance); 
+
         triggerInstance = Object.create(prototype);
-        cleanInstanceObjectCreate = Object.create(ModelObject.prototype),
-        cleanInstanceConstructor = new ModelObject();
-
         triggerPropertyNames = Montage.getSerializablePropertyNames(triggerInstance);
-        console.log("Triggered", triggerPropertyNames);
 
-        cleanObjectCreatePropertyNames = Montage.getSerializablePropertyNames(cleanInstanceObjectCreate);        
-        console.log("Object.create", cleanObjectCreatePropertyNames);
-
-        cleanInstancePropertyNames = Montage.getSerializablePropertyNames(cleanInstanceConstructor);        
-        console.log("Constructor", cleanInstancePropertyNames);
-
-        expect(triggerPropertyNames).toEqual(["children", "ancestors", "identifier"]);
+        expect(triggerPropertyNames).toEqual(["ancestors", "siblings", "favoriteAunts", "identifier"]);
         expect(triggerPropertyNames).toEqual(cleanObjectCreatePropertyNames);
-        expect(cleanObjectCreatePropertyNames).toEqual(cleanInstancePropertyNames);
+        expect(cleanObjectCreatePropertyNames).toEqual(cleanConstructorInstancePropertyNames);
     });
 
 });
