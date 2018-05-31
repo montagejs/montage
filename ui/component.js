@@ -2918,8 +2918,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
      * Register a component for beeing a dragging source.
      */
     registerForDragSource: {
-        value: function (draggingOperationType) {
+        value: function () {
             this.dragManager.registerForDragSource(this);
+            this.classList.add("montage-drag-source");
         }
     },
 
@@ -2929,11 +2930,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     unregisterForDragSource: {
         value: function () {
             this.dragManager.unregisterForDragSource(this);
+            this.classList.remove("montage-drag-source");
         }
     },
 
     /**
-     * Register a component for beeing a drop destination.
+     * Register a component for beeing a drag destination.
      */
     registerForDragDestination: {
         value: function () {
@@ -2943,7 +2945,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     },
 
     /**
-     * Unregister a component for beeing a drop destination.
+     * Unregister a component for beeing a drag destination.
      */
     unregisterForDragDestination: {
         value: function () {
@@ -3010,7 +3012,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             }
 
             if (acceptDragOperation) {
-                this.classList.add('accept-dragging-image');
+                this.classList.add('accept-dragged-image');
             }
 
             this.acceptDragOperation = acceptDragOperation;
@@ -3023,7 +3025,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
      */
     _draggingEnded: {
         value: function (draggingOperationInfo) {
-            this.classList.remove('accept-dragging-image');
+            this.classList.remove('accept-dragged-image');
 
             if (typeof this.draggingEnded === "function") {
                 this.draggingEnded(draggingOperationInfo);
@@ -3037,7 +3039,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
      */
     _draggingEntered: {
         value: function (draggingOperationInfo) {
-            this.classList.add("dragging-image-entered");
+            this.classList.add("dragged-image-entered");
 
             if (typeof this.draggingEntered === "function") {
                 this.draggingEntered(draggingOperationInfo);
@@ -3051,7 +3053,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
      */
     _draggingUpdated: {
         value: function (draggingOperationInfo) {
-            this.classList.add("dragging-image-over");
+            this.classList.add("dragged-image-over");
 
             if (typeof this.draggingUpdated === "function") {
                 this.draggingUpdated(draggingOperationInfo);
@@ -3065,8 +3067,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
      */
     _draggingExited: {
         value: function (draggingOperationInfo) {
-            this.classList.remove("dragging-image-entered");
-            this.classList.remove("dragging-image-over");
+            this.classList.remove("dragged-image-entered");
+            this.classList.remove("dragged-image-over");
 
             if (typeof this.draggingExited === "function") {
                 this.draggingExited(draggingOperationInfo);
@@ -3078,28 +3080,28 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
      * Called after the released image has been removed from the screen, 
      * allowing the receiver to import the data.
      */
-    _performDropOperation: {
+    _performDragOperation: {
         value: function (draggingOperationInfo) {
             if (this.acceptDragOperation) {
-                if (typeof this.performDropOperation === "function") {
-                    this.performDropOperation(draggingOperationInfo);
+                if (typeof this.performDragOperation === "function") {
+                    this.performDragOperation(draggingOperationInfo);
                 }
             }
         }
     },
 
     /**
-     * Called when the dropping operation is complete, 
+     * Called when the dragging operation is complete, 
      * allowing the receiver to perform any necessary clean-up.
      */
-    _concludeDropOperation: {
+    _concludeDragOperation: {
         value: function (draggingOperationInfo) {
             if (this.acceptDragOperation) {
-                this.classList.remove("dragging-image-entered");
-                this.classList.remove("dragging-image-over");
+                this.classList.remove("dragged-image-entered");
+                this.classList.remove("dragged-image-over");
 
-                if (typeof this.concludeDropOperation === "function") {
-                    this.concludeDropOperation(draggingOperationInfo);
+                if (typeof this.concludeDragOperation === "function") {
+                    this.concludeDragOperation(draggingOperationInfo);
                 }
             }
         }

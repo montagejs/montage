@@ -28,7 +28,7 @@ exports.DropInner = Component.specialize(/** @lends DropInner# */ {
         }
     },
 
-    performDropOperation: {
+    performDragOperation: {
         value: function (draggingOperationInfo) {
             console.log('dropzone inner received dragging operation');
         }

@@ -28,7 +28,7 @@ exports.DropOuter = Component.specialize(/** @lends DropOuter# */ {
         }
     },
 
-    performDropOperation: {
+    performDragOperation: {
         value: function (draggingOperationInfo) {
             console.log('dropzone outer received dragging operation');
         }

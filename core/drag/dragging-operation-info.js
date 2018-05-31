@@ -3,13 +3,13 @@ var Montage = require("../core").Montage;
 // name -> DraggingOperationContext?
 exports.DraggingOperationInfo = Montage.specialize({
 
-    source: {
+    dragSource: {
         value: null
     },
 
     draggedImage: {
         set: function (image) {
-            if (!this.isDragging) {
+            if (!this.isDraggOperationStarted) {
                 this._draggedImage = image;
             }
         },
@@ -18,7 +18,7 @@ exports.DraggingOperationInfo = Montage.specialize({
         }
     },
 
-    isDragging: {
+    isDraggOperationStarted: {
         value: false
     },
 
@@ -46,28 +46,28 @@ exports.DraggingOperationInfo = Montage.specialize({
         value: 0
     },
 
-    draggingSourcePlaceholderStrategy: {
-        value: 0 // default DraggingSourcePlaceholderStrategyHidden
+    dragSourcePlaceholderStrategy: {
+        value: 0 // default DragSourcePlaceholderStrategyHidden
     },
     
-    draggingOperationType: {
+    dragOperationType: {
         value: 0 // default DragOperationCopy
     },
 
-    _draggingSourceContainer: {
+    _dragSourceContainer: {
         value: null
     },
 
-    draggingSourceContainer: {
+    dragSourceContainer: {
         set: function (element) {
             if (element instanceof Element) {
-                this._draggingSourceContainer = element;
+                this._dragSourceContainer = element;
             } else if (element.element instanceof Element) {
-                this._draggingSourceContainer = element.element;
+                this._dragSourceContainer = element.element;
             }
         },
         get: function () {
-            return this._draggingSourceContainer;
+            return this._dragSourceContainer;
         }
     },
 
@@ -83,6 +83,10 @@ exports.DraggingOperationInfo = Montage.specialize({
 
     hasBeenDrop: {
         value: false
+    },
+
+    dragDestination: {
+        value: null
     }
 
 });

@@ -33,25 +33,25 @@ exports.Drop = Component.specialize(/** @lends Drop# */ {
 
     draggingStarted: {
         value: function (draggingOperationInfo) {
-            var value = draggingOperationInfo.source.value;
+            var value = draggingOperationInfo.dragSource.value;
             return value && this.data.indexOf(value) === -1 && 
                 this.dataSource.indexOf(value) > -1;
         }
     },
 
-    performDropOperation: {
+    performDragOperation: {
         value: function (draggingOperationInfo) {
             console.log(
-                draggingOperationInfo.source.identifier + 
+                draggingOperationInfo.dragSource.identifier + 
                 ': ' + draggingOperationInfo.data.get('secret')
             );
 
-            var value = draggingOperationInfo.source.value;
+            var value = draggingOperationInfo.dragSource.value;
 
             if (value && this.data.indexOf(value) === -1) {
                 this.data.push(value);
 
-                if (draggingOperationInfo.draggingOperationType === DragManager.DragOperationMove) {
+                if (draggingOperationInfo.dragOperationType === DragManager.DragOperationMove) {
                     var index;
 
                     if (this.dataSource && (index = this.dataSource.indexOf(value)) > -1) {

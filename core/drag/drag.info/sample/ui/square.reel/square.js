@@ -37,16 +37,16 @@ exports.Square = Component.specialize(/** @lends Square# */ {
     beginDraggingOperation: {
         value: function (draggingOperationInfo) {
             if (this.enableMoveOperation) {
-                draggingOperationInfo.draggingOperationType = DragManager.DragOperationMove;
+                draggingOperationInfo.dragOperationType = DragManager.DragOperationMove;
             }
 
             if (this.container) {
-                draggingOperationInfo.draggingSourceContainer = this.container;
+                draggingOperationInfo.dragSourceContainer = this.container;
             }
 
             if (this.enableVisiblePlaceholder) {
-                draggingOperationInfo.draggingSourcePlaceholderStrategy = (
-                    DragManager.DraggingSourcePlaceholderStrategyVisible
+                draggingOperationInfo.dragSourcePlaceholderStrategy = (
+                    DragManager.DragSourcePlaceholderStrategyVisible
                 );
             }
             
@@ -55,8 +55,9 @@ exports.Square = Component.specialize(/** @lends Square# */ {
             }
 
             if (this.switchDraggedImage) {
-                var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
+                    circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+
                 circle.setAttributeNS(null, 'cx', 25);
                 circle.setAttributeNS(null, 'cy', 25);
                 circle.setAttributeNS(null, 'r', 25);

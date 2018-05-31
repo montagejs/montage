@@ -28,6 +28,6 @@
     display: none;
 }
 
-.Square.montage-dragging-image {
+.Square.montage-dragged-image {
     background-color: #9b59b6;
 }

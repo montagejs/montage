@@ -29,22 +29,22 @@
     display: block;
 }
 
-.Drop.accept-dragging-image {
+.Drop.accept-dragged-image {
     border: 4px dashed #3498db25;
     animation: blink 1.5s linear infinite alternate;
 }
 
-.Drop.accept-dragging-image.is-empty .drop-placeholder {
+.Drop.accept-dragged-image.is-empty .drop-placeholder {
     color:#3498db25;
     animation: blink 1.5s linear infinite alternate;
 }
 
-.Drop.dragging-image-over.is-empty .drop-placeholder {
+.Drop.dragged-image-over.is-empty .drop-placeholder {
     color:#3498db;
     animation: none;
 }
 
-.Drop.dragging-image-over {
+.Drop.dragged-image-over {
     border: 4px solid #3498db;
     animation: none;
 }
