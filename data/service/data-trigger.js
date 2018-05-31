@@ -494,6 +494,7 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
     _addTrigger: {
         value: function (service, objectDescriptor, prototype, name) {
             var descriptor = objectDescriptor.propertyDescriptorForName(name),
+                serializable = Montage.getPropertyAttribute(prototype, name, "serializable"),
                 trigger;
             if (descriptor) {
                 trigger = Object.create(this._getTriggerPrototype(service));
@@ -515,6 +516,7 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
                         }
                     });
                 } else {
+                    console.log("Serializable", name, serializable);
                     Montage.defineProperty(prototype, name, {
                         get: function () {
                             return trigger._getValue(this);
