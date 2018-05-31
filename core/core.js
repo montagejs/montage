@@ -463,9 +463,14 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
         }
 
         if (SERIALIZABLE in descriptor) {
+            
+            var attributeProperties = getAttributeProperties(obj, SERIALIZABLE);
+            
             // get the _serializableAttributeProperties property or creates it through the entire chain if missing.
-            getAttributeProperties(obj, SERIALIZABLE)[prop] = descriptor.serializable;
+            attributeProperties[prop] = descriptor.serializable;
         }
+
+        
 
         // clear the cache for super() for property we're about to redefine.
         // But If we're defining a property as part of a Type/Class construction, we most likely don't need to worry about

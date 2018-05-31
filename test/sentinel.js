@@ -2,7 +2,8 @@ console.log('montage-testing', 'Start');
 
 module.exports = require("montage-testing").run(require, [
 
-    {name: "spec/data/data-operation"}
+    // {name: "spec/data/data-operation"},
+    {name: "spec/data/data-trigger"}
     // {name: "spec/data/raw-data-worker"},
     // {name: "spec/data/data-service-mapping"},
     // {name: "spec/data/raw-data-service"},
