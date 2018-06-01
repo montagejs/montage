@@ -6,6 +6,7 @@ var Montage = require("../core").Montage,
 var DRAG_SOURCE = 0;
 var DRAG_DESTINATION = 1;
 var TOUCH_POINTER = "touch";
+var NOT_ALLOWED_CURSOR = "not-allowed";
 var PX = "px";
 
 var DragManager = exports.DragManager = Montage.specialize({
@@ -110,6 +111,10 @@ var DragManager = exports.DragManager = Montage.specialize({
 
     _dragEnterCounter: {
         value: 0
+    },
+
+    _dragEffect: {
+        value: null
     },
 
     initWithComponent: {
@@ -411,14 +416,11 @@ var DragManager = exports.DragManager = Montage.specialize({
      */
     _findDragDestinationAtPosition: {
         value: function (positionX, positionY) {
-            var dragDestination = this._findRegisteredComponentAtPosistion(
+            return this._findRegisteredComponentAtPosistion(
                 positionX,
                 positionY, 
                 DRAG_DESTINATION
             );
-
-            return dragDestination && dragDestination.acceptDragOperation ? 
-                dragDestination : null;
         }
     },
 
@@ -801,6 +803,13 @@ var DragManager = exports.DragManager = Montage.specialize({
                         draggingOperationInfo.positionX,
                         draggingOperationInfo.positionY
                     );
+
+                    if (dragDestination && !dragDestination.acceptDragOperation) {
+                        dragDestination = null;
+                        this._dragEffect = NOT_ALLOWED_CURSOR;
+                    } else {
+                        this._dragEffect = draggingOperationInfo.dragEffect;
+                    }
                     
                     if (draggingOperationInfo.dragSource) {
                         draggingOperationInfo.dragSource._updateDraggingOperation(
@@ -912,7 +921,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                 }
 
                 this._rootComponent.element.style.cursor = this._dragDestination ?
-                    draggingOperationInfo.dropEffect : draggingOperationInfo.dragEffect;
+                    draggingOperationInfo.dropEffect : this._dragEffect;
 
             } else if (this._willTerminateDraggingOperation) {
                 this._rootComponent.element.style.cursor = DraggingOperationType.Default;
