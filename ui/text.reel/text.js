@@ -56,6 +56,17 @@ var MontageText = exports.Text = Component.specialize( /**  @lends module:montag
     },
 
     /**
+     * An optional reverter for transforming the `value` into the
+     * corresponding rendered text.
+     * Converters are called at time of draw.
+     * @type {?Converter}
+     * @default null
+    */
+    reverter: {
+        value: null
+    },
+
+    /**
      * The default string value assigned to the Text instance.
      * @type {string}
      * @default "" empty string
@@ -91,7 +102,9 @@ var MontageText = exports.Text = Component.specialize( /**  @lends module:montag
             var displayValue = (typeof this._value !== "undefined" && this._value !== null) ? this._value : this.defaultValue;
 
             //push to DOM
-            this._valueNode.data = this.converter ? this.converter.convert(displayValue) : displayValue;
+            this._valueNode.data =  this.converter ?    this.converter.convert(displayValue) : 
+                                    this.reverter ?     this.reverter.revert(displayValue) : 
+                                                        displayValue;
         }
     }
 
