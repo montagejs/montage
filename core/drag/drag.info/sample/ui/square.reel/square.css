@@ -20,10 +20,6 @@
     text-align: center;
 }
 
-.Square:hover {
-    cursor: move;
-}
-
 .Square.hide {
     display: none;
 }

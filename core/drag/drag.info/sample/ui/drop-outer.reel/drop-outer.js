@@ -1,7 +1,8 @@
 /**
  * @module ui/drop-outer.reel
  */
-var Component = require("montage/ui/component").Component;
+var Component = require("montage/ui/component").Component,
+    DraggingOperationType = require("montage/core/drag/dragging-operation-type").DraggingOperationType;
 
 /**
  * @class DropOuter
@@ -25,6 +26,12 @@ exports.DropOuter = Component.specialize(/** @lends DropOuter# */ {
     draggingStarted: {
         value: function (draggingOperationInfo) {
            return true;
+        }
+    },
+
+    draggingEntered: {
+        value: function (draggingOperationInfo) {
+            draggingOperationInfo.dropEffect = DraggingOperationType.Link;
         }
     },
 

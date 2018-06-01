@@ -1,7 +1,8 @@
 /**
  * @module ui/drop-inner.reel
  */
-var Component = require("montage/ui/component").Component;
+var Component = require("montage/ui/component").Component,
+    DraggingOperationType = require("montage/core/drag/dragging-operation-type").DraggingOperationType;
 
 /**
  * @class DropInner
@@ -25,6 +26,12 @@ exports.DropInner = Component.specialize(/** @lends DropInner# */ {
     draggingStarted: {
         value: function (draggingOperationInfo) {
            return true;
+        }
+    },
+
+    draggingEntered: {
+        value: function (draggingOperationInfo) {
+            draggingOperationInfo.dropEffect = DraggingOperationType.Move;
         }
     },
 

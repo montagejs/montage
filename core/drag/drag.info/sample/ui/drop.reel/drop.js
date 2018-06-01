@@ -2,7 +2,8 @@
  * @module ui/drop.reel
  */
 var Component = require("montage/ui/component").Component,
-    DragManager = require("montage/core/drag/drag-manager").DragManager;
+    DragManager = require("montage/core/drag/drag-manager").DragManager,
+    DraggingOperationType = require("montage/core/drag/dragging-operation-type").DraggingOperationType;
 
 /**
  * @class Drop
@@ -34,7 +35,6 @@ exports.Drop = Component.specialize(/** @lends Drop# */ {
     draggingStarted: {
         value: function (draggingOperationInfo) {
             if (draggingOperationInfo.dragSource) {
-
                 var value = draggingOperationInfo.dragSource.value;
                 return value && this.data.indexOf(value) === -1 && 
                     this.dataSource.indexOf(value) > -1;
@@ -56,10 +56,16 @@ exports.Drop = Component.specialize(/** @lends Drop# */ {
                 if (value && this.data.indexOf(value) === -1) {
                     this.data.push(value);
     
-                    if (draggingOperationInfo.dragOperationType === DragManager.DragOperationMove) {
+                    if (
+                        draggingOperationInfo.dragEffect === 
+                        DraggingOperationType.Move
+                    ) {
                         var index;
     
-                        if (this.dataSource && (index = this.dataSource.indexOf(value)) > -1) {
+                        if (
+                            this.dataSource && 
+                            (index = this.dataSource.indexOf(value)) > -1
+                        ) {
                             this.dataSource.splice(index, 1);
                         }
                     }

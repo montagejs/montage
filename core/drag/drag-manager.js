@@ -1,13 +1,11 @@
 var Montage = require("../core").Montage,
     TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
-    DraggingOperationInfo = require("./dragging-operation-info").DraggingOperationInfo;
+    DraggingOperationInfo = require("./dragging-operation-info").DraggingOperationInfo,
+    DraggingOperationType = require("./dragging-operation-type").DraggingOperationType;
 
 var DRAG_SOURCE = 0;
 var DRAG_DESTINATION = 1;
 var TOUCH_POINTER = "touch";
-var POINTER_MOVE = "move";
-var POINTER_COPY = "copy";
-var POINTER_DEFAULT = "default";
 var PX = "px";
 
 var DragManager = exports.DragManager = Montage.specialize({
@@ -719,9 +717,9 @@ var DragManager = exports.DragManager = Montage.specialize({
                     )
                 ));
 
-                draggingOperationInfo.dragOperationType = (
-                    dragSource.dragOperationType || 
-                    DragManager.DragOperationCopy
+                draggingOperationInfo.dragEffect = (
+                    dragSource.dragEffect || 
+                    DraggingOperationType.Default
                 );
 
                 dragSource._beginDraggingOperation(draggingOperationInfo);
@@ -800,29 +798,37 @@ var DragManager = exports.DragManager = Montage.specialize({
                     }
                 } else {
                     var dragDestination = this._findDragDestinationAtPosition(
-                        this._draggingOperationInfo.positionX,
-                        this._draggingOperationInfo.positionY
+                        draggingOperationInfo.positionX,
+                        draggingOperationInfo.positionY
                     );
                     
-                    if (this._draggingOperationInfo.dragSource) {
-                        this._draggingOperationInfo.dragSource._updateDraggingOperation(
-                            this._draggingOperationInfo
+                    if (draggingOperationInfo.dragSource) {
+                        draggingOperationInfo.dragSource._updateDraggingOperation(
+                            draggingOperationInfo
                         );
                     }
                             
                     if (dragDestination !== this._dragDestination) {
                         if (this._dragDestination) {
-                            this._notifyDragDestinationDraggedImageHasExited();
+                            this._notifyDragDestinationDraggedImageHasExited(
+                                draggingOperationInfo
+                            );
                         }
-        
+
+                        this._dragDestination = dragDestination;
+
                         if (dragDestination) {
-                            this._notifyDragDestinationDraggedImageHasEntered();
+                            this._notifyDragDestinationDraggedImageHasEntered(
+                                draggingOperationInfo
+                            );
                         }
                     } else if (dragDestination) {
-                        this._notifyDragDestinationDraggedImageHasUpdated();
+                        this._notifyDragDestinationDraggedImageHasUpdated(
+                            draggingOperationInfo
+                        );
+                    } else {
+                        this._dragDestination = null;
                     }
-        
-                    this._dragDestination = dragDestination;
                 }
             }
         }
@@ -905,17 +911,11 @@ var DragManager = exports.DragManager = Montage.specialize({
                         translateX + "px," + translateY + "px,0)";
                 }
 
-                if (
-                    this._dragDestination && 
-                    draggingOperationInfo.dragOperationType === 
-                    DragManager.DragOperationCopy
-                ) {
-                    this._rootComponent.element.style.cursor = POINTER_COPY;
-                } else {
-                    this._rootComponent.element.style.cursor = POINTER_MOVE;
-                }
+                this._rootComponent.element.style.cursor = this._dragDestination ?
+                    draggingOperationInfo.dropEffect : draggingOperationInfo.dragEffect;
+
             } else if (this._willTerminateDraggingOperation) {
-                this._rootComponent.element.style.cursor = POINTER_DEFAULT;
+                this._rootComponent.element.style.cursor = DraggingOperationType.Default;
 
                 if (draggingOperationInfo.draggedImage) {
                     document.body.removeChild(draggingOperationInfo.draggedImage);
@@ -944,14 +944,12 @@ var DragManager = exports.DragManager = Montage.specialize({
                     );
                 }
 
-                this._dispatchDraggingOperationEnd(
-                    draggingOperationInfo
-                );
+                this._dispatchDraggingOperationEnd(draggingOperationInfo);
 
                 if (
                     draggingOperationInfo.dragSource &&
-                    draggingOperationInfo.dragOperationType === 
-                    DragManager.DragOperationMove
+                    draggingOperationInfo.dragEffect === 
+                    DraggingOperationType.Move
                 ) {
                     this._shouldRemovePlaceholder = true;
                     this._rootComponent.needsDraw = true;
@@ -977,8 +975,8 @@ var DragManager = exports.DragManager = Montage.specialize({
                 draggedImage.style.height = draggedImageBoundingRect.height + PX;
 
                 if (
-                    draggingOperationInfo.dragOperationType === 
-                    DragManager.DragOperationMove
+                    draggingOperationInfo.dragEffect === 
+                    DraggingOperationType.Move
                 ) {
                     var dragSourceElement = draggingOperationInfo.dragSource.element;
                     this._oldDragSourceDisplayStyle = dragSourceElement.style.display;
@@ -1010,7 +1008,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                 }
 
                 document.body.appendChild(draggedImage);
-                draggingOperationInfo.isDraggOperationStarted = true;
+                draggingOperationInfo.isDragOperationStarted = true;
                 this._needsToWaitforDraggedImageBoundaries = true;
             }
         }
@@ -1041,22 +1039,6 @@ var DragManager = exports.DragManager = Montage.specialize({
     }
 
 }, {
-
-    DragOperationCopy: {
-        value: 0
-    },
-
-    DragOperationLink: {
-        value: 1
-    },
-
-    DragOperationMove: {
-        value: 2
-    },
-
-    DragOperationAll :{
-        value: 3
-    },
 
     DragSourcePlaceholderStrategyHidden: {
         value: 0

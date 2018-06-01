@@ -2,7 +2,8 @@
  * @module ui/square.reel
  */
 var Component = require("montage/ui/component").Component,
-    DragManager = require("montage/core/drag/drag-manager").DragManager;
+    DragManager = require("montage/core/drag/drag-manager").DragManager,
+    DraggingOperationType = require("montage/core/drag/dragging-operation-type").DraggingOperationType;
 
 /**
  * @class Square
@@ -37,7 +38,8 @@ exports.Square = Component.specialize(/** @lends Square# */ {
     beginDraggingOperation: {
         value: function (draggingOperationInfo) {
             if (this.enableMoveOperation) {
-                draggingOperationInfo.dragOperationType = DragManager.DragOperationMove;
+                draggingOperationInfo.dragEffect = DraggingOperationType.Move;
+                draggingOperationInfo.dropEffectAllowed = DraggingOperationType.Move;
             }
 
             if (this.container) {

@@ -3073,6 +3073,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             if (typeof this.draggingExited === "function") {
                 this.draggingExited(draggingOperationInfo);
             }
+
+            draggingOperationInfo.dropEffect = null;
         }
     },
 

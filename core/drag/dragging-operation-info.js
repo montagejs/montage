@@ -1,7 +1,8 @@
-var Montage = require("../core").Montage;
+var Montage = require("../core").Montage,
+    DraggingOperationType = require("./dragging-operation-type").DraggingOperationType;
 
 // name -> DraggingOperationContext?
-exports.DraggingOperationInfo = Montage.specialize({
+var DraggingOperationInfo = exports.DraggingOperationInfo = Montage.specialize({
 
     dragSource: {
         value: null
@@ -13,7 +14,7 @@ exports.DraggingOperationInfo = Montage.specialize({
 
     draggedImage: {
         set: function (image) {
-            if (!this.isDraggOperationStarted) {
+            if (!this.isDragOperationStarted) {
                 this._draggedImage = image;
             }
         },
@@ -22,7 +23,7 @@ exports.DraggingOperationInfo = Montage.specialize({
         }
     },
 
-    isDraggOperationStarted: {
+    isDragOperationStarted: {
         value: false
     },
 
@@ -54,8 +55,80 @@ exports.DraggingOperationInfo = Montage.specialize({
         value: 0 // default DragSourcePlaceholderStrategyHidden
     },
     
-    dragOperationType: {
-        value: 0 // default DragOperationCopy
+    _dropEffect: {
+        value: null
+    },
+
+    dropEffect: {
+        set: function (effect) {
+            if (
+                effect && 
+                DraggingOperationType.ALLOWED_EFFECTS.indexOf(effect) > -1 &&
+                DraggingOperationInfo.isDropEffectAllowed(
+                    effect, this.dropEffectAllowed
+                )
+            ) {
+                this._dropEffect = effect;
+            } else {
+                this._dropEffect = null;
+            }
+        }, 
+        get: function () {
+            if (!this._dropEffect) {
+                var index;
+
+                if (
+                    this.dropEffectAllowed === DraggingOperationType.All || 
+                    this.dropEffectAllowed.startsWith('c')
+                ) {
+                    this._dropEffect = DraggingOperationType.Copy;
+                } else if ((index = DraggingOperationType.ALLOWED_EFFECTS.indexOf(
+                    this.dropEffectAllowed)) > -1
+                ) {
+                    this._dropEffect = DraggingOperationType.ALLOWED_EFFECTS[index];
+                } else {
+                    this._dropEffect = DraggingOperationType.Link;
+                }
+            }
+
+            return this._dropEffect;
+        }
+    },
+
+    _dragEffect: {
+        value: null
+    },
+
+    dragEffect: {
+        set: function (effect) {
+            if (
+                !this.isDragOperationStarted && 
+                DraggingOperationType.ALLOWED_EFFECTS.indexOf(effect) > -1
+            ) {
+                this._dragEffect = effect;
+            }
+        }, 
+        get: function () {
+            return this._dragEffect || DraggingOperationType.Default;
+        }
+    },
+
+    _dropEffectAllowed: {
+        value: null
+    },
+
+    dropEffectAllowed: {
+        set: function (effect) {
+            if (
+                !this.isDragOperationStarted && 
+                DraggingOperationType.ALLOWED_DROP_EFFECTS.indexOf(effect) > -1
+            ) {
+                this._dropEffectAllowed = effect;
+            }
+        }, 
+        get: function () {
+            return this._dropEffectAllowed || DraggingOperationType.All;
+        }
     },
 
     _dragSourceContainer: {
@@ -91,6 +164,33 @@ exports.DraggingOperationInfo = Montage.specialize({
 
     dragDestination: {
         value: null
+    }
+
+}, {
+
+    isDropEffectAllowed: {
+        value: function (effect, effectAllowed) {
+            return effectAllowed === DraggingOperationType.All ||
+                effect === effectAllowed ||
+                (effect === DraggingOperationType.Copy && 
+                    (
+                        effectAllowed === DraggingOperationType.CopyMove || 
+                        effectAllowed === DraggingOperationType.CopyLink
+                    )
+                ) ||
+                (effect === DraggingOperationType.Move && 
+                    (
+                        effectAllowed === DraggingOperationType.CopyMove || 
+                        effectAllowed === DraggingOperationType.LinkMove
+                    )
+                ) ||
+                (effect === DraggingOperationType.Link && 
+                    (
+                        effectAllowed === DraggingOperationType.LinkMove || 
+                        effectAllowed === DraggingOperationType.CopyLink
+                    )
+                );
+        }
     }
 
 });
