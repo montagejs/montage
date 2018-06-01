@@ -5,6 +5,9 @@ var Montage = require("../core").Montage,
 var DRAG_SOURCE = 0;
 var DRAG_DESTINATION = 1;
 var TOUCH_POINTER = "touch";
+var POINTER_MOVE = "move";
+var POINTER_COPY = "copy";
+var POINTER_DEFAULT = "default";
 
 var DragManager = exports.DragManager = Montage.specialize({
 
@@ -645,30 +648,6 @@ var DragManager = exports.DragManager = Montage.specialize({
             this._draggingOperationInfo.positionY = (
                 this._draggingOperationInfo.startPositionY + event.translateY
             );
-
-            var dragDestination = this._findDragDestinationAtPosition(
-                this._draggingOperationInfo.positionX,
-                this._draggingOperationInfo.positionY
-            );      
-            
-            this._draggingOperationInfo.dragSource._updateDraggingOperation(
-                this._draggingOperationInfo
-            );
-
-            if (dragDestination !== this._dragDestination) {
-                if (this._dragDestination) {
-                    this._notifyDragDestinationDraggedImageHasExited();
-                }
-
-                if (dragDestination) {
-                    this._notifyDragDestinationDraggedImageHasEntered();
-                }
-            } else if (dragDestination) {
-                this._notifyDragDestinationDraggedImageHasUpdated();
-            }
-
-            this._dragDestination = dragDestination;
-
             this._rootComponent.needsDraw = true;
         }
     },
@@ -709,6 +688,29 @@ var DragManager = exports.DragManager = Montage.specialize({
                             draggingOperationInfo.dragSourceContainer.getBoundingClientRect()
                         );
                     }
+                } else {
+                    var dragDestination = this._findDragDestinationAtPosition(
+                        this._draggingOperationInfo.positionX,
+                        this._draggingOperationInfo.positionY
+                    );      
+                    
+                    this._draggingOperationInfo.dragSource._updateDraggingOperation(
+                        this._draggingOperationInfo
+                    );
+        
+                    if (dragDestination !== this._dragDestination) {
+                        if (this._dragDestination) {
+                            this._notifyDragDestinationDraggedImageHasExited();
+                        }
+        
+                        if (dragDestination) {
+                            this._notifyDragDestinationDraggedImageHasEntered();
+                        }
+                    } else if (dragDestination) {
+                        this._notifyDragDestinationDraggedImageHasUpdated();
+                    }
+        
+                    this._dragDestination = dragDestination;
                 }
             }
         }
@@ -793,12 +795,12 @@ var DragManager = exports.DragManager = Montage.specialize({
                     draggingOperationInfo.dragOperationType === 
                     DragManager.DragOperationCopy
                 ) {
-                    this._rootComponent.element.style.cursor = 'copy';
+                    this._rootComponent.element.style.cursor = POINTER_COPY;
                 } else {
-                    this._rootComponent.element.style.cursor = 'move';
+                    this._rootComponent.element.style.cursor = POINTER_MOVE;
                 }
             } else if (this._willTerminateDraggingOperation) {
-                this._rootComponent.element.style.cursor = 'default';
+                this._rootComponent.element.style.cursor = POINTER_DEFAULT;
                 document.body.removeChild(draggingOperationInfo.draggedImage);
 
                 if (this._dragDestination) {
