@@ -14,7 +14,18 @@ var HttpError = exports.HttpError = Montage.specialize({
 
     constructor: {
         value: function HttpError() {
-            this.stack = (new Error()).stack;
+            this._nativeStack = (new Error()).stack;            
+        }
+    },
+
+    stack: {
+        get: function () {
+            if (!this._stack) {
+                var stack = this._nativeStack.split("\n").slice(1);
+                stack.unshift("HttpError " + this.message);
+                this._stack = stack.join("\n");
+            }
+            return this._stack;
         }
     },
 

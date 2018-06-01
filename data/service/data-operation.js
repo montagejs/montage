@@ -1,5 +1,6 @@
 var Montage = require("core/core").Montage,
-    Criteria = require("core/criteria").Criteria;
+    Criteria = require("core/criteria").Criteria,
+    DataOperationType = require("./data-operation-type").DataOperationType;
 
 /**
  * Represents
@@ -13,7 +14,6 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     serializeSelf: {
         value: function (serializer) {
 
-            serializer.addObject(this.type);
             serializer.setProperty("type", this.type);
 
             serializer.setProperty("authorization", this.authorization);
@@ -356,99 +356,8 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     */
 
     Type: {
-        value: undefined // Will be exports.DataOperationType
+        value: DataOperationType // Will be exports.DataOperationType
     }
 });
 
-exports.DataOperationType = Montage.specialize(/** @lends DataOperation.prototype */ {
-        
-        identifier: {
-            get: function () {
-                return "operationType_" + (this.action ? this.action : "Unknown");
-            }
-        },
 
-        action: {
-            value: undefined
-        },
-
-        isCreate: {
-            value: false
-        },
-
-        isRead: {
-            value: false
-        },
-
-        isUpdate: {
-            value: false
-        },
-
-        isDelete: {
-            value: false
-        }
-
-        /*
-        For update, needs to model:
-            - property value changed, needed for properties with cardinality 1 or n
-            - property added / removed for properties with cardinality n
-
-            - snapshot of known values that changed?
-    */
-
-    }, {
-        
-        withNames: {
-            value: function (name, umbrellaName) {
-                var type = new this(),
-                    flagName = "is" + umbrellaName;
-                type.uuid = Math.random();
-                type.action = name;
-                type[flagName] = true;
-                this[name] = type;
-                exports[name + "OperationType"] = type;
-            }
-        }
-
-});
-
-exports.DataOperationType.withNames("Create", "Create");
-exports.DataOperationType.withNames("CreateFailed", "Create");
-exports.DataOperationType.withNames("CreateCompleted", "Create");
-
-/* Read is the first operation that mnodels a query */
-exports.DataOperationType.withNames("Read", "Read");
-/* ReadFailed is the operation that instructs the client that a read operation has failed canceled */
-exports.DataOperationType.withNames("ReadFailed", "Read");
-/* ReadUpdated is pushed by server when a query's result changes due to data changes from others */
-exports.DataOperationType.withNames("ReadUpdated", "Read");
-/* ReadProgress / ReadUpdate / ReadSeek is used to instruct server that more data is required for a "live" read / query
-    //             Need a better name, and a symetric? Or is ReadUpdated enough if it referes to previous operation
-    //         */
-exports.DataOperationType.withNames("ReadProgress",  "Read");
-/* ReadCancel is the operation that instructs baclkend that client isn't interested by a read operastion anymore */
-exports.DataOperationType.withNames("ReadCancel", "Read");
-/* ReadCanceled is the operation that instructs the client that a read operation is canceled */
-exports.DataOperationType.withNames("ReadCanceled", "Read");
-/* ReadCompleted is the operation that instructs the client that a read operation has returned all available data */
-exports.DataOperationType.withNames("ReadCompleted", "Read");
-
-exports.DataOperationType.withNames("Update", "Update");
-exports.DataOperationType.withNames("UpdateFailed", "Update");
-exports.DataOperationType.withNames("UpdateCompleted", "Update");
-
-exports.DataOperationType.withNames("Delete", "Delete");
-exports.DataOperationType.withNames("DeleteFailed", "Delete");
-exports.DataOperationType.withNames("DeleteCompleted", "Delete");
-
-/* Lock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
-exports.DataOperationType.withNames("Lock", "Lock");
-exports.DataOperationType.withNames("LockFailed", "Lock");
-exports.DataOperationType.withNames("LockCompleted", "Lock");
-
-/* RemmoteProcedureCall models the ability to invoke code logic on the server-side, being a DB StoredProcedure, or an method/function in a service */
-exports.DataOperationType.withNames("RemoteProcedureCall", "RemoteProcedureCall");
-exports.DataOperationType.withNames("RemoteProcedureCallCompleted", "RemoteProcedureCall");
-exports.DataOperationType.withNames("RemoteProcedureCallFailed", "RemoteProcedureCall");
-
-exports.DataOperation.Type = exports.DataOperationType;

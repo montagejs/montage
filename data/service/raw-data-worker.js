@@ -158,6 +158,7 @@ exports.RawDataWorker = Montage.specialize({
                 objectDescriptor = descriptor;
                 return self._serviceForObjectDescriptor(descriptor);
             }).then(function (service) {
+                
                 var handlerName = self._handlerNameForOperationType(operation.type);
                 if (!service) {
                     // console.log(operation, self, objectDescriptor);

@@ -1386,9 +1386,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 info, mapping, triggers, requisites;
 
             if (descriptor && !prototype) {
-                if (type.name === "Layer") {
-                    debugger;
-                }
+
                 prototype = constructor           ? constructor.prototype :
                             type.objectPrototype  ? type.objectPrototype :
                                                     Montage.prototype;
@@ -1670,10 +1668,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 delegateFunction = !useDelegate && isHandler && this._delegateFunctionForPropertyName(propertyName),
                 propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
                 childService = !isHandler && this._childServiceForObject(object);
-            if (propertyName === "allFeatures" || propertyName === "visibleFeatures") {
-                console.log(object.name);
-                debugger;
-            }
+            // if (propertyName === "allFeatures" || propertyName === "visibleFeatures") {
+            //     console.log(object.name);
+            //     debugger;
+            // }
             
             return useDelegate ?                    this.fetchRawObjectProperty(object, propertyName) :
                    delegateFunction ?                  delegateFunction.call(this, object) :

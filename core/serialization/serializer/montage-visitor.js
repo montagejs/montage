@@ -419,10 +419,10 @@ var MontageVisitor = Montage.specialize({
      */
     setSerializableObjectValues: {
         value: function (malker, object) {
-            if (object.isLayer) {
-                console.log(object.name);
-                debugger;
-            }
+            // if (object.isLayer) {
+            //     console.log(object.name);
+            //     debugger;
+            // }
             var type,
                 propertyName,
                 propertyNames = Montage.getSerializablePropertyNames(object),
