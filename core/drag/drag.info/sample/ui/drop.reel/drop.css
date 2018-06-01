@@ -18,11 +18,11 @@
     touch-action: none;
     box-sizing: border-box;
     position: relative;
+    color: #34495e;
 }
 
 .Drop .drop-placeholder {
     display: none;
-    color: #34495e;
 }
 
 .Drop.is-empty .drop-placeholder {

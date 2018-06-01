@@ -110,6 +110,10 @@ var DragManager = exports.DragManager = Montage.specialize({
         value: null
     },
 
+    _dragEnterCounter: {
+        value: 0
+    },
+
     initWithComponent: {
         value: function (component) {
             this._rootComponent = component;
@@ -134,6 +138,7 @@ var DragManager = exports.DragManager = Montage.specialize({
             }
 
             this._translateComposer.addEventListener("translateStart", this);
+            element.addEventListener("dragenter", this);
 
             return this;
         }
@@ -503,6 +508,24 @@ var DragManager = exports.DragManager = Montage.specialize({
         }
     },
 
+    _addDragListeners: {
+        value: function () {
+            var element = this._rootComponent.element;
+            element.addEventListener("dragover", this);
+            element.addEventListener("drop", this);
+            element.addEventListener("dragleave", this);
+        }
+    },
+
+    _removeDragListeners: {
+        value: function () {
+            var element = this._rootComponent.element;
+            element.removeEventListener("dragover", this);
+            element.removeEventListener("drop", this);
+            element.removeEventListener("dragleave", this);
+        }
+    },
+
     /**
      * @private
      * @function
@@ -511,6 +534,8 @@ var DragManager = exports.DragManager = Montage.specialize({
     _resetTranslateContext: {
         value: function () {
             this._removeTranslateListeners();
+            this._removeDragListeners();
+            this._dragEnterCounter = 0;
             this._isDragging = false;
             this.__translateComposer.translateX = 0;
             this.__translateComposer.translateY = 0;
@@ -519,6 +544,22 @@ var DragManager = exports.DragManager = Montage.specialize({
             this._dragSourceContainerBoundingRect = null;
             this._willTerminateDraggingOperation = false;
             this._needsToWaitforDraggedImageBoundaries = false;
+        }
+    },
+
+    _populateDragOperationWithDataTransfer: {
+        value: function (dataTransfer) {
+            this._draggingOperationInfo.data.set(
+                "files", dataTransfer.files
+            );
+
+            this._draggingOperationInfo.data.set(
+                "items", dataTransfer.items
+            );
+
+            this._draggingOperationInfo.data.set(
+                "types", dataTransfer.types
+            );
         }
     },
 
@@ -588,6 +629,73 @@ var DragManager = exports.DragManager = Montage.specialize({
                 this._rootComponent.element.removeEventListener(
                     "touchmove", this, true
                 );
+            }
+        }
+    },
+
+    handleDragenter: {
+        value: function (event) {
+            if (!this._dragEnterCounter) {
+                var types = event.dataTransfer.types;
+                
+                var draggingOperationInfo;
+
+                this._draggingOperationInfo = (draggingOperationInfo = (
+                    this._createDraggingOperationInfoWithSourceAndPosition(
+                        null, 
+                        event
+                    )
+                ));
+
+                this._populateDragOperationWithDataTransfer(event.dataTransfer);
+                this._dispatchDraggingOperationStart(draggingOperationInfo);
+                this._addDragListeners();
+                this._isDragging = true;
+                this._rootComponent.needsDraw = true;
+            }
+
+            this._dragEnterCounter++;
+        }
+    },
+
+    handleDragover: {
+        value: function (event) {
+            if (this._dragDestination) {
+                event.preventDefault();
+            }
+
+            if (
+                this._draggingOperationInfo.positionX !== event.pageX ||
+                this._draggingOperationInfo.positionY !== event.pageY
+            ) {
+                this._draggingOperationInfo.deltaX = (
+                    event.pageX - this._draggingOperationInfo.startPositionX
+                );
+                this._draggingOperationInfo.deltaY = (
+                    event.pageY - this._draggingOperationInfo.startPositionY
+                );
+                this._draggingOperationInfo.positionX = event.pageX;
+                this._draggingOperationInfo.positionY = event.pageY;
+    
+                this._rootComponent.needsDraw = true;
+            }
+        }
+    },
+
+    handleDrop: {
+        value: function (event) {
+            event.preventDefault();
+            this._populateDragOperationWithDataTransfer(event.dataTransfer);           
+            this.handleTranslateEnd();
+        }
+    },
+
+    handleDragleave: {
+        value: function (event) {
+            this._dragEnterCounter--;
+
+            if (!this._dragEnterCounter) {
+                this.handleTranslateCancel();
             }
         }
     },
@@ -678,7 +786,8 @@ var DragManager = exports.DragManager = Montage.specialize({
                 var draggingOperationInfo;
 
                 if ((draggingOperationInfo = this._draggingOperationInfo) && 
-                    !this._draggedImageBoundingRect
+                    !this._draggedImageBoundingRect && 
+                    draggingOperationInfo.dragSource
                 ) {
                     this._draggedImageBoundingRect = (
                         draggingOperationInfo.dragSource.element.getBoundingClientRect()
@@ -693,12 +802,14 @@ var DragManager = exports.DragManager = Montage.specialize({
                     var dragDestination = this._findDragDestinationAtPosition(
                         this._draggingOperationInfo.positionX,
                         this._draggingOperationInfo.positionY
-                    );      
-                    
-                    this._draggingOperationInfo.dragSource._updateDraggingOperation(
-                        this._draggingOperationInfo
                     );
-        
+                    
+                    if (this._draggingOperationInfo.dragSource) {
+                        this._draggingOperationInfo.dragSource._updateDraggingOperation(
+                            this._draggingOperationInfo
+                        );
+                    }
+                            
                     if (dragDestination !== this._dragDestination) {
                         if (this._dragDestination) {
                             this._notifyDragDestinationDraggedImageHasExited();
@@ -722,74 +833,77 @@ var DragManager = exports.DragManager = Montage.specialize({
             var draggingOperationInfo = this._draggingOperationInfo;
 
             if (this._isDragging && !this._willTerminateDraggingOperation) {
-                var draggedImage = draggingOperationInfo.draggedImage,
-                    translateX = draggingOperationInfo.deltaX,
-                    translateY = draggingOperationInfo.deltaY;
+                var draggedImage = draggingOperationInfo.draggedImage;
 
-                this._setUpDraggedImageIfNeeded(draggedImage);
+                if (draggedImage) {
+                    var translateX = draggingOperationInfo.deltaX,
+                        translateY = draggingOperationInfo.deltaY;
 
-                if (!this._needsToWaitforDraggedImageBoundaries) {
-                    draggedImage.style.visibility = "visible";
-                } else {
-                    this._needsToWaitforDraggedImageBoundaries = false;
-                }
+                    this._setUpDraggedImageIfNeeded(draggedImage);
 
-                if (this._dragSourceContainerBoundingRect) {
-                    var rect = this._dragSourceContainerBoundingRect,
-                        deltaPointerLeft, deltaPointerRight,
-                        deltaPointerTop, deltaPointerBottom;
-
-                    if (draggingOperationInfo.positionX - (
-                        deltaPointerLeft = (
-                            draggingOperationInfo.startPositionX - 
-                            this._draggedImageBoundingRect.left
-                        )
-                    ) < rect.left) {
-                        translateX = (
-                            rect.left - 
-                            draggingOperationInfo.startPositionX + 
-                            deltaPointerLeft
-                        );
-                    } else if (draggingOperationInfo.positionX + (
-                        deltaPointerRight = (
-                            this._draggedImageBoundingRect.right - 
-                            draggingOperationInfo.startPositionX
-                        )
-                    ) > rect.right) {
-                        translateX = (
-                            rect.right - 
-                            draggingOperationInfo.startPositionX - 
-                            deltaPointerRight
-                        );
+                    if (!this._needsToWaitforDraggedImageBoundaries) {
+                        draggedImage.style.visibility = "visible";
+                    } else {
+                        this._needsToWaitforDraggedImageBoundaries = false;
                     }
-                    
-                    if (draggingOperationInfo.positionY - (
-                        deltaPointerTop = (
-                            draggingOperationInfo.startPositionY - 
-                            this._draggedImageBoundingRect.top
-                        )
-                    ) < rect.top) {
-                        translateY = (
-                            rect.top - 
-                            draggingOperationInfo.startPositionY + 
-                            deltaPointerTop
-                        );
-                    } else if (draggingOperationInfo.positionY + (
-                        deltaPointerBottom = (
-                            this._draggedImageBoundingRect.bottom - 
-                            draggingOperationInfo.startPositionY
-                        )
-                    ) > rect.bottom) {
-                        translateY = (
-                            rect.bottom - 
-                            draggingOperationInfo.startPositionY - 
-                            deltaPointerBottom
-                        );
-                    }
-                }
 
-                draggedImage.style[DragManager.cssTransform] = "translate3d(" +
-                    translateX + "px," + translateY + "px,0)";
+                    if (this._dragSourceContainerBoundingRect) {
+                        var rect = this._dragSourceContainerBoundingRect,
+                            deltaPointerLeft, deltaPointerRight,
+                            deltaPointerTop, deltaPointerBottom;
+
+                        if (draggingOperationInfo.positionX - (
+                            deltaPointerLeft = (
+                                draggingOperationInfo.startPositionX - 
+                                this._draggedImageBoundingRect.left
+                            )
+                        ) < rect.left) {
+                            translateX = (
+                                rect.left - 
+                                draggingOperationInfo.startPositionX + 
+                                deltaPointerLeft
+                            );
+                        } else if (draggingOperationInfo.positionX + (
+                            deltaPointerRight = (
+                                this._draggedImageBoundingRect.right - 
+                                draggingOperationInfo.startPositionX
+                            )
+                        ) > rect.right) {
+                            translateX = (
+                                rect.right - 
+                                draggingOperationInfo.startPositionX - 
+                                deltaPointerRight
+                            );
+                        }
+                        
+                        if (draggingOperationInfo.positionY - (
+                            deltaPointerTop = (
+                                draggingOperationInfo.startPositionY - 
+                                this._draggedImageBoundingRect.top
+                            )
+                        ) < rect.top) {
+                            translateY = (
+                                rect.top - 
+                                draggingOperationInfo.startPositionY + 
+                                deltaPointerTop
+                            );
+                        } else if (draggingOperationInfo.positionY + (
+                            deltaPointerBottom = (
+                                this._draggedImageBoundingRect.bottom - 
+                                draggingOperationInfo.startPositionY
+                            )
+                        ) > rect.bottom) {
+                            translateY = (
+                                rect.bottom - 
+                                draggingOperationInfo.startPositionY - 
+                                deltaPointerBottom
+                            );
+                        }
+                    }
+
+                    draggedImage.style[DragManager.cssTransform] = "translate3d(" +
+                        translateX + "px," + translateY + "px,0)";
+                }
 
                 if (
                     this._dragDestination && 
@@ -802,7 +916,10 @@ var DragManager = exports.DragManager = Montage.specialize({
                 }
             } else if (this._willTerminateDraggingOperation) {
                 this._rootComponent.element.style.cursor = POINTER_DEFAULT;
-                document.body.removeChild(draggingOperationInfo.draggedImage);
+
+                if (draggingOperationInfo.draggedImage) {
+                    document.body.removeChild(draggingOperationInfo.draggedImage);
+                }
 
                 if (this._dragDestination) {
                     draggingOperationInfo.hasBeenDrop = true;
@@ -821,15 +938,18 @@ var DragManager = exports.DragManager = Montage.specialize({
 
                 this._dragDestination = null;
 
-                draggingOperationInfo.dragSource._endDraggingOperation(
-                    draggingOperationInfo
-                );
+                if (draggingOperationInfo.dragSource) {
+                    draggingOperationInfo.dragSource._endDraggingOperation(
+                        draggingOperationInfo
+                    );
+                }
 
                 this._dispatchDraggingOperationEnd(
                     draggingOperationInfo
                 );
 
                 if (
+                    draggingOperationInfo.dragSource &&
                     draggingOperationInfo.dragOperationType === 
                     DragManager.DragOperationMove
                 ) {
@@ -898,7 +1018,10 @@ var DragManager = exports.DragManager = Montage.specialize({
 
     _removeDragSourcePlaceholderIfNeeded: {
         value: function (draggingOperationInfo) {
-            if (this._shouldRemovePlaceholder && draggingOperationInfo) {
+            if (
+                this._shouldRemovePlaceholder && draggingOperationInfo && 
+                draggingOperationInfo.dragSource
+            ) {
                 var dragSourceElement = draggingOperationInfo.dragSource.element;
 
                 dragSourceElement.style.display = this._oldDragSourceDisplayStyle; 

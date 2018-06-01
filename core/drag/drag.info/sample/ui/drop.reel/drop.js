@@ -33,29 +33,35 @@ exports.Drop = Component.specialize(/** @lends Drop# */ {
 
     draggingStarted: {
         value: function (draggingOperationInfo) {
-            var value = draggingOperationInfo.dragSource.value;
-            return value && this.data.indexOf(value) === -1 && 
-                this.dataSource.indexOf(value) > -1;
+            if (draggingOperationInfo.dragSource) {
+
+                var value = draggingOperationInfo.dragSource.value;
+                return value && this.data.indexOf(value) === -1 && 
+                    this.dataSource.indexOf(value) > -1;
+            }
+            return false;
         }
     },
 
     performDragOperation: {
         value: function (draggingOperationInfo) {
-            console.log(
-                draggingOperationInfo.dragSource.identifier + 
-                ': ' + draggingOperationInfo.data.get('secret')
-            );
-
-            var value = draggingOperationInfo.dragSource.value;
-
-            if (value && this.data.indexOf(value) === -1) {
-                this.data.push(value);
-
-                if (draggingOperationInfo.dragOperationType === DragManager.DragOperationMove) {
-                    var index;
-
-                    if (this.dataSource && (index = this.dataSource.indexOf(value)) > -1) {
-                        this.dataSource.splice(index, 1);
+            if (draggingOperationInfo.dragSource) {
+                console.log(
+                    draggingOperationInfo.dragSource.identifier + 
+                    ': ' + draggingOperationInfo.data.get('secret')
+                );
+    
+                var value = draggingOperationInfo.dragSource.value;
+    
+                if (value && this.data.indexOf(value) === -1) {
+                    this.data.push(value);
+    
+                    if (draggingOperationInfo.dragOperationType === DragManager.DragOperationMove) {
+                        var index;
+    
+                        if (this.dataSource && (index = this.dataSource.indexOf(value)) > -1) {
+                            this.dataSource.splice(index, 1);
+                        }
                     }
                 }
             }

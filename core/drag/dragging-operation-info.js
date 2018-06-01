@@ -7,6 +7,10 @@ exports.DraggingOperationInfo = Montage.specialize({
         value: null
     },
 
+    _draggedImage: {
+        value: null
+    },
+
     draggedImage: {
         set: function (image) {
             if (!this.isDraggOperationStarted) {
