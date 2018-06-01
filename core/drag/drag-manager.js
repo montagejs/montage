@@ -8,6 +8,7 @@ var TOUCH_POINTER = "touch";
 var POINTER_MOVE = "move";
 var POINTER_COPY = "copy";
 var POINTER_DEFAULT = "default";
+var PX = "px";
 
 var DragManager = exports.DragManager = Montage.specialize({
 
@@ -850,10 +851,10 @@ var DragManager = exports.DragManager = Montage.specialize({
 
             if (!draggedImage.parentElement) {
                 var draggedImageBoundingRect = this._draggedImageBoundingRect;
-                draggedImage.style.top = draggedImageBoundingRect.top + "px";
-                draggedImage.style.left = draggedImageBoundingRect.left + "px";
-                draggedImage.style.width = draggedImageBoundingRect.width + "px";
-                draggedImage.style.height = draggedImageBoundingRect.height + "px";
+                draggedImage.style.top = draggedImageBoundingRect.top + PX;
+                draggedImage.style.left = draggedImageBoundingRect.left + PX;
+                draggedImage.style.width = draggedImageBoundingRect.width + PX;
+                draggedImage.style.height = draggedImageBoundingRect.height + PX;
 
                 if (
                     draggingOperationInfo.dragOperationType === 
@@ -869,10 +870,10 @@ var DragManager = exports.DragManager = Montage.specialize({
                     ) {
                         var placeholderElement = document.createElement('div');
                         placeholderElement.style.width = (
-                            draggedImageBoundingRect.width + "px"
+                            draggedImageBoundingRect.width + PX
                         );
                         placeholderElement.style.height = (
-                            draggedImageBoundingRect.height + "px"
+                            draggedImageBoundingRect.height + PX
                         );
                         placeholderElement.style.boxSizing = "border-box";
                         placeholderElement.classList.add(
