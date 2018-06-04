@@ -77,3 +77,18 @@ h4 {
 .samples .montage-drag-source-placeholder {
     border: 2px dashed #9b59b6;
 }
+
+.scrollable {
+    margin-top: 20px; 
+    overflow: auto;
+    width: 200px;
+    height: 200px;
+    border: 1px solid #33495d;
+    box-sizing: border-box;
+}
+
+.scrollable-inner {
+    width: 2000px;
+    height: 2000px;
+    background: linear-gradient(to bottom, #f8c291 0%,#b71540 100%);
+}

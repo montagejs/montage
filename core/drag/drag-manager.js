@@ -1060,63 +1060,132 @@ var DragManager = exports.DragManager = Montage.specialize({
         value: function (positionX, positionY) {
             var element = document.elementFromPoint(positionX, positionY),
                 scrollThreshold = this._scrollThreshold,
-                elementRect, height, top, bottom, scrollHeight, scrollTop, 
-                multiplier, multiplierY;
+                stopSearchingX = false,
+                stopSearchingY = false, 
+                rect, height, width, top, bottom, right, left, scrollWidth,
+                scrollLeft, scrollHeight, scrollTop, outsideBoundariesCounter,
+                notScrollable;
 
             while (element) {
-                elementRect = element.getBoundingClientRect();
-                height = elementRect.height;
-                top = elementRect.top;
-                bottom = elementRect.bottom;
+                rect = element.getBoundingClientRect();
+                height = rect.height;
+                width = rect.width;
+                
+                if (
+                    (!height || !width) || 
+                    ((notScrollable = (scrollHeight = element.scrollHeight) <= height)) || 
+                    (notScrollable && (scrollWidth = element.scrollWidth) <= width)
+                ) {
+                    // if no height or width 
+                    // or not scrollable
+                    element = element.parentElement;
+                    continue;
+                }
 
-                if (height && positionY>= top && positionY <= bottom) {
-                    scrollHeight = element.scrollHeight;
+                top = rect.top;
+                bottom = rect.bottom;
+                left = rect.left;
+                right = rect.right;
+                outsideBoundariesCounter = 0;
+                stopSearchingY = false;
 
-                    if (scrollHeight > height) {
-                        if (
-                            positionY >= top && 
-                            positionY <= top + scrollThreshold
-                        ) { // up
-                            scrollTop = element.scrollTop;
+                // Check for horizontal scroll up
+                if (positionY >= top) {
+                    if (positionY <= top + scrollThreshold) {
+                        scrollTop = element.scrollTop;
 
-                            if (scrollTop) {
-                                multiplier = positionY - top;
-                                multiplierY = (
-                                    scrollThreshold / (
-                                        multiplier >= 1 ? multiplier : 1
-                                    )
-                                ) * 2;
-                                element.scrollTop = scrollTop - multiplierY;
-                                this._rootComponent.needsDraw = true;
-                                element = null;
-                                break;
-                            }
-                        } else if (
-                            positionY <= bottom &&
-                            positionY >= bottom - scrollThreshold
-                        ) { // down
-                            scrollTop = element.scrollTop;
+                        if (scrollTop) {
+                            element.scrollTop = (
+                                scrollTop - 
+                                this._getScrollMultiplier(positionY - top)
+                            );
 
-                            if (scrollTop < scrollHeight) {
-                                multiplier = bottom - positionY;
-                                multiplierY = (
-                                    scrollThreshold / (
-                                        multiplier >= 1 ? multiplier : 1
-                                    )
-                                ) * 2;
-                                element.scrollTop = scrollTop + multiplierY;
-                                this._rootComponent.needsDraw = true;
-                                element = null;
-                                break;
-                            }
+                            this._rootComponent.needsDraw = true;
                         }
-                    }
 
-                    element = element.parentElement;    
+                        stopSearchingY = true;
+                    } else {
+                        outsideBoundariesCounter++;
+                    }
                 } else {
+                    outsideBoundariesCounter++;
+                }
+
+                // Check for horizontal scroll down
+                if (!stopSearchingY && positionY <= bottom) {
+                    if (positionY >= bottom - scrollThreshold) {
+                        scrollTop = element.scrollTop;
+
+                        if (scrollTop < scrollHeight) {   
+                            element.scrollTop = scrollTop + 
+                                this._getScrollMultiplier(bottom - positionY);
+                            this._rootComponent.needsDraw = true;
+                        }
+
+                        stopSearchingY = true;
+                    } else {
+                        outsideBoundariesCounter++;
+                    }
+                } else {
+                    outsideBoundariesCounter++;
+                }
+
+                // Check for vertical scroll left
+                if (positionX >= left) {
+                    if (positionX <= left + scrollThreshold) {
+                        scrollLeft = element.scrollLeft;
+
+                        if (scrollLeft) {
+                            element.scrollLeft = (
+                                scrollLeft - 
+                                this._getScrollMultiplier(positionX - left)
+                            );
+
+                            this._rootComponent.needsDraw = true;
+                        }
+
+                        stopSearchingX = true;
+                    } else {
+                        outsideBoundariesCounter++;
+                    }
+                } else {
+                    outsideBoundariesCounter++;
+                }
+
+                // Check for horizontal scroll right
+                if (!stopSearchingX && positionX <= right) {
+                    if (positionX >= right - scrollThreshold) {
+                        scrollLeft = element.scrollLeft;
+                        scrollWidth = scrollWidth || element.scrollWidth;
+
+                        if (scrollLeft < scrollWidth) {   
+                            element.scrollLeft = scrollLeft + 
+                                this._getScrollMultiplier(right - positionX);
+                            this._rootComponent.needsDraw = true;
+                        }
+
+                        stopSearchingX = true;
+                    } else {
+                        outsideBoundariesCounter++;
+                    }
+                } else {
+                    outsideBoundariesCounter++;
+                }
+
+                if (stopSearchingY || stopSearchingX ||
+                    outsideBoundariesCounter === 4
+                ) {
                     element = null;
+                } else {
+                    element = element.parentElement;
                 }
             }
+        }
+    },
+
+    _getScrollMultiplier: {
+        value: function (delta) {
+            return (this._scrollThreshold / (delta >= 1 ? delta : 1)) * 4;
         }
     }
 
