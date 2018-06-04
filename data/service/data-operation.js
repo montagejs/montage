@@ -1,4 +1,6 @@
-var Montage = require("core/core").Montage;
+var Montage = require("core/core").Montage,
+    Criteria = require("core/criteria").Criteria,
+    DataOperationType = require("./data-operation-type").DataOperationType;
 
 /**
  * Represents
@@ -8,6 +10,27 @@ var Montage = require("core/core").Montage;
  */
 exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */ {
 
+
+    serializeSelf: {
+        value: function (serializer) {
+
+            serializer.setProperty("type", this.type);
+
+            serializer.setProperty("authorization", this.authorization);
+            serializer.setProperty("context", this.context);
+            serializer.setProperty("creationIndex", this.creationIndex);
+            serializer.setProperty("creator", this.creator);
+            serializer.setProperty("criteria", this.criteria);
+            serializer.setProperty("data", this.data);
+            serializer.setProperty("dataIdentifier", this.dataIdentifier);
+            serializer.setProperty("dataType", this.dataType);
+            serializer.setProperty("index", this.index);
+            serializer.setProperty("lastModified", this.lastModified);
+            serializer.setProperty("referrer", this.referrer);
+            serializer.setProperty("time", this.time);
+        }
+    },
+
     /***************************************************************************
      * Constructor
      */
@@ -15,12 +38,12 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     constructor: {
         value: function DataOperation() {
             this.time = Date.now();
-            this._index = exports.DataOperation.prototype._currentIndex + 1 || 0;
-            exports.DataOperation.prototype._currentIndex = this._index;
+            this.creationIndex = exports.DataOperation.prototype._currentIndex + 1 || 0;
+            exports.DataOperation.prototype._currentIndex = this.creationIndex;
         }
     },
 
-    _currentIndex: {
+    creationIndex: {
         value: undefined
     },
 
@@ -29,6 +52,8 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      */
 
     /**
+     * //Benoit, I think this should be a uuid
+     *
      * @type {number}
      */
     id: {
@@ -36,15 +61,78 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     },
 
     /**
+     * A property used to give a meaningful name to an operation
+     *
+     * @type {string}
+     */
+    name: {
+        value: undefined
+    },
+    /**
+     *  BENOIT: we have an overlap in term of semantics between the type of the operation and the type of the data it applies to. So we either keep "type" for the operation itseld as it is, and dataType, or we flip, calling this operationType and the dataType becomes "type".
+
      * @type {DataOperation.Type.CREATE|DataOperation.Type.READ|DataOperation.Type.UPDATE|DataOperation.Type.DELETE}
      */
     type: {
-        value: undefined
+        value: undefined,
+        serializable: "value"
     },
 
     /**
-     * A number used to order operations according to when they were created.
+     *  BENOIT: the module for the DataService that is associated with that operation. It's expected to be the main service for Operations and a specific RawDataService for RawOperation
+
+     * @type {DataOperation.Type.CREATE|DataOperation.Type.READ|DataOperation.Type.UPDATE|DataOperation.Type.DELETE}
+     */
+
+    dataServiceModule: {
+        value: undefined
+    },
+
+     /**
+     * returns the data service associated with the operation
      *
+     * @type {Promnise}
+     */
+
+    dataService: {
+        get: function() {
+
+        }
+    },
+
+    /**
+     * The criteria that qualifies objects this operation applies to.
+     * For a create operation it may not apply? missing something?
+     * For a read operation it would be the criteria of the DataQuery.
+     * For an update, it describes the set of objects to receive the changes
+     * carried in this operation. It could be an "or" of primary keys to a more
+     * model-related set of property/values.
+     * For a delete, it would describes objects to delete.
+     * Expected to be a boolean expression to be applied to data
+     * objects to determine whether they should be impacted by this operation or not.
+     *
+     * "hazard_ID = #12AS7507"
+     *
+     * @type {Criteria}
+     */
+    criteria: {
+        get: function () {
+            return this._criteria;
+        },
+        set: function (criteria) {
+            this._criteria = criteria;
+        }
+    },
+
+    _criteria: {
+        value: undefined
+    },
+
+
+    /**
+     * creationTime
+     * A number used to order operations according to when they were created.
+     * // Add deprecation of "time" bellow
      * This is initialized when an operation is created to the value of
      * [Date.now()]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now}.
      * The value can then be changed, but it should only be changed to values
@@ -57,11 +145,42 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      *
      * @type {number}
      */
-    time: {
+    creationTime: {
         value: undefined
     },
 
     /**
+     * An operation that preceded and this one is related to. For a ReadUpdated, it would be the Read operation.
+     *
+     * @type {DataOperation}
+     */
+    referrer: {
+        value: undefined
+    },
+
+    /**
+     * Models the agent that created the operation.
+     *
+     * @type {Object}
+     */
+    creator: {
+        value: undefined
+    },
+
+    /**
+     * The authorization object representing an authenticated user, like a JWToken.
+     *
+     * @type {Object}
+     */
+    authorization: {
+        value: undefined
+    },
+
+    /**
+     * Deprecate?  Make programatic, so that users doesn't have to worry about it.
+     *
+     * Meant to be unique per agent only
+     *
      * A number that is greater than the index values of all operations created
      * before this one in the current application session and less than the
      * index values of all operations created after this one in the current
@@ -85,6 +204,8 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      * same `index` value, so sorting operations as described above will
      * correctly sort them according to when they were created.
      *
+     * SHOULD be READ ONLY
+     *
      * @type {number}
      */
     index: {
@@ -92,6 +213,7 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     },
 
     /**
+     * Benoit: This property's role is a bit fuzzy. context can be changing and arbitrary. Keep??
      * @type {Object}
      */
     context: {
@@ -102,18 +224,99 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      * Data Properties
      */
 
-    dataID: {
+    /**
+     * Benoit: I don't think this is needed as it's covered in a more generic
+     * way by the criteria property. Remove?
+     *
+     * //DataIdentifier:
+     * montage-data://environment/type/#12AS7507"
+     *
+     * 0r just the value: #12AS7507"
+     * @type {Object}
+     */
+    dataIdentifier: {
         value: undefined
     },
 
     dataType: {
-        value: undefined
+        value: undefined,
+        serializable: "value"
     },
 
     /**
+     * data is designed to carry the "meat" of an operation's specifics. For a create, it would be all properties
+     * of a new object (I'm assuming a create operation is modeling only 1 object's creation).
+     * For an update, it has to carry the new values, but also including values replaced,
+     * or the values of some key properties that are considered important for the integrity/unicity of an object.
+     *
+     * Besides new/soon-to-be-previous-values for cardinality:1 properties, relationships (cardinality:n)
+     * modifications should additionally support add/remove | (plus/minus in our range change callbacks)
+     * on top of replace.  If we use a single DataOperation class for all operation types, this property may
+     * end up having various format depending on the operation's type (CRUD,Lock, RPC...)
+     *
+     * This property also touches on the difference between object-level operation and raw-data operations.
+     *
+     * //Update
+     * {
+     *      criteria: "primeryKey = 1234",
+     *      type: "moduleId-of-object-desxcriptor"
+     *      foo:{
+     *          "minus": "Blah Blah",
+     *          "plus": "Bleh"
+     *      },
+     *      "toMany": {
+     *          "minus": [object1,object2],
+     *          "plus": [object3]
+     *      }
+     * }
+     *
+     * //Create
+     * {
+     *      foo:{
+     *          "plus": "Bleh"
+     *      },
+     *      "toMany": {
+     *          "plus": [object1,object2]
+     *      }
+     * }
+     *
+     *
+     * Or go more for a serialization-like approach:
+     * {
+     *         "root": {
+     *             "prototype": "package/data/main.datareel/model/custom-type",
+     *            "values": {
+     *               "foo": "Bleh",
+     *               "toMany": [
+     *                   {"@": "object1"},
+     *                   {"@": "object2"}
+     *               ]
+     *           },
+     *          //for update
+     *          "previousValues": {
+     *                  "foo": "Blah Blah",
+     *                  "toMany": []
+     *          }
+     *       },
+     *
+     *       "object1": {
+     *           "object": "object1-data-identifier"
+     *       },
+     *
+     *       "object2": {
+     *           "object": "object2-data-identifier"
+     *       }
+     *    }
+     *
+     *
      * @type {Object}
      */
     data: {
+        value: undefined,
+        serializable: "value"
+    },
+
+    snapshotData: {
         value: undefined
     },
 
@@ -147,14 +350,14 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
 
 }, /** @lends DataOperation */ {
 
-    Type: {
-        value: {
-            CREATE: {isCreate: true},
-            READ: {isRead: true},
-            UPDATE: {isUpdate: true},
-            DELETE: {isDelete: true}
-        }
-    }
 
+    /* Explore the opportunity to add more XHR-like API with events matching the semantic of possible sytmetric operations
+        and also promise API that would resolve to the matching operation success/failed
+    */
+
+    Type: {
+        value: DataOperationType // Will be exports.DataOperationType
+    }
 });
+
 

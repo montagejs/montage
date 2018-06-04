@@ -128,6 +128,7 @@ var MontageVisitor = Montage.specialize({
             var builderObject = this.builder.createCustomObject(),
                 substituteObject;
 
+            
             this.setObjectSerialization(object, builderObject);
 
             substituteObject = this.serializeMontageObject(malker, object, builderObject);
@@ -349,7 +350,10 @@ var MontageVisitor = Montage.specialize({
             if (!malker.legacyMode) {
                 var unitSerializer = new UnitSerializer()
                     .initWithMalkerAndVisitorAndObject(malker, this, object),
-                    bindings = Bindings.serializeObjectBindings(unitSerializer, object);
+                    bindings = Bindings.serializeObjectBindings(unitSerializer, object),
+                    propertyNames = new Set(Montage.getSerializablePropertyNames(object));
+
+                
 
                 if (bindings) {
                     var valuesObject = this.builder.top.getProperty("values");
@@ -357,7 +361,7 @@ var MontageVisitor = Montage.specialize({
 
                     
                     /* jshint forin: true */
-                    for (var key in bindings) {
+                    for (var key in bindings && propertyNames.has(key)) {
                     /* jshint forin: false */
                         this.builder.top.setProperty(key, bindings[key]);
                     }
@@ -415,6 +419,7 @@ var MontageVisitor = Montage.specialize({
                 propertyName,
                 propertyNames = Montage.getSerializablePropertyNames(object),
                 propertyNamesCount = propertyNames.length;
+
 
             for (var i = 0; i < propertyNamesCount; i++) {
                 propertyName = propertyNames[i];

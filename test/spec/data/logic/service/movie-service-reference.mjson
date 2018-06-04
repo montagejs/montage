@@ -1,0 +1,17 @@
+{
+    "root": {
+        "prototype": "montage/data/service/data-service-reference",
+        "properties": {
+            "module": {"%": "spec/data/logic/service/movie-service.mjson"},
+            "serviceName": "MovieService",
+            "prototypeName": "MovieService",
+            "types": [
+                {"@": "MovieDescriptor"}
+            ]
+        }
+    },
+
+    "MovieDescriptor": {
+        "object": "spec/data/logic/model/movie.mjson"
+    }
+}

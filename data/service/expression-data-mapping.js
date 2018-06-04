@@ -76,9 +76,12 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 this.objectDescriptor = value;
             }
 
-            this.schemaReference = deserializer.getProperty("schema");
-            if (this.schemaReference) {
+            this.value = deserializer.getProperty("schema");
+            if (value instanceof ObjectDescriptorReference) {
+                this.schemaDescriptorReference = value;
                 hasReferences = true;
+            } else {
+                this.schemaDescriptor = value;
             }
 
             value = deserializer.getProperty("requisitePropertyNames");
@@ -486,10 +489,24 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     _resolveRelationship: {
         value: function (object, propertyDescriptor, rule, scope) {
             var self = this;
-            return rule.evaluate(scope).then(function (data) {
-                self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor);
-                return null;
-            });
+            var result = rule.evaluate(scope);
+
+            // if (!result || !result.then) {
+            //     debugger;
+            // }
+            if (this._isAsync(result)) {
+                return result.then(function (data) {
+                    self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor);
+                    return null;
+                });
+            } else {
+                self._setObjectValueForPropertyDescriptor(object, result, propertyDescriptor);
+                return Promise.resolve(null);
+            }
+            // return result.then(function (data) {
+            //     self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor);
+            //     return null;
+            // });
         }
     },
 
@@ -611,7 +628,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 propertyDescriptor = rule && rule.propertyDescriptor,
                 isRelationship = propertyDescriptor && propertyDescriptor.valueDescriptor,
                 result;
-
 
             if (isRelationship && rule.converter) {
                 this._prepareObjectToRawDataRule(rule);
@@ -769,7 +785,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 converter.expression = converter.expression || rule.expression;
                 converter.foreignDescriptor = converter.foreignDescriptor || propertyDescriptor.valueDescriptor;
                 converter.objectDescriptor = this.objectDescriptor;
-                converter.serviceIdentifier = rule.serviceIdentifier;
+                converter.serviceIdentifier = converter.serviceIdentifier || rule.serviceIdentifier;
             }
         }
     },

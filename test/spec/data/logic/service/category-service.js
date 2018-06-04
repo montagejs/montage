@@ -13,6 +13,28 @@ exports.CategoryService = RawDataService.specialize(/** @lends CategoryService.p
             }]);
             this.rawDataDone(stream);
         }
+    },
+
+    saveRawData: {
+        value: function (rawData, object) {
+            if (rawData.categoryID) {
+                CategoryNames[rawData.categoryID] = rawData.name;
+            } else {
+                CategoryNames.push(rawData.name);
+            }
+            
+            return Promise.resolve(CategoryNames);
+        }
+    },
+
+    deleteRawData: {
+        value: function (rawData, object) {
+            if (rawData.categoryID && CategoryNames[rawData.categoryID]) {
+                CategoryNames.splice(rawData.categoryID, 1);
+            }
+            return Promise.resolve(CategoryNames);
+        }
     }
+    
 
 });

@@ -103,7 +103,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._setPropertyWithDefaults(serializer, "collectionValueType", this.collectionValueType);
             this._setPropertyWithDefaults(serializer, "valueObjectPrototypeName", this.valueObjectPrototypeName);
             this._setPropertyWithDefaults(serializer, "valueObjectModuleId", this.valueObjectModuleId);
-            this._setPropertyWithDefaults(serializer, "valueDescriptor", this._valueDescriptorReference);
+            this._setPropertyWithDefaults(serializer, "valueDescriptor", this._valueDescriptor || this._valueDescriptorReference);
             if (this.enumValues.length > 0) {
                 this._setPropertyWithDefaults(serializer, "enumValues", this.enumValues);
             }
@@ -125,11 +125,16 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             if (value !== void 0) {
                 this._owner = value;
             }
-            
+
             this._overridePropertyWithDefaults(deserializer, "cardinality");
-            
+
             if (this.cardinality === -1) {
                 this.cardinality = Infinity;
+            }
+
+            value = deserializer.getProperty("isDerived");
+            if (value !== void 0) {
+                this._isDerived = value;
             }
             
             this._overridePropertyWithDefaults(deserializer, "mandatory");
@@ -139,7 +144,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._overridePropertyWithDefaults(deserializer, "collectionValueType");
             this._overridePropertyWithDefaults(deserializer, "valueObjectPrototypeName");
             this._overridePropertyWithDefaults(deserializer, "valueObjectModuleId");
-            this._overridePropertyWithDefaults(deserializer, "_valueDescriptorReference", "valueDescriptor", "targetBlueprint");
+            this._overridePropertyWithDefaults(deserializer, "valueDescriptor", "valueDescriptor", "targetBlueprint");
             this._overridePropertyWithDefaults(deserializer, "enumValues");
             this._overridePropertyWithDefaults(deserializer, "defaultValue");
             this._overridePropertyWithDefaults(deserializer, "helpKey");
@@ -303,7 +308,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      */
     isDerived: {
         get: function () {
-            return false;
+            return this._isDerived || false;
         }
     },
     
@@ -366,11 +371,27 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
         get: function () {
             // TODO: Needed for backwards compatibility with ObjectDescriptorReference.
             // Remove eventually, this can become completely sync
+            if (this._valueDescriptor && typeof this._valueDescriptor.promise === "function") {
+                deprecate.deprecationWarningOnce("valueDescriptor reference via ObjectDescriptorReference", "direct reference via object syntax");
+                return this._valueDescriptor.promise(this.require);
+            } else {
+                return this._valueDescriptor;
+            }
+        },
+        set: function (descriptor) {
+            this._valueDescriptor = descriptor;
+        }
+    },
+
+    valueDescriptorReference: {
+        get: function () {
+            // TODO: Needed for backwards compatibility with ObjectDescriptorReference.
+            // Remove eventually, this can become completely sync
             if (this._valueDescriptorReference && typeof this._valueDescriptorReference.promise === "function") {
                 deprecate.deprecationWarningOnce("valueDescriptor reference via ObjectDescriptorReference", "direct reference via object syntax");
                 return this._valueDescriptorReference.promise(this.require);
             } else {
-                return this._valueDescriptorReference && Promise.resolve(this._valueDescriptorReference);
+                return this._valueDescriptor && Promise.resolve(this._valueDescriptor);
             }
         },
         set: function (descriptor) {

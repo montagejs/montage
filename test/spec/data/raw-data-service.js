@@ -141,10 +141,10 @@ describe("A RawDataService", function() {
         expect(parent.childServiceForType(Types[1].TYPE)).toEqual(children[2]);
         expect(parent.childServiceForType(Types[2].TYPE)).toEqual(children[4]);
         expect(parent.childServiceForType(Types[3].TYPE)).toEqual(children[7]);
-        expect(parent._getChildServiceForObject(objects[0])).toEqual(children[0]);
-        expect(parent._getChildServiceForObject(objects[1])).toEqual(children[2]);
-        expect(parent._getChildServiceForObject(objects[2])).toEqual(children[4]);
-        expect(parent._getChildServiceForObject(objects[3])).toEqual(children[7]);
+        expect(parent._childServiceForObject(objects[0])).toEqual(children[0]);
+        expect(parent._childServiceForObject(objects[1])).toEqual(children[2]);
+        expect(parent._childServiceForObject(objects[2])).toEqual(children[4]);
+        expect(parent._childServiceForObject(objects[3])).toEqual(children[7]);
 
         // Modify the children and verify the resulting service parent, types,
         // and type-to-child mapping.
@@ -174,10 +174,10 @@ describe("A RawDataService", function() {
         expect(parent.childServiceForType(Types[1].TYPE)).toEqual(children[2]);
         expect(parent.childServiceForType(Types[2].TYPE)).toEqual(children[4]);
         expect(parent.childServiceForType(Types[3].TYPE)).toEqual(children[7]);
-        expect(parent._getChildServiceForObject(objects[0])).toEqual(children[3]);
-        expect(parent._getChildServiceForObject(objects[1])).toEqual(children[2]);
-        expect(parent._getChildServiceForObject(objects[2])).toEqual(children[4]);
-        expect(parent._getChildServiceForObject(objects[3])).toEqual(children[7]);
+        expect(parent._childServiceForObject(objects[0])).toEqual(children[3]);
+        expect(parent._childServiceForObject(objects[1])).toEqual(children[2]);
+        expect(parent._childServiceForObject(objects[2])).toEqual(children[4]);
+        expect(parent._childServiceForObject(objects[3])).toEqual(children[7]);
 
         // Modify and verify some more.
         parent.removeChildService(children[3]);
@@ -204,10 +204,10 @@ describe("A RawDataService", function() {
         expect(parent.childServiceForType(Types[1].TYPE)).toEqual(children[2]);
         expect(parent.childServiceForType(Types[2].TYPE)).toEqual(children[4]);
         expect(parent.childServiceForType(Types[3].TYPE)).toEqual(children[7]);
-        expect(parent._getChildServiceForObject(objects[0])).toEqual(children[4]);
-        expect(parent._getChildServiceForObject(objects[1])).toEqual(children[2]);
-        expect(parent._getChildServiceForObject(objects[2])).toEqual(children[4]);
-        expect(parent._getChildServiceForObject(objects[3])).toEqual(children[7]);
+        expect(parent._childServiceForObject(objects[0])).toEqual(children[4]);
+        expect(parent._childServiceForObject(objects[1])).toEqual(children[2]);
+        expect(parent._childServiceForObject(objects[2])).toEqual(children[4]);
+        expect(parent._childServiceForObject(objects[3])).toEqual(children[7]);
 
         // Modify and verify some more. After the modification there will be no
         // more children for Types[0] so the first "all types" child should be
@@ -235,10 +235,10 @@ describe("A RawDataService", function() {
         expect(parent.childServiceForType(Types[1].TYPE)).toEqual(children[2]);
         expect(parent.childServiceForType(Types[2].TYPE)).toEqual(children[5]);
         expect(parent.childServiceForType(Types[3].TYPE)).toEqual(children[7]);
-        expect(parent._getChildServiceForObject(objects[0])).toEqual(children[7]);
-        expect(parent._getChildServiceForObject(objects[1])).toEqual(children[2]);
-        expect(parent._getChildServiceForObject(objects[2])).toEqual(children[5]);
-        expect(parent._getChildServiceForObject(objects[3])).toEqual(children[7]);
+        expect(parent._childServiceForObject(objects[0])).toEqual(children[7]);
+        expect(parent._childServiceForObject(objects[1])).toEqual(children[2]);
+        expect(parent._childServiceForObject(objects[2])).toEqual(children[5]);
+        expect(parent._childServiceForObject(objects[3])).toEqual(children[7]);
 
         // Modify and verify some more.
         parent.removeChildService(children[5]);
@@ -262,10 +262,10 @@ describe("A RawDataService", function() {
         expect(parent.childServiceForType(Types[1].TYPE)).toEqual(children[2]);
         expect(parent.childServiceForType(Types[2].TYPE)).toEqual(children[8]);
         expect(parent.childServiceForType(Types[3].TYPE)).toEqual(children[8]);
-        expect(parent._getChildServiceForObject(objects[0])).toEqual(children[8]);
-        expect(parent._getChildServiceForObject(objects[1])).toEqual(children[2]);
-        expect(parent._getChildServiceForObject(objects[2])).toEqual(children[8]);
-        expect(parent._getChildServiceForObject(objects[3])).toEqual(children[8]);
+        expect(parent._childServiceForObject(objects[0])).toEqual(children[8]);
+        expect(parent._childServiceForObject(objects[1])).toEqual(children[2]);
+        expect(parent._childServiceForObject(objects[2])).toEqual(children[8]);
+        expect(parent._childServiceForObject(objects[3])).toEqual(children[8]);
 
         // Modify and verify some more.
         parent.removeChildService(children[2]);
@@ -287,10 +287,10 @@ describe("A RawDataService", function() {
         expect(parent.childServiceForType(Types[1].TYPE)).toEqual(children[9]);
         expect(parent.childServiceForType(Types[2].TYPE)).toEqual(children[9]);
         expect(parent.childServiceForType(Types[3].TYPE)).toEqual(children[9]);
-        expect(parent._getChildServiceForObject(objects[0])).toEqual(children[9]);
-        expect(parent._getChildServiceForObject(objects[1])).toEqual(children[9]);
-        expect(parent._getChildServiceForObject(objects[2])).toEqual(children[9]);
-        expect(parent._getChildServiceForObject(objects[3])).toEqual(children[9]);
+        expect(parent._childServiceForObject(objects[0])).toEqual(children[9]);
+        expect(parent._childServiceForObject(objects[1])).toEqual(children[9]);
+        expect(parent._childServiceForObject(objects[2])).toEqual(children[9]);
+        expect(parent._childServiceForObject(objects[3])).toEqual(children[9]);
 
         // Modify and verify some more.
         parent.removeChildService(children[9]);
@@ -310,41 +310,41 @@ describe("A RawDataService", function() {
         expect(parent.childServiceForType(Types[1].TYPE)).toBeNull();
         expect(parent.childServiceForType(Types[2].TYPE)).toBeNull();
         expect(parent.childServiceForType(Types[3].TYPE)).toBeNull();
-        expect(parent._getChildServiceForObject(objects[0])).toBeNull();
-        expect(parent._getChildServiceForObject(objects[1])).toBeNull();
-        expect(parent._getChildServiceForObject(objects[2])).toBeNull();
-        expect(parent._getChildServiceForObject(objects[3])).toBeNull();
+        expect(parent._childServiceForObject(objects[0])).toBeNull();
+        expect(parent._childServiceForObject(objects[1])).toBeNull();
+        expect(parent._childServiceForObject(objects[2])).toBeNull();
+        expect(parent._childServiceForObject(objects[3])).toBeNull();
     });
 
 
 
-    // it("manages type mappings correcty", function () {
-    //     var service = new RawDataService(),
-    //         parentDescriptor = new ObjectDescriptor(),
-    //         subDescriptorA = new ObjectDescriptor(),
-    //         subDescriptorB = new ObjectDescriptor(),
-    //         criteriaA = new Criteria().initWithExpression("type == $paramType", {
-    //             paramType: "type_a"
-    //         }),
-    //         criteriaB = new Criteria().initWithExpression("type == $paramType", {
-    //             paramType: "type_b"
-    //         }),
-    //         mappingA = RawDataTypeMapping.withTypeAndCriteria(subDescriptorA, criteriaA),
-    //         mappingB = RawDataTypeMapping.withTypeAndCriteria(subDescriptorB, criteriaB),
-    //         rawA = {type: "type_a"},
-    //         rawB = {type: "type_b"},
-    //         rawC = {type: "type_c"};
+    it("manages type mappings correcty", function () {
+        var service = new RawDataService(),
+            parentDescriptor = new ObjectDescriptor(),
+            subDescriptorA = new ObjectDescriptor(),
+            subDescriptorB = new ObjectDescriptor(),
+            criteriaA = new Criteria().initWithExpression("type == $paramType", {
+                paramType: "type_a"
+            }),
+            criteriaB = new Criteria().initWithExpression("type == $paramType", {
+                paramType: "type_b"
+            }),
+            mappingA = RawDataTypeMapping.withTypeAndCriteria(subDescriptorA, criteriaA),
+            mappingB = RawDataTypeMapping.withTypeAndCriteria(subDescriptorB, criteriaB),
+            rawA = {type: "type_a"},
+            rawB = {type: "type_b"},
+            rawC = {type: "type_c"};
 
-    //         subDescriptorB.parent = parentDescriptor;
-    //         subDescriptorA.parent = parentDescriptor;
+            subDescriptorB.parent = parentDescriptor;
+            subDescriptorA.parent = parentDescriptor;
         
         
-    //     service._registerRawDataTypeMappings([mappingA, mappingB]);
-    //     expect(service._descriptorForParentAndRawData(parentDescriptor, rawA)).toBe(subDescriptorA);
-    //     expect(service._descriptorForParentAndRawData(parentDescriptor, rawB)).toBe(subDescriptorB);
-    //     expect(service._descriptorForParentAndRawData(parentDescriptor, rawC)).toBe(parentDescriptor);
+        service._registerRawDataTypeMappings([mappingA, mappingB]);
+        expect(service._descriptorForParentAndRawData(parentDescriptor, rawA)).toBe(subDescriptorA);
+        expect(service._descriptorForParentAndRawData(parentDescriptor, rawB)).toBe(subDescriptorB);
+        expect(service._descriptorForParentAndRawData(parentDescriptor, rawC)).toBe(parentDescriptor);
 
-    // });
+    });
 
 
     it("traverses inheritance chain with type mappings", function () {
