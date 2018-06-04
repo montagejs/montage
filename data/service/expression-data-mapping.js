@@ -496,9 +496,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             // }
             if (this._isAsync(result)) {
                 return result.then(function (data) {
-                    // if (propertyDescriptor.name === "geometryType") {
-                    //     console.log(data);
-                    // }
                     self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor);
                     return null;
                 });
@@ -631,7 +628,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 propertyDescriptor = rule && rule.propertyDescriptor,
                 isRelationship = propertyDescriptor && propertyDescriptor.valueDescriptor,
                 result;
-
 
             if (isRelationship && rule.converter) {
                 this._prepareObjectToRawDataRule(rule);

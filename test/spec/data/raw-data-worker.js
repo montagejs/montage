@@ -1,6 +1,6 @@
 var RawDataWorker = require("montage/data/service/raw-data-worker").RawDataWorker,
     DataOperation = require("montage/data/service/data-operation").DataOperation,
-    OperationType = require("montage/data/service/data-operation").DataOperation.Type,
+    DataOperationType = require("montage/data/service/data-operation-type").DataOperationType,
     Category = require("spec/data/logic/model/category").Category,
     CategoryDescriptor = require("spec/data/logic/model/category.mjson").montageObject,
     Criteria = require("montage/core/criteria").Criteria,
@@ -19,7 +19,8 @@ var Deserializer = require("montage/core/serialization/deserializer/montage-dese
 describe("A RawDataWorker", function() {
     var worker,
         typeReference,
-        operation;
+        operation,
+        operationData;
 
     function makeOperation(operationType, dataType, data, criteria) {
         var newOperation = new DataOperation();
@@ -121,22 +122,24 @@ describe("A RawDataWorker", function() {
             var rawData = {
                 name: "Comedy"
             };
-            operation = makeOperation(OperationType.Create, CategoryDescriptor, rawData);
+            operation = makeOperation(DataOperationType.Create, CategoryDescriptor, rawData);
 
-            worker.handleOperation(operation).then(function (data) {
-                expect(Array.isArray(data)).toBe(true);
-                expect(data[1]).toBe(rawData.name);
+            worker.handleOperation(operation).then(function (returnOperation) {
+                operationData = returnOperation.data;
+                expect(Array.isArray(operationData)).toBe(true);
+                expect(operationData[1]).toBe(rawData.name);
                 done();
             });
         });
 
         it("read operation", function (done) {
 
-            operation = makeOperation(OperationType.Read, CategoryDescriptor);
+            operation = makeOperation(DataOperationType.Read, CategoryDescriptor);
 
-            worker.handleOperation(operation).then(function (data) {
-                expect(Array.isArray(data)).toBe(true);
-                expect(data.length).toBe(1);
+            worker.handleOperation(operation).then(function (returnOperation) {
+                operationData = returnOperation.data;
+                expect(Array.isArray(operationData)).toBe(true);
+                expect(operationData.length).toBe(1);
                 done();
             });
         });
@@ -147,11 +150,12 @@ describe("A RawDataWorker", function() {
                 categoryID: 1
             };
             //Should use criteria to identify which object to update
-            operation = makeOperation(OperationType.Update, CategoryDescriptor, rawData);
+            operation = makeOperation(DataOperationType.Update, CategoryDescriptor, rawData);
 
-            worker.handleOperation(operation).then(function (data) {
-                expect(Array.isArray(data)).toBe(true);
-                expect(data[1]).toBe(rawData.name);
+            worker.handleOperation(operation).then(function (returnOperation) {
+                operationData = returnOperation.data;
+                expect(Array.isArray(operationData)).toBe(true);
+                expect(operationData[1]).toBe(rawData.name);
                 done();
             });
         });
@@ -162,11 +166,12 @@ describe("A RawDataWorker", function() {
                 name: "Science Fiction",
                 categoryID: 1
             };
-            operation = makeOperation(OperationType.Delete, CategoryDescriptor, rawData);            
+            operation = makeOperation(DataOperationType.Delete, CategoryDescriptor, rawData);            
 
-            worker.handleOperation(operation).then(function (data) {
-                expect(Array.isArray(data)).toBe(true);
-                expect(data.length).toBe(1);
+            worker.handleOperation(operation).then(function (returnOperation) {
+                operationData = returnOperation.data;
+                expect(Array.isArray(operationData)).toBe(true);
+                expect(operationData.length).toBe(1);
                 done();
             });
         });
@@ -174,17 +179,17 @@ describe("A RawDataWorker", function() {
 
     describe("can handle read operation", function () {
         worker = new RawDataWorker();
-
         it("with criteria", function (done) {
             criteria = new Criteria().initWithExpression("id == $.id", {
                 categoryID: 1
             });
-            operation = makeOperation(OperationType.Read, CategoryDescriptor, null, criteria);
+            operation = makeOperation(DataOperationType.Read, CategoryDescriptor, null, criteria);
 
-            worker.handleOperation(operation).then(function (data) {
-                expect(Array.isArray(data)).toBe(true);
-                expect(data.length).toBe(1);
-                expect(data[0].name).toBe("Action");
+            worker.handleOperation(operation).then(function (returnOperation) {
+                operationData = returnOperation.data;
+                expect(Array.isArray(operationData)).toBe(true);
+                expect(operationData.length).toBe(1);
+                expect(operationData[0].name).toBe("Action");
                 done();
             });
 
@@ -216,7 +221,8 @@ describe("A RawDataWorker", function() {
         });
 
         it("with types", function (done) {
-            var deserializer = new Deserializer();
+            var deserializer = new Deserializer(),
+                data;
                 serialization = {
                     "root": {
                         "prototype": "montage/data/service/raw-data-worker",
@@ -247,18 +253,21 @@ describe("A RawDataWorker", function() {
                     },
                 },
                 serializationString = JSON.stringify(serialization),
-                operation = makeOperation(OperationType.Read, CategoryDescriptor);
-                operation2 = makeOperation(OperationType.Read, MovieDescriptor);
+                operation = makeOperation(DataOperationType.Read, CategoryDescriptor);
+                operation2 = makeOperation(DataOperationType.Read, MovieDescriptor);
+                
     
             deserializer.init(serializationString, require);
             deserializer.deserializeObject().then(function (root) {
                 expect(Object.getPrototypeOf(root)).toBe(RawDataWorker.prototype);
                 expect(root.serviceReferences.size).toBe(2);
-                return root.handleOperation(operation).then(function (data) {
+                return root.handleOperation(operation).then(function (returnOperation) {
+                    data = returnOperation.data;
                     expect(Array.isArray(data)).toBe(true);
                     expect(data.length).toBe(1);
                     return root.handleOperation(operation2);
-                }).then(function (data) {
+                }).then(function (returnOperation) {
+                    data = returnOperation.data;
                     expect(Array.isArray(data)).toBe(true);
                     expect(data.length).toBe(1);
                     return null;

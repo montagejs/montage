@@ -68,8 +68,10 @@ var ModuleLoader = Montage.specialize({
                 moduleDescriptor = _require.getModuleDescriptor(module.redirect);
             }
 
+
+
             if (moduleDescriptor.mappingRedirect !== void 0) {
-                return this.getExports(
+                return this.getModuleDescriptor(
                     moduleDescriptor.mappingRequire,
                     moduleDescriptor.mappingRedirect
                 );

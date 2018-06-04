@@ -1,11 +1,12 @@
 var Montage = require("montage").Montage,
     Criteria = require("core/criteria").Criteria,
+    DataOperation = require("data/service/data-operation").DataOperation,
+    DataOperationType = require("data/service/data-operation-type").DataOperationType,
     DataQuery = require("data/model/data-query").DataQuery,
     DataStream = require("data/service/data-stream").DataStream,    
     Map = require("collections/map"),
     ModuleReference = require("core/module-reference").ModuleReference,
     ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor,
-    OperationType = require("data/service/data-operation").DataOperation.Type,
     Promise = require("core/promise").Promise;
 
 
@@ -158,13 +159,19 @@ exports.RawDataWorker = Montage.specialize({
                 objectDescriptor = descriptor;
                 return self._serviceForObjectDescriptor(descriptor);
             }).then(function (service) {
-                
                 var handlerName = self._handlerNameForOperationType(operation.type);
                 if (!service) {
                     // console.log(operation, self, objectDescriptor);
                     throw new Error("No service available to handle operation with type (" + (objectDescriptor && objectDescriptor.name) + ")");
                 }
                 return self[handlerName](operation, service, objectDescriptor);
+            }).then(function (result) {
+                return self.returnOperationForOperation(operation, result);
+            }).catch(function (error) {
+                return self.returnOperationForOperation(operation, {
+                    message: error.message,
+                    stack: error.stack
+                }, true);
             });
         }
     },
@@ -209,6 +216,27 @@ exports.RawDataWorker = Montage.specialize({
     _performUpdateOperation: {
         value: function (operation, service, objectDescriptor) {
             return service.saveRawData(operation.data);
+        }
+    },
+
+    /***************************************************************************
+     * Return Operation
+     */
+
+    returnTypeForIncomingType: {
+        value: function (incomingType, error) {
+            return error ? DataOperationType.failureTypeForType(incomingType) :
+                           DataOperationType.completionTypeForType(incomingType);
+        }
+    },
+
+    returnOperationForOperation: {
+        value: function (operation, data, isFailure) {
+            var returnOperation = new DataOperation();
+            returnOperation.data = data;
+            returnOperation.dataType = operation.dataType;
+            returnOperation.type = this.returnTypeForIncomingType(operation.type, isFailure);
+            return returnOperation;
         }
     },
 

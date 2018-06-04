@@ -1033,9 +1033,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (type) {
             var descriptor = this._objectDescriptorForType(type),
                 service = this.rootService.childServiceForType(descriptor),
+                cache = this._objectDescriptorToMappingMap,
                 mapping;
             if (service === this) {
-                mapping = this._objectDescriptorToMappingMap.has(type) && this._objectDescriptorToMappingMap.get(type);
+                mapping = cache.has(type)                       ? cache.get(type) :
+                          type.parent && cache.has(type.parent) ? cache.get(type.parent) :
+                                                                  null;
             } else if (service) {
                 mapping = service.mappingWithType(type);
             }
@@ -1333,6 +1336,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 module = objectDescriptor.module;
 
             return module.require.async(module.id).then(function (exports) {
+                
                 var constructor = exports[objectDescriptor.exportName],
                     prototype = self._prototypeForType(objectDescriptor, constructor);
                 return null;
@@ -1668,10 +1672,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 delegateFunction = !useDelegate && isHandler && this._delegateFunctionForPropertyName(propertyName),
                 propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
                 childService = !isHandler && this._childServiceForObject(object);
-            // if (propertyName === "allFeatures" || propertyName === "visibleFeatures") {
-            //     console.log(object.name);
-            //     debugger;
-            // }
+
             
             return useDelegate ?                    this.fetchRawObjectProperty(object, propertyName) :
                    delegateFunction ?                  delegateFunction.call(this, object) :
@@ -2279,7 +2280,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 shouldMap = arguments.length < 4 || (canMap && !objectDescriptor), 
                 object = true, result;
 
-
             if (shouldMap) {
                 result = this._mappedObjectForTypeAndRawData(type, rawData, context).then(function (object) {
                     stream.addData(object);
@@ -2340,12 +2340,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 ownMapping = this.mappingWithType(streamQueryType),
                 serviceID = this._serviceIdentifierForQuery(stream.query),
                 canMap = (ownMapping || this.implementsMapRawDataToObject || this.isRootService) && !serviceID,
+                // canMap = (ownMapping || this.implementsMapRawDataToObject || this.isRootService),
                 iRecord;
 
-
-            // if (streamQueryType.name === "GeometryType") {
-            //     debugger;
-            // }
             // Record fetched raw data for offline use if appropriate.
             offline = records && !this.isOffline && this._streamRawData.get(stream);
             if (offline) {
@@ -2605,7 +2602,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                                 self.rawDataDone(stream);
                             });
                         } else {
-                            debugger;
                             throw new Error("Can't fetch data of unknown type - " + (query.type.typeName || query.type.name) + "/" + query.type.uuid);
                         }
                     } catch (e) {

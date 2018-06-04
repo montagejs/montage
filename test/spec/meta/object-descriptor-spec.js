@@ -112,7 +112,6 @@ describe("meta/object-descriptor-spec", function () {
 
             var personObjectDescriptor = new ObjectDescriptor().initWithName("Person");
             var companyObjectDescriptor = new ObjectDescriptor().initWithName("Company");
-
             var employerAssociation = personObjectDescriptor.addToManyPropertyDescriptorNamed("employer");
             employerAssociation.valueDescriptor = companyObjectDescriptor;
             var employeesAssociation = companyObjectDescriptor.addToManyPropertyDescriptorNamed("employees");
@@ -126,7 +125,7 @@ describe("meta/object-descriptor-spec", function () {
                 expect(companyObjectDescriptor.propertyDescriptorForName("employees")).toBe(employeesAssociation);
             });
             it("target objectDescriptor promise to be resolved", function (done) {
-                personObjectDescriptor.propertyDescriptorForName("employer").valueDescriptor.then(function (objectDescriptor) {
+                personObjectDescriptor.propertyDescriptorForName("employer").valueDescriptorReference.then(function (objectDescriptor) {
                     expect(objectDescriptor).toBeTruthy();
                     expect(objectDescriptor).toBe(companyObjectDescriptor);
                 }).finally(function () {
@@ -134,7 +133,7 @@ describe("meta/object-descriptor-spec", function () {
                 });
             });
             it("target objectDescriptor promise to be resolved", function (done) {
-                companyObjectDescriptor.propertyDescriptorForName("employees").valueDescriptor.then(function (objectDescriptor) {
+                companyObjectDescriptor.propertyDescriptorForName("employees").valueDescriptorReference.then(function (objectDescriptor) {
                     expect(objectDescriptor).toBeTruthy();
                     expect(objectDescriptor).toBe(personObjectDescriptor);
                 }).finally(function () {

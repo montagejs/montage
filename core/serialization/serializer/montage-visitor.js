@@ -251,10 +251,6 @@ var MontageVisitor = Montage.specialize({
 
             this.builder.push(builderObject);
 
-            // if (object.constructor.name === "HazardLayer") {
-            //     console.log(object.constructor.name, object.id);
-            //     debugger;
-            // }
             if (typeof object.serializeSelf === "function") {
                 selfSerializer = new SelfSerializer().
                     initWithMalkerAndVisitorAndObject(
@@ -419,10 +415,6 @@ var MontageVisitor = Montage.specialize({
      */
     setSerializableObjectValues: {
         value: function (malker, object) {
-            // if (object.isLayer) {
-            //     console.log(object.name);
-            //     debugger;
-            // }
             var type,
                 propertyName,
                 propertyNames = Montage.getSerializablePropertyNames(object),
@@ -431,10 +423,6 @@ var MontageVisitor = Montage.specialize({
 
             for (var i = 0; i < propertyNamesCount; i++) {
                 propertyName = propertyNames[i];
-                // if (object.constructor.name === "MapService" && object.id === "PDC_HP_Public_XML" && propertyName === "layers") {
-                //     debugger;
-                // }
-                
                 type = Montage.getPropertyAttribute(object, propertyName, "serializable");
                 this.setProperty(malker, propertyName, object[propertyName], type);
             }
