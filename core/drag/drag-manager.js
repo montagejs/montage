@@ -151,24 +151,48 @@ var DragManager = exports.DragManager = Montage.specialize({
         }
     },
 
+     /**
+     * @public
+     * @function
+     * @param {Component} component - a component
+     * @description Register a component to be a Drag Source
+     */
     registerForDragSource: {
         value: function (component) {
             this._register(component, DRAG_SOURCE);
         }
     },
 
+     /**
+     * @public
+     * @function
+     * @param {Component} component - a component
+     * @description Register a component to be a Drag Destination
+     */
     registerForDragDestination: {
         value: function (component) {
             this._register(component, DRAG_DESTINATION);
         }
     },
 
+     /**
+     * @public
+     * @function
+     * @param {Component} component - a component
+     * @description Unregister a component to be a Drag Source
+     */
     unregisterForDragSource: {
         value: function (component) {
             this._unregister(component, DRAG_SOURCE);
         }
     },
 
+    /**
+     * @public
+     * @function
+     * @param {Component} component - a component
+     * @description Unregister a component to be a Drag Destination
+     */
     unregisterForDragDestination: {
         value: function (component) {
             this._unregister(component, DRAG_DESTINATION);
@@ -512,6 +536,11 @@ var DragManager = exports.DragManager = Montage.specialize({
         }
     },
 
+     /**
+     * @private
+     * @function
+     * @description add drag event listeners.
+     */
     _addDragListeners: {
         value: function () {
             var element = this._rootComponent.element;
@@ -521,6 +550,11 @@ var DragManager = exports.DragManager = Montage.specialize({
         }
     },
 
+    /**
+     * @private
+     * @function
+     * @description remove drag event listeners.
+     */
     _removeDragListeners: {
         value: function () {
             var element = this._rootComponent.element;
@@ -551,7 +585,12 @@ var DragManager = exports.DragManager = Montage.specialize({
         }
     },
 
-    _populateDragOperationWithDataTransfer: {
+    /**
+     * @private
+     * @function
+     * @description populate the data property with the drag transfer data.
+     */
+    _populateDraggingOperationWithDataTransfer: {
         value: function (dataTransfer) {
             this._draggingOperationInfo.data.set(
                 "files", dataTransfer.files
@@ -651,7 +690,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                     )
                 ));
 
-                this._populateDragOperationWithDataTransfer(event.dataTransfer);
+                this._populateDraggingOperationWithDataTransfer(event.dataTransfer);
                 this._dispatchDraggingOperationStart(draggingOperationInfo);
                 this._addDragListeners();
                 this._isDragging = true;
@@ -689,7 +728,7 @@ var DragManager = exports.DragManager = Montage.specialize({
     handleDrop: {
         value: function (event) {
             event.preventDefault();
-            this._populateDragOperationWithDataTransfer(event.dataTransfer);           
+            this._populateDraggingOperationWithDataTransfer(event.dataTransfer);           
             this.handleTranslateEnd();
         }
     },
@@ -1077,7 +1116,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                     (notScrollable && (scrollWidth = element.scrollWidth) <= width)
                 ) {
                     // if no height or width 
-                    // or not scrollable
+                    // or not scrollable pass to to the next parent.
                     element = element.parentElement;
                     continue;
                 }
@@ -1094,6 +1133,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                     if (positionY <= top + scrollThreshold) {
                         scrollTop = element.scrollTop;
 
+                        // if not already reached the bottom edge
                         if (scrollTop) {
                             element.scrollTop = (
                                 scrollTop - 
@@ -1116,9 +1156,12 @@ var DragManager = exports.DragManager = Montage.specialize({
                     if (positionY >= bottom - scrollThreshold) {
                         scrollTop = element.scrollTop;
 
-                        if (scrollTop < scrollHeight) {   
-                            element.scrollTop = scrollTop + 
-                                this._getScrollMultiplier(bottom - positionY);
+                        // if not already reached the bottom edge
+                        if (scrollTop < scrollHeight) {
+                            element.scrollTop = (
+                                scrollTop + 
+                                this._getScrollMultiplier(bottom - positionY)
+                            );
                             this._rootComponent.needsDraw = true;
                         }
 
@@ -1135,6 +1178,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                     if (positionX <= left + scrollThreshold) {
                         scrollLeft = element.scrollLeft;
 
+                        // if not already reached the left edge
                         if (scrollLeft) {
                             element.scrollLeft = (
                                 scrollLeft - 
@@ -1158,9 +1202,12 @@ var DragManager = exports.DragManager = Montage.specialize({
                         scrollLeft = element.scrollLeft;
                         scrollWidth = scrollWidth || element.scrollWidth;
 
+                        // if not already reached the right edge
                         if (scrollLeft < scrollWidth) {   
-                            element.scrollLeft = scrollLeft + 
-                                this._getScrollMultiplier(right - positionX);
+                            element.scrollLeft = (
+                                scrollLeft + 
+                                this._getScrollMultiplier(right - positionX)
+                            );
                             this._rootComponent.needsDraw = true;
                         }
 
