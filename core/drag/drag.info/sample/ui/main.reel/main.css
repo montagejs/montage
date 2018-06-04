@@ -32,6 +32,15 @@ h4 {
     margin: 40px 0;
 }
 
+.options {
+    border-bottom: 1px solid #33495d;
+    position: absolute;
+    top: 80px;
+    left: 0px;
+    height: 236px;
+    box-sizing: border-box;
+}
+
 .options,
 .samples {
     padding: 15px;
@@ -39,7 +48,7 @@ h4 {
 
 .samples {
     position: absolute;
-    top: 300px;
+    top: 316px;
     bottom: 0;
     left: 0;
     right: 0;

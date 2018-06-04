@@ -117,6 +117,10 @@ var DragManager = exports.DragManager = Montage.specialize({
         value: null
     },
 
+    _scrollThreshold: {
+        value: 25
+    },
+
     initWithComponent: {
         value: function (component) {
             this._rootComponent = component;
@@ -918,6 +922,11 @@ var DragManager = exports.DragManager = Montage.specialize({
 
                     draggedImage.style[DragManager.cssTransform] = "translate3d(" +
                         translateX + "px," + translateY + "px,0)";
+
+                    this._scrollIfNeeded(
+                        draggingOperationInfo.positionX, 
+                        draggingOperationInfo.positionY
+                    );
                 }
 
                 this._rootComponent.element.style.cursor = this._dragDestination ?
@@ -1043,6 +1052,70 @@ var DragManager = exports.DragManager = Montage.specialize({
                 }
 
                 this._shouldRemovePlaceholder = false;
+            }
+        }
+    },
+
+    _scrollIfNeeded: {
+        value: function (positionX, positionY) {
+            var element = document.elementFromPoint(positionX, positionY),
+                scrollThreshold = this._scrollThreshold,
+                elementRect, height, top, bottom, scrollHeight, scrollTop, 
+                multiplier, multiplierY;
+
+            while (element) {
+                elementRect = element.getBoundingClientRect();
+                height = elementRect.height;
+                top = elementRect.top;
+                bottom = elementRect.bottom;
+
+                if (height && positionY>= top && positionY <= bottom) {
+                    scrollHeight = element.scrollHeight;
+
+                    if (scrollHeight > height) {
+                        if (
+                            positionY >= top && 
+                            positionY <= top + scrollThreshold
+                        ) { // up
+                            scrollTop = element.scrollTop;
+
+                            if (scrollTop) {
+                                multiplier = positionY - top;
+                                multiplierY = (
+                                    scrollThreshold / (
+                                        multiplier >= 1 ? multiplier : 1
+                                    )
+                                ) * 2;
+                                element.scrollTop = scrollTop - multiplierY;
+                                this._rootComponent.needsDraw = true;
+                                element = null;
+                                break;
+                            }
+                        } else if (
+                            positionY <= bottom &&
+                            positionY >= bottom - scrollThreshold
+                        ) { // down
+                            scrollTop = element.scrollTop;
+
+                            if (scrollTop < scrollHeight) {
+                                multiplier = bottom - positionY;
+                                multiplierY = (
+                                    scrollThreshold / (
+                                        multiplier >= 1 ? multiplier : 1
+                                    )
+                                ) * 2;
+                                element.scrollTop = scrollTop + multiplierY;
+                                this._rootComponent.needsDraw = true;
+                                element = null;
+                                break;
+                            }
+                        }
+                    }
+
+                    element = element.parentElement;    
+                } else {
+                    element = null;
+                }
             }
         }
     }
