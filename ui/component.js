@@ -1209,7 +1209,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     __exitDocument: {
         value: function () {
-            if (this._inDocument && typeof this.exitDocument === "function") {
+            if (this.isDragSource) {
+                this.unregisterForDragSource();
+            }
+
+            if (this.isDragDestination) {
+                this.unregisterForDragDestination();
+            }
+
+            if (this._inDocument && typeof this.exitDocument === "function") {                
                 this.exitDocument();
                 this._inDocument = false;
             }
@@ -1271,6 +1279,56 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     component.needsDraw = true;
                 });
             }
+        }
+    },
+
+    _isDragSource: {
+        value: false
+    },
+
+    isDragSource: {
+        set: function (isDragSource) {
+            isDragSource = !!isDragSource;
+
+            if (this._isDragSource !== isDragSource) {
+                if (this._inDocument) {
+                    if (this._isDragSource) {
+                        this.unregisterForDragSource();
+                    } else {
+                        this.registerForDragSource();
+                    }
+                }
+
+                this._isDragSource = isDragSource;
+            }
+        },
+        get: function () {
+            return this._isDragSource;
+        }
+    },
+
+    _isDragDestination: {
+        value: false
+    },
+
+    isDragDestination: {
+        set: function (isDragDestination) {
+            isDragDestination = !!isDragDestination;
+
+            if (this._isDragDestination !== isDragDestination) {
+                if (this._inDocument) {
+                    if (this._isDragDestination) {
+                        this.unregisterForDragDestination();
+                    } else {
+                        this.registerForDragDestination();
+                    }
+                }
+
+                this._isDragDestination = isDragDestination;
+            }
+        },
+        get: function () {
+            return this._isDragDestination;
         }
     },
 
@@ -2920,6 +2978,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     registerForDragSource: {
         value: function () {
             this.dragManager.registerForDragSource(this);
+            this.__isDragSource = true;
             this.classList.add("montage-drag-source");
         }
     },
@@ -2940,6 +2999,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     registerForDragDestination: {
         value: function () {
             this.dragManager.registerForDragDestination(this);
+            this.__isDragDestination = true;
             this.classList.add("montage-drag-destination");
         }
     },
@@ -3427,6 +3487,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     _enterDocument: {
         value: function (firstTime) {
             var originalElement;
+
+            if (this.isDragSource) {
+                this.registerForDragSource();
+            }
+
+            if (this.isDragDestination) {
+                this.registerForDragDestination();
+            }
 
             if (firstTime) {
                 // The element is now ready, so we can read the attributes that

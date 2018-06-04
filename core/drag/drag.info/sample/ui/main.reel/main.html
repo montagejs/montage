@@ -121,6 +121,15 @@
                 "values": {
                     "element": {"#": "drop5"}
                 }
+            },
+
+            "customDrag": {
+                "prototype": "montage/ui/component",
+                "values": {
+                    "element": {"#": "customDrag"},
+                    "hasTemplate": false,
+                    "isDragSource": true
+                }
             }
 
         }
@@ -182,6 +191,9 @@
             <div data-montage-id="drop5">
                 <div data-arg="placeholder">Drop File Here</div>
             </div>
+
+            <h4>Custom Drag</h4>
+            <div data-montage-id="customDrag" class="CustomDrag"></div>
             
         </div>
     </div>

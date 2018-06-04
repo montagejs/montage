@@ -92,3 +92,11 @@ h4 {
     height: 2000px;
     background: linear-gradient(to bottom, #f8c291 0%,#b71540 100%);
 }
+
+
+.CustomDrag {
+    height: 50px;
+    width: 50px;
+    border-radius: 25px;
+    background: #9b59b6;
+}
