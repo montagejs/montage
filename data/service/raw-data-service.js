@@ -234,6 +234,24 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     /**
+     *
+     * Resets the object to its last known state.
+     *
+     * @method
+     * @argument {Object} object   - The object to reset.
+     * @returns {external:Promise} - A promise fulfilled when the object has
+     * been reset to its last known state.
+     *
+     */
+    resetDataObject: {
+        value: function (object) {
+            var snapshot = this.snapshotForObject(object),
+                result = this._mapRawDataToObject(snapshot, object);
+            return result || Promise.resolve(object);
+        }
+    },
+
+    /**
      * Subclasses should override this method to save a data object when that
      * object's raw data would be useful to perform the save.
      *
