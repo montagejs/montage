@@ -459,6 +459,8 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
             scope.value = data;
 
+            
+
             this._prepareRawDataToObjectRule(rule, propertyDescriptor);
 
             return  isRelationship && rule.inversePropertyName ?    this._resolveBothSidesOfRelationship(object, propertyDescriptor, rule, scope) :
@@ -474,6 +476,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             return this._resolveRelationship(object, propertyDescriptor, rule, scope).then(function () {
                 return propertyDescriptor.valueDescriptor;
             }).then(function (objectDescriptor) {
+                
                 var inversePropertyDescriptor = objectDescriptor.propertyDescriptorForName(rule.inversePropertyName),
                     data = object[propertyDescriptor.name];
                 if (Array.isArray(data) && propertyDescriptor) {
@@ -494,8 +497,20 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             // if (!result || !result.then) {
             //     debugger;
             // }
+            // if (propertyDescriptor.name === "allFeatures" || propertyDescriptor.name === "visibleFeatures") {
+            //     console.log(object.name);
+            //     debugger;
+            // }
+            // if (propertyDescriptor.name === "renderer") {
+            //     console.log(object.name);
+            //     debugger;
+            // }
             if (this._isAsync(result)) {
                 return result.then(function (data) {
+                    // if (propertyDescriptor.name === "renderer") {
+                    //     console.log(object.name);
+                    //     debugger;
+                    // }
                     self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor);
                     return null;
                 });
@@ -750,7 +765,11 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             var propertyName = propertyDescriptor.name,
                 isToMany;
             //Add checks to make sure that data matches expectations of propertyDescriptor.cardinality
-
+            // var protocol = object.mapService && object.mapService.protocol || {};
+            // if (protocol.realID === "ARCGIS" && (propertyDescriptor.name === "allFeatures" || propertyDescriptor.name === "visibleFeatures")) {
+            //     console.log(object.name, value);
+            //     debugger;
+            // }
             if (Array.isArray(value)) {
                 isToMany = propertyDescriptor.cardinality !== 1;
                 if (isToMany && Array.isArray(object[propertyName])) {

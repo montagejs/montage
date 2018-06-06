@@ -163,6 +163,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 childService = this._childServiceForQuery(stream.query),
                 query = stream.query;
 
+            
             if (childService && childService !== this) {
                 childService._fetchRawData(stream);
             } else if (query.authorization) {

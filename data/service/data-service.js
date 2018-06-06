@@ -51,9 +51,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             this._initializeAuthorization();
             this._initializeOffline();
             this._typeIdentifierMap = new Map();
-            this._descriptorToRawDataTypeMappings = new Map();
+            // this._descriptorToRawDataTypeMappings = new Map();
         }
     },
+
 
     /***************************************************************************
      * Serialization
@@ -434,6 +435,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 self._registerObjectDescriptorsByModuleId(objectDescriptors);
                 return self._registerChildServiceMappings(child, mappings);
             }).then(function () {
+                // types;
+                // if (self.identifier.indexOf("layer") !== -1) {
+                //     debugger;
+                // }
+                
                 return self._prototypesForModuleObjectDescriptors(objectDescriptors);
             }).then(function () {
                 self.addChildService(child, types);
@@ -758,7 +764,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 mapping.schemaDescriptorReference || mapping.schemaDescriptor
             ]).spread(function (objectDescriptor, schemaDescriptor) {
                 // TODO -- remove looking up by string to unique.
-                
                 var type = [objectDescriptor.module.id, objectDescriptor.name].join("/");
                 objectDescriptor = service._moduleIdToObjectDescriptorMap.get(type);
                 mapping.objectDescriptor = objectDescriptor;
@@ -797,7 +802,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * @type {Map<ObjectDescpriptor:RawDataTypeMapping>}
      */
     _descriptorToRawDataTypeMappings: {
-        value: undefined
+        value: new Map()
     },
 
     /**
@@ -1032,7 +1037,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     mappingWithType: {
         value: function (type) {
             var descriptor = this._objectDescriptorForType(type),
-                service = this.rootService.childServiceForType(descriptor),
+                service = this.childServiceForType(descriptor),
                 cache = this._objectDescriptorToMappingMap,
                 mapping;
             if (service === this) {
@@ -1389,6 +1394,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 prototype = this._objectPrototypes.get(descriptor),
                 info, mapping, triggers, requisites;
 
+            // if (type && type.name.indexOf("Renderer") !== -1) {
+            //     console.log(type.name, this.identifier);
+            //     debugger;
+            // }
             if (descriptor && !prototype) {
 
                 prototype = constructor           ? constructor.prototype :
@@ -2154,13 +2163,19 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             var mappings = this._descriptorToRawDataTypeMappings.get(parent),
                 compiled, mapping, subType,
                 i, n;
-
+        
+            
             if (mappings && mappings.length) {
                 for (i = 0, n = mappings.length; i < n && !subType; ++i) {
                     mapping = mappings[i];
                     subType = mapping.criteria.evaluate(rawData) && mapping.type;
                 }
             }
+
+            // if (parent.name === "Renderer") {
+            //     console.log(subType && subType.name, rawData);
+            //     debugger;
+            // }
 
             return subType ? this._descriptorForParentAndRawData(subType, rawData) : parent;
         }
@@ -2567,8 +2582,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 query = type ? DataQuery.withTypeAndCriteria(type, criteria) : queryOrType,
                 stream = optionalCriteria instanceof DataStream ? optionalCriteria : optionalStream;
 
+                
+            
             // make sure type is an object descriptor or a data object descriptor.
             query.type = this._objectDescriptorForType(query.type);
+            var parameters = query.criteria && query.criteria.parameters || {};
+            
             // Set up the stream.
             stream = stream || new DataStream();
             stream.query = query;
@@ -2580,6 +2599,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 //have to go up to answer that question. The difference between
                 //.TYPE and ObjectDescriptor still creeps-in when it comes to
                 //the service to answer that to itself
+                // if (query.type.name === "Renderer") {
+                //     debugger;
+                // }
                 service = self.parentService ? self.parentService.childServiceForType(query.type) : self.childServiceForType(query.type);
                 if (service === self && typeof self.fetchRawData === "function") {
                     service = self;
@@ -2598,7 +2620,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                             rawDataStream = service.fetchData(query, rawDataStream) || rawDataStream;
                             self._dataServiceByDataStream.set(rawDataStream, service);
                             rawDataStream.then(function (rawData) {
-                                self.addRawData(stream, rawData, null, service.batchAddsDataToStream);
+                                self.addRawData(stream, rawData, query.criteria && query.criteria.parameters, service.batchAddsDataToStream);
                                 self.rawDataDone(stream);
                             });
                         } else {
@@ -2825,17 +2847,22 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     saveDataObject: {
         value: function (object) {
+            
             var self = this,
                 promise = this.nullPromise,
                 ownMapping = this.mappingForObject(object, true),
                 hasParent = !!this.parentService,
                 service = this._childServiceForObject(object),
-                childHasMapping = service && service.implementsMapObjectToRawData,
+                childHasMapping = service && service.implementsMapObjectToRawData && service !== this,
                 shouldMap = !!(ownMapping || this.implementsMapObjectToRawData || !hasParent) && !childHasMapping,
                 childHasSaveDataObject = !!(service && service.implementsSaveDataObject),
                 mappingPromise;
             
-
+            // var logEntryId = "logic/service/log-entry-service";
+            // if (this.identifier === logEntryId || (service && service.identifier === logEntryId)) {
+            //     console.log(this.identifier);
+            //     debugger;
+            // }
             if (shouldMap) {
                 var record = {};
                 mappingPromise =  this._mapObjectToRawData(object, record) || this.nullPromise;

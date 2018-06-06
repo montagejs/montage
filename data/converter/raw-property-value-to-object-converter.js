@@ -323,7 +323,7 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
             
             return this._descriptorToFetch.then(function (typeToFetch) {
                 var type = [typeToFetch.module.id, typeToFetch.name].join("/");
-                
+
                 if (self.serviceIdentifier) {
                     criteria.parameters.serviceIdentifier = self.serviceIdentifier;
                 }
@@ -331,6 +331,9 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
                 query = DataQuery.withTypeAndCriteria(type, criteria);
                 
                 return self.service ? self.service.then(function (service) {
+                    // if (type.indexOf("Renderer") !== -1) {
+                    //     debugger;
+                    // }
                     return service.rootService.fetchData(query);
                 }) : null;
             });

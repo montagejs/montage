@@ -44,7 +44,10 @@ var Criteria = exports.Criteria = Montage.specialize({
      */
    syntax: {
         get: function() {
-            return this._syntax || (this._syntax = parse(this._expression));
+            if (!this._syntax && this.expression) {
+                this._syntax = parse(this.expression);
+            }
+            return this._syntax;
         }
     },
     _compiledSyntax: {
@@ -121,7 +124,14 @@ var Criteria = exports.Criteria = Montage.specialize({
 
     serializeSelf: {
         value: function (serializer) {
-            serializer.setProperty("expression", this._expression || (this._expression = stringify(this.syntax)));
+            // serializer.setProperty("expression", this._expression || (this._expression = stringify(this.syntax)));
+            if (this._expression) {
+                serializer.setProperty("expression", this._expression);
+            } else if (this.syntax) {
+                serializer.setProperty("expression", (this._expression = stringify(this.syntax)));
+            } else {
+                serializer.setProperty("expression", "");
+            }
             serializer.setProperty("parameters", this.parameters);
         }
     },
