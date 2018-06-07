@@ -30,13 +30,27 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      */
 
     /**
-     * //Benoit, I think this should be a uuid
+     * This should be a composite id made from:
+     *
+     * clientId/time/hash based on type+operationType+criteria's expression,
      *
      * @type {number}
      */
     id: {
         value: undefined
     },
+
+    /**
+     * This is a unique clientId (per tab), that's given by the backend to the
+     * client's OperationService. This clientId needs then to be passed per
+     * operation to allow the server side to leverage it
+     *
+     * @type {sting}
+     */
+
+    clientId: {
+
+    }
 
     /**
      * A property used to give a meaningful name to an operation
@@ -335,6 +349,10 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
             Create: {isCreate: true},
             CreateFailed: {isCreate: true},
             CreateCompleted: {isCreate: true},
+            //Additional
+            Copy: {isCreate: true},
+            CopyFailed: {isCreate: true},
+            CopyCompleted: {isCreate: true},
             /* Read is the first operation that mnodels a query */
             Read: {isRead: true},
 
