@@ -1,5 +1,5 @@
 var Montage = require("core/core").Montage,
-    Criteria = require("montage/core/criteria").Criteria;
+    Criteria = require("core/criteria").Criteria;
 
 /**
  * Represents
@@ -31,6 +31,8 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
 
     /**
      * This should be a composite id made from:
+     *
+     * clientId/time/hash based on type+operationType+criteria's expression,
      *
      * clientId/time/hash based on type+operationType+criteria's expression,
      *

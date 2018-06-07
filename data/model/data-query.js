@@ -1,4 +1,5 @@
-var Montage = require("montage").Montage;
+var Montage = require("montage").Montage,
+    ModuleReference = require("core/module-reference").ModuleReference;
 
 /**
  * Defines the criteria that objects must satisfy to be included in a set of
@@ -9,12 +10,89 @@ var Montage = require("montage").Montage;
  */
 exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
 
+
+    deserializeSelf: {
+        value: function (deserializer) {
+            var result, value;
+
+            value = deserializer.getProperty("criteria");
+            if (value !== void 0) {
+                this.criteria = value;
+            }
+
+            value = deserializer.getProperty("orderings");
+            if (value !== void 0) {
+                this.orderings = value;
+            }
+
+            value = deserializer.getProperty("prefetchExpressions");
+            if (value !== void 0) {
+                this.prefetchExpressions = value;
+            }
+
+            value = deserializer.getProperty("selectBindings");
+            if (value !== void 0) {
+                this.selectBindings = value;
+            }
+
+            value = deserializer.getProperty("selectExpression");
+            if (value !== void 0) {
+                this.selectExpression = value;
+            }
+
+            
+            value = deserializer.getProperty("type");
+            if (value !== void 0) {
+                this.type = value;
+            } else {
+                value = deserializer.getProperty("typeModule");
+                if (value) {
+                    var self = this;
+                    
+                    result = value.require.async(value.id).then(function (exports) {
+                        self.type = exports.montageObject;
+                        return self;
+                    });
+                }
+            }
+
+            return result || Promise.resolve(this);
+        }
+    },
+
+    serializeSelf: {
+        value: function (serializer) {
+            serializer.setProperty("criteria", this.criteria);
+            serializer.setProperty("orderings", this.orderings);
+            serializer.setProperty("prefetchExpressions", this.prefetchExpressions);
+            serializer.setProperty("selectBindings", this.selectBindings);
+            serializer.setProperty("selectExpression", this.selectExpression);
+            
+            if (this.type.objectDescriptorInstanceModule) {
+                serializer.setProperty("typeModule", this.type.objectDescriptorInstanceModule);
+            } else {
+                serializer.setProperty("type", this.type);
+            }
+
+        }
+    },
+
     /**
      * The type of the data object to retrieve.
      *
      * @type {DataObjectDescriptor}
      */
     type: {
+        serializable: "value",
+        value: undefined
+    },
+
+    /**
+     * A property used to give a meaningful name to an operation
+     *
+     * @type {string}
+     */
+    name: {
         value: undefined
     },
 

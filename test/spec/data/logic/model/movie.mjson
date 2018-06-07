@@ -11,7 +11,7 @@
                 {"@": "title"}
             ],
             "objectDescriptorModule": {
-                "%": "spec/data/logic/model/figure.mjson"
+                "%": "spec/data/logic/model/movie.mjson"
             },
             "exportName": "Movie",
             "module": {
