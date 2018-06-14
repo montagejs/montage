@@ -1,5 +1,5 @@
 var Montage = require("core/core").Montage,
-    AuthorizationManager = require("data/service/authorization-manager").AuthorizationManager,
+    AuthorizationManager = require("data/service/authorization-manager").defaultAuthorizationManager,
     AuthorizationPolicy = require("data/service/authorization-policy").AuthorizationPolicy,
     DataObjectDescriptor = require("data/model/data-object-descriptor").DataObjectDescriptor,
     DataQuery = require("data/model/data-query").DataQuery,

@@ -1,7 +1,8 @@
 var Component = require("ui/component").Component,
     Promise  = require("core/promise").Promise,
     application = require("core/application").application,
-    Map = require("collections/map");
+    Map = require("collections/map"),
+    Montage = require("montage").Montage;
 
 /**
  * @class Main
@@ -9,15 +10,15 @@ var Component = require("ui/component").Component,
  */
 exports.AuthorizationManagerPanel = Component.specialize({
 
-    authorizationPanels: {
+    panels: {
         get: function () {
-            if (!this._authorizationPanels) {
-                this._authorizationPanels = [];
+            if (!this._panels) {
+                this._panels = [];
             }
-            return this._authorizationPanels;
+            return this._panels;
         },
         set: function (value) {
-            this._authorizationPanels = value;
+            console.warn("AuthorizationManagerPanel.panels.set", value);
         }
     },
 
@@ -26,42 +27,58 @@ exports.AuthorizationManagerPanel = Component.specialize({
     },
 
     approveAuthorization: {
-        value: function (authorization, authorizationPanel) {
+        value: function (authorization, panel) {
 
-            var index = this.authorizationPanels.indexOf(authorizationPanel);
-            if (index !== -1) {
-                this.authorizationPanels.splice(index, 1);
+            if (panel) {
+                this._deregisterPanel(panel, authorization);
             }
-            this._panels.get(authorizationPanel).resolve(authorization);
 
-            if (!this.authorizationPanels.length && this._authorizationResolve) {
+            if (!this.panels.length && this._authorizationResolve) {
                 this._authorizationResolve(authorization);
             }
         }
     },
 
-    _panels: {
-        get: function () {
-            if (!this.__panels) {
-                this.__panels = new Map();
+    _deregisterPanel: {
+        value: function (panel, authorization) {
+            var index = this.panels.indexOf(panel),
+                panelInfo = Montage.getInfoForObject(panel);
+
+            if (index !== -1) {
+                this.panels.splice(index, 1);
             }
-            return this.__panels;
+
+            if (authorization) {
+                this._authorizationPromiseByPanel.get(panel).resolve(authorization);
+            } else {
+                this._authorizationPromiseByPanel.get(panel).reject(new Error("Authorization Rejected for panel (" + panelInfo.id +")"));
+            }
+            this._authorizationPromiseByPanel.delete(panel);
+        }
+    },
+
+    _authorizationPromiseByPanel: {
+        get: function () {
+            if (!this.__authorizationPromiseByPanel) {
+                this.__authorizationPromiseByPanel = new Map();
+            }
+            return this.__authorizationPromiseByPanel;
         }
     },
 
     authorizeWithPanel: {
-        value: function (authorizationPanel) {
+        value: function (panel) {
             var self = this,
                 promise;
 
-            if (!this._panels.has(authorizationPanel)) {
+            if (!this._authorizationPromiseByPanel.has(panel)) {
                 promise = new Promise(function (resolve, reject) {
-                    self._panels.set(authorizationPanel, {
+                    self._authorizationPromiseByPanel.set(panel, {
                         resolve: resolve,
                         reject: reject
                     });
                 });
-                this.authorizationPanels.push(authorizationPanel);
+                this.panels.push(panel);
             } else {
                 promise = Promise.resolve(null);
             }
@@ -75,7 +92,11 @@ exports.AuthorizationManagerPanel = Component.specialize({
     },
 
     cancelAuthorization: {
-        value: function() {
+        value: function(panel) {
+            if (panel) {
+                this._deregisterPanel(panel);
+            }
+            
             if (application.applicationModal) {
                 application.applicationModal.hide(this);
             }
@@ -103,6 +124,18 @@ exports.AuthorizationManagerPanel = Component.specialize({
         }
     }
 
+}, {
+
+    instance: {
+        get: function () {
+            if (!this._instance) {
+                this._instance = new this();
+            }
+            return this._instance;
+        }
+    }
+
 });
+
 
 // FIXME: Selection needs to be managed by a selection controller
