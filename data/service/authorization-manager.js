@@ -14,7 +14,7 @@ var Montage = require("core/core").Montage,
  * @class
  * @extends external:Montage
  */
-var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.prototype */ {
+exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.prototype */ {
 
     constructor: {
         value: function () {
@@ -60,7 +60,7 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
             } else if (!this._managerPanelPromise) {
                 moduleId = this.callDelegateMethod("authorizationManagerWillLoadAuthorizationManagerPanel", this, MANAGER_PANEL_MODULE) || MANAGER_PANEL_MODULE;
                 this._managerPanelPromise = require.async(moduleId).bind(this).then(function (exports) {
-                    var panel = new exports.AuthorizationManagerPanel();
+                    var panel =  exports.AuthorizationManagerPanel.instance;
                     self.authorizationManagerPanel = panel;
                     panel.authorizationManager = self;
                     return panel;
@@ -171,6 +171,7 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
         value: function (provider) {
             var self = this,
                 managerPanel;
+                
             self._pendingServicesCount++;
             return this._managerPanel().then(function (authManagerPanel) {
                 managerPanel = authManagerPanel;
@@ -380,4 +381,4 @@ var AuthorizationManager = Montage.specialize(/** @lends AuthorizationManager.pr
 
 });
 
-exports.AuthorizationManager = new AuthorizationManager();
+exports.defaultAuthorizationManager = new exports.AuthorizationManager();
