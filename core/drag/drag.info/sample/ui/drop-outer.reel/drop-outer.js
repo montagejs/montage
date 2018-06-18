@@ -1,8 +1,7 @@
 /**
  * @module ui/drop-outer.reel
  */
-var Component = require("montage/ui/component").Component,
-    DraggingOperationType = require("montage/core/drag/dragging-operation-type").DraggingOperationType;
+var Component = require("montage/ui/component").Component;
 
 /**
  * @class DropOuter
@@ -12,32 +11,58 @@ exports.DropOuter = Component.specialize(/** @lends DropOuter# */ {
 
     enterDocument: {
         value: function () {
-            this.data = [];
-            this.registerForDragDestination();
+            this.registerDroppable();
+            this.application.addEventListener("dragstart", this, false);
         }
     },
 
     exitDocument: {
         value: function () {
-            this.unregisterForDragDestination();
+            this.unregisterDroppable();
+            this.application.removeEventListener("dragstart", this, false);
         }
     },
 
-    draggingStarted: {
-        value: function (draggingOperationInfo) {
-           return true;
+    handleDragstart: {
+        value: function (event) {
+            event.dataTransfer.candidateDropTargets.add(this);
+            this._addEventListeners();
         }
     },
 
-    draggingEntered: {
-        value: function (draggingOperationInfo) {
-            draggingOperationInfo.dropEffect = DraggingOperationType.Link;
+    handleDragenter: {
+        value: function (event) {
+            event.stopPropagation();
+            event.dataTransfer.dropEffect = "alias";
         }
     },
 
-    performDragOperation: {
-        value: function (draggingOperationInfo) {
-            console.log('dropzone outer received dragging operation');
+    handleDrop: {
+        value: function (event) {
+            event.stopPropagation();
+            console.log('dropzone outer received drop');
+        }
+    },
+
+    handleDragended: {
+        value: function (event) {
+            this._removeEventListeners();
+        }
+    },
+
+    _addEventListeners: {
+        value: function () {
+            this.addEventListener("dragenter", this);
+            this.addEventListener("dragended", this);
+            this.addEventListener("drop", this);
+        }
+    },
+
+    _removeEventListeners: {
+        value: function () {
+            this.removeEventListener("dragenter", this);
+            this.removeEventListener("dragended", this);
+            this.removeEventListener("drop", this);
         }
     }
 

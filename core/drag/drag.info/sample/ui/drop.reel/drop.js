@@ -1,9 +1,7 @@
 /**
  * @module ui/drop.reel
  */
-var Component = require("montage/ui/component").Component,
-    DragManager = require("montage/core/drag/drag-manager").DragManager,
-    DraggingOperationType = require("montage/core/drag/dragging-operation-type").DraggingOperationType;
+var Component = require("montage/ui/component").Component;
 
 /**
  * @class Drop
@@ -22,55 +20,73 @@ exports.Drop = Component.specialize(/** @lends Drop# */ {
     enterDocument: {
         value: function () {
             this.data = [];
-            this.registerForDragDestination();
+            this.registerDroppable();
+            this.application.addEventListener("dragstart", this, false);
         }
     },
 
     exitDocument: {
         value: function () {
-            this.unregisterForDragDestination();
+            this.unregisterDroppable();
+            this.application.removeEventListener("dragstart", this, false);
         }
     },
 
-    draggingStarted: {
-        value: function (draggingOperationInfo) {
-            if (draggingOperationInfo.dragSource) {
-                var value = draggingOperationInfo.dragSource.value;
-                return value && this.data.indexOf(value) === -1 && 
-                    this.dataSource.indexOf(value) > -1;
+    handleDragstart: {
+        value: function (event) {
+            var shouldAddToCandidate = false;
+
+            if (this.dataSource) {
+                var value = event.dataTransfer.getData("text/plain");
+                shouldAddToCandidate = value && this.data.indexOf(value) === -1 && 
+                    this.dataSource.indexOf(+value) > -1;
             }
-            return false;
+
+            if (shouldAddToCandidate) {
+                event.dataTransfer.candidateDropTargets.add(this);
+                this._addEventListeners();
+            }
         }
     },
 
-    performDragOperation: {
-        value: function (draggingOperationInfo) {
-            if (draggingOperationInfo.dragSource) {
-                console.log(
-                    draggingOperationInfo.dragSource.identifier + 
-                    ': ' + draggingOperationInfo.data.get('secret')
-                );
-    
-                var value = draggingOperationInfo.dragSource.value;
-    
-                if (value && this.data.indexOf(value) === -1) {
-                    this.data.push(value);
-    
+    handleDrop: {
+        value: function (event) {
+            var value = event.dataTransfer.getData("text/plain");
+
+            if (value && this.data.indexOf(value) === -1) {
+                this.data.push(value);
+
+                if (event.dataTransfer.dropEffect === "move") {
+                    var index;
+
                     if (
-                        draggingOperationInfo.dragEffect === 
-                        DraggingOperationType.Move
+                        this.dataSource && 
+                        (index = this.dataSource.indexOf(value)) > -1
                     ) {
-                        var index;
-    
-                        if (
-                            this.dataSource && 
-                            (index = this.dataSource.indexOf(value)) > -1
-                        ) {
-                            this.dataSource.splice(index, 1);
-                        }
+                        this.dataSource.splice(index, 1);
                     }
                 }
             }
+        }
+    },
+
+    handleDragended: {
+        value: function (event) {
+            this._removeEventListeners();
+        }
+    },
+
+    _addEventListeners: {
+        value: function () {
+            this.addEventListener("dragended", this);
+            this.addEventListener("drop", this);
+        }
+    },
+
+    _removeEventListeners: {
+        value: function () {
+            this.removeEventListener("dragended", this);
+            this.removeEventListener("drop", this);
         }
     }
 

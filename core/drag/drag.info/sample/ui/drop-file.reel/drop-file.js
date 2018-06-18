@@ -15,28 +15,55 @@ exports.DropFile = Component.specialize(/** @lends DropFile# */ {
 
     enterDocument: {
         value: function () {
-            this.fileName = 
-            this.registerForDragDestination();
+            this.registerDroppable();
+            this.application.addEventListener("dragstart", this);
         }
     },
 
     exitDocument: {
         value: function () {
-            this.unregisterForDragDestination();
+            this.unregisterDroppable();
+            this.application.removeEventListener("dragstart", this);
         }
     },
 
-    draggingStarted: {
-        value: function (draggingOperationInfo) {
-            return !!(draggingOperationInfo.data.has('types') && 
-                draggingOperationInfo.data.get('types').indexOf('Files') > -1);
+    handleDragstart: {
+        value: function (event) {
+            var shouldAccept = !!(event.dataTransfer.types && 
+            event.dataTransfer.types.indexOf('Files') > -1);
+            
+            if (shouldAccept) {
+                event.dataTransfer.candidateDropTargets.add(this);
+                this._addEventListeners();
+            }
         }
     },
 
-    performDragOperation: {
-        value: function (draggingOperationInfo) {
-            console.log(draggingOperationInfo.data.get("files"));
-            this.fileName = draggingOperationInfo.data.get("files")[0].name;
+    handleDrop: {
+        value: function (event) {
+            console.log(event.dataTransfer.files);
+            this.fileName = event.dataTransfer.files[0].name;
+        }
+    },
+
+    handleDragended: {
+        value: function (event) {
+            this._removeEventListeners();
+        }
+    },
+
+    _addEventListeners: {
+        value: function () {
+            this.application.addEventListener("dragend", this);
+            this.addEventListener("drop", this);
+        }
+    },
+
+    _removeEventListeners: {
+        value: function () {
+            this.application.removeEventListener("dragend", this);
+            this.removeEventListener("drop", this);
         }
     }
+
 });

@@ -1,9 +1,7 @@
 /**
  * @module ui/square.reel
  */
-var Component = require("montage/ui/component").Component,
-    DragManager = require("montage/core/drag/drag-manager").DragManager,
-    DraggingOperationType = require("montage/core/drag/dragging-operation-type").DraggingOperationType;
+var Component = require("montage/ui/component").Component;
 
 /**
  * @class Square
@@ -19,42 +17,41 @@ exports.Square = Component.specialize(/** @lends Square# */ {
         value: false
     },
 
-    secret: {
-        value: null
-    },
-
     enterDocument: {
         value: function () {
-            this.registerForDragSource();
+            this.registerDraggable();
+            this.addEventListener("dragstart", this, false);
         }
     },
 
     exitDocument: {
         value: function () {
-            this.unregisterForDragSource();
+            this.removeEventListener("dragstart", this, false);
+            this.unregisterDraggable();
         }
     },
 
-    beginDraggingOperation: {
-        value: function (draggingOperationInfo) {
+    handleDragstart: {
+        value: function (event) {
             if (this.enableMoveOperation) {
-                draggingOperationInfo.dragEffect = DraggingOperationType.Move;
-                draggingOperationInfo.dropEffectAllowed = DraggingOperationType.Move;
+                event.dataTransfer.effectAllowed = "move";
+                event.dataTransfer.dragEffect = "move";
+            } else {
+                event.dataTransfer.effectAllowed = "all";
             }
+            
 
             if (this.container) {
-                draggingOperationInfo.dragSourceContainer = this.container;
+                this.draggableContainer = this.container;
+            } else {
+                this.draggableContainer = null;
             }
 
             if (this.enableVisiblePlaceholder) {
-                draggingOperationInfo.dragSourcePlaceholderStrategy = (
-                    DragManager.DragSourcePlaceholderStrategyVisible
-                );
+                event.dataTransfer.draggablePlaceholderStrategy = "visible";
             }
             
-            if (this.secret) {
-                draggingOperationInfo.data.set("secret", this.secret);
-            }
+            event.dataTransfer.setData("text/plain", this.value);
 
             if (this.switchDraggedImage) {
                 var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
@@ -65,7 +62,7 @@ exports.Square = Component.specialize(/** @lends Square# */ {
                 circle.setAttributeNS(null, 'r', 25);
                 circle.setAttributeNS(null, 'style', 'fill: #e74c3c;');
                 svg.appendChild(circle);
-                draggingOperationInfo.draggedImage = svg;
+                event.dataTransfer.setDragImage(svg, 50, 50);
             }
         }
     }

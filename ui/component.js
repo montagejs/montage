@@ -1209,12 +1209,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     __exitDocument: {
         value: function () {
-            if (this.isDragSource) {
-                this.unregisterForDragSource();
+            if (this.isDraggable) {
+                this.unregisterDraggable();
             }
 
-            if (this.isDragDestination) {
-                this.unregisterForDragDestination();
+            if (this.isDroppable) {
+                this.unregisterDroppable();
             }
 
             if (this._inDocument && typeof this.exitDocument === "function") {                
@@ -1282,53 +1282,53 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
-    _isDragSource: {
+    _isDraggable: {
         value: false
     },
 
-    isDragSource: {
-        set: function (isDragSource) {
-            isDragSource = !!isDragSource;
+    isDraggable: {
+        set: function (isDraggable) {
+            isDraggable = !!isDraggable;
 
-            if (this._isDragSource !== isDragSource) {
+            if (this._isDraggable !== isDraggable) {
                 if (this._inDocument) {
-                    if (this._isDragSource) {
-                        this.unregisterForDragSource();
+                    if (this._isDraggable) {
+                        this.unregisterDraggable();
                     } else {
-                        this.registerForDragSource();
+                        this.registerDraggable();
                     }
                 }
 
-                this._isDragSource = isDragSource;
+                this._isDraggable = isDraggable;
             }
         },
         get: function () {
-            return this._isDragSource;
+            return this._isDraggable;
         }
     },
 
-    _isDragDestination: {
+    _isDroppable: {
         value: false
     },
 
-    isDragDestination: {
-        set: function (isDragDestination) {
-            isDragDestination = !!isDragDestination;
+    isDroppable: {
+        set: function (isDroppable) {
+            isDroppable = !!isDroppable;
 
-            if (this._isDragDestination !== isDragDestination) {
+            if (this._isDroppable !== isDroppable) {
                 if (this._inDocument) {
-                    if (this._isDragDestination) {
-                        this.unregisterForDragDestination();
+                    if (this._isDroppable) {
+                        this.unregisterDroppable();
                     } else {
-                        this.registerForDragDestination();
+                        this.registerDroppable();
                     }
                 }
 
-                this._isDragDestination = isDragDestination;
+                this._isDroppable = isDroppable;
             }
         },
         get: function () {
-            return this._isDragDestination;
+            return this._isDroppable;
         }
     },
 
@@ -2971,14 +2971,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     },
 
     // Drag & Drop operations
+     //registerDraggableComponent
 
     /**
      * Register a component for beeing a dragging source.
      */
-    registerForDragSource: {
+    registerDraggable: {
         value: function () {
-            this.dragManager.registerForDragSource(this);
-            this.__isDragSource = true;
+            this.dragManager.registerDraggable(this);
+            this.__isDraggable = true;
             this.classList.add("montage-drag-source");
         }
     },
@@ -2986,20 +2987,21 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     /**
      * unregister a component for beeing a dragging source.
      */
-    unregisterForDragSource: {
+    unregisterDraggable: {
         value: function () {
-            this.dragManager.unregisterForDragSource(this);
+            this.dragManager.unregisterDraggable(this);
             this.classList.remove("montage-drag-source");
         }
     },
 
+    //registerDroppableComponent
     /**
      * Register a component for beeing a drag destination.
      */
-    registerForDragDestination: {
+    registerDroppable: {
         value: function () {
-            this.dragManager.registerForDragDestination(this);
-            this.__isDragDestination = true;
+            this.dragManager.registerDroppable(this);
+            this.__isDroppable = true;
             this.classList.add("montage-drag-destination");
         }
     },
@@ -3007,165 +3009,29 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     /**
      * Unregister a component for beeing a drag destination.
      */
-    unregisterForDragDestination: {
+    unregisterDroppable: {
         value: function () {
-            this.dragManager.unregisterForDragDestination(this);
+            this.dragManager.unregisterDroppable(this);
             this.classList.remove("montage-drag-destination");
         }
     },
 
-    /**
-     * Called on the source when the drag operation starts.
-     */
-    _beginDraggingOperation: {
-        value: function (draggingOperationInfo) {
-            if (typeof this.beginDraggingOperation === "function") {
-                this.beginDraggingOperation(draggingOperationInfo);
-            }
-        }
+    _draggableContainer: {
+        value: null
     },
 
-    /**
-     * Called on the source when the dragged image is moving.
-     */
-    _updateDraggingOperation: {
-        value: function (draggingOperationInfo) {
-            if (typeof this.updateDraggingOperation === "function") {
-                this.updateDraggingOperation(draggingOperationInfo);
-            }
-        }
-    },
-
-    /**
-     * Called on the source when the drag operation ends.
-     */
-    _endDraggingOperation: {
-        value: function (draggingOperationInfo) {
-            if (typeof this.endDraggingOperation === "function") {
-                this.endDraggingOperation(draggingOperationInfo);
-            }
-        }
-    },
-
-    /**
-     * Called when the drag operation start,
-     * allowing the receivers to agree to or refuse the drag operation.
-     * By default all receivers will not accept any drag operation.
-     * The method `draggingStarted` should return a boolean value.
-     */
-    _draggingStarted: {
-        value: function (draggingOperationInfo) {
-            var acceptDragOperation = false,
-                acceptDragOperationDelegate = this.callDelegateMethod(
-                    "dragDestinationShouldAcceptDraggingOperation",
-                    this,
-                    draggingOperationInfo
-                );
-
-            if (acceptDragOperationDelegate !== void 0) {
-                acceptDragOperation = acceptDragOperationDelegate;
-
-            } else if (typeof this.draggingStarted === "function") {
-                acceptDragOperation = this.draggingStarted(draggingOperationInfo);
-                acceptDragOperation = acceptDragOperation === void 0 ? 
-                false : !!acceptDragOperation;
-            }
-
-            if (acceptDragOperation) {
-                this.classList.add('accept-dragged-image');
-            }
-
-            this.acceptDragOperation = acceptDragOperation;
-        }
-    },
-
-    /**
-     * Called when the drag operation end,
-     * allowing the receivers to perform any necessary clean-up
-     */
-    _draggingEnded: {
-        value: function (draggingOperationInfo) {
-            this.classList.remove('accept-dragged-image');
-
-            if (typeof this.draggingEnded === "function") {
-                this.draggingEnded(draggingOperationInfo);
-            }
-        }
-    },
-
-    /**
-     * Called when the dragged image enters 
-     * the destination’s bounds rectangle
-     */
-    _draggingEntered: {
-        value: function (draggingOperationInfo) {
-            this.classList.add("dragged-image-entered");
-
-            if (typeof this.draggingEntered === "function") {
-                this.draggingEntered(draggingOperationInfo);
-            }
-        }
-    },
-
-    /**
-     * Called periodically when the dragged image is held within 
-     * the destination’s bounds rectangle
-     */
-    _draggingUpdated: {
-        value: function (draggingOperationInfo) {
-            this.classList.add("dragged-image-over");
-
-            if (typeof this.draggingUpdated === "function") {
-                this.draggingUpdated(draggingOperationInfo);
-            }
-        }
-    },
-
-    /**
-     * Called when the dragged image exits 
-     * the destination’s bounds rectangle
-     */
-    _draggingExited: {
-        value: function (draggingOperationInfo) {
-            this.classList.remove("dragged-image-entered");
-            this.classList.remove("dragged-image-over");
-
-            if (typeof this.draggingExited === "function") {
-                this.draggingExited(draggingOperationInfo);
-            }
-
-            draggingOperationInfo.dropEffect = null;
-        }
-    },
-
-    /**
-     * Called after the released image has been removed from the screen, 
-     * allowing the receiver to import the data.
-     */
-    _performDragOperation: {
-        value: function (draggingOperationInfo) {
-            if (this.acceptDragOperation) {
-                if (typeof this.performDragOperation === "function") {
-                    this.performDragOperation(draggingOperationInfo);
+    draggableContainer: {
+        set: function (element) {
+            if (element) {
+                if (element instanceof Element) {
+                    this._draggableContainer = element;
+                } else if (element.element instanceof Element) {
+                    this._draggableContainer = element.element;
                 }
             }
-        }
-    },
-
-    /**
-     * Called when the dragging operation is complete, 
-     * allowing the receiver to perform any necessary clean-up.
-     */
-    _concludeDragOperation: {
-        value: function (draggingOperationInfo) {
-            if (this.acceptDragOperation) {
-                this.classList.remove("dragged-image-entered");
-                this.classList.remove("dragged-image-over");
-
-                if (typeof this.concludeDragOperation === "function") {
-                    this.concludeDragOperation(draggingOperationInfo);
-                }
-            }
+        },
+        get: function () {
+            return this._draggableContainer;
         }
     },
 
@@ -3488,12 +3354,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         value: function (firstTime) {
             var originalElement;
 
-            if (this.isDragSource) {
-                this.registerForDragSource();
+            if (this.isDraggable) {
+                this.registerDraggable();
             }
 
-            if (this.isDragDestination) {
-                this.registerForDragDestination();
+            if (this.isDroppable) {
+                this.registerDroppable();
             }
 
             if (firstTime) {
