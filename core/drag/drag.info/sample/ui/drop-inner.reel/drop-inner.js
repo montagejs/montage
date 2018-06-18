@@ -8,17 +8,19 @@ var Component = require("montage/ui/component").Component;
  * @extends Component
  */
 exports.DropInner = Component.specialize(/** @lends DropInner# */ {
+    
+    droppable: {
+        value: true
+    },
 
     enterDocument: {
         value: function () {
-            this.registerDroppable();
             this.application.addEventListener("dragstart", this, false);
         }
     },
 
     exitDocument: {
         value: function () {
-            this.unregisterDroppable();
             this.application.removeEventListener("dragstart", this, false);
         }
     },

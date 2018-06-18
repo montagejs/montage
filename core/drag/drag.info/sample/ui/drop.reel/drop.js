@@ -17,17 +17,19 @@ exports.Drop = Component.specialize(/** @lends Drop# */ {
         value: null
     },
 
+    droppable: {
+        value: true
+    },
+
     enterDocument: {
         value: function () {
             this.data = [];
-            this.registerDroppable();
             this.application.addEventListener("dragstart", this, false);
         }
     },
 
     exitDocument: {
         value: function () {
-            this.unregisterDroppable();
             this.application.removeEventListener("dragstart", this, false);
         }
     },

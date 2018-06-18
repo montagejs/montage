@@ -9,16 +9,18 @@ var Component = require("montage/ui/component").Component;
  */
 exports.DropOuter = Component.specialize(/** @lends DropOuter# */ {
 
+    droppable: {
+        value: true
+    },
+
     enterDocument: {
         value: function () {
-            this.registerDroppable();
             this.application.addEventListener("dragstart", this, false);
         }
     },
 
     exitDocument: {
         value: function () {
-            this.unregisterDroppable();
             this.application.removeEventListener("dragstart", this, false);
         }
     },

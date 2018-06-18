@@ -1209,11 +1209,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     __exitDocument: {
         value: function () {
-            if (this.isDraggable) {
+            if (this.draggable) {
                 this.unregisterDraggable();
             }
 
-            if (this.isDroppable) {
+            if (this.droppable) {
                 this.unregisterDroppable();
             }
 
@@ -1282,54 +1282,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
-    _isDraggable: {
+    draggable: {
         value: false
     },
 
-    isDraggable: {
-        set: function (isDraggable) {
-            isDraggable = !!isDraggable;
-
-            if (this._isDraggable !== isDraggable) {
-                if (this._inDocument) {
-                    if (this._isDraggable) {
-                        this.unregisterDraggable();
-                    } else {
-                        this.registerDraggable();
-                    }
-                }
-
-                this._isDraggable = isDraggable;
-            }
-        },
-        get: function () {
-            return this._isDraggable;
-        }
-    },
-
-    _isDroppable: {
+    droppable: {
         value: false
-    },
-
-    isDroppable: {
-        set: function (isDroppable) {
-            isDroppable = !!isDroppable;
-
-            if (this._isDroppable !== isDroppable) {
-                if (this._inDocument) {
-                    if (this._isDroppable) {
-                        this.unregisterDroppable();
-                    } else {
-                        this.registerDroppable();
-                    }
-                }
-
-                this._isDroppable = isDroppable;
-            }
-        },
-        get: function () {
-            return this._isDroppable;
-        }
     },
 
     /**
@@ -1886,6 +1844,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             if(this._templateObjects) {
                 this._setupTemplateObjects(documentPart.objects);
             }
+
+            this.addOwnPropertyChangeListener("draggable", this);
+            this.addOwnPropertyChangeListener("droppable", this);
         }
     },
 
@@ -2971,7 +2932,26 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     },
 
     // Drag & Drop operations
-     //registerDraggableComponent
+
+    handleDraggableChange: {
+        value: function (value) {
+            if (value) {
+                this.registerDraggable();
+            } else {
+                this.unregisterDraggable();
+            }
+        }
+    },
+
+    handleDroppableChange: {
+        value: function (value) {
+            if (value) {
+                this.registerDroppable();
+            } else {
+                this.unregisterDroppable();
+            }
+        }
+    },
 
     /**
      * Register a component for beeing a dragging source.
@@ -2979,7 +2959,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     registerDraggable: {
         value: function () {
             this.dragManager.registerDraggable(this);
-            this.__isDraggable = true;
             this.classList.add("montage-drag-source");
         }
     },
@@ -2994,14 +2973,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
-    //registerDroppableComponent
     /**
      * Register a component for beeing a drag destination.
      */
     registerDroppable: {
         value: function () {
             this.dragManager.registerDroppable(this);
-            this.__isDroppable = true;
             this.classList.add("montage-drag-destination");
         }
     },
@@ -3354,11 +3331,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         value: function (firstTime) {
             var originalElement;
 
-            if (this.isDraggable) {
+            if (this.draggable) {
                 this.registerDraggable();
             }
 
-            if (this.isDroppable) {
+            if (this.droppable) {
                 this.registerDroppable();
             }
 

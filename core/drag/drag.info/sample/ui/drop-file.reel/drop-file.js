@@ -13,16 +13,18 @@ exports.DropFile = Component.specialize(/** @lends DropFile# */ {
         value: null
     },
 
+    droppable: {
+        value: true
+    },
+
     enterDocument: {
         value: function () {
-            this.registerDroppable();
             this.application.addEventListener("dragstart", this);
         }
     },
 
     exitDocument: {
         value: function () {
-            this.unregisterDroppable();
             this.application.removeEventListener("dragstart", this);
         }
     },

@@ -17,9 +17,12 @@ exports.Square = Component.specialize(/** @lends Square# */ {
         value: false
     },
 
+    draggable: {
+        value: true
+    },
+
     enterDocument: {
         value: function () {
-            this.registerDraggable();
             this.addEventListener("dragstart", this, false);
         }
     },
@@ -27,7 +30,6 @@ exports.Square = Component.specialize(/** @lends Square# */ {
     exitDocument: {
         value: function () {
             this.removeEventListener("dragstart", this, false);
-            this.unregisterDraggable();
         }
     },
 
