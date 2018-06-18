@@ -1,5 +1,6 @@
 var Montage = require("../core").Montage,
     DragEvent = require("./drag-event").DragEvent,
+    DataTransfer = require("./drag-event").DataTransfer,
     TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
     DraggingOperationContext = require("./dragging-operation-context").DraggingOperationContext;
 
@@ -113,7 +114,6 @@ var DragManager = exports.DragManager = Montage.specialize({
         value: 0
     },
 
-    // TODO: rename
     _cursorStyle: {
         value: null
     },
@@ -703,7 +703,9 @@ var DragManager = exports.DragManager = Montage.specialize({
                         )
                     ));
 
-                    draggingOperationContext.dataTransfer = event.dataTransfer;
+                    draggingOperationContext.dataTransfer = (
+                        DataTransfer.fromDataTransfer(event.dataTransfer)
+                    );
 
                     var dragStartEvent = this._dispatchDragStart();
 
@@ -714,7 +716,6 @@ var DragManager = exports.DragManager = Montage.specialize({
                     this._addDragListeners();
                     this._isDragging = true;
                     this._rootComponent.needsDraw = true;
-
                 }
             }
             
@@ -742,6 +743,10 @@ var DragManager = exports.DragManager = Montage.specialize({
                 this._draggingOperationContext.positionY = event.pageY;
                 this._draggingOperationContext.dataTransfer = event.dataTransfer;
 
+                this._draggingOperationContext.dataTransfer = (
+                    DataTransfer.fromDataTransfer(event.dataTransfer)
+                );
+
                 this._rootComponent.needsDraw = true;
             }
         }
@@ -761,11 +766,9 @@ var DragManager = exports.DragManager = Montage.specialize({
             );
             this._draggingOperationContext.positionX = event.pageX;
             this._draggingOperationContext.positionY = event.pageY;
-            this._draggingOperationContext.dataTransfer = {
-                files: event.dataTransfer.files,
-                items: event.dataTransfer.items,
-                types: event.dataTransfer.types
-            };
+            this._draggingOperationContext.dataTransfer = (
+                DataTransfer.fromDataTransfer(event.dataTransfer)
+            );
             
             this._removeDragListeners();
             this.handleTranslateEnd();
@@ -800,7 +803,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                     )
                 ));
 
-                var dragStartEvent = this._dispatchDragStart(dragStartEvent);
+                var dragStartEvent = this._dispatchDragStart();
                 
                 this._draggingOperationContext.dataTransfer = dragStartEvent.dataTransfer;
                 this._draggingOperationContext.dragEffect = dragStartEvent.dataTransfer.dragEffect;

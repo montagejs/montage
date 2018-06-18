@@ -1,7 +1,7 @@
 var MutableEvent = require("../event/mutable-event").MutableEvent,
     Montage = require("../core").Montage;
 
-var DataTransfer = Montage.specialize({
+var DataTransfer = exports.DataTransfer = Montage.specialize({
 
     __data: {
         enumerable: false,
@@ -248,7 +248,27 @@ var DataTransfer = Montage.specialize({
                     effectAllowed === this.CopyLink
                 ));
         }
-    }
+    },
+
+    /**
+    * @function
+    * @param {window.DataTransfer} dataTransfer The original DataTransfer.
+    * @returns DataTransfer
+    */
+    fromDataTransfer: {
+        value: function (dataTransfer) {
+            montageDataTransfer = new DataTransfer();
+
+            montageDataTransfer.items = dataTransfer.items;
+            montageDataTransfer.files = dataTransfer.files;
+            montageDataTransfer.types = dataTransfer.types;
+            montageDataTransfer.dropEffect = dataTransfer.dropEffect === 'none' ?
+                this.Default : dataTransfer.dropEffect;
+            montageDataTransfer.effectAllowed = dataTransfer.effectAllowed;
+
+            return montageDataTransfer;
+        }
+    },
 });
 
 exports.DragEvent = MutableEvent.specialize({
