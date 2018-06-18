@@ -22,8 +22,6 @@ var Montage = require("../core").Montage,
     WeakMap = require("collections/weak-map"),
     currentEnvironment = require("../environment").currentEnvironment;
 
-require("../extras/event");
-
 var defaultEventManager;
 
 //This is a quick polyfill for IE10 that is not exposing CustomEvent as a function.
