@@ -12,13 +12,13 @@ var PX = "px";
 
 var DragManager = exports.DragManager = Montage.specialize({
 
-    __dragabbles: {
+    __draggables: {
         value: null
     },
 
-    _dragabbles: {
+    _draggables: {
         get: function () {
-            return this.__dragabbles || (this.__dragabbles = []);
+            return this.__draggables || (this.__draggables = []);
         }
     },
 
@@ -219,7 +219,7 @@ var DragManager = exports.DragManager = Montage.specialize({
         value: function (component, role) {
             if (component) {
                 var components = role === DRAGGABLE ?
-                    this._dragabbles : this._droppables;
+                    this._draggables : this._droppables;
 
                 if (components.indexOf(component) === -1) {
                     components.push(component);
@@ -239,7 +239,7 @@ var DragManager = exports.DragManager = Montage.specialize({
         value: function (component, role) {
             if (component) {
                 var components = role === DRAGGABLE ?
-                    this._dragabbles : this._droppables,
+                    this._draggables : this._droppables,
                     index;
 
                 if ((index = components.indexOf(component)) > -1) {
@@ -503,7 +503,7 @@ var DragManager = exports.DragManager = Montage.specialize({
 
             if (targetComponent) {
                 var components = role === DRAGGABLE ? 
-                    this._dragabbles : this._droppables,
+                    this._draggables : this._droppables,
                     index;
 
                 while (targetComponent) {
@@ -1084,7 +1084,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                         );
                         placeholderElement.style.boxSizing = "border-box";
                         placeholderElement.classList.add(
-                            'montage-drag-source-placeholder'
+                            'montage-draggable-placeholder'
                         );
 
                         draggableElement.parentNode.insertBefore(

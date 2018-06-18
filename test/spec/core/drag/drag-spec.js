@@ -20,35 +20,35 @@ TestPageLoader.queueTest("drag-test", function (testPage) {
 
             describe("Drag Source", function () {
                 it("shoud be registered within the drag manager", function () {
-                    expect(dragComponent.isDragSource).toEqual(true);
-                    expect(dragComponent.dragManager._dragSources.indexOf(dragComponent) > -1).toEqual(true);
+                    expect(dragComponent.draggable).toEqual(true);
+                    expect(dragComponent.dragManager._draggables.indexOf(dragComponent) > -1).toEqual(true);
                 });
 
-                it("shoud have the class name `montage-drag-source`", function () {
-                    expect(dragComponent.classList.has("montage-drag-source")).toEqual(true);
+                it("shoud have the class name `montage-draggable`", function () {
+                    expect(dragComponent.classList.has("montage-draggable")).toEqual(true);
                 });
 
                 it("shoud be unregistered when leaving the component tree", function () {
                     dragComponent._exitDocument();
-                    expect(dragComponent.dragManager._dragSources.indexOf(dragComponent) === -1).toEqual(true);
-                    expect(dragComponent.classList.has("montage-drag-source")).toEqual(false);
+                    expect(dragComponent.dragManager._draggables.indexOf(dragComponent) === -1).toEqual(true);
+                    expect(dragComponent.classList.has("montage-draggable")).toEqual(false);
                 });
             });
 
             describe("Drag Destination", function () {
                 it("shoud be registered within the drag manager ", function () {
-                    expect(dropComponent.isDragDestination).toEqual(true);
-                    expect(dropComponent.dragManager._dragDestinations.indexOf(dropComponent) > -1).toEqual(true);
+                    expect(dropComponent.droppable).toEqual(true);
+                    expect(dropComponent.dragManager._droppables.indexOf(dropComponent) > -1).toEqual(true);
                 });
 
-                it("shoud have the class name `montage-drag-destination`", function () {
-                    expect(dropComponent.classList.has("montage-drag-destination")).toEqual(true);
+                it("shoud have the class name `montage-droppable`", function () {
+                    expect(dropComponent.classList.has("montage-droppable")).toEqual(true);
                 });
 
                 it("shoud be unregistered when leaving the component tree", function () {
                     dropComponent._exitDocument();
-                    expect(dropComponent.dragManager._dragDestinations.indexOf(dropComponent) === -1).toEqual(true);
-                    expect(dropComponent.classList.has("montage-drag-destination")).toEqual(false);
+                    expect(dropComponent.dragManager._droppables.indexOf(dropComponent) === -1).toEqual(true);
+                    expect(dropComponent.classList.has("montage-droppable")).toEqual(false);
                 });
             });
             

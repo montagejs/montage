@@ -257,7 +257,7 @@ var DataTransfer = exports.DataTransfer = Montage.specialize({
     */
     fromDataTransfer: {
         value: function (dataTransfer) {
-            montageDataTransfer = new DataTransfer();
+            var montageDataTransfer = new DataTransfer();
 
             montageDataTransfer.items = dataTransfer.items;
             montageDataTransfer.files = dataTransfer.files;
@@ -308,7 +308,7 @@ exports.DragEvent = MutableEvent.specialize({
     }
 
 }, {
-        DRAGEND: {
+        DRAGSTART: {
             value: "dragstart"
         },
 

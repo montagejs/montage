@@ -74,7 +74,7 @@ h4 {
     margin-left: 8px;
 }
 
-.samples .montage-drag-source-placeholder {
+.samples .montage-draggable-placeholder {
     border: 2px dashed #9b59b6;
 }
 

@@ -2959,7 +2959,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     registerDraggable: {
         value: function () {
             this.dragManager.registerDraggable(this);
-            this.classList.add("montage-drag-source");
+            this.classList.add("montage-draggable");
         }
     },
 
@@ -2969,7 +2969,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     unregisterDraggable: {
         value: function () {
             this.dragManager.unregisterDraggable(this);
-            this.classList.remove("montage-drag-source");
+            this.classList.remove("montage-draggable");
         }
     },
 
@@ -2979,7 +2979,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     registerDroppable: {
         value: function () {
             this.dragManager.registerDroppable(this);
-            this.classList.add("montage-drag-destination");
+            this.classList.add("montage-droppable");
         }
     },
 
@@ -2989,7 +2989,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     unregisterDroppable: {
         value: function () {
             this.dragManager.unregisterDroppable(this);
-            this.classList.remove("montage-drag-destination");
+            this.classList.remove("montage-droppable");
         }
     },
 
