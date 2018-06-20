@@ -10,18 +10,18 @@
                 "element": {"#": "authorization-manager-panel"}
             }
         },
-        "authorizationPanels": {
+        "panels": {
             "prototype": "ui/repetition.reel",
             "values": {
-                "element": {"#": "authorizationPanels"},
-                "content": { "<-": "@owner.authorizationPanels" }
+                "element": {"#": "panels"},
+                "content": { "<-": "@owner.panels" }
             }
         },
-        "authorizationPanelSlot": {
+        "panelSlot": {
             "prototype": "ui/slot.reel",
             "values": {
-                "element": {"#": "authorizationPanelSlot"},
-                "content": { "<-": "@authorizationPanels:iteration.object" }
+                "element": {"#": "panelSlot"},
+                "content": { "<-": "@panels:iteration.object" }
             }
         }
     }
@@ -29,8 +29,8 @@
 </head>
 <body>
     <div data-montage-id="authorization-manager-panel" class="AuthorizationManagerPanel">
-        <div data-montage-id="authorizationPanels" class="">
-            <div data-montage-id="authorizationPanelSlot" class=""></div>
+        <div data-montage-id="panels" class="">
+            <div data-montage-id="panelSlot" class=""></div>
         </div>
     </div>
 </body>
