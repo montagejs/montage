@@ -150,9 +150,20 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
 
     _providerWithModuleID: {
         value: function (moduleID, require) {
-            var existingService = this._providersByModuleID.get(moduleID);
-            return existingService ? Promise.resolve(existingService) :
-                                     this._makeProviderWithModuleID(moduleID, require);
+            var existingService = this._providersByModuleID.get(moduleID),
+                isPromise = existingService && existingService instanceof Promise,
+                result;
+
+            if (isPromise) {
+                result = existingService;
+            } else if (existingService) {
+                result = Promise.resolve(existingService);
+            } else {
+                result = this._makeProviderWithModuleID(moduleID, require);
+                this._registerAuthorizationServicePromise(moduleID, result);
+            }
+
+            return result;
         }
     },
 
@@ -162,6 +173,7 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
             var self = this,
                 provider;
             return this._providerWithModuleID(moduleID, require).then(function (instance) {
+                window.AuthProvider = instance;
                 provider = instance;
                 return provider.authorize();
             }).then(function (authorization) {
@@ -201,7 +213,6 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
                 for (i = 0; (providerName = providerNames[i]); ++i) {
                     provider = provider || new exports[providerName]();
                 }
-                self.registerAuthorizationService(provider);
                 return provider;
             });
         }
@@ -367,6 +378,13 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
         value: function(dataService) {
             var info = Montage.getInfoForObject(dataService);
             this._providersByModuleID.set(info.moduleId, dataService);
+        }
+    },
+
+
+    _registerAuthorizationServicePromise: {
+        value: function(moduleID, promise) {
+            this._providersByModuleID.set(moduleID, promise);
         }
     },
 
