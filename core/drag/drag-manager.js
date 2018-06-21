@@ -1049,6 +1049,8 @@ var DragManager = exports.DragManager = Montage.specialize({
                     // Wait for the next draw cycle to remove the placeholder,
                     // allowing the receiver to perform any necessary clean-up. 
                     return void 0;
+                } else {
+                    this._draggingOperationContext = null;
                 }
             }
 
