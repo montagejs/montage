@@ -301,7 +301,6 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
                     }
                 }
 
-                //this.classList.add("montage-Button");
                 this.element.setAttribute("role", "button");
                 this.element.addEventListener("keyup", this, false);
             }

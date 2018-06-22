@@ -52,8 +52,6 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
             this._keyComposer.keys = "space";
             this.addComposer(this._keyComposer);
 
-            this.classList.add("montage-ToggleButton");
-
             this.defineBindings({
                 // classList management
                 "classList.has('montage--disabled')": {
@@ -346,4 +344,3 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     }
 
 });
-

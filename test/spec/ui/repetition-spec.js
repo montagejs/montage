@@ -427,7 +427,7 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
 
                     // BUG: Chrome outputs 0 on this..
                     // expects(querySelector("#list3 > li:nth-child(2) > ul#list4-1").length).toBe(5);
-                    var list3a = testPage.evaluateNode("//*[@class='list3']/li[2]/ul[@class='list3a']");
+                    var list3a = testPage.evaluateNode("//*[@class='list3 montage-Repetition']/li[2]/ul[@class='list3a montage-Repetition']");
                     expect(list3a.querySelectorAll("li").length).toBe(5);
                     console.log("should draw one>five iterations –expectationFunction expect 2 passed");
 
@@ -517,7 +517,7 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
 
                         // BUG: Chrome outputs 0 on this..
                         // expect(querySelectorAll("#list3 > li:nth-child(2) > ul#list4-1 > li").length).toBe(5);
-                        var list4a = testPage.evaluateNode("//*[@class='list4']/li[2]/ul[@class='list4a']");
+                        var list4a = testPage.evaluateNode("//*[@class='list4 montage-Repetition']/li[2]/ul[@class='list4a montage-Repetition']");
                         expect(list4a.querySelectorAll("li").length).toBe(5);
                         var inputs = list4a.querySelectorAll("input");
                         expect(inputs.length).toBe(5);
@@ -586,7 +586,7 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                         expect(querySelectorAll(".list5 > li").length).toBe(2);
 
                         expect(querySelectorAll(".list5 > li:nth-child(2) > ul.list5a > li").length).toBe(5);
-                        var list5a = testPage.evaluateNode("//*[@class='list5']/li[2]/ul[@class='list5a']");
+                        var list5a = testPage.evaluateNode("//*[@class='list5 montage-Repetition']/li[2]/ul[@class='list5a montage-Repetition']");
                         expect(list5a.querySelectorAll("li").length).toBe(5);
                         var inputs = list5a.querySelectorAll("input");
                         expect(inputs.length).toBe(5);
