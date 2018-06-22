@@ -1,313 +1,316 @@
 var MutableEvent = require("../event/mutable-event").MutableEvent,
     Montage = require("../core").Montage;
 
-var DataTransfer = exports.DataTransfer = Montage.specialize({
+// XXX Does not presently function server-side
+if (typeof window !== "undefined") {
 
-    __data: {
-        enumerable: false,
-        value: null
-    },
+    var DataTransfer = exports.DataTransfer = Montage.specialize({
 
-    _data: {
-        enumerable: false,
-        get: function () {
-            return this.__data || (this.__data = new Map());
-        }
-    },
+        __data: {
+            enumerable: false,
+            value: null
+        },
 
-    _dragImage: {
-        value: null,
-        enumerable: false,
-    },
-
-    _dragEffect: {
-        value: null
-    },
-
-    dragEffect: {
-        set: function (effect) {
-            if (DataTransfer.ALLOWED_EFFECTS.indexOf(effect) > -1) {
-                this._dragEffect = effect;
+        _data: {
+            enumerable: false,
+            get: function () {
+                return this.__data || (this.__data = new Map());
             }
         },
-        get: function () {
-            return this._dragEffect || DataTransfer.Default;
-        }
-    },
 
-    _dropEffect: {
-        value: null
-    },
+        _dragImage: {
+            value: null,
+            enumerable: false,
+        },
 
-    dropEffect: {
-        set: function (effect) {
-            if (
-                effect &&
-                DataTransfer.ALLOWED_EFFECTS.indexOf(effect) > -1 &&
-                DataTransfer.isDropEffectAllowed(
-                    effect, this.effectAllowed
-                )
-            ) {
-                this._dropEffect = effect;
-            } else {
-                this._dropEffect = null;
+        _dragEffect: {
+            value: null
+        },
+
+        dragEffect: {
+            set: function (effect) {
+                if (DataTransfer.ALLOWED_EFFECTS.indexOf(effect) > -1) {
+                    this._dragEffect = effect;
+                }
+            },
+            get: function () {
+                return this._dragEffect || DataTransfer.Default;
             }
         },
-        get: function () {
-            if (!this._dropEffect) {
-                var index;
 
+        _dropEffect: {
+            value: null
+        },
+
+        dropEffect: {
+            set: function (effect) {
                 if (
-                    this.effectAllowed === DataTransfer.All ||
-                    this.effectAllowed.startsWith('c')
+                    effect &&
+                    DataTransfer.ALLOWED_EFFECTS.indexOf(effect) > -1 &&
+                    DataTransfer.isDropEffectAllowed(
+                        effect, this.effectAllowed
+                    )
                 ) {
-                    this._dropEffect = DataTransfer.Copy;
-                } else if ((index = DataTransfer.ALLOWED_EFFECTS.indexOf(
-                    this.effectAllowed)) > -1
-                ) {
-                    this._dropEffect = DataTransfer.ALLOWED_EFFECTS[index];
+                    this._dropEffect = effect;
                 } else {
-                    this._dropEffect = DataTransfer.Link;
+                    this._dropEffect = null;
+                }
+            },
+            get: function () {
+                if (!this._dropEffect) {
+                    var index;
+
+                    if (
+                        this.effectAllowed === DataTransfer.All ||
+                        this.effectAllowed.startsWith('c')
+                    ) {
+                        this._dropEffect = DataTransfer.Copy;
+                    } else if ((index = DataTransfer.ALLOWED_EFFECTS.indexOf(
+                        this.effectAllowed)) > -1
+                    ) {
+                        this._dropEffect = DataTransfer.ALLOWED_EFFECTS[index];
+                    } else {
+                        this._dropEffect = DataTransfer.Link;
+                    }
+                }
+
+                return this._dropEffect;
+            }
+        },
+
+        _effectAllowed: {
+            value: null
+        },
+
+        effectAllowed: {
+            set: function (effect) {
+                if (DataTransfer.ALLOWED_DROP_EFFECTS.indexOf(effect) > -1) {
+                    this._effectAllowed = effect;
+                }
+            },
+            get: function () {
+                return this._effectAllowed || DataTransfer.All;
+            }
+        },
+
+        files: {
+            value: null
+        },
+
+        items: {
+            value: null
+        },
+
+        types: {
+            value: null
+        },
+
+        dragTarget: {
+            value: null
+        },
+
+        _candidateDropTargets: {
+            value: null,
+            enumerable: false
+        },
+
+        candidateDropTargets: {
+            get: function () {
+                return this._candidateDropTargets ||
+                    (this._candidateDropTargets = new Set());
+            }
+        },
+
+        dragabblePlaceholderStrategy: {
+            value: 'hidden'
+        },
+
+        clearData: {
+            value: function () {
+                return this._data.clear();
+            }
+        },
+
+        getData: {
+            value: function (key) {
+                return this._data.get(key);
+            }
+        },
+
+        hasData: {
+            value: function (key) {
+                return this._data.has(key);
+            }
+        },
+
+        setData: {
+            value: function (key, value) {
+                return this._data.set(key, value);
+            }
+        },
+
+        setDragImage: {
+            value: function (img, xOffset, yOffset) {
+                if (!this._dragImage) {
+                    this._dragImage = img;
                 }
             }
+        },
 
-            return this._dropEffect;
-        }
-    },
-
-    _effectAllowed: {
-        value: null
-    },
-
-    effectAllowed: {
-        set: function (effect) {
-            if (DataTransfer.ALLOWED_DROP_EFFECTS.indexOf(effect) > -1) {
-                this._effectAllowed = effect;
+        getDragImage: {
+            value: function () {
+                return this._dragImage;
             }
         },
-        get: function () {
-            return this._effectAllowed || DataTransfer.All;
-        }
-    },
 
-    files: {
-        value: null
-    },
+    }, {
+            Default: {
+                value: "default"
+            },
 
-    items: {
-        value: null
-    },
+            Copy: {
+                value: "copy"
+            },
 
-    types: {
-        value: null
-    },
+            Move: {
+                value: "move"
+            },
 
-    dragTarget: {
-        value: null
-    },
+            Link: {
+                value: "alias"
+            },
 
-    _candidateDropTargets: {
-        value: null,
-        enumerable: false
-    },
+            CopyLink: {
+                value: "copyLink"
+            },
 
-    candidateDropTargets: {
-        get: function () {
-            return this._candidateDropTargets ||
-                (this._candidateDropTargets = new Set());
-        }
-    },
+            CopyMove: {
+                value: "copyMove"
+            },
 
-    dragabblePlaceholderStrategy: {
-        value: 'hidden'
-    },
+            LinkMove: {
+                value: "linkMove"
+            },
 
-    clearData: {
-        value: function () {
-            return this._data.clear();
-        }
-    },
+            All: {
+                value: "all"
+            },
 
-    getData: {
-        value: function (key) {
-            return this._data.get(key);
-        }
-    },
+            _ALLOWED_EFFECTS: {
+                value: null
+            },
 
-    hasData: {
-        value: function (key) {
-            return this._data.has(key);
-        }
-    },
+            ALLOWED_EFFECTS: {
+                get: function () {
+                    if (!this._ALLOWED_EFFECTS) {
+                        this._ALLOWED_EFFECTS = [
+                            this.Default,
+                            this.Copy,
+                            this.Link,
+                            this.Move
+                        ];
+                    }
 
-    setData: {
-        value: function (key, value) {
-            return this._data.set(key, value);
-        }
-    },
+                    return this._ALLOWED_EFFECTS;
+                }
+            },
 
-    setDragImage: {
-        value: function (img, xOffset, yOffset) {
-            if (!this._dragImage) {
-                this._dragImage = img;
-            }
-        }
-    },
+            _ALLOWED_DROP_EFFECTS: {
+                value: null
+            },
 
-    getDragImage: {
-        value: function () {
-            return this._dragImage;
-        }
-    },
+            ALLOWED_DROP_EFFECTS: {
+                get: function () {
+                    if (!this._ALLOWED_DROP_EFFECTS) {
+                        this._ALLOWED_DROP_EFFECTS = this.ALLOWED_EFFECTS.concat([
+                            this.All,
+                            this.CopyMove,
+                            this.CopyLink,
+                            this.LinkMove
+                        ]);
+                    }
 
-}, {
-    Default: {
-        value: "default"
-    },
+                    return this._ALLOWED_DROP_EFFECTS;
+                }
+            },
 
-    Copy: {
-        value: "copy"
-    },
+            isDropEffectAllowed: {
+                value: function (effect, effectAllowed) {
+                    return effectAllowed === this.All ||
+                        effect === effectAllowed ||
+                        (effect === this.Copy && (
+                            effectAllowed === this.CopyMove ||
+                            effectAllowed === this.CopyLink
+                        )) ||
+                        (effect === this.Move && (
+                            effectAllowed === this.CopyMove ||
+                            effectAllowed === this.LinkMove
+                        )) ||
+                        (effect === this.Link && (
+                            effectAllowed === this.LinkMove ||
+                            effectAllowed === this.CopyLink
+                        ));
+                }
+            },
 
-    Move: {
-        value: "move"
-    },
+            /**
+            * @function
+            * @param {window.DataTransfer} dataTransfer The original DataTransfer.
+            * @returns DataTransfer
+            */
+            fromDataTransfer: {
+                value: function (dataTransfer) {
+                    var montageDataTransfer = new DataTransfer();
 
-    Link: {
-        value: "alias"
-    },
+                    montageDataTransfer.items = dataTransfer.items;
+                    montageDataTransfer.files = dataTransfer.files;
+                    montageDataTransfer.types = dataTransfer.types;
+                    montageDataTransfer.dropEffect = dataTransfer.dropEffect === 'none' ?
+                        this.Default : dataTransfer.dropEffect;
+                    montageDataTransfer.effectAllowed = dataTransfer.effectAllowed;
 
-    CopyLink: {
-        value: "copyLink"
-    },
+                    return montageDataTransfer;
+                }
+            },
+        });
 
-    CopyMove: {
-        value: "copyMove"
-    },
-
-    LinkMove: {
-        value: "linkMove"
-    },
-
-    All: {
-        value: "all"
-    },
-
-    _ALLOWED_EFFECTS: {
-        value: null
-    },
-
-    ALLOWED_EFFECTS: {
-        get: function () {
-            if (!this._ALLOWED_EFFECTS) {
-                this._ALLOWED_EFFECTS = [
-                    this.Default,
-                    this.Copy,
-                    this.Link,
-                    this.Move
-                ];
-            }
-
-            return this._ALLOWED_EFFECTS;
-        }
-    },
-
-    _ALLOWED_DROP_EFFECTS: {
-        value: null
-    },
-
-    ALLOWED_DROP_EFFECTS: {
-        get: function () {
-            if (!this._ALLOWED_DROP_EFFECTS) {
-                this._ALLOWED_DROP_EFFECTS = this.ALLOWED_EFFECTS.concat([
-                    this.All,
-                    this.CopyMove,
-                    this.CopyLink,
-                    this.LinkMove
-                ]);
-            }
-
-            return this._ALLOWED_DROP_EFFECTS;
-        }
-    },
-
-    isDropEffectAllowed: {
-        value: function (effect, effectAllowed) {
-            return effectAllowed === this.All ||
-                effect === effectAllowed ||
-                (effect === this.Copy && (
-                        effectAllowed === this.CopyMove ||
-                        effectAllowed === this.CopyLink
-                )) ||
-                (effect === this.Move && (
-                    effectAllowed === this.CopyMove ||
-                    effectAllowed === this.LinkMove
-                )) ||
-                (effect === this.Link && (
-                    effectAllowed === this.LinkMove ||
-                    effectAllowed === this.CopyLink
-                ));
-        }
-    },
-
-    /**
-    * @function
-    * @param {window.DataTransfer} dataTransfer The original DataTransfer.
-    * @returns DataTransfer
-    */
-    fromDataTransfer: {
-        value: function (dataTransfer) {
-            var montageDataTransfer = new DataTransfer();
-
-            montageDataTransfer.items = dataTransfer.items;
-            montageDataTransfer.files = dataTransfer.files;
-            montageDataTransfer.types = dataTransfer.types;
-            montageDataTransfer.dropEffect = dataTransfer.dropEffect === 'none' ?
-                this.Default : dataTransfer.dropEffect;
-            montageDataTransfer.effectAllowed = dataTransfer.effectAllowed;
-
-            return montageDataTransfer;
-        }
-    },
-});
-
-exports.DragEvent = MutableEvent.specialize({
+    exports.DragEvent = MutableEvent.specialize({
     
-    type: {
-        value: "drag"
-    },
-
-    _event: {
-        enumerable: false,
-        value: null
-    },
-
-    event: {
-        get: function () {
-            return this._event;
+        type: {
+            value: "drag"
         },
-        set: function (value) {
-            this._event = value;
+
+        _event: {
+            enumerable: false,
+            value: null
+        },
+
+        event: {
+            get: function () {
+                return this._event;
+            },
+            set: function (value) {
+                this._event = value;
+            }
+        },
+
+        bubbles: {
+            value: true
+        },
+
+        dataTransfer: {
+            value: null
+        },
+
+        constructor: {
+            value: function (type, eventInit) {
+                this.dataTransfer = new DataTransfer();
+                this._event = new CustomEvent(type, eventInit);
+                this.type = type;
+            }
         }
-    },
 
-    bubbles: {
-        value: true
-    },
-
-    dataTransfer: {
-        value: null
-    },
-
-    constructor: {
-        value: function (type, eventInit) {
-            this.dataTransfer = new DataTransfer();
-            this._event = new CustomEvent(type, eventInit);
-            this.type = type;
-        }
-    }
-
-}, {
+    }, {
         DRAGSTART: {
             value: "dragstart"
         },
@@ -335,4 +338,6 @@ exports.DragEvent = MutableEvent.specialize({
         DRAGEND: {
             value: "dragend"
         }
-});
+    });
+
+}
