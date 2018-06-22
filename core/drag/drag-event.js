@@ -121,7 +121,7 @@ if (typeof window !== "undefined") {
             }
         },
 
-        dragabblePlaceholderStrategy: {
+        draggablePlaceholderStrategy: {
             value: 'hidden'
         },
 
