@@ -100,17 +100,6 @@
             "helpKey": ""
         }
     },
-    "rangeController_multiSelect": {
-        "prototype": "core/meta/property-descriptor",
-        "values": {
-            "name": "multiSelect",
-            "objectDescriptor": {
-                "@": "root"
-            },
-            "valueType": "boolean",
-            "helpKey": ""
-        }
-    },
     "root": {
         "prototype": "core/meta/module-object-descriptor",
         "values": {
@@ -143,9 +132,6 @@
                 },
                 {
                     "@": "rangeController_avoidsEmptySelection"
-                },
-                {
-                    "@": "rangeController_multiSelect"
                 }
             ],
             "propertyDescriptorGroups": {
@@ -176,9 +162,6 @@
                     },
                     {
                         "@": "rangeController_avoidsEmptySelection"
-                    },
-                    {
-                        "@": "rangeController_multiSelect"
                     }
                 ]
             },
