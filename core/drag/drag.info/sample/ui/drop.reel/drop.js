@@ -69,6 +69,8 @@ exports.Drop = Component.specialize(/** @lends Drop# */ {
                     }
                 }
             }
+
+            console.log(event.dataTransfer.draggedObject)
         }
     },
 
