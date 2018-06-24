@@ -1073,11 +1073,39 @@ var DragManager = exports.DragManager = Montage.specialize({
             var draggingOperationContext = this._draggingOperationContext;
 
             if (!draggedImage.parentElement) {
-                var draggedImageBoundingRect = this._draggedImageBoundingRect;
-                draggedImage.style.top = draggedImageBoundingRect.top + PX;
-                draggedImage.style.left = draggedImageBoundingRect.left + PX;
+                var draggedImageBoundingRect = this._draggedImageBoundingRect,
+                    top = 0, left = 0;
                 draggedImage.style.width = draggedImageBoundingRect.width + PX;
                 draggedImage.style.height = draggedImageBoundingRect.height + PX;
+
+
+                if (draggingOperationContext.dataTransfer.dragImageXOffset !== null) {
+                    left = draggingOperationContext.startPositionX;
+
+                    if (draggingOperationContext.dataTransfer.dragImageXOffset > draggedImageBoundingRect.width) {
+                        left -= draggedImageBoundingRect.width;
+                    } else {
+                        left -= draggingOperationContext.dataTransfer.dragImageXOffset;
+                    }
+
+                } else {
+                    left = draggedImageBoundingRect.left;
+                }
+
+                if (draggingOperationContext.dataTransfer.dragImageXOffset !== null) {
+                    top = draggingOperationContext.startPositionY;
+
+                    if (draggingOperationContext.dataTransfer.dragImageYOffset > draggedImageBoundingRect.height) {
+                        top -= draggedImageBoundingRect.height;
+                    } else {
+                        top -= draggingOperationContext.dataTransfer.dragImageYOffset;
+                    }
+                } else {
+                    top = draggedImageBoundingRect.top;
+                }
+
+                draggedImage.style.top = top + PX;
+                draggedImage.style.left = left + PX;
 
                 if (draggingOperationContext.dragEffect === "move") {
                     var draggableElement = draggingOperationContext.draggable.element;

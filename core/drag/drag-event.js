@@ -160,10 +160,26 @@ if (typeof window !== "undefined") {
             }
         },
 
+        dragImageXOffset: {
+            value: null
+        },
+
+        dragImageYOffset: {
+            value: null
+        },
+
         setDragImage: {
             value: function (img, xOffset, yOffset) {
                 if (!this._dragImage) {
                     this._dragImage = img;
+
+                    if (xOffset >= 0) {
+                        this.dragImageXOffset = xOffset;
+                    }
+
+                    if (yOffset >= 0) {
+                        this.dragImageYOffset = yOffset;
+                    }
                 }
             }
         },
