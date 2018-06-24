@@ -1009,8 +1009,13 @@ var DragManager = exports.DragManager = Montage.specialize({
                         }
                     }
 
-                    draggedImage.style[DragManager.cssTransform] = "translate3d(" +
-                        translateX + "px," + translateY + "px,0)";
+                    var translate = "translate3d(";
+                    translate += translateX;
+                    translate += "px,";
+                    translate += translateY;
+                    translate += "px,0)";
+
+                    draggedImage.style[DragManager.cssTransform] = translate;
 
                     this._scrollIfNeeded(
                         draggingOperationContext.positionX, 
