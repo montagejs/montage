@@ -29,22 +29,22 @@
     display: block;
 }
 
-.Drop.accept-dragged-image {
+.Drop.valid-drop-target {
     border: 4px dashed #3498db25;
     animation: blink 1.5s linear infinite alternate;
 }
 
-.Drop.accept-dragged-image.is-empty .drop-placeholder {
+.Drop.valid-drop-target.is-empty .drop-placeholder {
     color:#3498db25;
     animation: blink 1.5s linear infinite alternate;
 }
 
-.Drop.dragged-image-over.is-empty .drop-placeholder {
+.Drop.drag-over.is-empty .drop-placeholder {
     color:#3498db;
     animation: none;
 }
 
-.Drop.dragged-image-over {
+.Drop.drag-over {
     border: 4px solid #3498db;
     animation: none;
 }
@@ -52,4 +52,3 @@
 @keyframes blink { 
     50% { border-color: #3498db; color: #3498db } 
  }
-

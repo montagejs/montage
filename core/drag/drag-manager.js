@@ -336,7 +336,7 @@ var DragManager = exports.DragManager = Montage.specialize({
 
             this._draggingOperationContext.candidateDropTargets.forEach(
                 function (droppable) {
-                    droppable.classList.add('accept-dragged-image');
+                    droppable.classList.add('valid-drop-target');
                 }
             );
 
@@ -354,7 +354,7 @@ var DragManager = exports.DragManager = Montage.specialize({
     _dispatchDragEnd: {
         value: function (draggingOperationContext) {
             draggingOperationContext.candidateDropTargets.forEach(function (droppable) {
-                droppable.classList.remove('accept-dragged-image');
+                droppable.classList.remove('valid-drop-target');
             });
 
             if (draggingOperationContext.draggable) {
@@ -377,8 +377,8 @@ var DragManager = exports.DragManager = Montage.specialize({
     _dispatchDrop: {
         value: function (draggingOperationContext) {
             if (this._dropDestination) {
-                this._dropDestination.classList.remove("dragged-image-entered");
-                this._dropDestination.classList.remove("dragged-image-over");
+                this._dropDestination.classList.remove("drag-enter");
+                this._dropDestination.classList.remove("drag-over");
 
                 this._dropDestination.dispatchEvent(this._createDragEvent(
                     "drop", draggingOperationContext
@@ -395,7 +395,7 @@ var DragManager = exports.DragManager = Montage.specialize({
     _dispatchDragEnter: {
         value: function (draggingOperationContext) {
             if (this._dropDestination) {
-                this._dropDestination.classList.add("dragged-image-entered");
+                this._dropDestination.classList.add("drag-enter");
                 var dragEnterEvent = this._createDragEvent(
                     "dragenter", draggingOperationContext
                 );
@@ -416,7 +416,7 @@ var DragManager = exports.DragManager = Montage.specialize({
     _dispatchDragOver: {
         value: function (draggingOperationContext) {
             if (this._dropDestination) {
-                this._dropDestination.classList.add("dragged-image-over");
+                this._dropDestination.classList.add("drag-over");
                 var dragOverEvent = this._createDragEvent(
                     "dragover", draggingOperationContext
                 );
@@ -439,8 +439,8 @@ var DragManager = exports.DragManager = Montage.specialize({
     _dispatchDragLeave: {
         value: function (draggingOperationContext) {
             if (this._dropDestination) {
-                this._dropDestination.classList.remove("dragged-image-over");
-                this._dropDestination.classList.remove("dragged-image-entered");
+                this._dropDestination.classList.remove("drag-over");
+                this._dropDestination.classList.remove("drag-enter");
 
                 this._dropDestination.dispatchEvent(this._createDragEvent(
                     "dragleave", draggingOperationContext
@@ -894,9 +894,13 @@ var DragManager = exports.DragManager = Montage.specialize({
                             droppable
                         )
                     ) {
+                        droppable.classList.add('invalid-drop-target');
+                        this._invalidDroppable = droppable;
                         droppable = null;
-                        this._cursorStyle = NOT_ALLOWED_CURSOR;
-                    } 
+                    } else if (this._invalidDroppable) {
+                        this._invalidDroppable.classList.remove('invalid-drop-target');
+                        this._invalidDroppable = null;
+                    }
                     
                     if (draggable) {
                         draggable.dispatchEvent(this._createDragEvent(
@@ -1091,7 +1095,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                         );
                         placeholderElement.style.boxSizing = "border-box";
                         placeholderElement.classList.add(
-                            'montage-draggable-placeholder'
+                            'montage-drag-placeholder'
                         );
 
                         draggableElement.parentNode.insertBefore(
