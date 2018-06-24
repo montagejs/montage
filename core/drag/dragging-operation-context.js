@@ -34,8 +34,8 @@ exports.DraggingOperationContext = Montage.specialize({
         value: 0
     },
 
-    dragabblePlaceholderStrategy: {
-        value: 'hidden'
+    showPlaceholder: {
+        value: false
     },
 
     dragEffect: {

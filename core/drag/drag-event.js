@@ -123,8 +123,8 @@ if (typeof window !== "undefined") {
             }
         },
 
-        draggablePlaceholderStrategy: {
-            value: 'hidden'
+        showPlaceholder: {
+            value: false
         },
 
         draggedObject: {

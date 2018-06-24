@@ -806,8 +806,8 @@ var DragManager = exports.DragManager = Montage.specialize({
                 
                 this._draggingOperationContext.dataTransfer = dragStartEvent.dataTransfer;
                 this._draggingOperationContext.dragEffect = dragStartEvent.dataTransfer.dragEffect;
-                this._draggingOperationContext.draggablePlaceholderStrategy = (
-                    dragStartEvent.dataTransfer.draggablePlaceholderStrategy
+                this._draggingOperationContext.showPlaceholder = (
+                    dragStartEvent.dataTransfer.showPlaceholder
                 );
 
                 if (!(draggedImage = dragStartEvent.dataTransfer.getDragImage())) {
@@ -1055,7 +1055,9 @@ var DragManager = exports.DragManager = Montage.specialize({
                     this._shouldRemovePlaceholder = true;
                     this._rootComponent.needsDraw = true;
                     // Wait for the next draw cycle to remove the placeholder,
-                    // allowing the receiver to perform any necessary clean-up. 
+                    // or in order to be synchronised with the draw cyle when 
+                    // the draggable component will become visible again.
+                    // Plus it allows the receiver to perform any necessary clean-up. 
                     return void 0;
                 } else {
                     this._draggingOperationContext = null;
@@ -1082,9 +1084,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                     this._oldDraggableDisplayStyle = draggableElement.style.display;
                     draggableElement.style.display = 'none'; 
 
-                    if (
-                        draggingOperationContext.draggablePlaceholderStrategy === "visible"
-                    ) {
+                    if (draggingOperationContext.showPlaceholder) {
                         var placeholderElement = document.createElement('div');
                         placeholderElement.style.width = (
                             draggedImageBoundingRect.width + PX
@@ -1123,9 +1123,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                     var draggableElement = draggingOperationContext.draggable.element;
                     draggableElement.style.display = this._oldDraggableDisplayStyle; 
     
-                    if (
-                        draggingOperationContext.draggablePlaceholderStrategy === "visible"
-                    ) {
+                    if (draggingOperationContext.showPlaceholder) {
                         draggableElement.parentNode.removeChild(
                             this._placeholderElement
                         );

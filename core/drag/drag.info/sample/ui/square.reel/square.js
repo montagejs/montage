@@ -52,7 +52,7 @@ exports.Square = Component.specialize(/** @lends Square# */ {
             event.dataTransfer.draggedObject = { secret: "montage" };
 
             if (this.enableVisiblePlaceholder) {
-                event.dataTransfer.draggablePlaceholderStrategy = "visible";
+                event.dataTransfer.showPlaceholder = true;
             }
             
             event.dataTransfer.setData("text/plain", this.value);
