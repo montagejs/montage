@@ -260,6 +260,7 @@ if (typeof window !== "undefined") {
             */
             fromDataTransfer: {
                 value: function (dataTransfer) {
+                    // can't be re used it for security purposes.
                     var montageDataTransfer = new DataTransfer();
 
                     montageDataTransfer.items = dataTransfer.items;

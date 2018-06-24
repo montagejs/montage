@@ -533,10 +533,10 @@ var DragManager = exports.DragManager = Montage.specialize({
             var element = document.elementFromPoint(positionX, positionY),
                 component = null;
 
-            if (element) {
-                while (element && !(component = element.component)) {
-                    element = element.parentElement;
-                }
+            // that is done at several place in the framework
+            // we should re-organize that 
+            while (element && !(component = element.component)) {
+                element = element.parentElement;
             }
 
             return component;
@@ -690,6 +690,7 @@ var DragManager = exports.DragManager = Montage.specialize({
 
     captureDragenter: {
         value: function (event) {
+            // check if event._event it's an instance of the custom dragEvent instead of checking if types contains files.
             if (!this._draggingOperationContext) {
                 var types = event.dataTransfer.types;
 
@@ -752,7 +753,6 @@ var DragManager = exports.DragManager = Montage.specialize({
         }
     },
 
-    // maybe not needed here
     captureDrop: {
         value: function (event) {
             event.preventDefault();
