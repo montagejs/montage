@@ -109,15 +109,15 @@ if (typeof window !== "undefined") {
             value: null
         },
 
-        _candidateDropTargets: {
+        _dropTargetCandidates: {
             value: null,
             enumerable: false
         },
 
-        candidateDropTargets: {
+        dropTargetCandidates: {
             get: function () {
-                return this._candidateDropTargets ||
-                    (this._candidateDropTargets = new Set());
+                return this._dropTargetCandidates ||
+                    (this._dropTargetCandidates = new Set());
             }
         },
 

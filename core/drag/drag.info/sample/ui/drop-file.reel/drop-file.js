@@ -35,7 +35,7 @@ exports.DropFile = Component.specialize(/** @lends DropFile# */ {
             event.dataTransfer.types.indexOf('Files') > -1);
             
             if (shouldAccept) {
-                event.dataTransfer.candidateDropTargets.add(this);
+                event.dataTransfer.dropTargetCandidates.add(this);
                 this._addEventListeners();
             }
         }

@@ -45,7 +45,7 @@ exports.Drop = Component.specialize(/** @lends Drop# */ {
             }
 
             if (shouldAddToCandidate) {
-                event.dataTransfer.candidateDropTargets.add(this);
+                event.dataTransfer.dropTargetCandidates.add(this);
                 this._addEventListeners();
             }
         }

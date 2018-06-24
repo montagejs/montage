@@ -330,11 +330,11 @@ var DragManager = exports.DragManager = Montage.specialize({
                 this._rootComponent.application.dispatchEvent(dragStartEvent);
             }
 
-            this._draggingOperationContext.candidateDropTargets = (
-                dragStartEvent.dataTransfer.candidateDropTargets
+            this._draggingOperationContext.dropTargetCandidates = (
+                dragStartEvent.dataTransfer.dropTargetCandidates
             );
 
-            this._draggingOperationContext.candidateDropTargets.forEach(
+            this._draggingOperationContext.dropTargetCandidates.forEach(
                 function (droppable) {
                     droppable.classList.add('valid-drop-target');
                 }
@@ -353,7 +353,7 @@ var DragManager = exports.DragManager = Montage.specialize({
      */
     _dispatchDragEnd: {
         value: function (draggingOperationContext) {
-            draggingOperationContext.candidateDropTargets.forEach(function (droppable) {
+            draggingOperationContext.dropTargetCandidates.forEach(function (droppable) {
                 droppable.classList.remove('valid-drop-target');
             });
 
@@ -890,7 +890,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                     );
 
                     if (droppable && 
-                        !draggingOperationContext.candidateDropTargets.has(
+                        !draggingOperationContext.dropTargetCandidates.has(
                             droppable
                         )
                     ) {

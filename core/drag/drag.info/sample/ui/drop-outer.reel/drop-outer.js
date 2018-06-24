@@ -27,7 +27,7 @@ exports.DropOuter = Component.specialize(/** @lends DropOuter# */ {
 
     handleDragstart: {
         value: function (event) {
-            event.dataTransfer.candidateDropTargets.add(this);
+            event.dataTransfer.dropTargetCandidates.add(this);
             this._addEventListeners();
         }
     },

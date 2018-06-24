@@ -27,7 +27,7 @@ exports.DropInner = Component.specialize(/** @lends DropInner# */ {
 
     handleDragstart: {
         value: function (event) {
-            event.dataTransfer.candidateDropTargets.add(this);
+            event.dataTransfer.dropTargetCandidates.add(this);
             this._addEventListeners();
         }
     },
