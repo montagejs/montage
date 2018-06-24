@@ -31,10 +31,6 @@ var DragManager = exports.DragManager = Montage.specialize({
         }
     },
 
-    _dropDestination: {
-        value: null
-    },
-
     __rootComponent: {
         value: null
     },
@@ -83,10 +79,6 @@ var DragManager = exports.DragManager = Montage.specialize({
 
     _draggingOperationContext: {
         value: null
-    },
-
-    _isDragging: {
-        value: false
     },
 
     _willTerminateDraggingOperation: {
@@ -375,11 +367,11 @@ var DragManager = exports.DragManager = Montage.specialize({
      */
     _dispatchDrop: {
         value: function (draggingOperationContext) {
-            if (this._dropDestination) {
-                this._dropDestination.classList.remove("drag-enter");
-                this._dropDestination.classList.remove("drag-over");
+            if (draggingOperationContext.currentDropTarget) {
+                draggingOperationContext.currentDropTarget.classList.remove("drag-enter");
+                draggingOperationContext.currentDropTarget.classList.remove("drag-over");
 
-                this._dropDestination.dispatchEvent(this._createDragEvent(
+                draggingOperationContext.currentDropTarget.dispatchEvent(this._createDragEvent(
                     "drop", draggingOperationContext
                 ));
             }
@@ -393,13 +385,13 @@ var DragManager = exports.DragManager = Montage.specialize({
      */
     _dispatchDragEnter: {
         value: function (draggingOperationContext) {
-            if (this._dropDestination) {
-                this._dropDestination.classList.add("drag-enter");
+            if (draggingOperationContext.currentDropTarget) {
+                draggingOperationContext.currentDropTarget.classList.add("drag-enter");
                 var dragEnterEvent = this._createDragEvent(
                     "dragenter", draggingOperationContext
                 );
 
-                this._dropDestination.dispatchEvent(dragEnterEvent);
+                draggingOperationContext.currentDropTarget.dispatchEvent(dragEnterEvent);
                 draggingOperationContext.dropEffect = (
                     dragEnterEvent.dataTransfer.dropEffect || "default"
                 );
@@ -414,13 +406,13 @@ var DragManager = exports.DragManager = Montage.specialize({
      */
     _dispatchDragOver: {
         value: function (draggingOperationContext) {
-            if (this._dropDestination) {
-                this._dropDestination.classList.add("drag-over");
+            if (draggingOperationContext.currentDropTarget) {
+                draggingOperationContext.currentDropTarget.classList.add("drag-over");
                 var dragOverEvent = this._createDragEvent(
                     "dragover", draggingOperationContext
                 );
 
-                this._dropDestination.dispatchEvent(dragOverEvent);
+                draggingOperationContext.currentDropTarget.dispatchEvent(dragOverEvent);
                 draggingOperationContext.dropEffect = (
                     dragOverEvent.dataTransfer.dropEffect || "default"
                 );
@@ -437,11 +429,11 @@ var DragManager = exports.DragManager = Montage.specialize({
      */
     _dispatchDragLeave: {
         value: function (draggingOperationContext) {
-            if (this._dropDestination) {
-                this._dropDestination.classList.remove("drag-over");
-                this._dropDestination.classList.remove("drag-enter");
+            if (draggingOperationContext.currentDropTarget) {
+                draggingOperationContext.currentDropTarget.classList.remove("drag-over");
+                draggingOperationContext.currentDropTarget.classList.remove("drag-enter");
 
-                this._dropDestination.dispatchEvent(this._createDragEvent(
+                draggingOperationContext.currentDropTarget.dispatchEvent(this._createDragEvent(
                     "dragleave", draggingOperationContext
                 ));
             }
@@ -606,7 +598,7 @@ var DragManager = exports.DragManager = Montage.specialize({
             this._removeTranslateListeners();
             this._removeDragListeners();
             this._dragEnterCounter = 0;
-            this._isDragging = false;
+            this._draggingOperationContext.isDragging = false;
             this.__translateComposer.translateX = 0;
             this.__translateComposer.translateY = 0;
             this._oldDraggableDisplayStyle = null;
@@ -714,7 +706,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                     );
                     
                     this._addDragListeners();
-                    this._isDragging = true;
+                    draggingOperationContext.isDragging = true;
                     this._rootComponent.needsDraw = true;
                 }
             }
@@ -725,7 +717,7 @@ var DragManager = exports.DragManager = Montage.specialize({
 
     captureDragover: {
         value: function (event) {
-            if (this._dropDestination) {
+            if (this._draggingOperationContext.currentDropTarget) {
                 event.preventDefault();
             }
 
@@ -819,7 +811,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                 );
 
                 this._addTranslateListeners();
-                this._isDragging = true;
+                draggingOperationContext.isDragging = true;
                 this._rootComponent.needsDraw = true;
             } else {
                 this._translateComposer._cancel();
@@ -850,7 +842,7 @@ var DragManager = exports.DragManager = Montage.specialize({
 
     handleTranslateCancel: {
         value: function () {
-            this._dropDestination = null;
+            this.draggingOperationContext.currentDropTarget = null;
             this._willTerminateDraggingOperation = true;
             this._rootComponent.needsDraw = true;
         }
@@ -864,8 +856,9 @@ var DragManager = exports.DragManager = Montage.specialize({
         value: function () {
             var draggingOperationContext;
 
-            if (this._isDragging && 
-                (draggingOperationContext = this._draggingOperationContext)
+            if (
+                (draggingOperationContext = this._draggingOperationContext) &&
+                draggingOperationContext.isDragging
             ) {
                 var draggable = draggingOperationContext.draggable;
 
@@ -907,14 +900,14 @@ var DragManager = exports.DragManager = Montage.specialize({
                         ));
                     }
                             
-                    if (droppable !== this._dropDestination) {
-                        if (this._dropDestination) {
+                    if (droppable !== draggingOperationContext.currentDropTarget) {
+                        if (draggingOperationContext.currentDropTarget) {
                             this._dispatchDragLeave(
                                 draggingOperationContext
                             );
                         }
 
-                        this._dropDestination = droppable;
+                        draggingOperationContext.currentDropTarget = droppable;
 
                         if (droppable) {
                             this._dispatchDragEnter(
@@ -926,7 +919,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                             draggingOperationContext
                         );
                     } else {
-                        this._dropDestination = null;
+                        draggingOperationContext.currentDropTarget = null;
                     }
 
                     if (droppable) {
@@ -943,7 +936,11 @@ var DragManager = exports.DragManager = Montage.specialize({
         value: function () {
             var draggingOperationContext = this._draggingOperationContext;
 
-            if (this._isDragging && !this._willTerminateDraggingOperation) {
+            if (
+                draggingOperationContext &&
+                draggingOperationContext.isDragging &&
+                !this._willTerminateDraggingOperation
+            ) {
                 var draggedImage = draggingOperationContext.draggedImage;
 
                 if (draggedImage) {
@@ -1035,9 +1032,9 @@ var DragManager = exports.DragManager = Montage.specialize({
                     document.body.removeChild(draggingOperationContext.draggedImage);
                 }
 
-                if (this._dropDestination) {
+                if (draggingOperationContext.currentDropTarget) {
                     draggingOperationContext.hasBeenDrop = true;
-                    draggingOperationContext.droppable = this._dropDestination;
+                    draggingOperationContext.droppable = draggingOperationContext.currentDropTarget;
                 }
 
                 this._dispatchDrop(
@@ -1045,7 +1042,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                 );
                 
                 this._resetTranslateContext();
-                this._dropDestination = null;
+                draggingOperationContext.currentDropTarget = null;
                 this._dispatchDragEnd(draggingOperationContext);
 
                 if (

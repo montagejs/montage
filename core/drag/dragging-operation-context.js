@@ -60,6 +60,14 @@ exports.DraggingOperationContext = Montage.specialize({
 
     dragTarget: {
         value: null
+    },
+
+    currentDropTarget: {
+        value: null
+    },
+
+    _isDragging: {
+        value: false
     }
 
 });
