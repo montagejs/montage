@@ -7,7 +7,6 @@ var Montage = require("../core").Montage,
 var DRAGGABLE = 0;
 var DROPABBLE = 1;
 var TOUCH_POINTER = "touch";
-var NOT_ALLOWED_CURSOR = "not-allowed";
 var PX = "px";
 
 var DragManager = exports.DragManager = Montage.specialize({
