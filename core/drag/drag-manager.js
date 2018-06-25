@@ -681,34 +681,30 @@ var DragManager = exports.DragManager = Montage.specialize({
 
     captureDragenter: {
         value: function (event) {
-            // check if event._event it's an instance of the custom dragEvent instead of checking if types contains files.
-            if (!this._draggingOperationContext) {
-                var types = event.dataTransfer.types;
+            if (!this._draggingOperationContext && !(event instanceof DragEvent)) {
+                var types = event.dataTransfer.types,
+                    draggingOperationContext;
 
-                if (types.indexOf("Files") > -1) {
-                    var draggingOperationContext;
+                this._draggingOperationContext = (draggingOperationContext = (
+                    this._createDraggingOperationContextWithDraggableAndPosition(
+                        null, 
+                        event
+                    )
+                ));
 
-                    this._draggingOperationContext = (draggingOperationContext = (
-                        this._createDraggingOperationContextWithDraggableAndPosition(
-                            null, 
-                            event
-                        )
-                    ));
+                draggingOperationContext.dataTransfer = (
+                    DataTransfer.fromDataTransfer(event.dataTransfer)
+                );
 
-                    draggingOperationContext.dataTransfer = (
-                        DataTransfer.fromDataTransfer(event.dataTransfer)
-                    );
+                var dragStartEvent = this._dispatchDragStart();
 
-                    var dragStartEvent = this._dispatchDragStart();
-
-                    draggingOperationContext.dragEffect = (
-                        dragStartEvent.dataTransfer.dragEffect
-                    );
-                    
-                    this._addDragListeners();
-                    draggingOperationContext.isDragging = true;
-                    this._rootComponent.needsDraw = true;
-                }
+                draggingOperationContext.dragEffect = (
+                    dragStartEvent.dataTransfer.dragEffect
+                );
+                
+                this._addDragListeners();
+                draggingOperationContext.isDragging = true;
+                this._rootComponent.needsDraw = true;
             }
             
             this._dragEnterCounter++;
