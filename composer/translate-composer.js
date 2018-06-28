@@ -1072,8 +1072,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             var velocity;
 
             if (
-                this._hasMomentum && (velocity = event.velocity) && ((velocity.speed > 40)
-                    || this.translateStrideX || this.translateStrideY)
+                this._hasMomentum && (velocity = event.velocity) &&
+                ((velocity.speed > 40) || this.translateStrideX || this.translateStrideY)
             ) {
                 if (this._axis !== "vertical") {
                     this.momentumX = velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
