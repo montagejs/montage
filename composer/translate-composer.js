@@ -958,7 +958,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 isNegativeDeltaX,
                 deltaX,
                 deltaY;
-
+            
             if (event.type === "wheel" || event.type === "mousewheel") {
                 if (this._axis !== "vertical") {
                     deltaX = ((event.wheelDeltaX || -event.deltaX || 0) * 20) / 120;
@@ -1069,9 +1069,12 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             this.endX = this.posX = this.startX=this._translateX;
             this.endY=this.posY=this.startY=this._translateY;
 
-            var velocity = event.velocity;
+            var velocity;
 
-            if ((this._hasMomentum) && ((velocity.speed>40) || this.translateStrideX || this.translateStrideY)) {
+            if (
+                this._hasMomentum && (velocity = event.velocity) && ((velocity.speed > 40)
+                    || this.translateStrideX || this.translateStrideY)
+            ) {
                 if (this._axis !== "vertical") {
                     this.momentumX = velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
                 } else {
