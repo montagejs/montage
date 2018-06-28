@@ -231,7 +231,6 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
      */
     load: {
         value: function () {
-            debugger
             this.component.addComposerForElement(
                 this._translateComposer, this.element
             );
@@ -259,7 +258,6 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
 
     handleTranslateStart: {
         value: function (event) {
-            console.log(event)
             this._startPositionX = this._translateComposer.pointerStartEventPosition.pageX;
             this._startPositionY = this._translateComposer.pointerStartEventPosition.pageY;
             this._startTimestamp = event.timeStamp;
@@ -272,8 +270,6 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
             var distance = this._findDistance(
                 event.translateX, event.translateY
             );
-
-            debugger
 
             if (distance >= this.minDistance) {
                 var velocity = this._findVelocity(
