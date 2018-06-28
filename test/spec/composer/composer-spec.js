@@ -98,43 +98,119 @@ TestPageLoader.queueTest("composer-programmatic-lazyload", {src: "spec/composer/
 });
 
 TestPageLoader.queueTest("swipe-composer", {src:"spec/composer/swipe/swipe.html", firstDraw: false}, function (testPage) {
-    var test;
+    var test, swipeElement;
     beforeEach(function () {
         test = testPage.test;
+        swipeElement = test.dummyComponent.element;
     });
+
+    //FIXME: should be removed when will provide a pollyfil for the pointer events
+    function dispatchPointerEvent(element, type, positionX, positionY) {
+        var eventInit = {
+            clientX: positionX,
+            clientY: positionY,
+            bubbles: true,
+            pointerType: "mouse"
+        };
+
+        if (window.PointerEvent) {
+            element.dispatchEvent(new PointerEvent(type, eventInit));
+        } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+            if (type === "pointerdown")  {
+                type = "MSPointerDown";
+            } else if (type === "pointermove") {
+                type = "MSPointerMove";
+            } else {
+                type = "MSPointerUp";
+            }
+            element.dispatchEvent(new MSPointerEvent(type, eventInit));
+        } else {
+            if (type === "pointerdown") {
+                type = "mousedown";
+            } else if (type === "pointermove") {
+                type = "mousemove";
+            } else {
+                type = "mouseup";
+            }
+            element.dispatchEvent(new MouseEvent(type, eventInit));
+        }
+    }
+
     describe("composer-spec", function () {
         describe("swipe right",function () {
             it("shouldn't emit swipe event or swipemove event if no move", function () {
-                //simulate touch events
                 spyOn(test, 'handleSwipe').and.callThrough();
-                spyOn(test, 'handleSwipemove').and.callThrough();
-                testPage.touchEvent(new EventInfo().initWithElementAndPosition(null, -100, 100), "touchstart", function () {
-                    testPage.touchEvent(new EventInfo().initWithElementAndPosition(null, -100, 100), "touchmove", function () {
-                        testPage.touchEvent(new EventInfo().initWithElementAndPosition(null, -100, 100), "touchend", function () {
-                            expect(test.handleSwipemove).not.toHaveBeenCalled();
-                            expect(test.handleSwipe).not.toHaveBeenCalled();
-                        });
-                    });
-                });
+                dispatchPointerEvent(swipeElement, "pointerdown", -100, 100);
+                dispatchPointerEvent(swipeElement, "pointermove", -100, 100);
+                dispatchPointerEvent(swipeElement, "pointermove", -100, 100);
+                dispatchPointerEvent(swipeElement, "pointerup", -100, 100);
+                expect(test.handleSwipe).not.toHaveBeenCalled();
             });
 
-            it("should emit swipe event and swipemove event", function () {
-                //simulate touch events
+            it("should emit swipe event and swipeDown event", function () {
                 spyOn(test, 'handleSwipe').and.callThrough();
-                spyOn(test, 'handleSwipemove').and.callThrough();
-                testPage.touchEvent(new EventInfo().initWithElementAndPosition(null, 0, 0), "touchstart", function () {
-                    testPage.touchEvent(new EventInfo().initWithElementAndPosition(null, 0, 50), "touchmove", function () {
-                        testPage.touchEvent(new EventInfo().initWithElementAndPosition(null, 0, 100), "touchmove", function () {
-                            testPage.touchEvent(new EventInfo().initWithElementAndPosition(null, 50, 50), "touchend", function () {
-                                expect(test.handleSwipemove).toHaveBeenCalled();
-                                expect(test.handleSwipe).toHaveBeenCalled();
-                            });
-                        });
-                    });
-                });
+                spyOn(test, 'handleSwipeDown').and.callThrough();
+                dispatchPointerEvent(swipeElement, "pointerdown", 0, 0);
+                dispatchPointerEvent(swipeElement, "pointermove", 0, 50);
+                dispatchPointerEvent(swipeElement, "pointermove", 0, 80);
+                dispatchPointerEvent(swipeElement, "pointerup", 0, 80);
+                expect(test.handleSwipeDown).toHaveBeenCalled();
+                expect(test.handleSwipe).toHaveBeenCalled();
+
+                var event = test.handleSwipe.calls.argsFor(0)[0];
+                expect(event.direction).toBe('down');
+                expect(event.angle).toBe(270);
+                expect(event.distance).toBe(80);
+            });
+
+            it("should emit swipe event and swipeUp event", function () {
+                spyOn(test, 'handleSwipe').and.callThrough();
+                spyOn(test, 'handleSwipeUp').and.callThrough();
+                dispatchPointerEvent(swipeElement, "pointerdown", 50, 50);
+                dispatchPointerEvent(swipeElement, "pointermove", 50, 40);
+                dispatchPointerEvent(swipeElement, "pointermove", 50, 30);
+                dispatchPointerEvent(swipeElement, "pointerup", 50, 30);
+                expect(test.handleSwipeUp).toHaveBeenCalled();
+                expect(test.handleSwipeUp).toHaveBeenCalled();
+                expect(test.handleSwipe).toHaveBeenCalled();
+
+                var event = test.handleSwipe.calls.argsFor(0)[0];
+                expect(event.direction).toBe('up');
+                expect(event.angle).toBe(90);
+                expect(event.distance).toBe(20);
+            });
+
+            it("should emit swipe event and swipeRight event", function () {
+                spyOn(test, 'handleSwipe').and.callThrough();
+                spyOn(test, 'handleSwipeRight').and.callThrough();
+                dispatchPointerEvent(swipeElement, "pointerdown", 0, 0);
+                dispatchPointerEvent(swipeElement, "pointermove", 50, 0);
+                dispatchPointerEvent(swipeElement, "pointermove", 80, 0);
+                dispatchPointerEvent(swipeElement, "pointerup", 80, 0);
+                expect(test.handleSwipeRight).toHaveBeenCalled();
+                expect(test.handleSwipe).toHaveBeenCalled();
+
+                var event = test.handleSwipe.calls.argsFor(0)[0];
+                expect(event.direction).toBe('right');
+                expect(event.angle).toBe(0);
+                expect(event.distance).toBe(80);
+            });
+
+            it("should emit swipe event and swipeLeft event", function () {
+                spyOn(test, 'handleSwipe').and.callThrough();
+                spyOn(test, 'handleSwipeLeft').and.callThrough();
+                dispatchPointerEvent(swipeElement, "pointerdown", 100, 0);
+                dispatchPointerEvent(swipeElement, "pointermove", 80, 0);
+                dispatchPointerEvent(swipeElement, "pointermove", 50, 0);
+                dispatchPointerEvent(swipeElement, "pointerup", 50, 0);
+                expect(test.handleSwipeLeft).toHaveBeenCalled();
+                expect(test.handleSwipe).toHaveBeenCalled();
+
+                var event = test.handleSwipe.calls.argsFor(0)[0];
+                expect(event.direction).toBe('left');
+                expect(event.angle).toBe(180);
+                expect(event.distance).toBe(50);
             });
         });
     });
 });
-
-
