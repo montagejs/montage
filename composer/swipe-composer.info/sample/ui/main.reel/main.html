@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "main"},
+                "_hitBox": {"#": "hitBox"},
+                "_line": {"#": "line"}
+            }
+        },
+        
+        "swipeDirection": {
+            "prototype": "montage/ui/text.reel",
+            "values": {
+                "element": {"#": "swipeDirection"},
+                "value": {"<-": "@owner.swipeDirection"}
+            }
+        },
+
+        "swipeDistance": {
+            "prototype": "montage/ui/text.reel",
+            "values": {
+                "element": {"#": "swipeDistance"},
+                "value": {"<-": "@owner.swipeDistance"}
+            }
+        },
+
+        "swipeVelocity": {
+            "prototype": "montage/ui/text.reel",
+            "values": {
+                "element": {"#": "swipeVelocity"},
+                "value": {"<-": "@owner.swipeVelocity"}
+            }
+        },
+
+        "swipeAngle": {
+            "prototype": "montage/ui/text.reel",
+            "values": {
+                "element": {"#": "swipeAngle"},
+                "value": {"<-": "@owner.swipeAngle"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>Swipe Composer Sample</header>
+        <div data-montage-id="hitBox" class="HitBox">
+            <svg height="100%" width="100%">
+                <line data-montage-id="line" style="stroke:rgb(255,0,0);stroke-width:2" />
+            </svg>
+        </div>
+        <div>
+            <p>
+                <span>Direction:</span>
+                <span data-montage-id="swipeDirection"></span>
+            </p>
+            <p>
+                <span>Distance:</span>
+                <span data-montage-id="swipeDistance"></span>
+            </p>
+            <p>
+                <span>Velocity:</span>
+                <span data-montage-id="swipeVelocity"></span>
+            </p>
+            <p>
+                <span>Angle:</span>
+                <span data-montage-id="swipeAngle"></span>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
