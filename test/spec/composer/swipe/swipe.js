@@ -17,36 +17,12 @@ exports.Swipe = Montage.specialize( {
             this.swipeComposer.lazyLoad = false;
             dummyComponent.addComposer(this.swipeComposer);
             this.swipeComposer.addEventListener("swipe", this, false);
-            this.swipeComposer.addEventListener("swipeLeft", this, false);
-            this.swipeComposer.addEventListener("swipeRight", this, false);
-            this.swipeComposer.addEventListener("swipeDown", this, false);
-            this.swipeComposer.addEventListener("swipeUp", this, false);
         }
     },
 
     handleSwipe: {
         value: function (event) {
             console.log(event.direction)
-        }
-    },
-
-    handleSwipeUp: {
-        value: function (event) {
-        }
-    },
-
-    handleSwipeRight: {
-        value: function (event) {
-        }
-    },
-
-    handleSwipeDown: {
-        value: function (event) {
-        }
-    },
-
-    handleSwipeLeft: {
-        value: function (event) {
         }
     }
 

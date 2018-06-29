@@ -382,22 +382,18 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
      */
     _dispatchSwipeEvent: {
         value: function (distance, velocity, angle, direction, endPositionX, endPositionY) {
-            var swipeEvent = new SwipeEvent(SWIPE),
-                swipeDirectionEvent = new SwipeEvent(
-                    SWIPE + direction.toCapitalized()
-                );
+            var swipeEvent = new SwipeEvent(SWIPE);
 
-            swipeEvent.distance = swipeDirectionEvent.distance = distance;
-            swipeEvent.velocity = swipeDirectionEvent.velocity = velocity;
-            swipeEvent.angle = swipeDirectionEvent.angle = angle;
-            swipeEvent.direction = swipeDirectionEvent.direction = direction;
-            swipeEvent.startPositionX = swipeDirectionEvent.startPositionX = this._startPositionX;
-            swipeEvent.startPositionY = swipeDirectionEvent.startPositionY = this._startPositionY;
-            swipeEvent.endPositionX = swipeDirectionEvent.endPositionX = endPositionX;
-            swipeEvent.endPositionY = swipeDirectionEvent.endPositionY = endPositionY;
+            swipeEvent.distance = distance;
+            swipeEvent.velocity = velocity;
+            swipeEvent.angle = angle;
+            swipeEvent.direction = direction;
+            swipeEvent.startPositionX = this._startPositionX;
+            swipeEvent.startPositionY = this._startPositionY;
+            swipeEvent.endPositionX = endPositionX;
+            swipeEvent.endPositionY = endPositionY;
 
             this.dispatchEvent(swipeEvent);
-            this.dispatchEvent(swipeDirectionEvent);
         }
     },
 

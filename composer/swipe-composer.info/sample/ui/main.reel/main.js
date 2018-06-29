@@ -45,10 +45,6 @@ exports.Main = Component.specialize({
             if (firstTime) {
                 this._translateComposer.addEventListener("translateStart", this);
                 this._swipeComposer.addEventListener("swipe", this);
-                this._swipeComposer.addEventListener("swipeUp", this);
-                this._swipeComposer.addEventListener("swipeRight", this);
-                this._swipeComposer.addEventListener("swipeLeft", this);
-                this._swipeComposer.addEventListener("swipeDown", this);
             }
         }
     },
@@ -93,33 +89,10 @@ exports.Main = Component.specialize({
 
     handleSwipe: {
         value: function (event) {
+            this.swipeDirection = event.direction;
             this.swipeVelocity = event.velocity.toFixed(2);
             this.swipeAngle = event.angle.toFixed(2);
             this.swipeDistance = event.distance.toFixed(2);
-        }
-    },
-
-    handleSwipeUp: {
-        value: function (event) {
-            this.swipeDirection = event.direction;
-        }
-    },
-
-    handleSwipeLeft: {
-        value: function (event) {
-            this.swipeDirection = event.direction;
-        }
-    },
-
-    handleSwipeRight: {
-        value: function (event) {
-            this.swipeDirection = event.direction;
-        }
-    },
-
-    handleSwipeDown: {
-        value: function (event) {
-            this.swipeDirection = event.direction;
         }
     },
 

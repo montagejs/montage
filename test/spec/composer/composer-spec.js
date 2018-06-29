@@ -149,12 +149,10 @@ TestPageLoader.queueTest("swipe-composer", {src:"spec/composer/swipe/swipe.html"
 
             it("should emit swipe event and swipeDown event", function () {
                 spyOn(test, 'handleSwipe').and.callThrough();
-                spyOn(test, 'handleSwipeDown').and.callThrough();
                 dispatchPointerEvent(swipeElement, "pointerdown", 0, 0);
                 dispatchPointerEvent(swipeElement, "pointermove", 0, 50);
                 dispatchPointerEvent(swipeElement, "pointermove", 0, 80);
                 dispatchPointerEvent(swipeElement, "pointerup", 0, 80);
-                expect(test.handleSwipeDown).toHaveBeenCalled();
                 expect(test.handleSwipe).toHaveBeenCalled();
 
                 var event = test.handleSwipe.calls.argsFor(0)[0];
@@ -165,13 +163,10 @@ TestPageLoader.queueTest("swipe-composer", {src:"spec/composer/swipe/swipe.html"
 
             it("should emit swipe event and swipeUp event", function () {
                 spyOn(test, 'handleSwipe').and.callThrough();
-                spyOn(test, 'handleSwipeUp').and.callThrough();
                 dispatchPointerEvent(swipeElement, "pointerdown", 50, 50);
                 dispatchPointerEvent(swipeElement, "pointermove", 50, 40);
                 dispatchPointerEvent(swipeElement, "pointermove", 50, 30);
                 dispatchPointerEvent(swipeElement, "pointerup", 50, 30);
-                expect(test.handleSwipeUp).toHaveBeenCalled();
-                expect(test.handleSwipeUp).toHaveBeenCalled();
                 expect(test.handleSwipe).toHaveBeenCalled();
 
                 var event = test.handleSwipe.calls.argsFor(0)[0];
@@ -182,12 +177,10 @@ TestPageLoader.queueTest("swipe-composer", {src:"spec/composer/swipe/swipe.html"
 
             it("should emit swipe event and swipeRight event", function () {
                 spyOn(test, 'handleSwipe').and.callThrough();
-                spyOn(test, 'handleSwipeRight').and.callThrough();
                 dispatchPointerEvent(swipeElement, "pointerdown", 0, 0);
                 dispatchPointerEvent(swipeElement, "pointermove", 50, 0);
                 dispatchPointerEvent(swipeElement, "pointermove", 80, 0);
                 dispatchPointerEvent(swipeElement, "pointerup", 80, 0);
-                expect(test.handleSwipeRight).toHaveBeenCalled();
                 expect(test.handleSwipe).toHaveBeenCalled();
 
                 var event = test.handleSwipe.calls.argsFor(0)[0];
@@ -198,12 +191,10 @@ TestPageLoader.queueTest("swipe-composer", {src:"spec/composer/swipe/swipe.html"
 
             it("should emit swipe event and swipeLeft event", function () {
                 spyOn(test, 'handleSwipe').and.callThrough();
-                spyOn(test, 'handleSwipeLeft').and.callThrough();
                 dispatchPointerEvent(swipeElement, "pointerdown", 100, 0);
                 dispatchPointerEvent(swipeElement, "pointermove", 80, 0);
                 dispatchPointerEvent(swipeElement, "pointermove", 50, 0);
                 dispatchPointerEvent(swipeElement, "pointerup", 50, 0);
-                expect(test.handleSwipeLeft).toHaveBeenCalled();
                 expect(test.handleSwipe).toHaveBeenCalled();
 
                 var event = test.handleSwipe.calls.argsFor(0)[0];
