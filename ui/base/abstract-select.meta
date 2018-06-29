@@ -59,10 +59,10 @@
             }
         }
     },
-    "multiSelect_property": {
+    "allowsMultipleSelection_property": {
         "prototype": "core/meta/property-descriptor",
         "values": {
-            "name": "multiSelect",
+            "name": "allowsMultipleSelection",
             "valueType": "boolean",
             "objectDescriptor": {
                 "@": "root"
@@ -99,7 +99,7 @@
                     "@": "values_property"
                 },
                 {
-                    "@": "multiSelect_property"
+                    "@": "allowsMultipleSelection_property"
                 }
             ],
             "propertyDescriptorGroups": {
@@ -123,7 +123,7 @@
                         "@": "values_property"
                     },
                     {
-                        "@": "multiSelect_property"
+                        "@": "allowsMultipleSelection_property"
                     }
                 ]
             },

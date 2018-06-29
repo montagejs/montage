@@ -4,7 +4,6 @@
 var Montage = require("./core").Montage;
 var GenericCollection = require("collections/generic-collection");
 var observableArrayProperties = require("collections/listen/array-changes").observableArrayProperties;
-var deprecate = require("core/deprecate");
 
 // The content controller is responsible for determining which content from a
 // source collection are visible, their order of appearance, and whether they
@@ -363,21 +362,6 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * @property {boolean}
      */
     allowsMultipleSelection: {value: false},
-
-    /**
-     * @deprecated
-     */
-    multiSelect: {
-        set: function (multiSelect) {
-            deprecate.deprecationWarning("multiSelect", "allowsMultipleSelection");
-            this.allowsMultipleSelection = !!multiSelect;
-        },
-        get: function () {
-            deprecate.deprecationWarning("multiSelect", "allowsMultipleSelection");
-            return this.allowsMultipleSelection;
-        }
-    },
-
 
     // Properties managed by the controller
     // ------------------------------------
