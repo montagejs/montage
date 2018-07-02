@@ -354,6 +354,35 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         }
     },
 
+    _dismissOnScroll: {
+        value: true
+    },
+
+    /**
+     * @public
+     * @type {Boolean}
+     * @description Determines if the overlay should be dismissed after a scroll event.
+     * @default true
+     */
+    dismissOnScroll: {
+        set: function (value) {
+            value = !!value;
+
+            if (value !== this._dismissOnScroll) {
+                this._dismissOnScroll = value;
+
+                if (value && this._isShown) {
+                    document.nativeAddEventListener("scroll", this, true);
+                } else {
+                    document.nativeRemoveEventListener("scroll", this, true);
+                }
+            }
+        },
+        get: function () {
+            return this._dismissOnScroll;
+        }
+    },
+
     enterDocument: {
         value: function (firstTime) {
             if (firstTime) {
@@ -361,14 +390,6 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                 // escape possible offset parent container.
                 this.element.ownerDocument.body.appendChild(this.element);
                 this.attachToParentComponent();
-            }
-        }
-    },
-
-    handleAction: {
-        value: function (event) {
-            if (event.target === this.control) {
-                this.show();
             }
         }
     },
@@ -420,6 +441,10 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                 if (this._dismissOnEscape) {
                     this._keyComposer.addEventListener("keyPress", this);
                 }
+
+                if (this._dismissOnScroll) {
+                    document.nativeAddEventListener("scroll", this, true);
+                }
             }
         }
     },
@@ -446,6 +471,10 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
 
                 if (this._dismissOnEscape) {
                     this._keyComposer.removeEventListener("keyPress", this);
+                }
+
+                if (this._dismissOnScroll) {
+                    document.nativeRemoveEventListener("scroll", this, true);
                 }
             }
         }
@@ -490,6 +519,14 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
 
     // Event handlers
 
+    handleAction: {
+        value: function (event) {
+            if (event.target === this.control) {
+                this.show();
+            }
+        }
+    },
+
     handleResize: {
         value: function () {
             if (this.isShown) {
@@ -509,6 +546,16 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
     handleKeyPress: {
         value: function (event) {
             if (event.identifier === "escape") {
+                this.dismissOverlay(event);
+            }
+        }
+    },
+
+    // FIXME: There is an odd issue with the event manager, 
+    // can't get a scroll event without using the nativeAddEventListener
+    handleEvent: {
+        value: function (event) {
+            if (event.type === "scroll") {
                 this.dismissOverlay(event);
             }
         }

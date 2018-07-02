@@ -42,3 +42,15 @@ h4 {
 .Button3 {
     margin-left: 200px;
 }
+
+.Scrollable {
+    border: 1px solid #c8c7cc;
+    height: 100px;
+    width: 100px;
+    overflow: auto;
+}
+
+.Scrollable-inner {
+    height: 10000px;
+    width: 100px;
+}
