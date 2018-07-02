@@ -4,7 +4,7 @@ var MutableEvent = require("../event/mutable-event").MutableEvent,
 // XXX Does not presently function server-side
 if (typeof window !== "undefined") {
 
-    var OBJECT_MINE_TYPE = 'application/object';
+    var OBJECT_MIME_TYPE = 'application/object';
 
     var DataTransfer = exports.DataTransfer = Montage.specialize({
 
@@ -129,10 +129,10 @@ if (typeof window !== "undefined") {
 
         draggedObject: {
             set: function (object) {
-                this._data.set(OBJECT_MINE_TYPE, object);
+                this._data.set(OBJECT_MIME_TYPE, object);
             },
             get: function () {
-                return this._data.get(OBJECT_MINE_TYPE);
+                return this._data.get(OBJECT_MIME_TYPE);
             }
         },
 
