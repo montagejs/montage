@@ -31,7 +31,7 @@ if (typeof window !== "undefined") {
 
         dragEffect: {
             set: function (effect) {
-                if (DataTransfer.ALLOWED_EFFECTS.indexOf(effect) > -1) {
+                if (this.isEffectAllowed(effect)) {
                     this._dragEffect = effect;
                 }
             },
@@ -48,7 +48,7 @@ if (typeof window !== "undefined") {
             set: function (effect) {
                 if (
                     effect &&
-                    DataTransfer.ALLOWED_EFFECTS.indexOf(effect) > -1 &&
+                    this.isEffectAllowed(effect) &&
                     DataTransfer.isDropEffectAllowed(
                         effect, this.effectAllowed
                     )
@@ -60,17 +60,13 @@ if (typeof window !== "undefined") {
             },
             get: function () {
                 if (!this._dropEffect) {
-                    var index;
-
                     if (
                         this.effectAllowed === DataTransfer.All ||
                         this.effectAllowed.startsWith('c')
                     ) {
                         this._dropEffect = DataTransfer.Copy;
-                    } else if ((index = DataTransfer.ALLOWED_EFFECTS.indexOf(
-                        this.effectAllowed)) > -1
-                    ) {
-                        this._dropEffect = DataTransfer.ALLOWED_EFFECTS[index];
+                    } else if (this.isEffectAllowed(this.effectAllowed)) {
+                        this._dropEffect = this.effectAllowed;
                     } else {
                         this._dropEffect = DataTransfer.Link;
                     }
@@ -86,7 +82,7 @@ if (typeof window !== "undefined") {
 
         effectAllowed: {
             set: function (effect) {
-                if (DataTransfer.ALLOWED_DROP_EFFECTS.indexOf(effect) > -1) {
+                if (!!DataTransfer.allowedDropEffectsMap[effect]) {
                     this._effectAllowed = effect;
                 }
             },
@@ -190,6 +186,12 @@ if (typeof window !== "undefined") {
             }
         },
 
+        isEffectAllowed: {
+            value: function (effect) {
+                return !!DataTransfer.allowedEffectsMap[effect];
+            }
+        }
+
     }, {
             Default: {
                 value: "default"
@@ -223,41 +225,41 @@ if (typeof window !== "undefined") {
                 value: "all"
             },
 
-            _ALLOWED_EFFECTS: {
+            _allowedEffectsMap: {
                 value: null
             },
 
-            ALLOWED_EFFECTS: {
+            allowedEffectsMap: {
                 get: function () {
-                    if (!this._ALLOWED_EFFECTS) {
-                        this._ALLOWED_EFFECTS = [
-                            this.Default,
-                            this.Copy,
-                            this.Link,
-                            this.Move
-                        ];
+                    if (!this._allowedEffectsMap) {
+                        this._allowedEffectsMap = {
+                            [this.Default]: true,
+                            [this.Copy]: true,
+                            [this.Link]: true,
+                            [this.Move]: true
+                        };
                     }
 
-                    return this._ALLOWED_EFFECTS;
+                    return this._allowedEffectsMap;
                 }
             },
 
-            _ALLOWED_DROP_EFFECTS: {
+            _allowedDropEffectsMap: {
                 value: null
             },
 
-            ALLOWED_DROP_EFFECTS: {
+            allowedDropEffectsMap: {
                 get: function () {
-                    if (!this._ALLOWED_DROP_EFFECTS) {
-                        this._ALLOWED_DROP_EFFECTS = this.ALLOWED_EFFECTS.concat([
-                            this.All,
-                            this.CopyMove,
-                            this.CopyLink,
-                            this.LinkMove
-                        ]);
+                    if (!this._allowedDropEffectsMap) {
+                        this._allowedDropEffectsMap = Object.assign({
+                            [this.All]: true,
+                            [this.CopyMove]: true,
+                            [this.CopyLink]: true,
+                            [this.LinkMove]: true
+                        }, this._allowedEffectsMap);
                     }
 
-                    return this._ALLOWED_DROP_EFFECTS;
+                    return this._allowedDropEffectsMap;
                 }
             },
 
