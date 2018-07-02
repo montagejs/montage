@@ -1097,8 +1097,11 @@ var DragManager = exports.DragManager = Montage.specialize({
                     top = draggedImageBoundingRect.top;
                 }
 
-                draggedImage.style.top = top + PX;
-                draggedImage.style.left = left + PX;
+                top += PX;
+                left += PX;
+
+                draggedImage.style.top = top;
+                draggedImage.style.left = left;
 
                 if (draggingOperationContext.dragEffect === "move") {
                     var draggableElement = draggingOperationContext.draggable.element;
@@ -1106,13 +1109,12 @@ var DragManager = exports.DragManager = Montage.specialize({
                     draggableElement.style.display = 'none'; 
 
                     if (draggingOperationContext.showPlaceholder) {
-                        var placeholderElement = document.createElement('div');
-                        placeholderElement.style.width = (
-                            draggedImageBoundingRect.width + PX
-                        );
-                        placeholderElement.style.height = (
-                            draggedImageBoundingRect.height + PX
-                        );
+                        var placeholderElement = document.createElement('div'),
+                            width = draggedImageBoundingRect.width + PX,
+                            height = draggedImageBoundingRect.height + PX;
+
+                        placeholderElement.style.width = width;
+                        placeholderElement.style.height = height;
                         placeholderElement.style.boxSizing = "border-box";
                         placeholderElement.classList.add(
                             'montage-drag-placeholder'
