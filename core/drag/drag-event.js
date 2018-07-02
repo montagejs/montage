@@ -232,12 +232,11 @@ if (typeof window !== "undefined") {
             allowedEffectsMap: {
                 get: function () {
                     if (!this._allowedEffectsMap) {
-                        this._allowedEffectsMap = {
-                            [this.Default]: true,
-                            [this.Copy]: true,
-                            [this.Link]: true,
-                            [this.Move]: true
-                        };
+                        this._allowedEffectsMap = {};
+                        this._allowedEffectsMap[this.Default] = true;
+                        this._allowedEffectsMap[this.Copy] = true;
+                        this._allowedEffectsMap[this.Link] = true;
+                        this._allowedEffectsMap[this.Move] = true;
                     }
 
                     return this._allowedEffectsMap;
@@ -251,12 +250,15 @@ if (typeof window !== "undefined") {
             allowedDropEffectsMap: {
                 get: function () {
                     if (!this._allowedDropEffectsMap) {
-                        this._allowedDropEffectsMap = Object.assign({
-                            [this.All]: true,
-                            [this.CopyMove]: true,
-                            [this.CopyLink]: true,
-                            [this.LinkMove]: true
-                        }, this._allowedEffectsMap);
+                        var tmp = {};
+                        tmp[this.All] = true;
+                        tmp[this.CopyMove] = true;
+                        tmp[this.CopyLink] = true;
+                        tmp[this.LinkMove] = true;
+
+                        this._allowedDropEffectsMap = Object.assign(
+                            tmp, this._allowedEffectsMap
+                        );
                     }
 
                     return this._allowedDropEffectsMap;
