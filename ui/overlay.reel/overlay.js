@@ -33,7 +33,9 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
             if (!this.__pressComposer) {
                 this.__pressComposer = new PressComposer();
                 this.__pressComposer.delegate = this;
-                this.addComposerForElement(this._pressComposer, this.element.ownerDocument);
+                this.addComposerForElement(
+                    this._pressComposer, this.element.ownerDocument
+                );
             }
 
             return this.__pressComposer;
@@ -50,10 +52,62 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                 this.__keyComposer = new KeyComposer();
                 this.__keyComposer.keys = "escape";
                 this.__keyComposer.identifier = "escape";
-                this.addComposerForElement(this.__keyComposer, this.element.ownerDocument.defaultView);
+                this.addComposerForElement(
+                    this.__keyComposer, this.element.ownerDocument.defaultView
+                );
             }
 
             return this.__keyComposer;
+        }
+    },
+
+    _width: {
+        value: null
+    },
+
+    /**
+     * @type {string|Number}
+     * @description The width of the overlay. If a number is provided, 
+     * pixel units will be used.
+     * @default null
+     */
+    width: {
+        set: function (width) {
+            if (!isNaN(width)) {
+                this._width = width + "px";
+            } else if (typeof width === "string" && width) {
+                this._width = width;
+            } else {
+                this._width = null;
+            }
+        },
+        get: function () {
+            return this._width;
+        }
+    },
+
+    _height: {
+        value: null
+    },
+
+    /**
+     * @type {string|Number}
+     * @description The height of the overlay. If a number is provided,
+     * pixel units will be used.
+     * @default null
+     */
+    height: {
+        set: function (height) {
+            if (!isNaN(height)) {
+                this._height = height + "px";
+            } else if (typeof height === "string" && height) {
+                this._height = height;
+            } else {
+                this._height = null;
+            }
+        },
+        get: function () {
+            return this._height;
         }
     },
 
@@ -332,16 +386,17 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         value: function () {
             if (this._isShown) {
                 var position = this._drawPosition;
-
                 this.element.style.top = position.top + "px";
                 this.element.style.left = position.left + "px";
                 this.element.style.visibility = "visible";
-
                 this.callDelegateMethod("didShowOverlay", this);
 
             } else {
                 this.element.style.visibility = "hidden";
             }
+
+            this.element.style.height = this.height;
+            this.element.style.width = this.width;
         }
     },
 
@@ -366,7 +421,9 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                 position = this._calculateCenteredPosition();
             }
 
-            delegatePosition = this.callDelegateMethod("willPositionOverlay", this, position);
+            delegatePosition = this.callDelegateMethod(
+                "willPositionOverlay", this, position
+            );
 
             if (delegatePosition) {
                 position = delegatePosition;
