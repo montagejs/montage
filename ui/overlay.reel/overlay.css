@@ -1,4 +1,6 @@
 .montage-Overlay {
     position: absolute;
     z-index: 9999;
+    background: #fff;
+    border: 1px solid #c8c7cc;
 }

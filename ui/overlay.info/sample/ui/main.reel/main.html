@@ -26,6 +26,57 @@
                     "height": 100,
                     "width": 100
                 }
+            },
+
+            "button2": {
+                "prototype": "montage/ui/button.reel",
+                "values": {
+                    "element": {"#": "button2"},
+                    "label": "show overlay 2"
+                }
+            },
+
+            "overlay2": {
+                "prototype": "montage/ui/overlay.reel",
+                "values": {
+                    "element": {"#": "overlay2"},
+                    "control": {"@": "button2"},
+                    "height": 150,
+                    "width": 200
+                }
+            },
+
+            "select1": {
+                "prototype": "montage/ui/select.reel",
+                "values": {
+                    "element": {"#": "select1"},
+                    "content": [
+                        "top",
+                        "right",
+                        "bottom",
+                        "left"
+                    ]
+                }
+            },
+
+            "button3": {
+                "prototype": "montage/ui/button.reel",
+                "values": {
+                    "element": {"#": "button3"},
+                    "label": "show overlay 3"
+                }
+            },
+
+            "overlay3": {
+                "prototype": "montage/ui/overlay.reel",
+                "values": {
+                    "element": {"#": "overlay3"},
+                    "control": {"@": "button3"},
+                    "anchor": {"@": "button3"},
+                    "anchorPosition": {"<-": "@select1.value"},
+                    "height": 100,
+                    "width": 100
+                }
             }
 
         }
@@ -38,6 +89,17 @@
         <button data-montage-id="button1"></button>
         <div data-montage-id="overlay1">
             overlay1
+        </div>
+        <button data-montage-id="button2"></button>
+        <div data-montage-id="overlay2">
+            overlay2
+        </div>
+
+        <h4>With a anchor</h4>
+        <select data-montage-id="select1"></select>
+        <button data-montage-id="button3" class="Button3"></button>
+        <div data-montage-id="overlay3">
+            overlay3
         </div>
         
     </div>

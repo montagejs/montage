@@ -158,11 +158,44 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
      */
     anchor: {
         set: function (value) {
+            if (value instanceof Component) {
+                value = value.element;
+            } else if (value instanceof Element) {
+                value = value;
+            } else {
+                value = null;
+            }
+
             this._anchor = value;
             this.needsDraw = true;
         },
         get: function () {
             return this._anchor;
+        }
+    },
+
+    _anchorPosition: {
+        value: null
+    },
+
+    anchorPosition: {
+        set: function (anchorPosition) {
+            if (this._anchorPosition !== anchorPosition) {
+                if (
+                    anchorPosition === Overlay.POSITION_TOP ||
+                    anchorPosition === Overlay.POSITION_RIGHT ||
+                    anchorPosition === Overlay.POSITION_BOTTOM ||
+                    anchorPosition === Overlay.POSITION_LEFT
+                ) {
+                    this._anchorPosition = anchorPosition;
+                } else {
+                    this._anchorPosition = null;
+                }
+                this.needsDraw = true;
+            }
+        },
+        get: function () {
+            return this._anchorPosition || Overlay.POSITION_BOTTOM;
         }
     },
 
@@ -570,14 +603,48 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
     _calculateAnchorPosition: {
         value: function () {
             var anchor = this.anchor,
-                width = this.element.offsetWidth,
-                anchorPosition = anchor.getBoundingClientRect(),
-                anchorHeight = anchor.offsetHeight || 0,
-                anchorWidth = anchor.offsetWidth || 0,
+                overlay = this.element,
+                anchorRect = anchor.getBoundingClientRect(),
+                overlayRect = overlay.getBoundingClientRect(),
+                position;
+            
+            if (this.anchorPosition === Overlay.POSITION_BOTTOM) {
                 position = {
-                    top: anchorPosition.top + anchorHeight,
-                    left: anchorPosition.left + (anchorWidth / 2) - (width / 2)
+                    top: anchorRect.top + anchorRect.height,
+                    left: (
+                        anchorRect.left +
+                        (anchorRect.width / 2) -
+                        (overlayRect.width / 2)
+                    )
                 };
+            } else if (this.anchorPosition === Overlay.POSITION_TOP) {
+                position = {
+                    top: anchorRect.top - overlayRect.height,
+                    left: (
+                        anchorRect.left +
+                        (anchorRect.width / 2) -
+                        (overlayRect.width / 2)
+                    )
+                };
+            } else if (this.anchorPosition === Overlay.POSITION_LEFT) {
+                position = {
+                    top: (
+                        anchorRect.top +
+                        (anchorRect.height / 2) -
+                        (overlayRect.height / 2)
+                    ),
+                    left: anchorRect.left - overlayRect.width
+                };
+            } else {
+                position = {
+                    top: (
+                        anchorRect.top +
+                        (anchorRect.height / 2) -
+                        (overlayRect.height / 2)
+                    ),
+                    left: anchorRect.right
+                };
+            }
 
             if (position.left < 0) {
                 position.left = 0;
@@ -610,6 +677,19 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         }
     }
 
+}, {
+        POSITION_LEFT: {
+            value: "left"
+        },
+        POSITION_RIGHT: {
+            value: "right"
+        },
+        POSITION_TOP: {
+            value: "top"
+        },
+        POSITION_BOTTOM: {
+            value: "bottom"
+        },
 });
 
 if (window.MontageElement) {

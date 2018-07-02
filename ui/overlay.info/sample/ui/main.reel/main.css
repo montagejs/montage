@@ -28,7 +28,6 @@ h4 {
 }
 
 .montage-Overlay {
-    border: 1px solid #c8c7cc;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -38,4 +37,8 @@ h4 {
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;
+}
+
+.Button3 {
+    margin-left: 200px;
 }
