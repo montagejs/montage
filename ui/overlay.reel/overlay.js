@@ -19,15 +19,34 @@ var CLASS_PREFIX = "montage-Overlay",
 var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
 
     /**
-     * Dispatched when the user dismiss the overlay by clicking outside of it.
-     * @event dismiss
-     * @memberof Overlay
-     * @param {Event} event
+     * @private
+     * @type {Object}
+     * @default null
      */
+    _previousActiveTarget: {
+        value: null
+    },
+
+    /**
+     * @private
+     * @type {{left: number, top: number}}
+     * @description Value used to store the position where the overlay will be drawn.
+     * This position is calculated at willDraw time and used at draw.
+     * @default null
+     */
+    _drawPosition: {
+        value: null
+    },
+
     __pressComposer: {
         value: null
     },
 
+    /**
+     * @private
+     * @type {PressComposer}
+     * @description Dispatched when the user dismiss the overlay by clicking outside of it.
+     */
     _pressComposer: {
         get: function () {
             if (!this.__pressComposer) {
@@ -46,6 +65,11 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         value: null
     },
 
+    /**
+     * @private
+     * @type {KeyComposer}
+     * @description Dispatched when the user hit the escape key.
+     */
     _keyComposer: {
         get: function () {
             if (!this.__keyComposer) {
@@ -66,6 +90,7 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
     },
 
     /**
+     * @public
      * @type {string|Number}
      * @description The width of the overlay. If a number is provided, 
      * pixel units will be used.
@@ -75,8 +100,12 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         set: function (width) {
             if (!isNaN(width)) {
                 this._width = width + "px";
+                this.needsDraw = true;
+
             } else if (typeof width === "string" && width) {
                 this._width = width;
+                this.needsDraw = true;
+
             } else {
                 this._width = null;
             }
@@ -91,6 +120,7 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
     },
 
     /**
+     * @public
      * @type {string|Number}
      * @description The height of the overlay. If a number is provided,
      * pixel units will be used.
@@ -100,8 +130,12 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         set: function (height) {
             if (!isNaN(height)) {
                 this._height = height + "px";
+                this.needsDraw = true;
+
             } else if (typeof height === "string" && height) {
                 this._height = height;
+                this.needsDraw = true;
+
             } else {
                 this._height = null;
             }
@@ -111,12 +145,11 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         }
     },
 
-    _anchor: {
-        value: null
-    },
-
     /**
-     * The anchor element or component to display the overlay next to.
+     * @public
+     * @type {Element|Component}
+     * @description The anchor element or component to display the overlay next to.
+     * @default null
      */
     anchor: {
         set: function (value) {
@@ -133,8 +166,10 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
     },
 
     /**
-     * Where to position the overlay in the screen.
+     * @public
      * @type {{left: number, top: number}}
+     * @description Where to position the overlay in the screen.
+     * @default null
      */
     position: {
         set: function (value) {
@@ -146,32 +181,26 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         }
     },
 
-    // Value used to store the position where the overlay will be drawn.
-    // This position is calculated at willDraw time and used at draw.
-    _drawPosition: {
-        value: null
-    },
-
     _isShown: {
         value: false
     },
 
+     /**
+     * @public
+     * @type {Boolean}
+     * @description Indicate if the overlay is shown or not.
+     * @default false
+     */
     isShown: {
         get: function () {
             return this._isShown;
         }
     },
 
-    _resizeHandlerTimeout: {
-        value: null
-    },
-
-    _previousActiveTarget: {
-        value: null
-    },
-
     /**
-     * A delegate that can implement `willPositionOverlay` and/or
+     * @public
+     * @type {Object}
+     * @description  A delegate that can implement `willPositionOverlay` and/or
      * `shouldDismissOverlay`.
      *
      * - `willPositionOverlay(overlay, calculatedPosition)` is called when the
@@ -181,30 +210,80 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
      *   clicks outside of the overlay or presses escape inside the overlay.
      *   Usually this will hide the overlay. Return `true` to hide the overlay,
      *   or `false` to leave the overlay visible.
-     * @type {Object}
+     * 
+     * @default null
      */
     delegate: {
         value: null
+    },
+
+    /**
+     * @public
+     * @type {Boolean}
+     * @description TODO ??
+     * @default true
+     */
+    isModal: {
+        value: true
     },
 
     _dismissOnExternalInteraction: {
         value: true
     },
 
+    /**
+     * @public
+     * @type {Boolean}
+     * @description Determines if the overlay should be dismissed when the user
+     * clicks outside of the overlay.
+     * @default true
+     */
     dismissOnExternalInteraction: {
         set: function (value) {
+            value = !!value;
+
             if (value !== this._dismissOnExternalInteraction) {
                 this._dismissOnExternalInteraction = value;
 
-                if (value) {
-                    this._pressComposer.addEventListener("pressStart", this, false);
+                if (value && this._isShown) {
+                    this._pressComposer.addEventListener("pressStart", this);
                 } else {
-                    this._pressComposer.removeEventListener("pressStart", this, false);
+                    this._pressComposer.removeEventListener("pressStart", this);
                 }
             }
         },
         get: function () {
             return this._dismissOnExternalInteraction;
+        }
+    },
+
+    _dismissOnEscape: {
+        value: true
+    },
+
+    /**
+     * @public
+     * @type {Boolean}
+     * @description Determines if the overlay should be dismissed when the user
+     * presses escape inside the overlay.
+     * @default true
+     */
+    dismissOnEscape: {
+        set: function (value) {
+            value = !!value;
+
+            if (value !== this._dismissOnEscape) {
+                this._dismissOnEscape = value;
+
+                if (value && this._isShown) {
+                    this._keyComposer.addEventListener("keyPress", this);
+                } else {
+                    this._keyComposer.removeEventListener("keyPress", this);
+                }
+            }
+        },
+        get: function () {
+            return this._dismissOnEscape;
         }
     },
 
@@ -219,7 +298,6 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         }
     },
     
-
     /**
      * Show the overlay. The overlay is displayed at the position determined by
      * the following conditions:
@@ -242,7 +320,11 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                     this._previousActiveTarget = defaultEventManager.activeTarget;
                     defaultEventManager.activeTarget = this;
                     if (defaultEventManager.activeTarget !== this) {
-                        console.warn("Overlay " + this.identifier + " can't become the active target because ", defaultEventManager.activeTarget, " didn't surrender it.");
+                        console.warn("Overlay " + this.identifier +
+                            " can't become the active target because ",
+                            defaultEventManager.activeTarget,
+                            " didn't surrender it."
+                        );
                         return;
                     }
                 }
@@ -254,11 +336,14 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                 this._isShown = true;
                 this.needsDraw = true;
 
-                this._keyComposer.addEventListener("keyPress", this, false);
                 this.element.ownerDocument.defaultView.addEventListener("resize", this);
 
                 if (this._dismissOnExternalInteraction) {
-                    this._pressComposer.addEventListener("pressStart", this, false);
+                    this._pressComposer.addEventListener("pressStart", this);
+                }
+
+                if (this._dismissOnEscape) {
+                    this._keyComposer.addEventListener("keyPress", this);
                 }
             }
         }
@@ -278,23 +363,25 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                     defaultEventManager.activeTarget = this._previousActiveTarget;
                 }
 
-                this._keyComposer.removeEventListener("keyPress", this, false);
                 this.element.ownerDocument.defaultView.removeEventListener("resize", this);
 
                 if (this._dismissOnExternalInteraction) {
-                    this._pressComposer.removeEventListener("pressStart", this, false);
+                    this._pressComposer.removeEventListener("pressStart", this);
+                }
+
+                if (this._dismissOnEscape) {
+                    this._keyComposer.removeEventListener("keyPress", this);
                 }
             }
         }
     },
 
-    isModal: {
-        value: true
-    },
-
     shouldComposerSurrenderPointerToComponent: {
         value: function (composer, pointer, component) {
-            if (component && component.element && !this.element.contains(component.element)) {
+            if (
+                component && component.element &&
+                !this.element.contains(component.element)
+            ) {
                 this.hide();
             }
 
@@ -316,7 +403,10 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
             }
 
             delegateResponse = this.callDelegateMethod(
-                "overlayShouldDismissOnSurrenderActiveTarget", this, candidateActiveTarget, response
+                "overlayShouldDismissOnSurrenderActiveTarget",
+                this,
+                candidateActiveTarget,
+                response
             );
 
             return delegateResponse !== void 0 ? delegateResponse : response;
@@ -357,7 +447,9 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         value: function (event) {
             var shouldDismissOverlay = false;
             if (this._isShown) {
-                shouldDismissOverlay = this.callDelegateMethod("shouldDismissOverlay", this, event.targetElement, event.type);
+                shouldDismissOverlay = this.callDelegateMethod(
+                    "shouldDismissOverlay", this, event.targetElement, event.type
+                );
 
                 if (shouldDismissOverlay === void 0 || shouldDismissOverlay) {
                     this.hide();
@@ -440,12 +532,10 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                 anchorPosition = anchor.getBoundingClientRect(),
                 anchorHeight = anchor.offsetHeight || 0,
                 anchorWidth = anchor.offsetWidth || 0,
-                position;
-
-            position = {
-                top: anchorPosition.top + anchorHeight,
-                left: anchorPosition.left + (anchorWidth / 2) - (width / 2)
-            };
+                position = {
+                    top: anchorPosition.top + anchorHeight,
+                    left: anchorPosition.left + (anchorWidth / 2) - (width / 2)
+                };
 
             if (position.left < 0) {
                 position.left = 0;
@@ -473,9 +563,7 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
     _dispatchDismissEvent: {
         value: function () {
             var dismissEvent = document.createEvent("CustomEvent");
-
             dismissEvent.initCustomEvent("dismiss", true, true, null);
-
             this.dispatchEvent(dismissEvent);
         }
     }
