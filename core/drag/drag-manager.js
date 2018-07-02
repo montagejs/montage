@@ -430,8 +430,9 @@ var DragManager = exports.DragManager = Montage.specialize({
     _dispatchDragLeave: {
         value: function (draggingOperationContext) {
             if (draggingOperationContext.currentDropTarget) {
-                draggingOperationContext.currentDropTarget.classList.remove("drag-over");
-                draggingOperationContext.currentDropTarget.classList.remove("drag-enter");
+                draggingOperationContext.currentDropTarget.classList.remove(
+                    "drag-over", "drag-enter"
+                );
 
                 draggingOperationContext.currentDropTarget.dispatchEvent(this._createDragEvent(
                     "dragleave", draggingOperationContext
