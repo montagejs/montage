@@ -943,7 +943,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                     var translateX = draggingOperationContext.deltaX,
                         translateY = draggingOperationContext.deltaY;
 
-                    this._setUpDraggedImageIfNeeded(draggedImage);
+                    this._drawDraggedImageIfNeeded(draggedImage);
 
                     if (!this._needsToWaitforDraggedImageBoundaries) {
                         draggedImage.style.visibility = "visible";
@@ -1061,7 +1061,7 @@ var DragManager = exports.DragManager = Montage.specialize({
         }
     },
 
-    _setUpDraggedImageIfNeeded: {
+    _drawDraggedImageIfNeeded: {
         value: function (draggedImage) {
             var draggingOperationContext = this._draggingOperationContext;
 
