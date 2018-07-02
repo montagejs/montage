@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"},
+                    "overlay1": {"@": "overlay1"}
+                }
+            },
+
+            "button1": {
+                "prototype": "montage/ui/button.reel",
+                "values": {
+                    "element": {"#": "button1"}
+                }
+            },
+
+            "overlay1": {
+                "prototype": "montage/ui/overlay.reel",
+                "values": {
+                    "element": {"#": "overlay1"},
+                    "height": 400,
+                    "width": 400
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>Overlay Samples</header>
+        <h4>Simple</h4>
+        <button data-montage-id="button1"></button>
+        <div data-montage-id="overlay1">
+            overlay1
+        </div>
+        
+    </div>
+</body>
+</html>
