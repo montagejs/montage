@@ -4,6 +4,7 @@
  * @module "ui/overlay.reel"
  */
 var Component = require("../component").Component,
+    Control = require("../control").Control,
     KeyComposer = require("../../composer/key-composer").KeyComposer,
     PressComposer = require("../../composer/press-composer").PressComposer,
     defaultEventManager = require("../../core/event/event-manager").defaultEventManager;
@@ -145,6 +146,10 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         }
     },
 
+    _anchor: {
+        value: null
+    },
+
     /**
      * @public
      * @type {Element|Component}
@@ -158,6 +163,35 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         },
         get: function () {
             return this._anchor;
+        }
+    },
+
+    _control: {
+        value: null
+    },
+
+    /**
+     * @public
+     * @type {Control}
+     * @description Represents the control component bounded to the overlay.
+     * The overlay will listen to the control's action event in order to automatically
+     * show the overlay
+     * @default null
+     */
+    control: {
+        set: function (control) {
+            if (this._control !== control) {
+                if (control instanceof Control) {
+                    control.addEventListener("action", this);
+                } else if (this._control) {
+                    control.removeEventListener("action", this);
+                }
+
+                this._control = control;
+            }
+        },
+        get: function () {
+            return this._control;
         }
     },
 
@@ -294,6 +328,14 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                 // escape possible offset parent container.
                 this.element.ownerDocument.body.appendChild(this.element);
                 this.attachToParentComponent();
+            }
+        }
+    },
+
+    handleAction: {
+        value: function (event) {
+            if (event.target === this.control) {
+                this.show();
             }
         }
     },

@@ -6,8 +6,7 @@
         {
             "owner": {
                 "values": {
-                    "element": {"#": "main"},
-                    "overlay1": {"@": "overlay1"}
+                    "element": {"#": "main"}
                 }
             },
 
@@ -15,7 +14,7 @@
                 "prototype": "montage/ui/button.reel",
                 "values": {
                     "element": {"#": "button1"},
-                    "label": "show"
+                    "label": "show overlay 1"
                 }
             },
 
@@ -23,6 +22,7 @@
                 "prototype": "montage/ui/overlay.reel",
                 "values": {
                     "element": {"#": "overlay1"},
+                    "control": {"@": "button1"},
                     "height": 100,
                     "width": 100
                 }
