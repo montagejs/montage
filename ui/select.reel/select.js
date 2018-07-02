@@ -107,20 +107,25 @@ var Select = exports.Select =  Control.specialize(/** @lends module:"montage/ui/
     <code>contentController</code> property, which is a RangeController.
 */
     content: {
-        set: function(value) {
-            //if(!Array.isArray(value)) {
-            //    value = [value];
-            //}
-            this._content = value;
+        set: function (value) {
+            if (value !== this._content) {
+                if (!Array.isArray(value)) {
+                    value = [value];
+                }
 
-            if(!this.contentController) {
-                var contentController = new RangeController();
-                contentController.content = value;
-                contentController.selection = [];
-                this.contentController = contentController;
+                this._mapContentIfNeeded(value);
+
+                this._content = value;
+
+                if (!this.contentController) {
+                    var contentController = new RangeController();
+                    contentController.content = value;
+                    contentController.selection = [];
+                    this.contentController = contentController;
+                }
+
+                this.needsDraw = true;
             }
-
-            this.needsDraw = true;
         },
         get: function() {
             return this._content;
@@ -319,6 +324,22 @@ var Select = exports.Select =  Control.specialize(/** @lends module:"montage/ui/
         }
     },
 
+    _mapContentIfNeeded: {
+        value: function (content) {
+            var item;
+
+            for (var i = 0, l = content.length; i < l; i++) {
+                item = content[i];
+
+                if (!item.value || !item.text) {
+                    content[i] = {
+                        value: item.value || item,
+                        text: item.text || item.value || item
+                    };
+                }
+            }
+        }
+    },
 
     deserializedFromTemplate: {
         value: function() {
@@ -545,4 +566,3 @@ Select.addAttributes( /** @lends module:"montage/ui/native/select.reel".Select *
 */
         size: {dataType: 'number', value: '1'}
 });
-
