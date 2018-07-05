@@ -480,6 +480,21 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         }
     },
 
+    /**
+     * @public
+     * @type {Boolean}
+     * @description Hide or show the overlay.
+     */
+    toggle: {
+        value: function () {
+            if (this._isShown) {
+                this.hide();
+            } else {
+                this.show();
+            }
+        }
+    },
+
     shouldComposerSurrenderPointerToComponent: {
         value: function (composer, pointer, component) {
             if (
