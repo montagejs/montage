@@ -178,6 +178,14 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         value: null
     },
 
+    /**
+     * @public
+     * @type {String}
+     * @description Determine the anchor position.
+     * Possible values:
+     * 'left' | 'right' | 'bottom' | 'top'
+     * @default 'bottom'
+     */
     anchorPosition: {
         set: function (anchorPosition) {
             if (this._anchorPosition !== anchorPosition) {
@@ -395,19 +403,18 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
     },
     
     /**
-     * Show the overlay. The overlay is displayed at the position determined by
-     * the following conditions:
+     * @public
+     * @description Show the overlay. The overlay is displayed at the position 
+     * determined by the following conditions:
      *
      * 1. If a delegate is provided and the willPositionOverlay function is
      *    implemented, the position is always determined by the delegate.
      * 2. If "position" is set, the overlay is always displayed at this
      *    location.
-     * 3. If an anchor is set, the overlay is displayed below the anchor.
+     * 3. If an anchor is set, the overlay is displayed by the specified anchor 
+     * position, bellow by default.
      * 4. If no positional hints are provided, the overlay is displayed at the
      *    center of the screen.
-     *
-     * FIXME: We have to add key events on both this component and the keyComposer
-     * because of a bug in KeyComposer.
      */
     show: {
         value: function () {
@@ -449,6 +456,10 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         }
     },
 
+     /**
+     * @public
+     * @description Hide the overlay.
+     */
     hide: {
         value: function () {
             if (this._isShown) {
@@ -482,7 +493,6 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
 
     /**
      * @public
-     * @type {Boolean}
      * @description Hide or show the overlay.
      */
     toggle: {
@@ -495,6 +505,34 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         }
     },
 
+    /**
+     * @public
+     * @description User event has requested that we dismiss the overlay. Give the delegate
+     * an opportunity to prevent it. Returns whether the overlay was hidden.
+     */
+    dismissOverlay: {
+        value: function (event) {
+            var shouldDismissOverlay = false;
+            if (this._isShown) {
+                shouldDismissOverlay = this.callDelegateMethod(
+                    "shouldDismissOverlay", this, event.targetElement, event.type
+                );
+
+                if (shouldDismissOverlay === void 0 || shouldDismissOverlay) {
+                    this.hide();
+                    this._dispatchDismissEvent();
+                }
+            }
+
+            return shouldDismissOverlay;
+        }
+    },
+
+    /**
+     * @public
+     * @description The overlay should only surrender focus if it is hidden, non-modal, or
+     * if the other component is one of its descendants.
+     */
     shouldComposerSurrenderPointerToComponent: {
         value: function (composer, pointer, component) {
             if (
@@ -576,35 +614,12 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         }
     },
 
-    /**
-     * User event has requested that we dismiss the overlay. Give the delegate
-     * an opportunity to prevent it. Returns whether the overlay was hidden.
-     */
-    dismissOverlay: {
-        value: function (event) {
-            var shouldDismissOverlay = false;
-            if (this._isShown) {
-                shouldDismissOverlay = this.callDelegateMethod(
-                    "shouldDismissOverlay", this, event.targetElement, event.type
-                );
-
-                if (shouldDismissOverlay === void 0 || shouldDismissOverlay) {
-                    this.hide();
-                    this._dispatchDismissEvent();
-                }
-            }
-
-            return shouldDismissOverlay;
-        }
-    },
-
     // Draw
 
     willDraw: {
         value: function () {
             if (this._isShown) {
                 this._calculatePosition();
-
             } else {
                 this.callDelegateMethod("didHideOverlay", this);
             }
@@ -637,6 +652,10 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         }
     },
 
+    /**
+     * @private
+     * @description Determine the overlay's position
+     */
     _calculatePosition: {
         value: function () {
             var position,
@@ -662,6 +681,10 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         }
     },
 
+    /**
+     * @private
+     * @description Determine the anchor's position
+     */
     _calculateAnchorPosition: {
         value: function () {
             var anchor = this.anchor,
@@ -716,6 +739,10 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         }
     },
 
+     /**
+     * @private
+     * @description Determine the centered position
+     */
     _calculateCenteredPosition: {
         value: function () {
             var defaultView = this.element.ownerDocument.defaultView,
@@ -731,6 +758,10 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         }
     },
 
+    /**
+     * @private
+     * @description Dispatch a dismiss event
+     */
     _dispatchDismissEvent: {
         value: function () {
             var dismissEvent = document.createEvent("CustomEvent");
