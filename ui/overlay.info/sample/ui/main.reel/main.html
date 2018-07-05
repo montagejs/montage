@@ -7,7 +7,11 @@
             "owner": {
                 "values": {
                     "element": {"#": "main"},
-                    "overlay4": {"@": "overlay4"}
+                    "overlay4": {"@": "overlay4"},
+                    "overlay5": {"@": "overlay5"},
+                    "toggle1": {"@": "toggle1"},
+                    "toggle2": {"@": "toggle2"},
+                    "overlayContainer1": {"#": "container1"}
                 }
             },
 
@@ -94,6 +98,23 @@
                     "height": 100,
                     "width": 100
                 }
+            },
+
+            "toggle2": {
+                "prototype": "montage/ui/toggle.reel",
+                "values": {
+                    "element": {"#": "toggle2"}
+                }
+            },
+
+            "overlay5": {
+                "prototype": "montage/ui/overlay.reel",
+                "values": {
+                    "element": {"#": "overlay5"},
+                    "overlayContainer": {"#": "container1"},
+                    "height": 100,
+                    "width": 100
+                }
             }
 
         }
@@ -119,16 +140,22 @@
             overlay3
         </div>
 
-        <h4>Scrollable view</h4>
-        <div class="Scrollable">
-            <div class="Scrollable-inner"></div>
-        </div>
-
         <h4>Contextual overlay</h4>
-        <span>Enable contextual overlay: </span>
+        <span>Enable global contextual overlay: </span>
         <span data-montage-id="toggle1"></span>
         <div data-montage-id="overlay4">
             overlay4
+        </div>
+
+        <h4>Within a container</h4>
+        <span>Enable contextual overlay: </span>
+        <span data-montage-id="toggle2"></span>
+        <div class="Scrollable"  data-montage-id="container1">
+            <div class="Scrollable-inner">
+                <div data-montage-id="overlay5">
+                    overlay5
+                </div>
+            </div>
         </div>
     </div>
 </body>

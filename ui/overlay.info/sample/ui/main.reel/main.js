@@ -5,26 +5,39 @@ exports.Main = Component.specialize({
     constructor: {
         value: function () {
             this.addEventListener("action", this);
+            document.addEventListener("contextmenu", this);
         }
     },
 
     handleToggle1Action: {
         value: function (event) {
             if (event.target.checked) {
-                document.addEventListener("contextmenu", this);
-            } else {
-                document.removeEventListener("contextmenu", this);
-                this.overlay4.hide();
+                this.toggle2.checked = false;
+            }
+        }
+    },
+
+    handleToggle2Action: {
+        value: function (event) {
+            if (event.target.checked) {
+                this.toggle1.checked = false;
             }
         }
     },
 
     handleContextmenu: {
         value: function (event) {   
-            event.preventDefault();
-            this.overlay4.position.left = event.pageX;
-            this.overlay4.position.top = event.pageY;
-            this.overlay4.show();
+            if (this.toggle1.checked) {
+                event.preventDefault();
+                this.overlay4.position.left = event.pageX;
+                this.overlay4.position.top = event.pageY;
+                this.overlay4.show();
+            } else if (this.toggle2.checked) {
+                event.preventDefault();
+                this.overlay5.position.left = event.pageX - this.overlayContainer1.offsetLeft;
+                this.overlay5.position.top = event.pageY - this.overlayContainer1.offsetTop;
+                this.overlay5.show();
+            }
         }
     }
 

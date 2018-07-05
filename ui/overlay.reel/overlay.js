@@ -446,17 +446,6 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         }
     },
 
-    enterDocument: {
-        value: function (firstTime) {
-            if (firstTime) {
-                // Need to move the element to be a child of the document to
-                // escape possible offset parent container.
-                this.element.ownerDocument.body.appendChild(this.element);
-                this.attachToParentComponent();
-            }
-        }
-    },
-    
     /**
      * @public
      * @description Show the overlay. The overlay is displayed at the position 
@@ -685,16 +674,32 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
     draw: {
         value: function () {
             if (this._isShown) {
+                if (
+                    !this.overlayContainer &&
+                    this.element.parentElement !== this.element.ownerDocument.body
+                ) {
+                    // Need to move the element to be a child of the document to
+                    // escape possible offset parent container.
+                    this.element.ownerDocument.body.appendChild(this.element);
+                    this.attachToParentComponent();
+                } else if (this.overlayContainer) {
+                    this.overlayContainer.style.position = "relative";
+                }
+                
                 var position = this._drawPosition;
                 this.element.style.top = position.top + "px";
                 this.element.style.left = position.left + "px";
                 this.element.style.visibility = "visible";
+                this.element.style.zIndex = "99999";
                 this.callDelegateMethod("didShowOverlay", this);
-
             } else {
                 this.element.style.visibility = "hidden";
+                this.element.style.zIndex = "-99999";
+                this.element.style.top = "0px";
+                this.element.style.left = "0px";
             }
 
+            this.element.style.position = "absolute";
             this.element.style.height = this.height;
             this.element.style.width = this.width;
         }
@@ -785,7 +790,12 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                         height: height
                     };
                 } else {
-                    overlayContainerRect = this.overlayContainer.getBoundingClientRect();
+                    overlayContainerRect = {
+                        top: 0,
+                        left: 0,
+                        width: this.overlayContainer.offsetWidth,
+                        height: this.overlayContainer.offsetHeight
+                    };
                 }
 
                 if (position.top < overlayContainerRect.top) {
@@ -793,8 +803,9 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                 } else if (
                     position.top + overlayRect.height > overlayContainerRect.height
                 ) {
-                    position.top = (this.anchor ? overlayContainerRect.height :
-                        position.top) - overlayRect.height;
+                    position.top = (this.anchor || position.top > overlayContainerRect.height
+                        ? overlayContainerRect.height : position.top
+                    ) - overlayRect.height;
                 }
 
                 if (position.left < overlayContainerRect.left) {
@@ -802,8 +813,15 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                 } else if (
                     position.left + overlayRect.width > overlayContainerRect.width
                 ) {
-                    position.left = (this.anchor ? overlayContainerRect.width :
-                        position.left) - overlayRect.width;
+                    position.left = (
+                        this.anchor || position.left > overlayContainerRect.width
+                            ? overlayContainerRect.width : position.left
+                    ) - overlayRect.width;
+                }
+
+                if (this.overlayContainer) {
+                    position.top += this.overlayContainer.scrollTop;
+                    position.left += this.overlayContainer.scrollLeft;
                 }
             }
 
@@ -827,7 +845,12 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         value: function () {
             var anchor = this.anchor,
                 overlay = this.element,
-                anchorRect = anchor.getBoundingClientRect(),
+                anchorRect = {
+                    top: anchor.offsetTop,
+                    left: anchor.offsetLeft,
+                    height: anchor.offsetHeight,
+                    width: anchor.offsetWidth
+                },
                 overlayRect = this._overlayRect,
                 position;
             
@@ -865,7 +888,7 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                         (anchorRect.height / 2) -
                         (overlayRect.height / 2)
                     ),
-                    left: anchorRect.right
+                    left: anchorRect.left + anchorRect.width
                 };
             }
 

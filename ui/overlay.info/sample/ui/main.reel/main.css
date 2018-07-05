@@ -44,15 +44,16 @@ h4 {
 }
 
 .Scrollable {
+    margin-top: 20px;
     border: 1px solid #c8c7cc;
-    height: 100px;
-    width: 100px;
+    height: 200px;
+    width: 400px;
     overflow: auto;
 }
 
 .Scrollable-inner {
     height: 10000px;
-    width: 100px;
+    width: 400px;
 }
 
 .montage-toggle {
