@@ -29,13 +29,17 @@ exports.Main = Component.specialize({
         value: function (event) {   
             if (this.toggle1.checked) {
                 event.preventDefault();
-                this.overlay4.position.left = event.pageX;
-                this.overlay4.position.top = event.pageY;
+                this.overlay4.position = {
+                    left: event.pageX,
+                    top: event.pageY
+                };
                 this.overlay4.show();
             } else if (this.toggle2.checked) {
                 event.preventDefault();
-                this.overlay5.position.left = event.pageX - this.overlayContainer1.offsetLeft;
-                this.overlay5.position.top = event.pageY - this.overlayContainer1.offsetTop;
+                this.overlay5.position = {
+                    left: event.pageX - this.overlayContainer1.offsetLeft,
+                    top: event.pageY - this.overlayContainer1.offsetTop
+                };
                 this.overlay5.show();
             }
         }

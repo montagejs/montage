@@ -289,24 +289,10 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
      */
     position: {
         set: function (value) {
-            if (value) {
-                this.position.left = value.left;
-                this._position.top = value.top;
-            } else {
-                this._position.left = null;
-                this._position.top = null;
-            }
-
+            this._position = value;
             this.needsDraw = true;
         },
         get: function () {
-            if (!this._position) {
-                this._position = {
-                    left: null,
-                    top: null
-                };
-            }
-
             return this._position;
         }
     },
@@ -559,10 +545,18 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
             var shouldDismissOverlay = false;
             if (this._isShown) {
                 shouldDismissOverlay = this.callDelegateMethod(
-                    "shouldDismissOverlay", this, event.targetElement, event.type
+                    "shouldDismissOverlay",
+                    this,
+                    event.targetElement,
+                    event.type,
+                    event
                 );
 
-                if (shouldDismissOverlay === void 0 || shouldDismissOverlay) {
+                if (
+                    (shouldDismissOverlay === void 0 &&
+                        (event._event && !event._event.button) || !event._event) ||
+                    shouldDismissOverlay
+                ) {
                     this.hide();
                     this._dispatchDismissEvent();
                 }
@@ -740,10 +734,7 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
         value: function () {
             var position, overlayContainerRect, delegatePosition;
 
-            if (
-                this.position && this.position.left !== null &&
-                this.position.top !== null
-            ) {
+            if (this.position) {
                 position = this.position;
             } else if (this.anchor) {
                 position = this._calculateAnchorPosition();
@@ -803,8 +794,8 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                 } else if (
                     position.top + overlayRect.height > overlayContainerRect.height
                 ) {
-                    position.top = (this.anchor || position.top > overlayContainerRect.height
-                        ? overlayContainerRect.height : position.top
+                    position.top = (this.anchor || position.top > overlayContainerRect.height ?
+                        overlayContainerRect.height : position.top
                     ) - overlayRect.height;
                 }
 
@@ -814,8 +805,8 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                     position.left + overlayRect.width > overlayContainerRect.width
                 ) {
                     position.left = (
-                        this.anchor || position.left > overlayContainerRect.width
-                            ? overlayContainerRect.width : position.left
+                        this.anchor || position.left > overlayContainerRect.width ?
+                            overlayContainerRect.width : position.left
                     ) - overlayRect.width;
                 }
 
