@@ -6,7 +6,8 @@
         {
             "owner": {
                 "values": {
-                    "element": {"#": "main"}
+                    "element": {"#": "main"},
+                    "overlay4": {"@": "overlay4"}
                 }
             },
 
@@ -77,6 +78,22 @@
                     "height": 100,
                     "width": 100
                 }
+            },
+
+            "toggle1": {
+                "prototype": "montage/ui/toggle.reel",
+                "values": {
+                    "element": {"#": "toggle1"}
+                }
+            },
+
+            "overlay4": {
+                "prototype": "montage/ui/overlay.reel",
+                "values": {
+                    "element": {"#": "overlay4"},
+                    "height": 100,
+                    "width": 100
+                }
             }
 
         }
@@ -107,6 +124,12 @@
             <div class="Scrollable-inner"></div>
         </div>
 
+        <h4>Contextual overlay</h4>
+        <span>Enable contextual overlay: </span>
+        <span data-montage-id="toggle1"></span>
+        <div data-montage-id="overlay4">
+            overlay4
+        </div>
     </div>
 </body>
 </html>
