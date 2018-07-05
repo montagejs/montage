@@ -22,8 +22,8 @@ exports.Main = Component.specialize({
     handleContextmenu: {
         value: function (event) {   
             event.preventDefault();
-            this.overlay4.position.left = event.clientX;
-            this.overlay4.position.top = event.clientY;
+            this.overlay4.position.left = event.pageX;
+            this.overlay4.position.top = event.pageY;
             this.overlay4.show();
         }
     }

@@ -746,15 +746,43 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
                 position = this._calculateCenteredPosition();
             }
 
-            if (this.repositionWithinBoundaries) {
+            if (this.repositionWithinContainerBoundaries) {
                 var overlayRect = this._overlayRect;
 
                 if (!this.overlayContainer) { // default browser client boundaries
+                    var innerHeight = window.innerHeight,
+                        innerWidth = window.innerWidth,
+                        clientWidth = document.body.clientWidth,
+                        clientHeight = document.body.clientHeight,
+                        height, width;
+                    
+                    if (innerHeight > clientHeight) {
+                        height = innerHeight;
+                    } else if (
+                        clientHeight > innerHeight &&
+                        position.top + overlayRect.height > innerHeight
+                    ) {
+                        height = position.top;
+                    } else {
+                        height = clientHeight;
+                    }
+
+                    if (innerWidth > innerWidth) {
+                        width = innerWidth;
+                    } else if (
+                        clientWidth > innerWidth &&
+                        position.left + overlayRect.width > innerWidth
+                    ) {
+                        width = position.left;
+                    } else {
+                        width = clientWidth;
+                    }
+                        
                     overlayContainerRect = {
                         top: 0,
                         left: 0,
-                        width: window.innerWidth || document.body.clientWidth,
-                        height: window.innerHeight || document.body.clientHeight
+                        width: width,
+                        height: height
                     };
                 } else {
                     overlayContainerRect = this.overlayContainer.getBoundingClientRect();
