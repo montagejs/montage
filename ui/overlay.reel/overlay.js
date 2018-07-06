@@ -554,7 +554,7 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
 
                 if (
                     (shouldDismissOverlay === void 0 &&
-                        (event._event && !event._event.button) || !event._event) ||
+                        ((event._event && !event._event.button) || !event._event)) ||
                     shouldDismissOverlay
                 ) {
                     this.hide();
