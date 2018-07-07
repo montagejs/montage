@@ -1,0 +1,54 @@
+.Drop {
+    height: 200px;
+    width: 200px;
+    border: 4px solid #34495e;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    -ms-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    -ms-justify-content: center;
+    justify-content: center;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    touch-action: none;
+    box-sizing: border-box;
+    position: relative;
+    color: #34495e;
+}
+
+.Drop .drop-placeholder {
+    display: none;
+}
+
+.Drop.is-empty .drop-placeholder {
+    display: block;
+}
+
+.Drop.valid-drop-target {
+    border: 4px dashed #3498db25;
+    animation: blink 1.5s linear infinite alternate;
+}
+
+.Drop.valid-drop-target.is-empty .drop-placeholder {
+    color:#3498db25;
+    animation: blink 1.5s linear infinite alternate;
+}
+
+.Drop.drag-over.is-empty .drop-placeholder {
+    color:#3498db;
+    animation: none;
+}
+
+.Drop.drag-over {
+    border: 4px solid #3498db;
+    animation: none;
+}
+
+@keyframes blink { 
+    50% { border-color: #3498db; color: #3498db } 
+ }

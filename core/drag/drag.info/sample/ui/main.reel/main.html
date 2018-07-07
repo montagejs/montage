@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"}
+                }
+            },
+
+            "enableVisiblePlaceholder": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "enableVisiblePlaceholder"}
+                }
+            },
+
+            "enableMoveOperation": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "enableMoveOperation"}
+                }
+            },
+
+            "switchDraggedImage": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "switchDraggedImage"}
+                }
+            },
+
+            "square1": {
+                "prototype": "../square.reel",
+                "values": {
+                    "element": {"#": "square1"},
+                    "value": "drag me",
+                    "enableVisiblePlaceholder": {"<-": "!!@enableVisiblePlaceholder.checked"},
+                    "switchDraggedImage": {"<-": "!!@switchDraggedImage.checked"},
+                    "enableMoveOperation": {"<-": "!!@enableMoveOperation.checked"}
+                }
+            },
+
+            "square2": {
+                "prototype": "../square.reel",
+                "values": {
+                    "element": {"#": "square2"},
+                    "value": "drag me",
+                    "container": {"#": "container1"},
+                    "enableVisiblePlaceholder": {"<-": "!!@enableVisiblePlaceholder.checked"},
+                    "switchDraggedImage": {"<-": "!!@switchDraggedImage.checked"},
+                    "enableMoveOperation": {"<-": "!!@enableMoveOperation.checked"}
+                }
+            },
+
+            "repetition": {
+                "prototype": "montage/ui/repetition.reel",
+                "values": {
+                    "element": {"#": "repetition"},
+                    "content":  {"<-": "@owner.data"}
+                }
+            },
+
+            "square3": {
+                "prototype": "../square.reel",
+                "values": {
+                    "element": {"#": "square3"},
+                    "identifier": {"<-": "'square ' + @repetition:iteration.object"},
+                    "value": {"<-": "@repetition:iteration.object"},
+                    "secret": {"<-": "'secret' + @repetition:iteration.object"},
+                    "switchDraggedImage": {"<-": "!!@switchDraggedImage.checked"},
+                    "enableVisiblePlaceholder": {"<-": "!!@enableVisiblePlaceholder.checked"},
+                    "enableMoveOperation": {"<-": "!!@enableMoveOperation.checked"}
+                }
+            },
+
+            "drop": {
+                "prototype": "../drop.reel",
+                "values": {
+                    "element": {"#": "drop"},
+                    "dataSource": {"<-": "@owner.data"}
+                }
+            },
+
+            "drop2": {
+                "prototype": "../drop.reel",
+                "values": {
+                    "element": {"#": "drop2"}
+                }
+            },
+
+            "drop3": {
+                "prototype": "../drop-outer.reel",
+                "values": {
+                    "element": {"#": "drop3"}
+                }
+            },
+
+            "drop4": {
+                "prototype": "../drop-inner.reel",
+                "values": {
+                    "element": {"#": "drop4"}
+                }
+            },
+
+            "square4": {
+                "prototype": "../square.reel",
+                "values": {
+                    "element": {"#": "square4"},
+                    "value": "drag me",
+                    "switchDraggedImage": {"<-": "!!@switchDraggedImage.checked"},
+                    "enableVisiblePlaceholder": {"<-": "!!@enableVisiblePlaceholder.checked"},
+                    "enableMoveOperation": {"<-": "!!@enableMoveOperation.checked"}
+                }
+            },
+
+            "drop5": {
+                "prototype": "../drop-file.reel",
+                "values": {
+                    "element": {"#": "drop5"}
+                }
+            },
+
+            "customDrag": {
+                "prototype": "montage/ui/component",
+                "values": {
+                    "element": {"#": "customDrag"},
+                    "hasTemplate": false,
+                    "draggable": true
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>Drag & Drop Samples</header>
+        
+        <div class="options">
+            <h4>Options: </h4>
+            <p>
+                <span>Enable Visible Placeholder</span>
+                <input type="checkbox" data-montage-id="enableVisiblePlaceholder" />
+            </p>
+            <p>
+                <span>Enable Move operation</span>
+                <input type="checkbox" data-montage-id="enableMoveOperation" />
+            </p>
+
+            <p>
+                <span>Switch Dragged Image</span>
+                <input type="checkbox" data-montage-id="switchDraggedImage" />
+            </p>
+        </div>
+
+        <div class="samples">
+            <h4>Simple drag</h4>
+            <div data-montage-id="square1"></div>
+            <div class="scrollable">
+                <div class="scrollable-inner"></div>
+            </div>
+
+            <h4>Drag within a container</h4>
+            <div data-montage-id="container1" class="container Drop">
+                <div data-montage-id="square2"></div>
+            </div>
+
+            <h4>Drag&Drop</h4>
+            <div data-montage-id="repetition" class="squares flex flex-row list">
+                <div data-montage-id="square3"></div>
+            </div>
+            <div class="flex flex-row list">
+                <div data-montage-id="drop">
+                    <div data-arg="placeholder">Drop Here</div>
+                </div>
+                <div data-montage-id="drop2">
+                    <div data-arg="placeholder">Drop not allowed</div>
+                </div>
+            </div>
+
+            <h4>inner Dropzone</h4>
+            <div data-montage-id="square4"></div>
+            <div data-montage-id="drop3">
+                <div data-montage-id="drop4"></div>
+            </div>
+
+            <h4>Drop file</h4>
+            <div data-montage-id="drop5">
+                <div data-arg="placeholder">Drop File Here</div>
+            </div>
+
+            <h4>Custom Drag</h4>
+            <div data-montage-id="customDrag" class="CustomDrag"></div>
+            
+        </div>
+    </div>
+</body>
+</html>

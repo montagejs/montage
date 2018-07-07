@@ -1,0 +1,106 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+     -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    position: fixed;
+}
+
+.Main {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+header {
+    margin: 20px 0;
+    font-size: 2rem;
+    text-align: center;
+    color: #33495d;
+    min-height: 40px;
+}
+
+h4 {
+    font-size: 1rem;
+    color: #33495d;
+    margin: 40px 0;
+}
+
+.options {
+    border-bottom: 1px solid #33495d;
+    position: absolute;
+    top: 80px;
+    left: 0px;
+    height: 236px;
+    box-sizing: border-box;
+}
+
+.options,
+.samples {
+    padding: 15px;
+}
+
+.samples {
+    position: absolute;
+    top: 316px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.flex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.list {
+    padding: 8px;
+}
+
+.list > * {
+    margin-top: 8px;
+    margin-left: 8px;
+}
+
+.samples .montage-drag-placeholder {
+    border: 2px dashed #9b59b6;
+}
+
+.scrollable {
+    margin-top: 20px; 
+    overflow: auto;
+    width: 200px;
+    height: 200px;
+    border: 1px solid #33495d;
+    box-sizing: border-box;
+}
+
+.scrollable-inner {
+    width: 2000px;
+    height: 2000px;
+    background: linear-gradient(to bottom, #f8c291 0%,#b71540 100%);
+}
+
+
+.CustomDrag {
+    height: 50px;
+    width: 50px;
+    border-radius: 25px;
+    background: #9b59b6;
+}
+
+.invalid-drop-target {
+    cursor: not-allowed;
+}

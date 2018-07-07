@@ -15,7 +15,7 @@
  */
 
 var Montage = require("../core").Montage,
-    MutableEvent = require("./mutable-event").MutableEvent,
+    MutableEvent = require("./mutable-event").MutableEvent, 
     Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
     Deserializer = require("../serialization/deserializer/montage-deserializer").MontageDeserializer,
     Map = require("collections/map"),
@@ -23,7 +23,6 @@ var Montage = require("../core").Montage,
     currentEnvironment = require("../environment").currentEnvironment;
 
 var defaultEventManager;
-
 
 //This is a quick polyfill for IE10 that is not exposing CustomEvent as a function.
 //From https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill

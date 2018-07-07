@@ -21,7 +21,7 @@ var Montage = require("../core/core").Montage,
     Promise = require("../core/promise").Promise,
     defaultEventManager = require("../core/event/event-manager").defaultEventManager,
     Alias = require("../core/serialization/alias").Alias,
-
+    DragManager = require("../core/drag/drag-manager").DragManager,
     logger = require("../core/logger").logger("component"),
     drawPerformanceLogger = require("../core/logger").logger("Drawing performance").color.green(),
     drawListLogger = require("../core/logger").logger("drawing list").color.blue(),
@@ -39,7 +39,8 @@ var Montage = require("../core/core").Montage,
 var ATTR_LE_COMPONENT = "data-montage-le-component",
     ATTR_LE_ARG = "data-montage-le-arg",
     ATTR_LE_ARG_BEGIN = "data-montage-le-arg-begin",
-    ATTR_LE_ARG_END = "data-montage-le-arg-end";
+    ATTR_LE_ARG_END = "data-montage-le-arg-end",
+    _defaultDragManager;
 
 
 function loggerToString (object) {
@@ -744,6 +745,13 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
+    dragManager: {
+        get: function () {
+            return _defaultDragManager || 
+            ((_defaultDragManager = new DragManager()).initWithComponent(this.rootComponent));
+        }
+    },
+
     /**
      * TemplateArgumentProvider implementation
      */
@@ -1201,7 +1209,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     __exitDocument: {
         value: function () {
-            if (this._inDocument && typeof this.exitDocument === "function") {
+            if (this.draggable) {
+                this.unregisterDraggable();
+            }
+
+            if (this.droppable) {
+                this.unregisterDroppable();
+            }
+
+            if (this._inDocument && typeof this.exitDocument === "function") {                
                 this.exitDocument();
                 this._inDocument = false;
             }
@@ -1264,6 +1280,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 });
             }
         }
+    },
+
+    draggable: {
+        value: false
+    },
+
+    droppable: {
+        value: false
     },
 
     /**
@@ -1820,6 +1844,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             if(this._templateObjects) {
                 this._setupTemplateObjects(documentPart.objects);
             }
+
+            this.addOwnPropertyChangeListener("draggable", this);
+            this.addOwnPropertyChangeListener("droppable", this);
         }
     },
 
@@ -2904,6 +2931,87 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
+    // Drag & Drop operations
+
+    handleDraggableChange: {
+        value: function (value) {
+            if (value) {
+                this.registerDraggable();
+            } else {
+                this.unregisterDraggable();
+            }
+        }
+    },
+
+    handleDroppableChange: {
+        value: function (value) {
+            if (value) {
+                this.registerDroppable();
+            } else {
+                this.unregisterDroppable();
+            }
+        }
+    },
+
+    /**
+     * Register a component for beeing a dragging source.
+     */
+    registerDraggable: {
+        value: function () {
+            this.dragManager.registerDraggable(this);
+            this.classList.add("montage-draggable");
+        }
+    },
+
+    /**
+     * unregister a component for beeing a dragging source.
+     */
+    unregisterDraggable: {
+        value: function () {
+            this.dragManager.unregisterDraggable(this);
+            this.classList.remove("montage-draggable");
+        }
+    },
+
+    /**
+     * Register a component for beeing a drag destination.
+     */
+    registerDroppable: {
+        value: function () {
+            this.dragManager.registerDroppable(this);
+            this.classList.add("montage-droppable");
+        }
+    },
+
+    /**
+     * Unregister a component for beeing a drag destination.
+     */
+    unregisterDroppable: {
+        value: function () {
+            this.dragManager.unregisterDroppable(this);
+            this.classList.remove("montage-droppable");
+        }
+    },
+
+    _draggableContainer: {
+        value: null
+    },
+
+    draggableContainer: {
+        set: function (element) {
+            if (element) {
+                if (element instanceof Element) {
+                    this._draggableContainer = element;
+                } else if (element.element instanceof Element) {
+                    this._draggableContainer = element.element;
+                }
+            }
+        },
+        get: function () {
+            return this._draggableContainer;
+        }
+    },
+
     //
     // Attribute Handling
     //
@@ -3222,6 +3330,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     _enterDocument: {
         value: function (firstTime) {
             var originalElement;
+
+            if (this.draggable) {
+                this.registerDraggable();
+            }
+
+            if (this.droppable) {
+                this.registerDroppable();
+            }
 
             if (firstTime) {
                 // The element is now ready, so we can read the attributes that
@@ -4442,7 +4558,21 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             this._element = document.documentElement;
             this._documentResources = DocumentResources.getInstanceForDocument(document);
         }
-    }   
+    },
+
+    willDraw: {
+        value: function () {
+            this.dragManager.willDraw();
+        }
+    },
+
+    draw: {
+        value: function () {
+            this.dragManager.draw();
+        }
+    }
+
+
 });
  
 exports.__root__ = rootComponent = new RootComponent().init();

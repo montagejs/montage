@@ -1,0 +1,25 @@
+.DropInner::before {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    content: "inner";
+}
+.Drop.DropInner.valid-drop-target {
+    border: 4px solid #34495e;
+    animation: none;
+}
+
+.Drop.DropInner.valid-drop-target.is-empty .drop-placeholder {
+    color:#34495e;
+    animation: none;
+}
+
+.Drop.DropInner.drag-over.is-empty .drop-placeholder {
+    color:#3498db;
+    animation: none;
+}
+
+.Drop.DropInner.drag-over {
+    border: 4px solid #3498db;
+    animation: none;
+}
