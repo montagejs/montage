@@ -49,7 +49,7 @@
   "production": true,
   "dependencies": {
     "bluebird": "~3.5.0",
-    "collections": "~5.0.x",
+    "collections": "~5.1.x",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
     "q-io": "^1.13.3",
