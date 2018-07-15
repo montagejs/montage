@@ -173,7 +173,6 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
             var self = this,
                 provider;
             return this._providerWithModuleID(moduleID, require).then(function (instance) {
-                window.AuthProvider = instance;
                 provider = instance;
                 return provider.authorize();
             }).then(function (authorization) {
