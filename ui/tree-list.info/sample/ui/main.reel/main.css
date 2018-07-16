@@ -122,9 +122,10 @@ input[type=checkbox][checked=checked].expand::before {
 }
 
 .tree-list-row .locked::after {
-    font-family: FontAwesome;
+    font-family: 'Font Awesome\ 5 Free';
     content: "\f023";
     margin-left: 12px;
+    font-weight: 900;
 }
 
 .montage-TreeList-ghostImage {
