@@ -405,6 +405,10 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
         }
     },
 
+    _shouldUpdateButtonPositions: {
+        value: false
+    },
+
     /**
     * @private
     * @function _loadDataUserInterfaceDescriptorIfNeeded
@@ -917,13 +921,10 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
                 var hasLeftButtons = this._leftButtons && this._leftButtons.length > 0,
                     hasRightButtons = this._rightButtons && this._rightButtons.length > 0;
-
-                this._updateButtonPositions();
+                
+                this._shouldUpdateButtonPositions = true;
                 this.disabled = !hasLeftButtons && !hasRightButtons;
             }
-
-            this._setButtonBoundaries(this._rightButtons, 'marginLeft');
-            this._setButtonBoundaries(this._leftButtons, 'marginRight');
         }
     },
 
@@ -949,6 +950,14 @@ var ListItemMenu = exports.ListItemMenu = Component.specialize(/** @lends ListIt
 
     draw: {
         value: function () {
+            if (this._shouldUpdateButtonPositions) {
+                this._shouldUpdateButtonPositions = false;
+                this._updateButtonPositions();
+            }
+
+            this._setButtonBoundaries(this._rightButtons, 'marginLeft');
+            this._setButtonBoundaries(this._leftButtons, 'marginRight');
+
             if (this.__translateComposer && !this.disabled) {
                 var dragElementWidth = this._dragElementRect.width,
                     dragElementStyle = this.dragElement.style,
