@@ -1,5 +1,5 @@
 var Montage = require("./core").Montage,
-    Deserializer = require("core/serialization/deserializer/montage-deserializer").MontageDeserializer,
+    Deserializer = require("./serialization/deserializer/montage-deserializer").MontageDeserializer,
     DocumentPart = require("./document-part").DocumentPart,
     DocumentResources = require("./document-resources").DocumentResources,
     Serialization = require("./serialization/serialization").Serialization,
@@ -316,7 +316,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 part.objects = objects;
                 self._invokeDelegates(part, instances);
                 part.stopActingAsTopComponent();
-                
+
                 return part;
             });
         }
@@ -1008,7 +1008,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
                             break;
                         }
                     }
-                    
+
                     // Store all element ids of the argument, we need to create
                     // a serialization with the components that point to them.
                     argumentsElementIds.push.apply(argumentsElementIds,
@@ -1025,7 +1025,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
                         /* jshint forin: false */
                             argumentElementsCollisionTable[key] = collisionTable[key];
                         }
-                    }   
+                    }
                 }
             }
 
@@ -1551,7 +1551,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
                 documentResources = DocumentResources.getInstanceForDocument(targetDocument);
                 return documentResources.preloadResource(url);
             }
-            
+
             return this.resolvedPromise;
         }
     },

@@ -3,7 +3,7 @@ var Montage = require("../../core").Montage,
     MontageReviver = require("./montage-reviver").MontageReviver,
     BindingsModule = require("../bindings"),
     Map = require("collections/map").Map,
-    Promise = require("core/promise").Promise,
+    Promise = require("../../promise").Promise,
     deprecate = require("../../deprecate");
 
 var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
