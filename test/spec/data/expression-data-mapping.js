@@ -118,6 +118,7 @@ describe("An Expression Data Mapping", function() {
     plotSummaryModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/plot-summary", require);
     plotSummaryObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(plotSummaryModuleReference, "PlotSummary");
     plotSummaryObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("summary", plotSummaryObjectDescriptor, 1));
+    plotSummaryObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("movie", movieObjectDescriptor, 1));
     plotSummaryPropertyDescriptor = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("plotSummary", movieObjectDescriptor, 1);
     plotSummaryPropertyDescriptor.valueDescriptor = plotSummaryObjectDescriptor;
     movieObjectDescriptor.addPropertyDescriptor(plotSummaryPropertyDescriptor);
@@ -156,7 +157,8 @@ describe("An Expression Data Mapping", function() {
     summaryConverter.service = plotSummaryService;
     movieMapping.addObjectMappingRule("plotSummary", {
         "<-": "{movie_id: id}",
-        converter: summaryConverter
+        converter: summaryConverter,
+        inversePropertyName: "movie"
     });
     movieMapping.addRawDataMappingRule("category_id", {"<-": "category.id"});
     movieMapping.addObjectMappingRule("releaseDate", {
@@ -268,6 +270,28 @@ describe("An Expression Data Mapping", function() {
 
             //Properties defined in own descriptor
             expect(movie.country).toBeDefined(); 
+            done();
+        });
+    });
+
+    it("can map inverse for fetch with updateObjectProperties", function (done) {
+        var movie = mainService.createDataObject(movieObjectDescriptor),
+            data = {
+                name: "Star Wars",
+                category_id: 1,
+                budget: "14000000.00",
+                is_featured: "true",
+                release_date: "05/25/1977",
+                fcc_rating: "pg",
+                country_id: 1
+            };
+        
+        return actionMovieMapping.mapRawDataToObject(data, movie).then(function () {
+            //Properties defined in parent descriptor
+            return mainService.updateObjectProperties(movie, "plotSummary");
+        }).then(function () {
+            expect(movie.plotSummary).toBeDefined();
+            expect(movie.plotSummary.movie).toBe(movie);
             done();
         });
     });
