@@ -87,6 +87,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 this.delegate = value;
             }
 
+            value = deserializer.getProperty("isUniquing");
+            if (value !== undefined) {
+                this.isUniquing = value;
+            }
+            
             return result;
         }
     },
