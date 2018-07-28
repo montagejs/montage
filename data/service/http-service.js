@@ -63,6 +63,11 @@ var HttpError = exports.HttpError = Montage.specialize({
         value: function (request, url) {
             var error = new this();
             error.statusCode = request.status;
+            try {
+                error.response = JSON.parse(request.responseText);
+            } catch (e) {
+                error.response = request.responseText;
+            }
             error.url = url;
             return error;
         }

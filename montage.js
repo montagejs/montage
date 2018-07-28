@@ -229,6 +229,61 @@
                 Promise = bootRequire("promise");
                 Require = bootRequire("require");
 
+                var objectURLForScript = function (location) {
+                    return window.cordovaReadyPromise.then(function () {
+                        return new Promise(function (resolve, reject) {
+                            var relativePath = location.split("packages")[1];
+                            if (relativePath) {
+                                relativePath = "packages" + relativePath;
+                                readFile(relativePath, resolve);
+                            } else {
+                                resolve(location);
+                            }
+                        });
+                    });
+                };
+            
+                var readFile = function (url, callback) {
+                    url = cordova.file.applicationDirectory + "www/app/" + url;
+                    resolveLocalFileSystemURL(url, function (entry) {
+                        entry.file(function (file) {
+                            var reader = new FileReader();
+                            reader.onloadend = function() {
+                                callback(bufferToUrl(reader.result));
+                            };
+                            reader.readAsArrayBuffer(file);
+                        });
+                    }, function (error) {
+                        console.warn("ReadFile.fail", error);
+                        callback(url);
+                    });
+                };
+            
+                var bufferToUrl = function (buffer) {
+                    var bufferView = new Uint8Array(buffer),
+                    blob = new Blob([bufferView], {type: "text/javascript"}),
+                    urlCreator = window.URL || window.webkitURL;
+                    return urlCreator.createObjectURL(blob);
+                };
+
+                Require.loadScript = function (location) {
+                    objectURLForScript(location).then(function (realLocation) {
+                        var script = document.createElement("script");
+                        script.onload = function() {
+                            script.parentNode.removeChild(script);
+                        };
+                        script.onerror = function (error) {
+                            script.parentNode.removeChild(script);
+                        };
+                        // script.src = location;
+                        script.src = realLocation;
+                        script.defer = true;
+                        document.getElementsByTagName("head")[0].appendChild(script);
+                    });
+                    
+                };
+
+
                 // if we get past the for loop, bootstrapping is complete.  get rid
                 // of the bootstrap function and proceed.
                 delete global.bootstrap;
@@ -827,6 +882,7 @@
                     // Expose global require and mr
                     global.require = global.mr = applicationRequire;
 
+                    
                     return platform.initMontage(montageRequire, applicationRequire, params);
                 });
 
