@@ -1286,7 +1286,16 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 useDelegate = isHandler && typeof this.fetchRawObjectProperty === "function",
                 delegateFunction = !useDelegate && isHandler && this._delegateFunctionForPropertyName(propertyName),
                 propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
-                childService = !isHandler && this._getChildServiceForObject(object);
+                childService = !isHandler && this._getChildServiceForObject(object),
+                debug = exports.DataService.debugProperties.has(propertyName),
+                trace = debug || exports.DataService.traceProperties.has(propertyName);
+
+            if (trace) {
+                console.log("DataService.fetchObjectProperty", object, propertyName);
+            }
+            if (debug) {
+                debugger;
+            }
 
             return  useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
                     delegateFunction ?                  delegateFunction.call(this, object) :
@@ -2539,6 +2548,19 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     authorizationManager: {
         value: AuthorizationManager
+    },
+
+
+    /***************************************************************************
+     * Debugging
+     */
+
+     debugProperties: {
+         value: new Set()
+     },
+
+     traceProperties: {
+        value: new Set()
     }
 
 });
