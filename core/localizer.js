@@ -263,7 +263,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
     },
 
     _require: {
-        value: global.require
+        value: global.mr //global.mr ensures that global.require is not overwritten by another library.
     },
 
     /**
@@ -302,7 +302,6 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
         depends: ["require"],
         get: function () {
             var messageRequire = this.require;
-
             if (messageRequire.packageDescription.manifest === true) {
                 if (!this.__manifest) {
                     this.__manifest = messageRequire.async(MANIFEST_FILENAME);
