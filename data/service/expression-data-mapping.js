@@ -467,7 +467,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     _resolveRelationship: {
         value: function (object, propertyDescriptor, rule, scope) {
             var self = this,
-                hasInverse = !!rule.inversePropertyName,
+                hasInverse = !!propertyDescriptor.inversePropertyName || !!rule.inversePropertyName,
                 data;
             return rule.evaluate(scope).then(function (result) {
                 data = result;
@@ -475,15 +475,17 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             }).then(function () {
                 self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor);
                 return null;
-            });
+            });ƒ
         }
     },
 
     _assignInversePropertyValue: {
         value: function (data, object, propertyDescriptor, rule) {
-            var self = this;
+            var self = this,
+                inversePropertyName = propertyDescriptor.inversePropertyName || rule.inversePropertyName;
+
             return propertyDescriptor.valueDescriptor.then(function (objectDescriptor) {
-                var inversePropertyDescriptor = objectDescriptor.propertyDescriptorForName(rule.inversePropertyName);
+                var inversePropertyDescriptor = objectDescriptor.propertyDescriptorForName(inversePropertyName);
                 
                 if (data) {
                     self._setObjectsValueForPropertyDescriptor(data, object, inversePropertyDescriptor);
@@ -826,20 +828,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             }
         }
     },
-
-    _assignObjectAsInverseProperty: {
-        value: function (object, valueDescriptor, data, inversePropertyName) {
-            var inversePropertyDescriptor = valueDescriptor.propertyDescriptorForName(inversePropertyName),
-                i, n;
-
-            if (inversePropertyDescriptor.cardinality === 1) {
-                for (i = 0, n = data ? data.length : 0; i < n; ++i) {
-                    data[i][inversePropertyName] = object;
-                }
-            }
-        }
-    },
-
     /***************************************************************************
      * Rules
      */

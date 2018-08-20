@@ -6,6 +6,7 @@ var ExpressionDataMapping = require("montage/data/service/expression-data-mappin
     ModuleObjectDescriptor = require("montage/core/meta/module-object-descriptor").ModuleObjectDescriptor,
     ModuleReference = require("montage/core/module-reference").ModuleReference,
     PlotSummaryService = require("spec/data/logic/service/plot-summary-service").PlotSummaryService,
+    PropService = require("spec/data/logic/service/prop-service").PropService,
     Promise = require("montage/core/promise").Promise,
     PropertyDescriptor = require("montage/core/meta/property-descriptor").PropertyDescriptor,
     RawDataService = require("montage/data/service/raw-data-service").RawDataService,
@@ -16,7 +17,8 @@ var ExpressionDataMapping = require("montage/data/service/expression-data-mappin
 var Movie = require("spec/data/logic/model/movie").Movie,
     Category = require("spec/data/logic/model/category").Category,
     Country = require("spec/data/logic/model/country").Country,
-    ActionMovie = require("spec/data/logic/model/action-movie").ActionMovie;
+    ActionMovie = require("spec/data/logic/model/action-movie").ActionMovie,
+    Prop = require("spec/data/logic/model/prop").Prop;
 
 describe("An Expression Data Mapping", function() {
 
@@ -46,14 +48,18 @@ describe("An Expression Data Mapping", function() {
         actionMovieMapping,
         actionMovieModuleReference,
         actionMovieObjectDescriptor,
-        actionMovieRawDataTypeMapping,
         plotSummaryModuleReference,
         plotSummaryObjectDescriptor,
         plotSummaryPropertyDescriptor,
         registrationPromise,
         schemaBudgetPropertyDescriptor,
         schemaIsFeaturedPropertyDescriptor,
-        schemaReleaseDatePropertyDescriptor,
+        propModuleReference,
+        propObjectDescriptor,
+        propMoviePropertyDescriptor,
+        propsPropertyDescriptor,
+        propConverter,
+        propService,
         
 
 
@@ -123,6 +129,18 @@ describe("An Expression Data Mapping", function() {
     plotSummaryPropertyDescriptor.valueDescriptor = plotSummaryObjectDescriptor;
     movieObjectDescriptor.addPropertyDescriptor(plotSummaryPropertyDescriptor);
 
+    propService = new PropService();
+    propModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/prop", require);
+    propObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(propModuleReference, "Prop");
+    propObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("name", null));
+    propMoviePropertyDescriptor = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("movie", movieObjectDescriptor, -1);
+    propMoviePropertyDescriptor.valueDescriptor = propObjectDescriptor;
+    propObjectDescriptor.addPropertyDescriptor(propMoviePropertyDescriptor);
+    propsPropertyDescriptor = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("props", movieObjectDescriptor, Infinity);
+    propsPropertyDescriptor.valueDescriptor = propObjectDescriptor;
+    propsPropertyDescriptor.inversePropertyName = "movie";
+    movieObjectDescriptor.addPropertyDescriptor(propsPropertyDescriptor);
+
 
     schemaBudgetPropertyDescriptor = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("budget", movieSchema, 1);
     movieSchema.addPropertyDescriptor(schemaBudgetPropertyDescriptor);
@@ -159,6 +177,12 @@ describe("An Expression Data Mapping", function() {
         "<-": "{movie_id: id}",
         converter: summaryConverter,
         inversePropertyName: "movie"
+    });
+    propConverter = new RawPropertyValueToObjectConverter().initWithConvertExpression("category_id == $");
+    propConverter.service = propService;
+    movieMapping.addObjectMappingRule("props", {
+        "<-": "{}",
+        converter: propConverter
     });
     movieMapping.addRawDataMappingRule("category_id", {"<-": "category.id"});
     movieMapping.addObjectMappingRule("releaseDate", {
@@ -204,7 +228,8 @@ describe("An Expression Data Mapping", function() {
         mainService.registerChildService(movieService, [movieObjectDescriptor, actionMovieObjectDescriptor]),
         mainService.registerChildService(categoryService, categoryObjectDescriptor),
         mainService.registerChildService(countryService, countryObjectDescriptor),
-        mainService.registerChildService(plotSummaryService, plotSummaryObjectDescriptor)
+        mainService.registerChildService(plotSummaryService, plotSummaryObjectDescriptor),
+        mainService.registerChildService(propService, propObjectDescriptor)
     ]);
 
     it("properly registers the object descriptor type to the mapping object in a service", function (done) {
@@ -216,7 +241,7 @@ describe("An Expression Data Mapping", function() {
     });
 
     it("can create the correct number of mapping rules", function () {
-        expect(movieMapping.objectMappingRules.size).toBe(7);
+        expect(movieMapping.objectMappingRules.size).toBe(8);
         expect(movieMapping.rawDataMappingRules.size).toBe(7);
     });
 
@@ -274,7 +299,7 @@ describe("An Expression Data Mapping", function() {
         });
     });
 
-    it("can map inverse for fetch with updateObjectProperties", function (done) {
+    it("can map inverse in mapping for fetch with updateObjectProperties", function (done) {
         var movie = mainService.createDataObject(movieObjectDescriptor),
             data = {
                 name: "Star Wars",
@@ -292,6 +317,29 @@ describe("An Expression Data Mapping", function() {
         }).then(function () {
             expect(movie.plotSummary).toBeDefined();
             expect(movie.plotSummary.movie).toBe(movie);
+            done();
+        });
+    });
+
+    it("can map inverse on propertyDescriptor for fetch with updateObjectProperties", function (done) {
+        var movie = mainService.createDataObject(movieObjectDescriptor),
+            data = {
+                name: "Star Wars",
+                category_id: 1,
+                budget: "14000000.00",
+                is_featured: "true",
+                release_date: "05/25/1977",
+                fcc_rating: "pg",
+                country_id: 1
+            };
+        
+        return movieMapping.mapRawDataToObject(data, movie).then(function () {
+            //Properties defined in parent descriptor
+            return mainService.updateObjectProperties(movie, "props");
+        }).then(function () {
+            expect(movie.props).toBeDefined();
+            expect(Array.isArray(movie.props)).toBe(true);
+            expect(movie.props[0].movie).toBe(movie);
             done();
         });
     });
