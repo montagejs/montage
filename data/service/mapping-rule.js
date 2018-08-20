@@ -1,6 +1,7 @@
 var Montage = require("montage").Montage,
     compile = require("frb/compile-evaluator"),
-    parse = require("frb/parse");
+    parse = require("frb/parse"),
+    deprecate = require("core/deprecate");
 
 
 var ONE_WAY_BINDING = "<-";
@@ -45,8 +46,18 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
      *
      * @type {string}
      */
-    inversePropertyName: {
+    
+    _inversePropertyName: {
         value: undefined
+    },
+
+    inversePropertyName: {
+        get: deprecate.deprecateMethod(void 0, function () {
+            return this._inversePropertyName;
+        }, "MappingRule.inversePropertyName", "PropertyDescriptor.inversePropertyName", true),
+        set: deprecate.deprecateMethod(void 0, function (value) {
+            this._inversePropertyName = value;
+        }, "MappingRule.inversePropertyName", "PropertyDescriptor.inversePropertyName", true)
     },
 
 

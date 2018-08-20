@@ -11,6 +11,7 @@ var Defaults = {
     mandatory: false,
     readOnly: false,
     denyDelete: false,
+    inversePropertyName: void 0,
     valueType: "string",
     collectionValueType: "list",
     valueObjectPrototypeName: "",
@@ -110,6 +111,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._setPropertyWithDefaults(serializer, "defaultValue", this.defaultValue);
             this._setPropertyWithDefaults(serializer, "helpKey", this.helpKey);
             this._setPropertyWithDefaults(serializer, "definition", this.definition);
+            this._setPropertyWithDefaults(serializer, "inversePropertyName", this.inversePropertyName);
 
         }
     },
@@ -144,6 +146,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._overridePropertyWithDefaults(deserializer, "defaultValue");
             this._overridePropertyWithDefaults(deserializer, "helpKey");
             this._overridePropertyWithDefaults(deserializer, "definition");
+            this._overridePropertyWithDefaults(deserializer, "inversePropertyName");
         }
     },
 
@@ -424,6 +427,21 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
         value: true
     },
 
+    /**
+     * Property name on the object on the opposite side of the relationship
+     * to which the value of this property should be assigned.
+     * 
+     * For example, take the following relationship: 
+     * 
+     * Foo.bars <------->> Bar.foo
+     * 
+     * Each Bar object in Foo.bars will have Foo assigned to it's Bar.foo property. Therefore, 
+     * the inversePropertyName on the 'bars' propertyDescriptor would be 'foo'. 
+     */
+    inversePropertyName: {
+        value: undefined
+    },
+
     /********************************************************
      * Deprecated functions
      */
@@ -451,6 +469,9 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     },
 
     blueprintDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
-    blueprint: require("../core")._objectDescriptorDescriptor
+    blueprint: require("../core")._objectDescriptorDescriptor,
+
+
+    
 
 });
