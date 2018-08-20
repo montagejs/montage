@@ -475,7 +475,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             }).then(function () {
                 self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor);
                 return null;
-            });ƒ
+            });
         }
     },
 
