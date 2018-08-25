@@ -1909,6 +1909,26 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
+     * Resets an object to the last value in the snapshot.
+     * @method
+     * @argument {Object} object - The object who will be reset.
+     * @returns {external:Promise} - A promise fulfilled when the object has
+     * been mapped back to its last known state.
+     */
+    resetDataObject: {
+        value: function (object) {
+            var service = this._getChildServiceForObject(object),
+                promise;
+
+            if (service) {
+                promise = service.resetDataObject(object);
+            }
+
+            return promise;
+        }
+    },
+
+    /**
      * Save changes made to a data object.
      *
      * @method
