@@ -31,9 +31,9 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
             return this.history.length ? this.history[this.history.length - 1] : undefined;
         },
         set: function (component) {
-            if (component) {
+            if (this.content !== component) {
                 this.history.push(component);
-            } else {
+            } else if (!component) {
                 this.history.clear();
             }
         }
