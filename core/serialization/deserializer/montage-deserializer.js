@@ -32,7 +32,8 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                 this._serializationString = JSON.stringify(serialization);
             }
             this._require = _require;
-            this._locationId = locationId;
+            this._locationId = locationId ? locationId.indexOf(_require.location) === 0 ? locationId : _require.location + locationId : locationId;
+
             this._reviver = new MontageReviver().init(
                 _require, objectRequires, this.constructor
             );
