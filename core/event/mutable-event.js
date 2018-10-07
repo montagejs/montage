@@ -236,6 +236,13 @@ if (typeof window !== "undefined") {
         touches: {
             get: function () {
                 return this._event.touches;
+            },
+            set: function (value) {
+                if (Array.isArray(value) && this._event.touches) {
+                    this._event.touches.splice.apply(this._event.touches, [0, Infinity].concat(value));
+                } else if (Array.isArray(value)) {
+                    this._event.touches = value;
+                }
             }
         },
         /**
@@ -245,6 +252,13 @@ if (typeof window !== "undefined") {
         changedTouches: {
             get: function () {
                 return this._event.changedTouches;
+            },
+            set: function (value) {
+                if (Array.isArray(value) && this._event.changedTouches) {
+                    this._event.changedTouches.splice.apply(this._event.changedTouches, [0, Infinity].concat(value));
+                } else if (Array.isArray(value)) {
+                    this._event.changedTouches = value;
+                }
             }
         },
         /**
