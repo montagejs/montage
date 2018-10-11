@@ -164,6 +164,7 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
                 }
 
                 if (doc) {
+
                     this._sanitizeNode(
                         doc.body,
                         allowedTags,
