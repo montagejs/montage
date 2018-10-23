@@ -48,7 +48,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
                 //     "<->": "values.one()"
                 // },
                 "contentController.allowsMultipleSelection": {
-                    "<-": "multiSelect"
+                    "<-": "allowsMultipleSelection"
                 },
                 // classList management
                 "classList.has('montage--disabled')": {
@@ -154,7 +154,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
         }
     },
 
-    multiSelect: {
+    allowsMultipleSelection: {
         value: false
     },
 
@@ -265,4 +265,3 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
     }
 
 });
-

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="drop-file.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "owner"},
+                "classList.has('is-empty')": {"<-": "!@owner.fileName.defined()"}
+            }
+        },
+
+        "text": {
+            "prototype": "montage/ui/text.reel",
+            "values": {
+                "element": {"#": "text"},
+                "value": {"<-": "@owner.fileName"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="DropFile Drop">
+        <div data-param="placeholder" class="drop-placeholder"></div>
+        <div data-montage-id="text"></div>
+    </div>
+</body>
+</html>

@@ -87,11 +87,11 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
                             l--;
                         } else {
                             childAttributes = child.attributes;
-                            shouldRemoveAttribute = false;
                             allowedAttributesForTag = allowedAttributes[childTagName] ||
                                 allowedAttributes['*'];
                             
                             for (ii = 0, ll = childAttributes.length; ii < ll; ii++) {
+                                shouldRemoveAttribute = false;
                                 attribute = childAttributes[ii];
                                 attributeName = attribute.name;
                                 attributeValue = attribute.value;

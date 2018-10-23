@@ -56,7 +56,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     deserializeSelf: {
         value:function (deserializer) {
             var self = this,
-                result = null, 
+                result = null,
                 value;
 
             value = deserializer.getProperty("childServices");
@@ -86,7 +86,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (value) {
                 this.delegate = value;
             }
-            
+
             return result;
         }
     },
@@ -485,7 +485,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (type) {
             var descriptor = this._constructorToObjectDescriptorMap.get(type) ||
                              typeof type === "string" && this._moduleIdToObjectDescriptorMap[type];
-            
+
             return  descriptor || type;
         }
     },
@@ -834,7 +834,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
-     * Performs whatever tasks are necessary to authorize 
+     * Performs whatever tasks are necessary to authorize
      * this service and returns a Promise that resolves with
      * an Authorization object.
      *
@@ -968,6 +968,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             prototype = this._dataObjectPrototypes.get(type);
             if (type && !prototype) {
                 prototype = Object.create(type.objectPrototype || Montage.prototype);
+                prototype.constuctor = type.objectPrototype.constructor;
+                if(prototype.constuctor.name === "constructor" ) {
+                    Object.defineProperty(prototype.constuctor, "name", { value: type.typeName });
+                }
+
                 this._dataObjectPrototypes.set(type, prototype);
                 if (type instanceof ObjectDescriptor || type instanceof DataObjectDescriptor) {
                     triggers = DataTrigger.addTriggers(this, type, prototype);
@@ -1178,7 +1183,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             var self = this,
                 propertyName = propertiesToRequest.shift(),
                 promise = this.getObjectProperties(object, propertyName);
-            
+
             if (promise) {
                 return promise.then(function () {
                     var result = null;
@@ -1309,7 +1314,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 mapping = objectDescriptor && this.mappingWithType(objectDescriptor),
                 data = {},
                 result;
-            
+
 
             if (mapping) {
                 Object.assign(data, this.snapshotForObject(object));

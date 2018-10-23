@@ -236,7 +236,7 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
     objectDescriptorForPrototype: {
         value: deprecate.deprecateMethod(void 0, function (prototypeName) {
             return this.objectDescriptorForName(prototypeName);
-        }, "objectDescriptorForPrototype", "objectDescriptorForName")
+        }, "objectDescriptorForPrototype", "objectDescriptorForName", true)
     },
 
     /**
@@ -297,7 +297,7 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
     blueprints: {
         get: deprecate.deprecateMethod(void 0, function () {
             return this.objectDescriptors;
-        }, "blueprints", "objectDescriptors")
+        }, "blueprints", "objectDescriptors", true)
     },
 
     /**
@@ -309,7 +309,7 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
     addBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (blueprint) {
             return this.addObjectDescriptor(blueprint);
-        }, "addBlueprint", "addObjectDescriptor")
+        }, "addBlueprint", "addObjectDescriptor", true)
     },
 
     /**
@@ -321,7 +321,7 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
     removeBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (blueprint) {
             return this.removeObjectDescriptor(blueprint);
-        }, "removeBlueprint", "removeObjectDescriptor")
+        }, "removeBlueprint", "removeObjectDescriptor", true)
     },
 
     /**
@@ -334,7 +334,7 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
     addBlueprintNamed: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.addObjectDescriptorNamed(name);
-        }, "addBlueprintNamed", "addObjectDescriptorNamed")
+        }, "addBlueprintNamed", "addObjectDescriptorNamed", true)
     },
 
     /**
@@ -348,7 +348,7 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
     blueprintForPrototype: {
         value: deprecate.deprecateMethod(void 0, function (prototypeName) {
             return this.blueprintForName(prototypeName);
-        }, "blueprintForPrototype", "blueprintForName")
+        }, "blueprintForPrototype", "blueprintForName", true)
     },
 
     /**
@@ -359,7 +359,7 @@ var Model = exports.Model = Montage.specialize( /** @lends Model.prototype # */ 
     blueprintForName: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.objectDescriptorForName(name);
-        }, "blueprintForName", "objectDescriptorForName")
+        }, "blueprintForName", "objectDescriptorForName", true)
     },
 
     blueprintModuleId: require("../core")._objectDescriptorModuleIdDescriptor,

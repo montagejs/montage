@@ -152,11 +152,11 @@ describe("test/base/abstract-select-spec", function () {
             });
         });
 
-        describe("value with multiSelect", function () {
+        describe("value with allowsMultipleSelection", function () {
             beforeEach(function () {
                 aSelect = new Select();
                 aSelect.content = content;
-                aSelect.multiSelect = true;
+                aSelect.allowsMultipleSelection = true;
             });
 
             it("should have first of the values", function () {
@@ -175,7 +175,7 @@ describe("test/base/abstract-select-spec", function () {
             beforeEach(function () {
                 aSelect = new Select();
                 aSelect.content = content;
-                aSelect.multiSelect = true;
+                aSelect.allowsMultipleSelection = true;
             });
 
             it("should change the selection of the content controller", function () {
@@ -224,25 +224,25 @@ describe("test/base/abstract-select-spec", function () {
             });
         });
 
-        describe("multiSelect", function () {
+        describe("allowsMultipleSelection", function () {
             beforeEach(function () {
                 aSelect = new Select();
                 aSelect.content = content;
             });
 
-            it("should only have one item in the content controller's selection when multiSelect is off", function () {
-                aSelect.multiSelect = false;
+            it("should only have one item in the content controller's selection when allowsMultipleSelection is off", function () {
+                aSelect.allowsMultipleSelection = false;
                 expect(aSelect.contentController.selection.length).toBe(1);
 
                 aSelect.values = [content[1], content[2]];
                 expect(aSelect.contentController.selection.length).toBe(1);
             });
 
-            it("should only have one selected item in content controller's selection when multiSelect is turned off", function () {
-                aSelect.multiSelect = true;
+            it("should only have one selected item in content controller's selection when allowsMultipleSelection is turned off", function () {
+                aSelect.allowsMultipleSelection = true;
                 aSelect.values = [content[1], content[2]];
 
-                aSelect.multiSelect = false;
+                aSelect.allowsMultipleSelection = false;
                 expect(aSelect.contentController.selection.length).toBe(1);
             });
         });

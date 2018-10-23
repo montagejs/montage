@@ -410,7 +410,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                 isReady = true,
                 descriptor, i, n;
             if (!this._propertyDescriptorsAreCached)  {
-                
+
                 for (i = 0, n = ownDescriptors.length; i < n && isReady; ++i) {
                     descriptor = ownDescriptors[i];
                     isReady = !!(descriptor && descriptor.name);
@@ -1004,7 +1004,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             if (!this._userInterfaceDescriptor) {
                 if (this.userInterfaceDescriptorModules &&
                     this.userInterfaceDescriptorModules["*"]) {
-                    
+
                     Montage.defineProperty(this, "_userInterfaceDescriptor", {
                         enumerable: false,
                         value: this.userInterfaceDescriptorModules["*"].require.async(
@@ -1094,7 +1094,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     addEventBlueprintNamed: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.addEventDescriptorNamed(name);
-        }, "addEventBlueprintNamed", "addEventDescriptorNamed")
+        }, "addEventBlueprintNamed", "addEventDescriptorNamed", true)
     },
 
     /**
@@ -1111,7 +1111,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     addPropertyBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (propertyBlueprint) {
             this.addPropertyDescriptor(propertyBlueprint);
-        }, "addPropertyBlueprint", "addPropertyDescriptor")
+        }, "addPropertyBlueprint", "addPropertyDescriptor", true)
     },
 
     /**
@@ -1123,7 +1123,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     addPropertyBlueprintGroupNamed: {
         value: deprecate.deprecateMethod(void 0, function (groupName) {
             this.addPropertyDescriptorGroupNamed(groupName);
-        }, "addPropertyBlueprintGroupNamed", "addPropertyDescriptorGroupNamed")
+        }, "addPropertyBlueprintGroupNamed", "addPropertyDescriptorGroupNamed", true)
     },
 
     /**
@@ -1137,7 +1137,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     addPropertyBlueprintToGroupNamed: {
         value: deprecate.deprecateMethod(void 0, function (propertyBlueprint, groupName) {
             this.addPropertyDescriptorToGroupNamed(propertyBlueprint, groupName);
-        }, "addPropertyBlueprintToGroupNamed", "addPropertyDescriptorToGroupNamed")
+        }, "addPropertyBlueprintToGroupNamed", "addPropertyDescriptorToGroupNamed", true)
     },
 
     /**
@@ -1146,7 +1146,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     addToOnePropertyBlueprintNamed: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.addToOnePropertyDescriptorNamed(name);
-        }, "addToOnePropertyBlueprintNamed", "addToOnePropertyDescriptorNamed")
+        }, "addToOnePropertyBlueprintNamed", "addToOnePropertyDescriptorNamed", true)
     },
 
     /**
@@ -1155,7 +1155,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     addToManyPropertyBlueprintNamed: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.addToManyPropertyDescriptorNamed(name);
-        }, "addToManyPropertyBlueprintNamed", "addToManyPropertyDescriptorNamed")
+        }, "addToManyPropertyBlueprintNamed", "addToManyPropertyDescriptorNamed", true)
     },
 
     /**
@@ -1167,10 +1167,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         serializable: false,
         get: deprecate.deprecateMethod(void 0, function () {
             return this.objectDescriptorInstanceModule;
-        }, "blueprintInstanceModule.get", "objectDescriptorInstanceModule.get"),
+        }, "blueprintInstanceModule.get", "objectDescriptorInstanceModule.get", true),
         set: deprecate.deprecateMethod(void 0, function (value) {
             this.objectDescriptorInstanceModule = value;
-        }, "blueprintInstanceModule.set", "objectDescriptorInstanceModule.set")
+        }, "blueprintInstanceModule.set", "objectDescriptorInstanceModule.set", true)
     },
 
     /**
@@ -1182,10 +1182,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         serializable: false,
         get: deprecate.deprecateMethod(void 0, function () {
             return this.model;
-        }, "binder.get", "model.get"),
+        }, "binder.get", "model.get", true),
         set: deprecate.deprecateMethod(void 0, function (value) {
             this.model = value;
-        }, "binder.set", "model.set")
+        }, "binder.set", "model.set", true)
     },
 
     /**
@@ -1197,7 +1197,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     eventBlueprintForName: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.eventDescriptorForName(name);
-        }, "eventBlueprintForName", "eventDescriptorForName")
+        }, "eventBlueprintForName", "eventDescriptorForName", true)
     },
 
     /**
@@ -1207,10 +1207,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         // value: null
         get: deprecate.deprecateMethod(void 0, function () {
             return this.eventDescriptors;
-        }, "eventBlueprints.get", "eventDescriptors.get"),
+        }, "eventBlueprints.get", "eventDescriptors.get", true),
         set: deprecate.deprecateMethod(void 0, function (value) {
             this.eventDescriptors = value;
-        }, "eventBlueprints.set", "eventDescriptors.set")
+        }, "eventBlueprints.set", "eventDescriptors.set", true)
     },
 
     /**
@@ -1243,7 +1243,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     newDerivedPropertyBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (name, cardinality) {
             return this.newDerivedDescriptor(name, cardinality);
-        }, "newDerivedPropertyBlueprint", "newDerivedDescriptor")
+        }, "newDerivedPropertyBlueprint", "newDerivedDescriptor", true)
     },
 
     /**
@@ -1271,7 +1271,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     newEventBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.newEventDescriptor(name);
-        }, "newEventBlueprint", "newEventDescriptor")
+        }, "newEventBlueprint", "newEventDescriptor", true)
     },
 
     /**
@@ -1287,7 +1287,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     newPropertyBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (name, cardinality) {
             return this.newPropertyDescriptor(name, cardinality);
-        }, "newPropertyBlueprint", "newPropertyDescriptor")
+        }, "newPropertyBlueprint", "newPropertyDescriptor", true)
     },
 
     /**
@@ -1299,7 +1299,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     propertyBlueprintForName: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.propertyDescriptorForName(name);
-        }, "propertyBlueprintForName", "propertyDescriptorForName")
+        }, "propertyBlueprintForName", "propertyDescriptorForName", true)
     },
 
     /**
@@ -1310,7 +1310,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     propertyBlueprintGroups: {
         get: deprecate.deprecateMethod(void 0, function () {
             return this.propertyDescriptorGroups;
-        }, "propertyBlueprintGroups", "propertyDescriptorGroups")
+        }, "propertyBlueprintGroups", "propertyDescriptorGroups", true)
     },
 
     /**
@@ -1322,7 +1322,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     propertyBlueprintGroupForName: {
         value: deprecate.deprecateMethod(void 0, function (groupName) {
             return this.propertyDescriptorGroupForName(groupName);
-        }, "propertyBlueprintGroupForName", "propertyDescriptorForName")
+        }, "propertyBlueprintGroupForName", "propertyDescriptorForName", true)
     },
 
     /**
@@ -1332,7 +1332,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     propertyBlueprints: {
         get: deprecate.deprecateMethod(void 0, function () {
             return this.propertyDescriptors;
-        }, "propertyBlueprints", "propertyDescriptors")
+        }, "propertyBlueprints", "propertyDescriptors", true)
     },
 
     /**
@@ -1346,7 +1346,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     removeEventBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (eventBlueprint) {
             this.removeEventDescriptor(eventBlueprint);
-        }, "removeEventBlueprint", "removeEventDescriptor")
+        }, "removeEventBlueprint", "removeEventDescriptor", true)
     },
 
     /**
@@ -1362,7 +1362,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     removePropertyBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (propertyBlueprint) {
             this.removePropertyDescriptor(propertyBlueprint);
-        }, "removePropertyBlueprint", "removePropertyDescriptor")
+        }, "removePropertyBlueprint", "removePropertyDescriptor", true)
     },
 
     /**
@@ -1376,7 +1376,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     removePropertyBlueprintFromGroupNamed: {
         value: deprecate.deprecateMethod(void 0, function (propertyBlueprint, groupName) {
             this.removePropertyDescriptorFromGroupNamed(propertyBlueprint, groupName);
-        }, "removePropertyBlueprintFromGroupNamed", "removePropertyDescriptorGroupNamed")
+        }, "removePropertyBlueprintFromGroupNamed", "removePropertyDescriptorGroupNamed", true)
     },
 
     /**
@@ -1389,7 +1389,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     removePropertyBlueprintGroupNamed: {
         value: deprecate.deprecateMethod(void 0, function (groupName) {
             this.removePropertyDescriptorGroupNamed(groupName);
-        }, "removePropertyBlueprintGroupNamed", "removePropertyDescriptorGroupNamed")
+        }, "removePropertyBlueprintGroupNamed", "removePropertyDescriptorGroupNamed", true)
     },
 
      /**
@@ -1419,7 +1419,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     createDefaultBlueprintForObject: {
         value: deprecate.deprecateMethod(void 0, function (object) {
             return ObjectDescriptor.createDefaultObjectDescriptorForObject(object);
-        }, "Blueprint.createDefaultBlueprintForObject", "ObjectDescriptor.createDefaultObjectDescriptorForObject")
+        }, "Blueprint.createDefaultBlueprintForObject", "ObjectDescriptor.createDefaultObjectDescriptorForObject", true)
     },
 
     /**

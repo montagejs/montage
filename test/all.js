@@ -40,6 +40,7 @@ module.exports = require("montage-testing").run(require, [
     "spec/core/range-controller-spec",
     {name: "spec/core/media-controller-spec", node: false},
     {name: "spec/core/radio-button-controller-spec", node: false},
+    {name: "spec/core/drag/drag-spec", node: false, karma: false},
     // Base
     {name: "spec/base/abstract-control-spec", node: false},
     {name: "spec/base/abstract-alert-spec", node: false},
