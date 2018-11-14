@@ -457,11 +457,14 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 debug = DataService.debugProperties.has(propertyName),
                 trace = DataService.traceProperties.has(propertyName);
 
+
+            // Check if property is included in the DataService.traceProperties or 
+            // DataService.debugProperties collections. Intended for debugging
             if (trace) {
                 console.log("DataService.fetchObjectProperty", object, propertyName);
             }
             if (debug) {
-                debugger;
+                debugger; // jshint ignore:line
             }
 
             scope.value = data;
