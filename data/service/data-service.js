@@ -56,7 +56,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     deserializeSelf: {
         value:function (deserializer) {
             var self = this,
-                result = null,
+                result = this,
                 value;
 
             value = deserializer.getProperty("childServices");
@@ -1037,12 +1037,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     _dataObjectPrototypes: {
-        get: function () {
-            if (!this.__dataObjectPrototypes){
-                this.__dataObjectPrototypes = new Map();
-            }
-            return this.__dataObjectPrototypes;
-        }
+        // get: function () {
+        //     if (!this.__dataObjectPrototypes){
+        //         this.__dataObjectPrototypes = new Map();
+        //     }
+        //     return this.__dataObjectPrototypes;
+        // },
+        value: new Map()
     },
 
     __dataObjectPrototypes: {
@@ -1755,6 +1756,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
             // make sure type is an object descriptor or a data object descriptor.
             query.type = this._objectDescriptorForType(query.type);
+
             // Set up the stream.
             stream = stream || new DataStream();
             stream.query = query;

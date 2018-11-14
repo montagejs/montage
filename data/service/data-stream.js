@@ -357,6 +357,16 @@ exports.DataStream = DataProvider.specialize(/** @lends DataStream.prototype */ 
             stream.query = selector;
             return stream;
         }
+    },
+
+    withTypeOrQuery: {
+        value: function (typeOrQuery) {
+            var type = typeOrQuery instanceof DataObjectDescriptor && typeOrQuery,
+                query = type && DataQuery.withTypeAndCriteria(type) || typeOrQuery,
+                stream = new this();
+            stream.query = query;
+            return stream;
+        }
     }
 
 });
