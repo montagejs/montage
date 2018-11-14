@@ -1291,11 +1291,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 debug = exports.DataService.debugProperties.has(propertyName),
                 trace = debug || exports.DataService.traceProperties.has(propertyName);
 
+
+            // Check if property is included in the traceProperties or debugProperties 
+            // collections. Intended for debugging
             if (trace) {
                 console.log("DataService.fetchObjectProperty", object, propertyName);
             }
+            
             if (debug) {
-                debugger;
+                debugger; // jshint ignore:line
             }
 
             return  useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
