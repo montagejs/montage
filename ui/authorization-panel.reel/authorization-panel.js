@@ -24,7 +24,7 @@ exports.AuthorizationPanel = Component.specialize({
 
     authorizationManagerPanel: {
         get: function() {
-            return AuthorizationManagerPanel.instance;
+            return AuthorizationManager.authorizationManagerPanel;
         }
     }
 

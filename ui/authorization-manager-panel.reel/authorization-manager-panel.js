@@ -124,17 +124,6 @@ exports.AuthorizationManagerPanel = Component.specialize({
         }
     }
 
-}, {
-
-    instance: {
-        get: function () {
-            if (!this._instance) {
-                this._instance = new this();
-            }
-            return this._instance;
-        }
-    }
-
 });
 
 
