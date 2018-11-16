@@ -62,10 +62,8 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
             } else if (!this._managerPanelPromise) {
                 moduleId = this.callDelegateMethod("authorizationManagerWillLoadAuthorizationManagerPanel", this, MANAGER_PANEL_MODULE) || MANAGER_PANEL_MODULE;
                 this._managerPanelPromise = require.async(moduleId).bind(this).then(function (exports) {
-                    var panel =  exports.AuthorizationManagerPanel.instance;
-                    if (!panel) {
-                        panel = new exports.AuthorizationManagerPanel();
-                    }
+                    var panel = new exports.AuthorizationManagerPanel();
+
                     self.authorizationManagerPanel = panel;
                     panel.authorizationManager = self;
                     return panel;
