@@ -23,8 +23,7 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
             this._panelsByModuleID = new Map();
             this._authorizationsByProviderModuleID = new Map();
             this._pendingServices = new Set();
-            this._pendingServicesArray = [];
-            this.defineBinding("hasPendingServices", {"<-": "_pendingServicesArray.length > 0"});
+            this.defineBinding("hasPendingServices", {"<-": "_pendingServices.size > 0"});
             return this;
         }
     },
@@ -190,7 +189,6 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
                 result = null;
             
             self._pendingServices.add(provider.identifier);
-            self._pendingServicesArray.push(provider.identifier);
             return this._managerPanel().then(function (authManagerPanel) {
                 managerPanel = authManagerPanel;
                 return self._panelForProvider(provider);
@@ -201,8 +199,6 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
                 return authorization;
             }).finally(function () {
                 self._pendingServices.delete(provider.identifier);
-                var index = self._pendingServicesArray.indexOf(provider.identifier);
-                self._pendingServicesArray.splice(index, 1);
                 return result;
             });
         }
@@ -352,10 +348,6 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
 
 
     _pendingServices: {
-        value: undefined
-    },
-
-    _pendingServicesArray: {
         value: undefined
     },
 
