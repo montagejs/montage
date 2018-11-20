@@ -1,6 +1,6 @@
 // Note: Montage's promises are used even if ECMAScript 6 promises are available.
 var DataProvider = require("data/service/data-provider").DataProvider,
-    DataObjectDescriptor = require("data/model/data-object-descriptor").DataObjectDescriptor,
+    ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor,
     DataQuery = require("data/model/data-query").DataQuery,
     Promise = require("core/promise").Promise,
     deprecate = require("core/deprecate"),
@@ -346,22 +346,16 @@ exports.DataStream = DataProvider.specialize(/** @lends DataStream.prototype */ 
 
 }, /** @lends DataStream */ {
 
-    /**
-     * @todo Document.
-     */
     withTypeOrSelector: {
-        value: function (typeOrSelector) {
-            var type = typeOrSelector instanceof DataObjectDescriptor && typeOrSelector,
-                selector = type && DataQuery.withTypeAndCriteria(type) || typeOrSelector,
-                stream = new this();
-            stream.query = selector;
-            return stream;
-        }
+        // value: deprecate.deprecateMethod(scope, deprecatedFunction, name, alternative, once)
+        value: deprecate.deprecateMethod(exports.DataStream, function (typeOrSelector) {
+            return this.withTypeOrQuery(typeOrSelector);
+        }, "withTypeOrSelector", "withTypeOrQuery", true)
     },
 
     withTypeOrQuery: {
         value: function (typeOrQuery) {
-            var type = typeOrQuery instanceof DataObjectDescriptor && typeOrQuery,
+            var type = typeOrQuery instanceof ObjectDescriptor && typeOrQuery,
                 query = type && DataQuery.withTypeAndCriteria(type) || typeOrQuery,
                 stream = new this();
             stream.query = query;
