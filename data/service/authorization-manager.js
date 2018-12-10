@@ -284,7 +284,6 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
             if (dataService.authorizationPolicy === AuthorizationPolicy.NONE) {
                 return Promise.resolve(null);
             } else {
-                //[TJ] This will only work for data services with a single authorization-service    
                 authorizationPromises = this._authorizationsForDataService(dataService);
 
                 if (authorizationPromises.length) {
@@ -295,11 +294,15 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
                     return self._notifyDataService(dataService).then(function () {
                         authorizationPromises = self._authorizationsForDataService(dataService, true);
                         var useModal = application && application.applicationModal && self.authorizationManagerPanel.runModal;
+                  
+                        
                         return useModal ? self.authorizationManagerPanel.runModal() : Promise.all(authorizationPromises);
                     }).then(function(authorizations) {
                         self.callDelegateMethod("authorizationManagerDidAuthorizeService", self, dataService);
-                        //TODO [TJ] How to concatenate authorizations from different auth services
-                        //TODO      into a single Authorization Object for the data-service
+                        //TODO [TJ] Concatenate authorizations from different auth services
+                        //TODO      into a single Authorization Object for the data-service. 
+                        //TODO      Allow a DataService to require only one of it's auth
+                        //TODO      services
                         return authorizations;
                     });
                 }
@@ -311,7 +314,7 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
         value: function (dataService, requestIfAbsent) {
             var promises = [],
                 promise, moduleID, i, n;
-            
+
             for (i = 0, n = dataService.authorizationServices.length; i < n; i++) {
                 moduleID = dataService.authorizationServices[i];
                 promise = this._authorizationForServiceFromProvider(moduleID, dataService, requestIfAbsent);

@@ -1,6 +1,7 @@
 var AuthorizationManager = require("montage/data/service/authorization-manager").AuthorizationManager,
     Authorization = require("spec/data/logic/authorization/authorization").Authorization,
     AuthorizationService = require("spec/data/logic/authorization/authorization-service").AuthorizationService,
+    AuthorizationServiceB = require("spec/data/logic/authorization/authorization-service-b").AuthorizationServiceB,
     NoneService = require("spec/data/logic/authorization/none-service").NoneService,
     OnDemandService = require("spec/data/logic/authorization/on-demand-service").OnDemandService,
     OnFirstFetchService = require("spec/data/logic/authorization/on-first-fetch-service").OnFirstFetchService,
@@ -14,7 +15,9 @@ describe("An Authorization Manager", function () {
     beforeEach(function () {
         authorizationManager = new AuthorizationManager();
         authorizationService = new AuthorizationService();
+        authorizationServiceB = new AuthorizationServiceB();
         authorizationManager.registerAuthorizationService(authorizationService);
+        authorizationManager.registerAuthorizationService(authorizationServiceB);
     });
 
     it("can be created", function () {
@@ -112,6 +115,50 @@ describe("An Authorization Manager", function () {
                         done();
                     });
                 })
+            });
+        });
+
+
+
+        it("with all of multiple authorization services", function (done) {
+            var service = new OnFirstFetchService(),
+                authorizations;
+            
+
+            service.authorizationServices = [
+                "spec/data/logic/authorization/authorization-service",
+                "spec/data/logic/authorization/authorization-service-b",
+            ];
+
+            authorizationService.resolve();
+            authorizationServiceB.resolve();
+            authorizationManager.authorizeService(service).then(function (result) {
+                expect(Array.isArray(result)).toBeTruthy();
+                expect(result[0] instanceof Authorization).toBeTruthy();
+                expect(result[1] instanceof Authorization).toBeTruthy();
+                authorizations = authorizationManager._authorizationsForDataService(service);
+                expect(authorizations.length).toBe(2);
+                done();
+            });
+        });
+
+        xit("with one of multiple authorization services", function (done) {
+            var service = new OnFirstFetchService(),
+                authorizations;
+            
+
+            service.authorizationServices = [
+                "spec/data/logic/authorization/authorization-service",
+                "spec/data/logic/authorization/authorization-service-b",
+            ];
+
+            authorizationService.resolve();
+            authorizationManager.authorizeService(service).then(function (result) {
+                expect(Array.isArray(result)).toBeTruthy();
+                expect(result[0] instanceof Authorization).toBeTruthy();
+                authorizations = authorizationManager._authorizationsForDataService(service);
+                expect(authorizations.length).toBe(1);
+                done();
             });
         });
     });
