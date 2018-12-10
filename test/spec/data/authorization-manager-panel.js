@@ -1,19 +1,23 @@
 var AuthorizationManager = require("montage/data/service/authorization-manager").AuthorizationManager,
+    defaultAuthorizationManager = require("montage/data/service/authorization-manager").defaultAuthorizationManager,
     AuthorizationManagerPanel = require("montage/ui/authorization-manager-panel.reel").AuthorizationManagerPanel,
     AuthorizationPanel = require("spec/data/ui/authorization/authorization-panel.reel").AuthorizationPanel,
     Authorization = require("spec/data/logic/authorization/authorization").Authorization;
 
 
 describe("An AuthorizationManagerPanel", function () {
-
+    var managerPanel;
+    beforeAll(function () {
+        managerPanel = new AuthorizationManagerPanel();
+        defaultAuthorizationManager.authorizationManagerPanel = managerPanel;
+    });
 
     it("can be created", function () {
         expect(new AuthorizationManagerPanel()).toBeDefined();
     });
 
     it ("can authorize with panel", function (done) {
-        var managerPanel = AuthorizationManagerPanel.instance,
-            panel = new AuthorizationPanel(),
+        var panel = new AuthorizationPanel(),
             promise = managerPanel.authorizeWithPanel(panel);
         
         expect(managerPanel.panels.indexOf(panel) !== -1).toBe(true);
@@ -28,8 +32,7 @@ describe("An AuthorizationManagerPanel", function () {
     });
 
     it ("can reject authorization with panel", function (done) {
-        var managerPanel = AuthorizationManagerPanel.instance,
-            panel = new AuthorizationPanel(),
+        var panel = new AuthorizationPanel(),
             promise = managerPanel.authorizeWithPanel(panel),
             isError = true;
 

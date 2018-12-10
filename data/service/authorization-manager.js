@@ -294,7 +294,7 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
                 } else {                
                     return self._notifyDataService(dataService).then(function () {
                         authorizationPromises = self._authorizationsForDataService(dataService, true);
-                        var useModal = application.applicationModal && self.authorizationManagerPanel.runModal;
+                        var useModal = application && application.applicationModal && self.authorizationManagerPanel.runModal;
                         return useModal ? self.authorizationManagerPanel.runModal() : Promise.all(authorizationPromises);
                     }).then(function(authorizations) {
                         self.callDelegateMethod("authorizationManagerDidAuthorizeService", self, dataService);
