@@ -113,6 +113,8 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/core/localizer-spec", node: false, karma: false},
     {name: "spec/core/localizer/serialization-spec", node: false, karma: false},
     // Data
+    {name: "spec/data/authorization-manager", node: true},
+    {name: "spec/data/authorization-manager-panel", node: false},
     {name: "spec/data/data-query"},
     {name: "spec/data/data-mapping"},
     {name: "spec/data/data-object-descriptor"},

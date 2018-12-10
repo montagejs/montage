@@ -93,25 +93,25 @@ describe("An Authorization Manager", function () {
             it("with single authorization service", function (done) {
                 var service = new OnFirstFetchService(),
                     didFail = false,
-                    authPromise, provider,
                     authorizations;
                 
                 authorizationService.reject();
-                authPromise = authorizationManager.authorizeService(service).catch(function (e) {
+                authorizationManager.authorizeService(service).catch(function (e) {
                     didFail = true;
                 }).finally(function () {
                     expect(didFail).toBe(true);
-                    expect(authorizationManager._authorizationsForDataService(service).length).toBe(0);
+                    authorizations = authorizationManager._authorizationsForDataService(service);
+                    expect(authorizations.length).toBe(0);
                     authorizationService.reset();
                     authorizationService.resolve();
                     return authorizationManager.authorizeService(service).then(function (result) {
                         expect(Array.isArray(result)).toBeTruthy();
                         expect(result[0] instanceof Authorization).toBeTruthy();
-                        expect(authorizationManager._authorizationsForDataService(service).length).toBe(1);
+                        authorizations = authorizationManager._authorizationsForDataService(service);
+                        expect(authorizations.length).toBe(1);
                         done();
                     });
                 })
-                expect(authorizationManager._authorizationsForDataService(service).length).toBe(1);
             });
         });
     });
