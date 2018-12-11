@@ -1288,18 +1288,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 delegateFunction = !useDelegate && isHandler && this._delegateFunctionForPropertyName(propertyName),
                 propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
                 childService = !isHandler && this._getChildServiceForObject(object),
-                debug = exports.DataService.debugProperties.has(propertyName),
-                trace = debug || exports.DataService.traceProperties.has(propertyName);
+                debug = exports.DataService.debugProperties.has(propertyName);
 
 
-            // Check if property is included in the traceProperties or debugProperties 
-            // collections. Intended for debugging
-            if (trace) {
-                console.log("DataService.fetchObjectProperty", object, propertyName);
-            }
-            
+            // Check if property is included in debugProperties. Intended for debugging
             if (debug) {
-                debugger; // jshint ignore:line
+                console.log("DataService.fetchObjectProperty", object, propertyName);
+                console.log("To debug DataService.mapRawDataToObjectProperty for " + propertyName + ", place a breakpoint at this line in your browser's developer tools.");
             }
 
             return  useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
@@ -2583,10 +2578,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
      debugProperties: {
          value: new Set()
-     },
-
-     traceProperties: {
-        value: new Set()
-    }
+     }
 
 });
