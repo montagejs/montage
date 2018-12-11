@@ -456,17 +456,13 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 isRelationship = propertyDescriptor && !propertyDescriptor.definition && propertyDescriptor.valueDescriptor,
                 isDerived = propertyDescriptor && !!propertyDescriptor.definition,
                 scope = this._scope,
-                debug = DataService.debugProperties.has(propertyName),
-                trace = DataService.traceProperties.has(propertyName);
+                debug = DataService.debugProperties.has(propertyName);
 
 
-            // Check if property is included in the DataService.traceProperties or 
-            // DataService.debugProperties collections. Intended for debugging
-            if (trace) {
-                console.log("DataService.fetchObjectProperty", object, propertyName);
-            }
+            // Check if property is included in the DataService.debugProperties collection. Intended for debugging.
             if (debug) {
-                debugger; // jshint ignore:line
+                console.log("ExpressionDataMapping.mapRawDataToObjectProperty", object, propertyName);
+                console.log("To debug ExpressionDataMapping.mapRawDataToObjectProperty for " + propertyName + ", place a breakpoint at this line in your browser's developer tools.");
             }
 
             scope.value = data;
