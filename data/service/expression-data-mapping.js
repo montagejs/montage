@@ -358,7 +358,9 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         },
         set: function (value) {
             this._schemaDescriptor = value;
-            this._schemaDescriptorReference = new ObjectDescriptorReference().initWithValue(value);
+            if (value) {
+                this._schemaDescriptorReference = new ObjectDescriptorReference().initWithValue(value);
+            }
         }
     },
 
