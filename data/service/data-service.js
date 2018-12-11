@@ -1,5 +1,5 @@
 var Montage = require("core/core").Montage,
-    AuthorizationManager = require("data/service/authorization-manager").AuthorizationManager,
+    AuthorizationManager = require("data/service/authorization-manager").defaultAuthorizationManager,
     AuthorizationPolicy = require("data/service/authorization-policy").AuthorizationPolicy,
     DataObjectDescriptor = require("data/model/data-object-descriptor").DataObjectDescriptor,
     DataQuery = require("data/model/data-query").DataQuery,
@@ -765,11 +765,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
             if (this.authorizationPolicy === AuthorizationPolicyType.UpfrontAuthorizationPolicy) {
                 var self = this;
-                exports.DataService.authorizationManager.authorizeService(this).then(function(authorization) {
+                this.authorizationPromise = exports.DataService.authorizationManager.authorizeService(this).then(function(authorization) {
                     self.authorization = authorization;
                     return authorization;
-                }).catch(function(error) {
-                    console.log(error);
                 });
             } else {
                 //Service doesn't need anything upfront, so we just go through
@@ -1788,13 +1786,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 childService._fetchRawData(stream);
             } else {
                 if (this.authorizationPolicy === AuthorizationPolicy.ON_DEMAND) {
-                    if (typeof this.shouldAuthorizeForQuery === "function" && this.shouldAuthorizeForQuery(stream.query) && !this.authorization) {
-                        this.authorizationPromise = exports.DataService.authorizationManager.authorizeService(this).then(function(authorization) {
+                    var prefetchAuthorization = typeof this.shouldAuthorizeForQuery === "function" && this.shouldAuthorizeForQuery(stream.query);
+                    if (prefetchAuthorization || !this.authorization) {
+                        this.authorizationPromise = exports.DataService.authorizationManager.authorizeService(this, prefetchAuthorization).then(function(authorization) {
                             self.authorization = authorization;
                             return authorization;
-                        }).catch(function(error) {
-                            console.log(error);
                         });
+                        
                     }
                 }
                 this.authorizationPromise.then(function (authorization) {
@@ -1802,6 +1800,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     stream.query = self.mapSelectorToRawDataQuery(streamSelector);
                     self.fetchRawData(stream);
                     stream.query = streamSelector;
+                }).catch(function (e) {
+                    stream.dataError(e);
+                    self.authorizationPromise = Promise.resolve(null);
                 });
             }
         }
