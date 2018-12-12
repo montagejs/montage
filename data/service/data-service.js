@@ -56,7 +56,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     deserializeSelf: {
         value:function (deserializer) {
             var self = this,
-                result = null,
+                result = this,
                 value;
 
             value = deserializer.getProperty("childServices");
@@ -87,6 +87,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 this.delegate = value;
             }
 
+            value = deserializer.getProperty("isUniquing");
+            if (value !== undefined) {
+                this.isUniquing = value;
+            }
+            
             return result;
         }
     },
@@ -1028,12 +1033,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     _dataObjectPrototypes: {
-        get: function () {
-            if (!this.__dataObjectPrototypes){
-                this.__dataObjectPrototypes = new Map();
-            }
-            return this.__dataObjectPrototypes;
-        }
+        // get: function () {
+        //     if (!this.__dataObjectPrototypes){
+        //         this.__dataObjectPrototypes = new Map();
+        //     }
+        //     return this.__dataObjectPrototypes;
+        // },
+        value: new Map()
     },
 
     __dataObjectPrototypes: {
@@ -1279,7 +1285,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 useDelegate = isHandler && typeof this.fetchRawObjectProperty === "function",
                 delegateFunction = !useDelegate && isHandler && this._delegateFunctionForPropertyName(propertyName),
                 propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
-                childService = !isHandler && this._getChildServiceForObject(object);
+                childService = !isHandler && this._getChildServiceForObject(object),
+                debug = exports.DataService.debugProperties.has(propertyName);
+
+
+            // Check if property is included in debugProperties. Intended for debugging
+            if (debug) {
+                console.debug("DataService.fetchObjectProperty", object, propertyName);
+                console.debug("To debug ExpressionDataMapping.mapRawDataToObjectProperty for " + propertyName + ", set a breakpoint here.");
+            }
 
             return  useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
                     delegateFunction ?                  delegateFunction.call(this, object) :
@@ -1737,6 +1751,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
             // make sure type is an object descriptor or a data object descriptor.
             query.type = this._objectDescriptorForType(query.type);
+
             // Set up the stream.
             stream = stream || new DataStream();
             stream.query = query;
@@ -1907,6 +1922,26 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /**
+     * Resets an object to the last value in the snapshot.
+     * @method
+     * @argument {Object} object - The object who will be reset.
+     * @returns {external:Promise} - A promise fulfilled when the object has
+     * been mapped back to its last known state.
+     */
+    resetDataObject: {
+        value: function (object) {
+            var service = this._getChildServiceForObject(object),
+                promise;
+
+            if (service) {
+                promise = service.resetDataObject(object);
+            }
+
+            return promise;
+        }
+    },
+    
     /**
      * Save changes made to a data object.
      *
@@ -2532,6 +2567,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     authorizationManager: {
         value: AuthorizationManager
-    }
+    },
+
+
+    /***************************************************************************
+     * Debugging
+     */
+
+     debugProperties: {
+         value: new Set()
+     }
 
 });
