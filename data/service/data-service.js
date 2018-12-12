@@ -1002,13 +1002,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     // __object__snapshotMethodImplementation: {
     //     value: function() {
-    //         debugger;
     //         return exports.DataService.mainService._getChildServiceForObject(this).snapshotForObject(this);
     //     }
     // },
     // __object_primaryKeyMethodImplementation: {
     //     value: function() {
-    //         debugger;
     //         return exports.DataService.mainService.dataIdentifierForObject(this).primaryKey;
     //     }
     // },
@@ -1792,7 +1790,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                             self.authorization = authorization;
                             return authorization;
                         });
-                        
+
                     }
                 }
                 this.authorizationPromise.then(function (authorization) {
