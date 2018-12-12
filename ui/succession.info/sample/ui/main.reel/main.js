@@ -45,7 +45,6 @@ exports.Main = Component.specialize({
             //        if (change.name === '_inDocument') {
             //            console.log("Property " + '_inDocument' + " changed");
             //            console.log(change);
-            //            debugger;
             //        }
             //    });
             //})

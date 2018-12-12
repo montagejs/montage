@@ -363,7 +363,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 // which is a constant reference and won't cause unexpected
                 // behavior due to iteration.
                 // if (streamSelectorType.name && streamSelectorType.name.toUpperCase().indexOf("BSP") !== -1) {
-                //     debugger;
+                //     console.debug("set a breakpoint here");
                 // }
                 this.addOneRawData(stream, records[i], context, streamSelectorType);
                 /*jshint +W083*/
