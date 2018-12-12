@@ -348,7 +348,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             // and stop the execution. This is intended to provide a certain
             // level of debugging in the serialization.
             if (value.debugger) {
-                debugger; // jshint ignore:line
+                console.debug("set a breakpoint here");
             }
 
             if ("value" in value) {
