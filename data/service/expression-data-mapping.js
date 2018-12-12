@@ -461,8 +461,8 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
             // Check if property is included in the DataService.debugProperties collection. Intended for debugging.
             if (debug) {
-                console.log("ExpressionDataMapping.mapRawDataToObjectProperty", object, propertyName);
-                console.log("To debug ExpressionDataMapping.mapRawDataToObjectProperty for " + propertyName + ", place a breakpoint at this line in your browser's developer tools.");
+                console.debug("ExpressionDataMapping.mapRawDataToObjectProperty", object, propertyName);
+                console.debug("To debug ExpressionDataMapping.mapRawDataToObjectProperty for " + propertyName + ", set a breakpoint here.");
             }
 
             scope.value = data;

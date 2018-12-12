@@ -1295,8 +1295,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
             // Check if property is included in debugProperties. Intended for debugging
             if (debug) {
-                console.log("DataService.fetchObjectProperty", object, propertyName);
-                console.log("To debug DataService.mapRawDataToObjectProperty for " + propertyName + ", place a breakpoint at this line in your browser's developer tools.");
+                console.debug("DataService.fetchObjectProperty", object, propertyName);
+                console.debug("To debug ExpressionDataMapping.mapRawDataToObjectProperty for " + propertyName + ", set a breakpoint here.");
             }
 
             return  useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
