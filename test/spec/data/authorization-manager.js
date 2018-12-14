@@ -27,6 +27,17 @@ describe("An Authorization Manager", function () {
     });
 
 
+    it("can track has pending services", function () {
+        expect(authorizationManager).toBeDefined();
+        expect(authorizationManager.hasPendingServices).toBe(false);
+        authorizationManager._pendingServices.add("a/test/authorization-service");
+        expect(authorizationManager.hasPendingServices).toBe(true);
+        authorizationManager._pendingServices.add("b/test/authorization-service");
+        expect(authorizationManager.hasPendingServices).toBe(true);
+        authorizationManager._pendingServices.clear();
+        expect(authorizationManager.hasPendingServices).toBe(false);
+    });
+
     
 
     describe("can skip authorization", function () {
