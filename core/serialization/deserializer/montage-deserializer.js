@@ -89,6 +89,25 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
 
     preloadModules: {
         value: function () {
+            try {
+                JSON.parse(this._serializationString);
+            } catch (e) {
+                var keywordIndex = e.message.indexOf("at position"),
+                    buffer = 12, //length of 'at position' 
+                    message,
+                    positionIndex, position, snippet;
+                if (keywordIndex) {
+                    positionIndex = keywordIndex + buffer;
+                    position = parseInt(e.message.slice(positionIndex));
+                    message = "Failed to parse JSON here: \n\n";
+
+                    snippet = this._serializationString.slice(position - 40, position + 40);
+                    message += snippet;
+                    console.warn(message);
+                    console.error(e);
+                }
+            }
+            
             var serialization = JSON.parse(this._serializationString),
                 reviver = this._reviver,
                 moduleLoader = reviver.moduleLoader,
