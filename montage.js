@@ -37,7 +37,7 @@
         function finallyHandler() {
             // remove clutter
             if (script.parentNode) {
-                script.parentNode.removeChild(script);   
+                script.parentNode.removeChild(script);
             }
         }
 
@@ -64,11 +64,11 @@
             }
         } else {
             throw new Error("Platform not supported");
-        }   
+        }
     }
 
     exports.initBrowser = function initBrowser() {
-        
+
         return  {
 
             resolveUrl: (function makeResolveUrl() {
@@ -131,7 +131,7 @@
 
                 if (!params) {
                     params = this._params = {};
-                    
+
                     // Find the <script> that loads us, so we can divine our
                     // parameters from its attributes.
                     var i, j, match, script, attr, name,
@@ -176,7 +176,9 @@
                             params.packagesLocation = this.resolveUrl(params.location , '../../');
 
                             params[paramNamespace + 'Location'] = params.location;
-                            params[paramNamespace + 'Hash'] = params.hash;
+                            if (!params[paramNamespace + 'Hash'] && params.hash) {
+                                params[paramNamespace + 'Hash'] = params.hash;
+                            }
 
                             // Permits multiple bootstrap.js <scripts>; by
                             // removing as they are discovered, next one
@@ -189,7 +191,7 @@
 
                 return params;
             },
-            
+
             loadPackage: function (dependency, config, packageDescription) {
                 return mr.loadPackage(dependency, config, packageDescription);
             },
@@ -214,12 +216,11 @@
                         "exports": Promise,
                         "global": "Promise",
                         "export": "Promise",
-                        "location": "node_modules/bluebird/js/browser/bluebird.min.js",
+                        "location": "node_modules/bluebird/js/browser/bluebird.min.js"
                     },
                     "require": {
-                        "exports": mr, // Preloaded
-                        //location: "./require.js"
-                        "location": "node_modules/mr/require.js",
+                        "exports": mr,
+                        "location": "node_modules/mr/require.js"
                     }
                 };
 
@@ -237,8 +238,8 @@
                     var module = dependencies[id];
 
                     if (
-                        module && 
-                            moduleHasExport(module) === false && 
+                        module &&
+                            moduleHasExport(module) === false &&
                                 typeof module.factory === "function"
                     ) {
                         module.exports = module.factory(bootModule, (module.exports = {})) || module.exports;
@@ -257,9 +258,9 @@
                     if (!dependencies.hasOwnProperty(id)) {
                         return;
                     }
-                    
+
                     dependencies[id].factory = factory;
-                    
+
                     for (id in dependencies) {
                         if (dependencies.hasOwnProperty(id)) {
                             // this causes the function to exit if there are any remaining
@@ -278,7 +279,7 @@
 
                     // Restore inital Boostrap
                     if (initalBoostrap) {
-                        global.bootstrap = initalBoostrap;   
+                        global.bootstrap = initalBoostrap;
                     }
 
                     // At least bootModule in order
@@ -326,36 +327,70 @@
                 // Expose bootstrap
                 global.bootstrap = bootstrapModule;
 
-                // Load other module and skip promise
-                for (var id in dependencies) {
-                    if (dependencies.hasOwnProperty(id)) {
-                        var module = dependencies[id],
-                            paramModuleLocation = id + 'Location';
+                if (typeof global.BUNDLE !== "undefined") {
+                    // Special case for bluebird under a bundle:
+                    // When we get bluebird as part of our bundle, it will be in
+                    // the form of a IIFE that defines Promise on the global
+                    // namespace. Other modules (e.g. mr) are bundled in the form
+                    // of a bootstrap() call. Since bluebird doesn't do this,
+                    // we need to manually call bootstrap() ourselves, otherwise
+                    // the bootstrapping process will not complete in time before
+                    // montageDefine() calls are processed.
+                    // TODO: Maybe mop should take care of providing the bootstrap()
+                    // call for bluebird in bundles for us?
+                    global.nativePromise = global.Promise;
+                    Object.defineProperty(global, "Promise", {
+                        configurable: true,
+                        set: function(PromiseValue) {
+                            Object.defineProperty(global, "Promise", {
+                                value: PromiseValue
+                            });
 
-                        if (typeof module === 'string') {
-                            module = {
-                                id: id,
-                                location: module
-                            };
-                        } else {
-                            module.id = id;   
+                            global.bootstrap("bluebird", function (require, exports) {
+                                return global.Promise;
+                            });
+                            global.bootstrap("promise", function (require, exports) {
+                                return global.Promise;
+                            });
                         }
+                    });
 
-                        // Update dependency
-                        dependencies[id] = module;  
-                        // Update locatiom from param
-                        module.location = params.hasOwnProperty(paramModuleLocation) ? params[paramModuleLocation] : module.location;
+                    bootstrapModule("mini-url", dependencies["mini-url"].shim);
+                } else {
+                    // Load in parallel, but only if we're not using a preloaded cache.
+                    // otherwise, these scripts will be inlined after already
+                    for (var id in dependencies) {
+                        if (dependencies.hasOwnProperty(id)) {
+                            var module = dependencies[id],
+                                paramModuleLocation = id + 'Location';
 
-                        // Reset bad exports
-                        if (moduleHasExport(module)) {
-                            bootstrapModule(module.id, module.exports);
-                        } else if (typeof module.shim !== "undefined") {
-                            bootstrapModule(module.id, module.shim);
-                        } else {
-                            bootstrapModuleScript(module);
+                            if (typeof module === 'string') {
+                                module = {
+                                    id: id,
+                                    location: module
+                                };
+                            } else {
+                                module.id = id;
+                            }
+
+                            // Update dependency
+                            dependencies[id] = module;
+                            // Update location of dependency from params, e.g. if we are in a mop build
+                            if (params.hasOwnProperty(paramModuleLocation)) {
+                                module.location = params[paramModuleLocation];
+                            }
+
+                            // Reset bad exports
+                            if (moduleHasExport(module)) {
+                                bootstrapModule(module.id, module.exports);
+                            } else if (typeof module.shim !== "undefined") {
+                                bootstrapModule(module.id, module.shim);
+                            } else {
+                                bootstrapModuleScript(module);
+                            }
                         }
                     }
-                } 
+                }
             }
         };
     };
@@ -363,10 +398,176 @@
     exports.initNodeJS = function initServer() {
 
         var PATH = require("path"),
-            FS  = require("fs");
+            FS  = require("q-io/fs"),
+            URL = require("url"),
+            htmlparser = require("htmlparser2"),
+            DomUtils = htmlparser.DomUtils;
 
-        return  {
+        function parseHtml(html) {
+            var dom, error;
 
+            var handler = new htmlparser.DomHandler(function (_error, _dom) {
+                error = _error;
+                dom = _dom;
+            });
+
+            // although these functions use callbacks they are actually synchronous
+            var parser = new htmlparser.Parser(handler);
+            parser.write(html);
+            parser.done();
+
+            if (error) {
+                throw error;
+            } else if (!dom) {
+                throw new Error("HTML parsing did not complete");
+            }
+
+            // wrap the returned array in a pseudo-document object for consistency
+            return {type: "document", children: dom};
+        }
+
+        function visit(element, visitor) {
+            var pruned;
+            var prune = function () {
+                pruned = true;
+            };
+            visitor(element, prune);
+            if (pruned) {
+                return;
+            }
+
+            var children = element.children;
+            var len = children ? children.length : 0;
+            for (var i = 0; i < len; i++) {
+                visit(children[i], visitor);
+            }
+        }
+
+        function getAttribute(element, name) {
+            return element.attribs ? element.attribs[name] : null;
+        }
+
+        function getText(element) {
+            return DomUtils.getText(element);
+        }
+
+        function parsePrototypeForModule(prototype) {
+            return prototype.replace(/\[[^\]]+\]$/, "");
+        }
+
+        function collectSerializationDependencies(text, dependencies) {
+            var serialization = JSON.parse(text);
+            Object.keys(serialization).forEach(function (label) {
+                var description = serialization[label];
+                if (description.lazy) {
+                    return;
+                }
+                if (typeof description.prototype === "string") {
+                    dependencies.push(parsePrototypeForModule(description.prototype));
+                }
+                if (typeof description.object === "string") {
+                    dependencies.push(parsePrototypeForModule(description.object));
+                }
+            });
+            return dependencies;
+        }
+
+        function collectHtmlDependencies(dom, dependencies) {
+            visit(dom, function (element) {
+                if (DomUtils.isTag(element)) {
+                    if (element.name === "script") {
+                        if (getAttribute(element, "type") === "text/montage-serialization") {
+                            collectSerializationDependencies(getText(element), dependencies);
+                        }
+                    } else if (element.name === "link") {
+                        if (getAttribute(element, "type") === "text/montage-serialization") {
+                            dependencies.push(getAttribute(element, "href"));
+                        }
+                    }
+                }
+            });
+        }
+
+        function parseHtmlDependencies(text/*, location*/) {
+            var dependencies = [];
+            var dom = parseHtml(text);
+            collectHtmlDependencies(dom, dependencies);
+            return dependencies;
+        }
+
+        exports.TemplateLoader = function (config, load) {
+            return function (id, module) {
+                var html = id.match(/(.*\/)?(?=[^\/]+\.html$)/);
+                var serialization = id.match(/(?=[^\/]+\.(?:json|mjson|meta)$)/); // XXX this is not necessarily a strong indicator of a serialization alone
+                var reelModule = id.match(/(.*\/)?([^\/]+)\.reel\/\2$/);
+                if (html) {
+                    return load(id, module)
+                    .then(function () {
+                        module.dependencies = parseHtmlDependencies(module.text, module.location);
+                        return module;
+                    });
+                } else if (serialization) {
+                    return load(id, module)
+                    .then(function () {
+                        module.dependencies = collectSerializationDependencies(module.text, []);
+                        return module;
+                    });
+                } else if (reelModule) {
+                    return load(id, module)
+                    .then(function () {
+                        var reelHtml = URL.resolve(module.location, reelModule[2] + ".html");
+                        return FS.stat(URL.parse(reelHtml).pathname)
+                        .then(function (stat) {
+                            if (stat.isFile()) {
+                                module.extraDependencies = [id + ".html"];
+                            }
+                        }, function (error) {
+                            // not a problem
+                            // montage/ui/loader.reel/loader.html": Error: ENOENT: no such file or directory
+                            console.log(error.message);
+                        });
+                    });
+                } else {
+                    return load(id, module);
+                }
+            };
+        };
+
+        // add the TemplateLoader to the middleware chain
+        mr.makeLoader = (function (makeLoader) {
+            return function (config) {
+                return exports.TemplateLoader(config, makeLoader(config));
+            };
+        })(mr.makeLoader);
+
+        function findPackage(path) {
+            var directory = FS.directory(path);
+            if (directory === path) {
+                throw new Error("Can't find package");
+            }
+            var packageJson = FS.join(directory, "package.json");
+            return FS.stat(packageJson).then(function (stat) {
+                if (stat.isFile()) {
+                    return directory;
+                } else {
+                    return findPackage(directory);
+                }
+            });
+        }
+
+        function loadFreeModule(/*program, command, args*/) {
+            throw new Error("Can't load module that is not in a package");
+        }
+
+        function loadPackagedModule(directory, program/*, command, args*/) {
+            return exports.loadPackage(directory)
+            .then(function (require) {
+                var id = program.slice(directory.length + 1);
+                return require.async(id);
+            });
+        }
+
+        return {
             _location: null,
 
             getLocation: function () {
@@ -393,10 +594,10 @@
                     params.location = params[paramNamespace + 'Location'] = location;
                     // Detect command line
                     if (
-                        typeof process !== "undefined" && 
+                        typeof process !== "undefined" &&
                             typeof process.argv !== "undefined"
                     ) {
-                        
+
                         var command, module, modulePackage,
                             args = process.argv.slice(1);
 
@@ -411,29 +612,54 @@
                             }
 
                             params.module = PATH.basename(module);
-                            params.package = PATH.dirname(FS.realpathSync(module)) + "/";  
+                            params.package = PATH.dirname(FS.realpathSync(module)) + "/";
                         }
                     }
                 }
 
-                return params; 
+                return params;
             },
-            
+
             loadPackage: function (dependency, config, packageDescription) {
-                return mr.loadPackage(dependency, config, packageDescription);
+                if (dependency.slice(dependency.length - 1, dependency.length) !== "/") {
+                    dependency += "/";
+                }
+
+                config = config || {};
+                config.overlays = ["node", "server", "montage"];
+                config.location = URL.resolve(mr.getLocation(), dependency);
+
+                return mr.loadPackage(config.location, config, packageDescription);
             },
 
             bootstrap: function (callback) {
-
                 var self = this,
                     params = self.getParams();
-
+              
                 mr.delegate = exports;
                 exports.mrPromise = Promise;
 
-                if (params.package) {
-                    callback(mr, Promise, miniURL);
-                }
+                var command = process.argv.slice(0, 3);
+                var args = process.argv.slice(2);
+                var program = args.length ? args.shift() : "./";
+                return FS.canonical(program).then(function (program) {
+                    return findPackage(program)
+                    .catch(function (error) {
+                        if (error.message === "Can't find package") {
+                            loadFreeModule(program, command, args);
+                        } else {
+                            throw new Error(error);
+                        }
+                    })
+                    .then(function (directory) {
+                        return loadPackagedModule(directory, program, command, args);
+                    })
+                    .then(function () {
+                        if (params.package) {
+                            callback(mr, Promise, miniURL);
+                        }
+                    });
+                });
             }
         };
     };
@@ -460,7 +686,7 @@
     exports.initMontageCustomElement = function () {
 
         if (
-            typeof customElements === 'undefined' || 
+            typeof customElements === 'undefined' ||
                 typeof Reflect === 'undefined'
         ) {
             return void 0;
@@ -603,7 +829,7 @@
                 mainEnterDocument = component.enterDocument,
                 mainTemplateDidLoad = component.templateDidLoad,
                 proxyElement = this.findProxyForElement(this);
-            
+
             if (proxyElement) {
                 var observedAttributes = this.observedAttributes,
                     observedAttribute,
@@ -619,7 +845,7 @@
                     }
                 }
             }
-                
+
             this.application.eventManager.registerTargetForActivation(shadowRoot);
 
             component.templateDidLoad = function () {
@@ -673,6 +899,19 @@
         var platform = exports.getPlatform();
         return platform.bootstrap(function (mrRequire, mrPromise, miniURL) {
 
+            function defer() {
+                var resolve, reject;
+                var promise = new mrPromise(function (_resolve, _reject) {
+                    resolve = _resolve;
+                    reject = _reject;
+                });
+                return {
+                    promise: promise,
+                    resolve: resolve,
+                    reject: reject
+                };
+            }
+
             var config = {},
                 params = platform.getParams(),
                 location = params.location,
@@ -684,23 +923,25 @@
 
             // execute the preloading plan and stall the fallback module loader
             // until it has finished
-            if (global.preload) {
-
+            if (typeof global.BUNDLE === "object") {
                 var bundleDefinitions = {};
                 var getDefinition = function (name) {
-                    return (bundleDefinitions[name] = bundleDefinitions[name] || Promise.resolve());
+                    if (!bundleDefinitions[name]) {
+                         return (bundleDefinitions[name] = defer());
+                    }
+                    return bundleDefinitions[name];
                 };
-                
+
                 global.bundleLoaded = function (name) {
                     return getDefinition(name).resolve();
                 };
-                
-                var preloading = Promise.resolve();
+
+                var preloading = defer();
                 config.preloaded = preloading.promise;
 
                 // preload bundles sequentially
                 var preloaded = mrPromise.resolve();
-                global.preload.forEach(function (bundleLocations) {
+                global.BUNDLE.forEach(function (bundleLocations) {
                     preloaded = preloaded.then(function () {
                         return mrPromise.all(bundleLocations.map(function (bundleLocation) {
                             loadScript(bundleLocation);
@@ -711,7 +952,7 @@
 
                 // then release the module loader to run normally
                 preloading.resolve(preloaded.then(function () {
-                    delete global.preload;
+                    delete global.BUNDLE;
                     delete global.bundleLoaded;
                 }));
             }
@@ -775,7 +1016,7 @@
                     window.addEventListener("message", messageCallback);
                 });
 
-                
+
                 // TODO need test
                 applicationRequirePromise = trigger.spread(function (location, injections) {
                     var promise = mrRequire.loadPackage({
@@ -882,11 +1123,9 @@
                         var Montage = montageRequire("core/core").Montage;
                         var EventManager = montageRequire("core/event/event-manager").EventManager;
                         var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
-                        var MontageDeserializer = montageRequire("core/serialization/deserializer/montage-deserializer").MontageDeserializer;    
+                        var MontageDeserializer = montageRequire("core/serialization/deserializer/montage-deserializer").MontageDeserializer;
                         var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                         var logger = montageRequire("core/logger").logger;
-                            
-
                         exports.MontageDeserializer = new MontageDeserializer; // Create instance once only
 
                         // montageWillLoad is mostly for testing purposes
@@ -912,7 +1151,7 @@
                             application.eventManager = defaultEventManager;
 
                             return application._load(applicationRequire, function() {
-                                
+
                                 // If a module was specified in the config then we initialize it now
                                 if (applicationModuleId) {
                                     applicationRequire.async(applicationModuleId);
@@ -967,7 +1206,7 @@
     };
 
     if (
-        typeof window !== "undefined" || 
+        typeof window !== "undefined" ||
             (typeof module === 'object' && module.exports &&
                 typeof require !== "undefined")
     ) {
