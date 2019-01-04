@@ -53,6 +53,16 @@
     transform-style: preserve-3d;
 }
 
+.montage-Flow.camera-disabled .montage-Flow-Repetition > div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: auto;
+    height: auto;
+}
+
 .montage-Flow-Slot {
     position: absolute;
     top: 50%;

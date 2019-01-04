@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="list.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "list"},
+                    "selection": {"<->": "@repetition.selection"},
+                    "montageListItemModule": { "%": "../list-item.reel"}
+                } 
+            },
+
+            "repetition": {
+                "prototype": "../repetition.reel",
+                "values": {
+                    "element": {"#": "repetition"},
+                    "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"},
+                    "allowsMultipleSelection": {"<-": "@owner.allowsMultipleSelection"},
+                    "content": {"<-": "@owner.data"}
+                }
+            },
+
+            ":iteration": {
+               "alias": "@repetition:iteration"
+            },
+            
+            "placeholder": {
+                "prototype": "../placeholder.reel",
+                "values": {
+                    "element": {"#": "placeholder"},
+                    "data": {"<-": "@repetition:iteration.object"},
+                    "componentModule": {"<-": "@owner.userInterfaceDescriptor.collectionItemComponentModule || @owner.montageListItemModule"},
+                    "component.list": {"<-": "@owner"},
+                    "component.delegate": {"<-": "@owner.delegate"},
+                    "component.rowIndex": {"<-": "@repetition:iteration.index"},
+                    "component.isExpandable": {"<-": "@owner.isExpandable"},
+                    "component.userInterfaceDescriptor": {"<-": "@owner.userInterfaceDescriptor"},
+                    "component.selected": {"<-": "@repetition:iteration.selected"},
+                    "component.active": {"<-": "@repetition:iteration.active"},
+                    "component.classList.has('ListItem')": {"<-": "true"}
+                }
+            }          
+        }
+    </script>
+</head>
+<body>
+	<div data-montage-id="list" class="List">
+        <div data-montage-id="repetition" class="List-repetition">
+            <div data-param="*">
+                <div data-montage-id="placeholder"></div>
+            </div>
+        </div>
+	</div>
+</body>
+</html>

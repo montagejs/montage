@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="drop.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "owner"},
+                "classList.has('is-empty')":  {"<-": "@owner.data.length == 0"}
+            }
+        },
+
+        "repetition": {
+            "prototype": "montage/ui/repetition.reel",
+            "values": {
+                "element": {"#": "repetition"},
+                "content":  {"<-": "@owner.data"}
+            }
+        },
+
+        "square": {
+            "prototype": "../square.reel",
+            "values": {
+                "element": {"#": "square"},
+                "identifier": {"<-": "'square ' + @repetition:iteration.object"},
+                "value": {"<-": "@repetition:iteration.object"},
+                "container": {"@": "owner"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="Drop">
+        <div data-param="placeholder" class="drop-placeholder"></div>
+        <div data-montage-id="repetition" class="flex row list">
+            <div data-montage-id="square"></div>
+        </div>
+    </div>
+</body>
+</html>

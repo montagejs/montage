@@ -1,6 +1,6 @@
 {
   "name": "montage",
-  "version": "17.1.1",
+  "version": "17.2.1",
   "description": "Build your next application with a browser based platform that really gets the web.",
   "license": "BSD-3-Clause",
   "repository": {
@@ -49,7 +49,7 @@
   "production": true,
   "dependencies": {
     "bluebird": "~3.5.0",
-    "collections": "~5.0.x",
+    "collections": "~5.1.x",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
     "xhr2": "^0.1.4",

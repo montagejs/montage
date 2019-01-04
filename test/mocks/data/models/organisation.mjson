@@ -1,0 +1,32 @@
+{
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "Organisation",
+            "exportName": "Organisation",
+            "propertyDescriptors": [
+                {"@": "companyName"}
+            ],
+            "objectDescriptorModule": {
+                "%": "test/mocks/data/models/organisation.mjson"
+            },
+            "module": {
+                "%": "test/mocks/data/models/organisation"
+            },
+            "userInterfaceDescriptorModules": {
+                "*": {
+                    "%": "test/mocks/data/models/organisation-ui-descriptor.mjson"
+                }
+            }
+        }
+    },
+
+    "companyName": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "name",
+            "valueType": "string"
+        }
+    }
+
+}

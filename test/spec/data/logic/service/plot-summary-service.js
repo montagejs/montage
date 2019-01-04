@@ -7,7 +7,7 @@ exports.PlotSummaryService = RawDataService.specialize(/** @lends PlotSummarySer
             this.addRawData(stream, [{
                 summary: exports.PlotSummaryService.STAR_WARS_PLOT_SUMMARY
             }]);
-            stream.dataDone();
+            this.rawDataDone(stream);
         }
     }
 

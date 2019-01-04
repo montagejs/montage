@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="department.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "owner"}
+                }
+            },
+
+            "name": {
+                "prototype": "../../../../../ui/text.reel",
+                "values": {
+                    "element": {"#": "name"},
+                    "value": {"<-": "@owner.data.name"}
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner">
+        <div class="field">
+            <span>Organisation Name:</span>
+            <span data-montage-id="name"></span>
+        </div>
+    </div>
+</body>
+</html>

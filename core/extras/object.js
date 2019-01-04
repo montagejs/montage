@@ -90,3 +90,23 @@ if (Object.hasOwnProperty('deleteBinding') === false) {
     });
 }
 
+if (Object.hasOwnProperty('deepFreeze') === false) {
+    Object.defineProperty(Object, "deepFreeze", {
+        value: function (object) {
+            var propertyNames = Object.getOwnPropertyNames(object),
+                property;
+            
+            for (var i = 0, length = propertyNames.length; i < length; i++) {
+                if ((property = object[propertyNames[i]]) !== null &&
+                    typeof property === 'object'
+                ) {
+                    Object.deepFreeze(property);
+                }
+            }
+            
+            return Object.freeze(object);
+        },
+        writable: true,
+        configurable: true
+    });
+}

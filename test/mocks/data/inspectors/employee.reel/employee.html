@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="employee.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "owner"}
+                }
+            },
+
+            "firstname": {
+                "prototype": "../../../../../ui/text.reel",
+                "values": {
+                    "element": {"#": "firstname"},
+                    "value": {"<-": "@owner.data.firstname"}
+                }
+            },
+
+            "lastname": {
+                "prototype": "../../../../../ui/text.reel",
+                "values": {
+                    "element": {"#": "lastname"},
+                    "value": {"<-": "@owner.data.lastname"}
+                }
+            },
+
+            "department": {
+                "prototype": "../../../../../ui/text.reel",
+                "values": {
+                    "element": {"#": "department"},
+                    "value": {"<-": "@owner.data.department"}
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner">
+        <div class="field">
+            <span>First Name:</span>
+            <span data-montage-id="firstname"></span>
+        </div>
+        <div class="field">
+            <span>Last Name:</span>
+            <span data-montage-id="lastname"></span>
+        </div>
+        <div class="field">
+            <span>Department:</span>
+            <span data-montage-id="department"></span>
+        </div>
+    </div>
+</body>
+</html>

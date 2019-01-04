@@ -156,77 +156,6 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * Fetching Data
      */
 
-    /**
-     * Fetch the raw data of this service.
-     *
-     * This method should not be called directly from anyone other than this
-     * service's [fetchData()]{@link RawDataService#fetchData}.
-     *
-     * Subclasses that don't override
-     * [fetchData()]{@link RawDataService#fetchData} should override this method
-     * to:
-     *
-     *   1. Fetch the raw records needed to generate the requested data object.
-     *
-     *   2. Add those records to the specified stream with calls to
-     *      [addRawData()]{@link RawDataService#addRawData}.
-     *
-     *   3. Indicate that the fetching is done with a call to
-     *      [rawDataDone()]{@link RawDataService#rawDataDone}.
-     *
-     * This method must be asynchronous and return as soon as possible even if
-     * it takes a while to obtain the raw data. The raw data can be provided to
-     * the service at any point after this method is called, even after it
-     * returns, with calls to [addRawData()]{@link RawDataService#addRawData}
-     * and [rawDataDone()]{@link RawDataService#rawDataDone}.
-     *
-     * The default implementation of this method simply calls
-     * [rawDataDone()]{@link RawDataService#rawDataDone} immediately.
-     *
-     * @method
-     * @argument {DataStream} stream - The stream to which the data objects
-     *                                 corresponding to the raw data should be
-     *                                 added. This stream must contain a
-     *                                 reference to the selector defining what
-     *                                 raw data to fetch.
-     */
-
-
-    _fetchRawData: {
-        value: function (stream) {
-            var self = this,
-                childService = this._childServiceForQuery(stream.query),
-                query = stream.query;
-
-            //TODO [TJ] Determine purpose of this check...
-            // if (childService && childService.identifier.indexOf("offline-service") === -1) {
-            //     childService._fetchRawData(stream);
-            // } else
-            if (childService) {
-                childService._fetchRawData(stream);
-            } else if (query.authorization) {
-                stream.query = self.mapSelectorToRawDataQuery(query);
-                self.fetchRawData(stream);
-                stream.query = query;
-            } else if (this.authorizationPolicy === DataService.AuthorizationPolicy.NONE) {
-                stream.query = self.mapSelectorToRawDataQuery(query);
-                self.fetchRawData(stream);
-                stream.query = query;
-            } else {
-                DataService.authorizationManager.authorizeService(this).then(function(authorization) {
-                    self.authorization = authorization;
-                    return authorization;
-                }).catch(function(error) {
-                    console.log(error);
-                }).then(function (authorization) {
-                    stream.query = self.mapSelectorToRawDataQuery(query);
-                    self.fetchRawData(stream);
-                    stream.query = query;
-                });
-            }
-        }
-    },
-
     fetchRawData: {
         value: function (stream) {
             this.rawDataDone(stream);
@@ -301,6 +230,24 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: function (record, context) {
             // Subclasses must override this.
             return this.nullPromise;
+        }
+    },
+
+    /**
+     *
+     * Resets the object to its last known state.
+     *
+     * @method
+     * @argument {Object} object   - The object to reset.
+     * @returns {external:Promise} - A promise fulfilled when the object has
+     * been reset to its last known state.
+     *
+     */
+    resetDataObject: {
+        value: function (object) {
+            var snapshot = this.snapshotForObject(object),
+                result = this._mapRawDataToObject(snapshot, object);
+            return result || Promise.resolve(object);
         }
     },
 
@@ -434,7 +381,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 // which is a constant reference and won't cause unexpected
                 // behavior due to iteration.
                 // if (streamSelectorType.name && streamSelectorType.name.toUpperCase().indexOf("BSP") !== -1) {
-                //     debugger;
+                //     console.debug("set a breakpoint here");
                 // }
                 this.addOneRawData(stream, records[i], context, streamSelectorType);
                 /*jshint +W083*/
@@ -442,7 +389,27 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
-
+    /**
+     * Called by [addRawData()]{@link RawDataService#addRawData} to add an object
+     * for the passed record to the stream. This method both takes care of doing
+     * mapRawDataToObject and add the object to the stream.
+     *
+     * @method
+     * @argument {DataStream} stream
+     *                           - The stream to which the data objects created
+     *                             from the raw data should be added.
+     * @argument {Object} rawData - An anonymnous object whose properties'
+     *                             values hold the raw data. This array
+     *                             will be modified by this method.
+     * @argument {?} context     - An arbitrary value that will be passed to
+     *                             [getDataObject()]{@link RawDataService#getDataObject}
+     *                             and
+     *                             [mapRawDataToObject()]{@link RawDataService#mapRawDataToObject}
+     *                             if it is provided.
+     *
+     * @returns {Promise<MappedObject>} - A promise resolving to the mapped object.
+     *
+     */
 
     addOneRawData: {
         value: function (stream, rawData, context) {

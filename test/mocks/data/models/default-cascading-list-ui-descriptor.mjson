@@ -1,0 +1,8 @@
+{
+    "root": {
+        "prototype": "core/meta/user-interface-descriptor",
+        "values": {
+            "cascadingListItemFooterMiddleCollectionNameExpression": "length + ' item' + (length == 1 ? '' : 's')"
+        }
+    }
+}

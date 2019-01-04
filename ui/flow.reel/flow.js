@@ -1771,6 +1771,10 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
         }
     },
 
+    allowsMultipleSelection: {
+        value: false
+    },
+
     // TODO doc
     /**
      */

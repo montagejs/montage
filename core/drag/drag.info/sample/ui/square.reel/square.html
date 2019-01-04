@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="square.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "owner"}
+            }
+        },
+
+        "text": {
+            "prototype": "montage/ui/text.reel",
+            "values": {
+                "element": {"#": "text"},
+                "value": {"<-": "@owner.value"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="Square">
+        <div data-montage-id="text"></div>
+    </div>
+</body>
+</html>

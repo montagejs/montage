@@ -11,6 +11,7 @@ var Defaults = {
     mandatory: false,
     readOnly: false,
     denyDelete: false,
+    inversePropertyName: void 0,
     valueType: "string",
     collectionValueType: "list",
     valueObjectPrototypeName: "",
@@ -54,7 +55,7 @@ var Defaults = {
  * @class PropertyDescriptor
  */
 exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# */ {
-    
+
     /**
      * Initialize a newly allocated property descriptor.
      * @function
@@ -71,7 +72,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             return this;
         }
     },
-    
+
     /**
      * Initialize a newly allocated property descriptor.
      * @deprecated
@@ -84,9 +85,9 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     initWithNameBlueprintAndCardinality: {
         value: deprecate.deprecateMethod(void 0, function (name, blueprint, cardinality) {
             return this.initWithNameObjectDescriptorAndCardinality(name, blueprint, cardinality);
-        }, "new PropertyBlueprint().initWithNameBlueprintAndCardinality", "new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality")
+        }, "new PropertyBlueprint().initWithNameBlueprintAndCardinality", "new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality", true)
     },
-    
+
     serializeSelf: {
         value:function (serializer) {
             serializer.setProperty("name", this.name);
@@ -110,10 +111,11 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._setPropertyWithDefaults(serializer, "defaultValue", this.defaultValue);
             this._setPropertyWithDefaults(serializer, "helpKey", this.helpKey);
             this._setPropertyWithDefaults(serializer, "definition", this.definition);
-            
+            this._setPropertyWithDefaults(serializer, "inversePropertyName", this.inversePropertyName);
+
         }
     },
-    
+
     deserializeSelf: {
         value:function (deserializer) {
             var value;
@@ -125,13 +127,13 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             if (value !== void 0) {
                 this._owner = value;
             }
-            
+
             this._overridePropertyWithDefaults(deserializer, "cardinality");
-            
+
             if (this.cardinality === -1) {
                 this.cardinality = Infinity;
             }
-            
+
             this._overridePropertyWithDefaults(deserializer, "mandatory");
             this._overridePropertyWithDefaults(deserializer, "readOnly");
             this._overridePropertyWithDefaults(deserializer, "denyDelete");
@@ -144,9 +146,10 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._overridePropertyWithDefaults(deserializer, "defaultValue");
             this._overridePropertyWithDefaults(deserializer, "helpKey");
             this._overridePropertyWithDefaults(deserializer, "definition");
+            this._overridePropertyWithDefaults(deserializer, "inversePropertyName");
         }
     },
-    
+
     _setPropertyWithDefaults: {
         value: function (serializer, propertyName, value) {
             if (value !== null && value !== Defaults[propertyName]) {
@@ -154,7 +157,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             }
         }
     },
-    
+
     _getPropertyWithDefaults: {
         value:function (deserializer) {
             var propertyNames = Array.prototype.slice.call(arguments).slice(1, Infinity),
@@ -165,7 +168,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             return value || Defaults[propertyNames[0]];
         }
     },
-    
+
     /**
      * Applies a property from the deserializer to the object. If no such
      * property is defined on the deserializer, then the current value
@@ -185,25 +188,25 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     _overridePropertyWithDefaults: {
         value: function (deserializer, objectKey /*, deserializerKeys... */) {
             var propertyNames, value, i, n;
-            
+
             if (arguments.length > 2) {
                 propertyNames = Array.prototype.slice.call(arguments, 2, Infinity);
             } else {
                 propertyNames = [objectKey];
             }
-            
+
             for (i = 0, n = propertyNames.length; i < n && !value; i++) {
                 value = deserializer.getProperty(propertyNames[i]);
             }
-            
+
             this[objectKey] = value === undefined ? Defaults[propertyNames[0]] : value;
         }
     },
-    
+
     _owner: {
         value: null
     },
-    
+
     /**
      * Component description attached to this property descriptor.
      */
@@ -212,11 +215,11 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             return this._owner;
         }
     },
-    
+
     _name: {
         value: null
     },
-    
+
     /**
      * Name of the object. The name is used to define the property on the
      * object.
@@ -229,7 +232,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             return this._name;
         }
     },
-    
+
     /**
      * The identifier is the name of the descriptor, dot, the name of the
      * property descriptor, and is used to make the serialization of property
@@ -245,7 +248,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             ].join("_");
         }
     },
-    
+
     /**
      * Cardinality of the property descriptor.
      *
@@ -260,7 +263,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     cardinality: {
         value: Defaults["cardinality"]
     },
-    
+
     /**
      * @type {boolean}
      * @default false
@@ -268,7 +271,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     mandatory: {
         value: Defaults["mandatory"]
     },
-    
+
     /**
      * @type {boolean}
      * @default false
@@ -276,7 +279,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     denyDelete: {
         value: Defaults["denyDelete"]
     },
-    
+
     /**
      * @type {boolean}
      * @default false
@@ -284,7 +287,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     readOnly: {
         value: Defaults["readOnly"]
     },
-    
+
     /**
      * Returns true if the cardinality is more than one.
      * @readonly
@@ -296,7 +299,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             return this.cardinality === Infinity || this.cardinality > 1;
         }
     },
-    
+
     /**
      * @type {boolean}
      * @default false
@@ -306,7 +309,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             return false;
         }
     },
-    
+
     /**
      * @type {string}
      * Definition can be used to express a property as the result of evaluating an expression
@@ -322,7 +325,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     definition: {
         value: null
     },
-    
+
     /**
      * @type {string}
      * TODO: This is semantically similar to valueDescriptor
@@ -332,28 +335,28 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     valueType: {
         value: Defaults["valueType"]
     },
-    
+
     /**
      * @type {string}
      */
     collectionValueType: {
         value: Defaults["collectionValueType"]
     },
-    
+
     /**
      * @type {string}
      */
     valueObjectPrototypeName: {
         value: Defaults["valueObjectPrototypeName"]
     },
-    
+
     /**
      * @type {string}
      */
     valueObjectModuleId: {
         value: Defaults["valueObjectModuleId"]
     },
-    
+
     /**
      * Promise for the descriptor targeted by this association.
      *
@@ -377,15 +380,15 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._valueDescriptorReference = descriptor;
         }
     },
-    
+
     _targetObjectDescriptorReference: {
         value: null
     },
-    
+
     _enumValues: {
         value:null
     },
-    
+
     /**
      * List of values for enumerated value types
      * @type {Array}
@@ -403,18 +406,18 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             }
         }
     },
-    
+
     defaultValue: {
         value: Defaults["defaultValue"]
     },
-    
+
     helpKey:{
         value: Defaults["helpKey"]
     },
-    
+
     objectDescriptorModuleId:require("../core")._objectDescriptorModuleIdDescriptor,
     objectDescriptor:require("../core")._objectDescriptorDescriptor,
-    
+
     /**
      * @type {boolean}
      * possible values are: "reference" | "value" | "auto" | true | false,
@@ -423,11 +426,26 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     serializable: {
         value: true
     },
-    
+
+    /**
+     * Property name on the object on the opposite side of the relationship
+     * to which the value of this property should be assigned.
+     * 
+     * For example, take the following relationship: 
+     * 
+     * Foo.bars <------->> Bar.foo
+     * 
+     * Each Bar object in Foo.bars will have Foo assigned to it's Bar.foo property. Therefore, 
+     * the inversePropertyName on the 'bars' propertyDescriptor would be 'foo'. 
+     */
+    inversePropertyName: {
+        value: undefined
+    },
+
     /********************************************************
      * Deprecated functions
      */
-    
+
     /**
      * @deprecated
      * @readonly
@@ -438,19 +456,22 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     isAssociationBlueprint: {
         get: deprecate.deprecateMethod(void 0, function () {
             return !!this._valueDescriptorReference;
-        }, "isAssociationBlueprint", "No analog")
+        }, "isAssociationBlueprint", "No analog", true)
     },
-    
+
     targetBlueprint: {
         get: deprecate.deprecateMethod(void 0, function () {
             return this.valueDescriptor;
-        }, "targetBlueprint.get", "valueDescriptor.get"),
+        }, "targetBlueprint.get", "valueDescriptor.get", true),
         set: deprecate.deprecateMethod(void 0, function (value) {
             this.valueDescriptor = value;
-        }, "targetBlueprint.get", "valueDescriptor.set")
+        }, "targetBlueprint.get", "valueDescriptor.set", true)
     },
-    
+
     blueprintDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
-    blueprint: require("../core")._objectDescriptorDescriptor
+    blueprint: require("../core")._objectDescriptorDescriptor,
+
+
     
+
 });

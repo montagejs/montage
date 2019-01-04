@@ -81,6 +81,13 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             if (typeof this.maxAge === "number") {
                 serializer.setProperty("maxAge", this.maxAge);
             }
+
+            if (this.userInterfaceDescriptorModules) {
+                serializer.setProperty(
+                    "userInterfaceDescriptorModules",
+                    this.userInterfaceDescriptorModules
+                );
+            }
         }
     },
 
@@ -131,6 +138,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             value = deserializer.getProperty("maxAge");
             if (value) {
                 this.maxAge = value;
+            }
+            value = deserializer.getProperty("userInterfaceDescriptorModules");
+            if (value) {
+                this.userInterfaceDescriptorModules = value;
             }
         }
     },
@@ -393,35 +404,34 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         }
     },
 
-_preparePropertyDescriptorsCache: {
-    value: function () {
-        var ownDescriptors = this._ownPropertyDescriptors,
-            isReady = true,
-            descriptor, i, n;
+    _preparePropertyDescriptorsCache: {
+        value: function () {
+            var ownDescriptors = this._ownPropertyDescriptors,
+                isReady = true,
+                descriptor, i, n;
+            if (!this._propertyDescriptorsAreCached)  {
 
-        if (!this._propertyDescriptorsAreCached)  {
-
-            for (i = 0, n = ownDescriptors.length; i < n && isReady; ++i) {
-                descriptor = ownDescriptors[i];
-                isReady = !!(descriptor && descriptor.name);
-            }
-
-            if (isReady) {
-                this._propertyDescriptorsAreCached = true;
-                this._propertyDescriptors = [];
-                this._propertyDescriptorsTable.clear();
-                for (i = 0, n = ownDescriptors.length; i < n; ++i) {
+                for (i = 0, n = ownDescriptors.length; i < n && isReady; ++i) {
                     descriptor = ownDescriptors[i];
-                    descriptor._owner = this;
-                    this._propertyDescriptors.push(descriptor);
-                    this._propertyDescriptorsTable.set(descriptor.name,  descriptor);
+                    isReady = !!(descriptor && descriptor.name);
                 }
-                this.addRangeAtPathChangeListener("_ownPropertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
-                this.addRangeAtPathChangeListener("parent.propertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
+
+                if (isReady) {
+                    this._propertyDescriptorsAreCached = true;
+                    this._propertyDescriptors = [];
+                    this._propertyDescriptorsTable.clear();
+                    for (i = 0, n = ownDescriptors.length; i < n; ++i) {
+                        descriptor = ownDescriptors[i];
+                        descriptor._owner = this;
+                        this._propertyDescriptors.push(descriptor);
+                        this._propertyDescriptorsTable.set(descriptor.name,  descriptor);
+                    }
+                    this.addRangeAtPathChangeListener("_ownPropertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
+                    this.addRangeAtPathChangeListener("parent.propertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
+                }
             }
         }
-    }
-},
+    },
 
     /**
      * PropertyDescriptors for this object descriptor, not including those
@@ -989,6 +999,72 @@ _preparePropertyDescriptorsCache: {
     objectDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
     objectDescriptor: require("../core")._objectDescriptorDescriptor,
 
+    userInterfaceDescriptor: {
+        get: function () {
+            if (!this._userInterfaceDescriptor) {
+                if (this.userInterfaceDescriptorModules &&
+                    this.userInterfaceDescriptorModules["*"]) {
+
+                    Montage.defineProperty(this, "_userInterfaceDescriptor", {
+                        enumerable: false,
+                        value: this.userInterfaceDescriptorModules["*"].require.async(
+                            this.userInterfaceDescriptorModules["*"].id
+                        ).then(function (userInterfaceDescriptorModule) {
+                            return userInterfaceDescriptorModule.montageObject;
+                        })
+                    });
+                }
+            }
+
+            return this._userInterfaceDescriptor ||
+                (this._userInterfaceDescriptor = Promise.resolve());
+        }
+    },
+
+    userInterfaceDescriptors: {
+        get: function () {
+            if (!this._userInterfaceDescriptors) {
+                if (this.userInterfaceDescriptorModules) {
+                    var keys = Object.keys(this.userInterfaceDescriptorModules),
+                        length;
+
+                    if ((length = keys.length)) {
+                        var promisesHandler = function (defaultUserInterfaceDescriptor, userInterfaceDescriptorModule) {
+                                return Object.assign(
+                                    {},
+                                    defaultUserInterfaceDescriptor,
+                                    userInterfaceDescriptorModule.montageObject
+                                );
+                            },
+                            map = {},
+                            key;
+
+                        for (var i = 0; i < length; i++) {
+                            key = keys[i];
+
+                            if (key === '*') {
+                                map[key] = this.userInterfaceDescriptor;
+                            } else {
+                                Montage.defineProperty(map, key, {
+                                    enumerable: false,
+                                    value: Promise.all([
+                                        this.userInterfaceDescriptor,
+                                        this.userInterfaceDescriptorModules[key].require.async(
+                                            this.userInterfaceDescriptorModules[key].id
+                                        )
+                                    ]).spread(promisesHandler)
+                                });
+                            }
+                        }
+                        this._userInterfaceDescriptors = map;
+                    }
+                }
+            }
+
+            return this._userInterfaceDescriptors;
+        }
+    },
+
     /**********************************************************************************
      * Deprecated methods.
      */
@@ -1018,7 +1094,7 @@ _preparePropertyDescriptorsCache: {
     addEventBlueprintNamed: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.addEventDescriptorNamed(name);
-        }, "addEventBlueprintNamed", "addEventDescriptorNamed")
+        }, "addEventBlueprintNamed", "addEventDescriptorNamed", true)
     },
 
     /**
@@ -1035,7 +1111,7 @@ _preparePropertyDescriptorsCache: {
     addPropertyBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (propertyBlueprint) {
             this.addPropertyDescriptor(propertyBlueprint);
-        }, "addPropertyBlueprint", "addPropertyDescriptor")
+        }, "addPropertyBlueprint", "addPropertyDescriptor", true)
     },
 
     /**
@@ -1047,7 +1123,7 @@ _preparePropertyDescriptorsCache: {
     addPropertyBlueprintGroupNamed: {
         value: deprecate.deprecateMethod(void 0, function (groupName) {
             this.addPropertyDescriptorGroupNamed(groupName);
-        }, "addPropertyBlueprintGroupNamed", "addPropertyDescriptorGroupNamed")
+        }, "addPropertyBlueprintGroupNamed", "addPropertyDescriptorGroupNamed", true)
     },
 
     /**
@@ -1061,7 +1137,7 @@ _preparePropertyDescriptorsCache: {
     addPropertyBlueprintToGroupNamed: {
         value: deprecate.deprecateMethod(void 0, function (propertyBlueprint, groupName) {
             this.addPropertyDescriptorToGroupNamed(propertyBlueprint, groupName);
-        }, "addPropertyBlueprintToGroupNamed", "addPropertyDescriptorToGroupNamed")
+        }, "addPropertyBlueprintToGroupNamed", "addPropertyDescriptorToGroupNamed", true)
     },
 
     /**
@@ -1070,7 +1146,7 @@ _preparePropertyDescriptorsCache: {
     addToOnePropertyBlueprintNamed: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.addToOnePropertyDescriptorNamed(name);
-        }, "addToOnePropertyBlueprintNamed", "addToOnePropertyDescriptorNamed")
+        }, "addToOnePropertyBlueprintNamed", "addToOnePropertyDescriptorNamed", true)
     },
 
     /**
@@ -1079,7 +1155,7 @@ _preparePropertyDescriptorsCache: {
     addToManyPropertyBlueprintNamed: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.addToManyPropertyDescriptorNamed(name);
-        }, "addToManyPropertyBlueprintNamed", "addToManyPropertyDescriptorNamed")
+        }, "addToManyPropertyBlueprintNamed", "addToManyPropertyDescriptorNamed", true)
     },
 
     /**
@@ -1091,10 +1167,10 @@ _preparePropertyDescriptorsCache: {
         serializable: false,
         get: deprecate.deprecateMethod(void 0, function () {
             return this.objectDescriptorInstanceModule;
-        }, "blueprintInstanceModule.get", "objectDescriptorInstanceModule.get"),
+        }, "blueprintInstanceModule.get", "objectDescriptorInstanceModule.get", true),
         set: deprecate.deprecateMethod(void 0, function (value) {
             this.objectDescriptorInstanceModule = value;
-        }, "blueprintInstanceModule.set", "objectDescriptorInstanceModule.set")
+        }, "blueprintInstanceModule.set", "objectDescriptorInstanceModule.set", true)
     },
 
     /**
@@ -1106,10 +1182,10 @@ _preparePropertyDescriptorsCache: {
         serializable: false,
         get: deprecate.deprecateMethod(void 0, function () {
             return this.model;
-        }, "binder.get", "model.get"),
+        }, "binder.get", "model.get", true),
         set: deprecate.deprecateMethod(void 0, function (value) {
             this.model = value;
-        }, "binder.set", "model.set")
+        }, "binder.set", "model.set", true)
     },
 
     /**
@@ -1121,7 +1197,7 @@ _preparePropertyDescriptorsCache: {
     eventBlueprintForName: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.eventDescriptorForName(name);
-        }, "eventBlueprintForName", "eventDescriptorForName")
+        }, "eventBlueprintForName", "eventDescriptorForName", true)
     },
 
     /**
@@ -1131,10 +1207,10 @@ _preparePropertyDescriptorsCache: {
         // value: null
         get: deprecate.deprecateMethod(void 0, function () {
             return this.eventDescriptors;
-        }, "eventBlueprints.get", "eventDescriptors.get"),
+        }, "eventBlueprints.get", "eventDescriptors.get", true),
         set: deprecate.deprecateMethod(void 0, function (value) {
             this.eventDescriptors = value;
-        }, "eventBlueprints.set", "eventDescriptors.set")
+        }, "eventBlueprints.set", "eventDescriptors.set", true)
     },
 
     /**
@@ -1167,7 +1243,7 @@ _preparePropertyDescriptorsCache: {
     newDerivedPropertyBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (name, cardinality) {
             return this.newDerivedDescriptor(name, cardinality);
-        }, "newDerivedPropertyBlueprint", "newDerivedDescriptor")
+        }, "newDerivedPropertyBlueprint", "newDerivedDescriptor", true)
     },
 
     /**
@@ -1195,7 +1271,7 @@ _preparePropertyDescriptorsCache: {
     newEventBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.newEventDescriptor(name);
-        }, "newEventBlueprint", "newEventDescriptor")
+        }, "newEventBlueprint", "newEventDescriptor", true)
     },
 
     /**
@@ -1211,7 +1287,7 @@ _preparePropertyDescriptorsCache: {
     newPropertyBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (name, cardinality) {
             return this.newPropertyDescriptor(name, cardinality);
-        }, "newPropertyBlueprint", "newPropertyDescriptor")
+        }, "newPropertyBlueprint", "newPropertyDescriptor", true)
     },
 
     /**
@@ -1223,7 +1299,7 @@ _preparePropertyDescriptorsCache: {
     propertyBlueprintForName: {
         value: deprecate.deprecateMethod(void 0, function (name) {
             return this.propertyDescriptorForName(name);
-        }, "propertyBlueprintForName", "propertyDescriptorForName")
+        }, "propertyBlueprintForName", "propertyDescriptorForName", true)
     },
 
     /**
@@ -1234,7 +1310,7 @@ _preparePropertyDescriptorsCache: {
     propertyBlueprintGroups: {
         get: deprecate.deprecateMethod(void 0, function () {
             return this.propertyDescriptorGroups;
-        }, "propertyBlueprintGroups", "propertyDescriptorGroups")
+        }, "propertyBlueprintGroups", "propertyDescriptorGroups", true)
     },
 
     /**
@@ -1246,7 +1322,7 @@ _preparePropertyDescriptorsCache: {
     propertyBlueprintGroupForName: {
         value: deprecate.deprecateMethod(void 0, function (groupName) {
             return this.propertyDescriptorGroupForName(groupName);
-        }, "propertyBlueprintGroupForName", "propertyDescriptorForName")
+        }, "propertyBlueprintGroupForName", "propertyDescriptorForName", true)
     },
 
     /**
@@ -1256,7 +1332,7 @@ _preparePropertyDescriptorsCache: {
     propertyBlueprints: {
         get: deprecate.deprecateMethod(void 0, function () {
             return this.propertyDescriptors;
-        }, "propertyBlueprints", "propertyDescriptors")
+        }, "propertyBlueprints", "propertyDescriptors", true)
     },
 
     /**
@@ -1270,7 +1346,7 @@ _preparePropertyDescriptorsCache: {
     removeEventBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (eventBlueprint) {
             this.removeEventDescriptor(eventBlueprint);
-        }, "removeEventBlueprint", "removeEventDescriptor")
+        }, "removeEventBlueprint", "removeEventDescriptor", true)
     },
 
     /**
@@ -1286,7 +1362,7 @@ _preparePropertyDescriptorsCache: {
     removePropertyBlueprint: {
         value: deprecate.deprecateMethod(void 0, function (propertyBlueprint) {
             this.removePropertyDescriptor(propertyBlueprint);
-        }, "removePropertyBlueprint", "removePropertyDescriptor")
+        }, "removePropertyBlueprint", "removePropertyDescriptor", true)
     },
 
     /**
@@ -1300,7 +1376,7 @@ _preparePropertyDescriptorsCache: {
     removePropertyBlueprintFromGroupNamed: {
         value: deprecate.deprecateMethod(void 0, function (propertyBlueprint, groupName) {
             this.removePropertyDescriptorFromGroupNamed(propertyBlueprint, groupName);
-        }, "removePropertyBlueprintFromGroupNamed", "removePropertyDescriptorGroupNamed")
+        }, "removePropertyBlueprintFromGroupNamed", "removePropertyDescriptorGroupNamed", true)
     },
 
     /**
@@ -1313,7 +1389,7 @@ _preparePropertyDescriptorsCache: {
     removePropertyBlueprintGroupNamed: {
         value: deprecate.deprecateMethod(void 0, function (groupName) {
             this.removePropertyDescriptorGroupNamed(groupName);
-        }, "removePropertyBlueprintGroupNamed", "removePropertyDescriptorGroupNamed")
+        }, "removePropertyBlueprintGroupNamed", "removePropertyDescriptorGroupNamed", true)
     },
 
      /**
@@ -1343,7 +1419,7 @@ _preparePropertyDescriptorsCache: {
     createDefaultBlueprintForObject: {
         value: deprecate.deprecateMethod(void 0, function (object) {
             return ObjectDescriptor.createDefaultObjectDescriptorForObject(object);
-        }, "Blueprint.createDefaultBlueprintForObject", "ObjectDescriptor.createDefaultObjectDescriptorForObject")
+        }, "Blueprint.createDefaultBlueprintForObject", "ObjectDescriptor.createDefaultObjectDescriptorForObject", true)
     },
 
     /**

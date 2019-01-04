@@ -5,6 +5,8 @@ var ExpressionDataMapping = require("montage/data/service/expression-data-mappin
     DateConverter = require("montage/core/converter/date-converter").DateConverter,
     ModuleObjectDescriptor = require("montage/core/meta/module-object-descriptor").ModuleObjectDescriptor,
     ModuleReference = require("montage/core/module-reference").ModuleReference,
+    PlotSummaryService = require("spec/data/logic/service/plot-summary-service").PlotSummaryService,
+    PropService = require("spec/data/logic/service/prop-service").PropService,
     Promise = require("montage/core/promise").Promise,
     PropertyDescriptor = require("montage/core/meta/property-descriptor").PropertyDescriptor,
     RawDataService = require("montage/data/service/raw-data-service").RawDataService,
@@ -15,7 +17,8 @@ var ExpressionDataMapping = require("montage/data/service/expression-data-mappin
 var Movie = require("spec/data/logic/model/movie").Movie,
     Category = require("spec/data/logic/model/category").Category,
     Country = require("spec/data/logic/model/country").Country,
-    ActionMovie = require("spec/data/logic/model/action-movie").ActionMovie;
+    ActionMovie = require("spec/data/logic/model/action-movie").ActionMovie,
+    Prop = require("spec/data/logic/model/prop").Prop;
 
 describe("An Expression Data Mapping", function() {
 
@@ -45,14 +48,18 @@ describe("An Expression Data Mapping", function() {
         actionMovieMapping,
         actionMovieModuleReference,
         actionMovieObjectDescriptor,
-        actionMovieRawDataTypeMapping,
         plotSummaryModuleReference,
         plotSummaryObjectDescriptor,
         plotSummaryPropertyDescriptor,
         registrationPromise,
         schemaBudgetPropertyDescriptor,
         schemaIsFeaturedPropertyDescriptor,
-        schemaReleaseDatePropertyDescriptor,
+        propModuleReference,
+        propObjectDescriptor,
+        propMoviePropertyDescriptor,
+        propsPropertyDescriptor,
+        propConverter,
+        propService,
         
 
 
@@ -83,6 +90,7 @@ describe("An Expression Data Mapping", function() {
     movieModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/movie", require);
     movieObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(movieModuleReference, "Movie");
     movieObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("title", movieObjectDescriptor, 1));
+    movieObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("id", movieObjectDescriptor, 1));
     movieSchemaModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/schema/logic/movie", require);
     movieSchema = new ModuleObjectDescriptor().initWithModuleAndExportName(movieSchemaModuleReference, "MovieSchema");
     
@@ -111,12 +119,27 @@ describe("An Expression Data Mapping", function() {
     countryPropertyDescriptor.valueDescriptor = countryObjectDescriptor;
     actionMovieObjectDescriptor.addPropertyDescriptor(countryPropertyDescriptor);
 
+
+    plotSummaryService = new PlotSummaryService();
     plotSummaryModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/plot-summary", require);
     plotSummaryObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(plotSummaryModuleReference, "PlotSummary");
     plotSummaryObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("summary", plotSummaryObjectDescriptor, 1));
+    plotSummaryObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("movie", movieObjectDescriptor, 1));
     plotSummaryPropertyDescriptor = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("plotSummary", movieObjectDescriptor, 1);
     plotSummaryPropertyDescriptor.valueDescriptor = plotSummaryObjectDescriptor;
     movieObjectDescriptor.addPropertyDescriptor(plotSummaryPropertyDescriptor);
+
+    propService = new PropService();
+    propModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/prop", require);
+    propObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(propModuleReference, "Prop");
+    propObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("name", null));
+    propMoviePropertyDescriptor = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("movie", movieObjectDescriptor, -1);
+    propMoviePropertyDescriptor.valueDescriptor = propObjectDescriptor;
+    propObjectDescriptor.addPropertyDescriptor(propMoviePropertyDescriptor);
+    propsPropertyDescriptor = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("props", movieObjectDescriptor, Infinity);
+    propsPropertyDescriptor.valueDescriptor = propObjectDescriptor;
+    propsPropertyDescriptor.inversePropertyName = "movie";
+    movieObjectDescriptor.addPropertyDescriptor(propsPropertyDescriptor);
 
 
     schemaBudgetPropertyDescriptor = new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("budget", movieSchema, 1);
@@ -136,14 +159,30 @@ describe("An Expression Data Mapping", function() {
     movieSchema.addPropertyDescriptor(schemaIsFeaturedPropertyDescriptor);
 
     movieMapping = new ExpressionDataMapping().initWithServiceObjectDescriptorAndSchema(movieService, movieObjectDescriptor, movieSchema);
-    movieMapping.addRequisitePropertyName("title", "category", "budget", "isFeatured", "releaseDate");
+    movieMapping.addRequisitePropertyName( "title", "category", "budget", "isFeatured", "releaseDate", "id");
     movieMapping.addObjectMappingRule("title", {"<->": "name"});
+    
+    movieMapping.addObjectMappingRule("id", {"<->": "id"});
+
 
     categoryConverter = new RawPropertyValueToObjectConverter().initWithConvertExpression("category_id == $");
     categoryConverter.service = categoryService;
     movieMapping.addObjectMappingRule("category", {
         "<-": "{categoryID: category_id}",
         converter: categoryConverter
+    });
+    summaryConverter = new RawPropertyValueToObjectConverter().initWithConvertExpression("category_id == $");
+    summaryConverter.service = plotSummaryService;
+    movieMapping.addObjectMappingRule("plotSummary", {
+        "<-": "{movie_id: id}",
+        converter: summaryConverter,
+        inversePropertyName: "movie"
+    });
+    propConverter = new RawPropertyValueToObjectConverter().initWithConvertExpression("category_id == $");
+    propConverter.service = propService;
+    movieMapping.addObjectMappingRule("props", {
+        "<-": "{}",
+        converter: propConverter
     });
     movieMapping.addRawDataMappingRule("category_id", {"<-": "category.id"});
     movieMapping.addObjectMappingRule("releaseDate", {
@@ -154,6 +193,7 @@ describe("An Expression Data Mapping", function() {
     movieMapping.addObjectMappingRule("isFeatured", {"<-": "is_featured"});
     movieMapping.addRawDataMappingRule("budget", {"<-": "budget"});
     movieMapping.addRawDataMappingRule("is_featured", {"<-": "isFeatured"});
+    movieMapping.addRawDataMappingRule("summary", {"<-": "plotSummary.summary"});
     movieService.addMappingForType(movieMapping, movieObjectDescriptor);
     movieMapping.rawDataPrimaryKeys = ["id"];
     categoryMapping = new ExpressionDataMapping().initWithServiceObjectDescriptorAndSchema(categoryService, categoryObjectDescriptor);
@@ -180,14 +220,16 @@ describe("An Expression Data Mapping", function() {
     movieService.addMappingForType(actionMovieMapping, actionMovieObjectDescriptor);
 
 
-    // it("can be created", function () {
-    //     expect(new ExpressionDataMapping()).toBeDefined();
-    // });
+    it("can be created", function () {
+        expect(new ExpressionDataMapping()).toBeDefined();
+    });
 
     registrationPromise = Promise.all([
         mainService.registerChildService(movieService, [movieObjectDescriptor, actionMovieObjectDescriptor]),
         mainService.registerChildService(categoryService, categoryObjectDescriptor),
-        mainService.registerChildService(countryService, countryObjectDescriptor)
+        mainService.registerChildService(countryService, countryObjectDescriptor),
+        mainService.registerChildService(plotSummaryService, plotSummaryObjectDescriptor),
+        mainService.registerChildService(propService, propObjectDescriptor)
     ]);
 
     it("properly registers the object descriptor type to the mapping object in a service", function (done) {
@@ -199,8 +241,8 @@ describe("An Expression Data Mapping", function() {
     });
 
     it("can create the correct number of mapping rules", function () {
-        expect(movieMapping.objectMappingRules.size).toBe(5);
-        expect(movieMapping.rawDataMappingRules.size).toBe(5);
+        expect(movieMapping.objectMappingRules.size).toBe(8);
+        expect(movieMapping.rawDataMappingRules.size).toBe(7);
     });
 
     it("can inherit rawDataPrimaryKeys", function () {
@@ -257,6 +299,51 @@ describe("An Expression Data Mapping", function() {
         });
     });
 
+    it("can map inverse in mapping for fetch with updateObjectProperties", function (done) {
+        var movie = mainService.createDataObject(movieObjectDescriptor),
+            data = {
+                name: "Star Wars",
+                category_id: 1,
+                budget: "14000000.00",
+                is_featured: "true",
+                release_date: "05/25/1977",
+                fcc_rating: "pg",
+                country_id: 1
+            };
+        
+        return actionMovieMapping.mapRawDataToObject(data, movie).then(function () {
+            //Properties defined in parent descriptor
+            return mainService.updateObjectProperties(movie, "plotSummary");
+        }).then(function () {
+            expect(movie.plotSummary).toBeDefined();
+            expect(movie.plotSummary.movie).toBe(movie);
+            done();
+        });
+    });
+
+    it("can map inverse on propertyDescriptor for fetch with updateObjectProperties", function (done) {
+        var movie = mainService.createDataObject(movieObjectDescriptor),
+            data = {
+                name: "Star Wars",
+                category_id: 1,
+                budget: "14000000.00",
+                is_featured: "true",
+                release_date: "05/25/1977",
+                fcc_rating: "pg",
+                country_id: 1
+            };
+        
+        return movieMapping.mapRawDataToObject(data, movie).then(function () {
+            //Properties defined in parent descriptor
+            return mainService.updateObjectProperties(movie, "props");
+        }).then(function () {
+            expect(movie.props).toBeDefined();
+            expect(Array.isArray(movie.props)).toBe(true);
+            expect(movie.props[0].movie).toBe(movie);
+            done();
+        });
+    });
+
     it("can automatically convert raw data to the correct type", function (done) {
         var movie = {},
             data = {
@@ -277,7 +364,7 @@ describe("An Expression Data Mapping", function() {
 
     it("can map objects to raw data", function (done) {
         var category = new Category(),
-            movie = new Movie(),
+            movie = mainService.createDataObject(movieObjectDescriptor),
             data = {};
         category.name = "Action";
         category.id = 1;
@@ -292,6 +379,41 @@ describe("An Expression Data Mapping", function() {
             expect(data.is_featured).toBe("true");
             expect(data.release_date).toBe("05/25/1977");
             expect(data.category_id).toBe(1);
+            done();
+        });
+    });
+
+    it("can map objects to raw data with untripped trigger", function (done) {
+        var snapshot = {
+                id: 1
+            },
+            data = {},
+            movie = movieService.getDataObject(movieObjectDescriptor, data);
+
+        movieMapping.mapObjectToRawData(movie, data).then(function () {
+            expect(data.summary).toBeDefined();
+            done();
+        });
+    });
+
+    it("can map objects to raw data with tripped trigger", function (done) {
+        var snapshot = {
+                id: 1
+            },
+            movie = movieService.rootService.createDataObject(movieObjectDescriptor),
+            category = new Category(),
+            movieTitle = "The Social Network";
+        
+        
+        var title = movie.title; //Trigger Title Getter 
+        movie.title = movieTitle;
+        movie.id = 2;
+        category.name = "A Category";
+        category.id = 4;
+        // movie.category = category;
+
+        movieService.saveDataObject(movie).then(function (data) {
+            expect(movie.title).toBe(movieTitle);
             done();
         });
     });

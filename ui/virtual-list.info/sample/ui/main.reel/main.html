@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"}
+                }
+            },
+
+            "allowMultipeSelection": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "allowMultipeSelection"}
+                }
+            },
+
+            "isSelectionEnabled": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "isSelectionEnabled"}
+                }
+            },
+
+            "isExpandable": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "isExpandable"}
+                }
+            },
+
+            "list1": {
+                "prototype": "montage/ui/virtual-list.reel",
+                "values": {
+                    "element": {"#": "list1"},
+                    "data": {"<-": "@owner.strings"},
+                    "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
+                    "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"},
+                    "isExpandable": {"<-": "!!@isExpandable.checked"}
+                }
+            },
+            
+            "list2": {
+                "prototype": "montage/ui/virtual-list.reel",
+                "values": {
+                    "element": {"#": "list2"},
+                    "data": {"<-": "@owner.employees"},
+                    "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
+                    "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"},
+                    "isExpandable": {"<-": "!!@isExpandable.checked"}
+                }
+            },
+
+            "listItem2": {
+                "prototype": "montage/ui/list-item.reel",
+                "values": {
+                    "element": {"#": "listItem2"},
+                    "label": {"<-": "@list2:iteration.object.lastname"},
+                    "description": {"<-": "@list2:iteration.object.department"},
+                    "isExpandable": {"<-": "@list2.isExpandable"}
+                }
+            },
+
+            "list3": {
+                "prototype": "montage/ui/virtual-list.reel",
+                "values": {
+                    "element": {"#": "list3"},
+                    "data": {"<-": "@owner.employees"},
+                    "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
+                    "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"},
+                    "isExpandable": {"<-": "!!@isExpandable.checked"}
+                }
+            },
+
+            "list4": {
+                "prototype": "montage/ui/virtual-list.reel",
+                "values": {
+                    "element": {"#": "list4"},
+                    "delegate": {"@": "owner"},
+                    "data": {"<-": "@owner.customers"},
+                    "userInterfaceDescriptor": {"<-": "@owner.customerUIDescriptor"},
+                    "allowsMultipleSelection": {"<-": "!!@allowMultipeSelection.checked"},
+                    "isSelectionEnabled": {"<-": "!!@isSelectionEnabled.checked"}
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>VirtualList Samples</header>
+        <h4>Options:</h4>
+        <div class="options">
+            <p>
+                <span>Enable Selection: </span>
+                <input type="checkbox" data-montage-id="isSelectionEnabled" />
+            </p>
+            <p>
+                <span>Allow Multipe Selection: </span>
+                <input type="checkbox" data-montage-id="allowMultipeSelection" />
+            </p>
+            <p>
+                <span>Allow Navigation: </span>
+                <input type="checkbox" data-montage-id="isExpandable" />
+            </p>
+        </div>
+
+        <h4>VirtualList with default list item</h4>
+        <div data-montage-id="list1"></div>
+
+        <h4>VirtualList with injected list item </h4>
+        <div data-montage-id="list2">
+            <div data-montage-id="listItem2"></div>
+        </div>
+
+        <h4>VirtualList with default list item and user interface descriptor</h4>
+        <div data-montage-id="list3"></div>
+
+        <h4>VirtualList with custom list item from user interface descriptor</h4>
+        <div data-montage-id="list4"></div>
+    </div>
+</body>
+</html>

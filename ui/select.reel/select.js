@@ -2,7 +2,7 @@
     @module "montage/ui/native/select.reel"
 */
 
-var Bindings = require("core/bindings").Bindings,
+var Bindings = require("core/core").Bindings,
     RangeController = require("core/range-controller").RangeController,
     Control = require("ui/control").Control,
     PressComposer = require("composer/press-composer").PressComposer;
@@ -487,7 +487,7 @@ var Select = exports.Select =  Control.specialize(/** @lends module:"montage/ui/
                 this._setContentControllerSelectedIndexes(arr);
                 this._synchValues();
             }
-            this._dispatchActionEvent();
+            this.dispatchActionEvent();
         }
     }
 

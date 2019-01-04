@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="employee.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "owner"}
+                }
+            },
+
+            "firstname": {
+                "prototype": "../../../../../ui/text-field.reel",
+                "values": {
+                    "element": {"#": "firstname"},
+                    "value": {"<->": "@owner.data.firstname"}
+                }
+            },
+
+            "lastname": {
+                "prototype": "../../../../../ui/text-field.reel",
+                "values": {
+                    "element": {"#": "lastname"},
+                    "value": {"<->": "@owner.data.lastname"}
+                }
+            },
+
+            "contentController": {
+                "prototype": "../../../../../core/range-controller",
+                "values": {
+                    "content": {"<-": "@owner.departments.map{{label: name, value: name}}"}
+                }
+            },
+
+            "department": {
+                "prototype": "../../../../../ui/select.reel",
+                "values": {
+                    "element": {"#": "department"},
+                    "contentController": {"<-": "@contentController"},
+                    "value": {"<->": "@owner.data.department"}
+                }
+            },
+
+            "cancel": {
+                "prototype": "../../../../../ui/button.reel",
+                "values": {
+                    "element": {"#": "cancel"},
+                    "label": "Cancel",
+                    "detail.get('data')": {"<-": "@owner.data"}
+                }
+            },
+
+            "save": {
+                "prototype": "../../../../../ui/button.reel",
+                "values": {
+                    "element": {"#": "save"},
+                    "label": "Save",
+                    "detail.get('data')": {"<-": "@owner.data"},
+                    "disabled": {"<-": "!(@department.value && @lastname.value && @firstname.value)"}
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="employee-editor">
+        <div class="field">
+            <span>First Name:</span>
+            <input data-montage-id="firstname" />
+        </div>
+        <div class="field">
+            <span>Last Name:</span>
+            <input data-montage-id="lastname" />
+        </div>
+        <div class="field">
+            <span>Department:</span>
+            <select data-montage-id="department"></select>
+        </div>
+        <div class="buttons">
+            <div data-montage-id="cancel" class="button cancel"></div>
+            <div data-montage-id="save" class="button save"></div>
+        </div>
+    </div>
+</body>
+</html>

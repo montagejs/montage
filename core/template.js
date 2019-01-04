@@ -991,10 +991,10 @@ var Template = Montage.specialize( /** @lends Template# */ {
                         parameterName);
 
                     if (parameterName === "*" && parameterElement.childElementCount > 0) { // has default
-                        if (argumentElement.childElementCount > 0 ||
+                        if (argumentElement && (argumentElement.childElementCount > 0 ||
                             !!(argumentElement.firstChild &&
                                 argumentElement.firstChild.data &&
-                                argumentElement.firstChild.data.trim())
+                                argumentElement.firstChild.data.trim()))
                         ) { // has arguments, need to clean the serialization.
                             var labels = serialization.getSerializationLabels();
                             serialization.removeObjectsWithLabels(
@@ -1028,40 +1028,43 @@ var Template = Montage.specialize( /** @lends Template# */ {
                     }   
                 }
             }
-            result.elementIds = argumentsElementIds;
-            result.elementIdsCollisions = argumentElementsCollisionTable;
 
-            // Expand objects.
-            argumentsSerialization = templateArgumentProvider
-                .getTemplateArgumentSerialization(argumentsElementIds);
+            if (templateArgumentProvider._ownerDocumentPart) {
+                result.elementIds = argumentsElementIds;
+                result.elementIdsCollisions = argumentElementsCollisionTable;
 
-            argumentsSerialization.renameElementReferences(
-                argumentElementsCollisionTable);
+                // Expand objects.
+                argumentsSerialization = templateArgumentProvider
+                    .getTemplateArgumentSerialization(argumentsElementIds);
 
-            // When merging the serializations we need to resolve any template
-            // property alias that comes from the arguments, for instance, the
-            // argument could be referring to @table:cell in its scope when in
-            // this scope (the serialization1) it is aliased to
-            // @repetition:iteration. To do this we ask the argument provider
-            // to resolve the template property for us.
-            // This approach works because the arguments serialization is
-            // created assuming that template properties are just like any other
-            // label and are considered external objects.
-            willMergeObjectWithLabel = function (label) {
-                if (label.indexOf(":") > 0) {
-                    return templateArgumentProvider
-                        .resolveTemplateArgumentTemplateProperty(label);
-                }
-            };
+                argumentsSerialization.renameElementReferences(
+                    argumentElementsCollisionTable);
 
-            objectsCollisionTable = serialization.mergeSerialization(
-                argumentsSerialization, {
-                    willMergeObjectWithLabel: willMergeObjectWithLabel
-                });
-            this.objectsString = serialization.getSerializationString();
+                // When merging the serializations we need to resolve any template
+                // property alias that comes from the arguments, for instance, the
+                // argument could be referring to @table:cell in its scope when in
+                // this scope (the serialization1) it is aliased to
+                // @repetition:iteration. To do this we ask the argument provider
+                // to resolve the template property for us.
+                // This approach works because the arguments serialization is
+                // created assuming that template properties are just like any other
+                // label and are considered external objects.
+                willMergeObjectWithLabel = function (label) {
+                    if (label.indexOf(":") > 0) {
+                        return templateArgumentProvider
+                            .resolveTemplateArgumentTemplateProperty(label);
+                    }
+                };
 
-            result.labels = argumentsSerialization.getSerializationLabels();
-            result.labelsCollisions = objectsCollisionTable;
+                objectsCollisionTable = serialization.mergeSerialization(
+                    argumentsSerialization, {
+                        willMergeObjectWithLabel: willMergeObjectWithLabel
+                    });
+                this.objectsString = serialization.getSerializationString();
+
+                result.labels = argumentsSerialization.getSerializationLabels();
+                result.labelsCollisions = objectsCollisionTable;
+            }
 
             return result;
         }
@@ -1384,6 +1387,15 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
         }
     },
 
+    resolvedPromise: {
+        get: function () {
+            if (!TemplateResources._resolvedPromise) {
+                TemplateResources._resolvedPromise = Promise.resolve();
+            }
+            return TemplateResources._resolvedPromise;
+        }
+    },
+
     initWithTemplate: {
         value: function (template) {
             this.template = template;
@@ -1456,7 +1468,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
                 return Promise.all(promises);
             }
 
-            return Promise.resolve();
+            return this.resolvedPromise;
         }
     },
 
@@ -1532,17 +1544,15 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
 
     loadStyle: {
         value: function (element, targetDocument) {
-            var url,
+            var url = element.getAttribute("href"),
                 documentResources;
-
-            url = element.getAttribute("href");
 
             if (url) {
                 documentResources = DocumentResources.getInstanceForDocument(targetDocument);
                 return documentResources.preloadResource(url);
-            } else {
-                return Promise.resolve();
             }
+            
+            return this.resolvedPromise;
         }
     },
 

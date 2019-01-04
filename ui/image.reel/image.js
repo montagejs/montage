@@ -11,7 +11,7 @@ var Component = require("ui/component").Component;
    @extends module:montage/ui/control.Control
  */
 exports.Image = Component.specialize({
-    hasTemplate: {value: false }
+    hasTemplate: {value: true }
 });
 
 exports.Image.addAttributes(/** @lends module:"montage/ui/native/image.reel".Image */{

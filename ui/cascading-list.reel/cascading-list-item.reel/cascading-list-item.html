@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="cascading-list-item.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "owner"},
+                "content": {"@": "content"},
+                "selection": {"<-": "@owner.content.component.selection"}
+            }
+        },
+
+        "header": {
+            "value": {"#": "header"},
+            "values": {
+                "hidden": {"<-": "@owner.shouldHideHeader"}
+            }
+        },
+
+        "headerLeft": {
+            "prototype": "../../button.reel",
+            "values": {
+                "element": {"#": "header-left"},
+                "defaultLabel": "",
+                "label": {"<-": "@owner.headerLeftLabel"},
+                "detail.get('context')": {"<-": "@owner.context"}
+            }
+        },
+
+        "headerMiddle": {
+            "prototype": "../../button.reel",
+            "values": {
+                "element": {"#": "header-middle"},
+                "defaultLabel": "",
+                "label": {"<-": "@owner.headerMiddleLabel"},
+                "detail.get('context')": {"<-": "@owner.context"}
+            }
+        },
+
+        "headerRight": {
+            "prototype": "../../button.reel",
+            "values": {
+                "element": {"#": "header-right"},
+                "defaultLabel": "",
+                "label": {"<-": "@owner.headerRightLabel"},
+                "detail.get('context')": {"<-": "@owner.context"},
+                "classList.has('invisible')": {"<-": "@owner.context.isEditing"}
+            }
+        },
+
+        "content": {
+            "prototype": "../../placeholder.reel",
+            "values": {
+                "element": {"#": "content"},
+                "componentModule": {"<-": "@owner.componentModule"},
+                "data": {"<-": "@owner.context.object"},
+                "component.userInterfaceDescriptor": {"<-": "@owner.context.userInterfaceDescriptor"},
+                "component.delegate": {"<-": "@owner.delegate"}
+            }
+        },
+
+        "footer": {
+            "value": {"#": "footer"},
+            "values": {
+                "hidden": {"<-": "@owner.shouldHideFooter"}
+            }
+        },
+
+        "footerLeft": {
+            "prototype": "../../button.reel",
+            "values": {
+                "element": {"#": "footer-left"},
+                "defaultLabel": "",
+                "detail.get('context')": {"<-": "@owner.context"},
+                "label": {"<-": "@owner.footerLeftLabel"}
+            }
+        },
+
+        "footerMiddle": {
+            "prototype": "../../button.reel",
+            "values": {
+                "element": {"#": "footer-middle"},
+                "defaultLabel": "",
+                "detail.get('context')": {"<-": "@owner.context"},
+                "label": {"<-": "@owner.footerMiddleLabel"}
+            }
+        },
+
+        "footerRight": {
+            "prototype": "../../button.reel",
+            "values": {
+                "element": {"#": "footer-right"},
+                "defaultLabel": "",
+                "detail.get('context')": {"<-": "@owner.context"},
+                "label": {"<-": "@owner.footerRightLabel"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="CascadingListItem">
+        <div data-montage-id="header" class="CascadingListItem-header">
+            <div data-montage-id="header-left" class="CascadingListItemAction CascadingListItemAction-header left"></div>
+            <div data-montage-id="header-middle" class="CascadingListItemAction CascadingListItemAction-header middle"></div>
+            <div data-montage-id="header-right" class="CascadingListItemAction CascadingListItemAction-header right"></div>
+        </div>
+        <div data-montage-id="content" class="CascadingListItem-content"></div>
+        <div data-montage-id="footer" class="CascadingListItem-footer">
+            <div data-montage-id="footer-left" class="CascadingListItemAction CascadingListItemAction-footer left"></div>
+            <div data-montage-id="footer-middle" class="CascadingListItemAction CascadingListItemAction-footer middle"></div>
+            <div data-montage-id="footer-right" class="CascadingListItemAction CascadingListItemAction-footer right"></div>
+        </div>
+    </div>
+</body>
+</html>

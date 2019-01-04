@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024px" height="1024px" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <path d="M540.353195,823.385702 C540.822522,824.022103 541.315863,824.642635 541.833228,825.245702 C553.067249,838.340664 571.366325,838.241432 582.721958,825.004713 L831.914397,534.532985 L855.446984,561.963797 L904.93097,402 L767.699822,459.681121 L791.232408,487.111933 L562.232042,754.046725 L306.406485,455.843088 C300.339318,448.770881 292.232111,445.520105 284.288633,446.092059 C276.345155,445.520105 268.237948,448.770881 262.170781,455.843088 L-13.5775878,777.269795 C-24.8084612,790.361088 -24.8083796,811.586362 -13.5718885,824.684204 C-2.33786751,837.779165 15.8765313,837.778639 27.1044011,824.690847 L284.288633,524.903468 L540.353195,823.385702 L540.353195,823.385702 Z" id="path-1"></path>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-40" y="-40" width="1006.93097" height="513">
+            <rect x="-62" y="362" width="1006.93097" height="513" fill="white"></rect>
+            <use xlink:href="#path-1" fill="black"></use>
+        </mask>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="sales">
+            <rect id="Rectangle" fill="#000000" x="412" y="184" width="200" height="840"></rect>
+            <rect id="Rectangle-Copy-2" fill="#000000" x="718" y="274" width="200" height="750"></rect>
+            <rect id="Rectangle-Copy" fill="#000000" x="106" y="466" width="200" height="558"></rect>
+            <g id="Combined-Shape">
+                <use fill="#000000" fill-rule="evenodd" xlink:href="#path-1"></use>
+                <use stroke="#FFFFFF" mask="url(#mask-2)" stroke-width="80" xlink:href="#path-1"></use>
+            </g>
+        </g>
+    </g>
+</svg>

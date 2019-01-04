@@ -1,0 +1,44 @@
+{
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "Employee",
+            "exportName": "Department",
+            "propertyDescriptors": [
+                {"@": "id"},
+                {"@": "name"}
+            ],
+            "objectDescriptorModule": {
+                "%": "test/mocks/data/models/department.mjson"
+            },
+            "module": {
+                "%": "test/mocks/data/models/department"
+            },
+            "userInterfaceDescriptorModules": {
+                "*": {
+                    "%": "test/mocks/data/models/department-ui-descriptor.mjson"
+                },
+                "montage/ui/cascading-list.reel": {
+                    "%": "test/mocks/data/models/default-cascading-list-ui-descriptor.mjson"
+                }
+            }
+        }
+    },
+
+    "id": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "id",
+            "valueType": "number"
+        }
+    },
+
+    "name": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "name",
+            "valueType": "string"
+        }
+    }
+
+}

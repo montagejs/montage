@@ -1,0 +1,7 @@
+.fa-check {
+    color: #C7C7CC;
+}
+
+.fa-check.checked {
+    color: #32db64
+}

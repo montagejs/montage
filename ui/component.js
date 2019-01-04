@@ -13,6 +13,7 @@
  * @requires collections/set
  */
 var Montage = require("../core/core").Montage,
+    getObjectDescriptorWithModuleId = require("../core/meta/module-object-descriptor").ModuleObjectDescriptor.getObjectDescriptorWithModuleId,
     Target = require("../core/target").Target,
     Template = require("../core/template").Template,
     DocumentResources = require("../core/document-resources").DocumentResources,
@@ -20,7 +21,7 @@ var Montage = require("../core/core").Montage,
     Promise = require("../core/promise").Promise,
     defaultEventManager = require("../core/event/event-manager").defaultEventManager,
     Alias = require("../core/serialization/alias").Alias,
-
+    DragManager = require("../core/drag/drag-manager").DragManager,
     logger = require("../core/logger").logger("component"),
     drawPerformanceLogger = require("../core/logger").logger("Drawing performance").color.green(),
     drawListLogger = require("../core/logger").logger("drawing list").color.blue(),
@@ -38,7 +39,8 @@ var Montage = require("../core/core").Montage,
 var ATTR_LE_COMPONENT = "data-montage-le-component",
     ATTR_LE_ARG = "data-montage-le-arg",
     ATTR_LE_ARG_BEGIN = "data-montage-le-arg-begin",
-    ATTR_LE_ARG_END = "data-montage-le-arg-end";
+    ATTR_LE_ARG_END = "data-montage-le-arg-end",
+    _defaultDragManager;
 
 
 function loggerToString (object) {
@@ -451,30 +453,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     },
 
     /**
-     * Dispatch the actionEvent this component is configured to emit upon interaction
-     * @private
-     */
-    _dispatchActionEvent: {
-        value: function () {
-            this.dispatchEvent(this.createActionEvent());
-        },
-        enumerable: false
-    },
-
-    /**
-     * Convenience to create a custom event named "action"
-     * @function
-     * @returns and event to dispatch upon interaction
-     */
-    createActionEvent: {
-        value: function () {
-            var actionEvent = document.createEvent("CustomEvent");
-            actionEvent.initCustomEvent("action", true, true, null);
-            return actionEvent;
-        }
-    },
-
-    /**
      * The gate controlling the canDraw() response of the component.
      * @type {Gate}
      * @private
@@ -767,39 +745,48 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
+    dragManager: {
+        get: function () {
+            return _defaultDragManager || 
+            ((_defaultDragManager = new DragManager()).initWithComponent(this.rootComponent));
+        }
+    },
+
     /**
      * TemplateArgumentProvider implementation
      */
 
     getTemplateArgumentElement: {
         value: function (argumentName) {
-            var ownerModuleId, element, range, argument, label,
-                template = this._ownerDocumentPart.template;
+            if (this._ownerDocumentPart) {
+                var ownerModuleId, element, range, argument, label,
+                    template = this._ownerDocumentPart.template;
 
-            if (global._montage_le_flag) {
-                ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
-                label = this._montage_metadata.label;
-            }
-
-            if (argumentName === "*") {
-                element = template.getElementById(this.getElementId());
-
-                range = template.document.createRange();
-                range.selectNodeContents(element);
-                argument = range.cloneContents();
-                if (global._montage_le_flag && element.children.length > 0) {
-                    this._leTagStarArgument(ownerModuleId, label, argument);
-                }
-            } else {
-                argument = this._getTemplateDomArgument(argumentName).cloneNode(true);
-                argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
                 if (global._montage_le_flag) {
-                    this._leTagNamedArgument(ownerModuleId, label, argument,
-                        argumentName);
+                    ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
+                    label = this._montage_metadata.label;
                 }
-            }
 
-            return argument;
+                if (argumentName === "*") {
+                    element = template.getElementById(this.getElementId());
+
+                    range = template.document.createRange();
+                    range.selectNodeContents(element);
+                    argument = range.cloneContents();
+                    if (global._montage_le_flag && element.children.length > 0) {
+                        this._leTagStarArgument(ownerModuleId, label, argument);
+                    }
+                } else {
+                    argument = this._getTemplateDomArgument(argumentName).cloneNode(true);
+                    argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
+                    if (global._montage_le_flag) {
+                        this._leTagNamedArgument(ownerModuleId, label, argument,
+                            argumentName);
+                    }
+                }
+
+                return argument;
+            }
         }
     },
 
@@ -1222,7 +1209,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     __exitDocument: {
         value: function () {
-            if (this._inDocument && typeof this.exitDocument === "function") {
+            if (this.draggable) {
+                this.unregisterDraggable();
+            }
+
+            if (this.droppable) {
+                this.unregisterDroppable();
+            }
+
+            if (this._inDocument && typeof this.exitDocument === "function") {                
                 this.exitDocument();
                 this._inDocument = false;
             }
@@ -1285,6 +1280,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 });
             }
         }
+    },
+
+    draggable: {
+        value: false
+    },
+
+    droppable: {
+        value: false
     },
 
     /**
@@ -1841,6 +1844,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             if(this._templateObjects) {
                 this._setupTemplateObjects(documentPart.objects);
             }
+
+            this.addOwnPropertyChangeListener("draggable", this);
+            this.addOwnPropertyChangeListener("droppable", this);
         }
     },
 
@@ -2925,6 +2931,87 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
+    // Drag & Drop operations
+
+    handleDraggableChange: {
+        value: function (value) {
+            if (value) {
+                this.registerDraggable();
+            } else {
+                this.unregisterDraggable();
+            }
+        }
+    },
+
+    handleDroppableChange: {
+        value: function (value) {
+            if (value) {
+                this.registerDroppable();
+            } else {
+                this.unregisterDroppable();
+            }
+        }
+    },
+
+    /**
+     * Register a component for beeing a dragging source.
+     */
+    registerDraggable: {
+        value: function () {
+            this.dragManager.registerDraggable(this);
+            this.classList.add("montage-draggable");
+        }
+    },
+
+    /**
+     * unregister a component for beeing a dragging source.
+     */
+    unregisterDraggable: {
+        value: function () {
+            this.dragManager.unregisterDraggable(this);
+            this.classList.remove("montage-draggable");
+        }
+    },
+
+    /**
+     * Register a component for beeing a drag destination.
+     */
+    registerDroppable: {
+        value: function () {
+            this.dragManager.registerDroppable(this);
+            this.classList.add("montage-droppable");
+        }
+    },
+
+    /**
+     * Unregister a component for beeing a drag destination.
+     */
+    unregisterDroppable: {
+        value: function () {
+            this.dragManager.unregisterDroppable(this);
+            this.classList.remove("montage-droppable");
+        }
+    },
+
+    _draggableContainer: {
+        value: null
+    },
+
+    draggableContainer: {
+        set: function (element) {
+            if (element) {
+                if (element instanceof Element) {
+                    this._draggableContainer = element;
+                } else if (element.element instanceof Element) {
+                    this._draggableContainer = element.element;
+                }
+            }
+        },
+        get: function () {
+            return this._draggableContainer;
+        }
+    },
+
     //
     // Attribute Handling
     //
@@ -3244,6 +3331,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         value: function (firstTime) {
             var originalElement;
 
+            if (this.draggable) {
+                this.registerDraggable();
+            }
+
+            if (this.droppable) {
+                this.registerDroppable();
+            }
+
             if (firstTime) {
                 // The element is now ready, so we can read the attributes that
                 // have been set on it.
@@ -3474,8 +3569,116 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 component.dispose();
             });
         }
+    },
+
+    loadUserInterfaceDescriptor: {
+        value: function (object) {
+            var self = this,
+                objectDescriptorModuleIdCandidate,
+                objectDescriptorModuleId,
+                objectDescriptor,
+                infoDelegate,
+                constructor,
+                promise;
+
+            this.canDrawGate.setField(
+                this.constructor.userInterfaceDescriptorLoadedField,
+                false
+            );
+
+            if (typeof object === "object" &&
+                (constructor = object.constructor) &&
+                constructor.objectDescriptorModuleId
+            ) {
+                objectDescriptorModuleId = constructor.objectDescriptorModuleId;
+            }
+
+            objectDescriptorModuleIdCandidate = this.callDelegateMethod(
+                "componentWillUseObjectDescriptorModuleIdForObject",
+                this,
+                objectDescriptorModuleId,
+                object
+            );
+
+            if (objectDescriptorModuleIdCandidate) {
+                infoDelegate = Montage.getInfoForObject(this.delegate);
+                objectDescriptorModuleId = objectDescriptorModuleIdCandidate;
+            }
+
+            if (objectDescriptorModuleId) {
+                if (objectDescriptorModuleIdCandidate) {
+                    objectDescriptor = getObjectDescriptorWithModuleId(
+                        objectDescriptorModuleId,
+                        infoDelegate ? infoDelegate.require : require
+                    );
+                } else {
+                    objectDescriptor = constructor.objectDescriptor;
+                }
+
+                promise = objectDescriptor;
+            } else {
+                promise = Promise.resolve();
+            }
+
+            promise = promise.then(function (objectDescriptor) {
+                var moduleInfo = Montage.getInfoForObject(self),
+                    packageName = moduleInfo.require.packageDescription.name,
+                    moduleId = packageName + "/" + moduleInfo.moduleId,
+                    userInterfaceDescriptorModuleId,
+                    userInterfaceDescriptorModuleIdCandidate;
+                
+                if (objectDescriptor && objectDescriptor.userInterfaceDescriptorModules) {
+                    userInterfaceDescriptorModuleId =
+                        objectDescriptor.userInterfaceDescriptorModules[moduleId];
+
+                    if (!userInterfaceDescriptorModuleId) {
+                        userInterfaceDescriptorModuleId =
+                            objectDescriptor.userInterfaceDescriptorModules['*'];
+                    }
+                }
+
+                userInterfaceDescriptorModuleIdCandidate = self.callDelegateMethod(
+                    "componentWillUseUserInterfaceDescriptorModuleIdForObject",
+                    self,
+                    userInterfaceDescriptorModuleId,
+                    object
+                );
+
+                if (objectDescriptor && userInterfaceDescriptorModuleId &&
+                    (userInterfaceDescriptorModuleIdCandidate === userInterfaceDescriptorModuleId ||
+                        !userInterfaceDescriptorModuleIdCandidate)
+                ) {
+                    if (
+                        userInterfaceDescriptorModuleId === objectDescriptor.userInterfaceDescriptorModules['*']
+                    ) {
+                        return objectDescriptor.userInterfaceDescriptor;
+                    }
+
+                    return objectDescriptor.userInterfaceDescriptors[moduleId];
+                } else if (userInterfaceDescriptorModuleIdCandidate) {
+                    infoDelegate = infoDelegate || Montage.getInfoForObject(self.delegate);
+
+                    return (infoDelegate.require || require).async(userInterfaceDescriptorModuleIdCandidate)
+                        .then(function (userInterfaceDescriptorModule) {
+                            return userInterfaceDescriptorModule.montageObject;
+                        });
+                }
+            });
+
+            return promise.finally(function () {
+                self.canDrawGate.setField(
+                    self.constructor.userInterfaceDescriptorLoadedField,
+                    true
+                );
+            });
+        }
     }
-},{
+
+}, {
+
+    userInterfaceDescriptorLoadedField: {
+        value: 'userInterfaceDescriptorLoaded'
+    },
     /**
      * Add the specified properties as properties of this component.
      * @function
@@ -4355,7 +4558,21 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             this._element = document.documentElement;
             this._documentResources = DocumentResources.getInstanceForDocument(document);
         }
+    },
+
+    willDraw: {
+        value: function () {
+            this.dragManager.willDraw();
+        }
+    },
+
+    draw: {
+        value: function () {
+            this.dragManager.draw();
+        }
     }
+
+
 });
  
 exports.__root__ = rootComponent = new RootComponent().init();

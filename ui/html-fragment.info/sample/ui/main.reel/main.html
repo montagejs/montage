@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"},
+                    "_fragment8": {"@": "fragment8"}
+                }
+            },
+
+            "fragment1": {
+                "prototype": "montage/ui/html-fragment.reel",
+                "values": {
+                    "element": {"#": "fragment1"},
+                    "value": "<span style='color: #3498db; font-size: 3em;'>Hello</span><script>alert('hello');<\/script>"
+                }
+            },
+
+            "fragment2": {
+                "prototype": "montage/ui/html-fragment.reel",
+                "values": {
+                    "element": {"#": "fragment2"},
+                    "value": "<div style='color: #e74c3c; font-size: 1.5em;'><span>Bonjour </span><div><div><i>nope</i><span>...</span></div></div><p>test</p><i>Montage</i></div>",
+                    "allowedTags": ["div", "span"]
+                }
+            },
+
+            "fragment3": {
+                "prototype": "montage/ui/html-fragment.reel",
+                "values": {
+                    "element": {"#": "fragment3"},
+                    "value": "<span class='fragment3' style='color: #f1c40f; font-size: 3em;' title='Hola' alt='hola'>Hola</span><script>alert('hola')<\/script>",
+                    "allowedAttributes": {
+                        "span": ["style", "title"]
+                    }
+                }
+            },
+
+            "fragment4": {
+                "prototype": "montage/ui/html-fragment.reel",
+                "values": {
+                    "element": {"#": "fragment4"},
+                    "value": "<style>.fragment4:after{content: attr(data-name);}</style><span class='fragment4' style='color: #f39c12; font-size: 2em;' title='Hello' data-name='Montage'>Hello </span>",
+                    "allowedAttributes": {
+                        "span": ["style", "title", "data-*", "class"]
+                    },
+                    "allowedTags": ["style", "span"]
+                }
+            },
+
+            "fragment5": {
+                "prototype": "montage/ui/html-fragment.reel",
+                "values": {
+                    "element": {"#": "fragment5"},
+                    "value": "<html><head><style>.fragment5:after{content: attr(data-name); color: #2ecc71;}</style></head><body><span class='fragment5' style='font-size: 1.5em;' title='Bonjour' data-name='Montage'>Bonjour </span> </body></html>",
+                    "allowedAttributes": {
+                        "span": ["style", "title", "data-*", "class"]
+                    },
+                    "allowedTags": ["style", "span"]
+                }
+            },
+
+            "fragment6": {
+                "prototype": "montage/ui/html-fragment.reel",
+                "values": {
+                    "element": {"#": "fragment6"},
+                    "value": "<style>.fragment6:after{content: attr(data-name);}</style><span class='fragment6' style='color: #9b59b6; font-size: 2em;' title='Hola' data-name='Montage'>Hola </span>",
+                    "allowedAttributes": {
+                        "span": ["style", "title", "data-*", "class"]
+                    },
+                    "allowedTags": ["span"]
+                }
+            },
+
+            "fragment7": {
+                "prototype": "montage/ui/html-fragment.reel",
+                "values": {
+                    "element": {"#": "fragment7"},
+                    "value": "<svg height='100' width='100'><circle cx='50' cy='50' r='40' stroke='#c0392b' stroke-width='3' fill='#d35400' /></svg>",
+                    "allowedAttributes": {
+                        "svg": ["height", "width"],
+                        "circle": false
+                    },
+                    "allowedTags": ["svg", "circle"]
+                }
+            },
+
+            "fragment8": {
+                "prototype": "montage/ui/html-fragment.reel",
+                "values": {
+                    "element": {"#": "fragment8"},
+                    "delegate": {"=": "@owner"},
+                    "value": "<style>.fragment8:after{content: attr(data-name);}</style><span class='fragment8' style='color: #9b59b6; font-size: 2em;' title='Hola' data-name='Montage'>Hola </span><p><i>montage</i></p>",
+                    "allowedAttributes": {
+                        "span": ["style", "title", "data-*", "class"]
+                    },
+                    "allowedTags": ["style", "span"]
+                }
+            },
+
+            "fragment9": {
+                "prototype": "montage/ui/html-fragment.reel",
+                "values": {
+                    "element": {"#": "fragment9"},
+                    "value": "Plain Text should work"
+                }
+            },
+
+            "checkbox": {
+                "prototype": "montage/ui/checkbox.reel",
+                "values": {
+                    "element": {"#": "checkbox"}
+                }
+            },
+
+            "repetition": {
+                "prototype": "montage/ui/repetition.reel",
+                "values": {
+                    "element": {"#": "repetition"},
+                    "content": {"<-": "@checkbox.checked ? @owner.content2 : @owner.content1"}
+                }
+            },
+
+            "fragment10": {
+                "prototype": "montage/ui/html-fragment.reel",
+                "values": {
+                    "element": {"#": "fragment10"},
+                    "value": {"<-": "@repetition:iteration.object"}
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>HTML Fragment Samples</header>
+        <div class="content">
+            <div data-montage-id="fragment1" class="html-fragment"></div>
+            <div data-montage-id="fragment2" class="html-fragment"></div>
+            <div data-montage-id="fragment3" class="html-fragment"></div>
+            <div data-montage-id="fragment4" class="html-fragment"></div>
+            <div data-montage-id="fragment5" class="html-fragment"></div>
+            <div data-montage-id="fragment6" class="html-fragment"></div>
+            <div data-montage-id="fragment7" class="html-fragment"></div>
+            <div data-montage-id="fragment8" class="html-fragment"></div>
+            <div data-montage-id="fragment9" class="html-fragment"></div>
+            <div>
+                <label for="checkbox">Switch content </label>
+                <input id="checkbox" data-montage-id="checkbox" type="checkbox" />
+            </div>
+            <div data-montage-id="repetition">
+                <div data-montage-id="fragment10" class="html-fragment"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

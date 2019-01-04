@@ -68,14 +68,6 @@ exports.SerializableAttribute = Montage.specialize( {
     prop2b: {value: null, serializable: "reference"},
 });
 
-exports.DistinctArrayProp = Montage.specialize( {
-    prop: {value: [], serializable: true, distinct: true}
-});
-
-exports.DistinctLiteralProp = Montage.specialize( {
-    prop: {value: {}, serializable: true, distinct: true}
-});
-
 exports.CustomProperties = Montage.specialize( {
     manchete: {value: 42},
 
@@ -186,8 +178,6 @@ exports.objects = {
     TwoProps: exports.TwoProps,
     OneReferenceProp: exports.OneReferenceProp,
     SerializableAttribute: exports.SerializableAttribute,
-    DistinctArrayProp: exports.DistinctArrayProp,
-    DistinctLiteralProp: exports.DistinctLiteralProp,
     CustomProperties: exports.CustomProperties,
     CustomPropertiesRef: exports.CustomPropertiesRef,
     CustomAllProperties: exports.CustomAllProperties,

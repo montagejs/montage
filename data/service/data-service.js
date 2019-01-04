@@ -1,5 +1,5 @@
 var Montage = require("core/core").Montage,
-    AuthorizationManager = require("data/service/authorization-manager").AuthorizationManager,
+    AuthorizationManager = require("data/service/authorization-manager").defaultAuthorizationManager,
     AuthorizationPolicy = require("data/service/authorization-policy").AuthorizationPolicy,
     DataObjectDescriptor = require("data/model/data-object-descriptor").DataObjectDescriptor,
     DataQuery = require("data/model/data-query").DataQuery,
@@ -56,7 +56,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     deserializeSelf: {
         value:function (deserializer) {
             var self = this,
-                result = null, 
+                result = this,
                 value;
 
             value = deserializer.getProperty("childServices");
@@ -85,6 +85,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             value = deserializer.getProperty("delegate");
             if (value) {
                 this.delegate = value;
+            }
+
+            value = deserializer.getProperty("isUniquing");
+            if (value !== undefined) {
+                this.isUniquing = value;
             }
             
             return result;
@@ -466,8 +471,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (mapping, child) {
             var service = this;
             return Promise.all([
-                mapping.objectDescriptorReference,
-                mapping.schemaDescriptorReference
+                mapping.objectDescriptor,
+                mapping.schemaDescriptor
             ]).spread(function (objectDescriptor, schemaDescriptor) {
                 // TODO -- remove looking up by string to unique.
                 var type = [objectDescriptor.module.id, objectDescriptor.name].join("/");
@@ -483,9 +488,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     _objectDescriptorForType: {
         value: function (type) {
-            return  this._constructorToObjectDescriptorMap.get(type) ||
-                    typeof type === "string" && this._moduleIdToObjectDescriptorMap[type] ||
-                    type;
+            var descriptor = this._constructorToObjectDescriptorMap.get(type) ||
+                             typeof type === "string" && this._moduleIdToObjectDescriptorMap[type];
+
+            return  descriptor || type;
         }
     },
 
@@ -764,11 +770,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
             if (this.authorizationPolicy === AuthorizationPolicyType.UpfrontAuthorizationPolicy) {
                 var self = this;
-                exports.DataService.authorizationManager.authorizeService(this).then(function(authorization) {
+                this.authorizationPromise = exports.DataService.authorizationManager.authorizeService(this).then(function(authorization) {
                     self.authorization = authorization;
                     return authorization;
-                }).catch(function(error) {
-                    console.log(error);
                 });
             } else {
                 //Service doesn't need anything upfront, so we just go through
@@ -833,7 +837,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
-     * Performs whatever tasks are necessary to authorize 
+     * Performs whatever tasks are necessary to authorize
      * this service and returns a Promise that resolves with
      * an Authorization object.
      *
@@ -967,6 +971,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             prototype = this._dataObjectPrototypes.get(type);
             if (type && !prototype) {
                 prototype = Object.create(type.objectPrototype || Montage.prototype);
+                prototype.constuctor = type.objectPrototype.constructor;
+                if(prototype.constuctor.name === "constructor" ) {
+                    Object.defineProperty(prototype.constuctor, "name", { value: type.typeName });
+                }
+
                 this._dataObjectPrototypes.set(type, prototype);
                 if (type instanceof ObjectDescriptor || type instanceof DataObjectDescriptor) {
                     triggers = DataTrigger.addTriggers(this, type, prototype);
@@ -998,13 +1007,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     // __object__snapshotMethodImplementation: {
     //     value: function() {
-    //         debugger;
     //         return exports.DataService.mainService._getChildServiceForObject(this).snapshotForObject(this);
     //     }
     // },
     // __object_primaryKeyMethodImplementation: {
     //     value: function() {
-    //         debugger;
     //         return exports.DataService.mainService.dataIdentifierForObject(this).primaryKey;
     //     }
     // },
@@ -1026,12 +1033,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     _dataObjectPrototypes: {
-        get: function () {
-            if (!this.__dataObjectPrototypes){
-                this.__dataObjectPrototypes = new Map();
-            }
-            return this.__dataObjectPrototypes;
-        }
+        // get: function () {
+        //     if (!this.__dataObjectPrototypes){
+        //         this.__dataObjectPrototypes = new Map();
+        //     }
+        //     return this.__dataObjectPrototypes;
+        // },
+        value: new Map()
     },
 
     __dataObjectPrototypes: {
@@ -1277,7 +1285,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 useDelegate = isHandler && typeof this.fetchRawObjectProperty === "function",
                 delegateFunction = !useDelegate && isHandler && this._delegateFunctionForPropertyName(propertyName),
                 propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
-                childService = !isHandler && this._getChildServiceForObject(object);
+                childService = !isHandler && this._getChildServiceForObject(object),
+                debug = exports.DataService.debugProperties.has(propertyName);
+
+
+            // Check if property is included in debugProperties. Intended for debugging
+            if (debug) {
+                console.debug("DataService.fetchObjectProperty", object, propertyName);
+                console.debug("To debug ExpressionDataMapping.mapRawDataToObjectProperty for " + propertyName + ", set a breakpoint here.");
+            }
 
             return  useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
                     delegateFunction ?                  delegateFunction.call(this, object) :
@@ -1295,29 +1311,40 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    _isAsync: {
+        value: function (object) {
+            return object && object.then && typeof object.then === "function";
+        }
+    },
+
     _fetchObjectPropertyWithPropertyDescriptor: {
         value: function (object, propertyName, propertyDescriptor) {
             var self = this,
                 objectDescriptor = propertyDescriptor.owner,
                 mapping = objectDescriptor && this.mappingWithType(objectDescriptor),
-                data = {};
+                data = {},
+                result;
+
 
             if (mapping) {
-
                 Object.assign(data, this.snapshotForObject(object));
-
-                return mapping.mapObjectToCriteriaSourceForProperty(object, data, propertyName).then(function() {
+                result = mapping.mapObjectToCriteriaSourceForProperty(object, data, propertyName);
+                if (this._isAsync(result)) {
+                    return result.then(function() {
+                        Object.assign(data, self.snapshotForObject(object));
+                        return mapping.mapRawDataToObjectProperty(data, object, propertyName);
+                    });
+                } else {
                     Object.assign(data, self.snapshotForObject(object));
-                    return mapping.mapRawDataToObjectProperty(data, object, propertyName);
-                });
+                    result = mapping.mapRawDataToObjectProperty(data, object, propertyName);
+                    if (!this._isAsync(result)) {
+                        result = this.nullPromise;
+                    }
+                    return result;
+                }
             } else {
                 return this.nullPromise;
             }
-
-
-            //return mapping.
-            // (object,{}, propertyName);
-
         }
     },
 
@@ -1351,9 +1378,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     }
                 }
             }
-            // if (names.indexOf("geometryType")) {
-            //
-            // }
+
             // Return a promise that will be fulfilled only when all of the
             // requested data has been set on the object. If possible do this
             // without creating any additional promises.
@@ -1726,6 +1751,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
             // make sure type is an object descriptor or a data object descriptor.
             query.type = this._objectDescriptorForType(query.type);
+
             // Set up the stream.
             stream = stream || new DataStream();
             stream.query = query;
@@ -1773,13 +1799,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 childService._fetchRawData(stream);
             } else {
                 if (this.authorizationPolicy === AuthorizationPolicy.ON_DEMAND) {
-                    if (typeof this.shouldAuthorizeForQuery === "function" && this.shouldAuthorizeForQuery(stream.query) && !this.authorization) {
-                        this.authorizationPromise = exports.DataService.authorizationManager.authorizeService(this).then(function(authorization) {
+                    var prefetchAuthorization = typeof this.shouldAuthorizeForQuery === "function" && this.shouldAuthorizeForQuery(stream.query);
+                    if (prefetchAuthorization || !this.authorization) {
+                        this.authorizationPromise = exports.DataService.authorizationManager.authorizeService(this, prefetchAuthorization).then(function(authorization) {
                             self.authorization = authorization;
                             return authorization;
-                        }).catch(function(error) {
-                            console.log(error);
                         });
+
                     }
                 }
                 this.authorizationPromise.then(function (authorization) {
@@ -1787,6 +1813,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     stream.query = self.mapSelectorToRawDataQuery(streamSelector);
                     self.fetchRawData(stream);
                     stream.query = streamSelector;
+                }).catch(function (e) {
+                    stream.dataError(e);
+                    self.authorizationPromise = Promise.resolve(null);
                 });
             }
         }
@@ -1894,6 +1923,26 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
+     * Resets an object to the last value in the snapshot.
+     * @method
+     * @argument {Object} object - The object who will be reset.
+     * @returns {external:Promise} - A promise fulfilled when the object has
+     * been mapped back to its last known state.
+     */
+    resetDataObject: {
+        value: function (object) {
+            var service = this._getChildServiceForObject(object),
+                promise;
+
+            if (service) {
+                promise = service.resetDataObject(object);
+            }
+
+            return promise;
+        }
+    },
+    
+    /**
      * Save changes made to a data object.
      *
      * @method
@@ -1918,9 +1967,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 }
                 return mappingPromise.then(function () {
                         return self.saveRawData(record, object)
-                            .then(function () {
+                            .then(function (data) {
                                 self.rootService.createdDataObjects.delete(object);
-                                return null;
+                                return data;
                             });
                  });
             }
@@ -2518,6 +2567,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     authorizationManager: {
         value: AuthorizationManager
-    }
+    },
+
+
+    /***************************************************************************
+     * Debugging
+     */
+
+     debugProperties: {
+         value: new Set()
+     }
 
 });

@@ -4,7 +4,146 @@
  * @requires montage/composer/composer
  */
 var Montage = require("../core/core").Montage,
-    Composer = require("./composer").Composer;
+    Composer = require("./composer").Composer,
+    MutableEvent = require("../core/event/mutable-event").MutableEvent,
+    TranslateComposer = require("./translate-composer").TranslateComposer;
+
+var DIRECTION_LEFT = 'left',
+    DIRECTION_RIGHT = 'right',
+    DIRECTION_UP = 'up',
+    DIRECTION_DOWN = 'down',
+    SWIPE = 'swipe';
+
+var SwipeEvent = exports.SwipeEvent = MutableEvent.specialize({
+
+    /**
+     * @public
+     * @type {String}
+     * @default "swipe"
+     * @description Name of the swipe event.
+     * 
+     * Possible values: 
+     * - "swipe"
+     * - "swipeUp"
+     * - "swipeRight"
+     * - "swipeDown"
+     * - "swipeLeft"
+     */
+    type: {
+        value: SWIPE
+    },
+
+    _event: {
+        enumerable: false,
+        value: null
+    },
+
+    event: {
+        get: function () {
+            return this._event;
+        },
+        set: function (value) {
+            this._event = value;
+        }
+    },
+
+    bubbles: {
+        value: true
+    },
+
+     /**
+     * @public
+     * @type {String}
+     * @default null
+     * @description The direction of a swipe gesture.
+     * Possible values:
+     * - "up"
+     * - "right"
+     * - "down"
+     * - "left"
+     */
+    direction: {
+        value: null
+    },
+
+     /**
+     * @public
+     * @type {Number}
+     * @default null
+     * @description The angle of a swipe gesture.
+     */
+    angle: {
+        value: null
+    },
+
+     /**
+     * @public
+     * @type {Number}
+     * @default null
+     * @description The distance traveled of a swipe gesture.
+     */
+    distance: {
+        value: null
+    },
+
+     /**
+     * @public
+     * @type {Number}
+     * @default null
+     * @description The velocity of a swipe gesture.
+     */
+    velocity: {
+        value: null
+    },
+
+     /**
+     * @public
+     * @type {Number}
+     * @default null
+     * @description Start x coordinate of a swipe gesture.
+     */
+    startPositionX: {
+        value: null
+    },
+
+     /**
+     * @public
+     * @type {Number}
+     * @default null
+     * @description Start y coordinate of a swipe gesture.
+     */
+    startPositionY: {
+        value: null
+    },
+
+     /**
+     * @public
+     * @type {Number}
+     * @default null
+     * @description End x coordinate of a swipe gesture.
+     */
+    endPositionX: {
+        value: null
+    },
+
+    /**
+     * @public
+     * @type {Number}
+     * @default null
+     * @description End y coordinate of a swipe gesture.
+     */
+    endPositionY: {
+        value: null
+    },
+
+    constructor: {
+        value: function (type, eventInit) {
+            this._event = new CustomEvent(type, eventInit);
+            this.type = type;
+        }
+    }
+
+});
 
 /**
  * @class SwipeComposer
@@ -13,226 +152,296 @@ var Montage = require("../core/core").Montage,
  */
 exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
 
-    load: {
-        value: function () {
-            document.addEventListener("touchstart", this, true);
-        }
-    },
-
-    unload: {
-        value: function () {
-            document.removeEventListener("touchstart", this, true);
-        }
-    },
-
-    _startX: {
-        enumerable: false,
-        value: 0
-    },
-
-    _startY: {
-        enumerable: false,
-        value: 0
-    },
-
-    _deltaX: {
-        enumerable: false,
-        value: 0
-    },
-
-    _deltaY: {
-        enumerable: false,
-        value: 0
-    },
-
     /**
-     * The number of pixels a gesture must continue to be recognized as a
-     * swipe.
-     * @type {number}
+     * @private
+     * @type {Number}
+     * @default null
+     * @description Start x coordinate of a swipe gesture.
      */
-    _threshold: {
-        enumerable: false,
-        value: 50
-    },
-
-    /**
-     * The maximum angle (in degrees) away from horizontal or vertical
-     * for a gesture to be recognized as a swipe.
-     * @type {number}
-     */
-    _thresholdSwipeAngle: {
-        enumerable: false,
-        value: 20
-    },
-
-    _startTimestamp: {
-        enumerable: false,
-        value: 0
-    },
-
-    captureTouchstart: {
-        value: function (event) {
-            this._reset();
-            var touches = event.touches,
-                touch = touches[0];
-            this._startX = touch.clientX;
-            this._startY = touch.clientY;
-            this._startTimestamp = event.timeStamp;
-            document.addEventListener("touchmove", this, true);
-            document.addEventListener("touchend", this, true);
-            document.addEventListener("touchcancel", this, true);
-        }
-    },
-
-    _reset: {
-        enumerable: false,
-        value: function () {
-            this._startX = 0;
-            this._startY = 0;
-            this._deltaX = 0;
-            this._deltaY = 0;
-            this._startSwipeAngle = null;
-        }
-    },
-
-    _startSwipeAngle: {
-        enumerable: false,
+    _startPositionX: {
         value: null
     },
 
-    captureTouchcancel: {
-        value: function (event) {
-            document.removeEventListener("touchmove", this, true);
-            document.removeEventListener("touchend", this, true);
-            document.removeEventListener("touchcancel", this, true);
+    /**
+     * @private
+     * @type {Number}
+     * @default null
+     * @description Start y coordinate of a swipe gesture.
+     */
+    _startPositionY: {
+        value: null
+    },
+
+    /**
+     * @private
+     * @type {Number}
+     * @default null
+     * @description Start Timestamp of a swipe gesture.
+     */
+    _startTimestamp: {
+        value: null
+    },
+
+    __translateComposer: {
+        value: null
+    },
+
+    /**
+     * @private
+     * @typedef {Object} TranslateComposer
+     * @readOnly
+     * @default null
+     * @description SwipeComposer's translate composer.
+     */
+    _translateComposer: {
+        get: function () {
+            if (!this.__translateComposer) {
+                this.__translateComposer = new TranslateComposer();
+                this.__translateComposer.hasMomentum = false;
+            }
+
+            return this.__translateComposer;
         }
     },
 
-    captureTouchmove: {
-        value: function (event) {
-            event.preventDefault();
-            var touches = event.changedTouches[0], swipeEvent, direction;
+    /**
+     * @public
+     * @type {Number}
+     * @default 10
+     * @description Minimal distance required before recognizing. (px)
+     */
+    minDistance: {
+        value: 10
+    },
 
-            this._deltaX = touches.clientX - this._startX;
-            this._deltaY = touches.clientY - this._startY;
+    /**
+     * @public
+     * @type {Number}
+     * @default 0.3
+     * @description Minimal velocity required before recognizing.(px per ms)
+     */
+    minVelocity: {
+        value: 0.3
+    },
 
-            var dX = this._deltaX,
-                dY = this._deltaY,
-                threshold = this._threshold,
-                swipeAngle = this._findSwipeAngle(dX, dY);
-
-            if (
-                this._startSwipeAngle !== null && 
-                    Math.abs(this._startSwipeAngle - swipeAngle) > this._thresholdSwipeAngle
-            ) {
-                //Direction changed; Abort touch
-                //this.captureTouchcancel();
-                this._startSwipeAngle = null;
-            }
-
-            if (this._startSwipeAngle === null) {
-                this._startSwipeAngle = swipeAngle;
-                this._startX = touches.clientX;
-                this._startY = touches.clientY;
-                this._deltaX = 0;
-                this._deltaY = 0;
-            }
-
-            if (dX > threshold && dY > threshold) {
-                direction = "DIAGONAL";
-            } else if (dX > threshold && dY < threshold) {
-                if (this._deltaX > 0) {
-                    direction = "RIGHT";
-                } else {
-                    direction = "LEFT";
-                }
-            } else if (dX < threshold && dY > threshold) {
-                if (this._deltaY > 0) {
-                    direction = "DOWN";
-                } else {
-                    direction = "UP";
-                }
-            }
-
-            if (dX !== 0 || dY !== 0) {
-                swipeEvent = document.createEvent("CustomEvent");
-                swipeEvent.initCustomEvent("swipemove", true, false, null);
-                swipeEvent.direction = direction;
-                swipeEvent.angle = this._startSwipeAngle;
-                swipeEvent.velocity = this._findVelocity((event.timeStamp - this._startTimestamp));
-                swipeEvent.startX = this._startX;
-                swipeEvent.startY = this._startY;
-                swipeEvent.dX = this._deltaX;
-                swipeEvent.dY = this._deltaY;
-
-                this.dispatchEvent(swipeEvent);
-            }
+    /**
+     * @public
+     * @function load
+     * @description load the swipe composer.
+     */
+    load: {
+        value: function () {
+            this.component.addComposerForElement(
+                this._translateComposer, this.element
+            );
+            this._translateComposer.load();
+            this._translateComposer.addEventListener(
+                "translateStart", this, false
+            );
         }
     },
 
-    _findSwipeAngle: {
-        enumerable: false,
-        value: function (dX, dY) {
-            var swipeAngle = -1 * (Math.atan2(dY, dX) * 180 / 3.14);
-            return swipeAngle.toFixed(2);
+    /**
+     * @public
+     * @function unload
+     * @description unload the swipe composer.
+     */
+    unload: {
+        value: function () {
+            this.component.unloadComposer(this._translateComposer);
+            this._translateComposer.unload();
+            this._translateComposer.removeEventListener(
+                "translateStart", this, false
+            );
         }
     },
 
-    captureTouchend: {
+    handleTranslateStart: {
         value: function (event) {
+            this._startPositionX = this._translateComposer.pointerStartEventPosition.pageX;
+            this._startPositionY = this._translateComposer.pointerStartEventPosition.pageY;
+            this._startTimestamp = event.timeStamp;
+            this._addTranslateEventListeners();
+        }
+    },
 
-            if (!event) {
-                return;
-            }
+    handleTranslateEnd: {
+        value: function (event) {
+            var distance = this._findDistance(
+                event.translateX, event.translateY
+            );
 
-            var deltaX = Math.abs(this._deltaX),
-                deltaY = Math.abs(this._deltaY),
-                threshold = this._threshold,
-                direction,
-                swipeEvent;
+            if (distance >= this.minDistance) {
+                var velocity = this._findVelocity(
+                    distance,
+                    event.timeStamp - this._startTimestamp
+                );
 
-            if (deltaX < threshold && deltaY < threshold) {
-                this.captureTouchcancel();
-                return;
-            }
+                if (velocity > this.minVelocity) {
+                    var angle = this._findAngle(
+                        0, 0, event.translateX, event.translateY
+                    ), direction;
 
-            document.removeEventListener("touchmove", this, true);
+                    if (
+                        angle >= 0 && angle <= 45 || 
+                        angle >= 315 && angle <= 360
+                    ) {
+                        direction = DIRECTION_RIGHT;
+                    } else if (angle > 45 && angle < 165) {
+                        direction = DIRECTION_UP;
+                    } else if (angle > 165 && angle < 225) {
+                        direction = DIRECTION_LEFT;
+                    } else {
+                        direction = DIRECTION_DOWN;
+                    }
 
-            if (deltaX > threshold && deltaY > threshold) {
-                direction = "DIAGONAL";
-            } else if (deltaX > threshold && deltaY < threshold) {
-                if (this._deltaX > 0) {
-                    direction = "RIGHT";
-                } else {
-                    direction = "LEFT";
+                    this._dispatchSwipeEvent(
+                        distance, velocity, angle, direction
+                    );
                 }
-            } else if (deltaX < threshold && deltaY > threshold) {
-                if (this._deltaY > 0) {
-                    direction = "DOWN";
-                } else {
-                    direction = "UP";
-                }
             }
 
-            swipeEvent = document.createEvent("CustomEvent");
-            swipeEvent.initCustomEvent("swipe", true, false, null);
+            this._resetComposerState();
+        }
+    },
+
+    handleTranslateCancel: {
+        value: function () {
+            this._resetComposerState();
+        }
+    },
+
+     /**
+     * @private
+     * @function _findAngle
+     * @param p1x - start x coordinate
+     * @param p1y - start y coordinate
+     * @param p2x - end x coordinate
+     * @param p2y - end y coordinate
+     * @description Find the angle of a swipe gesture
+     * @returns Number
+     */
+    _findAngle: {
+        value: function (p1x, p1y, p2x, p2y) {
+            var arctangent = (
+                (Math.atan2(p2y - p1y, p2x - p1x) * -180) / Math.PI
+            );
+                
+            if (arctangent < 0) {
+                arctangent = 360 + arctangent;
+            }
+
+            return arctangent;
+        }
+    },
+
+    /**
+     * @private
+     * @function _findVelocity
+     * @param distance - distance traveled by the swipe gesture.
+     * @param deltaTime - the time difference between the begining and 
+     * the end of the translate gesture.
+     * @description Find the velocity of a swipe gesture.
+     * @returns Number
+     */
+    _findVelocity: {
+        value: function (distance, deltaTime) {
+            if (deltaTime > 300) {
+                return 0;
+            }
+
+            return distance / deltaTime;
+        }
+    },
+
+     /**
+     * @private
+     * @function _findDistance
+     * @param deltaX - the difference between the two x coordinates.
+     * @param deltaY - the difference between the two y coordinates.
+     * @description Find the distance of a swipe gesture.
+     * @returns Number
+     */
+    _findDistance: {
+        value: function (deltaX, deltaY) {
+            return Math.sqrt(
+                (deltaX * deltaX) +
+                (deltaY * deltaY)
+            );
+        }
+    },
+
+    /**
+     * @private
+     * @function _dispatchSwipeEvent
+     * @param distance - the distance of a swipe gesture.
+     * @param velocity - the velocity of a swipe gesture.
+     * @param angle - the angle of a swipe gesture.
+     * @param direction - the direction of a swipe gesture.
+     * @description Dispatch two swipe events.
+     */
+    _dispatchSwipeEvent: {
+        value: function (distance, velocity, angle, direction, endPositionX, endPositionY) {
+            var swipeEvent = new SwipeEvent(SWIPE);
+
+            swipeEvent.distance = distance;
+            swipeEvent.velocity = velocity;
+            swipeEvent.angle = angle;
             swipeEvent.direction = direction;
-            swipeEvent.angle = this._startSwipeAngle;
-            swipeEvent.velocity = this._findVelocity((event.timeStamp - this._startTimestamp));
-            swipeEvent.startX = this._startX;
-            swipeEvent.startY = this._startY;
-            swipeEvent.dX = this._deltaX;
-            swipeEvent.dY = this._deltaY;
+            swipeEvent.startPositionX = this._startPositionX;
+            swipeEvent.startPositionY = this._startPositionY;
+            swipeEvent.endPositionX = endPositionX;
+            swipeEvent.endPositionY = endPositionY;
 
             this.dispatchEvent(swipeEvent);
         }
     },
 
-    _findVelocity: {
-        enumerable: false,
-        value: function (deltaTime) {
-            return (Math.sqrt(/*xSquare*/(this._deltaX * this._deltaX) + /*ySquare*/(this._deltaY * this._deltaY)) / /*deltaTime*/(deltaTime));
+     /**
+     * @private
+     * @function _addTranslateEventListeners
+     * @description add the translate event listeners
+     */
+    _addTranslateEventListeners: {
+        value: function () {
+            this._translateComposer.addEventListener(
+                "translateCancel", this
+            );
+            this._translateComposer.addEventListener(
+                "translateEnd", this
+            );
+        }
+    },
 
+     /**
+     * @private
+     * @function _removeTranslateEventListeners
+     * @description remove the translate event listeners
+     */
+    _removeTranslateEventListeners: {
+        value: function () {
+            this._translateComposer.removeEventListener(
+                "translateCancel", this
+            );
+            this._translateComposer.removeEventListener(
+                "translateEnd", this
+            );
+        }
+    },
+
+    /**
+     * @private
+     * @function _resetComposerState
+     * @description Reset the swipe composer state.
+     */
+    _resetComposerState: {
+        value: function () {
+            this._startPositionX = 0;
+            this._startPositionY = 0;
+            this._direction = null;
+            this.__translateComposer.translateX = 0;
+            this.__translateComposer.translateY = 0;
+            this._removeTranslateEventListeners();
         }
     }
 

@@ -88,6 +88,7 @@ TestPageLoader.queueTest("translate-composer-test", function(testPage) {
 
             describe("allowFloats", function() {
                 it('only allows translate{X|Y} to be ints when false', function() {
+                    test.translateComposer.allowFloats = false;
                     test.translateComposer.translateX = 100.543;
                     test.translateComposer.translateY = -20.4;
                     expect(test.translateComposer.translateX).toBe(100);

@@ -1,0 +1,29 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+     -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.Main {
+    padding: 20px;
+}
+
+header {
+    margin: 40px 0;
+    font-size: 2rem;
+    text-align: center;
+    color: #33495d;
+    height: 40px;
+}
+
+.HitBox {
+    margin: auto;
+    width: 400px;
+    height: 400px;
+    border: 1px solid black;
+}

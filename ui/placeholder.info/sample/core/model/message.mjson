@@ -1,0 +1,41 @@
+{
+    "root": {
+        "prototype": "montage/core/meta/module-object-descriptor",
+        "values": {
+            "name": "Message",
+            "exportName": "Message",
+            "propertyDescriptors": [
+                {"@": "id"},
+                {"@": "value"}
+            ],
+            "objectDescriptorModule": {
+                "%": "core/model/message.mjson"
+            },
+            "module": {
+                "%": "core/model/message"
+            },
+            "userInterfaceDescriptorModules": {
+                "*": {
+                    "%": "core/model/message-ui-descriptor.mjson"
+                }
+            }
+        }
+    },
+
+    "id": {
+        "prototype": "montage/core/meta/property-descriptor",
+        "values": {
+            "name": "id",
+            "valueType": "number"
+        }
+    },
+
+    "value": {
+        "prototype": "montage/core/meta/property-descriptor",
+        "values": {
+            "name": "value",
+            "valueType": "string"
+        }
+    }
+
+}

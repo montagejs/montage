@@ -215,6 +215,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
             var prototype, descriptor, getter;
             // Start an asynchronous fetch of the property's value if necessary.
             this.getObjectProperty(object);
+            
             // Search the prototype chain for a getter for this property,
             // starting just after the prototype that called this method.
             prototype = Object.getPrototypeOf(this._objectPrototype);
@@ -408,12 +409,10 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
                 propertyDescriptor, trigger, name, i;
 
             for (i = 0; (propertyDescriptor = propertyDescriptors[i]); i += 1) {
-                if (!requisitePropertyNames.has(propertyDescriptor.name)) {
-                    name = propertyDescriptor.name;
-                    trigger = this.addTrigger(service, objectDescriptor, prototype, name);
-                    if (trigger) {
-                        triggers[name] = trigger;
-                    }
+                name = propertyDescriptor.name;
+                trigger = this.addTrigger(service, objectDescriptor, prototype, name);
+                if (trigger) {
+                    triggers[name] = trigger;
                 }
             }
             return triggers;
@@ -527,11 +526,6 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
                         }
                     });
                 }
-                    trigger = Object.create(this._getTriggerPrototype(service));
-                    trigger._objectPrototype = prototype;
-                    trigger._propertyName = name;
-                    trigger._isGlobal = descriptor.isGlobal;
-
             }
             return trigger;
         }

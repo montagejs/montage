@@ -422,45 +422,6 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize an instance object with a distinct array property", function () {
-                var object = new objects.DistinctArrayProp(),
-                    serialization,
-                    expectedSerialization;
-
-                expectedSerialization = {
-                    root: {
-                        prototype: "spec/serialization/testobjects-v2[DistinctArrayProp]",
-                        values: {
-                            identifier: null,
-                            prop: []
-                        }
-                    }
-                };
-
-                serialization = serializer.serializeObject(object);
-                expect(JSON.parse(serialization)).toEqual(expectedSerialization);
-            });
-
-            it("should serialize an instance object with a distinct literal property", function () {
-                var object = new objects.DistinctLiteralProp(),
-                    serialization,
-                    expectedSerialization;
-
-                expectedSerialization = {
-                    root: {
-                        prototype: "spec/serialization/testobjects-v2[DistinctLiteralProp]",
-                        values: {
-                            identifier: null,
-                            prop: {}
-                        }
-                    }
-                };
-
-                serialization = serializer.serializeObject(object);
-                expect(JSON.parse(serialization))
-                .toEqual(expectedSerialization);
-            });
-
             it("should serialize an instance object with native type properties", function () {
                 var object = new objects.Simple(),
                     serialization,

@@ -13,6 +13,8 @@ var Deserializer = require("montage/core/serialization/deserializer/montage-dese
 var ModelHelper = require("./blueprint/model-helper").ModelHelper;
 var Person = require("./blueprint/person").Person;
 var Company = require("./blueprint/company").Company;
+var Employee = require("./blueprint/employee").Employee;
+var Customer = require("./blueprint/customer").Customer;
 var logger = require("montage/core/logger").logger("./object-descriptor-spec.js");
 
 // Require to deserialize
@@ -458,6 +460,32 @@ describe("meta/object-descriptor-spec", function () {
 
                 expect(objectDescriptor.eventDescriptors.length).toEqual(2);
                 expect(objectDescriptor.eventDescriptors).toEqual([event, parentEvent]);
+            });
+        });
+
+        describe("UserInterfaceDescriptor", function () {
+            var employee, customer;
+
+            beforeEach(function () {
+                employee = new Employee();
+                customer = new Customer();
+            });
+
+            it("should be required if it exists", function (done) {
+                return employee.constructor.objectDescriptor.then(function (objectDescriptor) {
+                    return objectDescriptor.userInterfaceDescriptor.then(function (userInterfaceDescriptor) {
+                        expect(userInterfaceDescriptor).toBeTruthy();
+                        expect(userInterfaceDescriptor.descriptionExpression).toBe("department");
+                        expect(userInterfaceDescriptor.inspectorComponentModule.id).toBe("ui/inspectors/employee.reel");
+
+                        return customer.constructor.objectDescriptor.then(function (objectDescriptor) {
+                            return objectDescriptor.userInterfaceDescriptor.then(function (userInterfaceDescriptor) {
+                                expect(userInterfaceDescriptor).toBeFalsy();
+                                done();
+                            });
+                        });
+                    });
+                });
             });
         });
     });
