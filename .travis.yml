@@ -3,6 +3,7 @@ node_js:
   - "4"
   - "6"
   - "8"
+  - "9"
 script: npm run $COMMAND
 env:
   - COMMAND=lint
@@ -11,7 +12,7 @@ env:
   - COMMAND=test:karma-travis
   #- COMMAND=integration MONTAGE_VERSION=. MOP_VERSION=0.13
   #- COMMAND=integration MONTAGE_VERSION=. MOP_VERSION=latest
-  - COMMAND=integration MONTAGE_VERSION=#commonjs MOP_VERSION="#commonjs"
+  - COMMAND=integration MONTAGE_VERSION=. MOP_VERSION="#commonjs"
 before_install:
   - export CHROME_BIN=chromium-browser
   - export DISPLAY=:99.0
