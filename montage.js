@@ -289,16 +289,16 @@
 
                     mrRequire.delegate = exports;
                     exports.mrPromise = mrPromise;
-                    
+
                     callback(mrRequire, mrPromise, miniURL);
                 }
 
                 // This define if the script should be loaded has "nested" of "flat" dependencies in packagesLocation.
                 // Change to "nested" for npm 2 support or add data-packages-strategy="nested" on montage.js script tag.
-                var defaultStrategy = params.packagesStrategy || 'nested'; 
+                var defaultStrategy = params.packagesStrategy || 'nested';
 
                 function bootstrapModuleScript(module, strategy) {
-                    module.strategy = strategy || defaultStrategy; 
+                    module.strategy = strategy || defaultStrategy;
                     var locationRoot = strategy === "flat" ? params.packagesLocation : params.location;
                     module.script = resolveUrl(locationRoot, module.location);
                     loadScript(module.script, function (err, script) {
@@ -313,7 +313,7 @@
                             defaultStrategy = module.strategy;
                             bootstrapModule(module.id, function (bootRequire, exports) {
                                 if (module.export) {
-                                    exports[module.export] = global[module.global]; 
+                                    exports[module.export] = global[module.global];
                                 } else {
                                     return global[module.global];
                                 }
@@ -522,9 +522,7 @@
                                 module.extraDependencies = [id + ".html"];
                             }
                         }, function (error) {
-                            // not a problem
-                            // montage/ui/loader.reel/loader.html": Error: ENOENT: no such file or directory
-                            console.log(error.message);
+                            // not a problem, .reels don't have to have a .html file
                         });
                     });
                 } else {
@@ -635,7 +633,7 @@
             bootstrap: function (callback) {
                 var self = this,
                     params = self.getParams();
-              
+
                 mr.delegate = exports;
                 exports.mrPromise = Promise;
 
@@ -917,7 +915,7 @@
                 location = params.location,
                 applicationModuleId = params.module || "",
                 applicationLocation = miniURL.resolve(platform.getLocation(), params.package || ".");
-            
+
             // Exports mrRequire as Require
             exports.Require = mrRequire;
 
@@ -1201,7 +1199,7 @@
     exports.compileMJSONFile = function (mjson, require, moduleId) {
         return exports.getMontageDeserializer().then(function (deserializer) {
             deserializer.init(mjson, require, void 0, require.location + moduleId);
-            return deserializer.deserializeObject();  
+            return deserializer.deserializeObject();
         });
     };
 
