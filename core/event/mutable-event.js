@@ -238,12 +238,7 @@ if (typeof window !== "undefined") {
                 return this._event.touches;
             },
             set: function (value) {
-                var isArray = Array.isArray(value);
-                if (isArray && this._event.touches) {
-                    this._event.touches.splice.apply(this._event.touches, [0, Infinity].concat(value));
-                } else if (isArray) {
-                    this._event.touches = value;
-                }
+                this._event.touches = value;
             }
         },
         /**
@@ -255,12 +250,7 @@ if (typeof window !== "undefined") {
                 return this._event.changedTouches;
             },
             set: function (value) {
-                var isArray = Array.isArray(value);
-                if (isArray && this._event.changedTouches) {
-                    this._event.changedTouches.splice.apply(this._event.changedTouches, [0, Infinity].concat(value));
-                } else if (isArray) {
-                    this._event.changedTouches = value;
-                }
+                this._event.changedTouches = value;
             }
         },
         /**
