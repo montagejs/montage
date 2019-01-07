@@ -130,6 +130,7 @@ module.exports = require("montage-testing").run(require, [
     {name: "spec/data/raw-data-service"},
     {name: "spec/data/raw-data-type-mapping-spec"},
     {name: "spec/data/integration", node: false},
+    {name: "spec/data/core-integration"},
 
     // Meta
     {name: "spec/meta/module-object-descriptor-spec"},

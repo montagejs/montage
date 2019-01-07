@@ -968,15 +968,23 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (locationId) {
             var moduleId,
                 objectName,
-                bracketIndex = locationId.indexOf("[");
+                bracketIndex = locationId.indexOf("["),
+                mjsonIndex, slashIndex;
 
             if (bracketIndex > 0) {
                 moduleId = locationId.substr(0, bracketIndex);
                 objectName = locationId.slice(bracketIndex + 1, -1);
-            } else {
+            }
+            else {
                 moduleId = locationId;
                 this._findObjectNameRegExp.test(locationId);
-                objectName = RegExp.$1.replace(
+
+                objectName = RegExp.$1;
+                if((mjsonIndex = objectName.indexOf(".mjson")) !== -1) {
+                    objectName = objectName.substr((slashIndex = objectName.indexOf("/")) === -1 ? 0 : slashIndex+1, mjsonIndex-(slashIndex+1));
+                }
+
+                objectName = objectName.replace(
                     this._toCamelCaseRegExp,
                     this._replaceToCamelCase
                 );

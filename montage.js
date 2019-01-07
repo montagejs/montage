@@ -37,7 +37,7 @@
         function finallyHandler() {
             // remove clutter
             if (script.parentNode) {
-                script.parentNode.removeChild(script);   
+                script.parentNode.removeChild(script);
             }
         }
 
@@ -64,11 +64,11 @@
             }
         } else {
             throw new Error("Platform not supported");
-        }   
+        }
     }
 
     exports.initBrowser = function initBrowser() {
-        
+
         return  {
 
             resolveUrl: (function makeResolveUrl() {
@@ -131,7 +131,7 @@
 
                 if (!params) {
                     params = this._params = {};
-                    
+
                     // Find the <script> that loads us, so we can divine our
                     // parameters from its attributes.
                     var i, j, match, script, attr, name,
@@ -189,7 +189,7 @@
 
                 return params;
             },
-            
+
             loadPackage: function (dependency, config, packageDescription) {
                 return mr.loadPackage(dependency, config, packageDescription);
             },
@@ -237,8 +237,8 @@
                     var module = dependencies[id];
 
                     if (
-                        module && 
-                            moduleHasExport(module) === false && 
+                        module &&
+                            moduleHasExport(module) === false &&
                                 typeof module.factory === "function"
                     ) {
                         module.exports = module.factory(bootModule, (module.exports = {})) || module.exports;
@@ -257,9 +257,9 @@
                     if (!dependencies.hasOwnProperty(id)) {
                         return;
                     }
-                    
+
                     dependencies[id].factory = factory;
-                    
+
                     for (id in dependencies) {
                         if (dependencies.hasOwnProperty(id)) {
                             // this causes the function to exit if there are any remaining
@@ -278,7 +278,7 @@
 
                     // Restore inital Boostrap
                     if (initalBoostrap) {
-                        global.bootstrap = initalBoostrap;   
+                        global.bootstrap = initalBoostrap;
                     }
 
                     // At least bootModule in order
@@ -288,16 +288,16 @@
 
                     mrRequire.delegate = exports;
                     exports.mrPromise = mrPromise;
-                    
+
                     callback(mrRequire, mrPromise, miniURL);
                 }
 
                 // This define if the script should be loaded has "nested" of "flat" dependencies in packagesLocation.
                 // Change to "nested" for npm 2 support or add data-packages-strategy="nested" on montage.js script tag.
-                var defaultStrategy = params.packagesStrategy || 'nested'; 
+                var defaultStrategy = params.packagesStrategy || 'nested';
 
                 function bootstrapModuleScript(module, strategy) {
-                    module.strategy = strategy || defaultStrategy; 
+                    module.strategy = strategy || defaultStrategy;
                     var locationRoot = strategy === "flat" ? params.packagesLocation : params.location;
                     module.script = resolveUrl(locationRoot, module.location);
                     loadScript(module.script, function (err, script) {
@@ -312,7 +312,7 @@
                             defaultStrategy = module.strategy;
                             bootstrapModule(module.id, function (bootRequire, exports) {
                                 if (module.export) {
-                                    exports[module.export] = global[module.global]; 
+                                    exports[module.export] = global[module.global];
                                 } else {
                                     return global[module.global];
                                 }
@@ -338,11 +338,11 @@
                                 location: module
                             };
                         } else {
-                            module.id = id;   
+                            module.id = id;
                         }
 
                         // Update dependency
-                        dependencies[id] = module;  
+                        dependencies[id] = module;
                         // Update locatiom from param
                         module.location = params.hasOwnProperty(paramModuleLocation) ? params[paramModuleLocation] : module.location;
 
@@ -355,7 +355,7 @@
                             bootstrapModuleScript(module);
                         }
                     }
-                } 
+                }
             }
         };
     };
@@ -393,10 +393,10 @@
                     params.location = params[paramNamespace + 'Location'] = location;
                     // Detect command line
                     if (
-                        typeof process !== "undefined" && 
+                        typeof process !== "undefined" &&
                             typeof process.argv !== "undefined"
                     ) {
-                        
+
                         var command, module, modulePackage,
                             args = process.argv.slice(1);
 
@@ -411,14 +411,14 @@
                             }
 
                             params.module = PATH.basename(module);
-                            params.package = PATH.dirname(FS.realpathSync(module)) + "/";  
+                            params.package = PATH.dirname(FS.realpathSync(module)) + "/";
                         }
                     }
                 }
 
-                return params; 
+                return params;
             },
-            
+
             loadPackage: function (dependency, config, packageDescription) {
                 return mr.loadPackage(dependency, config, packageDescription);
             },
@@ -460,7 +460,7 @@
     exports.initMontageCustomElement = function () {
 
         if (
-            typeof customElements === 'undefined' || 
+            typeof customElements === 'undefined' ||
                 typeof Reflect === 'undefined'
         ) {
             return void 0;
@@ -603,7 +603,7 @@
                 mainEnterDocument = component.enterDocument,
                 mainTemplateDidLoad = component.templateDidLoad,
                 proxyElement = this.findProxyForElement(this);
-            
+
             if (proxyElement) {
                 var observedAttributes = this.observedAttributes,
                     observedAttribute,
@@ -619,7 +619,7 @@
                     }
                 }
             }
-                
+
             this.application.eventManager.registerTargetForActivation(shadowRoot);
 
             component.templateDidLoad = function () {
@@ -678,7 +678,7 @@
                 location = params.location,
                 applicationModuleId = params.module || "",
                 applicationLocation = miniURL.resolve(platform.getLocation(), params.package || ".");
-            
+
             // Exports mrRequire as Require
             exports.Require = mrRequire;
 
@@ -690,11 +690,11 @@
                 var getDefinition = function (name) {
                     return (bundleDefinitions[name] = bundleDefinitions[name] || Promise.resolve());
                 };
-                
+
                 global.bundleLoaded = function (name) {
                     return getDefinition(name).resolve();
                 };
-                
+
                 var preloading = Promise.resolve();
                 config.preloaded = preloading.promise;
 
@@ -775,7 +775,7 @@
                     window.addEventListener("message", messageCallback);
                 });
 
-                
+
                 // TODO need test
                 applicationRequirePromise = trigger.spread(function (location, injections) {
                     var promise = mrRequire.loadPackage({
@@ -882,10 +882,10 @@
                         var Montage = montageRequire("core/core").Montage;
                         var EventManager = montageRequire("core/event/event-manager").EventManager;
                         var defaultEventManager = montageRequire("core/event/event-manager").defaultEventManager;
-                        var MontageDeserializer = montageRequire("core/serialization/deserializer/montage-deserializer").MontageDeserializer;    
+                        var MontageDeserializer = montageRequire("core/serialization/deserializer/montage-deserializer").MontageDeserializer;
                         var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                         var logger = montageRequire("core/logger").logger;
-                            
+
 
                         exports.MontageDeserializer = new MontageDeserializer; // Create instance once only
 
@@ -904,6 +904,21 @@
                             appModulePromise = montageRequire.async("core/application");
                         }
 
+                        // Load main.datareel/main.mjson
+                        var mainDatareel = applicationRequire.packageDescription.mainDatareel,
+                        mainDatareelLocation, mainDatareelModulePromise;
+
+                        if (mainDatareel) {
+                            mainDatareelLocation = MontageReviver.parseObjectLocationId(mainDatareel);
+                            mainDatareelModulePromise = applicationRequire.async(mainDatareelLocation.moduleId);
+                        } else {
+                            //mainDatareelModulePromise = applicationRequire.makeRequire("data/main.datareel/main.mjson").async("data/main.datareel/main.mjson");
+                            mainDatareelLocation = "data/main.datareel/main.mjson";
+                            mainDatareelModulePromise = applicationRequire.async("data/main.datareel/main.mjson");
+                            //mainDatareelModulePromise = mrPromise.resolve();
+                        }
+
+
                         return appModulePromise.then(function (exports) {
 
                             var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
@@ -911,21 +926,33 @@
                             defaultEventManager.application = application;
                             application.eventManager = defaultEventManager;
 
-                            return application._load(applicationRequire, function() {
-                                
-                                // If a module was specified in the config then we initialize it now
-                                if (applicationModuleId) {
-                                    applicationRequire.async(applicationModuleId);
-                                }
+                            return mainDatareelModulePromise.then(function(mainDataServiceExport) {
+                                // fulfillment
+                                application.service = mainDataServiceExport.montageObject;
+                                return application;
+                            }, function(reason) {
+                                // rejection
+                                console.log("App failed to load datareel at location:",mainDatareelLocation,reason);
+                                return application;
+                            }).finally(function() {
 
-                                if (typeof global.montageDidLoad === "function") {
-                                    global.montageDidLoad();
-                                }
+                                return application._load(applicationRequire, function() {
 
-                                if (typeof window !== "undefined" && window && window.MontageElement) {
-                                    MontageElement.applicationReady(application, MontageReviver);
-                                }
+                                    // If a module was specified in the config then we initialize it now
+                                    if (applicationModuleId) {
+                                        applicationRequire.async(applicationModuleId);
+                                    }
+
+                                    if (typeof global.montageDidLoad === "function") {
+                                        global.montageDidLoad();
+                                    }
+
+                                    if (typeof window !== "undefined" && window && window.MontageElement) {
+                                        MontageElement.applicationReady(application, MontageReviver);
+                                    }
+                                });
                             });
+
                         });
                     });
                 });
@@ -962,12 +989,12 @@
     exports.compileMJSONFile = function (mjson, require, moduleId) {
         return exports.getMontageDeserializer().then(function (deserializer) {
             deserializer.init(mjson, require, void 0, require.location + moduleId);
-            return deserializer.deserializeObject();  
+            return deserializer.deserializeObject();
         });
     };
 
     if (
-        typeof window !== "undefined" || 
+        typeof window !== "undefined" ||
             (typeof module === 'object' && module.exports &&
                 typeof require !== "undefined")
     ) {
