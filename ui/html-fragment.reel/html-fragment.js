@@ -169,12 +169,6 @@ var HtmlFragment = exports.HtmlFragment = Component.specialize(/** @lends HtmlFr
                         allowedTags,
                         allowedAttributes
                     );
-
-                    this._sanitizeNode(
-                        doc.head,
-                        allowedTags,
-                        allowedAttributes
-                    );
                 }
             }
 
