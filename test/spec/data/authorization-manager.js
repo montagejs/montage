@@ -338,6 +338,7 @@ describe("An Authorization Manager", function () {
                     expect(authorizationManager._servicesByProviderModuleID.get(serviceA.authorizationServices[0]).has(serviceB)).toBeTruthy();
                     return authorizationManager.clearAuthorizationForService(serviceA);
                 }).then(function () {
+                    expect(authorization.didLogOut).toBeTruthy();
                     expect(serviceA.didLogOut).toBeTruthy();
                     expect(serviceB.didLogOut).toBeTruthy();
                     expect(authorizationManager._authorizationsForDataService(serviceA).length).toBe(0);
@@ -360,7 +361,6 @@ describe("An Authorization Manager", function () {
             };
 
             authorizationManager._providersByModuleID.clear(); //Ensure authorizationService is loaded asynchronously
-            authorizationService.resolve();
             authorizationManager.authorizeService(service).then(function (result) {
                 expect(Array.isArray(result)).toBeTruthy();
                 authorization = result[0];

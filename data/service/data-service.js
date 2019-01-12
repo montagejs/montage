@@ -406,7 +406,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (types) {
             var self = this;
             return Promise.all(this._flattenArray(types).map(function (type) {
-                return type instanceof Promise ? type : Promise.resolve(type);
+                return type;
             })).then(function (descriptors) {
                 return self._flattenArray(descriptors);
             });

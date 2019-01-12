@@ -181,14 +181,14 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
 
     _providerWithModuleID: {
         value: function (moduleID, require) {
-            var existingService = this._providersByModuleID.get(moduleID),
-                isPromise = existingService && existingService instanceof Promise,
+            var provider = this._providersByModuleID.get(moduleID),
+                isPromise = this._isAsync(provider),
                 result;
 
             if (isPromise) {
-                result = existingService;
-            } else if (existingService) {
-                result = Promise.resolve(existingService);
+                result = provider;
+            } else if (provider) {
+                result = Promise.resolve(provider);
             } else {
                 result = this._makeProviderWithModuleID(moduleID, require);
                 this._registerAuthorizationServicePromise(moduleID, result);
@@ -457,22 +457,13 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
         }
     },
 
-    _addSetToSet: {
-        value: function (target, source) {
-            var iterator = source && source.values(),
-                item;
-            
-            while (iterator && (item = iterator.next().value)) {
-                target.add(item);
-            }
-        }
-    },
+    
 
     _clearAuthorizationForProviderID: {
         value: function (moduleID) {
             var self = this,
                 provider = this._providersByModuleID.get(moduleID),
-                isPromise = provider && provider instanceof Promise,
+                isPromise = this._isAsync(provider),
                 result;
 
             if (this._authorizationsByProviderModuleID.has(moduleID)) {
@@ -500,6 +491,26 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
         }
     },
 
+
+
+    //Utils
+
+    _addSetToSet: {
+        value: function (target, source) {
+            var iterator = source && source.values(),
+                item;
+            
+            while (iterator && (item = iterator.next().value)) {
+                target.add(item);
+            }
+        }
+    },
+
+    _isAsync: {
+        value: function (object) {
+            return object && object.then && typeof object.then === "function";
+        }
+    },
 
     /**
      * A shared promise resolved with a value of
