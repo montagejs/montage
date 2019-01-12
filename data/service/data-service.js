@@ -5,6 +5,7 @@ var Montage = require("core/core").Montage,
     DataQuery = require("data/model/data-query").DataQuery,
     DataStream = require("data/service/data-stream").DataStream,
     DataTrigger = require("data/service/data-trigger").DataTrigger,
+    deprecate = require("core/deprecate"),
     Map = require("collections/map"),
     Promise = require("core/promise").Promise,
     ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor,
@@ -791,7 +792,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
-     * holds authorization object after a successfull authorization
+     * holds authorization object after a successful authorization
      *
      * @type {Object}
      */
@@ -848,7 +849,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: undefined
     },
 
-
     /**
      *
      * @method
@@ -856,8 +856,20 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     logOut: {
         value: function () {
-            console.warn("DataService.logOut() must be overridden by the implementing service");
-            return this.nullPromise;
+            var authorization = this.authorization,
+                result;
+
+            this.authorization = null;
+
+            if (Array.isArray(authorization)) {
+                result =  Promise.all(authorization.map(function (item) {
+                    return item.logOut();
+                }));
+            } else if (authorization) {
+                result = authorization.logOut();
+            }
+
+            return result;
         }
     },
 

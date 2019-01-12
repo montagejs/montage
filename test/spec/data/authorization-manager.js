@@ -303,42 +303,74 @@ describe("An Authorization Manager", function () {
     });
 
     describe("can logout", function () {
-            
-        it("with single authorization service", function (done) {
-            var service = new OnFirstFetchService();
+
+        describe("with single authorization service", function () {
+
+            it("for single data service", function (done) {
+                var service = new OnFirstFetchService();
+                authorizationService.resolve();
+                authorizationManager.authorizeService(service).then(function (result) {
+                    expect(Array.isArray(result)).toBeTruthy();
+                    expect(result[0] instanceof Authorization).toBeTruthy();
+                    expect(authorizationManager._authorizationsForDataService(service).length).toBe(1);
+                    authorizationManager.clearAuthorizationForService(service);
+                    expect(authorizationManager._authorizationsForDataService(service).length).toBe(0);
+                    done();
+                });
+            });
+
+            it("for multiple data-services", function (done) {
+                var serviceA = new OnFirstFetchService(),
+                    serviceB = new OnDemandService(),
+                    authorization;
+                authorizationService.resolve();
+                authorizationManager.authorizeService(serviceA).then(function (result) {
+                    expect(Array.isArray(result)).toBeTruthy();
+                    expect(result[0] instanceof Authorization).toBeTruthy();
+                    authorization = result[0];
+                    expect(authorizationManager._servicesByProviderModuleID.get(serviceA.authorizationServices[0]).has(serviceA)).toBeTruthy();
+                    expect(authorizationManager._authorizationsForDataService(serviceA).length).toBe(1);
+                    return authorizationManager.authorizeService(serviceB);
+                }).then(function (result) {
+                    expect(Array.isArray(result)).toBeTruthy();
+                    expect(result[0] instanceof Authorization).toBeTruthy();
+                    expect(result[0]).toBe(authorization);
+                    expect(authorizationManager._servicesByProviderModuleID.get(serviceA.authorizationServices[0]).has(serviceB)).toBeTruthy();
+                    return authorizationManager.clearAuthorizationForService(serviceA);
+                }).then(function () {
+                    expect(serviceA.didLogOut).toBeTruthy();
+                    expect(serviceB.didLogOut).toBeTruthy();
+                    expect(authorizationManager._authorizationsForDataService(serviceA).length).toBe(0);
+                    return authorizationManager.authorizeService(serviceB);
+                }).then(function (result) {
+                    expect(result).toBe(null);
+                    expect(authorizationManager._authorizationsForDataService(serviceB).length).toBe(0);
+                    done();
+                });
+                
+            });
+        });
+
+        it("with async authorization provider", function (done) {
+            var service = new OnFirstFetchService(),
+                authorization;
+
+            service.authorizationManagerWillAuthorizeWithProvider = function (manager, provider) {
+                provider.resolve();
+            };
+
+            authorizationManager._providersByModuleID.clear(); //Ensure authorizationService is loaded asynchronously
             authorizationService.resolve();
             authorizationManager.authorizeService(service).then(function (result) {
                 expect(Array.isArray(result)).toBeTruthy();
-                expect(result[0] instanceof Authorization).toBeTruthy();
-                expect(authorizationManager._authorizationsForDataService(service).length).toBe(1);
-                authorizationManager.clearAuthorizationForService(service);
-                expect(authorizationManager._authorizationsForDataService(service).length).toBe(0);
-                done();
-            });
-            
-        });
-
-        it("for multiple data-services", function (done) {
-            var serviceA = new OnFirstFetchService(),
-                serviceB = new OnDemandService(),
-                authorization;
-            authorizationService.resolve();
-            authorizationManager.authorizeService(serviceA).then(function (result) {
-                expect(Array.isArray(result)).toBeTruthy();
-                expect(result[0] instanceof Authorization).toBeTruthy();
                 authorization = result[0];
-                expect(authorizationManager._authorizationsForDataService(serviceA).length).toBe(1);
-                return authorizationManager.authorizeService(serviceB);
-            }).then(function (result) {
-                expect(Array.isArray(result)).toBeTruthy();
-                expect(result[0] instanceof Authorization).toBeTruthy();
-                expect(result[0]).toBe(authorization);
-                authorizationManager.clearAuthorizationForService(serviceA);
-                expect(authorizationManager._authorizationsForDataService(serviceA).length).toBe(0);
-                return authorizationManager.authorizeService(serviceB);
-            }).then(function (result) {
-                expect(result).toBe(null);
-                expect(authorizationManager._authorizationsForDataService(serviceB).length).toBe(0);
+                expect(authorization).toBeTruthy();
+                expect(authorizationManager._authorizationsForDataService(service).length).toBe(1);
+                return authorizationManager.clearAuthorizationForService(service);
+            }).then(function () {
+                expect(service.didLogOut).toBeTruthy();
+                expect(authorization.didLogOut).toBeTruthy();
+                expect(authorizationManager._authorizationsForDataService(service).length).toBe(0);
                 done();
             });
             

@@ -15,6 +15,22 @@ exports.OnDemandService = RawDataService.specialize(/** @lends OnDemandService.p
         value: function (stream) {
             stream.dataDone();
         }
+    },
+
+    didLogOut: {
+        value: false
+    },
+
+    /**
+     *
+     * @method
+     * @returns Promise
+     */
+    logOut: {
+        value: function () {
+            this.didLogOut = true;
+            return RawDataService.prototype.logOut.call(this);
+        }
     }
 
 });
