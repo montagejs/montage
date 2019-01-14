@@ -854,23 +854,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * @returns Promise
      */
     logOut: {
-        value: function () {
-            var authorization = this.authorization,
-                result;
-
-            this.authorization = null;
-
-            if (Array.isArray(authorization)) {
-                result =  Promise.all(authorization.map(function (item) {
-                    return item.logOut();
-                }));
-            } else if (authorization) {
-                result = authorization.logOut();
-            }
-
-            return result;
-        }
+        value: undefined
     },
+
 
     /***************************************************************************
      * Data Object Types

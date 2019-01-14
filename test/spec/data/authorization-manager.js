@@ -339,8 +339,7 @@ describe("An Authorization Manager", function () {
                     return authorizationManager.clearAuthorizationForService(serviceA);
                 }).then(function () {
                     expect(authorization.didLogOut).toBeTruthy();
-                    expect(serviceA.didLogOut).toBeTruthy();
-                    expect(serviceB.didLogOut).toBeTruthy();
+                    expect(authorizationService.didLogOut).toBeTruthy();
                     expect(authorizationManager._authorizationsForDataService(serviceA).length).toBe(0);
                     return authorizationManager.authorizeService(serviceB);
                 }).then(function (result) {
@@ -368,7 +367,10 @@ describe("An Authorization Manager", function () {
                 expect(authorizationManager._authorizationsForDataService(service).length).toBe(1);
                 return authorizationManager.clearAuthorizationForService(service);
             }).then(function () {
-                expect(service.didLogOut).toBeTruthy();
+                return authorizationManager._providersForDataService(service);
+            }).then(function (providers) {
+                authorizationService = providers[0];
+                expect(authorizationService.didLogOut).toBeTruthy();
                 expect(authorization.didLogOut).toBeTruthy();
                 expect(authorizationManager._authorizationsForDataService(service).length).toBe(0);
                 done();

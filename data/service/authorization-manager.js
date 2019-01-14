@@ -437,8 +437,6 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
                 services, service, iterator,
                 moduleID, i, n;
 
-            promises.push(dataService.logOut());
-
             for (i = 0, n = dataService.authorizationServices.length; i < n; ++i) {
                 moduleID = dataService.authorizationServices[i];
                 promises.push(this._clearAuthorizationForProviderID(moduleID));
@@ -448,16 +446,12 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
 
             iterator = allServices.values();
             while ((service = iterator.next().value)) {
-                if (service !== dataService) {
-                    promises.add(service.logOut());
-                }
+                service.authorization = null;
             }
 
             return Promise.all(promises);
         }
     },
-
-    
 
     _clearAuthorizationForProviderID: {
         value: function (moduleID) {
@@ -480,18 +474,29 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
             return result;
         }
     },
+    
 
+    // AuthorizationService is responsible for propagating the logOut to  
+    // the Authorization objects
     _clearAuthorizationForProvider: {
         value: function (provider) {
-            var result = null;
-            if (provider && typeof provider.logOut === "function") {
-                result = provider.logOut();
+            var promises = [],
+                authorization = provider.authorization;
+
+            if (typeof provider.logOut === "function") {
+                promises.push(provider.logOut());
             }
-            return result;
+            if (Array.isArray(authorization)) {
+                promises = promises.concat(authorization.map(function (item) {
+                    return item.logOut();
+                }));
+            } else if (authorization) {
+                promises.push(authorization.logOut());
+            }
+
+            return Promise.all(promises);
         }
     },
-
-
 
     //Utils
 
