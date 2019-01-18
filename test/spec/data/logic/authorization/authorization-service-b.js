@@ -15,10 +15,24 @@ exports.AuthorizationServiceB = DataService.specialize( /** @lends Authorization
             return this._authorization;
         }
     },
+
+    providesAuthorization: {
+        value: true
+    },
     
     authorize: {
         value: function () {
             return this.promiseDescriptor.value;
+        }
+    },
+
+    didLogOut: {
+        value: false
+    },
+
+    logOut: {
+        value: function () {
+            this.didLogOut = true;
         }
     },
 

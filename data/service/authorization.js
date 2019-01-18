@@ -8,7 +8,13 @@ var Montage = require("core/core").Montage;
  * @class
  * @extends external:Montage
  */
-var Authorization = exports.Authorization = Montage.specialize(/** @lends AuthorizationManager.prototype */ {
+var Authorization = exports.Authorization = Montage.specialize(/** @lends Authorization.prototype */ {
+
+  logOut: {
+    value: function () {
+      console.warn("Authorization.logOut() must be overridden by the implementing object");
+    }
+  }
 
 });
 

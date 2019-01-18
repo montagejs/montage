@@ -179,6 +179,13 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * Saving Data
      */
 
+    _isAsync: {
+        value: function (object) {
+            return object && object.then && typeof object.then === "function";
+        }
+    },
+
+
     /**
      * Subclasses should override this method to delete a data object when that
      * object's raw data wouldn't be useful to perform the deletion.
@@ -200,7 +207,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 mapResult = this._mapObjectToRawData(object, record),
                 result;
 
-            if (mapResult instanceof Promise) {
+            if (this._isAsync(mapResult)) {
                 result = mapResult.then(function () {
                     return self.deleteRawData(record, object);
                 });
@@ -417,7 +424,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 object = this.objectForTypeRawData(type, rawData, context),
                 result = this._mapRawDataToObject(rawData, object, context);
 
-            if (result && result instanceof Promise) {
+            if (this._isAsync(result)) {
                 result = result.then(function () {
                     stream.addData(object);
                     return object;
@@ -820,9 +827,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             if (record) {
                 if (result) {
                     var otherResult = this.mapObjectToRawData(object, record, context);
-                    if (result instanceof Promise && otherResult instanceof Promise) {
+                    if (this._isAsync(result) && this._isAsync(otherResult)) {
                         result = Promise.all([result, otherResult]);
-                    } else if (otherResult instanceof Promise) {
+                    } else if (this._isAsync(otherResult)) {
                         result = otherResult;
                     }
                 } else {

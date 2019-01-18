@@ -14,6 +14,20 @@ exports.AuthorizationServiceWithPanel = DataService.specialize( /** @lends Autho
             return this._authorization;
         }
     },
+
+    providesAuthorization: {
+        value: true
+    },
+
+    didLogOut: {
+        value: false
+    },
+
+    logOut: {
+        value: function () {
+            this.didLogOut = true;
+        }
+    },
     
     authorize: {
         value: function () {

@@ -1,8 +1,15 @@
-var Montage = require("montage").Montage;
+var Authorization = require("montage/data/service/authorization").Authorization;
 
-exports.Authorization = Montage.specialize(/** @lends Montage.prototype */ {
+exports.Authorization = Authorization.specialize(/** @lends Authorization.prototype */ {
 
-    //TODO
+    didLogOut: {
+        value: false
+    },
 
+    logOut: {
+        value: function () {
+            this.didLogOut = true;
+        }
+    }
     
 });
