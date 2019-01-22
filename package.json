@@ -7,44 +7,13 @@
     "type": "git",
     "url": "https://github.com/montagejs/montage.git"
   },
-  "main": "montage",
+  "main": "core/core",
+  "redirects": {
+    "montage": "core/core"
+  },
   "engines": {
     "node": "<=4.9.1",
     "npm": "<=2.15.11"
-  },
-  "overlay": {
-    "browser": {
-      "main": "core/core",
-      "redirects": {
-        "montage": "core/core"
-      },
-      "mappings": {
-        "mr": {
-          "name": "mr",
-          "location": "node_modules/mr"
-        },
-        "bluebird": {
-          "name": "bluebird",
-          "location": "node_modules/bluebird"
-        }
-      }
-    },
-    "node": {
-      "main": "core/core",
-      "redirects": {
-        "montage": "core/core"
-      },
-      "mappings": {
-        "mr": {
-          "name": "mr",
-          "location": "node_modules/mr"
-        },
-        "bluebird": {
-          "name": "bluebird",
-          "location": "node_modules/bluebird"
-        }
-      }
-    }
   },
   "production": true,
   "dependencies": {
