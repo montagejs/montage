@@ -206,7 +206,7 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
         get: function () {
             return  this._objectDescriptor                      ?   Promise.resolve(this._objectDescriptor) :
                     this.owner && this.owner.objectDescriptor   ?   Promise.resolve(this.owner.objectDescriptor) :
-                    this.owner && this.owner instanceof Promise ?   this._objectDescriptorReference :
+                    this._isAsync(this.owner)                   ?   this._objectDescriptorReference :
                                                                     undefined;
         },
         set: function (value) {
@@ -224,6 +224,13 @@ exports.RawPropertyValueToObjectConverter = Converter.specialize( /** @lends Raw
             });
         }
     },
+
+    _isAsync: {
+        value: function (object) {
+            return object && object.then && typeof object.then === "function";
+        }
+    },
+
     
     /**
      * The descriptor for which to perform the fetch.

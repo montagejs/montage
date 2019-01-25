@@ -406,7 +406,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (types) {
             var self = this;
             return Promise.all(this._flattenArray(types).map(function (type) {
-                return type instanceof Promise ? type : Promise.resolve(type);
+                return type;
             })).then(function (descriptors) {
                 return self._flattenArray(descriptors);
             });
@@ -791,7 +791,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
-     * holds authorization object after a successfull authorization
+     * holds authorization object after a successful authorization
      *
      * @type {Object}
      */
@@ -848,18 +848,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: undefined
     },
 
-
     /**
      *
      * @method
      * @returns Promise
      */
     logOut: {
-        value: function () {
-            console.warn("DataService.logOut() must be overridden by the implementing service");
-            return this.nullPromise;
-        }
+        value: undefined
     },
+
 
     /***************************************************************************
      * Data Object Types

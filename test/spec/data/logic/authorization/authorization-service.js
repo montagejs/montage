@@ -21,6 +21,16 @@ exports.AuthorizationService = DataService.specialize( /** @lends AuthorizationS
         }
     },
 
+    didLogOut: {
+        value: false
+    },
+
+    logOut: {
+        value: function () {
+            this.didLogOut = true;
+        }
+    },
+
     reset: {
         value: function () {
             this._promiseDescriptor = this._makePromiseDescriptor();
