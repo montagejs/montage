@@ -3,7 +3,7 @@ node_js:
   - "4"
   - "6"
   - "8"
-  - "9"
+  - "10"
 script: npm run $COMMAND
 env:
   - COMMAND=lint
