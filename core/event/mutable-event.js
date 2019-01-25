@@ -236,6 +236,9 @@ if (typeof window !== "undefined") {
         touches: {
             get: function () {
                 return this._event.touches;
+            },
+            set: function (value) {
+                this._event.touches = value;
             }
         },
         /**
@@ -245,6 +248,9 @@ if (typeof window !== "undefined") {
         changedTouches: {
             get: function () {
                 return this._event.changedTouches;
+            },
+            set: function (value) {
+                this._event.changedTouches = value;
             }
         },
         /**
