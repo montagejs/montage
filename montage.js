@@ -955,11 +955,10 @@
                 }));
             }
 
-            var applicationRequirePromise;
+            var applicationRequirePromise,
+                applicationPackage;
 
             if (!("remoteTrigger" in params)) {
-
-
                 // TODO need test
                 if ("autoPackage" in params) {
                     mrRequire.injectPackageDescription(location, {
@@ -975,11 +974,21 @@
                         applicationLocation = miniURL.resolve(applicationLocation, ".");
                     }
                 }
-                applicationRequirePromise = mrRequire.loadPackage({
+                applicationPackage = {
                     location: applicationLocation,
                     hash: params.applicationHash
-                }, config);
-
+                };
+                if (typeof global.BUNDLE === "object") {
+                    applicationRequirePromise = mrRequire.loadPackage(applicationPackage, config);
+                } else {
+                    applicationRequirePromise = mrRequire.loadPackageLock(applicationPackage, config)
+                    .then(function (packageLock) {
+                        if (packageLock) {
+                            config.packageLock = packageLock;
+                        }
+                        return mrRequire.loadPackage(applicationPackage, config);
+                    });
+                }
             // TODO need test
             } else {
 
