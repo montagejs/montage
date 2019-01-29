@@ -571,9 +571,10 @@
             getLocation: function () {
                 var location = this.location;
                 if (!location) {
-                    location = "file://" + process.cwd();
+                    /* jshint -W117 */
+                    location = "file://" + __dirname;
+                    /* jshint +W117 */
                 }
-
                 return location;
             },
 
