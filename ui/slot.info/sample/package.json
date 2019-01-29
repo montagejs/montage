@@ -2,6 +2,9 @@
 	"name": "slot.info",
 	"private": true,
 	"dependencies": {
-		"montage": "../.."
+		"montage": "*"
+	},
+	"mappings": {
+		"montage": "../../../"
 	}
 }
