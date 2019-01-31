@@ -72,12 +72,11 @@ function getMontageMontageDeserializer() {
         return getMontageMontageDeserializer._promise;
     }
 
-    return (getMontageMontageDeserializer._promise = MontageBoot.loadPackage(
-            PATH.join(__dirname, "."), {mainPackageLocation: PATH.join(__dirname, "../")})
+    return (getMontageMontageDeserializer._promise = MontageBoot.loadPackage(PATH.join(__dirname, "."))
         .then(function (mr) {
             return mr.async("./core/serialization/deserializer/montage-deserializer")
             .then(function (MontageDeserializerModule) {
-                return (MontageBoot.MontageDeserializer = 
+                return (MontageBoot.MontageDeserializer =
                     MontageDeserializerModule.MontageDeserializer
                 );
             });
