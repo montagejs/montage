@@ -91,12 +91,19 @@
             }
         },
 
-        load: function (location,loadCallback) {
+        load: function (location, callback) {
             var script = document.createElement("script");
             script.src = location;
             script.onload = function () {
-                if(loadCallback) {
-                    loadCallback(script);
+                if (callback) {
+                    callback(null, script);
+                }
+                // remove clutter
+                script.parentNode.removeChild(script);
+            };
+            script.onerror = function () {
+                if (callback) {
+                    callback(new Error("Can't load script " + JSON.stringify(location)), script);
                 }
                 // remove clutter
                 script.parentNode.removeChild(script);
@@ -253,13 +260,28 @@
                 allModulesLoaded();
             };
 
+            var montageLocation;
+            function loadModuleScript(path, callback) {
+                montageLocation = montageLocation || resolve(global.location, params.montageLocation);
+                // try loading script relative to app first (npm 3+)
+                browser.load(resolve(global.location, path), function (err, script) {
+                    if (err) {
+                        // if that fails, the app may have been installed with
+                        // npm 2 or with --legacy-bundling, in which case the
+                        // script will be under montage's node_modules
+                        browser.load(resolve(montageLocation, path), callback);
+                    } else if (callback) {
+                        callback(null, script);
+                    }
+                });
+            }
+
             // load in parallel, but only if we're not using a preloaded cache.
             // otherwise, these scripts will be inlined after already
             if (typeof global.BUNDLE === "undefined") {
-                var montageLocation = resolve(global.location, params.montageLocation);
 
-                //Special Case bluebird for now:
-                browser.load(resolve(montageLocation, pending.promise), function() {
+                // Special Case bluebird for now:
+                loadModuleScript(pending.promise, function () {
                     delete pending.promise;
 
                     //global.bootstrap cleans itself from global once all known are loaded. "bluebird" is not known, so needs to do it first
@@ -272,7 +294,7 @@
 
                     for (var module in pending) {
                         if (pending.hasOwnProperty(module)) {
-                            browser.load(resolve(montageLocation, pending[module]));
+                            loadModuleScript(pending[module]);
                         }
                     }
                 });
