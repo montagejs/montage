@@ -799,34 +799,8 @@
                     hash: params.montageHash
                 })
                 .then(function (montageRequire) {
-                    // load the promise package so we can inject the bootstrapped
-                    // promise library back into it
-                    var promiseLocation;
-                    if (params.promiseLocation) {
-                        promiseLocation = URL.resolve(Require.getLocation(), params.promiseLocation);
-                    } else {
-                        //promiseLocation = URL.resolve(montageLocation, "packages/mr/packages/q");
-                        //node tools/build --features="core timers call_get" --browser
-                        promiseLocation = URL.resolve(montageLocation, "node_modules/bluebird");
-                    }
-
-                    var result = [
-                        montageRequire,
-                        montageRequire.loadPackage({
-                            location: promiseLocation,
-                            hash: params.promiseHash
-                        })
-                    ];
-
-                    return result;
-                })
-                .spread(function (montageRequire, promiseRequire) {
                     montageRequire.inject("core/mini-url", URL);
                     montageRequire.inject("core/promise", {Promise: Promise});
-                    promiseRequire.inject("bluebird", Promise);
-
-                    // This prevents bluebird to be loaded twice by mousse's code
-                    promiseRequire.inject("js/browser/bluebird", Promise);
 
                     // install the linter, which loads on the first error
                     config.lint = function (module) {
