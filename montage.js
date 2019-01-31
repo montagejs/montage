@@ -19,7 +19,7 @@
     // reassigning causes eval to not use lexical scope.
     var globalEval = eval,
     /*jshint evil:true */
-    global = globalEval('this'); 
+    global = globalEval('this');
     /*jshint evil:false */
 
     // Here we expose global for legacy mop support.
@@ -30,7 +30,7 @@
     var browser = {
 
         makeResolve: function () {
-            
+
             try {
 
                 var testHost = "http://example.org",
@@ -131,7 +131,7 @@
                         if (script.dataset) {
                             for (name in script.dataset) {
                                 if (script.dataset.hasOwnProperty(name)) {
-                                    this._params[name] = script.dataset[name];   
+                                    this._params[name] = script.dataset[name];
                                 }
                             }
                         } else if (script.attributes) {
@@ -246,7 +246,7 @@
                         // this causes the function to exit if there are any remaining
                         // scripts loading, on the first iteration.  consider it
                         // equivalent to an array length check
-                        return;   
+                        return;
                     }
                 }
 
@@ -346,7 +346,7 @@
 
                 var appProto = applicationRequire.packageDescription.applicationPrototype,
                     applicationLocation, appModulePromise;
-            
+
                 if (appProto) {
                     applicationLocation = MontageReviver.parseObjectLocationId(appProto);
                     appModulePromise = applicationRequire.async(applicationLocation.moduleId);
@@ -383,7 +383,7 @@
         deserializer.init(mjson, require, void 0, require.location + moduleId);
         return deserializer.deserializeObject();
     };
-    
+
     exports.initMontageCustomElement = function () {
         if (typeof window.customElements === 'undefined' || typeof window.Reflect === 'undefined') {
             return void 0;
@@ -476,7 +476,7 @@
             if (!this._instance) {
                 var self = this,
                     component = this.instantiateComponent();
-                
+
                 return this.findParentComponent().then(function (parentComponent) {
                     self._instance = component;
                     parentComponent.addChildComponent(component);
@@ -528,7 +528,7 @@
                 mainEnterDocument = component.enterDocument,
                 mainTemplateDidLoad = component.templateDidLoad,
                 proxyElement = this.findProxyForElement(this);
-            
+
             if (proxyElement) {
                 var observedAttributes = this.observedAttributes,
                     observedAttribute,
@@ -544,7 +544,7 @@
                     }
                 }
             }
-                
+
             this.application.eventManager.registerTargetForActivation(shadowRoot);
 
             component.templateDidLoad = function () {
@@ -802,10 +802,10 @@
                     montageRequire.inject("core/mini-url", URL);
                     montageRequire.inject("core/promise", {Promise: Promise});
                     promiseRequire.inject("bluebird", Promise);
-                    
+
                     // This prevents bluebird to be loaded twice by mousse's code
                     promiseRequire.inject("js/browser/bluebird", Promise);
-                    
+
                     // install the linter, which loads on the first error
                     config.lint = function (module) {
                         montageRequire.async("core/jshint")
