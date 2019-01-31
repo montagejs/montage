@@ -53,7 +53,7 @@
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
     "q-io": "^1.13.3",
-    "mr": "^17.0.11",
+    "mr": "montagejs/mr#feature/npm3",
     "weak-map": "^1.0.5",
     "lodash.kebabcase": "^4.1.1",
     "lodash.camelcase": "^4.3.0",
