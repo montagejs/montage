@@ -658,4 +658,19 @@ describe("core/core-spec", function () {
             expect(delegate.methodToBeCalled).toHaveBeenCalled();
         });
     });
+
+    describe("Object shim", function () {
+
+        it("should accept undefined arguments to assign()", function () {
+            var object = {aProperty: 23},
+                error = null;
+            try {
+                Object.assign(object, undefined);
+            } catch (e) {
+                error = e;
+            }
+            expect(error).toBeNull();
+        });
+    });
+
 });
