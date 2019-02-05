@@ -81,9 +81,11 @@ if (!Object.assign) {
             }
             for (s = 1, ss = arguments.length; s < ss; ++s) {
                 source = arguments[s];
-                keys = source ? Object.keys(source) : [];
-                for (k = 0, kk = keys.length; k < kk; ++k) {
-                    target[keys[k]] = source[keys[k]];
+                if (source) {
+                    keys = Object.keys(source);
+                    for (k = 0, kk = keys.length; k < kk; ++k) {
+                        target[keys[k]] = source[keys[k]];
+                    }
                 }
             }
             return target;
