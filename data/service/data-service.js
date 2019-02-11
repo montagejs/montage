@@ -91,7 +91,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (value !== undefined) {
                 this.isUniquing = value;
             }
-            
+
             return result;
         }
     },
@@ -272,16 +272,21 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     _addChildService: {
         value: function (child, types) {
             var children, type, i, n, nIfEmpty = 1;
-            types = types || child.model && child.model.objectDescriptors || child.types;
+            types = types || child.model && child.model.objectDescriptors || child.types,
+            isNotParentService = (child._parentService !== this);
             // If the new child service already has a parent, remove it from
             // that parent.
-            if (child._parentService) {
+            // Adding more test to allow a service to register types in multiple
+            // calls, which can happen if the service is deserilized multiple times
+            if (child._parentService && isNotParentService) {
                 child._parentService.removeChildService(child);
             }
 
             // Add the new child to this service's children set.
-            this.childServices.add(child);
-            this._childServicesByIdentifier.set(child.identifier, child);
+            if(isNotParentService) {
+                this.childServices.add(child);
+                this._childServicesByIdentifier.set(child.identifier, child);
+            }
             // Add the new child service to the services array of each of its
             // types or to the "all types" service array identified by the
             // `null` type, and add each of the new child's types to the array
@@ -290,12 +295,17 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             for (i = 0, n = types && types.length || nIfEmpty; i < n; i += 1) {
                 type = types && types.length && types[i] || null;
                 children = this._childServicesByType.get(type) || [];
-                children.push(child);
-                if (children.length === 1) {
-                    this._childServicesByType.set(type, children);
-                    if (type) {
-                        this._childServiceTypes.push(type);
+
+                //Checking in case this is called multiple times
+                if(children.indexOf(child) === -1 ) {
+                    children.push(child);
+                    if (children.length === 1) {
+                        this._childServicesByType.set(type, children);
+                        if (type) {
+                            this._childServiceTypes.push(type);
+                        }
                     }
+
                 }
             }
             // Set the new child service's parent.
@@ -963,12 +973,17 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     _getPrototypeForType: {
         value: function (type) {
-            var info, triggers, prototype;
+            var info, triggers, prototypeToExtend, prototype;
             type = this._objectDescriptorForType(type);
             prototype = this._dataObjectPrototypes.get(type);
             if (type && !prototype) {
-                prototype = Object.create(type.objectPrototype || Montage.prototype);
-                prototype.constuctor = type.objectPrototype.constructor;
+                //type.objectPrototype is legacy and should be depreated over time
+                prototypeToExtend = type.objectPrototype || Object.getPrototypeOf(type.module) || Montage.prototype;
+                prototype = Object.create(prototypeToExtend);
+                prototype.constuctor = type.objectPrototype
+                                            ? type.objectPrototype.constructor
+                                            : type.module;
+
                 if(prototype.constuctor.name === "constructor" ) {
                     Object.defineProperty(prototype.constuctor, "name", { value: type.typeName });
                 }
@@ -1324,6 +1339,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
 
             if (mapping) {
+                //Why aren't we passing this.snapshotForObject(object) instead of copying everying in a new empty object?
                 Object.assign(data, this.snapshotForObject(object));
                 result = mapping.mapObjectToCriteriaSourceForProperty(object, data, propertyName);
                 if (this._isAsync(result)) {
@@ -1332,6 +1348,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                         return mapping.mapRawDataToObjectProperty(data, object, propertyName);
                     });
                 } else {
+                    //This was already done a few lines up. Why are we re-doing this?
                     Object.assign(data, self.snapshotForObject(object));
                     result = mapping.mapRawDataToObjectProperty(data, object, propertyName);
                     if (!this._isAsync(result)) {
@@ -1938,7 +1955,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             return promise;
         }
     },
-    
+
     /**
      * Save changes made to a data object.
      *
