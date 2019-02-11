@@ -502,7 +502,14 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 object = value && "prototype" in value ?
                     Object.create(module.montageObject) : module.montageObject;
                 context.setObjectLabel(object, label);
-                return this.instantiateMJSONObject(value, object, objectName, context, label);
+
+                if(label === "root") {
+                    return this.instantiateMontageObject(value, object, objectName, context, label);
+                }
+                else {
+                    return this.instantiateMJSONObject(value, object, objectName, context, label);
+                }
+
             } else {
                 object = this.getMontageObject(value, module, objectName, context, label);
                 context.setObjectLabel(object, label);
