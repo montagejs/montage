@@ -341,7 +341,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             // should be rejected as an error.
             error = this._checkLabel(label, isAlias);
             if (error) {
-                return Promise.reject(error);
+                throw error;
             }
 
             // Check if the optional "debugger" unit is set for this object
@@ -419,7 +419,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 }
                 return element;
             } else {
-                return Promise.reject(new Error("Element with id '" + elementId + "' was not found."));
+                throw new Error("Element with id '" + elementId + "' was not found.");
             }
         }
     },
@@ -469,7 +469,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 )) {
                 // We have a circular reference. If we wanted to forbid circular
                 // references this is where we would throw an error.
-                return Promise.resolve(this._deserializerConstructor.moduleContexts.get(location)._objects.root);
+                return this._deserializerConstructor.moduleContexts.get(location)._objects.root;
             }
 
             if (isObjectDescriptor && !Promise.is(module) && !module.montageObject) {
@@ -687,14 +687,9 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     didReviveObjects: {
         value: function (objects, context) {
-            var self = this;
-
-            return Promise.all([
-                this._deserializeBindings(context),
-                this._deserializeUnits(context)
-            ]).then(function () {
-                self._invokeDeserializedFromSerialization(objects, context);
-            });
+            this._deserializeBindings(context);
+            this._deserializeUnits(context);
+            this._invokeDeserializedFromSerialization(objects, context);
         }
     },
 
@@ -731,17 +726,13 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 bindingsToDeserializeDesc;
 
             if (bindingsToDeserialize) {
-                try {
-                    for (var i = 0, length = bindingsToDeserialize.length; i < length; i++) {
-                        bindingsToDeserializeDesc = bindingsToDeserialize[i];
-                        Bindings.deserializeObjectBindings(
-                            unitDeserializer.initWithContext(context),
-                            bindingsToDeserializeDesc.object,
-                            bindingsToDeserializeDesc.bindings
-                        );
-                    }
-                } catch (ex) {
-                    return Promise.reject(ex);
+                for (var i = 0, length = bindingsToDeserialize.length; i < length; i++) {
+                    bindingsToDeserializeDesc = bindingsToDeserialize[i];
+                    Bindings.deserializeObjectBindings(
+                        unitDeserializer.initWithContext(context),
+                        bindingsToDeserializeDesc.object,
+                        bindingsToDeserializeDesc.bindings
+                    );
                 }
             }
         }
@@ -753,19 +744,15 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 unitDeserializer = new UnitDeserializer(),
                 unitNames;
 
-            try {
-                for (var i = 0, unitsDesc; (unitsDesc = unitsToDeserialize[i]); i++) {
-                    unitNames = unitsDesc.unitNames;
+            for (var i = 0, unitsDesc; (unitsDesc = unitsToDeserialize[i]); i++) {
+                unitNames = unitsDesc.unitNames;
 
-                    for (var j = 0, unitName; (unitName = unitNames[j]); j++) {
-                        if (unitName in unitsDesc.objectDesc) {
-                            unitDeserializer.initWithContext(context);
-                            MontageReviver._unitRevivers.get(unitName)(unitDeserializer, unitsDesc.object, unitsDesc.objectDesc[unitName]);
-                        }
+                for (var j = 0, unitName; (unitName = unitNames[j]); j++) {
+                    if (unitName in unitsDesc.objectDesc) {
+                        unitDeserializer.initWithContext(context);
+                        MontageReviver._unitRevivers.get(unitName)(unitDeserializer, unitsDesc.object, unitsDesc.objectDesc[unitName]);
                     }
                 }
-            } catch (ex) {
-                return Promise.reject(ex);
             }
         }
     },
@@ -913,9 +900,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     reviveExternalObject: {
         value: function(value, context, label) {
-            return Promise.reject(
-                new Error("External object '" + label + "' not found in user objects.")
-            );
+            throw new Error("External object '" + label + "' not found in user objects.");
         }
     },
 

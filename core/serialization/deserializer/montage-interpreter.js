@@ -130,8 +130,6 @@ var MontageContext = Montage.specialize({
                 objects = this._objects,
                 object;
 
-
-
             if (label in objects) {
                 return objects[label];
             } else if (label in serialization) {
@@ -208,12 +206,8 @@ var MontageContext = Montage.specialize({
                 result;
 
             if (typeof reviver.didReviveObjects === "function") {
-                result = reviver.didReviveObjects(this._objects, this);
-                if (Promise.is(result)) {
-                    return result.then(function() {
-                        return self._objects;
-                    });
-                }
+                reviver.didReviveObjects(this._objects, this);
+                return self._objects;
             }
 
             return this._objects;

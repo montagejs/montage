@@ -41,12 +41,20 @@ describe("reviver", function() {
                             return;
                         },
                         setObjectLabel: function() {}
-                    };
+                    },
+                    revived;
 
-                reviver.reviveRootObject({}, context, "external").catch(function (err) {
+                try {
+                    revived = reviver.reviveRootObject({}, context, "external")
+                } catch (err) {
+                    revived = Promise.reject(err);
+                }
+
+                revived.then(function () {
+                    throw new Error("expected to throw");
+                }, function (err) {
                     expect(err).toBeDefined();
-                    done();
-                });
+                }).finally(done);
             });
         });
 
