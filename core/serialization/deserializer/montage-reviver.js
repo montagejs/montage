@@ -79,13 +79,6 @@ var ModuleLoader = Montage.specialize({
         }
     },
 
-    getExports: {
-        value: function (_require, moduleId) {
-            var moduleDescriptor = this.getModuleDescriptor(_require, moduleId);
-            return moduleDescriptor ? moduleDescriptor.exports : void 0;
-        }
-    },
-
     getModule: {
         value: function (moduleId, label) {
             var objectRequires = this._objectRequires,
@@ -97,14 +90,16 @@ var ModuleLoader = Montage.specialize({
                 _require = this._require;
             }
 
-            module = this.getExports(_require, moduleId);
+            try {
+                module = _require(moduleId);
+            } catch (err) {
+                if (!module && (moduleId.endsWith(".mjson") || moduleId.endsWith(".meta"))) {
+                    module = this.getModuleDescriptor(_require, moduleId).text;
+                }
 
-            if (!module && (moduleId.endsWith(".mjson") || moduleId.endsWith(".meta"))) {
-                module = this.getModuleDescriptor(_require, moduleId).text;
-            }
-
-            if (!module) {
-                module = _require.async(moduleId);
+                if (!module) {
+                    module = _require.async(moduleId);
+                }
             }
 
             return module;
