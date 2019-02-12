@@ -172,7 +172,9 @@ exports.ExpressionDataMappingConverter = Converter.specialize( /** @lends Expres
      * */
     revertSyntax: {
         get: function() {
-            return this._revertSyntax || (this._revertSyntax = parse(this.revertExpression));
+            return this._revertSyntax || (this._revertSyntax === undefined
+                ? this._revertSyntax = this.revertExpression ? parse(this.revertExpression) : null
+                : null);
         }
     },
 
@@ -182,7 +184,10 @@ exports.ExpressionDataMappingConverter = Converter.specialize( /** @lends Expres
 
     compiledRevertSyntax: {
         get: function () {
-            return this._compiledRevertSyntax || (this._compiledRevertSyntax = compile(this.revertSyntax));
+
+            return this._compiledRevertSyntax || (this._compiledRevertSyntax === undefined
+                ? this._compiledRevertSyntax = this.revertSyntax ? compile(this.revertSyntax) : null
+                : null);
         }
     },
 
