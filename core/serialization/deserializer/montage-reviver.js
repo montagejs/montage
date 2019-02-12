@@ -126,10 +126,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
      *        that also needs to be deserialized.
      */
     init: {
-        value: function (_require, objectRequires, deserializerConstructor) {
+        value: function (_require, objectRequires, deserializerConstructor, sync) {
             this.moduleLoader = new ModuleLoader().init(_require, objectRequires);
             this._require = _require;
             this._deserializerConstructor = deserializerConstructor;
+            this._sync = sync;
             return this;
         }
     },
@@ -472,6 +473,12 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             }
 
             if (Promise.is(module)) {
+                if (this._sync) {
+                    throw new Error(
+                        "Tried to revive montage object with label " + label +
+                        " synchronously but the module was not loaded: " + JSON.stringify(value)
+                    );
+                }
                 return module.then(function (exports) {
                     return self.instantiateObject(exports, locationDesc, value, objectName, context, label);
                 }, function (error) {
@@ -767,24 +774,31 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     reviveValue: {
         value: function(value, context, label) {
-            var type = this.getTypeOf(value);
+            var type = this.getTypeOf(value),
+                revived;
 
             if (type === "string" || type === "number" || type === "boolean" || type === "null" || type === "undefined") {
-                return this.reviveNativeValue(value, context, label);
+                revived = this.reviveNativeValue(value, context, label);
             } else if (type === "regexp") {
-                return this.reviveRegExp(value, context, label);
+                revived = this.reviveRegExp(value, context, label);
             } else if (type === "reference") {
-                return this.reviveObjectReference(value, context, label);
+                revived = this.reviveObjectReference(value, context, label);
             } else if (type === "array") {
-                return this.reviveArray(value, context, label);
+                revived = this.reviveArray(value, context, label);
             } else if (type === "object") {
-                return this.reviveObjectLiteral(value, context, label);
+                revived = this.reviveObjectLiteral(value, context, label);
             } else if (type === "Element") {
-                return this.reviveElement(value, context, label);
+                revived = this.reviveElement(value, context, label);
             } else if (type === "binding") {
-                return value;
+                revived = value;
             } else {
-                return this._callReviveMethod("revive" + type, value, context, label);
+                revived = this._callReviveMethod("revive" + type, value, context, label);
+            }
+
+            if (this._sync && Promise.is(revived)) {
+                throw new Error("Unable to revive value with label " + label + " synchronously: " + value);
+            } else {
+                return revived;
             }
         }
     },

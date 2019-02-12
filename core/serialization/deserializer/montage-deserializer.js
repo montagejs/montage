@@ -25,7 +25,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
     },
 
     init: {
-        value: function (serialization, _require, objectRequires, locationId) {
+        value: function (serialization, _require, objectRequires, locationId, sync) {
             if (typeof serialization === "string") {
                 this._serializationString = serialization;
             } else {
@@ -35,8 +35,9 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
             this._locationId = locationId ? locationId.indexOf(_require.location) === 0 ? locationId : _require.location + locationId : locationId;
 
             this._reviver = new MontageReviver().init(
-                _require, objectRequires, this.constructor
+                _require, objectRequires, this.constructor, sync
             );
+            this._sync = sync;
 
             return this;
         }
@@ -48,33 +49,49 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
      * link against the serialization.
      * @param {Element} element The root element to resolve element references
      * against.
-     * @return {Promise}
+     * @return {Promise|object} Deserialized objects if the deserializer was
+     * initialized with sync set to true, or a Promise for the deserialized
+     * objects otherwise.
      */
     deserialize: {
         value: function (instances, element) {
-            var context = this._locationId && MontageDeserializer.moduleContexts.get(this._locationId);
+            var context = this._locationId && MontageDeserializer.moduleContexts.get(this._locationId),
+                circularError;
             if (context) {
                 if (context._objects.root) {
-                    return Promise.resolve(context._objects);
+                    return this._sync ? context._objects : Promise.resolve(context._objects);
                 } else {
-                    return Promise.reject(new Error(
+                    circularError = new Error(
                         "Unable to deserialize because a circular dependency was detected. " +
                         "Module \"" + this._locationId + "\" has already been loaded but " +
                         "its root could not be resolved."
-                    ));
+                    );
+                    if (this._sync) {
+                        throw circularError;
+                    } else {
+                        return Promise.reject(circularError);
+                    }
                 }
             }
 
             try {
                 var serialization = JSON.parse(this._serializationString);
                 context = new MontageContext()
-                    .init(serialization, this._reviver, instances, element, this._require);
+                    .init(serialization, this._reviver, instances, element, this._require, this._sync);
                 if (this._locationId) {
                     MontageDeserializer.moduleContexts.set(this._locationId, context);
                 }
-                return context.getObjects();
+                try {
+                    return context.getObjects();
+                } catch (ex) {
+                    return Promise.reject(ex);
+                }
             } catch (ex) {
-                return this._formatSerializationSyntaxError(this._serializationString);
+                if (this._sync) {
+                    throw ex;
+                } else {
+                    return this._formatSerializationSyntaxError(this._serializationString);
+                }
             }
         }
     },

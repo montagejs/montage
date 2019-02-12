@@ -95,7 +95,7 @@ var MontageContext = Montage.specialize({
     },
 
     init: {
-        value: function (serialization, reviver, objects, element, _require) {
+        value: function (serialization, reviver, objects, element, _require, sync) {
             this._reviver = reviver;
             this._serialization = serialization;
             this._objects = Object.create(null);
@@ -112,6 +112,7 @@ var MontageContext = Montage.specialize({
 
             this._element = element;
             this._require = _require;
+            this._sync = sync;
 
             return this;
         }
@@ -128,7 +129,7 @@ var MontageContext = Montage.specialize({
             var serialization = this._serialization,
                 reviver = this._reviver,
                 objects = this._objects,
-                object;
+                object, notFoundError;
 
             if (label in objects) {
                 return objects[label];
@@ -143,9 +144,12 @@ var MontageContext = Montage.specialize({
 
                 return object;
             } else {
-                return Promise.reject(
-                    new Error("Object with label '" + label + "' was not found.")
-                );
+                notFoundError = new Error("Object with label '" + label + "' was not found.");
+                if (this._sync) {
+                    throw notFoundError;
+                } else {
+                    return Promise.reject(notFoundError);
+                }
             }
         }
     },
@@ -168,8 +172,10 @@ var MontageContext = Montage.specialize({
             }
 
             if (promises.length === 0) {
-                return Promise.resolve(this._invokeDidReviveObjects());
+                result = this._invokeDidReviveObjects();
+                return this._sync ? result : Promise.resolve(result);
             } else {
+                // We shouldn't get here if this._sync is true
                 return Promise.all(promises).then(function() {
                     return self._invokeDidReviveObjects();
                 });
