@@ -435,6 +435,12 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             }
             this._addMapDataPromiseForStream(result, stream);
 
+
+            //TO-DO: #warning
+            //This method should evolve to use resolveObjectForTypeRawData instead,
+            //however resolveObjectForTypeRawData's promises resolves to object
+            //only after it's been mapped, so this delegate call should only be called then
+            //and not too early as it is now. Not sure if that may create a backward compatibility issue
             if (object) {
                 this.callDelegateMethod("rawDataServiceDidAddOneRawData", this, stream, rawData, object);
             }
@@ -461,10 +467,55 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
+    /**
+     * Called by [addRawData()]{@link RawDataService#addRawData} to add an object
+     * for the passed record to the stream. This method both takes care of doing
+     * mapRawDataToObject and add the object to the stream.
+     *
+     * @method
+     * @argument {ObjectDescriptor} type
+     *                           - The type of the data object matching rawData.
+     * @argument {Object} rawData - An anonymnous object whose properties'
+     *                             values hold the raw data.
+     * @argument {?} context     - An arbitrary value that will be passed to
+     *                             [getDataObject()]{@link RawDataService#getDataObject}
+     *                             and
+     *                             [mapRawDataToObject()]{@link RawDataService#mapRawDataToObject}
+     *                             if it is provided.
+     *
+     * @returns {Promise<MappedObject>} - A promise resolving to the mapped object.
+     *
+     */
+
+    resolveObjectForTypeRawData: {
+        value:function(type, rawData, context) {
+            var dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData),
+                //Retrieves an existing object is responsible data service is uniquing, or creates one
+                object, result;
+
+            //Record snapshot before we may create an object
+            this.recordSnapshot(dataIdentifier, rawData);
+
+            //Retrieves an existing object is responsible data service is uniquing, or creates one
+            object = this.getDataObject(type, rawData, context, dataIdentifier),
+
+            result = this._mapRawDataToObject(rawData, object, context);
+
+            if (Promise.is(result)) {
+                return result.then(function () {
+                    return object;
+                });
+            } else {
+                return Promise.resolve(object);
+            }
+        }
+    },
+
+
     objectForTypeRawData: {
         value:function(type, rawData, context) {
             var dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData);
-                //Record snapshot before we may create an object
+            //Record snapshot before we may create an object
             this.recordSnapshot(dataIdentifier, rawData);
             //iDataIdentifier argument should be all we need later on
             return this.getDataObject(type, rawData, context, dataIdentifier);
