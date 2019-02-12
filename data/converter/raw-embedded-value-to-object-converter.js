@@ -73,13 +73,10 @@ exports.RawEmbeddedValueToObjectConverter = ExpressionDataMappingConverter.speci
 
     _convertOneValue:  {
         value: function (v, typeToFetch, service, valueArray, index) {
-            var dataIdentifier = service.dataIdentifierForTypeRawData(typeToFetch, v),
-                dataServiceForType = service.rootService.childServiceForType(typeToFetch);
-                dataObject = service.rootService.getDataObject(typeToFetch, v, /* context */ undefined, dataIdentifier),
-                result = dataServiceForType.mapRawDataToObject(v,dataObject);
+            var result = service.resolveObjectForTypeRawData(typeToFetch, v);
 
             if (result) {
-                result = result.then(function () {
+                result = result.then(function (dataObject) {
                     if(valueArray) {
                         //Wondering if we need to do this in a property-change compatible way,
                         //[] direct modification of an Array doesn't send property-changes
@@ -89,7 +86,7 @@ exports.RawEmbeddedValueToObjectConverter = ExpressionDataMappingConverter.speci
                 });
             }
             else  {
-                result = dataObject;
+                result = Promise.resolve(undefined);
             }
             return result;
         }
