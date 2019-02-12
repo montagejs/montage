@@ -84,7 +84,11 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                 try {
                     return context.getObjects();
                 } catch (ex) {
-                    return Promise.reject(ex);
+                    if (this._sync) {
+                        throw ex;
+                    } else {
+                        return Promise.reject(ex);
+                    }
                 }
             } catch (ex) {
                 if (this._sync) {

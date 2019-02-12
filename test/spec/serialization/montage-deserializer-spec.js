@@ -1465,4 +1465,39 @@ describe("serialization/montage-deserializer-spec", function () {
                 done();
             });
     });
+
+    describe("sync option", function () {
+        it("deserializes objects synchronously if all needed modules are available", function () {
+            var serialization = {
+                    "component": {
+                        "prototype": "montage/ui/component"
+                    }
+                },
+                serializationString = JSON.stringify(serialization),
+                deserializer = new Deserializer().init(serializationString, require, undefined, undefined, true);
+
+            var objects = deserializer.deserialize();
+            if (Promise.is(objects)) {
+                throw new Error("Expected deserialize() not to return a promise");
+            }
+            expect(objects.component).toBeTruthy();
+        });
+
+        it("throws an error if some needed modules are not available", function () {
+            var serialization = {
+                    "bar": {
+                        "prototype": "foo/bar"
+                    }
+                },
+                serializationString = JSON.stringify(serialization),
+                deserializer = new Deserializer().init(serializationString, require, undefined, undefined, true);
+
+            try {
+                deserializer.deserialize();
+                throw new Error("expected to throw");
+            } catch (err) {
+                expect(err.message.indexOf("synchronous")).toBeGreaterThan(-1);
+            }
+        });
+    });
 });
