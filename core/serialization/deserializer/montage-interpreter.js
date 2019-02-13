@@ -95,7 +95,7 @@ var MontageContext = Montage.specialize({
     },
 
     init: {
-        value: function (serialization, reviver, objects, element, _require, sync) {
+        value: function (serialization, reviver, objects, element, _require, isSync) {
             this._reviver = reviver;
             this._serialization = serialization;
             this._objects = Object.create(null);
@@ -112,7 +112,7 @@ var MontageContext = Montage.specialize({
 
             this._element = element;
             this._require = _require;
-            this._sync = sync;
+            this._isSync = isSync;
 
             return this;
         }
@@ -145,7 +145,7 @@ var MontageContext = Montage.specialize({
                 return object;
             } else {
                 notFoundError = new Error("Object with label '" + label + "' was not found.");
-                if (this._sync) {
+                if (this._isSync) {
                     throw notFoundError;
                 } else {
                     return Promise.reject(notFoundError);
@@ -173,9 +173,9 @@ var MontageContext = Montage.specialize({
 
             if (promises.length === 0) {
                 result = this._invokeDidReviveObjects();
-                return this._sync ? result : Promise.resolve(result);
+                return this._isSync ? result : Promise.resolve(result);
             } else {
-                // We shouldn't get here if this._sync is true
+                // We shouldn't get here if this._isSync is true
                 return Promise.all(promises).then(function() {
                     return self._invokeDidReviveObjects();
                 });

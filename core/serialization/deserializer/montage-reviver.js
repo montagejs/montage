@@ -126,11 +126,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
      *        that also needs to be deserialized.
      */
     init: {
-        value: function (_require, objectRequires, deserializerConstructor, sync) {
+        value: function (_require, objectRequires, deserializerConstructor, isSync) {
             this.moduleLoader = new ModuleLoader().init(_require, objectRequires);
             this._require = _require;
             this._deserializerConstructor = deserializerConstructor;
-            this._sync = sync;
+            this._isSync = isSync;
             return this;
         }
     },
@@ -473,7 +473,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             }
 
             if (Promise.is(module)) {
-                if (this._sync) {
+                if (this._isSync) {
                     throw new Error(
                         "Tried to revive montage object with label " + label +
                         " synchronously but the module was not loaded: " + JSON.stringify(value)
@@ -795,7 +795,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 revived = this._callReviveMethod("revive" + type, value, context, label);
             }
 
-            if (this._sync && Promise.is(revived)) {
+            if (this._isSync && Promise.is(revived)) {
                 throw new Error("Unable to revive value with label " + label + " synchronously: " + value);
             } else {
                 return revived;

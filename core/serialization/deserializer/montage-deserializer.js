@@ -25,7 +25,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
     },
 
     init: {
-        value: function (serialization, _require, objectRequires, locationId, sync) {
+        value: function (serialization, _require, objectRequires, locationId, isSync) {
             if (typeof serialization === "string") {
                 this._serializationString = serialization;
             } else {
@@ -35,9 +35,9 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
             this._locationId = locationId ? locationId.indexOf(_require.location) === 0 ? locationId : _require.location + locationId : locationId;
 
             this._reviver = new MontageReviver().init(
-                _require, objectRequires, this.constructor, sync
+                _require, objectRequires, this.constructor, isSync
             );
-            this._sync = sync;
+            this._isSync = isSync;
 
             return this;
         }
@@ -59,14 +59,14 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                 circularError;
             if (context) {
                 if (context._objects.root) {
-                    return this._sync ? context._objects : Promise.resolve(context._objects);
+                    return this._isSync ? context._objects : Promise.resolve(context._objects);
                 } else {
                     circularError = new Error(
                         "Unable to deserialize because a circular dependency was detected. " +
                         "Module \"" + this._locationId + "\" has already been loaded but " +
                         "its root could not be resolved."
                     );
-                    if (this._sync) {
+                    if (this._isSync) {
                         throw circularError;
                     } else {
                         return Promise.reject(circularError);
@@ -77,21 +77,21 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
             try {
                 var serialization = JSON.parse(this._serializationString);
                 context = new MontageContext()
-                    .init(serialization, this._reviver, instances, element, this._require, this._sync);
+                    .init(serialization, this._reviver, instances, element, this._require, this._isSync);
                 if (this._locationId) {
                     MontageDeserializer.moduleContexts.set(this._locationId, context);
                 }
                 try {
                     return context.getObjects();
                 } catch (ex) {
-                    if (this._sync) {
+                    if (this._isSync) {
                         throw ex;
                     } else {
                         return Promise.reject(ex);
                     }
                 }
             } catch (ex) {
-                if (this._sync) {
+                if (this._isSync) {
                     throw ex;
                 } else {
                     return this._formatSerializationSyntaxError(this._serializationString);
