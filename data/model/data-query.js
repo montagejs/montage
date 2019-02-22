@@ -1,5 +1,4 @@
-var Montage = require("montage").Montage,
-    ModuleReference = require("core/module-reference").ModuleReference;
+var Montage = require("montage").Montage;
 
 /**
  * Defines the criteria that objects must satisfy to be included in a set of
@@ -40,7 +39,7 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
                 this.selectExpression = value;
             }
 
-            
+
             value = deserializer.getProperty("type");
             if (value !== void 0) {
                 this.type = value;
@@ -48,7 +47,7 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
                 value = deserializer.getProperty("typeModule");
                 if (value) {
                     var self = this;
-                    
+
                     result = value.require.async(value.id).then(function (exports) {
                         self.type = exports.montageObject;
                         return self;
@@ -67,7 +66,7 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
             serializer.setProperty("prefetchExpressions", this.prefetchExpressions);
             serializer.setProperty("selectBindings", this.selectBindings);
             serializer.setProperty("selectExpression", this.selectExpression);
-            
+
             if (this.type.objectDescriptorInstanceModule) {
                 serializer.setProperty("typeModule", this.type.objectDescriptorInstanceModule);
             } else {
@@ -189,6 +188,15 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
     selectBindings: {
         value: undefined
     },
+
+    /**
+     * An expression that is used in memory client side to further refine the set objects retrieves.
+     * by the query's criteria expression. This useful in cases the origin service doesn't know how to handle such criteria.
+     * That shouldn't be exposed to the end developer, but instead, a RawDataService should be able to analyse a query's criteria
+     * and split the apsects that can be executed by the origin service automatically, to filter the rest itself.
+     * @type {Array}
+     */
+
 
     selectExpression: {
         value: undefined
