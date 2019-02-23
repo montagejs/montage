@@ -95,7 +95,7 @@ var MontageContext = Montage.specialize({
     },
 
     init: {
-        value: function (serialization, reviver, objects, element, _require) {
+        value: function (serialization, reviver, objects, element, _require, isSync) {
             this._reviver = reviver;
             this._serialization = serialization;
             this._objects = Object.create(null);
@@ -112,6 +112,7 @@ var MontageContext = Montage.specialize({
 
             this._element = element;
             this._require = _require;
+            this._isSync = isSync;
 
             return this;
         }
@@ -128,9 +129,7 @@ var MontageContext = Montage.specialize({
             var serialization = this._serialization,
                 reviver = this._reviver,
                 objects = this._objects,
-                object;
-
-
+                object, notFoundError;
 
             if (label in objects) {
                 return objects[label];
@@ -145,9 +144,12 @@ var MontageContext = Montage.specialize({
 
                 return object;
             } else {
-                return Promise.reject(
-                    new Error("Object with label '" + label + "' was not found.")
-                );
+                notFoundError = new Error("Object with label '" + label + "' was not found.");
+                if (this._isSync) {
+                    throw notFoundError;
+                } else {
+                    return Promise.reject(notFoundError);
+                }
             }
         }
     },
@@ -170,8 +172,10 @@ var MontageContext = Montage.specialize({
             }
 
             if (promises.length === 0) {
-                return Promise.resolve(this._invokeDidReviveObjects());
+                result = this._invokeDidReviveObjects();
+                return this._isSync ? result : Promise.resolve(result);
             } else {
+                // We shouldn't get here if this._isSync is true
                 return Promise.all(promises).then(function() {
                     return self._invokeDidReviveObjects();
                 });
@@ -208,12 +212,8 @@ var MontageContext = Montage.specialize({
                 result;
 
             if (typeof reviver.didReviveObjects === "function") {
-                result = reviver.didReviveObjects(this._objects, this);
-                if (Promise.is(result)) {
-                    return result.then(function() {
-                        return self._objects;
-                    });
-                }
+                reviver.didReviveObjects(this._objects, this);
+                return self._objects;
             }
 
             return this._objects;
