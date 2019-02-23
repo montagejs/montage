@@ -74,7 +74,7 @@ exports.RawEmbeddedValueToObjectConverter = RawValueToObjectConverter.specialize
                 });
             }
             else  {
-                result = Promise.resolve(undefined);
+                result = Promise.resolve();
             }
             return result;
         }
@@ -99,7 +99,7 @@ exports.RawEmbeddedValueToObjectConverter = RawValueToObjectConverter.specialize
                 }
 
             }
-            return Promise.resolve(undefined);
+            return Promise.resolve();
         }
     }
 
