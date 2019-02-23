@@ -67,7 +67,7 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                 }
 
             }
-            return Promise.resolve(undefined);
+            return Promise.resolve();
         }
     }
 
