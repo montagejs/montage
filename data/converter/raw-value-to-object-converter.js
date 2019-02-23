@@ -132,9 +132,10 @@ exports.RawValueToObjectConverter = Converter.specialize( /** @lends RawValueToO
 
     convertSyntax: {
         get: function() {
-            return this._convertSyntax || (this._convertSyntax === undefined
-                                            ? this._convertSyntax = this.convertExpression ? parse(this.convertExpression) : null
-                                            : null);
+            return (this._convertSyntax ||
+                ((this._convertSyntax === undefined)
+                    ? (this._convertSyntax = (this.convertExpression ? parse(this.convertExpression) : null))
+                    : null));
         }
     },
 
@@ -318,13 +319,6 @@ exports.RawValueToObjectConverter = Converter.specialize( /** @lends RawValueToO
     /*********************************************************************
      * Public API
      */
-
-    //TODO
-    //The converter needs to know the property descriptor it acts on.
-    //This is available at the rule level, but only the whole objectDescriptor is
-    //set on the converter. If instead we set the propertyDescriptor, we would know both,
-    //as the propertyDescriptor can give the ObjectDescriptor it belongs to
-    //Question: Why does the objectDescriptor property on a propertyDescriptor returns a promise?s
 
     /**
      * Convert raw data to data objects of an appropriate type.
