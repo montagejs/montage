@@ -436,7 +436,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             this._addMapDataPromiseForStream(result, stream);
 
 
-            //TO-DO: #warning
+            //TODO: #warning
             //This method should evolve to use resolveObjectForTypeRawData instead,
             //however resolveObjectForTypeRawData's promises resolves to object
             //only after it's been mapped, so this delegate call should only be called then
