@@ -1,18 +1,11 @@
-var ExpressionDataMappingConverter = require("./expression-data-mapping-converter").ExpressionDataMappingConverter,
-Criteria = require("core/criteria").Criteria,
-DataQuery = require("data/model/data-query").DataQuery,
-ObjectDescriptorReference = require("core/meta/object-descriptor-reference").ObjectDescriptorReference,
-Promise = require("core/promise").Promise,
-Scope = require("frb/scope"),
-parse = require("frb/parse"),
-compile = require("frb/compile-evaluator");
-
+var RawValueToObjectConverter = require("./raw-value-to-object-converter").RawValueToObjectConverter,
+Promise = require("core/promise").Promise;
 /**
  * @class RawEmbeddedRelationshipValueToObjectConverter
  * @classdesc Converts a property value of raw data to the referenced object.
- * @extends ExpressionDataMappingConverter
+ * @extends RawValueToObjectConverter
  */
-exports.RawEmbeddedValueToObjectConverter = ExpressionDataMappingConverter.specialize( /** @lends RawPropertyValueToObjectConverter# */ {
+exports.RawEmbeddedValueToObjectConverter = RawValueToObjectConverter.specialize( /** @lends RawEmbeddedValueToObjectConverter# */ {
 
     /*********************************************************************
      * Properties
@@ -33,12 +26,7 @@ exports.RawEmbeddedValueToObjectConverter = ExpressionDataMappingConverter.speci
         value: function (v) {
             var self = this,
                 convertedValue,
-                result,
-                criteria = this.convertSyntax
-                                ? new Criteria().initWithSyntax(self.convertSyntax, v)
-                                : null,
-                query;
-
+                result;
 
 
             return Promise.all([this._descriptorToFetch, this.service]).then(function (values) {
