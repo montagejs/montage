@@ -41,12 +41,20 @@ describe("reviver", function() {
                             return;
                         },
                         setObjectLabel: function() {}
-                    };
+                    },
+                    revived;
 
-                reviver.reviveRootObject({}, context, "external").catch(function (err) {
+                try {
+                    revived = reviver.reviveRootObject({}, context, "external")
+                } catch (err) {
+                    revived = Promise.reject(err);
+                }
+
+                revived.then(function () {
+                    throw new Error("expected to throw");
+                }, function (err) {
                     expect(err).toBeDefined();
-                    done();
-                });
+                }).finally(done);
             });
         });
 
@@ -323,6 +331,56 @@ describe("reviver", function() {
             extendedReviver.reviveValue(value);
 
             expect(extendedReviver.reviveBlob).toHaveBeenCalled();
+        })
+    });
+
+    describe("sync option", function () {
+        var reviver, context;
+
+        beforeEach(function () {
+            reviver = new Reviver().init(require, undefined, undefined, true);
+        });
+
+        it("gets objects synchronously if all needed modules are available", function () {
+            var serialization = {
+                reviver: {
+                    prototype: "montage/core/serialization/deserializer/montage-reviver"
+                },
+                context: {
+                    prototype: "montage/core/serialization/deserializer/montage-interpreter"
+                }
+            };
+
+            context = new Context().init(serialization, reviver, void 0, void 0, require, true);
+            var objects = context.getObjects();
+            if (Promise.is(objects)) {
+                throw new Error("Expected getObjects() not to return a promise");
+            }
+            expect(objects).toBeTruthy();
+        });
+
+        it("throws an error if some needed modules are not available", function () {
+            var serialization = {
+                reviver: {
+                    prototype: "montage/core/serialization/deserializer/montage-reviver"
+                },
+                context: {
+                    prototype: "montage/core/serialization/deserializer/montage-interpreter"
+                },
+                text: {
+                    prototype: "foo/bar"
+                }
+            };
+            context = new Context().init(serialization, reviver, void 0, void 0, require, true);
+            try {
+                context.getObjects();
+                throw new Error("expected to throw");
+            } catch (err) {
+                if (err.message === "expected to throw") {
+                    throw err;
+                }
+                expect(err.message.indexOf("synchronously") > -1);
+            }
         })
     });
 });
