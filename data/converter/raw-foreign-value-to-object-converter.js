@@ -23,26 +23,32 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
      */
     convert: {
         value: function (v) {
-            var self = this,
+
+            if(v) {
+                var self = this,
                 criteria = new Criteria().initWithSyntax(self.convertSyntax, v),
                 query;
 
-            return this._descriptorToFetch.then(function (typeToFetch) {
-                var type = typeToFetch.module.id;
+                return this._descriptorToFetch.then(function (typeToFetch) {
+                    var type = typeToFetch.module.id;
 
-                type += "/";
-                type += typeToFetch.name;
+                    type += "/";
+                    type += typeToFetch.name;
 
-                if (self.serviceIdentifier) {
-                    criteria.parameters.serviceIdentifier = self.serviceIdentifier;
-                }
+                    if (self.serviceIdentifier) {
+                        criteria.parameters.serviceIdentifier = self.serviceIdentifier;
+                    }
 
-                query = DataQuery.withTypeAndCriteria(type, criteria);
+                    query = DataQuery.withTypeAndCriteria(type, criteria);
 
-                return self.service ? self.service.then(function (service) {
-                    return service.rootService.fetchData(query);
-                }) : null;
-            });
+                    return self.service ? self.service.then(function (service) {
+                        return service.rootService.fetchData(query);
+                    }) : null;
+                });
+            }
+            else {
+                return Promise.resolve();
+            }
         }
     },
 
