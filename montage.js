@@ -18,9 +18,11 @@
 
     // reassigning causes eval to not use lexical scope.
     var globalEval = eval,
-    /*jshint evil:true */
-    global = globalEval('this');
-    /*jshint evil:false */
+        /*jshint evil:true */
+        global = globalEval('this'),
+        /*jshint evil:false */
+        montageExports = exports;
+
 
     // Here we expose global for legacy mop support.
     // TODO move to mr cause it's loader role to expose
@@ -400,11 +402,112 @@
         }
     };
 
-    exports.compileMJSONFile = function (mjson, require, moduleId) {
-        var deserializer = new exports.MontageDeserializer();
-        deserializer.init(mjson, require, void 0, require.location + moduleId);
-        return deserializer.deserializeObject();
+    exports.MJSONCompilerFactory = function MJSONCompilerFactory(require, exports, module, global, moduleFilename, moduleDirectory) {
+
+            //var root =  Require.delegate.compileMJSONFile(module.text, require.config.requireForId(module.id), module.id, /*isSync*/ true);
+
+            if(module.exports.hasOwnProperty("montageObject")) {
+                throw new Error(
+                    'using reserved word as property name, \'montageObject\' at: ' +
+                    module.location
+                );
+            }
+
+            if(!module.deserializer) {
+                // var root =  Require.delegate.compileMJSONFile(module.text, require.config.requireForId(module.id), module, /*isSync*/ true);
+                if(!montageExports.MontageDeserializer) {
+                    montageExports.MontageDeserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer;
+                }
+
+                var deserializer = new montageExports.MontageDeserializer(),
+                    deserializerRequire = require.config.requireForId(module.id),
+                    root;
+                module.deserializer = deserializer;
+                deserializer.init(module.text, deserializerRequire, void 0, deserializerRequire.location + module.id, true);
+                root = deserializer.deserializeObject();
+
+                // console.log("********MJSONCompilerFactory END compileMJSONFile",module.id);
+
+                if (module.exports.montageObject && module.exports.montageObject !== root) {
+                    throw new Error(
+                        'Final deserialized object is different than one set on module ' +
+                        module.location
+                    );
+                }
+                else if(!module.exports.montageObject) {
+                    module.exports.montageObject = root;
+                }
+
+                if(module.exports) {
+                    Object.assign(module.exports, module.parsedText)
+                }
+                else {
+                    module.exports = module.parsedText;
+                }
+
+                module.deserializer = null;
+                module.text = null;
+
+            }
+
+        // console.log("********MJSONCompilerFactory END montageObject THERE",module.id);
+
+
     };
+
+    exports.parseMJSONDependencies = function parseMJSONDependencies(jsonRoot) {
+
+        var rootEntries = Object.keys(jsonRoot),
+            i=0, iLabel, dependencies = [], iLabelObject;
+
+        while ((iLabel = rootEntries[i])) {
+            iLabelObject = jsonRoot[iLabel];
+            if(iLabelObject.hasOwnProperty("prototype")) {
+                dependencies.push(iLabelObject["prototype"]);
+            }
+            else if(iLabelObject.hasOwnProperty("object")) {
+                dependencies.push(iLabelObject["object"]);
+            }
+            i++;
+        }
+        return dependencies;
+    };
+
+    var dotMeta = ".meta",
+        dotMJSON = ".mjson",
+        dotMJSONLoadJs = ".mjson.load.js";
+
+    exports.Compiler = function (config, compile) {
+        return function(module) {
+
+            if (module.exports || module.factory || (typeof module.text !== "string") || (typeof module.exports === "object")) {
+                return module;
+            }
+
+            var location = module.location,
+                isMJSON = (location && (location.endsWith(dotMJSON) || location.endsWith(dotMJSONLoadJs) || location.endsWith(dotMeta)));
+
+            if (isMJSON) {
+                if (typeof module.exports !== "object" && typeof module.text === "string") {
+                    module.parsedText = JSON.parse(module.text);
+                    if (module.parsedText.montageObject) {
+                        throw new Error(
+                            'using reserved word as property name, \'montageObject\' at: ' +
+                            location
+                        );
+                    }
+                }
+                module.dependencies = montageExports.parseMJSONDependencies(module.parsedText);
+                module.factory = exports.MJSONCompilerFactory;
+
+                return module;
+            } else {
+                var result = compile(module);
+                return result;
+            }
+        }
+    };
+
 
     exports.initMontageCustomElement = function () {
         if (typeof window.customElements === 'undefined' || typeof window.Reflect === 'undefined') {
