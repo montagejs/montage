@@ -60,6 +60,9 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
             this.super(serializer);
             this._setPropertyWithDefaults(serializer, "module", this.module);
             this._setPropertyWithDefaults(serializer, "exportName", this.exportName);
+            if(this.object) {
+                this._setPropertyWithDefaults(serializer, "object", this.object);
+            }
         }
     },
 
@@ -82,6 +85,12 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
             if (!this.exportName) {
                 throw new Error("Cannot deserialize object descriptor without an exportName");
             }
+
+            value = deserializer.getProperty("object");
+            if (value !== void 0) {
+                this.object = value;
+            }
+
         }
     },
 
@@ -92,6 +101,15 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
     module: {
         value: null
     },
+
+    /**
+     * A reference to the actual object that this object descriptor is for.
+     * @type {Object}
+     */
+    object: {
+        value: null
+    },
+
 
     /**
      * The name of the export this object descriptor is for.
