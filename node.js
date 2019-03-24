@@ -83,17 +83,7 @@ function getMontageMontageDeserializer() {
     }));
 }
 
-exports.compileMJSONFile = function (mjson, require, moduleId) {
-    if (MontageBoot.MontageDeserializer) {
-        return MontageBoot.compileMJSONFile(mjson, require, moduleId);
-    } else {
-        return getMontageMontageDeserializer().then(function () {
-            return MontageBoot.compileMJSONFile(mjson, require, moduleId);
-        });
-    }
-};
-
-Require.delegate = exports;
+Require.delegate = MontageBoot;
 
 function parseHtml(html) {
     var dom, error;
