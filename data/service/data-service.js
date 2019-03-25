@@ -59,14 +59,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 result = this,
                 value;
 
-            value = deserializer.getProperty("childServices");
-            if (value) {
-                this.registerChildServices(value);
-                result = this._childServiceRegistrationPromise.then(function () {
-                    return self;
-                });
-            }
-
             value = deserializer.getProperty("model") || deserializer.getProperty("binder");
             if (value) {
                 this.model = value;
@@ -92,7 +84,19 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 this.isUniquing = value;
             }
 
-            return result;
+            value = deserializer.getProperty("childServices");
+            if (value) {
+                this._childServices = value;
+            }
+
+            return this;
+        }
+    },
+
+    deserializedFromSerialization: {
+        value: function () {
+            if(this._childServices)
+                this.addChildServices(this._childServices)
         }
     },
 
@@ -240,6 +244,49 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     _childServices: {
         value: undefined
+    },
+
+
+
+    addChildServices: {
+        value: function (childServices) {
+            var i, countI, iChild, j, countJ, mappings, jMapping, types, jType, jResult, typesPromises;
+
+            for(i=0, countI = childServices.length;(i<countI);i++) {
+                iChild = childServices[i];
+
+                if((types = iChild.types)) {
+                    this._registerTypesByModuleId(types);
+
+                    for(j=0, countJ = types.length;(j<countJ);j++ ) {
+                        jType = types[j];
+                        jResult = this._makePrototypeForType(iChild, jType);
+                        if(Promise.is(jResult)) {
+                            (typesPromises || (typesPromises = [])).push(jResult);
+                        }
+                    }
+
+                }
+
+                if((mappings = iChild.mappings)) {
+                    for(j=0, countJ = mappings.length;(j<countJ);j++ ) {
+                        jMapping = mappings[j];
+                        iChild.addMappingForType(jMapping, jMapping.objectDescriptor);
+                    }
+                }
+
+                this.addChildService(iChild);
+
+        //Process Mappings
+        //this._childServiceMappings / addMappingForType(mapping, type)
+
+            }
+
+            if(typesPromises) {
+                this._childServiceRegistrationPromise = Promise.all(typesPromises);
+            }
+
+        }
     },
 
     /**
@@ -460,20 +507,32 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     _makePrototypeForType: {
         value: function (childService, objectDescriptor) {
-            var self = this,
+
+            if(objectDescriptor.object) {
+                return this.__makePrototypeForType(childService, objectDescriptor, objectDescriptor.object);
+            } else {
+                var self = this,
                 module = objectDescriptor.module;
-            return module.require.async(module.id).then(function (exports) {
-                var constructor = exports[objectDescriptor.exportName],
-                    prototype = Object.create(constructor.prototype),
-                    mapping = childService.mappingWithType(objectDescriptor),
-                    requisitePropertyNames = mapping && mapping.requisitePropertyNames || new Set(),
-                    dataTriggers = DataTrigger.addTriggers(self, objectDescriptor, prototype, requisitePropertyNames);
-                self._dataObjectPrototypes.set(constructor, prototype);
-                self._dataObjectPrototypes.set(objectDescriptor, prototype);
-                self._dataObjectTriggers.set(objectDescriptor, dataTriggers);
-                self._constructorToObjectDescriptorMap.set(constructor, objectDescriptor);
-                return null;
-            });
+                return module.require.async(module.id).then(function (exports) {
+                    return self.__makePrototypeForType(childService, objectDescriptor, exports[objectDescriptor.exportName]);
+                });
+            }
+        }
+    },
+
+    __makePrototypeForType: {
+        value: function (childService, objectDescriptor, constructor) {
+            var prototype = Object.create(constructor.prototype),
+            mapping = childService.mappingWithType(objectDescriptor),
+            requisitePropertyNames = mapping && mapping.requisitePropertyNames || new Set(),
+            dataTriggers = DataTrigger.addTriggers(this, objectDescriptor, prototype, requisitePropertyNames);
+
+        this._dataObjectPrototypes.set(constructor, prototype);
+        this._dataObjectPrototypes.set(objectDescriptor, prototype);
+        this._dataObjectTriggers.set(objectDescriptor, dataTriggers);
+        this._constructorToObjectDescriptorMap.set(constructor, objectDescriptor);
+        return null;
+
         }
     },
 
