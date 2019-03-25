@@ -158,20 +158,19 @@ var MontageContext = Montage.specialize({
         value: function() {
             var self = this,
                 serialization = this._serialization,
-                promises = [],
-                result;
+                promises,
+                result,
+                objectKeys = Object.keys(serialization);
 
-            for (var label in serialization) {
-                if (serialization.hasOwnProperty(label)) {
-                    result = this.getObject(label);
+            for (var i=0, label;(label = objectKeys[i]); i++) {
+                result = this.getObject(label);
 
-                    if (Promise.is(result)) {
-                        promises.push(result);
-                    }
+                if (Promise.is(result)) {
+                    (promises || (promises = [])).push(result);
                 }
             }
 
-            if (promises.length === 0) {
+            if (!promises || promises.length === 0) {
                 result = this._invokeDidReviveObjects();
                 return this._isSync ? result : Promise.resolve(result);
             } else {
