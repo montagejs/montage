@@ -423,7 +423,7 @@
                     deserializerRequire = require.config.requireForId(module.id),
                     root;
                 module.deserializer = deserializer;
-                deserializer.init(module.text, deserializerRequire, void 0, deserializerRequire.location + module.id, true);
+                deserializer.init(module.text, deserializerRequire, void 0, module, true);
                 root = deserializer.deserializeObject();
 
                 // console.log("********MJSONCompilerFactory END compileMJSONFile",module.id);
