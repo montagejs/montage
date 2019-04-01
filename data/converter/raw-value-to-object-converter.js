@@ -133,9 +133,8 @@ exports.RawValueToObjectConverter = Converter.specialize( /** @lends RawValueToO
     convertSyntax: {
         get: function() {
             return (this._convertSyntax ||
-                ((this._convertSyntax === undefined)
-                    ? (this._convertSyntax = (this.convertExpression ? parse(this.convertExpression) : null))
-                    : null));
+                ((this._convertSyntax === undefined)    ? (this._convertSyntax = (this.convertExpression ? parse(this.convertExpression) : null))
+                                                        : null));
         }
     },
 
@@ -171,9 +170,10 @@ exports.RawValueToObjectConverter = Converter.specialize( /** @lends RawValueToO
      * */
     revertSyntax: {
         get: function() {
-            return this._revertSyntax || (this._revertSyntax === undefined
-                ? this._revertSyntax = this.revertExpression ? parse(this.revertExpression) : null
-                : null);
+            return this._revertSyntax ||
+                (this._revertSyntax === undefined  ? this._revertSyntax = this.revertExpression ? parse(this.revertExpression)
+                                                                                                                        : null
+                                                    : null);
         }
     },
 
@@ -184,9 +184,10 @@ exports.RawValueToObjectConverter = Converter.specialize( /** @lends RawValueToO
     compiledRevertSyntax: {
         get: function () {
 
-            return this._compiledRevertSyntax || (this._compiledRevertSyntax === undefined
-                ? this._compiledRevertSyntax = this.revertSyntax ? compile(this.revertSyntax) : null
-                : null);
+            return this._compiledRevertSyntax ||
+                    (this._compiledRevertSyntax === undefined   ? this._compiledRevertSyntax = this.revertSyntax    ? compile(this.revertSyntax)
+                                                                                                                    : null
+                                                                : null);
         }
     },
 

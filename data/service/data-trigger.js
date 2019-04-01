@@ -258,7 +258,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
         configurable: true,
         writable: true,
         value: function (object, value) {
-            var status, prototype, descriptor, getter, setter, writable, currentValue;
+            var status, prototype, descriptor, getter, setter, writable, currentValue, isToMany;
             // Get the value's current status and update that status to indicate
             // the value has been obtained. This way if the setter called below
             // requests the property's value it will get the value the property
@@ -288,7 +288,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
                 isToMany = this.propertyDescriptor.cardinality !== 1;
                 currentValue = this._getValue(object);
                 if (isToMany && Array.isArray(currentValue)) {
-                    object[propertyName].splice.apply(currentValue, [0, Infinity].concat(value));
+                    object[this._privatePropertyName].splice.apply(currentValue, [0, Infinity].concat(value));
                 }
                 else {
                     object[this._privatePropertyName] = value;

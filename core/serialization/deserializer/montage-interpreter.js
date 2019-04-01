@@ -251,12 +251,10 @@ var MontageContext = Montage.specialize({
     },
 
     _classifyValuesToDeserialize: {
-        value: function (object, objectDesc, bindings) {
+        value: function (object, objectDesc) {
             var values,
                 value,
                 keys,
-                objectValuesToDeserialize,
-                objectProperties,
                 bindings;
 
 
@@ -281,14 +279,6 @@ var MontageContext = Montage.specialize({
                             bindings[key] = value;
                             delete values[key];
                         }
-                        //A flat property
-                        // else {
-                        //     objectProperties = (objectValuesToDeserialize || (objectValuesToDeserialize = this.objectValuesToDeserialize)).get(object);
-                        //     if(!objectProperties) {
-                        //         objectValuesToDeserialize.set(object,(objectProperties = []));
-                        //     }
-                        //     objectProperties.push(key);
-                        // }
                     }
 
                 }
@@ -355,7 +345,7 @@ var MontageContext = Montage.specialize({
             }
 
             if(unitsDesc) {
-                if(unitNames != unitsDesc.unitNames || unitsDesc.objectDesc != objectDesc) {
+                if(unitNames !== unitsDesc.unitNames || unitsDesc.objectDesc !== objectDesc) {
                     var unitsDescObjectDesc = unitsDesc.objectDesc,
                         unitsDescUnitNames = unitsDesc.unitNames;
 

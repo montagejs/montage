@@ -95,8 +95,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     deserializedFromSerialization: {
         value: function () {
-            if(this._childServices)
-                this.addChildServices(this._childServices)
+            if(this._childServices) {
+                this.addChildServices(this._childServices);
+            }
         }
     },
 
@@ -318,8 +319,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     _addChildService: {
         value: function (child, types) {
-            var children, type, i, n, nIfEmpty = 1;
-            types = types || child.model && child.model.objectDescriptors || child.types,
+            var children, type, i, n, nIfEmpty = 1, isNotParentService;
+
+            types = types || (child.model && child.model.objectDescriptors) || child.types;
             isNotParentService = (child._parentService !== this);
             // If the new child service already has a parent, remove it from
             // that parent.
@@ -1039,9 +1041,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 //type.objectPrototype is legacy and should be depreated over time
                 prototypeToExtend = type.objectPrototype || Object.getPrototypeOf(type.module) || Montage.prototype;
                 prototype = Object.create(prototypeToExtend);
-                prototype.constuctor = type.objectPrototype
-                                            ? type.objectPrototype.constructor
-                                            : type.module;
+                prototype.constuctor = type.objectPrototype     ? type.objectPrototype.constructor
+                                                                : type.module;
 
                 if(prototype.constuctor.name === "constructor" ) {
                     Object.defineProperty(prototype.constuctor, "name", { value: type.typeName });

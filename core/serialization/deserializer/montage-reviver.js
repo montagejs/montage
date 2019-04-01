@@ -661,7 +661,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     // TODO: can deserializeSelf make deserializedFromSerialization irrelevant?
     _invokeDeserializedFromSerialization: {
         value: function (context) {
-            var objects = context._objects;
+            var objects = context._objects,
+                object;
 
             /* jshint forin: true */
             for (var label in objects) {
@@ -696,8 +697,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
                 if((object = objects[label])) {
                     values = serialization[label];
-                    this.deserializeMontageObject(values, object, context, label)
-
+                    this.deserializeMontageObject(values, object, context, label);
                 }
             }
         }

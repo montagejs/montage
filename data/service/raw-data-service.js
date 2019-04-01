@@ -497,7 +497,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             this.recordSnapshot(dataIdentifier, rawData);
 
             //Retrieves an existing object is responsible data service is uniquing, or creates one
-            object = this.getDataObject(type, rawData, context, dataIdentifier),
+            object = this.getDataObject(type, rawData, context, dataIdentifier);
 
             result = this._mapRawDataToObject(rawData, object, context);
 

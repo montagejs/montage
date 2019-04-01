@@ -439,7 +439,7 @@
                 }
 
                 if(module.exports) {
-                    Object.assign(module.exports, module.parsedText)
+                    Object.assign(module.exports, module.parsedText);
                 }
                 else {
                     module.exports = module.parsedText;
@@ -505,7 +505,7 @@
                 var result = compile(module);
                 return result;
             }
-        }
+        };
     };
 
 
