@@ -1398,7 +1398,19 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
 
             if (mapping) {
-                //Why aren't we passing this.snapshotForObject(object) instead of copying everying in a new empty object?
+                /*
+                    @marchant: Why aren't we passing this.snapshotForObject(object) instead of copying everying in a new empty object?
+
+                    @tejaede: The criteria source was a first attempt to support derived properties. It's a bucket in which we can put data from the cooked object in order to fetch other cooked properties. The cooked data placed in the criteria source does not belong in the snapshot.
+
+                    For example, take this model:
+
+                    A Foo model includes a bars property and a baz property.
+                    Foo.baz is derived from the value of Foo.bars.
+                    When the application triggers a fetch for Foo.baz, the value of Foo.bars needs to be available to build the criteria for the fetch. However, the value of Foo.bars is cooked and does not belong in the snapshot. Therefore, we create a copy of the snapshot called the "criteria source" into which we can put Foo.bars.
+
+                    All of this said, I don't know this is the right way to solve the problem. The issue at the moment is that this functionality is being used so we cannot remove it without an alternative.
+                */
                 Object.assign(data, this.snapshotForObject(object));
                 result = mapping.mapObjectToCriteriaSourceForProperty(object, data, propertyName);
                 if (this._isAsync(result)) {
