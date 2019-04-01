@@ -756,7 +756,6 @@ describe("serialization/montage-deserializer-spec", function () {
 
             deserializer.init(serializationString, require);
             deserializer.deserializeObject().then(function (root) {
-                console.log("root", root);
                 expect(root).toBeDefined();
             }).catch(function(reason) {
                 fail(reason);
@@ -870,7 +869,6 @@ describe("serialization/montage-deserializer-spec", function () {
             });
         });
 
-        //TODO
         it("should deserialize using object: module.mjson, object created", function (done) {
             var serialization = {
                     "root": {
@@ -887,7 +885,7 @@ describe("serialization/montage-deserializer-spec", function () {
             deserializer.deserializeObject().then(function (root) {
                 var info = Montage.getInfoForObject(root);
                 expect(info.moduleId).toBe("core/core");
-                expect(info.isInstance).toBe(true);
+                expect(info.isInstance).toBe(false);
                 expect(root.type).toBeUndefined();
                 expect(root.blah).toBe("RootObjectDescriptor");
                 expect(root.number).toBe(42);
@@ -899,6 +897,11 @@ describe("serialization/montage-deserializer-spec", function () {
             });
         });
 
+        it("should deserialize mjson synchronously with require", function (done) {
+            var root = require("spec/serialization/test-object-mjson.mjson").montageObject;
+            expect(root.blah).toBe("RootObjectDescriptor");
+            done();
+        });
 
         it("should deserialize singleton using object: module.mjson", function (done) {
             var serialization = {

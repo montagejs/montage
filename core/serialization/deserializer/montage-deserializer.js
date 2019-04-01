@@ -25,17 +25,19 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
     },
 
     init: {
-        value: function (serialization, _require, objectRequires, locationId, isSync) {
+        value: function (serialization, _require, objectRequires, module, isSync) {
             if (typeof serialization === "string") {
                 this._serializationString = serialization;
             } else {
                 this._serializationString = JSON.stringify(serialization);
             }
             this._require = _require;
-            this._locationId = locationId ? locationId.indexOf(_require.location) === 0 ? locationId : _require.location + locationId : locationId;
+            this._module = module;
+            var locationId = module && _require.location + module.id;
+            this._locationId = locationId;
 
             this._reviver = new MontageReviver().init(
-                _require, objectRequires, this.constructor, isSync
+                _require, objectRequires, this, isSync, locationId
             );
             this._isSync = isSync;
 
@@ -55,7 +57,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
      */
     deserialize: {
         value: function (instances, element) {
-            var context = this._locationId && MontageDeserializer.moduleContexts.get(this._locationId),
+            var context = this._module && MontageDeserializer.moduleContexts.get(this._module),
                 circularError;
             if (context) {
                 if (context._objects.root) {
@@ -79,7 +81,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                 context = new MontageContext()
                     .init(serialization, this._reviver, instances, element, this._require, this._isSync);
                 if (this._locationId) {
-                    MontageDeserializer.moduleContexts.set(this._locationId, context);
+                    MontageDeserializer.moduleContexts.set(this._module, context);
                 }
                 try {
                     return context.getObjects();

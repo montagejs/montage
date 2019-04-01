@@ -18,6 +18,7 @@ var SelfDeserializer = Montage.specialize( {
         value: function (object, objectDescriptor, context, unitNames) {
             this._object = object;
             this._objectDescriptor = objectDescriptor;
+            this._objectDescriptorValues = objectDescriptor.values || objectDescriptor.properties || objectDescriptor;
             this._context = context;
             this._unitNames = unitNames;
 

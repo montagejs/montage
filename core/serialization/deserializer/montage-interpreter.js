@@ -2,6 +2,7 @@ var Montage = require("../../core").Montage,
     MontageReviver = require("./montage-reviver").MontageReviver,
     Promise = require("../../promise").Promise,
     deprecate = require("../../deprecate"),
+    Set = require("collections/set"),
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
     TWO_WAY = "<->";
@@ -77,9 +78,13 @@ var MontageInterpreter = Montage.specialize({
     }
 });
 
+var idCount = 0;
 var MontageContext = Montage.specialize({
     _ELEMENT_ID_ATTRIBUTE: {value: "data-montage-id"},
-    _unitsToDeserialize: {value: null},
+    _ELEMENT_ID_SELECTOR_PREFIX: {value: '*[data-montage-id="'},
+    _ELEMENT_ID_SELECTOR_SUFFIX: {value: '"]'},
+    unitsToDeserialize: {value: null},
+    _mjsonDependencies: {value: null},
     _element: {value: null},
     _require: {value: null},
     _objects: {value: null},
@@ -90,7 +95,7 @@ var MontageContext = Montage.specialize({
 
     constructor: {
         value: function () {
-            this._unitsToDeserialize = [];
+            this.unitsToDeserialize = new Map();
         }
     },
 
@@ -160,19 +165,22 @@ var MontageContext = Montage.specialize({
                 serialization = this._serialization,
                 promises,
                 result,
+                objectKeys;
+
+            if(serialization) {
                 objectKeys = Object.keys(serialization);
+                for (var i=0, label;(label = objectKeys[i]); i++) {
+                    result = this.getObject(label);
 
-            for (var i=0, label;(label = objectKeys[i]); i++) {
-                result = this.getObject(label);
-
-                if (Promise.is(result)) {
-                    (promises || (promises = [])).push(result);
+                    if (Promise.is(result)) {
+                        (promises || (promises = [])).push(result);
+                    }
                 }
             }
 
             if (!promises || promises.length === 0) {
                 result = this._invokeDidReviveObjects();
-                return this._isSync ? result : Promise.resolve(result);
+                return this._isSync ? result : Promise.is(result) ? result : Promise.resolve(result);
             } else {
                 // We shouldn't get here if this._isSync is true
                 return Promise.all(promises).then(function() {
@@ -207,11 +215,10 @@ var MontageContext = Montage.specialize({
     _invokeDidReviveObjects: {
         value: function() {
             var self = this,
-                reviver = this._reviver,
-                result;
+                reviver = this._reviver;
 
             if (typeof reviver.didReviveObjects === "function") {
-                reviver.didReviveObjects(this._objects, this);
+                reviver.didReviveObjects(this);
                 return self._objects;
             }
 
@@ -239,30 +246,54 @@ var MontageContext = Montage.specialize({
 
     getElementById: {
         value: function (id) {
-            var selector = '*[' + this._ELEMENT_ID_ATTRIBUTE + '="' + id + '"]';
-
-            return this._element.querySelector(selector);
+            return this._element.querySelector(this._ELEMENT_ID_SELECTOR_PREFIX + id + this._ELEMENT_ID_SELECTOR_SUFFIX);
         }
     },
 
-    _extractBindingsToDeserialize: {
-        value: function (values, bindings) {
-            var value;
+    _classifyValuesToDeserialize: {
+        value: function (object, objectDesc, bindings) {
+            var values,
+                value,
+                keys,
+                objectValuesToDeserialize,
+                objectProperties,
+                bindings;
 
-            for (var key in values) {
-                if (values.hasOwnProperty(key)) {
-                    value = values[key];
 
-                    if ((typeof value === "object" && value &&
-                        Object.keys(value).length === 1 &&
-                        (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) ||
-                        key.indexOf('.') > -1
-                    ) {
-                        bindings[key] = value;
-                        delete values[key];
+            //This is where we support backward compatib
+             if((values = objectDesc.properties)) {
+                objectDesc.values = values;
+                delete objectDesc.properties;
+             }
+             else {
+                if((values = objectDesc.values)) {
+                    keys = Object.keys(values);
+                    bindings = objectDesc.bindings || (objectDesc.bindings = {});
+                    for (var i=0, key;(key = keys[i]);i++) {
+                        value = values[key];
+
+                        //An expression based property
+                        if ((typeof value === "object" && value &&
+                            Object.keys(value).length === 1 &&
+                            (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) ||
+                            key.indexOf('.') > -1
+                        ) {
+                            bindings[key] = value;
+                            delete values[key];
+                        }
+                        //A flat property
+                        // else {
+                        //     objectProperties = (objectValuesToDeserialize || (objectValuesToDeserialize = this.objectValuesToDeserialize)).get(object);
+                        //     if(!objectProperties) {
+                        //         objectValuesToDeserialize.set(object,(objectProperties = []));
+                        //     }
+                        //     objectProperties.push(key);
+                        // }
                     }
+
                 }
             }
+
 
             return bindings;
         }
@@ -274,44 +305,83 @@ var MontageContext = Montage.specialize({
         }
     },
 
+    __propertyToReviveForObjectLiteralValue: {
+        value: undefined
+    },
+    _propertyToReviveForObjectLiteralValue: {
+        get: function() {
+            return this.__propertyToReviveForObjectLiteralValue || (this.__propertyToReviveForObjectLiteralValue = new WeakMap());
+        }
+    },
+    propertyToReviveForObjectLiteralValue: {
+        value: function (objectLiteralValue) {
+            var  propertyToRevive;
+            if(!(propertyToRevive = this._propertyToReviveForObjectLiteralValue.get(objectLiteralValue))) {
+                this._propertyToReviveForObjectLiteralValue.set(objectLiteralValue,(propertyToRevive = new Set(Object.keys(objectLiteralValue))));
+            }
+            return propertyToRevive;
+        }
+    },
+
+    _objectDynamicValuesToDeserialize: {
+        value: undefined
+    },
+    _objectValuesToDeserialize: {
+        value: undefined
+    },
+    objectValuesToDeserialize: {
+        get: function() {
+            return this._objectValuesToDeserialize || (this._objectValuesToDeserialize = new Map());
+        }
+    },
+
+
+
     setBindingsToDeserialize: {
         value: function (object, objectDesc) {
-            var bindings = Object.create(null);
-
-            if (objectDesc.values) {
-                this._extractBindingsToDeserialize(objectDesc.values, bindings);
-            } else if (objectDesc.properties) { // deprecated
-                this._extractBindingsToDeserialize(objectDesc.properties, bindings);
-            }
-
-            if (Object.keys(bindings).length > 0) {
-                if (!this._bindingsToDeserialize) {
-                    this._bindingsToDeserialize = [];
-                }
-
-                this._bindingsToDeserialize.push({
-                    object: object,
-                    bindings: bindings
-                });
-            }
+                this._classifyValuesToDeserialize(object, objectDesc);
         }
     },
 
     setUnitsToDeserialize: {
         value: function (object, objectDesc, unitNames) {
-            this._unitsToDeserialize.push({
-                object: object,
-                objectDesc: objectDesc,
-                unitNames: unitNames
-            });
-        }
-    },
 
-    getUnitsToDeserialize: {
-        value: function () {
-            return this._unitsToDeserialize;
+            var moduleId = objectDesc.prototype || objectDesc.object,
+                isMJSONDependency = moduleId && (moduleId.endsWith(".mjson") || moduleId.endsWith(".meta")),
+                unitsDesc = this.unitsToDeserialize.get(object);
+
+            if(isMJSONDependency) {
+                (this._mjsonDependencies || (this._mjsonDependencies = new Set())).add(moduleId);
+            }
+
+            if(unitsDesc) {
+                if(unitNames != unitsDesc.unitNames || unitsDesc.objectDesc != objectDesc) {
+                    var unitsDescObjectDesc = unitsDesc.objectDesc,
+                        unitsDescUnitNames = unitsDesc.unitNames;
+
+                    for(var i=0, iUniteName, countI = unitNames.length;(i<countI);i++) {
+                        iUniteName = unitNames[i];
+                        if(objectDesc[iUniteName]) {
+                            Object.assign(unitsDescObjectDesc[iUniteName],objectDesc[iUniteName]);
+                        }
+                        if(!unitsDescUnitNames.has(iUniteName)) {
+                            unitsDescUnitNames.splice(i,0,iUniteName);
+                        }
+                    }
+                }
+            }
+            else {
+
+                this.unitsToDeserialize.set(object,{
+                    objectDesc: objectDesc,
+                    unitNames: unitNames
+                });
+            }
+
         }
     }
+
+
 });
 
 exports.MontageInterpreter = MontageInterpreter;

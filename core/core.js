@@ -308,8 +308,8 @@ Object.defineProperty(Montage.prototype, _serializableAttributeProperties, {
 var ObjectAttributeProperties = new Map();
 function getAttributeProperties(proto, attributeName, privateAttributeName) {
     var attributePropertyName = privateAttributeName || (
-        attributeName === SERIALIZABLE ? 
-            _serializableAttributeProperties : 
+        attributeName === SERIALIZABLE ?
+            _serializableAttributeProperties :
                 (UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES));
 
         if(proto !== Object.prototype) {
@@ -422,7 +422,7 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
         if (! (typeof obj === "object" || typeof obj === FUNCTION) || obj === null) {
             throw new TypeError("Object must be an object, not '" + obj + "'");
         }
-        
+
         var isValueDescriptor = (VALUE in descriptor);
 
         // reset defaults appropriately for framework.
@@ -548,8 +548,8 @@ function __findSuperMethodImplementation( method, classFn, isFunctionSuper, meth
             if(!methodPropertyName) {
                 //If methodPropertyNameArg is passed as an argument, we know what to look for,
                 //But it may not be there...
-                propertyNames = methodPropertyNameArg ? 
-                    (_propertyNames[0] = methodPropertyNameArg) && _propertyNames : 
+                propertyNames = methodPropertyNameArg ?
+                    (_propertyNames[0] = methodPropertyNameArg) && _propertyNames :
                         Object.getOwnPropertyNames(context);
 
                 //As we start, we don't really know which property name points to method, we're going to find out:
@@ -675,13 +675,13 @@ function __super(callerFn, methodPropertyName, isValue, isGetter, isSetter) {
  */
 function _super() {
     // Figure out which function called us.
-    var callerFn = ( _super && _super.caller ) ? _super.caller : arguments.callee.caller,        
+    var callerFn = ( _super && _super.caller ) ? _super.caller : arguments.callee.caller,
         superFn = __super.call(this,callerFn);
     return superFn ? superFn.apply(this, arguments) : undefined;
 }
 
 function _superForValue(methodName) {
-    var callerFn = ( _superForValue && _superForValue.caller ) ? _superForValue.caller  : arguments.callee.caller, 
+    var callerFn = ( _superForValue && _superForValue.caller ) ? _superForValue.caller  : arguments.callee.caller,
         superFn = __super.call(this, callerFn, methodName, true, false, false);
 
     //We may need to cache that at some point if it gets called too often
@@ -689,7 +689,7 @@ function _superForValue(methodName) {
 }
 
 function _superForGet(methodName) {
-     var callerFn = ( _superForGet && _superForGet.caller ) ? _superForGet.caller : arguments.callee.caller,       
+     var callerFn = ( _superForGet && _superForGet.caller ) ? _superForGet.caller : arguments.callee.caller,
        superFn = __super.call(this, callerFn, methodName, false, true, false);
 
     //We may need to cache that at some point if it gets called too often
@@ -697,7 +697,7 @@ function _superForGet(methodName) {
 }
 
 function _superForSet(methodName) {
-     var callerFn = ( _superForSet && _superForSet.caller ) ? _superForSet.caller : arguments.callee.caller,     
+     var callerFn = ( _superForSet && _superForSet.caller ) ? _superForSet.caller : arguments.callee.caller,
         superFn = __super.call(this,callerFn,methodName,false,false,true);
 
     //We may need to cache that at some point if it gets called too often
@@ -828,7 +828,7 @@ Montage.defineProperty(Montage, "getPropertyAttributes", {value: function (anObj
     for (var name in attributes) {
         if (hasProperty.call(attributes, name)) {
             attributeValues[name] = attributes[name];
-        // should return the inherited defined attribute values   
+        // should return the inherited defined attribute values
         } else {
             attributeValues[name] = attributes[name];
         }
@@ -979,7 +979,7 @@ Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
 
             var delegateFunctionName = this.identifier + name.toCapitalized();
             if (
-                typeof this.identifier === "string" && 
+                typeof this.identifier === "string" &&
                     typeof delegate[delegateFunctionName] === FUNCTION
             ) {
                 delegateFunction = delegate[delegateFunctionName];
@@ -1666,7 +1666,7 @@ exports._objectDescriptorDescriptor = {
     get: function () {
         var info = Montage.getInfoForObject(this),
             self = info && !info.isInstance ? this : this.constructor;
-        
+
         if (!Object.getOwnPropertyDescriptor(self, "_objectDescriptor") ||
             !self._objectDescriptor
         ) {
