@@ -486,6 +486,27 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             }).then(function () {
                 self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor);
                 return null;
+            }).catch(function () {
+                /*********
+                 * Intentionally NOOP. 
+                 * 
+                 * Catching the error ensures the 'object' is still 
+                 * returned with the stream when the relationship fails 
+                 * while being mapped as a requisitePropertyName. If the
+                 * catch is removed, RawDataService._mapRawDataToObject()
+                 * does not resolve which in turn prevents the associated
+                 * stream's mapping promise from resolving. See RawDataService._streamMapDataPromises
+                 * 
+                 * Note that this catch will also affect the DataTrigger in 2 ways:
+                 * 1. The DataTrigger is not 'tripped' for this property as it would be if the 
+                 *    fetch succeeded. The effect is that the next call to DataService.getObjectProperty()
+                 *    for this property will follow the full DataTrigger fetch property path.
+                 * 
+                 * 2. DataTrigger promises will never reject. This requires the developer to null
+                 *    check the property value rather than rely on DataService.getObjectProperties().catch()
+                 *    and DataService.updateObjectProperties().catch()
+                 */
+                return null;
             });
         }
     },
