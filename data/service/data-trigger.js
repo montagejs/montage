@@ -483,7 +483,7 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
             trigger._objectPrototype = prototype;
             trigger._propertyName = name;
             trigger._isGlobal = propertyDescriptor.isGlobal;
-            if(!serviceTriggers) {
+            if (!serviceTriggers) {
                 serviceTriggers = {};
                 service._dataObjectTriggers.set(objectDescriptor,serviceTriggers);
             }
@@ -494,6 +494,7 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
     _addTrigger: {
         value: function (service, objectDescriptor, prototype, name) {
             var descriptor = objectDescriptor.propertyDescriptorForName(name),
+                serializable = Montage.getPropertyAttribute(prototype, name, "serializable"),
                 trigger;
             if (descriptor) {
                 trigger = Object.create(this._getTriggerPrototype(service));
@@ -512,7 +513,8 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
                         set: function (value) {
                             trigger._setValue(this, value);
                             // (trigger||(trigger = DataTrigger._createTrigger(service, objectDescriptor, prototype, name,descriptor)))._setValue(this, value);
-                        }
+                        },
+                        serializable: serializable
                     });
                 } else {
                     Montage.defineProperty(prototype, name, {
@@ -523,7 +525,8 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
                         set: function (value) {
                             trigger._setValue(this, value);
                             // (trigger||(trigger = DataTrigger._createTrigger(service, objectDescriptor, prototype, name,descriptor)))._setValue(this, value);
-                        }
+                        },
+                        serializable: serializable
                     });
                 }
             }
