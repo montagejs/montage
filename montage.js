@@ -464,10 +464,34 @@
             iLabelObject = jsonRoot[iLabel];
             if(iLabelObject.hasOwnProperty("prototype")) {
                 dependencies.push(iLabelObject["prototype"]);
+
+                //This is to enable expression-data-mapping to deserialize itself synchronously
+                //despite the fact it may have been serialized using object-descriptor-reference.
+                //This allows us to add the objectDescriptorModule's id ("%") as a dependency upfront.
+                //A stronger version would analyze the whole file for the construct: {"%": "someModuleId"}.
+                //But this would impact performance for a use case that we don't need so far.
+                if(dependencies[dependencies.length-1] === "montage/core/meta/object-descriptor-reference") {
+                    /*
+                        We're adding the module of that referrence, typiacally serialized as:
+                        "ObjectDescriptorReference": {
+                            "prototype": "montage/core/meta/object-descriptor-reference",
+                            "properties": {
+                                "valueReference": {
+                                    "objectDescriptor": "Object_Descriptor_Name",
+                                    "prototypeName": "Object_Descriptor__Prototype_Name",
+                                    "objectDescriptorModule": {"%": "Object_Descriptor__module_id"}
+                                }
+                            }
+                        },
+                    */
+                    dependencies.push(iLabelObject.properties.valueReference.objectDescriptorModule["%"]);
+                }
+
             }
             else if(iLabelObject.hasOwnProperty("object")) {
                 dependencies.push(iLabelObject["object"]);
             }
+
             i++;
         }
         return dependencies;
