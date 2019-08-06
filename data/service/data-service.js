@@ -59,6 +59,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 result = this,
                 value;
 
+            value = deserializer.getProperty("name");
+            if (value) {
+                this.name = value;
+            }
+
             value = deserializer.getProperty("model") || deserializer.getProperty("binder");
             if (value) {
                 this.model = value;
@@ -95,8 +100,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     deserializedFromSerialization: {
         value: function () {
-            if(this._childServices) {
-                this.addChildServices(this._childServices);
+            if(Array.isArray(this._childServices)) {
+                var childServices = this._childServices;
+                this._childServices = [];
+                this.addChildServices(childServices);
             }
         }
     },
@@ -1859,6 +1866,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
                         service = self.childServiceForType(query.type);
                         if (service) {
+                            //Here we end up creating an extra stream for nothing because it should be third argument.
                             stream = service.fetchData(query, stream) || stream;
                             self._dataServiceByDataStream.set(stream, service);
                         } else {
