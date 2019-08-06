@@ -94,7 +94,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 this.rawDataPrimaryKeys = value;
             }
 
-            if (hasReferences) {
+            if (hasReferences && !deserializer.isSync) {
                 result = this.resolveReferences().then(function () {
                     value = deserializer.getProperty("objectMapping");
                     if (value) {
@@ -107,6 +107,11 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                     return self;
                 });
             } else {
+
+                if(!this.objectDescriptor) {
+                    this.objectDescriptor = deserializer._context._require(this._objectDescriptorReference._reference.objectDescriptorModule.id).montageObject;
+                }
+
                 value = deserializer.getProperty("objectMapping");
                 if (value) {
                     self._rawOwnObjectMappingRules = value.rules;

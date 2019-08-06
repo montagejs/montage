@@ -44,7 +44,12 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
             return this;
         }
     },
-
+    _isSync: {value: false},
+    isSync: {
+        get: function() {
+            return this._isSync;
+        }
+    },
 
     /**
      * @param {Object} instances Map-like object of external user objects to

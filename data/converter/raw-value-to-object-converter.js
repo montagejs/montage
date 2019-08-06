@@ -56,7 +56,12 @@ exports.RawValueToObjectConverter = Converter.specialize( /** @lends RawValueToO
 
             value = deserializer.getProperty("foreignDescriptor");
             if (value instanceof ObjectDescriptorReference) {
-                this._foreignDescriptorReference = value;
+                if(!deserializer.isSync) {
+                    this._foreignDescriptorReference = value;
+                }
+                else {
+                    this.foreignDescriptor = deserializer._context._require(value._reference.objectDescriptorModule.id).montageObject;
+                }
             } else if (value) {
                 this.foreignDescriptor = value;
             }

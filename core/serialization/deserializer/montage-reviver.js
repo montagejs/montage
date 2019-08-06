@@ -1140,7 +1140,8 @@ MontageReviver.defineUnitReviver("values", function (unitDeserializer, object, v
 
 
         var selfDeserializer = new SelfDeserializer();
-
+        //If the context is sync, we carry the info to the selfDeserializer
+        selfDeserializer.isSync = context.isSync;
         selfDeserializer.initWithObjectAndObjectDescriptorAndContextAndUnitNames(object, montageObjectDesc, context, MontageReviver._unitNames);
         substituteObject = (substituteObject || object).deserializeSelf(selfDeserializer);
 

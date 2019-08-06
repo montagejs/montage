@@ -123,6 +123,13 @@ var MontageContext = Montage.specialize({
         }
     },
 
+    _isSync: {value: false},
+    isSync: {
+        get: function() {
+            return this._isSync;
+        }
+    },
+
     setObjectLabel: {
         value: function(object, label) {
             this._objects[label] = object;
