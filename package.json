@@ -1,6 +1,6 @@
 {
   "name": "montage",
-  "version": "18.0.0-rc1",
+  "version": "18.0.0-rc2",
   "description": "Build your next application with a browser based platform that really gets the web.",
   "license": "BSD-3-Clause",
   "repository": {
@@ -9,8 +9,8 @@
   },
   "main": "montage",
   "engines": {
-    "node": ">=4",
-    "npm": ">=2"
+    "node": ">=8.2.1",
+    "npm": ">=6.7.0"
   },
   "overlay": {
     "browser": {
