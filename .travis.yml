@@ -20,7 +20,11 @@ jobs:
         node_js: 8
         env:
         script: npm run lint
-      - stage: deploy
+      - stage: test
+        node_js:
+          - 8
+          - 10
+     - stage: deploy
         script: skip
         node_js: 8
         env:
