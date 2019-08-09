@@ -350,7 +350,7 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
         }
     },
 
-    
+
 
     fetchHttpRawData: {
         value: function (url, headers, body, types, query, sendCredentials) {
@@ -504,7 +504,7 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
                             } catch (error) {
                                 console.warn(new Error("Can't parse JSON received from " + url));
                             }
-                        } else if (request) {
+                        } else if (request && request.status !== 204) {
                             console.warn(new Error("No JSON response received from " + url));
                         }
                         return data;
@@ -532,7 +532,7 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
                         } else if (text) {
                             console.warn(new Error("Can't parse JSONP received from " + url));
                             console.warn("Response text:", text);
-                        } else if (request) {
+                        } else if (request && request.status !== 204) {
                             console.warn(new Error("No JSONP response received from " + url));
                         }
                         return data;
@@ -547,7 +547,7 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
                 parseResponse: {
                     value: function (request, url) {
                         var text = request && request.responseText;
-                        if (!text && request) {
+                        if (!text && request && request.status !== 204) {
                             console.warn(new Error("No text response received from " + url));
                         }
                         return text;
