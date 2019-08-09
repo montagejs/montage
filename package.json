@@ -9,8 +9,8 @@
   },
   "main": "montage",
   "engines": {
-    "node": ">=8.2.1",
-    "npm": ">=6.7.0"
+    "node": ">=10.16.2",
+    "npm": ">=6.9.0"
   },
   "overlay": {
     "browser": {
@@ -48,7 +48,7 @@
   },
   "production": true,
   "dependencies": {
-    "bluebird": "~3.5.0",
+    "bluebird": "~3.5.5",
     "collections": "~5.1.x",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
@@ -68,7 +68,7 @@
     "jasmine-console-reporter": "^1.2.7",
     "jasmine-core": "^2.5.2",
     "jshint": "^2.9.5",
-    "karma": "^1.7.1",
+    "karma": "^4.2.0",
     "karma-chrome-launcher": "^3.0.0",
     "karma-coverage": "^1.1.2",
     "karma-firefox-launcher": "^1.2.0",
