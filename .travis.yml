@@ -17,11 +17,12 @@ before_install:
 jobs:
     include:
       - stage: lint
-        node_js: 9
+        node_js: 8
         env:
         script: npm run lint
       - stage: deploy
         script: skip
+        node_js: 8
         env:
         deploy:
             provider: npm
