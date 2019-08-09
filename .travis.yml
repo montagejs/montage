@@ -16,6 +16,7 @@ before_install:
 jobs:
     include:
       - stage: lint
+        node_js: 9
         env:
         script: npm run lint
       - stage: deploy
