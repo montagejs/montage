@@ -14,7 +14,7 @@ module.exports = function(config) {
 
     browserNoActivityTimeout: 30000,
 
-    browserSocketTimeout: 60000,
+    browserSocketTimeout: 80000,
 
     // list of files / patterns to load in the browser
     files: [
