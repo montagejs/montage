@@ -14,6 +14,8 @@ module.exports = function(config) {
 
     browserNoActivityTimeout: 30000,
 
+    browserSocketTimeout: 60000,
+
     // list of files / patterns to load in the browser
     files: [
         'test/run-karma.js',
