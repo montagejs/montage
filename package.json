@@ -1,6 +1,6 @@
 {
   "name": "montage",
-  "version": "18.0.0-rc2",
+  "version": "18.0.0",
   "description": "Build your next application with a browser based platform that really gets the web.",
   "license": "BSD-3-Clause",
   "repository": {
