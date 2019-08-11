@@ -1,9 +1,8 @@
 language: node_js
 node_js:
-  - 4
-  - 6
   - 8
-  - 10
+services:
+  - xvfb
 script: npm run $COMMAND
 env:
   - COMMAND=test
@@ -11,8 +10,7 @@ env:
   - COMMAND=integration MONTAGE_VERSION=. MOP_VERSION="#feature/npm3"
 before_install:
   - export CHROME_BIN=chromium-browser
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
+  - export DISPLAY=:0
 jobs:
     include:
       - stage: lint

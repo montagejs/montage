@@ -70,11 +70,13 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 self = this,
                 hasReferences = false,
                 result = this;
-            if (value instanceof ObjectDescriptorReference) {
-                this.objectDescriptorReference = value;
-                hasReferences = true;
-            } else {
-                this.objectDescriptor = value;
+            if (value) {
+                if (value instanceof ObjectDescriptorReference) {
+                    this.objectDescriptorReference = value;
+                    hasReferences = true;
+                } else {
+                    this.objectDescriptor = value;
+                }
             }
 
             this.schemaReference = deserializer.getProperty("schema");
@@ -92,7 +94,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 this.rawDataPrimaryKeys = value;
             }
 
-            if (hasReferences) {
+            if (hasReferences && !deserializer.isSync) {
                 result = this.resolveReferences().then(function () {
                     value = deserializer.getProperty("objectMapping");
                     if (value) {
@@ -105,6 +107,11 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                     return self;
                 });
             } else {
+
+                if(!this.objectDescriptor) {
+                    this.objectDescriptor = deserializer._context._require(this._objectDescriptorReference._reference.objectDescriptorModule.id).montageObject;
+                }
+
                 value = deserializer.getProperty("objectMapping");
                 if (value) {
                     self._rawOwnObjectMappingRules = value.rules;
@@ -456,7 +463,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 isRelationship = propertyDescriptor && !propertyDescriptor.definition && propertyDescriptor.valueDescriptor,
                 isDerived = propertyDescriptor && !!propertyDescriptor.definition,
                 scope = this._scope,
-                debug = DataService.debugProperties.has(propertyName);
+                debug = DataService.debugProperties.has(propertyName) || (rule && rule.debug === true);
 
 
             // Check if property is included in the DataService.debugProperties collection. Intended for debugging.
@@ -469,6 +476,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
             this._prepareRawDataToObjectRule(rule, propertyDescriptor);
 
+
             return  isRelationship ?                                this._resolveRelationship(object, propertyDescriptor, rule, scope) :
                     propertyDescriptor && !isDerived ?              this._resolveProperty(object, propertyDescriptor, rule, scope) :
                                                                     null;
@@ -480,10 +488,13 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             var self = this,
                 hasInverse = !!propertyDescriptor.inversePropertyName || !!rule.inversePropertyName,
                 data;
+
             return rule.evaluate(scope).then(function (result) {
                 data = result;
+
                 return hasInverse ? self._assignInversePropertyValue(data, object, propertyDescriptor, rule) : null;
             }).then(function () {
+
                 self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor);
                 return null;
             });
@@ -497,7 +508,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
             return propertyDescriptor.valueDescriptor.then(function (objectDescriptor) {
                 var inversePropertyDescriptor = objectDescriptor.propertyDescriptorForName(inversePropertyName);
-                
+
                 if (data) {
                     self._setObjectsValueForPropertyDescriptor(data, object, inversePropertyDescriptor);
                 }
@@ -607,7 +618,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     },
 
     /**
-     * Maps the value of a single object property to raw data. Assumes that 
+     * Maps the value of a single object property to raw data. Assumes that
      * the object property has been resolved
      *
      * @method
@@ -640,7 +651,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     },
 
      /**
-     * Prefetches any object properties required to map the rawData property 
+     * Prefetches any object properties required to map the rawData property
      * and maps once the fetch is complete.
      *
      * @method
@@ -669,7 +680,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             return result;
         }
     },
-    
+
     /**
      * Convert model object properties to the raw data properties present in the requirements
      * for a given propertyName
@@ -702,7 +713,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             return promises ? Promise.all(promises) : null;
         }
     },
-    
+
     _prepareObjectToRawDataRule: {
         value: function (rule) {
             var converter = rule.converter,
@@ -750,9 +761,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
             if (Array.isArray(value)) {
                 isToMany = propertyDescriptor.cardinality !== 1;
-                if (isToMany && Array.isArray(object[propertyName])) {
-                    object[propertyName].splice.apply(object[propertyName], [0, Infinity].concat(value));
-                } else if (isToMany) {
+                if (isToMany) {
                     object[propertyName] = value;
                 } else if (value.length) {
                     //Cardinality is 1, if data contains more than 1 item, we throw

@@ -3,7 +3,7 @@
 // Karma configuration
 // Generated on Tue Mar 07 2017 13:59:10 GMT-0800 (PST)
 module.exports = function(config) {
-  config.set({
+    var cfg = {
 
     // base path, that will be used to resolve files and exclude
     basePath: '.',
@@ -13,6 +13,8 @@ module.exports = function(config) {
     frameworks: ['jasmine'],
 
     browserNoActivityTimeout: 30000,
+
+    browserSocketTimeout: 80000,
 
     // list of files / patterns to load in the browser
     files: [
@@ -221,5 +223,12 @@ module.exports = function(config) {
         'karma-ie-launcher',
         'karma-phantomjs-launcher'
     ]
-  });
+  };
+
+//   if (process.env.TRAVIS) {
+//     cfg.browsers = ['Chrome_travis_ci'];
+//   }
+
+  config.set(cfg);
+
 };

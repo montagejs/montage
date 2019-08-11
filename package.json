@@ -9,8 +9,8 @@
   },
   "main": "montage",
   "engines": {
-    "node": ">=4",
-    "npm": ">=2"
+    "node": ">=10.16.2",
+    "npm": ">=6.9.0"
   },
   "overlay": {
     "browser": {
@@ -48,12 +48,12 @@
   },
   "production": true,
   "dependencies": {
-    "bluebird": "~3.5.0",
+    "bluebird": "~3.5.5",
     "collections": "~5.1.x",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
     "q-io": "^1.13.3",
-    "mr": "18.0.0-rc2",
+    "mr": "montagejs/mr#master",
     "weak-map": "^1.0.5",
     "lodash.kebabcase": "^4.1.1",
     "lodash.camelcase": "^4.3.0",
@@ -68,13 +68,13 @@
     "jasmine-console-reporter": "^1.2.7",
     "jasmine-core": "^2.5.2",
     "jshint": "^2.9.5",
-    "karma": "^1.5.0",
-    "karma-chrome-launcher": "^2.0.0",
-    "karma-coverage": "^1.1.1",
-    "karma-firefox-launcher": "^1.0.1",
+    "karma": "^4.2.0",
+    "karma-chrome-launcher": "^3.0.0",
+    "karma-coverage": "^1.1.2",
+    "karma-firefox-launcher": "^1.2.0",
     "karma-ie-launcher": "^1.0.0",
-    "karma-jasmine": "^1.1.0",
-    "karma-phantomjs-launcher": "^1.0.2",
+    "karma-jasmine": "^2.0.1",
+    "karma-phantomjs-launcher": "^1.0.4",
     "karma-safari-launcher": "^1.0.0",
     "montage-testing": "git://github.com/montagejs/montage-testing.git#master",
     "mop-integration": "git://github.com/montagejs/mop-integration.git#master",

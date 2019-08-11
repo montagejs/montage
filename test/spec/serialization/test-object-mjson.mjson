@@ -1,0 +1,8 @@
+{
+    "root": {
+        "object": "montage/core/core[Montage]",
+        "values": {
+            "blah": "RootObjectDescriptor"
+        }
+    }
+}

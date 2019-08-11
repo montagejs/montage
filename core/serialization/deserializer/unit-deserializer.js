@@ -17,6 +17,12 @@ var UnitDeserializer = Montage.specialize(/** @lends UnitDeserializer# */ {
         }
     },
 
+    context: {
+        get: function() {
+            return this._context;
+        }
+    },
+
     _templatePropertyRegExp: {
         value: /^([^:]+)(:.*)$/
     },

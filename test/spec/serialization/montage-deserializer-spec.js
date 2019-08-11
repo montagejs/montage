@@ -756,7 +756,6 @@ describe("serialization/montage-deserializer-spec", function () {
 
             deserializer.init(serializationString, require);
             deserializer.deserializeObject().then(function (root) {
-                console.log("root", root);
                 expect(root).toBeDefined();
             }).catch(function(reason) {
                 fail(reason);
@@ -785,6 +784,8 @@ describe("serialization/montage-deserializer-spec", function () {
         });
 
         it("should deserialize using prototype: module.mjson", function (done) {
+            //The fact that this is a string created in montage-deserializer-spec
+            //makes harder to assess what moduleId should really be expected.
             var serialization = {
                     "root": {
                         "prototype": "spec/serialization/testmjson.mjson",
@@ -799,7 +800,7 @@ describe("serialization/montage-deserializer-spec", function () {
             deserializer.init(serializationString, require);
             deserializer.deserializeObject().then(function (root) {
                 var info = Montage.getInfoForObject(root);
-                expect(info.moduleId).toBe("core/core");
+                expect(info.moduleId).toBe("spec/serialization/testmjson.mjson");
                 expect(info.isInstance).toBe(true);
                 expect(root.type).toBeUndefined();
                 expect(root.name).toBe("RootObjectDescriptor");
@@ -855,7 +856,7 @@ describe("serialization/montage-deserializer-spec", function () {
             deserializer.init(serializationString, require);
             deserializer.deserializeObject().then(function (root) {
                 var info = Montage.getInfoForObject(root);
-                expect(info.moduleId).toBe("core/core");
+                expect(info.moduleId).toBe("spec/serialization/testmjson.mjson");
                 expect(info.isInstance).toBe(true);
                 expect(root.type).toBeUndefined();
                 expect(root.name).toBe("RootObjectDescriptor");
@@ -866,6 +867,40 @@ describe("serialization/montage-deserializer-spec", function () {
             }).finally(function () {
                 done();
             });
+        });
+
+        it("should deserialize using object: module.mjson, object created", function (done) {
+            var serialization = {
+                    "root": {
+                        "object": "spec/serialization/test-object-mjson.mjson",
+                        "values": {
+                            "number": 42,
+                            "string": {"<-": "'a string'"}
+                        }
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(serializationString, require);
+            deserializer.deserializeObject().then(function (root) {
+                var info = Montage.getInfoForObject(root);
+                expect(info.moduleId).toBe("core/core");
+                expect(info.isInstance).toBe(false);
+                expect(root.type).toBeUndefined();
+                expect(root.blah).toBe("RootObjectDescriptor");
+                expect(root.number).toBe(42);
+                expect(root.string).toBe("a string");
+            }).catch(function (reason) {
+                fail(reason);
+            }).finally(function () {
+                done();
+            });
+        });
+
+        it("should deserialize mjson synchronously with require", function (done) {
+            var root = require("spec/serialization/test-object-mjson.mjson").montageObject;
+            expect(root.blah).toBe("RootObjectDescriptor");
+            done();
         });
 
         it("should deserialize singleton using object: module.mjson", function (done) {
@@ -1032,7 +1067,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 }
             };
 
-        it("should only create the object", function (done) {
+        it("Empty deserializeSelf should only create the object and not set values", function (done) {
             var serializationString = JSON.stringify(serialization);
 
             deserializer.init(

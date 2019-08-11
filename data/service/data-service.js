@@ -59,12 +59,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 result = this,
                 value;
 
-            value = deserializer.getProperty("childServices");
+            value = deserializer.getProperty("name");
             if (value) {
-                this.registerChildServices(value);
-                result = this._childServiceRegistrationPromise.then(function () {
-                    return self;
-                });
+                this.name = value;
             }
 
             value = deserializer.getProperty("model") || deserializer.getProperty("binder");
@@ -91,8 +88,23 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (value !== undefined) {
                 this.isUniquing = value;
             }
-            
-            return result;
+
+            value = deserializer.getProperty("childServices");
+            if (value) {
+                this._childServices = value;
+            }
+
+            return this;
+        }
+    },
+
+    deserializedFromSerialization: {
+        value: function () {
+            if(Array.isArray(this._childServices)) {
+                var childServices = this._childServices;
+                this._childServices = [];
+                this.addChildServices(childServices);
+            }
         }
     },
 
@@ -242,6 +254,49 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: undefined
     },
 
+
+
+    addChildServices: {
+        value: function (childServices) {
+            var i, countI, iChild, j, countJ, mappings, jMapping, types, jType, jResult, typesPromises;
+
+            for(i=0, countI = childServices.length;(i<countI);i++) {
+                iChild = childServices[i];
+
+                if((types = iChild.types)) {
+                    this._registerTypesByModuleId(types);
+
+                    for(j=0, countJ = types.length;(j<countJ);j++ ) {
+                        jType = types[j];
+                        jResult = this._makePrototypeForType(iChild, jType);
+                        if(Promise.is(jResult)) {
+                            (typesPromises || (typesPromises = [])).push(jResult);
+                        }
+                    }
+
+                }
+
+                if((mappings = iChild.mappings)) {
+                    for(j=0, countJ = mappings.length;(j<countJ);j++ ) {
+                        jMapping = mappings[j];
+                        iChild.addMappingForType(jMapping, jMapping.objectDescriptor);
+                    }
+                }
+
+                this.addChildService(iChild);
+
+        //Process Mappings
+        //this._childServiceMappings / addMappingForType(mapping, type)
+
+            }
+
+            if(typesPromises) {
+                this._childServiceRegistrationPromise = Promise.all(typesPromises);
+            }
+
+        }
+    },
+
     /**
      * Adds a raw data service as a child of this data service and set it to
      * handle data of the types defined by its [types]{@link DataService#types}
@@ -271,17 +326,23 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     _addChildService: {
         value: function (child, types) {
-            var children, type, i, n, nIfEmpty = 1;
-            types = types || child.model && child.model.objectDescriptors || child.types;
+            var children, type, i, n, nIfEmpty = 1, isNotParentService;
+
+            types = types || (child.model && child.model.objectDescriptors) || child.types;
+            isNotParentService = (child._parentService !== this);
             // If the new child service already has a parent, remove it from
             // that parent.
-            if (child._parentService) {
+            // Adding more test to allow a service to register types in multiple
+            // calls, which can happen if the service is deserilized multiple times
+            if (child._parentService && isNotParentService) {
                 child._parentService.removeChildService(child);
             }
 
             // Add the new child to this service's children set.
-            this.childServices.add(child);
-            this._childServicesByIdentifier.set(child.identifier, child);
+            if(isNotParentService) {
+                this.childServices.add(child);
+                this._childServicesByIdentifier.set(child.identifier, child);
+            }
             // Add the new child service to the services array of each of its
             // types or to the "all types" service array identified by the
             // `null` type, and add each of the new child's types to the array
@@ -290,12 +351,17 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             for (i = 0, n = types && types.length || nIfEmpty; i < n; i += 1) {
                 type = types && types.length && types[i] || null;
                 children = this._childServicesByType.get(type) || [];
-                children.push(child);
-                if (children.length === 1) {
-                    this._childServicesByType.set(type, children);
-                    if (type) {
-                        this._childServiceTypes.push(type);
+
+                //Checking in case this is called multiple times
+                if(children.indexOf(child) === -1 ) {
+                    children.push(child);
+                    if (children.length === 1) {
+                        this._childServicesByType.set(type, children);
+                        if (type) {
+                            this._childServiceTypes.push(type);
+                        }
                     }
+
                 }
             }
             // Set the new child service's parent.
@@ -450,20 +516,32 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     _makePrototypeForType: {
         value: function (childService, objectDescriptor) {
-            var self = this,
+
+            if(objectDescriptor.object) {
+                return this.__makePrototypeForType(childService, objectDescriptor, objectDescriptor.object);
+            } else {
+                var self = this,
                 module = objectDescriptor.module;
-            return module.require.async(module.id).then(function (exports) {
-                var constructor = exports[objectDescriptor.exportName],
-                    prototype = Object.create(constructor.prototype),
-                    mapping = childService.mappingWithType(objectDescriptor),
-                    requisitePropertyNames = mapping && mapping.requisitePropertyNames || new Set(),
-                    dataTriggers = DataTrigger.addTriggers(self, objectDescriptor, prototype, requisitePropertyNames);
-                self._dataObjectPrototypes.set(constructor, prototype);
-                self._dataObjectPrototypes.set(objectDescriptor, prototype);
-                self._dataObjectTriggers.set(objectDescriptor, dataTriggers);
-                self._constructorToObjectDescriptorMap.set(constructor, objectDescriptor);
-                return null;
-            });
+                return module.require.async(module.id).then(function (exports) {
+                    return self.__makePrototypeForType(childService, objectDescriptor, exports[objectDescriptor.exportName]);
+                });
+            }
+        }
+    },
+
+    __makePrototypeForType: {
+        value: function (childService, objectDescriptor, constructor) {
+            var prototype = Object.create(constructor.prototype),
+            mapping = childService.mappingWithType(objectDescriptor),
+            requisitePropertyNames = mapping && mapping.requisitePropertyNames || new Set(),
+            dataTriggers = DataTrigger.addTriggers(this, objectDescriptor, prototype, requisitePropertyNames);
+
+        this._dataObjectPrototypes.set(constructor, prototype);
+        this._dataObjectPrototypes.set(objectDescriptor, prototype);
+        this._dataObjectTriggers.set(objectDescriptor, dataTriggers);
+        this._constructorToObjectDescriptorMap.set(constructor, objectDescriptor);
+        return null;
+
         }
     },
 
@@ -963,12 +1041,16 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     _getPrototypeForType: {
         value: function (type) {
-            var info, triggers, prototype;
+            var info, triggers, prototypeToExtend, prototype;
             type = this._objectDescriptorForType(type);
             prototype = this._dataObjectPrototypes.get(type);
             if (type && !prototype) {
-                prototype = Object.create(type.objectPrototype || Montage.prototype);
-                prototype.constuctor = type.objectPrototype.constructor;
+                //type.objectPrototype is legacy and should be depreated over time
+                prototypeToExtend = type.objectPrototype || Object.getPrototypeOf(type.module) || Montage.prototype;
+                prototype = Object.create(prototypeToExtend);
+                prototype.constuctor = type.objectPrototype     ? type.objectPrototype.constructor
+                                                                : type.module;
+
                 if(prototype.constuctor.name === "constructor" ) {
                     Object.defineProperty(prototype.constuctor, "name", { value: type.typeName });
                 }
@@ -1324,6 +1406,19 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
 
             if (mapping) {
+                /*
+                    @marchant: Why aren't we passing this.snapshotForObject(object) instead of copying everying in a new empty object?
+
+                    @tejaede: The criteria source was a first attempt to support derived properties. It's a bucket in which we can put data from the cooked object in order to fetch other cooked properties. The cooked data placed in the criteria source does not belong in the snapshot.
+
+                    For example, take this model:
+
+                    A Foo model includes a bars property and a baz property.
+                    Foo.baz is derived from the value of Foo.bars.
+                    When the application triggers a fetch for Foo.baz, the value of Foo.bars needs to be available to build the criteria for the fetch. However, the value of Foo.bars is cooked and does not belong in the snapshot. Therefore, we create a copy of the snapshot called the "criteria source" into which we can put Foo.bars.
+
+                    All of this said, I don't know this is the right way to solve the problem. The issue at the moment is that this functionality is being used so we cannot remove it without an alternative.
+                */
                 Object.assign(data, this.snapshotForObject(object));
                 result = mapping.mapObjectToCriteriaSourceForProperty(object, data, propertyName);
                 if (this._isAsync(result)) {
@@ -1332,6 +1427,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                         return mapping.mapRawDataToObjectProperty(data, object, propertyName);
                     });
                 } else {
+                    //This was already done a few lines up. Why are we re-doing this?
                     Object.assign(data, self.snapshotForObject(object));
                     result = mapping.mapRawDataToObjectProperty(data, object, propertyName);
                     if (!this._isAsync(result)) {
@@ -1770,6 +1866,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
                         service = self.childServiceForType(query.type);
                         if (service) {
+                            //Here we end up creating an extra stream for nothing because it should be third argument.
                             stream = service.fetchData(query, stream) || stream;
                             self._dataServiceByDataStream.set(stream, service);
                         } else {
@@ -1938,7 +2035,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             return promise;
         }
     },
-    
+
     /**
      * Save changes made to a data object.
      *

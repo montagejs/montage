@@ -2,6 +2,16 @@ var Montage = require("../../core").Montage,
     deprecate = require("../../deprecate");
 
 var SelfDeserializer = Montage.specialize( {
+    _isSync: {value: false},
+    isSync: {
+        get: function() {
+            return this._isSync;
+        },
+        set: function(value) {
+            this._isSync = value;
+        }
+    },
+
     _object: {value: null},
     _objectDescriptor: {value: null},
     _context: {value: null},
@@ -18,6 +28,7 @@ var SelfDeserializer = Montage.specialize( {
         value: function (object, objectDescriptor, context, unitNames) {
             this._object = object;
             this._objectDescriptor = objectDescriptor;
+            this._objectDescriptorValues = objectDescriptor.values || objectDescriptor.properties || objectDescriptor;
             this._context = context;
             this._unitNames = unitNames;
 
