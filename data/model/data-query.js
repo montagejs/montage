@@ -87,6 +87,24 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
     },
 
     /**
+     * A property used to give a meaningful name to an operation
+     *
+     * @type {string}
+     */
+    name: {
+        value: undefined
+    },
+
+    /**
+     * A property used to give a meaningful name to an operation
+     *
+     * @type {string}
+     */
+    name: {
+        value: undefined
+    },
+
+    /**
      * An object defining the criteria that must be satisfied by objects for
      * them to be included in the data set defined by this query.
      *
