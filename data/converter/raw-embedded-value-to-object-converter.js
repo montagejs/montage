@@ -52,7 +52,7 @@ exports.RawEmbeddedValueToObjectConverter = RawValueToObjectConverter.specialize
                 }
                 else {
                     if(v) {
-                        return this._convertOneValue(v,typeToFetch, service);
+                        return self._convertOneValue(v,typeToFetch, service);
                     }
                 }
             });
