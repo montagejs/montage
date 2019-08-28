@@ -12,8 +12,7 @@ var DataService = require("data/service/data-service").DataService,
     parse = require("frb/parse"),
     Scope = require("frb/scope"),
     compile = require("frb/compile-evaluator"),
-    Promise = require("core/promise").Promise,
-    RawDataService;
+    Promise = require("core/promise").Promise;
 
 /**
  * Provides data objects of certain types and manages changes to them based on
@@ -35,7 +34,7 @@ var DataService = require("data/service/data-service").DataService,
  * @class
  * @extends DataService
  */
-exports.RawDataService = RawDataService = DataService.specialize(/** @lends RawDataService.prototype */ {
+exports.RawDataService = DataService.specialize(/** @lends RawDataService.prototype */ {
 
     /***************************************************************************
      * Initializing
@@ -778,22 +777,7 @@ exports.RawDataService = RawDataService = DataService.specialize(/** @lends RawD
 
     mapRawDataToObject: {
         value: function (rawData, object, context) {
-
-            //Test for backward compatibility, mapFromRawData is deprecated.
-            if(this.mapFromRawData !== RawDataService.prototype.mapFromRawData) {
-                return this.mapFromRawData(object, rawData, context);
-            }
-            //New default implementation, just move the data over:
-            else {
-                //Loop on object keys:
-                var aKey;
-
-                for (aKey in object) {
-                    if(rawData.hasOwnProperty(aKey)) {
-                        object[aKey] = rawData[aKey];
-                    }
-                }
-            }
+            return this.mapFromRawData(object, rawData, context);
         }
     },
     /**
