@@ -735,6 +735,10 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }, "mapSelectorToRawDataSelector", "mapSelectorToRawDataQuery"),
     },
 
+    _defaultDataMapping : {
+        value: new DataMapping
+    },
+
     /**
      * Retrieve DataMapping for this object.
      *
@@ -747,11 +751,16 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 mapping = objectDescriptor && this.mappingWithType(objectDescriptor);
 
 
-            if (!mapping && objectDescriptor) {
-                mapping = this._objectDescriptorMappings.get(objectDescriptor);
-                if (!mapping) {
-                    mapping = DataMapping.withObjectDescriptor(objectDescriptor);
-                    this._objectDescriptorMappings.set(objectDescriptor, mapping);
+            if (!mapping) {
+                if(objectDescriptor) {
+                    mapping = this._objectDescriptorMappings.get(objectDescriptor);
+                    if (!mapping) {
+                        mapping = DataMapping.withObjectDescriptor(objectDescriptor);
+                        this._objectDescriptorMappings.set(objectDescriptor, mapping);
+                    }
+                }
+                else {
+                    mapping = this._defaultDataMapping;
                 }
             }
 
