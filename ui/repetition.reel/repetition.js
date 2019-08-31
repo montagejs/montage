@@ -208,6 +208,8 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             return this._selected;
         },
         set: function (value) {
+            var myObject = this.object,
+                myValue = value;
             value = !!value;
             if (this.object && this.repetition && this.repetition.contentController) {
                 if (value) {
@@ -216,12 +218,19 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
                     this.repetition.contentController.selection.delete(this.object);
                 }
             }
-            if (this._selected !== value) {
-                this.dispatchBeforeOwnPropertyChange("selected", this._selected);
-                this._selected = value;
-                this._updateRepetitionDirtyClassIteration();
-                this.dispatchOwnPropertyChange("selected", value);
-            }
+            //sketched idea to workaround issue Javier found that causes re-entant change
+            //in the middle of this and causes unexpected behavior
+            //Checking that nothing happened in a re-entrant way
+            //if(this.object === myObject) {
+
+                if (this._selected !== value) {
+                    this.dispatchBeforeOwnPropertyChange("selected", this._selected);
+                    this._selected = value;
+                    this._updateRepetitionDirtyClassIteration();
+                    this.dispatchOwnPropertyChange("selected", value);
+                }
+            //}
+
         }
     },
 
@@ -2097,6 +2106,8 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                     iteration.selected = false;
                 }
             }
+
+            //this.dispatchEvent("press");
 
             this._ignoreSelection();
         }
