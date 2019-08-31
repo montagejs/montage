@@ -52,7 +52,7 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
 
     clientId: {
 
-    }
+    },
 
     /**
      * A property used to give a meaningful name to an operation
