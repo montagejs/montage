@@ -51,7 +51,7 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      */
 
     clientId: {
-
+        value: undefined
     },
 
     /**
