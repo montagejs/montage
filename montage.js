@@ -266,6 +266,7 @@
             function loadModuleScript(path, callback) {
                 if(!montageLocation) {
                     montageLocation = montageLocation || resolve(global.location, params.montageLocation);
+
                     if(params.package) {
                         appLocation = resolve(global.location, params.package);
                         if(!appLocation.lastIndexOf("/") !== appLocation.length-1) {
