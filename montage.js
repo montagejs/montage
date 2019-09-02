@@ -262,11 +262,17 @@
                 allModulesLoaded();
             };
 
-            var montageLocation;
+            var montageLocation, appLocation;
             function loadModuleScript(path, callback) {
-                montageLocation = montageLocation || resolve(global.location, params.montageLocation);
+                if(!montageLocation) {
+                    montageLocation = montageLocation || resolve(global.location, params.montageLocation);
+                    appLocation = resolve(global.location, params.package);
+                    if(!appLocation.lastIndexOf("/") !== appLocation.length-1) {
+                        appLocation += "/";
+                    }
+                }
                 // try loading script relative to app first (npm 3+)
-                browser.load(resolve(global.location, path), function (err, script) {
+                browser.load(resolve(appLocation || global.location, path), function (err, script) {
                     if (err) {
                         // if that fails, the app may have been installed with
                         // npm 2 or with --legacy-bundling, in which case the
@@ -963,7 +969,7 @@
                 });
 
             // Will throw error if there is one
-            }).done();
+            });
         });
     };
 
