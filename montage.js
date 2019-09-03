@@ -266,9 +266,11 @@
             function loadModuleScript(path, callback) {
                 if(!montageLocation) {
                     montageLocation = montageLocation || resolve(global.location, params.montageLocation);
-                    appLocation = resolve(global.location, params.package);
-                    if(!appLocation.lastIndexOf("/") !== appLocation.length-1) {
-                        appLocation += "/";
+                    if(params.package) {
+                        appLocation = resolve(global.location, params.package);
+                        if(!appLocation.lastIndexOf("/") !== appLocation.length-1) {
+                            appLocation += "/";
+                        }
                     }
                 }
                 // try loading script relative to app first (npm 3+)
