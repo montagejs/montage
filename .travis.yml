@@ -3,6 +3,12 @@ node_js:
   - 8
 services:
   - xvfb
+addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
 script: npm run $COMMAND
 env:
   - COMMAND=test
