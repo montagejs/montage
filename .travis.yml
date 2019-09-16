@@ -3,14 +3,17 @@ node_js:
   - 8
 services:
   - xvfb
+addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
 script: npm run $COMMAND
 env:
   - COMMAND=test
   - COMMAND=test:karma-travis
   - COMMAND=integration MONTAGE_VERSION=. MOP_VERSION="#master"
-before_install:
-  - export CHROME_BIN=chromium-browser
-  - export DISPLAY=:0
 jobs:
     include:
       - stage: lint
