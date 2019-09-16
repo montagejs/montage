@@ -195,7 +195,7 @@ module.exports = function(config) {
             ]
         },
         Chrome_travis_ci: {
-            base: 'ChromeHeadless',
+            base: 'Chrome',
             flags: [
                 '--no-sandbox',
                 '--ignore-certificate-errors=true',
