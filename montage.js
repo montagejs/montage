@@ -521,7 +521,16 @@
 
             if (isMJSON) {
                 if (typeof module.exports !== "object" && typeof module.text === "string") {
-                    module.parsedText = JSON.parse(module.text);
+                    try {
+                        module.parsedText = JSON.parse(module.text);
+                    } catch (e) {
+                        if (e instanceof SyntaxError) {
+                            console.error("SyntaxError parsing JSON at "+location);
+                            config.lint(module);
+                        } else {
+                            throw e;
+                        }
+                    }
                     if (module.parsedText.montageObject) {
                         throw new Error(
                             'using reserved word as property name, \'montageObject\' at: ' +
