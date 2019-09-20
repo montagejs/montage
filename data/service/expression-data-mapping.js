@@ -490,7 +490,12 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 data;
 
             return rule.evaluate(scope).then(function (result) {
-                data = result;
+                if(propertyDescriptor.cardinality === 1 && result instanceof Array &&  result.length === 1) {
+                    data = result[0];
+                }
+                else {
+                    data = result;
+                }
 
                 return hasInverse ? self._assignInversePropertyValue(data, object, propertyDescriptor, rule) : null;
             }).then(function () {
