@@ -538,11 +538,11 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
             if(rawDataPrimaryKeys && rawDataPrimaryKeys.length) {
 
-                dataIdentifierMap = this._typeIdentifierMap.get(type);
+                // dataIdentifierMap = this._typeIdentifierMap.get(type);
 
-                if(!dataIdentifierMap) {
-                    this._typeIdentifierMap.set(type,(dataIdentifierMap = new Map()));
-                }
+                // if(!dataIdentifierMap) {
+                //     this._typeIdentifierMap.set(type,(dataIdentifierMap = new Map()));
+                // }
 
                 for(var i=0, expression; (expression = rawDataPrimaryKeys[i]); i++) {
                     rawDataPrimaryKeysValues = rawDataPrimaryKeysValues || [];
@@ -550,8 +550,40 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 }
                 if(rawDataPrimaryKeysValues) {
                     primaryKey = rawDataPrimaryKeysValues.join("/");
-                    dataIdentifier = dataIdentifierMap.get(primaryKey);
+                    // dataIdentifier = dataIdentifierMap.get(primaryKey);
                 }
+
+                return this.dataIdentifierForTypePrimaryKey(type,primaryKey);
+
+                // if(!dataIdentifier) {
+                //     var typeName = type.typeName /*DataDescriptor*/ || type.name;
+                //         //This should be done by ObjectDescriptor/blueprint using primaryProperties
+                //         //and extract the corresponsing values from rawData
+                //         //For now we know here that MileZero objects have an "id" attribute.
+                //         dataIdentifier = new DataIdentifier();
+                //         dataIdentifier.objectDescriptor = type;
+                //         dataIdentifier.dataService = this;
+                //         dataIdentifier.typeName = type.name;
+                //         dataIdentifier._identifier = dataIdentifier.primaryKey = primaryKey;
+
+                //         dataIdentifierMap.set(primaryKey,dataIdentifier);
+                // }
+                // return dataIdentifier;
+            }
+            return undefined;
+        }
+    },
+
+    dataIdentifierForTypePrimaryKey: {
+        value: function (type, primaryKey) {
+            var dataIdentifierMap = this._typeIdentifierMap.get(type),
+                dataIdentifier;
+
+                if(!dataIdentifierMap) {
+                    this._typeIdentifierMap.set(type,(dataIdentifierMap = new Map()));
+                }
+
+                dataIdentifier = dataIdentifierMap.get(primaryKey);
 
                 if(!dataIdentifier) {
                     var typeName = type.typeName /*DataDescriptor*/ || type.name;
@@ -567,9 +599,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                         dataIdentifierMap.set(primaryKey,dataIdentifier);
                 }
                 return dataIdentifier;
-            }
-            return undefined;
         }
+
     },
 
     __snapshot: {
