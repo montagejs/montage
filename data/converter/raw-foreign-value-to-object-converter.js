@@ -24,7 +24,7 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
     convert: {
         value: function (v) {
 
-            if(v) {
+            if((v && !(v instanceof Array )) || (v instanceof Array && v.length > 0)) {
                 var self = this,
                 criteria = new Criteria().initWithSyntax(self.convertSyntax, v),
                 query;
