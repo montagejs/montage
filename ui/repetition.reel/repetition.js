@@ -647,7 +647,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     initWithContent: {
         value: function (content) {
-            this.object = content;
+            this.content = content;
             return this;
         }
     },
