@@ -647,7 +647,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     initWithContent: {
         value: function (content) {
-            this.object = content;
+            this.content = content;
             return this;
         }
     },
@@ -1135,7 +1135,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // Where we want to be after the next draw:
             // ---
 
-            // The _boundaries array contains comment nodes that serve as the
+            // The _boundaries array contains empty text nodes that serve as the
             // top and bottom boundary of each iteration.  There will always be
             // one more boundary than iteration.
             this._boundaries = [];
