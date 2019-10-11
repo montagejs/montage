@@ -67,9 +67,9 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      */
     initWithNameObjectDescriptorAndCardinality: {
         value:function (name, objectDescriptor, cardinality) {
-            this._name = (name !== null ? name : Defaults["name"]);
+            this._name = (name !== null ? name : Defaults.name);
             this._owner = objectDescriptor;
-            this.cardinality = (cardinality > 0 ? cardinality : Defaults["cardinality"]);
+            this.cardinality = (cardinality > 0 ? cardinality : Defaults.cardinality);
             return this;
         }
     },
@@ -263,7 +263,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @default 1
      */
     cardinality: {
-        value: Defaults["cardinality"]
+        value: Defaults.cardinality
     },
 
     /**
@@ -271,7 +271,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @default false
      */
     mandatory: {
-        value: Defaults["mandatory"]
+        value: Defaults.mandatory
     },
 
     /**
@@ -279,7 +279,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @default false
      */
     denyDelete: {
-        value: Defaults["denyDelete"]
+        value: Defaults.denyDelete
     },
 
     /**
@@ -287,7 +287,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @default false
      */
     readOnly: {
-        value: Defaults["readOnly"]
+        value: Defaults.readOnly
     },
 
     /**
@@ -335,7 +335,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * this.
      */
     valueType: {
-        value: Defaults["valueType"]
+        value: Defaults.valueType
     },
 
     /**
@@ -345,21 +345,21 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * Default is an Array, but this could be a Set or other type of collection.
      */
     collectionValueType: {
-        value: Defaults["collectionValueType"]
+        value: Defaults.collectionValueType
     },
 
     /**
      * @type {string}
      */
     valueObjectPrototypeName: {
-        value: Defaults["valueObjectPrototypeName"]
+        value: Defaults.valueObjectPrototypeName
     },
 
     /**
      * @type {string}
      */
     valueObjectModuleId: {
-        value: Defaults["valueObjectModuleId"]
+        value: Defaults.valueObjectModuleId
     },
 
     /**
@@ -413,11 +413,11 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     },
 
     defaultValue: {
-        value: Defaults["defaultValue"]
+        value: Defaults.defaultValue
     },
 
     helpKey:{
-        value: Defaults["helpKey"]
+        value: Defaults.helpKey
     },
 
     objectDescriptorModuleId:require("../core")._objectDescriptorModuleIdDescriptor,
