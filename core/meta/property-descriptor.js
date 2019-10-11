@@ -19,7 +19,8 @@ var Defaults = {
     valueDescriptor: void 0,
     enumValues: [],
     defaultValue: void 0,
-    helpKey: ""
+    helpKey: "",
+    localizable: false
 };
 
 
