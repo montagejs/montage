@@ -112,7 +112,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._setPropertyWithDefaults(serializer, "helpKey", this.helpKey);
             this._setPropertyWithDefaults(serializer, "definition", this.definition);
             this._setPropertyWithDefaults(serializer, "inversePropertyName", this.inversePropertyName);
-
+            this._setPropertyWithDefaults(serializer, "localizable", this.localizable);
         }
     },
 
@@ -147,6 +147,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._overridePropertyWithDefaults(deserializer, "helpKey");
             this._overridePropertyWithDefaults(deserializer, "definition");
             this._overridePropertyWithDefaults(deserializer, "inversePropertyName");
+            this._overridePropertyWithDefaults(deserializer, "localizable");
         }
     },
 
@@ -338,6 +339,9 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
 
     /**
      * @type {string}
+     *
+     * This property specifies the type of collectinon this property should use.
+     * Default is an Array, but this could be a Set or other type of collection.
      */
     collectionValueType: {
         value: Defaults["collectionValueType"]
@@ -428,15 +432,25 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     },
 
     /**
+     * @type {boolean}
+     * Express the fact that the value of this property might change to meet the language, cultural and other requirements of a specific target market (a locale).
+     * @default false
+     */
+    localizable: {
+        value: false
+    },
+
+
+    /**
      * Property name on the object on the opposite side of the relationship
      * to which the value of this property should be assigned.
-     * 
-     * For example, take the following relationship: 
-     * 
+     *
+     * For example, take the following relationship:
+     *
      * Foo.bars <------->> Bar.foo
-     * 
-     * Each Bar object in Foo.bars will have Foo assigned to it's Bar.foo property. Therefore, 
-     * the inversePropertyName on the 'bars' propertyDescriptor would be 'foo'. 
+     *
+     * Each Bar object in Foo.bars will have Foo assigned to it's Bar.foo property. Therefore,
+     * the inversePropertyName on the 'bars' propertyDescriptor would be 'foo'.
      */
     inversePropertyName: {
         value: undefined
@@ -472,6 +486,6 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     blueprint: require("../core")._objectDescriptorDescriptor,
 
 
-    
+
 
 });
