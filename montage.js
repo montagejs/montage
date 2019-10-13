@@ -345,7 +345,7 @@
                 "core/logger"
             ];
 
-            var Promise = montageRequire("core/promise").Promise;
+            var Promise = montageRequire("./core/promise").Promise;
             var deepLoadPromises = [];
             var self = this;
 
@@ -424,7 +424,8 @@
             if(!module.deserializer) {
                 // var root =  Require.delegate.compileMJSONFile(module.text, require.config.requireForId(module.id), module, /*isSync*/ true);
                 if(!montageExports.MontageDeserializer) {
-                    montageExports.MontageDeserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer;
+                    var MontageDeserializerModule = montageExports.config.modules["core/serialization/deserializer/montage-deserializer"];
+                    montageExports.MontageDeserializer = MontageDeserializerModule.require("./core/serialization/deserializer/montage-deserializer").MontageDeserializer;
                 }
 
                 var deserializer = new montageExports.MontageDeserializer(),
@@ -510,6 +511,9 @@
         dotMJSONLoadJs = ".mjson.load.js";
 
     exports.Compiler = function (config, compile) {
+        if(!exports.config && config.name === "montage") {
+            exports.config = config;
+        }
         return function(module) {
 
             if (module.exports || module.factory || (typeof module.text !== "string") || (typeof module.exports === "object")) {

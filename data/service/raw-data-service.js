@@ -12,7 +12,7 @@ var DataService = require("data/service/data-service").DataService,
     parse = require("frb/parse"),
     Scope = require("frb/scope"),
     compile = require("frb/compile-evaluator"),
-    Promise = require("core/promise").Promise;
+    Promise = require("../../core/promise").Promise;
 
 /**
  * Provides data objects of certain types and manages changes to them based on
