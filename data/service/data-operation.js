@@ -299,6 +299,10 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      *           "object": "object2-data-identifier"
      *       }
      *    }
+     * //Transaction. For a Transaction, data would contain the list of data operations grouped together.
+     * //If data is muted, and observed, it could be dynamically processed by RawDataServices.
+     * //The referrer property, which is a pointer to another DatOperaiton would be used by an update/addition
+     * //to the transaction
      *
      *
      * @type {Object}
@@ -390,6 +394,31 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
             RemoteProcedureCall: {isRemoteProcedureCall: true},
             RemoteProcedureCallCompleted: {isRemoteProcedureCall: true},
             RemoteProcedureCallFailed: {isRemoteProcedureCall: true}
+
+            /* Batch models the ability to group multiple operation. If a referrer is provided
+                to a BeginTransaction operation, then the batch will be executed within that transaction  */
+            /*
+            Batch: {isBatch: true},
+            BatchCompleted: {isBatch: true},
+            BatchFailed: {isBatch: true},
+            */
+            /* A transaction is a unit of work that is performed against a database.
+            Transactions are units or sequences of work accomplished in a logical order.
+            A transactions begins, operations are grouped, then it is either commited or rolled-back*/
+           /* Start/End Open/Close, Commit/Save, rollback/cancel
+            BeginTransaction: {isTransaction: true},
+            BeginTransactionCompleted: {isTransaction: true},
+            BeginTransactionFailed: {isTransaction: true},
+
+            CommitTransaction: {isTransaction: true},
+            CommitTransactionCompleted: {isTransaction: true},
+            CommitTransactionFailed: {isTransaction: true},
+
+            RollbackTransaction: {isTransaction: true},
+            RollbackTransactionCompleted: {isTransaction: true},
+            RollbackTransactionFailed: {isTransaction: true},
+
+            */
         }
     }
 
