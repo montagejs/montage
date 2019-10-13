@@ -1,6 +1,6 @@
 {
   "name": "montage",
-  "version": "18.0.0",
+  "version": "19.0.0",
   "description": "Build your next application with a browser based platform that really gets the web.",
   "license": "BSD-3-Clause",
   "repository": {
@@ -52,7 +52,7 @@
     "collections": "~5.1.x",
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
-    "q-io": "^1.13.3",
+    "q-io": "github:marchant/q-io.git#bluebird-q-io",
     "mr": "montagejs/mr#master",
     "weak-map": "^1.0.5",
     "lodash.kebabcase": "^4.1.1",
