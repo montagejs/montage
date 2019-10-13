@@ -62,7 +62,7 @@ var Criteria = exports.Criteria = Montage.specialize({
     },
 
     /**
-     * Initialize a Criteria with a compiled syntax.
+     * Initialize a Criteria with a syntax, the expression parsed.
      *
      * @method
      * @returns {Criteria} - The Criteria initialized.
@@ -74,6 +74,21 @@ var Criteria = exports.Criteria = Montage.specialize({
             return this;
         }
     },
+
+    /**
+     * Initialize a Criteria with a syntax, the expression parsed.
+     *
+     * @method
+     * @returns {Criteria} - The Criteria initialized.
+     */
+    initWithCompiledSyntax: {
+        value: function (compiledSyntax, parameters) {
+            this._compiledSyntax = compiledSyntax;
+            this.parameters = parameters;
+            return this;
+        }
+    },
+
 
     /**
      * Initialize a Criteria with an expression as string representation
