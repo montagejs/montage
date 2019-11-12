@@ -9,6 +9,7 @@ var Montage = require("core/core").Montage,
     Promise = require("core/promise").Promise,
     ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor,
     Set = require("collections/set"),
+    CountedSet = require("core/counted-set").CountedSet,
     WeakMap = require("collections/weak-map");
 
 
@@ -534,7 +535,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             var prototype = Object.create(constructor.prototype),
             mapping = childService.mappingWithType(objectDescriptor),
             requisitePropertyNames = mapping && mapping.requisitePropertyNames || new Set(),
-            dataTriggers = DataTrigger.addTriggers(this, objectDescriptor, prototype, requisitePropertyNames);
+            dataTriggers = DataTrigger.addTriggers(this, objectDescriptor, prototype, requisitePropertyNames),
+            mainService = this.rootService;
+
+        Object.defineProperty(prototype,"identifier", {
+                enumerable: true,
+                get: function() {
+                    return mainService.dataIdentifierForObject(this);
+            }
+        });
 
         this._dataObjectPrototypes.set(constructor, prototype);
         this._dataObjectPrototypes.set(objectDescriptor, prototype);
@@ -564,12 +573,18 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-    _objectDescriptorForType: {
+    objectDescriptorForType: {
         value: function (type) {
             var descriptor = this._constructorToObjectDescriptorMap.get(type) ||
                              typeof type === "string" && this._moduleIdToObjectDescriptorMap[type];
 
             return  descriptor || type;
+        }
+    },
+
+    _objectDescriptorForType: {
+        value: function (type) {
+            return this.objectDescriptorForType(type);
         }
     },
 
@@ -747,7 +762,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     childServiceForType: {
         value: function (type) {
             var services;
-            type = type instanceof ObjectDescriptor ? type : this._objectDescriptorForType(type);
+            type = type instanceof ObjectDescriptor ? type : this.objectDescriptorForType(type);
             services = this._childServicesByType.get(type) || this._childServicesByType.get(null);
             return services && services[0] || null;
         }
@@ -780,7 +795,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     mappingWithType: {
         value: function (type) {
             var mapping;
-            type = this._objectDescriptorForType(type);
+            type = this.objectDescriptorForType(type);
             mapping = this._mappingByType.has(type) && this._mappingByType.get(type);
             return mapping || null;
         }
@@ -1042,7 +1057,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     _getPrototypeForType: {
         value: function (type) {
             var info, triggers, prototypeToExtend, prototype;
-            type = this._objectDescriptorForType(type);
+            type = this.objectDescriptorForType(type);
             prototype = this._dataObjectPrototypes.get(type);
             if (type && !prototype) {
                 //type.objectPrototype is legacy and should be depreated over time
@@ -1396,6 +1411,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /* TODO: Remove when mapping is moved in the webworker. This is used right now to know
+    when an object is bieng mapped so we can avoid tracking changes happening during that time. This issue will disappear when mapping is done in a web worker and not on the object directly.
+    */
+    _objectsBeingMapped: {
+        value: new CountedSet()
+    },
+
     _fetchObjectPropertyWithPropertyDescriptor: {
         value: function (object, propertyName, propertyDescriptor) {
             var self = this,
@@ -1420,11 +1442,31 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     All of this said, I don't know this is the right way to solve the problem. The issue at the moment is that this functionality is being used so we cannot remove it without an alternative.
                 */
                 Object.assign(data, this.snapshotForObject(object));
+
+                self._objectsBeingMapped.add(object);
+
                 result = mapping.mapObjectToCriteriaSourceForProperty(object, data, propertyName);
                 if (this._isAsync(result)) {
                     return result.then(function() {
                         Object.assign(data, self.snapshotForObject(object));
-                        return mapping.mapRawDataToObjectProperty(data, object, propertyName);
+                        result = mapping.mapRawDataToObjectProperty(data, object, propertyName);
+
+                        if (!self._isAsync(result)) {
+                            self._objectsBeingMapped.delete(object);
+                        }
+                        else {
+                            result = result.then(function(resolved) {
+
+                                self._objectsBeingMapped.delete(object);
+                                return resolved;
+                            }, function(failed) {
+                                self._objectsBeingMapped.delete(object);
+                            });
+                        }
+                        return result;
+                    }, function(error) {
+                        self._objectsBeingMapped.delete(object);
+                        throw error;
                     });
                 } else {
                     //This was already done a few lines up. Why are we re-doing this?
@@ -1432,6 +1474,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     result = mapping.mapRawDataToObjectProperty(data, object, propertyName);
                     if (!this._isAsync(result)) {
                         result = this.nullPromise;
+                        this._objectsBeingMapped.delete(object);
+                    }
+                    else {
+                        result = result.then(function(resolved) {
+                            self._objectsBeingMapped.delete(object);
+                            return resolved;
+                        }, function(failed) {
+                            self._objectsBeingMapped.delete(object);
+                        });
                     }
                     return result;
                 }
@@ -1593,6 +1644,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     removeDataIdentifierForObject: {
         value: function(object) {
+            console.log("removeDataIdentifierForObject(",object);
             this._dataIdentifierByObject.delete(object);
         }
     },
@@ -1679,7 +1731,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     _createDataObject: {
         value: function (type, dataIdentifier) {
-            var objectDescriptor = this._objectDescriptorForType(type),
+            var objectDescriptor = this.objectDescriptorForType(type),
                 object = Object.create(this._getPrototypeForType(objectDescriptor));
             if (object) {
 
@@ -1713,6 +1765,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
    registerUniqueObjectWithDataIdentifier: {
         value: function(object, dataIdentifier) {
+            //Benoit, this is currently relying on a manual turn-on of isUniquing on the MainService, which is really not something people should have to worry about...
             if (object && dataIdentifier && this.isRootService && this.isUniquing) {
                 this.recordDataIdentifierForObject(dataIdentifier, object);
                 this.recordObjectForDataIdentifier(object, dataIdentifier);
@@ -1751,7 +1804,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
-     * A set of the data objects managed by this service or any other descendent
+     * A Map of the data objects managed by this service or any other descendent
      * of this service's [root service]{@link DataService#rootService} that have
      * been changed since that root service's data was last saved, or since the
      * root service was created if that service's data hasn't been saved yet
@@ -1760,16 +1813,18 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * whose instances will not be root services should override this property
      * to return their root service's value for it.
      *
-     * @type {Set.<Object>}
+     * The key are the objects, the value is a Set containing the property changed
+     *
+     * @type {Map.<Object>}
      */
     changedDataObjects: {
         get: function () {
             if (this.isRootService) {
-                this._changedDataObjects = this._changedDataObjects || new Set();
+                this._changedDataObjects = this._changedDataObjects || new Map();
                 return this._changedDataObjects;
             }
             else {
-                return this.rootService.changedDataObjects();
+                return this.rootService.changedDataObjects;
             }
         }
     },
@@ -1777,6 +1832,132 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     _changedDataObjects: {
         value: undefined
     },
+
+    /**
+     * A Map containing the changes for an object. Keys are the property modified,
+     * values are either a single value, or a map with added/removed keys for properties
+     * that have a cardinality superior to 1. The underlyinng collection doesn't matter
+     * at that level.
+     *
+     * Retuns undefined if no changes have been registered.
+     *
+     * @type {Map.<Object>}
+     */
+
+    changesForDataObject: {
+        value: function (dataObject) {
+            return this.changedDataObjects.get(dataObject);
+        }
+    },
+
+    registerDataObjectChangesFromEvent: {
+        value: function (changeEvent) {
+
+            var dataObject =  changeEvent.target,
+                key = changeEvent.key,
+                keyValue = changeEvent.keyValue,
+                addedValues = changeEvent.addedValues,
+                removedValues = changeEvent.addedValues,
+                changesForDataObject = this.changedDataObjects.get(dataObject);
+
+            if(!changesForDataObject) {
+                changesForDataObject = new Map();
+                this._changedDataObjects.set(dataObject,changesForDataObject);
+            }
+
+            /*
+                While a single change Event should be able to model both a range change
+                equivalent of minus/plus and a related length property change at
+                the same time, a changeEvent from the perspective of tracking data changes
+                doesn't really care about length, or the array itself. The key of the changeEvent will be one of the target's and the added/removedValues would be from that property's array if it's one.
+
+                Which means that data objects setters should keep track of an array
+                changing on the object itself, as well as mutation done to the array itself while modeling that object's relatioonship.
+
+                Client side we're going to have partial views of a whole relationship
+                as we may not want to fetch everything at once if it's big. Which means
+                that even if we can track add / removes to a property's array, what we
+                may consider as an add / remove client side, may be a no-op while it reaches the server, and we may want to be able to tell the client about that specific fact.
+
+
+            */
+            if(keyValue) {
+                changesForDataObject.set(key,keyValue);
+            }
+            else if(addedValues || removedValues) {
+                //For key that can have add/remove the value of they key is an object
+                //that itself has two keys: addedValues and removedValues
+                //which value will be a set;
+                var manyChanges = changesForDataObject.get(key),
+                    i, countI;
+
+                if(!manyChanges) {
+                    manyChanges = {};
+                    changesForDataObject.set(key,manyChanges);
+                }
+
+                //Not sure if we should consider evaluating added values regarded
+                //removed ones, one could be added and later removed.
+                //We later need to convert these into dataIdentifers, we could avoid a loop later
+                //doing so right here.
+                if(addedValues) {
+                    var registeredAddedValues = manyChanges.addedValues;
+                    if(!registeredAddedValues) {
+                        manyChanges.addedValues = (registeredAddedValues = new Set(addedValues));
+                    } else {
+                        for(i=0, countI=addedValues.length;i<countI;i++) {
+                            registeredAddedValues.add(addedValues[i]);
+                        }
+                    }
+                }
+                if(removedValues) {
+                    var registeredRemovedValues = manyChanges.removedValues;
+                    if(!registeredRemovedValues) {
+                        manyChanges.removedValues = (registeredRemovedValues = new Set(removedValues));
+                    } else {
+                        for(i=0, countI=removedValues.length;i<countI;i++) {
+                            registeredRemovedValues.delete(removedValues[i]);
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    clearRegisteredChangesForDataObject: {
+        value: function (dataObject) {
+            this.changedDataObjects.set(dataObject,null);
+        }
+    },
+
+    /**
+     * A set of the data objects managed by this service or any other descendent
+     * of this service's [root service]{@link DataService#rootService} that have
+     * been set for deletion since that root service's data was last saved, or since the
+     * root service was created if that service's data hasn't been saved yet
+     *
+     * Since root services are responsible for tracking data objects, subclasses
+     * whose instances will not be root services should override this property
+     * to return their root service's value for it.
+     *
+     * @type {Set.<Object>}
+     */
+    deletedDataObjects: {
+        get: function () {
+            if (this.isRootService) {
+                this._deletedDataObjects = this._deletedDataObjects || new Set();
+                return this._deletedDataObjects;
+            }
+            else {
+                return this.rootService.deletedDataObjects();
+            }
+        }
+    },
+
+    _deletedDataObjects: {
+        value: undefined
+    },
+
 
     /***************************************************************************
      * Fetching Data
@@ -1843,7 +2024,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 stream = optionalCriteria instanceof DataStream ? optionalCriteria : optionalStream;
 
             // make sure type is an object descriptor or a data object descriptor.
-            query.type = this._objectDescriptorForType(query.type);
+            query.type = this.objectDescriptorForType(query.type);
 
             // Set up the stream.
             stream = stream || new DataStream();
@@ -1914,6 +2095,85 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             }
         }
     },
+
+
+    /*
+        ObjectDescriptors are what should dispatch events, as well as model objec intances
+        So an imperative method on DataService would internally create the operation/event and dispatch it on the object descriptor. It would internally addEventListener for the "symetric event", for a Read, it would be a ReadUpdated, for a ReadUpdate/ a ReadUpdated as well.
+
+        This would help re-implementing fetchData to be backward compatible.
+
+        What is clear is that we need for a read for example, a stable array that can be relied on by bindings and be mutated over time.
+
+        If we have anObjecDescriptor.dispatchEvent("read"), then someone whose job it to act on that read is an EventListener for it, and that's the RawDataServices running in the DataServiceWorker. This is where we need an intermediary whose job is to send these events over postMesssage so they get dispatched in the DataServiceWorker.
+
+        So as a developer what am I writing if I'm not doing
+
+            mainService.fetchData(query); //?
+
+            mainService.readData(query); //?
+            mainService.saveData(query); //?
+
+            mainService.performOperation(readOperation);
+
+
+    */
+
+   readData: {
+        value: function (dataOperation, optionalStream) {
+            var self = this,
+                objectDescriptor = dataOperation.objectDescriptor || dataOperation.dataType,
+                stream = optionalStream,
+                dataService, dataServicePromise;
+
+            // Set up the stream.
+            stream = stream || new DataStream();
+            stream.operation = dataOperation;
+
+            if(!(dataService = this._dataServiceByDataStream.get(stream))) {
+                this._dataServiceByDataStream.set(stream, (dataServicePromise = this._childServiceRegistrationPromise.then(function() {
+                    var service;
+                    //This is a workaround, we should clean that up so we don't
+                    //have to go up to answer that question. The difference between
+                    //.TYPE and Objectdescriptor still creeps-in when it comes to
+                    //the service to answer that to itself
+                    if (self.parentService && self.parentService.childServiceForType(objectDescriptor) === self && typeof self.fetchRawData === "function") {
+                        service = self;
+                        service._fetchRawData(stream);
+                    } else {
+
+                        // Use a child service to fetch the data.
+                            service = self.childServiceForType(objectDescriptor);
+                            if (service) {
+                                //Here we end up creating an extra stream for nothing because it should be third argument.
+                                self._dataServiceByDataStream.set(stream, service);
+                            } else {
+                                throw new Error("Can't fetch data of unknown type - " + objectDescriptor.name);
+                            }
+                    }
+
+                    return service;
+                })));
+            }
+            else {
+                dataServicePromise = Promise.resolve(dataService);
+            }
+
+            dataServicePromise.then(function(dataService) {
+                try {
+                    //Direct access for now
+                    stream = dataService.handleReadOperation(dataOperation);
+                } catch (e) {
+                    stream.dataError(e);
+                }
+
+            })
+
+            // Return the passed in or created stream.
+            return stream;
+        }
+    },
+
 
     _childServiceForQuery: {
         value: function (query) {
@@ -1997,6 +2257,29 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+
+    /**
+     * EventChange handler, begining of tracking objects changes via Triggers right now,
+     * which are installed on propertyDescriptors. We might need to refine that by adding the
+     * ability to model wether a property is persisted or not. If it's not meant to be persisted,
+     * then a DataService most likely doesn't have much to do with it.
+     * Right now, this is unfortunately called even during the mapRawDataToObject.
+     * We need a way to ignore this as early as possible
+     *
+     * @method
+     * @argument {ChangeEvent} [changeEvent] - The changeEvent
+     *
+     */
+    handleChange: {
+        value: function(changeEvent) {
+            if(!this._createdDataObjects || (this._createdDataObjects && !this._createdDataObjects.has(changeEvent.target))) {
+                //Needs to register the change so saving changes / update operations can use it later to decise what to send
+                //console.log("handleChange:",changeEvent);
+                this.registerDataObjectChangesFromEvent(changeEvent);
+            }
+        }
+    },
+
     /***************************************************************************
      * Saving Data
      */
@@ -2012,6 +2295,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     deleteDataObject: {
         value: function (object) {
             var saved = !this.createdDataObjects.has(object);
+            this.deletedDataObjects.add(object);
             return this._updateDataObject(object, saved && "deleteDataObject");
         }
     },
@@ -2070,7 +2354,22 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             else {
                 service = this._getChildServiceForObject(object);
                 if (service) {
-                    return service.saveDataObject(object);
+                    var result = service.saveDataObject(object);
+                    if(result) {
+                        return result.then(function(success) {
+                            self.rootService.createdDataObjects.delete(object);
+                            //Duck test of an operation
+                            // if(success.data) {
+                            //     return success.data;
+                            // }
+                            // else {
+                                return success;
+                            // }
+
+                        }, function(error) {
+                            console.error(error);
+                        });
+                    }
                 }
                 else {
                     return promise;
@@ -2132,6 +2431,24 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     //         return promise;
     //     }
     // },
+
+    saveChanges: {
+        value: function () {
+            //We need a list of the changes happening (creates, updates, deletes) operations
+            //to keep their natural order and be able to create a transaction operationn
+            //when saveChanges is called.
+
+            //createdDataObjects is a set
+            var createdDataObjects = this.createdDataObjects,
+                changedDataObjects = this.changedDataObjects,
+                deletedDataObjects = this.deletedDataObjects;
+
+            //Here we want to create a transaction to make sure everything is sent at the same time.
+            //Right now, we don't track what object fetched was changed that eventually needs to be included.
+        }
+    },
+
+
 
     /***************************************************************************
      * Offline
@@ -2673,3 +2990,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      }
 
 });
+
+
+
+//WARNING Shouldn't be a problem, but avoiding a potential require-cycle for now:
+DataStream.DataService = exports.DataService;

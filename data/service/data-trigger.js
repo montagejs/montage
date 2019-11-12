@@ -2,6 +2,10 @@ var Montage = require("core/core").Montage,
     DataObjectDescriptor = require("data/model/data-object-descriptor").DataObjectDescriptor,
     ObjectDescriptor = require("data/model/object-descriptor").ObjectDescriptor,
     WeakMap = require("collections/weak-map"),
+    Map = require("collections/map"),
+    //DataService requires DataTrigger before it sets itself on the exports object...
+    //DataServiceModule = require("data/service/data-service"),
+    ChangeEvent = require("../../core/event/change-event").ChangeEvent,
     DataTrigger;
 
 /**
@@ -243,6 +247,9 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
         }
     },
 
+    _valueSetter: {
+        value: undefined
+    },
     /**
      * Note that if a trigger's property value is set after that values is
      * requested but before it is obtained from the trigger's service the
@@ -258,49 +265,140 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
         configurable: true,
         writable: true,
         value: function (object, value) {
-            var status, prototype, descriptor, getter, setter, writable, currentValue, isToMany;
+            var status, prototype, descriptor, getter, setter = this._valueSetter, writable, currentValue, isToMany, isArray, initialValue;
+
             // Get the value's current status and update that status to indicate
             // the value has been obtained. This way if the setter called below
             // requests the property's value it will get the value the property
             // had before it was set, and it will get that value immediately.
             status = this._getValueStatus(object);
             this._setValueStatus(object, null);
-            // Search the prototype chain for a setter for this trigger's
-            // property, starting just after the trigger prototype that caused
-            // this method to be called.
-            prototype = Object.getPrototypeOf(this._objectPrototype);
-            while (prototype) {
-                descriptor = Object.getOwnPropertyDescriptor(prototype, this._propertyName);
-                getter = descriptor && descriptor.get;
-                setter = getter && descriptor.set;
-                writable = !descriptor || setter || descriptor.writable;
-                prototype = writable && !setter && Object.getPrototypeOf(prototype);
+
+
+            //We're not changing inheritance at runtime, no need to wolk the tree everytime...
+            if(!setter) {
+                // Search the prototype chain for a setter for this trigger's
+                // property, starting just after the trigger prototype that caused
+                // this method to be called.
+                prototype = Object.getPrototypeOf(this._objectPrototype);
+                while (prototype) {
+                    descriptor = Object.getOwnPropertyDescriptor(prototype, this._propertyName);
+                    getter = descriptor && descriptor.get;
+                    setter = getter && descriptor.set;
+                    writable = !descriptor || setter || descriptor.writable;
+                    prototype = writable && !setter && Object.getPrototypeOf(prototype);
+                }
+                this._valueSetter = setter;
             }
 
+            initialValue = this._getValue(object);
+            //If Array / to-Many
+            isToMany = this.propertyDescriptor.cardinality !== 1;
+            isArray = Array.isArray(initialValue);
 
             // Set this trigger's property to the desired value, but only if
             // that property is writable.
             if (setter) {
                 setter.call(object, value);
+                //currentValue = value;
             } else if (writable) {
 
-                //If Array / to-Many
-                isToMany = this.propertyDescriptor.cardinality !== 1;
-                currentValue = this._getValue(object);
-                if (isToMany && Array.isArray(currentValue)) {
-                    object[this._privatePropertyName].splice.apply(currentValue, [0, Infinity].concat(value));
+                if (isToMany && isArray) {
+                    object[this._privatePropertyName].splice.apply(initialValue, [0, Infinity].concat(value));
                 }
                 else {
                     object[this._privatePropertyName] = value;
                 }
 
             }
+
+            currentValue = this._getValue(object);
+            if(currentValue !== initialValue) {
+
+                if(isToMany) {
+                    if(initialValue && isArray) {
+                        var listener = this._collectionListener.get(object);
+                        if(listener) {
+                            initialValue.removeRangeChangeListener(listener);
+                            if(!currentValue) {
+                                this._collectionListener.delete(object);
+                            }
+                        }
+                    }
+                    if(currentValue) {
+                        if(Array.isArray(currentValue)) {
+                            var self = this,
+                                listener = function _triggerCollectionListener(plus, minus, index) {
+                                    //If we're not in the middle of a mapping...:
+                                    if(!self._service._objectsBeingMapped.has(object)) {
+                                        //Dispatch update event
+                                        var changeEvent = new ChangeEvent;
+                                        changeEvent.target = object;
+                                        changeEvent.key = self._propertyName;
+                                        changeEvent.index = index;
+                                        changeEvent.addedValues = plus;
+                                        changeEvent.removedValues = minus;
+
+                                        //To deal with changes happening to an array value of that property,
+                                        //we'll need to add/cancel observing on the array itself
+                                        //and dispatch added/removed change in the array's change handler.
+
+                                        //Bypass EventManager for now
+                                        self._service.rootService.handleChange(changeEvent);
+                                    }
+                                };
+
+                            this._collectionListener.set(object,listener);
+                            currentValue.addRangeChangeListener(listener);
+                        }
+                        else if(currentValue instanceof Map) {
+                            console.error("DataTrigger misses implementation to track changes on property values that are Map");
+                        }
+                        else {
+                            console.error("DataTrigger misses implementation to track changes on property values that are neither Array nor Map");
+                        }
+
+                    }
+                }
+            }
+
+
+//addRangeChangeListener
+
+            //If we're not in the middle of a mapping...:
+            if(!this._service._objectsBeingMapped.has(object)) {
+                //Dispatch update event
+                var changeEvent = new ChangeEvent;
+                changeEvent.target = object;
+                changeEvent.key = this._propertyName;
+                changeEvent.previousKeyValue = initialValue;
+                changeEvent.keyValue = currentValue;
+
+                //To deal with changes happening to an array value of that property,
+                //we'll need to add/cancel observing on the array itself
+                //and dispatch added/removed change in the array's change handler.
+
+                //Bypass EventManager for now
+                this._service.rootService.handleChange(changeEvent);
+            }
+
+
             // Resolve any pending promise for this trigger's property value.
             if (status) {
                 status.resolve(null);
             }
         }
     },
+
+    __collectionListener: {
+        value: undefined
+    },
+    _collectionListener: {
+        get: function() {
+            return this.__collectionListener || (this.__collectionListener = new WeakMap);
+        }
+    },
+
 
     /**
      * @todo Rename and document API and implementation.
@@ -370,7 +468,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
             this._service.fetchObjectProperty(object, this._propertyName).then(function () {
                 return self._fulfillObjectPropertyFetch(object);
             }).catch(function (error) {
-                console.error(error);
+                console.error("DataTrigger Error _fetchObjectProperty for property \""+self._propertyName+"\"",error);
                 return self._fulfillObjectPropertyFetch(object, error);
             });
         }

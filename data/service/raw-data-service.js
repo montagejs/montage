@@ -701,7 +701,41 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 stream.dataDone();
                 return null;
             }).catch(function (e) {
-                console.error(e);
+                console.error(e,stream);
+            });
+
+        }
+    },
+
+        /**
+     * To be called once for each [fetchData()]{@link RawDataService#fetchData}
+     * or [fetchRawData()]{@link RawDataService#fetchRawData} call received to
+     * indicate that all the raw data meant for the specified stream has been
+     * added to that stream.
+     *
+     * Subclasses should not override this method.
+     *
+     * @method
+     * @argument {DataStream} stream - The stream to which the data objects
+     *                                 corresponding to the raw data have been
+     *                                 added.
+     * @argument {?} context         - An arbitrary value that will be passed to
+     *                                 [writeOfflineData()]{@link RawDataService#writeOfflineData}
+     *                                 if it is provided.
+     */
+    rawDataBatchDone: {
+        value: function (stream, context) {
+            var self = this,
+                dataToPersist = this._streamRawData.get(stream),
+                mappingPromises = this._streamMapDataPromises.get(stream),
+                dataReadyPromise = mappingPromises ? Promise.all(mappingPromises) : this.nullPromise;
+
+            dataReadyPromise
+            .then(function () {
+                stream.dataBatchDone();
+                return null;
+            }).catch(function (e) {
+                console.error(e,stream);
             });
 
         }
@@ -805,7 +839,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * Subclasses should override this method to map properties of the raw data
      * to data objects:
      * @method
-     * @argument {Object} record - An object whose properties' values hold
+     * @argument {Object} rawData - An object whose properties' values hold
      *                             the raw data.
      * @argument {Object} object - An object whose properties must be set or
      *                             modified to represent the raw data.
@@ -820,6 +854,54 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             return this.mapFromRawData(object, rawData, context);
         }
     },
+
+
+    /**
+     * Called by a mapping before doing it's mapping work, giving the data service.
+     * an opportunity to intervene.
+     *
+     * Subclasses should override this method to influence how are properties of
+     * the raw mapped data to data objects:
+     *
+     * @method
+     * @argument {Object} mapping - A DataMapping object handing the mapping.
+     * @argument {Object} rawData - An object whose properties' values hold
+     *                             the raw data.
+     * @argument {Object} object - An object whose properties must be set or
+     *                             modified to represent the raw data.
+     * @argument {?} context     - The value that was passed in to the
+     *                             [addRawData()]{@link RawDataService#addRawData}
+     *                             call that invoked this method.
+     */
+    willMapRawDataToObject: {
+        value: function (mapping, rawData, object, context) {
+            return rawData;
+        }
+    },
+
+    /**
+     * Called by a mapping before doing it's mapping work, giving the data service.
+     * an opportunity to intervene.
+     *
+     * Subclasses should override this method to influence how are properties of
+     * the raw mapped data to data objects:
+     *
+     * @method
+     * @argument {Object} mapping - A DataMapping object handing the mapping.
+     * @argument {Object} rawData - An object whose properties' values hold
+     *                             the raw data.
+     * @argument {Object} object - An object whose properties must be set or
+     *                             modified to represent the raw data.
+     * @argument {?} context     - The value that was passed in to the
+     *                             [addRawData()]{@link RawDataService#addRawData}
+     *                             call that invoked this method.
+     */
+    didMapRawDataToObject: {
+        value: function (mapping, rawData, object, context) {
+            return rawData;
+        }
+    },
+
     /**
      * Convert raw data to data objects of an appropriate type.
      *
@@ -857,19 +939,91 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: function (record, object, context) {
             var self = this,
                 mapping = this.mappingForObject(object),
+                snapshot,
                 result;
 
             if (mapping) {
+
+                //Check if this isn't already being done, if it is, it's redundant and we bail
+                snapshot = this.snapshotForObject(object);
+                if(snapshot === record && this._objectsBeingMapped.has(object)) {
+                    return result;
+                }
+
+
+                this._objectsBeingMapped.add(object);
+
                 result = mapping.mapRawDataToObject(record, object, context);
                 if (result) {
                     result = result.then(function () {
-                        return self.mapRawDataToObject(record, object, context);
+                        result = self.mapRawDataToObject(record, object, context);
+                        if (!self._isAsync(result)) {
+                            self._objectsBeingMapped.delete(object);
+
+                            return result;
+                        }
+                        else {
+                            result = result.then(function(resolved) {
+
+                                self._objectsBeingMapped.delete(object);
+
+                                return resolved;
+                            }, function(failed) {
+
+                                self._objectsBeingMapped.delete(object);
+
+                            });
+                            return result;
+                        }
+
+                    }, function(error) {
+                        self._objectsBeingMapped.delete(object);
+                        throw error;
                     });
                 } else {
                     result = this.mapRawDataToObject(record, object, context);
+                    if (!this._isAsync(result)) {
+
+                        self._objectsBeingMapped.delete(object);
+                        return result;
+                    }
+                    else {
+                        result = result.then(function(resolved) {
+
+                            self._objectsBeingMapped.delete(object);
+
+                            return resolved;
+                        }, function(failed) {
+                            self._objectsBeingMapped.delete(object);
+
+                        });
+                        return result;
+                    }
                 }
             } else {
+
+
+                this._objectsBeingMapped.add(object);
+
                 result = this.mapRawDataToObject(record, object, context);
+
+                if (!this._isAsync(result)) {
+
+                    self._objectsBeingMapped.delete(object);
+
+                    return result;
+                }
+                else {
+                    result = result.then(function(resolved) {
+
+                        self._objectsBeingMapped.delete(object);
+
+                        return resolved;
+                    }, function(failed) {
+                        self._objectsBeingMapped.delete(object);
+                    });
+                    return result;
+                }
             }
 
             return result;
@@ -896,6 +1050,104 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     mapObjectToRawData: {
         value: function (object, record, context) {
             // this.mapToRawData(object, record, context);
+        }
+    },
+
+    /**
+     * Called by a mapping before doing it's mapping work, giving the data service.
+     * an opportunity to intervene.
+     *
+     * Subclasses should override this method to influence how properties of
+     * data objects are mapped back to raw data:
+     *
+     * @method
+     * @argument {Object} mapping - A DataMapping object handing the mapping.
+     * @argument {Object} rawData - An object whose properties' values hold
+     *                             the raw data.
+     * @argument {Object} object - An object whose properties must be set or
+     *                             modified to represent the raw data.
+     * @argument {?} context     - The value that was passed in to the
+     *                             [addRawData()]{@link RawDataService#addRawData}
+     *                             call that invoked this method.
+     */
+    willMapObjectToRawData: {
+        value: function (mapping, object, rawData, context) {
+            return rawData;
+        }
+    },
+    /**
+     * Called by a mapping after doing it's mapping work.
+     *
+     * Subclasses should override this method as needed:
+     *
+     * @method
+     * @argument {Object} mapping - A DataMapping object handing the mapping.
+     * @argument {Object} rawData - An object whose properties' values hold
+     *                             the raw data.
+     * @argument {Object} object - An object whose properties must be set or
+     *                             modified to represent the raw data.
+     * @argument {?} context     - The value that was passed in to the
+     *                             [addRawData()]{@link RawDataService#addRawData}
+     *                             call that invoked this method.
+     */
+    didMapObjectToRawData: {
+        value: function (mapping, object, rawData, context) {
+            return rawData;
+        }
+    },
+
+
+    /**
+     * Public method invoked by the framework during the conversion from
+     * an object to a raw data.
+     * Designed to be overriden by concrete RawDataServices to allow fine-graine control
+     * when needed, beyond transformations offered by an ObjectDescriptorDataMapping or
+     * an ExpressionDataMapping
+     *
+     * @method
+     * @argument {Object} object - An object whose properties must be set or
+     *                             modified to represent the raw data.
+     * @argument {String} propertyName - The name of a property whose values
+     *                                      should be converted to raw data.
+     * @argument {Object} data - An object whose properties' values hold
+     *                             the raw data.
+     */
+
+    mapObjectPropertyToRawData: {
+        value: function (object, propertyName, data) {
+        }
+    },
+
+        /**
+     * @todo Document.
+     * @todo Make this method overridable by type name with methods like
+     * `mapHazardToRawData()` and `mapProductToRawData()`.
+     *
+     * @method
+     */
+    _mapObjectPropertyToRawData: {
+        value: function (object, propertyName, record, context) {
+            var mapping = this.mappingForObject(object),
+                result;
+
+            if (mapping) {
+                result = mapping.mapObjectPropertyToRawData(object, propertyName, record, context);
+            }
+
+            if (record) {
+                if (result) {
+                    var otherResult = this.mapObjectPropertyToRawData(object, propertyName, record, context);
+                    if (this._isAsync(result) && this._isAsync(otherResult)) {
+                        result = Promise.all([result, otherResult]);
+                    } else if (this._isAsync(otherResult)) {
+                        result = otherResult;
+                    }
+                } else {
+                    result = this.mapObjectPropertyToRawData(object, propertyName, record, context);
+                }
+            }
+
+            return result;
         }
     },
 
