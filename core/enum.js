@@ -6,6 +6,12 @@
 var Montage = require("./core").Montage,
     logger = require("./logger").logger("enum");
 
+    /*
+        Evaluate https://github.com/adrai/enum
+
+        This might have the potential to replace gate / bitfield?
+    */
+
 /**
  * @class Enum
  * @extends Montage
