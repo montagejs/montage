@@ -4,7 +4,7 @@ var Montage = require("./core").Montage,
 
 /**
  * A Target is any object that can be a candidate for dispatching and receiving
- * events throughout what is typically considered the "component tree" of a
+ * events distributed troughout a tree. One such tree is the "component tree" of a
  * Montage application.
  *
  * @class Target
