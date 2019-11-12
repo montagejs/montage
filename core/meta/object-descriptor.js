@@ -635,6 +635,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
+     * FIXME: Should probably be named propertyDescriptorNamed or propertyDescriptorWithName
      * @function
      * @param {string} name
      * @returns {PropertyDescriptor}
