@@ -29,6 +29,9 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
      * the output of the expression is assigned directly to the destination value.
      * @type {string}
      */
+    _expression: {
+        value: undefined
+    },
     expression: {
         get: function () {
             if (!this._expression && this.sourcePathSyntax) {
@@ -46,7 +49,7 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
      *
      * @type {string}
      */
-    
+
     _inversePropertyName: {
         value: undefined
     },
@@ -92,7 +95,7 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
      * A converter that takes in the the output of #expression and returns the destination value.
      * When a reverter is specified the conversion use the revert method when mapping from
      * right to left.
-     * 
+     *
      * @type {Converter}
      */
     reverter: {
@@ -172,6 +175,37 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
         value: undefined
     },
 
+    /**
+     * Object created by parsing .sourcePath using frb/grammar.js that will
+     * be used to evaluate the data
+     * @type {Object}
+     * */
+    targetPathSyntax: {
+        get: function () {
+            if (!this._targetPathSyntax && this.targetPath) {
+                this._targetPathSyntax = parse(this.targetPath);
+            }
+            return this._targetPathSyntax;
+        }
+    },
+
+    /**
+     * The expression that defines the input to be passed to .converter's revert. If converter is not provided,
+     * the output of the expression is assigned directly to the destination value.
+     * @type {string}
+     */
+    _revertExpression: {
+        value: undefined
+    },
+    revertExpression: {
+        get: function () {
+            if (!this._revertExpression && this.targetPathSyntax) {
+                this._revertExpression = compile(this.targetPathSyntax);
+            }
+            return this._revertExpression;
+        }
+    },
+
 
     /**
      * Return the value of the property for this rule
@@ -181,7 +215,7 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
         value: function (scope) {
             var value = this.expression(scope);
             return this.converter ? this.converter.convert(value) :
-                                    this.reverter ? 
+                                    this.reverter ?
                                     this.reverter.revert(value) :
                                     value;
         }
@@ -195,16 +229,16 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
             var rule = new this(),
                 sourcePath = addOneWayBindings ? rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING] : propertyName,
                 targetPath = addOneWayBindings && propertyName || rawRule[TWO_WAY_BINDING];
-                
+
                 rule.inversePropertyName = rawRule.inversePropertyName;
                 rule.serviceIdentifier = rawRule.serviceIdentifier;
                 rule.sourcePath = sourcePath;
                 rule.targetPath = targetPath;
-            
+
                 return rule;
         }
     },
 
-    
+
 
 });
