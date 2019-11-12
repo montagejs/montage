@@ -968,6 +968,10 @@ Montage.defineProperty(Montage, "equals", {
  * This method calls the method named with the identifier prefix if it exists.
  * Example: If the name parameter is "shouldDoSomething" and the caller's identifier is "bob", then
  * this method will try and call "bobShouldDoSomething"
+ *
+ * TODO: Cache!!!! We're unlikely to remove a delegate method dynamically, so we should avoid checking all
+ * that and just cache the function found, using a weak map, so don't retain delegates.
+ *
  * @function Montage#callDelegateMethod
  * @param {string} name
 */
@@ -977,7 +981,9 @@ Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
 
         if (delegate) {
 
-            var delegateFunctionName = this.identifier + name.toCapitalized();
+            var delegateFunctionName = this.identifier;
+            delegateFunctionName += name.toCapitalized();
+
             if (
                 typeof this.identifier === "string" &&
                     typeof delegate[delegateFunctionName] === FUNCTION
