@@ -1,6 +1,6 @@
 var RawValueToObjectConverter = require("./raw-value-to-object-converter").RawValueToObjectConverter,
     Criteria = require("core/criteria").Criteria,
-    DataQuery = require("data/model/data-query").DataQuery,
+        DataQuery = require("data/model/data-query").DataQuery,
     Promise = require("core/promise").Promise;
 /**
  * @class RawForeignValueToObjectConverter
@@ -30,16 +30,12 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                 query;
 
                 return this._descriptorToFetch.then(function (typeToFetch) {
-                    var type = typeToFetch.module.id;
-
-                    type += "/";
-                    type += typeToFetch.name;
 
                     if (self.serviceIdentifier) {
                         criteria.parameters.serviceIdentifier = self.serviceIdentifier;
                     }
 
-                    query = DataQuery.withTypeAndCriteria(type, criteria);
+                    query = DataQuery.withTypeAndCriteria(typeToFetch, criteria);
 
                     return self.service ? self.service.then(function (service) {
                         return service.rootService.fetchData(query);
@@ -63,12 +59,28 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
     revert: {
         value: function (v) {
             if (v) {
+                //No specific instruction, so we return the primary keys using default assumptions.
                 if (!this.compiledRevertSyntax) {
-                    return Promise.resolve(v);
+                    return this.service ? this.service.then(function (service) {
+
+                        if(v instanceof Array) {
+                            var result=[];
+                            //forEach skipps over holes of a sparse array
+                            v.forEach(function(value) {
+                                result.push(service.dataIdentifierForObject(value).primaryKey);
+                            });
+                            return result;
+                        }
+                        else {
+                            return service.dataIdentifierForObject(v).primaryKey;
+                        }
+
+                    }) : Promise.resolve(v);
                 } else {
                     var scope = this.scope;
                     //Parameter is what is accessed as $ in expressions
-                    scope.value = v;
+                    scope.parameters = v;
+                    scope.value = this;
                     return Promise.resolve(this.compiledRevertSyntax(scope));
                 }
 
