@@ -153,7 +153,7 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
      *
      * For example, if one would want the number of objects fetched, one would do:
      *  aDataQuery.selectBindings = {
-     *      "count": {"<-": "data.length"
+     *      "count": {"<-": "data.length"}
      * };
      *
      *  aDataQuery.selectBindings = {
@@ -221,7 +221,28 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
 
     prefetchExpressions: {
         value: null
+    },
+
+   /**
+     * A property defining the number of objets to retrieve at once from the result set.
+     * @type {Number}
+     */
+
+    batchSize: {
+        value: null
+    },
+
+    _doesBatchResults: {
+        value: null
+    },
+
+    doesBatchResult: {
+        get: function() {
+            return this._doesBatchResults || (typeof this.batchSize === "number");
+        }
     }
+
+
 
 }, /** @lends DataQuery */ {
 
