@@ -1296,7 +1296,7 @@ describe("serialization/montage-deserializer-spec", function () {
         serializationString = JSON.stringify(serialization);
 
         deserializer.init(serializationString, require);
-        deserializer.deserialize(serializationString).then(function (objects) {
+        deserializer.deserialize().then(function (objects) {
             expect(objects.a).toBe(null);
         }).catch(function(reason) {
             fail(reason);
