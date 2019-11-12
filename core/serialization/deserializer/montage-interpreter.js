@@ -106,13 +106,21 @@ var MontageContext = Montage.specialize({
             this._objects = Object.create(null);
 
             if (objects) {
-                this._userObjects = Object.create(null);
+                this._userObjects = objects;
+                /*
+                    #PERF
+                    Benoit Performance Improvement:
+                    this._userObjects is used for lookup, it's never changed,
+                    therefore there's no reason to create a new object,
+                    and loop over it to copy the data over, just use it.
+                */
+                // this._userObjects = Object.create(null);
 
-                /* jshint forin: true */
-                for (var label in objects) {
-                /* jshint forin: false */
-                    this._userObjects[label] = objects[label];
-                }
+                // /* jshint forin: true */
+                // for (var label in objects) {
+                // /* jshint forin: false */
+                //     this._userObjects[label] = objects[label];
+                // }
             }
 
             this._element = element;
