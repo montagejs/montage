@@ -63,7 +63,7 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
         value: undefined
     },
     /**
-     *  BENOIT: we have an overlap in term of semantics between the type of the operation and the type of the data it applies to. So we either keep "type" for the operation itseld as it is, and dataType, or we flip, calling this operationType and the dataType becomes "type".
+     *  The type of operation, (TODO: inherited from Event). We sh
 
      * @type {DataOperation.Type.CREATE|DataOperation.Type.READ|DataOperation.Type.UPDATE|DataOperation.Type.DELETE}
      */
@@ -104,6 +104,19 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      * Expected to be a boolean expression to be applied to data
      * objects to determine whether they should be impacted by this operation or not.
      *
+     * For modifying one object, we need to be able to build a criteria with the identifier
+     * that can be converted back to the primary key by a RawDataService.
+     *
+     * For example, a DataIdentifier:
+     * "montage-data://environment/type/#12AS7507"
+     * "m-data://environment/type/#12AS7507"
+     * "mdata://environment/type/#12AS7507"
+     * "data-id://environment/type/#12AS7507"
+     *
+     * "montage-data://[dataService.identifier]/[dataService.connectionDescriptor.name || default]/[objectDescriptor.name]/[primaryKey]
+     * "montage-data://[dataService.identifier]/[dataService.connectionDescriptor.name || default]/[objectDescriptor.name]/[primaryKey]
+     *
+     * "identifier = $identifier", {"identifier":"montage-data://[dataService.identifier]/[dataService.connectionDescriptor.name || default]/[objectDescriptor.name]/[primaryKey]}
      * "hazard_ID = #12AS7507"
      *
      * @type {Criteria}
@@ -231,6 +244,9 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
         value: undefined
     },
 
+    /*
+    Might be more straightforward to name this objectDescriptor
+    */
     dataType: {
         value: undefined
     },
@@ -299,6 +315,46 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      *           "object": "object2-data-identifier"
      *       }
      *    }
+     *
+     *
+     * What if we used 2 new different operators on top of <-, <->, =, as in:?
+     * {
+     *      "root": {
+     *             "prototype": "package/data/main.datareel/model/custom-type",
+     *            "values": {
+     *               "foo": {"=":"Bleh"},
+     *               "toManyProperty": {
+     *                      //We would add the dataService unique objects map in the deserializer's context
+     *                      //so that we can reference this objects if they exists.
+     *                      //we're missing the index to tell us where the change happens.     *
+     *                      "+":"[@identifier1-url,@identifier2-url,@newObject]",
+     *                      "-":"[@identifier4-url]",
+     *                 },
+     *               //Should/could that be done with one expression that roughtl would look like:
+     *              "toManyProperty2.splice(index,add,remove)": {"=":"[@change.index,@change.add,@change.remove]"}
+     *           }
+     *      },
+     *      "change": {
+     *          "prototype": "Object",
+     *          "values": {
+     *              "index": "3",
+     *              "add": "[@identifier1-url,@identifier2-url,@newObject]",
+     *              "remove":"[@identifier4-url]",
+
+     *          }
+     *      }
+     * }
+
+     *      "newObject": {
+     *          "prototype": "module-id",
+     *          "values": {
+     *              "propA": "A",
+     *              "propB": "B"
+     *          }
+     *      }
+     * }
+
+     *
      * //Transaction. For a Transaction, data would contain the list of data operations grouped together.
      * //If data is muted, and observed, it could be dynamically processed by RawDataServices.
      * //The referrer property, which is a pointer to another DatOperaiton would be used by an update/addition
@@ -351,10 +407,16 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     */
 
     Type: {
+
+        /*
+            Search: is a read operation
+
+        */
         value: {
             Create: {isCreate: true},
             CreateFailed: {isCreate: true},
             CreateCompleted: {isCreate: true},
+            CreateCancelled: {isCreate: true},
             //Additional
             Copy: {isCreate: true},
             CopyFailed: {isCreate: true},
@@ -368,7 +430,8 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
             /* ReadProgress / ReadUpdate / ReadSeek is used to instruct server that more data is required for a "live" read / query
                 Need a better name, and a symetric? Or is ReadUpdated enough if it referes to previous operation
             */
-            ReadProgress: {isRead: true}, //ReadUpdated
+           ReadProgress: {isRead: true}, //ReadUpdate
+           ReadUpdate: {isRead: true}, //ReadUpdate
 
             /* ReadCancel is the operation that instructs baclkend that client isn't interested by a read operastion anymore */
             ReadCancel: {isRead: true},
@@ -383,6 +446,7 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
             Update: {isUpdate: true},
             UpdateCompleted: {isUpdate: true},
             UpdateFailed: {isUpdate: true},
+            UpdateCanceled: {isUpdate: true},
             Delete: {isDelete: true},
             DeleteCompleted: {isDelete: true},
             DeleteFailed: {isDelete: true},
