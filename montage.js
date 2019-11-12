@@ -455,6 +455,18 @@
 
     };
 
+    //Our moduleId can end with a [symbol] to indicate what symbol to
+    //use off the export object
+    function moduleIdWithoutExportSymbol(locationId) {
+        var bracketIndex = locationId.indexOf("[");
+
+        if (bracketIndex > 0) {
+            return locationId.substr(0, bracketIndex);
+        } else {
+            return locationId;
+        }
+    }
+
     exports.parseMJSONDependencies = function parseMJSONDependencies(jsonRoot) {
 
         var rootEntries = Object.keys(jsonRoot),
@@ -463,7 +475,7 @@
         while ((iLabel = rootEntries[i])) {
             iLabelObject = jsonRoot[iLabel];
             if(iLabelObject.hasOwnProperty("prototype")) {
-                dependencies.push(iLabelObject["prototype"]);
+                dependencies.push(moduleIdWithoutExportSymbol(iLabelObject["prototype"]));
 
                 //This is to enable expression-data-mapping to deserialize itself synchronously
                 //despite the fact it may have been serialized using object-descriptor-reference.
@@ -489,7 +501,7 @@
 
             }
             else if(iLabelObject.hasOwnProperty("object")) {
-                dependencies.push(iLabelObject["object"]);
+                dependencies.push(moduleIdWithoutExportSymbol(iLabelObject["object"]));
             }
 
             i++;
