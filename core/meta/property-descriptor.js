@@ -3,8 +3,7 @@ var Montage = require("../core").Montage,
     deprecate = require("../deprecate"),
     logger = require("../logger").logger("objectDescriptor");
 
-// TODO change Defaults[*] to Defaults.* throughout. Needless performance
-// degradations.
+// TODO: Replace Defaults by leveraging the value set on the prototype which really is the natural default
 var Defaults = {
     name: "default",
     cardinality: 1,
@@ -22,6 +21,31 @@ var Defaults = {
     helpKey: "",
     localizable: false
 };
+
+
+/*
+TODO:
+
+-   if a propertyDescriptor's serializable isn't false, it should be persisted,
+    however propertyDescriptors with a definition expression, should not.
+
+-   "valueType": "array" is not enough to persist a property in a modern relational DB,
+    we need the type in the array
+    Cardinality should be > 1, and also why isn't collectionValueType used as well?
+
+-   Number types need more data in term of storage: signed or not, decimal / integer / precision / scale?
+    Or is it a mapping issue?. Look at https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#Locale_identification_and_negotiation
+
+    Intl.NumberFormat:
+
+-   Also, we need to model for a toMany, wether it's unique, and if it is ordered. In most classic
+    to-many, order is irrelevant, but it sometimes can be.
+    Unique and ordered makes only sense when cardinality is > 1, or not?
+-   Unique can also means, like in a database, that the value of that property should be unique throughout a table.
+    How do we express this as well, which would be helpful to know to set constraints appropriately.
+
+*/
 
 
 /* TypeDescriptor */
