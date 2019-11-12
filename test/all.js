@@ -35,6 +35,7 @@ module.exports = require("montage-testing").run(require, [
     "spec/core/extras/function",
     "spec/core/extras/string",
     "spec/core/set-spec",
+    "spec/core/counted-set-spec",
     {name: "spec/core/dom-spec", node: false, karma: false},
     {name: "spec/core/extras/url", node: false},
     "spec/core/range-controller-spec",
