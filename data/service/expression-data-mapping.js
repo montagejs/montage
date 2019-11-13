@@ -518,7 +518,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         value: function (object, propertyDescriptor, rule, scope) {
             //console.debug("_resolveRelationship "+propertyDescriptor.name+" on ",object);
             var self = this,
-                hasInverse = !!propertyDescriptor.inversePropertyName || !!rule.inversePropertyName,
+                hasInverse = !!propertyDescriptor.inversePropertyName,
                 data;
 
             return rule.evaluate(scope).then(function (result) {
@@ -547,7 +547,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     _assignInversePropertyValue: {
         value: function (data, object, propertyDescriptor, rule) {
             var self = this,
-                inversePropertyName = propertyDescriptor.inversePropertyName || rule.inversePropertyName;
+                inversePropertyName = propertyDescriptor.inversePropertyName;
 
             return propertyDescriptor.valueDescriptor.then(function (objectDescriptor) {
                 var inversePropertyDescriptor = objectDescriptor.propertyDescriptorForName(inversePropertyName);
