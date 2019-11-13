@@ -225,12 +225,13 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
 }, {
 
     withRawRuleAndPropertyName: {
-        value: function (rawRule, propertyName, addOneWayBindings) {
+        value: function (rawRule, propertyDescriptor, addOneWayBindings) {
             var rule = new this(),
+                propertyName = propertyDescriptor.propertyName,
                 sourcePath = addOneWayBindings ? rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING] : propertyName,
                 targetPath = addOneWayBindings && propertyName || rawRule[TWO_WAY_BINDING];
 
-                rule.inversePropertyName = rawRule.inversePropertyName;
+                rule.inversePropertyName = propertyDescriptor.inversePropertyName;
                 rule.serviceIdentifier = rawRule.serviceIdentifier;
                 rule.sourcePath = sourcePath;
                 rule.targetPath = targetPath;
