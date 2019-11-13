@@ -981,6 +981,18 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    objectDescriptorForObjectDescriptorModuleId: {
+        value: function (objectDescriptorModuleId) {
+            var types = this.types, i, n;
+            for (i = 0, n = types.length; i < n; i++) {
+                if(types[i].module.id === objectDescriptorModuleId) {
+                    return types[i];
+                }
+            }
+            return null;
+        }
+    },
+
     /**
      * Get the type of the specified data object.
      *
