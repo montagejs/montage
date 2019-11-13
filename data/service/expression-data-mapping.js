@@ -1108,7 +1108,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         value: function (rawRule, propertyName, addOneWayBindings, isObjectMappingRule) {
             var propertyDescriptorName = !isObjectMappingRule && addOneWayBindings ? rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING] : propertyName,
                 propertyDescriptor = this.objectDescriptor.propertyDescriptorForName(propertyDescriptorName),
-                rule = MappingRule.withRawRuleAndPropertyName(rawRule, propertyName, addOneWayBindings, propertyDescriptor);
+                rule = MappingRule.withRawRuleAndPropertyName(rawRule, propertyName, addOneWayBindings);
 
             rule.propertyDescriptor = propertyDescriptor;
             if (rawRule.converter && addOneWayBindings) {

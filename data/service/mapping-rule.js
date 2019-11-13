@@ -41,28 +41,6 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
         }
     },
 
-    /**
-     * The name of the property on the destination value that the destination object represents.
-     * For example, consider:
-     *
-     * The MappingRule for Foo.bars will have inversePropertyName = foo.
-     *
-     * @type {string}
-     */
-
-    _inversePropertyName: {
-        value: undefined
-    },
-
-    inversePropertyName: {
-        get: deprecate.deprecateMethod(void 0, function () {
-            return this._inversePropertyName;
-        }, "MappingRule.inversePropertyName", "PropertyDescriptor.inversePropertyName", true),
-        set: deprecate.deprecateMethod(void 0, function (value) {
-            this._inversePropertyName = value;
-        }, "MappingRule.inversePropertyName", "PropertyDescriptor.inversePropertyName", true)
-    },
-
 
     /**
      * The descriptor for the property that this rule applies to
@@ -225,12 +203,11 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
 }, {
 
     withRawRuleAndPropertyName: {
-        value: function (rawRule, propertyName, addOneWayBindings, propertyDescriptor) {
+        value: function (rawRule, propertyName, addOneWayBindings) {
             var rule = new this(),
                 sourcePath = addOneWayBindings ? rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING] : propertyName,
                 targetPath = addOneWayBindings && propertyName || rawRule[TWO_WAY_BINDING];
 
-                rule.inversePropertyName = propertyDescriptor ? propertyDescriptor.inversePropertyName : null;
                 rule.serviceIdentifier = rawRule.serviceIdentifier;
                 rule.sourcePath = sourcePath;
                 rule.targetPath = targetPath;
