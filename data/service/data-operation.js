@@ -1,5 +1,98 @@
 var Montage = require("core/core").Montage,
-    Criteria = require("core/criteria").Criteria;
+    Criteria = require("core/criteria").Criteria,
+    Enum = require("core/enum").Enum,
+    uuid = require("core/uuid"),
+    DataOperationType;
+
+
+
+exports.DataOperationType = DataOperationType = new Enum().initWithMembers(
+    "NoOp",
+    "Create",
+    "CreateFailed",
+    "CreateCompleted",
+    "CreateCancelled",
+    //Additional
+    "Copy",
+    "CopyFailed",
+    "CopyCompleted",
+    /* Read is the first operation that mnodels a query */
+    "Read",
+
+    /* ReadUpdated is pushed by server when a query's result changes due to data changes from others */
+    "ReadUpdated",
+
+    /* ReadProgress / ReadUpdate / ReadSeek is used to instruct server that more data is required for a "live" read / query
+        Need a better name, and a symetric? Or is ReadUpdated enough if it referes to previous operation
+    */
+   "ReadProgress", //ReadUpdate
+   "ReadUpdate", //ReadUpdate
+
+    /* ReadCancel is the operation that instructs baclkend that client isn't interested by a read operastion anymore */
+    "ReadCancel",
+
+    /* ReadCanceled is the operation that instructs the client that a read operation is canceled */
+    "ReadCanceled",
+
+     /* ReadFailed is the operation that instructs the client that a read operation has failed canceled */
+    "ReadFailed",
+    /* ReadCompleted is the operation that instructs the client that a read operation has returned all available data */
+    "ReadCompleted",
+    /* Request to update data, used either by the client sending the server or vice versa */
+    "Update",
+    /* Confirmation that a Request to update data, used either by the client sending the server or vice versa*, has been completed */
+    "UpdateCompleted",
+    /* Confirmation that a Request to update data, used either by the client sending the server or vice versa*, has failed */
+    "UpdateFailed",
+    /* Request to cancel an update, used either by the client sending the server or vice versa */
+    "UpdateCancel",
+    /* Confirmation that a Request to cancel an update data, used either by the client sending the server or vice versa*, has completed */
+    "UpdateCanceled",
+    "Delete",
+    "DeleteCompleted",
+    "DeleteFailed",
+
+    /* Lock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
+    "Lock",
+    "LockCompleted",
+    "LockFailed",
+
+    /* Unlock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
+    "Unlock",
+    "UnockCompleted",
+    "UnockFailed",
+
+    /* RemmoteProcedureCall models the ability to invoke code logic on the server-side, being a DB StoredProcedure, or an method/function in a service */
+    "RemoteProcedureCall", /* Execute ? */
+    "RemoteProcedureCallCompleted",  /* ExecuteCompleted ? */
+    "RemoteProcedureCallFailed" /* ExecuteFailed ? */
+
+    /* Batch models the ability to group multiple operation. If a referrer is provided
+        to a BeginTransaction operation, then the batch will be executed within that transaction  */
+    /*
+    "Batch",
+    "BatchCompleted",
+    "BatchFailed",
+    */
+
+    /* A transaction is a unit of work that is performed against a database.
+    Transactions are units or sequences of work accomplished in a logical order.
+    A transactions begins, operations are grouped, then it is either commited or rolled-back*/
+   /* Start/End Open/Close, Commit/Save, rollback/cancel
+    "BeginTransaction",
+    "BeginTransactionCompleted",
+    "BeginTransactionFailed",
+
+    "CommitTransaction",
+    "CommitTransactionCompleted",
+    "CommitTransactionFailed",
+
+    "RollbackTransaction",
+    "RollbackTransactionCompleted",
+    "RollbackTransactionFailed",
+
+    */
+);
 
 /**
  * Represents
@@ -16,8 +109,68 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     constructor: {
         value: function DataOperation() {
             this.time = Date.now();
-            this.creationIndex = exports.DataOperation.prototype._currentIndex + 1 || 0;
-            exports.DataOperation.prototype._currentIndex = this.creationIndex;
+            this.id = uuid.generate();
+
+            //Not sure we need this, it's not used anywhere
+            //this.creationIndex = exports.DataOperation.prototype._currentIndex + 1 || 0;
+            //exports.DataOperation.prototype._currentIndex = this.creationIndex;
+        }
+    },
+
+    serializeSelf: {
+        value:function (serializer) {
+            serializer.setProperty("id", this.id);
+            serializer.setProperty("type", this.type);
+            serializer.setProperty("time", this.time);
+            serializer.setProperty("dataDescriptor", this.dataDescriptor);
+            if(this.referrerId) {
+                serializer.setProperty("referrerId", this.referrerId);
+            }
+            serializer.setProperty("criteria", this._criteria);
+            if(this.data) {
+                serializer.setProperty("data", this.data);
+            }
+
+        }
+    },
+    deserializeSelf: {
+        value:function (deserializer) {
+            var value;
+            value = deserializer.getProperty("id");
+            if (value !== void 0) {
+                this.id = value;
+            }
+
+            value = deserializer.getProperty("type");
+            if (value !== void 0) {
+                this.type = value;
+            }
+
+            value = deserializer.getProperty("time");
+            if (value !== void 0) {
+                this.time = value;
+            }
+
+            value = deserializer.getProperty("dataDescriptor");
+            if (value !== void 0) {
+                this.dataDescriptor = value;
+            }
+
+            value = deserializer.getProperty("referrerId");
+            if (value !== void 0) {
+                this.referrerId = value;
+            }
+
+            value = deserializer.getProperty("criteria");
+            if (value !== void 0) {
+                this.criteria = value;
+            }
+
+            value = deserializer.getProperty("data");
+            if (value !== void 0) {
+                this.data = value;
+            }
+
         }
     },
 
@@ -165,6 +318,24 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     },
 
     /**
+     * An operation that preceded and this one is related to. For a ReadUpdated, it would be the Read operation.
+     *
+     * @type {String}
+     */
+    referrerId: {
+        value: undefined
+    },
+
+    /**
+     * The identifier of an operation that preceded and this one is related to. For a ReadUpdated, it would be the Read operation.
+     *
+     * @type {DataOperation}
+     */
+    referrerIdentifier: {
+        value: undefined
+    },
+
+    /**
      * Models the agent that created the operation.
      *
      * @type {Object}
@@ -248,6 +419,10 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     Might be more straightforward to name this objectDescriptor
     */
     dataType: {
+        value: undefined
+    },
+
+    dataDescriptor: {
         value: undefined
     },
 
@@ -369,34 +544,6 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
 
     snapshotData: {
         value: undefined
-    },
-
-    /***************************************************************************
-     * Deprecated
-     */
-
-    /**
-     * @todo: Deprecate and remove when appropriate.
-     */
-    changes: {
-        get: function () {
-            return this.data;
-        },
-        set: function (data) {
-            this.data = data;
-        }
-    },
-
-    /**
-     * @todo: Deprecate and remove when appropriate.
-     */
-    lastModified: {
-        get: function () {
-            return this.time;
-        },
-        set: function (time) {
-            this.time = time;
-        }
     }
 
 }, /** @lends DataOperation */ {
@@ -413,74 +560,75 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
 
         */
         value: {
-            Create: {isCreate: true},
-            CreateFailed: {isCreate: true},
-            CreateCompleted: {isCreate: true},
-            CreateCancelled: {isCreate: true},
+            Create: DataOperationType.Create,
+            CreateFailed: DataOperationType.CreateFailed,
+            CreateCompleted: DataOperationType.CreateCompleted,
+            CreateCancelled: DataOperationType.CreateCancelled,
             //Additional
-            Copy: {isCreate: true},
-            CopyFailed: {isCreate: true},
-            CopyCompleted: {isCreate: true},
+            Copy: DataOperationType.Copy,
+            CopyFailed: DataOperationType.CopyFailed,
+            CopyCompleted: DataOperationType.CopyCompleted,
             /* Read is the first operation that mnodels a query */
-            Read: {isRead: true},
+            Read: DataOperationType.Read,
 
             /* ReadUpdated is pushed by server when a query's result changes due to data changes from others */
-            ReadUpdated: {isRead: true},
+            ReadUpdated: DataOperationType.ReadUpdated,
 
             /* ReadProgress / ReadUpdate / ReadSeek is used to instruct server that more data is required for a "live" read / query
                 Need a better name, and a symetric? Or is ReadUpdated enough if it referes to previous operation
             */
-           ReadProgress: {isRead: true}, //ReadUpdate
-           ReadUpdate: {isRead: true}, //ReadUpdate
+            ReadProgress: DataOperationType.ReadProgress, //ReadUpdate
+            ReadUpdate: DataOperationType.ReadUpdate, //ReadUpdate
 
             /* ReadCancel is the operation that instructs baclkend that client isn't interested by a read operastion anymore */
-            ReadCancel: {isRead: true},
+            ReadCancel: DataOperationType.ReadCancel,
 
             /* ReadCanceled is the operation that instructs the client that a read operation is canceled */
-            ReadCanceled: {isRead: true},
+            ReadCanceled: DataOperationType.ReadCanceled,
 
              /* ReadFailed is the operation that instructs the client that a read operation has failed canceled */
-            ReadFailed: {isRead: true},
+            ReadFailed: DataOperationType.ReadFailed,
             /* ReadCompleted is the operation that instructs the client that a read operation has returned all available data */
-            ReadCompleted: {isRead: true},
-            Update: {isUpdate: true},
-            UpdateCompleted: {isUpdate: true},
-            UpdateFailed: {isUpdate: true},
-            UpdateCanceled: {isUpdate: true},
-            Delete: {isDelete: true},
-            DeleteCompleted: {isDelete: true},
-            DeleteFailed: {isDelete: true},
+            ReadCompleted: DataOperationType.ReadCompleted,
+            Update: DataOperationType.Update,
+            UpdateCompleted: DataOperationType.UpdateCompleted,
+            UpdateFailed: DataOperationType.UpdateFailed,
+            UpdateCancel: DataOperationType.UpdateCancel,
+            UpdateCanceled: DataOperationType.UpdateCanceled,
+            Delete: DataOperationType.Delete,
+            DeleteCompleted: DataOperationType.DeleteCompleted,
+            DeleteFailed: DataOperationType.DeleteFailed,
             /* Lock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
-            Lock: {isLock: true},
-            LockCompleted: {isLock: true},
-            LockFailed: {isLock: true},
+            Lock: DataOperationType.Lock,
+            LockCompleted: DataOperationType.LockCompleted,
+            LockFailed: DataOperationType.LockFailed,
             /* RemmoteProcedureCall models the ability to invoke code logic on the server-side, being a DB StoredProcedure, or an method/function in a service */
-            RemoteProcedureCall: {isRemoteProcedureCall: true},
-            RemoteProcedureCallCompleted: {isRemoteProcedureCall: true},
-            RemoteProcedureCallFailed: {isRemoteProcedureCall: true}
+            RemoteProcedureCall: DataOperationType.RemoteProcedureCall,
+            RemoteProcedureCallCompleted: DataOperationType.RemoteProcedureCallCompleted,
+            RemoteProcedureCallFailed: DataOperationType.RemoteProcedureCallFailed
 
             /* Batch models the ability to group multiple operation. If a referrer is provided
                 to a BeginTransaction operation, then the batch will be executed within that transaction  */
             /*
-            Batch: {isBatch: true},
-            BatchCompleted: {isBatch: true},
-            BatchFailed: {isBatch: true},
+            Batch: DataOperationType.Batch,
+            BatchCompleted: DataOperationType.BatchCompleted,
+            BatchFailed: DataOperationType.BatchFailed,
             */
             /* A transaction is a unit of work that is performed against a database.
             Transactions are units or sequences of work accomplished in a logical order.
             A transactions begins, operations are grouped, then it is either commited or rolled-back*/
            /* Start/End Open/Close, Commit/Save, rollback/cancel
-            BeginTransaction: {isTransaction: true},
-            BeginTransactionCompleted: {isTransaction: true},
-            BeginTransactionFailed: {isTransaction: true},
+            BeginTransaction: DataOperationType.BeginTransaction,
+            BeginTransactionCompleted: DataOperationType.BeginTransactionCompleted,
+            BeginTransactionFailed: DataOperationType.BeginTransactionFailed,
 
-            CommitTransaction: {isTransaction: true},
-            CommitTransactionCompleted: {isTransaction: true},
-            CommitTransactionFailed: {isTransaction: true},
+            CommitTransaction: DataOperationType.CommitTransaction,
+            CommitTransactionCompleted: DataOperationType.CommitTransactionCompleted,
+            CommitTransactionFailed: DataOperationType.CommitTransactionFailed,
 
-            RollbackTransaction: {isTransaction: true},
-            RollbackTransactionCompleted: {isTransaction: true},
-            RollbackTransactionFailed: {isTransaction: true},
+            RollbackTransaction: DataOperationType.RollbackTransaction,
+            RollbackTransactionCompleted: DataOperationType.RollbackTransactionCompleted,
+            RollbackTransactionFailed: DataOperationType.RollbackTransactionFailed,
 
             */
         }
