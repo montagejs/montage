@@ -195,7 +195,7 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
             return this.converter ? this.converter.convert(value) :
                                     this.reverter ?
                                     this.reverter.revert(value) :
-                                    value;
+                                    Promise.resolve(value);
         }
     },
 

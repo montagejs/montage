@@ -43,7 +43,7 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                 });
             }
             else {
-                return Promise.resolve();
+                return Promise.resolve(null);
             }
         }
     },
