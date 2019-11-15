@@ -66,6 +66,7 @@ var MontageSerializer = Montage.specialize({
         value: function(objects) {
             var serializationString;
 
+            this._builder.init();
             this._labeler.initWithObjects(objects);
 
             for (var label in objects) {
