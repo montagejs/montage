@@ -981,15 +981,22 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-    objectDescriptorForObjectDescriptorModuleId: {
+    _objectDescriptorByModuleId: {
+        value:undefined
+    },
+    objectDescriptorWithModuleId: {
         value: function (objectDescriptorModuleId) {
-            var types = this.types, i, n;
-            for (i = 0, n = types.length; i < n; i++) {
-                if(types[i].module.id === objectDescriptorModuleId) {
-                    return types[i];
+
+            if(!this._objectDescriptorByModuleId) {
+                var map = this._objectDescriptorByModuleId = new Map();
+
+                var types = this.types, i, n;
+                for (i = 0, n = types.length; i < n; i++) {
+                    map.set(types[i].module.id,types[i]);
                 }
+
             }
-            return null;
+            return this._objectDescriptorByModuleId.get(objectDescriptorModuleId);
         }
     },
 
