@@ -594,7 +594,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                         dataIdentifier.objectDescriptor = type;
                         dataIdentifier.dataService = this;
                         dataIdentifier.typeName = type.name;
-                        dataIdentifier._identifier = dataIdentifier.primaryKey = primaryKey;
+                        //dataIdentifier._identifier = dataIdentifier.primaryKey = primaryKey;
+                        dataIdentifier.primaryKey = primaryKey;
 
                         dataIdentifierMap.set(primaryKey,dataIdentifier);
                 }

@@ -88,7 +88,27 @@ exports.DataIdentifier = Montage.specialize(/** @lends DataIdentifier.prototype 
     },
 
     _identifier: {
-        value: false
+        get: function() {
+            return this.url;
+        }
+    },
+
+    identifier: {
+        get: function() {
+            return this.url;
+        }
+    },
+
+    toString: {
+        value: function() {
+            return this.url;
+        }
+    },
+
+    valueOf: {
+        value: function() {
+            return this.url;
+        }
     },
 
     _url: {

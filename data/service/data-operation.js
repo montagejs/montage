@@ -195,6 +195,12 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
         value: undefined
     },
 
+    identifier: {
+        get: function() {
+            return this.id;
+        }
+    },
+
     /**
      * This is a unique clientId (per tab), that's given by the backend to the
      * client's OperationService. This clientId needs then to be passed per
