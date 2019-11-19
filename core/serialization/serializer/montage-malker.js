@@ -13,6 +13,12 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
         }
     },
 
+    cleanup: {
+        value: function() {
+            this._enteredObjects = {};
+        }
+    },
+
     _isObjectEntered: {
         value: function(object) {
             return Object.hash(object) in this._enteredObjects;

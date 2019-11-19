@@ -17,7 +17,7 @@ var MontageSerializer = Montage.specialize({
     _serializationIndentation: {value: 2},
     _malker: { value: null },
     legacyMode: { value: false },
-
+    _hasSerialized: { value: false },
     constructor: {
         value: function (legacyMode) {
             this.legacyMode = !!legacyMode;
@@ -66,8 +66,13 @@ var MontageSerializer = Montage.specialize({
         value: function(objects) {
             var serializationString;
 
-            this._builder.init();
             this._labeler.initWithObjects(objects);
+
+            if(this._hasSerialized) {
+                this._builder.init();
+                this._malker.cleanup();
+                this._visitor.cleanup();
+            }
 
             for (var label in objects) {
                 if (Object.hasOwnProperty.call(objects, label)) {
@@ -81,6 +86,7 @@ var MontageSerializer = Montage.specialize({
                 )
             );
 
+            this._hasSerialized = true;
             return serializationString;
         }
     },

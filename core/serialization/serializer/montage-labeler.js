@@ -69,8 +69,9 @@ exports.MontageLabeler = Montage.specialize({
             var identifier = object.identifier,
                 objectName;
 
-            if (identifier && this._labelRegexp.test(identifier)) {
-                objectName = object.identifier;
+            if (identifier && this._labelRegexp.test((identifier = identifier.toString()))) {
+                //objectName = object.identifier;
+                objectName = identifier;
             } else if (object && typeof object === "object" && "getInfoForObject" in object || "getInfoForObject" in object.constructor ) {
                 objectName = Montage.getInfoForObject(object).objectName;
                 objectName = objectName.toLowerCase();
@@ -97,7 +98,7 @@ exports.MontageLabeler = Montage.specialize({
             for (var label in labels) {
                 if (labels.hasOwnProperty(label)) {
                     this.setObjectLabel(labels[label], label);
-                    this._userDefinedLabels[label] = true;   
+                    this._userDefinedLabels[label] = true;
                 }
             }
         }

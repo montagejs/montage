@@ -29,6 +29,13 @@ var MontageVisitor = Montage.specialize({
         }
     },
 
+    cleanup: {
+        value: function() {
+            this._elements = [];
+            this._objectsSerialization = Object.create(null);
+        }
+    },
+
     getTypeOf: {
         value: function (object) {
             // Module and Alias are MontageObject's too so they need to be
@@ -280,7 +287,7 @@ var MontageVisitor = Montage.specialize({
             var selfSerializer,
                 substituteObject,
                 valuesBuilderObject = this.builder.createObjectLiteral();
-                
+
             builderObject.setProperty("prototype", object.constructor.name);
             builderObject.setProperty("values", valuesBuilderObject);
 
@@ -355,7 +362,7 @@ var MontageVisitor = Montage.specialize({
                     var valuesObject = this.builder.top.getProperty("values");
                     this.builder.push(valuesObject);
 
-                    
+
                     /* jshint forin: true */
                     for (var key in bindings) {
                     /* jshint forin: false */
@@ -381,7 +388,7 @@ var MontageVisitor = Montage.specialize({
         value: function (malker, object) {
             var valuesSerializer,
                 valuesObject = this.builder.top.getProperty("values");
-            
+
             this.builder.push(valuesObject);
 
             if (typeof object.serializeProperties === "function" || typeof object.serializeValues === "function") {
@@ -432,8 +439,8 @@ var MontageVisitor = Montage.specialize({
             // a reference to an object but that would be an external reference
             // the problem here is that the serializable defaults to "reference"
             // for most cases when in reality we probably just want "value".
-            return typeof value === "object" && 
-                (value !== null && value !== undefined) && 
+            return typeof value === "object" &&
+                (value !== null && value !== undefined) &&
                     !(typeof Element !== "undefined" && Element.isElement(value));
         }
     },
@@ -465,7 +472,7 @@ var MontageVisitor = Montage.specialize({
 
                     this.setObjectCustomUnit(malker, object, unitName);
                 }
-            }   
+            }
         }
     },
 
@@ -675,7 +682,7 @@ var MontageVisitor = Montage.specialize({
                     }
 
                     if (
-                        typeof visitor[methodName] === "function" && 
+                        typeof visitor[methodName] === "function" &&
                             methodName.substr(0, 5) === "visit"
                     ) {
                         if (typeof customObjectVisitors[methodName] === "undefined") {
@@ -683,7 +690,7 @@ var MontageVisitor = Montage.specialize({
                         } else {
                             return new Error("Visitor '" + methodName + "' is already registered.");
                         }
-                    }   
+                    }
                 }
             }
 
