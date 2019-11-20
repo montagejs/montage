@@ -130,7 +130,9 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
             if(this.data) {
                 serializer.setProperty("data", this.data);
             }
-
+            if(this.objectExpressions) {
+                serializer.setProperty("objectExpressions", this.objectExpressions);
+            }
         }
     },
     deserializeSelf: {
@@ -169,6 +171,11 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
             value = deserializer.getProperty("data");
             if (value !== void 0) {
                 this.data = value;
+            }
+
+            value = deserializer.getProperty("objectExpressions");
+            if (value !== void 0) {
+                this.objectExpressions = value;
             }
 
         }
