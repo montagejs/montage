@@ -19,7 +19,10 @@ var Defaults = {
     enumValues: [],
     defaultValue: void 0,
     helpKey: "",
-    localizable: false
+    localizable: false,
+    isSearcheable: false,
+    isOrdered: false,
+    hasUniqueValues: false,
 };
 
 
@@ -138,6 +141,10 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._setPropertyWithDefaults(serializer, "definition", this.definition);
             this._setPropertyWithDefaults(serializer, "inversePropertyName", this.inversePropertyName);
             this._setPropertyWithDefaults(serializer, "localizable", this.localizable);
+            this._setPropertyWithDefaults(serializer, "isSearcheable", this.isSearcheable);
+            this._setPropertyWithDefaults(serializer, "isOrdered", this.isOrdered);
+            this._setPropertyWithDefaults(serializer, "hasUniqueValues", this.hasUniqueValues);
+
         }
     },
 
@@ -173,6 +180,9 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._overridePropertyWithDefaults(deserializer, "definition");
             this._overridePropertyWithDefaults(deserializer, "inversePropertyName");
             this._overridePropertyWithDefaults(deserializer, "localizable");
+            this._overridePropertyWithDefaults(deserializer, "isSearcheable");
+            this._overridePropertyWithDefaults(deserializer, "isOrdered");
+            this._overridePropertyWithDefaults(deserializer, "hasUniqueValues");
         }
     },
 
@@ -283,6 +293,11 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * stored. Only positive values are legal. A value of infinity means that
      * any number of values can be stored.
      *
+     * Right now with just one property forHandling Cardinality, we can't deal with something like
+     * minCount and maxCount. minCount and maxCount with equal value would be similar to cardinality,
+     * or we could make cardinality a Range as well.
+     *
+     *
      * @type {number}
      * @default 1
      */
@@ -335,6 +350,53 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             return false;
         }
     },
+
+    /**
+     * Reflect if this property can be used to search with text and find that
+     * objetc. It should be used by data storage to provide the ability to offer
+     * such ability to find objects based on textual content of this property.
+     *
+     * Should it be limited to text/string type?
+     *
+     * @type {boolean}
+     * @default false
+     */
+    isSearcheable: {
+         value: Defaults.readOnly
+    },
+
+    /**
+     * models if the values of a collection / to-many property are ordered or not
+     * This is relevant for example for relationships where a relational DB would
+     * use a traditinal join table with 2 foreign keys to implement a many to many
+     * if isOrdered is false, but if true, that join table should have an index,
+     * or the relationship could be implemented with an array type in postgresql.
+     *
+     * If not ordered, a set could be used to hold data.
+     *
+     * @type {boolean}
+     * @default false
+     */
+    isOrdered: {
+        value: Defaults.isOrdered
+   },
+
+    /**
+     * models if the values of a collection / to-many property should be unique,
+     * This is relevant for example for relationships where a relational DB would
+     * use a traditinal join table with 2 foreign keys to implement a many to many,
+     * in which naturally there could be only one association and therefore be unique
+     * by nature. But a relationship implemented with an array type in postgresql for example,
+     * would naturally offer the ability to hold multiple times the same value at
+     * multiple indexes.
+     *
+     * @type {boolean}
+     * @default false
+     */
+    hasUniqueValues: {
+        value: Defaults.hasUniqueValues
+   },
+
 
     /**
      * @type {string}
@@ -458,7 +520,9 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
 
     /**
      * @type {boolean}
-     * Express the fact that the value of this property might change to meet the language, cultural and other requirements of a specific target market (a locale).
+     * Express the fact that the value of this property might change to meet the language,
+     * cultural and other requirements of a specific target market (a locale).
+     *
      * @default false
      */
     localizable: {
