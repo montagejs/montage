@@ -709,13 +709,15 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     handleContentRangeChange: {
         value: function (plus, minus, index) {
             if (this.selection.length > 0) {
-                var equals = this.content && this.content.contentEquals || Object.is;
+                var equals = this.content && this.content.contentEquals || Object.is,
+                    diff = minus.clone(1);
+
                 // remove all values from the selection that were removed (but
                 // not added back)
-                minus.deleteEach(plus, equals);
+                diff.deleteEach(plus, equals);
 
                 if (this.selection.length) {
-                    this.selection.deleteEach(minus);
+                    this.selection.deleteEach(diff);
 
                     // ensure selection always has content
                     if (this.selection.length === 0 && this.content && this.content.length &&
@@ -772,7 +774,11 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
             if (this.deselectInvisibleContent && this.selection) {
                 var diff = minus.clone(1);
                 diff.deleteEach(plus);
-                this.selection.deleteEach(minus);
+                //Benoit, checking along with fixing a bug with the same pattern in handleContentRangeChange
+                //This feels wrong we would clone minus to remove what's re-added and still pass minus to
+                //this.selection.deleteEach instead of diff here.
+                //this.selection.deleteEach(minus);
+                this.selection.deleteEach(diff);
             }
         }
     },
