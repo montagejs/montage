@@ -421,8 +421,19 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     addOneRawData: {
         value: function (stream, rawData, context) {
             var type = this._descriptorForParentAndRawData(stream.query.type, rawData),
-                object = this.objectForTypeRawData(type, rawData, context),
-                result = this._mapRawDataToObject(rawData, object, context);
+                dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData),
+                object = this.rootService.objectForDataIdentifier(dataIdentifier),
+                isUpdateToExistingObject = false,
+                result;
+
+                if(!object) {
+                    object = this.objectForTypeRawData(type, rawData, context);
+                }
+                else {
+                    isUpdateToExistingObject = true;
+                }
+
+                result = this._mapRawDataToObject(rawData, object, context, isUpdateToExistingObject);
 
             if (this._isAsync(result)) {
                 result = result.then(function () {
@@ -937,7 +948,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      *                             call that invoked this method.
      */
     _mapRawDataToObject: {
-        value: function (record, object, context) {
+        value: function (record, object, context, isUpdateToExistingObject) {
             var self = this,
                 mapping = this.mappingForObject(object),
                 snapshot,
@@ -954,7 +965,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                 this._objectsBeingMapped.add(object);
 
-                result = mapping.mapRawDataToObject(record, object, context);
+                result = mapping.mapRawDataToObject(record, object, context, isUpdateToExistingObject);
                 if (result) {
                     result = result.then(function () {
                         result = self.mapRawDataToObject(record, object, context);

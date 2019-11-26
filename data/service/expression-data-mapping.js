@@ -457,15 +457,36 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      *                             modified to represent the raw data.
      */
     mapRawDataToObject: {
-        value: function (data, object, context) {
+        value: function (data, object, context, isUpdateToExistingObject) {
             var iterator = this.requisitePropertyNames.values(),
                 promises, propertyName, result;
 
-            if (this.requisitePropertyNames.size) {
-                while ((propertyName = iterator.next().value)) {
-                    result = this.mapRawDataToObjectProperty(data, object, propertyName, context);
-                    if (this._isAsync(result)) {
-                        (promises || (promises = [])).push(result);
+            if(isUpdateToExistingObject) {
+                var dataKeys = Object.keys(data),
+                    i, countI = dataKeys.length,
+                    rawDataMappingRules = this.rawDataMappingRules,
+                    objectMappingRules = this.objectMappingRules,
+
+                    iKey, iRule;
+                for(i=0;i<countI;i++) {
+                    iKey = dataKeys[i];
+                    iRule = this.rawDataMappingRules.get(iKey);
+                    if(iRule) {
+                        result = this.mapRawDataToObjectProperty(data, object, iRule.targetPath, context);
+                        if (this._isAsync(result)) {
+                            (promises || (promises = [])).push(result);
+                        }
+                    }
+                }
+
+            }
+            else {
+                if (this.requisitePropertyNames.size) {
+                    while ((propertyName = iterator.next().value)) {
+                        result = this.mapRawDataToObjectProperty(data, object, propertyName, context);
+                        if (this._isAsync(result)) {
+                            (promises || (promises = [])).push(result);
+                        }
                     }
                 }
             }
@@ -495,6 +516,12 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 scope = this._scope,
                 propertyScope,
                 debug = DataService.debugProperties.has(propertyName) || (rule && rule.debug === true);
+
+
+            //Simplistic and potentially wrong, but if there's no properties on data for that rule, then there's no point doing it
+            // if(rule && !data.hasOwnProperty(rule.sourcePath)) {
+            //     return undefined;
+            // }
 
 
             // Check if property is included in the DataService.debugProperties collection. Intended for debugging.
