@@ -1,5 +1,20 @@
 console.log('montage-testing', 'Start');
 
+var Promise = require("montage/core/promise").Promise;
+
+//Remove once the issue that causes unminified bluebird to be bootstrapped is resolved.
+//Suppress Bluebird unhandled rejection error
+Promise.onPossiblyUnhandledRejection(function(e, promise) {
+    console.warn("[Bluebird] Unhandled Rejection: " + e.message);
+    // console.warn(e);
+});
+
+Promise.config({
+    // Enable warnings
+    warnings: false
+});
+
+
 module.exports = require("montage-testing").run(require, [
     // App
     {name: "spec/application-spec", node: false},
@@ -81,7 +96,7 @@ module.exports = require("montage-testing").run(require, [
     "spec/serialization/serialization-inspector-spec",
     "spec/serialization/serialization-merger-spec",
     {name: "spec/serialization/montage-serializer-spec"},
-    { name: "spec/serialization/montage-deserializer-spec" },
+    { name: "spec/serialization/montage-deserializer-spec", worker: true},
     {name: "spec/serialization/montage-serializer-element-spec", node: false},
     { name: "spec/serialization/montage-deserializer-element-spec", node: false },
     // Trigger

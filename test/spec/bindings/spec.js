@@ -1069,6 +1069,8 @@ describe("bindings/spec", function () {
             var target = new Alpha(),
             source = new Omega();
 
+
+            Bindings.isMyBindings = true;
             Bindings.defineBinding(target, "foo", {
                 source: source,
                 "<->": "bar"
@@ -1076,6 +1078,7 @@ describe("bindings/spec", function () {
 
             source.bar = 1;
             expect(target.foo).toBe(1);
+            debugger;
             Object.deleteBinding(target, "foo");
 
             source.bar = 2;

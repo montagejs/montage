@@ -12,6 +12,7 @@ var Montage = require("core/core").Montage,
     WeakMap = require("collections/weak-map");
 
 
+
 var AuthorizationPolicyType = new Montage();
 AuthorizationPolicyType.NoAuthorizationPolicy = AuthorizationPolicy.NONE;
 AuthorizationPolicyType.UpfrontAuthorizationPolicy = AuthorizationPolicy.UP_FRONT;
@@ -91,7 +92,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (value !== undefined) {
                 this.isUniquing = value;
             }
-            
+
             return result;
         }
     },
@@ -1938,7 +1939,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             return promise;
         }
     },
-    
+
     /**
      * Save changes made to a data object.
      *

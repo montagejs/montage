@@ -1,4 +1,4 @@
-/*global define, module, console, MontageElement, Reflect, customElements */
+/*global define, module, console, MontageElement, Reflect, customElements, worker, PATH_TO_MONTAGE, self, importScripts */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
@@ -841,6 +841,10 @@
             return browser;
         } else if (typeof process !== "undefined") {
             return require("./node.js");
+        } else if (typeof self !== "undefined" && typeof importScripts !== "undefined") {
+            //TODO Pass montage location without global variables
+            importScripts(PATH_TO_MONTAGE + "worker.js");
+            return worker;
         } else {
             throw new Error("Platform not supported.");
         }
@@ -854,6 +858,10 @@
             exports.initMontage();
             exports.initMontageCustomElement();
         }
+    } else if (typeof self !== "undefined" && typeof importScripts !== "undefined") {
+        //Is it necessary to do the __MONTAGE_LOADED__ check as is done for the browser?
+        //self.registration.scope.replace(/[^\/]*\.html$/, "");
+        exports.initMontage();
     } else {
         // may cause additional exports to be injected:
         exports.getPlatform();

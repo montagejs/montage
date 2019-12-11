@@ -12,7 +12,6 @@ exports.PropService = RawDataService.specialize(/** @lends PropService.prototype
 
     fetchRawData: {
         value: function (stream) {
-            console.log("PropService.fetchRawData");
             this.addRawData(stream, this._data);
             this.rawDataDone(stream);
         }

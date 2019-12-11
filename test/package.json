@@ -14,5 +14,6 @@
             "location": "package-b"
         }
     },
-    "manifest": true
+    "manifest": true,
+    "__mainWorkerModule": "test-worker"
 }

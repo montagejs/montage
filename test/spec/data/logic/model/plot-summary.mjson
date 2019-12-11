@@ -17,15 +17,26 @@
         }
     },
 
-    "movie_descriptor": {
-        "object": "spec/data/logic/model/movie.mjson"
+
+    "movie_reference": {
+        "prototype": "montage/core/meta/object-descriptor-reference",
+        "properties": {
+            "valueReference": {
+                "objectDescriptorName": "Category",
+                "prototypeName": "Category",
+                "objectDescriptorModule": {"%": "logic/model/descriptors/category.mjson"}
+            }
+        }
     },
 
     "movie": {
         "prototype": "montage/core/meta/property-descriptor",
         "properties": {
             "name": "movie",
-            "valueDescriptor": {"@": "movie"}
+            "valueDescriptor": {
+                "@": "movie_reference",
+                "_comment": "This cannot be object notation because it creates a circular reference with movie.mjson"
+            }
         }
     },
 
