@@ -3,6 +3,7 @@ var Bindings = require("frb"),
     assign = require("frb/assign"),
     evaluate = require("frb/evaluate"),
     expand = require("frb/expand"),
+    Map = require("collections/map"),
     Scope = require("frb/scope"),
     Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
     ONE_ASSIGNMENT = "=",
@@ -13,8 +14,12 @@ var serializeObjectBindings = exports.serializeObjectBindings = function (serial
     var inputs = Bindings.getBindings(object),
         outputs = {},
         hasBindings,
-        mapIter = inputs.keys(),
-        targetPath;
+        mapIter, targetPath;
+
+        if (!(inputs instanceof Map)) {
+            inputs = new Map();
+        }
+        mapIter = inputs.keys();
 
     while ((targetPath = mapIter.next().value)) {
     //for (var targetPath in inputs) {
@@ -98,7 +103,7 @@ var deserializeObjectBindings = exports.deserializeObjectBindings = function (de
 
         if (ONE_ASSIGNMENT in descriptor) {
             var value = descriptor[ONE_ASSIGNMENT];
-            
+
             assign(
                 object,
                 targetPath,
