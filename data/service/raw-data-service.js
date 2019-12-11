@@ -71,8 +71,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     deserializeSelf: {
         value:function (deserializer) {
             this.super(deserializer);
-            var value = deserializer.getProperty("rawDataTypeMappings");
-            this._registerRawDataTypeMappings(value || []);
+            this._rawDataTypeMappings = deserializer.getProperty("rawDataTypeMappings");
         }
     },
 
@@ -887,8 +886,20 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * of 'Employee' or 'Customer'.
      * @type {Map<ObjectDescpriptor:RawDataTypeMapping>}
      */
-
     _descriptorToRawDataTypeMappings: {
+        get: function () {
+            if (!this.__descriptorToRawDataTypeMappings) {
+                this.__descriptorToRawDataTypeMappings = new Map();
+                this._registerRawDataTypeMappings(this._rawDataTypeMappings || []);
+            }
+            return this.__descriptorToRawDataTypeMappings;
+        }
+    },
+
+    /**
+     * @type {Array<RawDataTypeMapping>}
+     */
+    _rawDataTypeMappings: {
         value: undefined
     },
 

@@ -1069,6 +1069,8 @@ describe("bindings/spec", function () {
             var target = new Alpha(),
             source = new Omega();
 
+
+            Bindings.isMyBindings = true;
             Bindings.defineBinding(target, "foo", {
                 source: source,
                 "<->": "bar"

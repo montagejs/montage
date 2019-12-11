@@ -12,6 +12,7 @@ var Montage = require("core/core").Montage,
     WeakMap = require("collections/weak-map");
 
 
+
 var AuthorizationPolicyType = new Montage();
 AuthorizationPolicyType.NoAuthorizationPolicy = AuthorizationPolicy.NONE;
 AuthorizationPolicyType.UpfrontAuthorizationPolicy = AuthorizationPolicy.UP_FRONT;
@@ -91,7 +92,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (value !== undefined) {
                 this.isUniquing = value;
             }
-            
+
             return result;
         }
     },
@@ -1754,6 +1755,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             stream.query = query;
             stream.dataExpression = query.selectExpression;
 
+            var stack = new Error().stack;
+
             this._dataServiceByDataStream.set(stream, this._childServiceRegistrationPromise.then(function() {
                 var service;
                 //This is a workaround, we should clean that up so we don't
@@ -1773,6 +1776,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                             stream = service.fetchData(query, stream) || stream;
                             self._dataServiceByDataStream.set(stream, service);
                         } else {
+                            console.log(stack);
+                            debugger;
                             throw new Error("Can't fetch data of unknown type - " + (query.type.typeName || query.type.name) + "/" + query.type.uuid);
                         }
                     } catch (e) {
@@ -1938,7 +1943,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             return promise;
         }
     },
-    
+
     /**
      * Save changes made to a data object.
      *
@@ -2082,7 +2087,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (this._isOffline === undefined) {
                 // Determine the initial value from the navigator state and call
                 // the public setter so _goOnline() is invoked if appropriate.
-                this.isOffline = !navigator.onLine;
+                this._isOffline = !navigator.onLine;
             }
             return this._isOffline;
         },
@@ -2117,7 +2122,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     _isOffline: {
         // `undefined` on startup, otherwise always `true` or `false`.
-        value: false
+        value: undefined
     },
 
     _willBeOffline: {
