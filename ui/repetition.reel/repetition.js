@@ -595,10 +595,13 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      * for corresponding keys.
      * @private
      */
+    _superMakePropertyObservable : {
+        value: PropertyChanges.prototype.makePropertyObservable
+    },
     makePropertyObservable: {
         value: function(key) {
             if(key !== "object" && key !== "_childComponents"  && key !== "index" && key !== "_noTransition" && key !== "selected") {
-                PropertyChanges.prototype.makePropertyObservable.call(this, key);
+                this._superMakePropertyObservable( key);
             }
         }
     }
@@ -720,6 +723,16 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         }
     },
 
+    /*
+        Selection TODO:
+
+        selection can't be bound on the outside because it's bound from the inside
+        - using contentController.selection in the binding isn't really acceptable
+        - if a binding is set on either selection or contentController.selection,
+        we shouldn't have to manually set isSelectionEnabled to true.
+        We should be overriding addOb
+    */
+
     /**
      * When selection is enabled, each element in an iteration responds to
      * touch and click events such that the iteration is highlighted (with the
@@ -735,6 +748,25 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * @type {boolean}
      */
     isSelectionEnabled: {value: null},
+
+
+    /**
+     * As dispatching has been implemented in key  setters, limit use of default method
+     * for corresponding keys.
+     * @private
+     */
+    _superMakePropertyObservable : {
+        value: PropertyChanges.prototype.makePropertyObservable
+    },
+    makePropertyObservable: {
+        value: function(key) {
+            if(key === "selection") {
+                this.isSelectionEnabled = true;
+            }
+            this._superMakePropertyObservable( key);
+        }
+    },
+
 
 
     allowsMultipleSelection: {
@@ -2027,6 +2059,15 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     _enableSelectionTracking: {
         value: function () {
             this._pressComposer.addEventListener("pressStart", this, false);
+            /*
+                Quick test to eventually listen for press event coming from within.
+                If iterations component use a press composer, their's will win as deeper
+                but the repetion should still know about what's going on.
+
+                However, if a button is pressed within an iteration, it might not means
+                the iteration it belongs to should become the selected one?
+            */
+            // this.addEventListener("pressStart", this, false);
         }
     },
 
