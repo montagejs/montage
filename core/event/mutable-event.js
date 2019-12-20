@@ -16,7 +16,7 @@ var wrapPropertyGetter = function (key, storageKey) {
 
 
 // XXX Does not presently function server-side
-if (typeof window !== "undefined") {
+//if (typeof window !== "undefined") {
 
     var _eventConstructorsByType = {};
 
@@ -86,7 +86,7 @@ if (typeof window !== "undefined") {
         },
 
         /**
-         * @function
+         * @function - deprecated
          */
         getPreventDefault: {
             value: function () {
@@ -94,6 +94,14 @@ if (typeof window !== "undefined") {
                     return this._event.getPreventDefault();
                 }
                 return this._event.defaultPrevented;
+            }
+        },
+
+        defaultPrevented: {
+            value: function () {
+                return (typeof this._event.defaultPrevented === "boolean")
+                ?  this._event.defaultPrevented
+                :  this.getPreventDefault();
             }
         },
 
@@ -335,4 +343,4 @@ if (typeof window !== "undefined") {
 
     });
 
-} // client-side
+//} // client-side
