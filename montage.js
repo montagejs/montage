@@ -374,8 +374,10 @@
                     global.montageWillLoad();
                 }
 
-                // Load the application
 
+
+
+                // Load the application
                 var appProto = applicationRequire.packageDescription.applicationPrototype,
                     applicationLocation, appModulePromise;
 
@@ -392,19 +394,47 @@
                     defaultEventManager.application = application;
                     application.eventManager = defaultEventManager;
 
-                    return application._load(applicationRequire, function () {
-                        if (params.module) {
-                            // If a module was specified in the config then we initialize it now
-                            applicationRequire.async(params.module);
-                        }
-                        if (typeof global.montageDidLoad === "function") {
-                            global.montageDidLoad();
-                        }
+                    // Load main.datareel/main.mjson
+                    var mainDatareel = applicationRequire.packageDescription.mainDatareel,
+                    mainDatareelLocation, mainDatareelModulePromise;
 
-                        if (window.MontageElement) {
-                            MontageElement.ready(applicationRequire, application, MontageReviver);
-                        }
+                    if (mainDatareel) {
+                        mainDatareelLocation = MontageReviver.parseObjectLocationId(mainDatareel);
+                        mainDatareelModulePromise = applicationRequire.async(mainDatareelLocation.moduleId);
+                    } else {
+                        //mainDatareelModulePromise = applicationRequire.makeRequire("data/main.datareel/main.mjson").async("data/main.datareel/main.mjson");
+                        mainDatareelLocation = "data/main.datareel/main.mjson";
+                        mainDatareelModulePromise = applicationRequire.async("data/main.datareel/main.mjson");
+                        //mainDatareelModulePromise = mrPromise.resolve();
+                    }
+
+
+                    return mainDatareelModulePromise.then(function(mainDataServiceExport) {
+                        // fulfillment
+                        application.service = application.dataService =  application.mainService = mainDataServiceExport.montageObject;
+                        return application;
+                    }, function(reason) {
+                        // rejection
+                        console.log("App failed to load datareel at location:",mainDatareelLocation,reason);
+                        return application;
+                    }).finally(function() {
+
+                        return application._load(applicationRequire, function () {
+                            if (params.module) {
+                                // If a module was specified in the config then we initialize it now
+                                applicationRequire.async(params.module);
+                            }
+                            if (typeof global.montageDidLoad === "function") {
+                                global.montageDidLoad();
+                            }
+
+                            if (window.MontageElement) {
+                                MontageElement.ready(applicationRequire, application, MontageReviver);
+                            }
+                        });
+
                     });
+
                 });
             });
         }
