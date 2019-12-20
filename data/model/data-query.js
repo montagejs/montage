@@ -95,6 +95,20 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
         value: undefined
     },
 
+
+    /**
+     * A property used to carry the identity of the current user issuing the query
+     * This is set by the framework based on wethere there's an authenticated user
+     * or not. RawDataServices use this to communicate to servers the identity of
+     * who is requiring data so it can be evaluated in term of access contol.
+     *
+     * @type {UserIdentity}
+     */
+    userIdentity: {
+        value: undefined
+    },
+
+
     /**
      * An object defining the criteria that must be satisfied by objects for
      * them to be included in the data set defined by this query.
@@ -201,7 +215,7 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
     /**
      * An expression that is used in memory client side to further refine the set objects retrieves.
      * by the query's criteria expression. This useful in cases the origin service doesn't know how to handle such criteria.
-     * That shouldn't be exposed to the end developer, but instead, a RawDataService should be able to analyse a query's criteria
+     * That shouldn't be exposed to the end developer, but instead, a RawDataService should be able to analyze a query's criteria
      * and split the apsects that can be executed by the origin service automatically, to filter the rest itself.
      * @type {Array}
      */
