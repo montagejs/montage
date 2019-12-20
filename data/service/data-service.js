@@ -1,6 +1,9 @@
 var Montage = require("core/core").Montage,
+    Target = require("core/target").Target,
     AuthorizationManager = require("data/service/authorization-manager").defaultAuthorizationManager,
     AuthorizationPolicy = require("data/service/authorization-policy").AuthorizationPolicy,
+    UserAuthenticationPolicy = require("data/service/user-authentication-policy").UserAuthenticationPolicy,
+    UserIdentityManager = require("data/service/user-identity-manager").UserIdentityManager,
     DataObjectDescriptor = require("data/model/data-object-descriptor").DataObjectDescriptor,
     DataQuery = require("data/model/data-query").DataQuery,
     DataStream = require("data/service/data-stream").DataStream,
@@ -19,6 +22,11 @@ AuthorizationPolicyType.UpfrontAuthorizationPolicy = AuthorizationPolicy.UP_FRON
 AuthorizationPolicyType.OnDemandAuthorizationPolicy = AuthorizationPolicy.ON_DEMAND;
 AuthorizationPolicyType.OnFirstFetchAuthorizationPolicy = AuthorizationPolicy.ON_FIRST_FETCH;
 
+UserAuthenticationPolicy.NoAuthenticationPolicy = UserAuthenticationPolicy.NONE;
+UserAuthenticationPolicy.UpfrontAuthenticationPolicy = UserAuthenticationPolicy.UP_FRONT;
+UserAuthenticationPolicy.OnDemandAuthenticationPolicy = UserAuthenticationPolicy.ON_DEMAND;
+UserAuthenticationPolicy.OnFirstFetchAuthenticationPolicy = UserAuthenticationPolicy.ON_FIRST_FETCH;
+
 /**
  * Provides data objects and manages changes to them.
  *
@@ -36,7 +44,7 @@ AuthorizationPolicyType.OnFirstFetchAuthorizationPolicy = AuthorizationPolicy.ON
  * @class
  * @extends external:Montage
  */
-exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
+exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
     /***************************************************************************
      * Initializing
@@ -45,7 +53,21 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     constructor: {
         value: function DataService() {
             exports.DataService.mainService = exports.DataService.mainService || this;
-            this._initializeAuthorization();
+            if(this === DataService.mainService) {
+                UserIdentityManager.mainService = DataService.mainService;
+            }
+
+            //Deprecated now
+            //this._initializeAuthorization();
+
+            if (this.providesAuthorization) {
+                exports.DataService.authorizationManager.registerAuthorizationService(this);
+            }
+
+            if(this.providesUserIdentity === true) {
+                UserIdentityManager.registerUserIdentityService(this);
+            }
+
             this._initializeOffline();
         }
     },
@@ -95,6 +117,16 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 this._childServices = value;
             }
 
+            value = deserializer.getProperty("authorizationPolicy");
+            if (value) {
+                this.authorizationPolicy = value;
+            }
+
+            value = deserializer.getProperty("userAuthenticationPolicy");
+            if (value) {
+                this.userAuthenticationPolicy = value;
+            }
+
             return this;
         }
     },
@@ -106,6 +138,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 this._childServices = [];
                 this.addChildServices(childServices);
             }
+
+            if (this.authorizationPolicy === AuthorizationPolicyType.UpfrontAuthorizationPolicy) {
+                exports.DataService.authorizationManager.registerServiceWithUpfrontAuthorizationPolicy(this);
+            }
+
         }
     },
 
@@ -265,15 +302,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 iChild = childServices[i];
 
                 if((types = iChild.types)) {
-                    this._registerTypesByModuleId(types);
+                    this._registerTypesForService(types,iChild);
 
-                    for(j=0, countJ = types.length;(j<countJ);j++ ) {
-                        jType = types[j];
-                        jResult = this._makePrototypeForType(iChild, jType);
-                        if(Promise.is(jResult)) {
-                            (typesPromises || (typesPromises = [])).push(jResult);
-                        }
-                    }
+                    // for(j=0, countJ = types.length;(j<countJ);j++ ) {
+                    //     jType = types[j];
+                    //     jResult = this._makePrototypeForType(iChild, jType);
+                    //     if(Promise.is(jResult)) {
+                    //         (typesPromises || (typesPromises = [])).push(jResult);
+                    //     }
+                    // }
 
                 }
 
@@ -291,9 +328,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
             }
 
-            if(typesPromises) {
-                this._childServiceRegistrationPromise = Promise.all(typesPromises);
-            }
+            // if(typesPromises) {
+            //     this._childServiceRegistrationPromise = Promise.all(typesPromises);
+            // }
 
         }
     },
@@ -366,7 +403,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 }
             }
             // Set the new child service's parent.
-            child._parentService = this;
+            child._parentService = child.nextTarget = this;
         }
     },
 
@@ -458,7 +495,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 objectDescriptors;
             return this._resolveAsynchronousTypes(types).then(function (descriptors) {
                 objectDescriptors = descriptors;
-                self._registerTypesByModuleId(objectDescriptors);
+                self._registerTypesForService(objectDescriptors,child);
                 return self._registerChildServiceMappings(child, mappings);
             }).then(function () {
                 return self._makePrototypesForTypes(child, objectDescriptors);
@@ -486,14 +523,36 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-    _registerTypesByModuleId: {
-        value: function (types) {
-            var map = this._moduleIdToObjectDescriptorMap;
-            types.forEach(function (objectDescriptor) {
-                var module = objectDescriptor.module,
-                    moduleId = [module.id, objectDescriptor.exportName].join("/");
-                map[moduleId] = objectDescriptor;
-            });
+    _registerTypesForService: {
+        value: function (types, service) {
+            var map = this._moduleIdToObjectDescriptorMap, typesPromises,
+                j, countJ, jObjectDescriptor, jModule, jModuleId;
+
+            for(j=0, countJ = types.length;(j<countJ);j++ ) {
+                jObjectDescriptor = types[j];
+                jResult = this._makePrototypeForType(service, jObjectDescriptor);
+                if(Promise.is(jResult)) {
+                    (typesPromises || (typesPromises = [])).push(jResult);
+                }
+
+                jModule = jObjectDescriptor.module;
+                jModuleId = [jModule.id, jObjectDescriptor.exportName].join("/");
+                map[jModuleId] = jObjectDescriptor;
+
+                //Setup the event propagation chain
+                jObjectDescriptor.nextTarget = service;
+            }
+
+            // types.forEach(function (objectDescriptor) {
+            //     var module = objectDescriptor.module,
+            //         moduleId = [module.id, objectDescriptor.exportName].join("/");
+            //     map[moduleId] = objectDescriptor;
+            // });
+
+            if(typesPromises) {
+                this._childServiceRegistrationPromise = Promise.all(typesPromises);
+            }
+
         }
     },
 
@@ -941,6 +1000,67 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: undefined
     },
 
+    /********* New set of methods for user identity and authentication **********/
+
+    /**
+     * Indicates whether a service can provide application user-identity .
+     * Defaults to false. Concrete services need to override this as
+     * needed.
+     *
+     * @type {boolean}
+     */
+
+    providesUserIdentity: {
+        value: false
+    },
+
+    /**
+     * Returns the UserAuthenticationPolicyType used by a DataService. For enabling both
+     * system to co-exists for upgradability, there is no default here.
+     * DataServices suclass have to provide it.
+     *
+     * @type {AuthorizationPolicyType}
+     */
+    userAuthenticationPolicy: {
+        value: AuthorizationPolicyType.NoAuthorizationPolicy
+    },
+
+    /**
+     * The user identity for the data service. It could be an unauthenticated/
+     * anonymous user identity
+     *
+     * @type {Object}
+     */
+
+    userIdentity: {
+        value: undefined
+    },
+
+    /**
+     * a promise to the user identity for the data service. This is necessary to buffer
+     * fetch/data operations that can't be executed until a valid user identity is known.
+     *
+     * @type {Object}
+     */
+
+    userIdentityPromise: {
+        value: Promise.resolve()
+    },
+
+    /**
+     * The list of DataServices a service accepts to provide
+     * authorization on its behalf. If an array has multiple
+     * authorizationServices, the final choice will be up to the App user
+     * regarding which one to use. This array is expected to return moduleIds,
+     * not objects, allowing the AuthorizationManager to manage unicity
+     *
+     * @type {string[]}
+     */
+    userIdentityServices: {
+        value: null
+    },
+
+
     /**
      *
      * @method
@@ -1112,6 +1232,21 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 //          get: this.__object_primaryKeyMethodImplementation
                 //      }
                 //  });
+
+                //Adds support for event structure, setting the classes as instances next target
+                //if there's type.module
+                if(type.module) {
+                    Object.defineProperty(prototype, "nextTarget", { value: type.module });
+
+                    //setting objectDescriptor as classes next target:
+                    Object.defineProperty(type.module, "nextTarget", { value: type });
+                } else {
+                    //If no known custom JS constructor, we go straight to the object descriptor:
+                    Object.defineProperty(prototype, "nextTarget", { value: type });
+                }
+
+                // //set data service as objectDescriptor next target:
+                // Object.defineProperty(type, "nextTarget", { value: this.mainService });
 
             }
             return prototype;
@@ -1408,11 +1543,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 console.debug("To debug ExpressionDataMapping.mapRawDataToObjectProperty for " + propertyName + ", set a breakpoint here.");
             }
 
-            return  useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
-                    delegateFunction ?                  delegateFunction.call(this, object) :
-                    isHandler && propertyDescriptor ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor) :
-                    childService ?                      childService.fetchObjectProperty(object, propertyName) :
-                                                        this.nullPromise;
+            return  useDelegate
+                        ?   this.fetchRawObjectProperty(object, propertyName)
+                        :   delegateFunction
+                                ?   delegateFunction.call(this, object)
+                                :   isHandler && propertyDescriptor
+                                    ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor)
+                                    : childService
+                                        ?   childService.fetchObjectProperty(object, propertyName)
+                                        :   this.nullPromise;
         }
     },
 
@@ -2092,25 +2231,100 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (childService) {
                 childService._fetchRawData(stream);
             } else {
-                if (this.authorizationPolicy === AuthorizationPolicy.ON_DEMAND) {
-                    var prefetchAuthorization = typeof this.shouldAuthorizeForQuery === "function" && this.shouldAuthorizeForQuery(stream.query);
-                    if (prefetchAuthorization || !this.authorization) {
-                        this.authorizationPromise = exports.DataService.authorizationManager.authorizeService(this, prefetchAuthorization).then(function(authorization) {
-                            self.authorization = authorization;
-                            return authorization;
+                //this is the new path for services with a userAuthenticationPolicy
+                if (this.userAuthenticationPolicy) {
+                    var userIdentityPromise,
+                        shouldAuthenticate;
+                    //If this is the service providing providesUserIdentity for the query's type: UserIdentityService for the UserIdentity type required.
+                    //the query is either for the UserIdentity itself, or something else.
+                    //If it's for the user identity itself, it's a simple fetch
+                    //but if it's for something else, we may need to fetch the identity first, and then move on to the query at hand.
+                    if(this.providesUserIdentity) {
+                        //Regardless of the policy, we're asked to fetch a user identity
+                        var streamQuery = stream.query;
+                        if(stream.query.criteria) {
+                            stream.query = self.mapSelectorToRawDataQuery(streamQuery);
+                        }
+                        this.fetchRawData(stream);
+                        //Switch it back
+                        stream.query = streamQuery;
+                    }
+                    else {
+                        if(!this.userIdentity) {
+                            if(this.userIdentityPromise) {
+                                userIdentityPromise = this.userIdentityPromise;
+                            }
+                            else if ((this.authenticationPolicy === AuthenticationPolicyType.UpfrontAuthenticationPolicy) ||
+                                    (
+                                        (this.authenticationPolicy === AuthenticationPolicy.ON_DEMAND) &&
+                                        (shouldAuthenticate = typeof this.queryRequireAuthentication === "function") && this.queryRequireAuthentication(stream.query)
+                                    )) {
+
+                                        this.userIdentityPromise = userIdentityPromise = new Promise(function(resolve,reject) {
+                                        var userIdentityServices = this.userIdentityServices,
+                                        userIdentityObjectDescriptors,
+                                        selfUserCriteria,
+                                        userIdentityQuery;
+
+
+                                        //Shortcut, there could be multiple one we need to flatten.
+                                        userIdentityObjectDescriptors = userIdentityServices[0].types;
+                                        //selfUserCriteria = new Criteria().initWithExpression("identity == $", "self");
+                                        userIdentityQuery = DataQuery.withTypeAndCriteria(userIdentityObjectDescriptors[0]);
+
+                                        this.rootService.fetchData(userIdentityQuery)
+                                        .then(function(userIdenties) {
+                                            self.userIdentity = userIdenties[0];
+                                            resolve(self.userIdentity);
+                                        },
+                                        function(error) {
+                                            console.error(error);
+                                            reject(error);
+                                        });
+
+                                    });
+
+                                }
+                                else userIdentityPromise = Promise.resolve(true);
+                        }
+                        else {
+                            userIdentityPromise = Promise.resolve(true);
+                        }
+
+                        userIdentityPromise.then(function (authorization) {
+                            var streamSelector = stream.query;
+                            stream.query = self.mapSelectorToRawDataQuery(streamSelector);
+                            self.fetchRawData(stream);
+                            stream.query = streamSelector;
+                        }).catch(function (e) {
+                            stream.dataError(e);
+                            self.userIdentityPromise = Promise.resolve(null);
                         });
 
                     }
                 }
-                this.authorizationPromise.then(function (authorization) {
-                    var streamSelector = stream.query;
-                    stream.query = self.mapSelectorToRawDataQuery(streamSelector);
-                    self.fetchRawData(stream);
-                    stream.query = streamSelector;
-                }).catch(function (e) {
-                    stream.dataError(e);
-                    self.authorizationPromise = Promise.resolve(null);
-                });
+                else {
+                    if (this.authorizationPolicy === AuthorizationPolicy.ON_DEMAND) {
+                        var prefetchAuthorization = typeof this.shouldAuthorizeForQuery === "function" && this.shouldAuthorizeForQuery(stream.query);
+                        if (prefetchAuthorization || !this.authorization) {
+                            this.authorizationPromise = exports.DataService.authorizationManager.authorizeService(this, prefetchAuthorization).then(function(authorization) {
+                                self.authorization = authorization;
+                                return authorization;
+                            });
+
+                        }
+                    }
+
+                    this.authorizationPromise.then(function (authorization) {
+                        var streamSelector = stream.query;
+                        stream.query = self.mapSelectorToRawDataQuery(streamSelector);
+                        self.fetchRawData(stream);
+                        stream.query = streamSelector;
+                    }).catch(function (e) {
+                        stream.dataError(e);
+                        self.authorizationPromise = Promise.resolve(null);
+                    });
+                }
             }
         }
     },
@@ -2386,7 +2600,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                             // }
 
                         }, function(error) {
-                            console.error(error);
+                            console.log(error);
+                            return Promise.reject(error);
                         });
                     }
                 }

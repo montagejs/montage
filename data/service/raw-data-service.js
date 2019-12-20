@@ -73,6 +73,12 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             this.super(deserializer);
             var value = deserializer.getProperty("rawDataTypeMappings");
             this._registerRawDataTypeMappings(value || []);
+
+            value = deserializer.getProperty("connection");
+            if (value) {
+                this.connection = value;
+            }
+
         }
     },
 
@@ -421,19 +427,32 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     addOneRawData: {
         value: function (stream, rawData, context) {
             var type = this._descriptorForParentAndRawData(stream.query.type, rawData),
+                prefetchExpressions = stream.query.prefetchExpressions,
                 dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData),
-                object = this.rootService.objectForDataIdentifier(dataIdentifier),
+                object,
+                //object = this.rootService.objectForDataIdentifier(dataIdentifier),
                 isUpdateToExistingObject = false,
                 result;
 
-                if(!object) {
-                    object = this.objectForTypeRawData(type, rawData, context);
-                }
-                else {
+                // if(!object) {
+                object = this.objectForTypeRawData(type, rawData, context);
+                // }
+                // else {
+                //     isUpdateToExistingObject = true;
+                // }
+
+                //If we're already have a snapshot, we've already fetched and
+                //instanciated an object for that identifier previously.
+                if(this.snapshotForDataIdentifier(dataIdentifier)) {
                     isUpdateToExistingObject = true;
                 }
 
-                result = this._mapRawDataToObject(rawData, object, context, isUpdateToExistingObject);
+                //Recording snapshot even if we already had an object
+                //Record snapshot before we may create an object
+                this.recordSnapshot(dataIdentifier, rawData);
+
+
+                result = this._mapRawDataToObject(rawData, object, context, prefetchExpressions);
 
             if (this._isAsync(result)) {
                 result = result.then(function () {
@@ -525,11 +544,25 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
     objectForTypeRawData: {
         value:function(type, rawData, context) {
-            var dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData);
+            // var dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData);
+
+            // return this.rootService.objectForDataIdentifier(dataIdentifier) ||
+            //         this.getDataObject(type, rawData, context, dataIdentifier);
+
+
+            var dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData),
+                object = this.rootService.objectForDataIdentifier(dataIdentifier);
+
+            //Consolidation, recording snapshot even if we already had an object
             //Record snapshot before we may create an object
             this.recordSnapshot(dataIdentifier, rawData);
-            //iDataIdentifier argument should be all we need later on
-            return this.getDataObject(type, rawData, context, dataIdentifier);
+
+            if(!object) {
+                //iDataIdentifier argument should be all we need later on
+                return this.getDataObject(type, rawData, context, dataIdentifier);
+            }
+            return object;
+
         }
     },
 
@@ -537,9 +570,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: undefined
     },
 
-    //This should belong on the
-    //Gives us an indirection layer to deal with backward compatibility.
-    dataIdentifierForTypeRawData: {
+
+    primaryKeyForTypeRawData: {
         value: function (type, rawData) {
             var mapping = this.mappingWithType(type),
                 rawDataPrimaryKeys = mapping ? mapping.rawDataPrimaryKeyExpressions : null,
@@ -548,12 +580,6 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 dataIdentifier, dataIdentifierMap, primaryKey;
 
             if(rawDataPrimaryKeys && rawDataPrimaryKeys.length) {
-
-                // dataIdentifierMap = this._typeIdentifierMap.get(type);
-
-                // if(!dataIdentifierMap) {
-                //     this._typeIdentifierMap.set(type,(dataIdentifierMap = new Map()));
-                // }
 
                 for(var i=0, expression; (expression = rawDataPrimaryKeys[i]); i++) {
                     rawDataPrimaryKeysValues = rawDataPrimaryKeysValues || [];
@@ -564,24 +590,57 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     // dataIdentifier = dataIdentifierMap.get(primaryKey);
                 }
 
-                return this.dataIdentifierForTypePrimaryKey(type,primaryKey);
-
-                // if(!dataIdentifier) {
-                //     var typeName = type.typeName /*DataDescriptor*/ || type.name;
-                //         //This should be done by ObjectDescriptor/blueprint using primaryProperties
-                //         //and extract the corresponsing values from rawData
-                //         //For now we know here that MileZero objects have an "id" attribute.
-                //         dataIdentifier = new DataIdentifier();
-                //         dataIdentifier.objectDescriptor = type;
-                //         dataIdentifier.dataService = this;
-                //         dataIdentifier.typeName = type.name;
-                //         dataIdentifier._identifier = dataIdentifier.primaryKey = primaryKey;
-
-                //         dataIdentifierMap.set(primaryKey,dataIdentifier);
-                // }
-                // return dataIdentifier;
+                return primaryKey;
             }
             return undefined;
+        }
+    },
+
+    registerDataIdentifierForTypeRawData: {
+        value: function (dataIdentifier, type, rawData) {
+            var primaryKey = this.primaryKeyForTypeRawData(type, rawData);
+
+            this.registerDataIdentifierForTypePrimaryKey(dataIdentifier, type, primaryKey);
+        }
+    },
+
+    //This should belong on the
+    //Gives us an indirection layer to deal with backward compatibility.
+    dataIdentifierForTypeRawData: {
+        value: function (type, rawData) {
+            var primaryKey = this.primaryKeyForTypeRawData(type, rawData);
+
+            if(primaryKey) {
+                return this.dataIdentifierForTypePrimaryKey(type,primaryKey);
+            }
+            return undefined;
+        }
+    },
+
+    /**
+     * In most cases a RawDataService will register a dataIdentifier created during
+     * the mapping process, but in some cases where an object created by the upper
+     * layers fitst, this can be used direcly to reconcilate things.
+     *
+     * @method
+     * @argument {DataIdentifier} dataIdentifier - The dataIdentifier representing the type's rawData.
+     * @argument {ObjectDescriptor} type - the type of the raw data.
+     * @argument {?} primaryKey     - An arbitrary value that that is the primary key
+     *
+     *
+     *
+     * @returns {Promise<MappedObject>} - A promise resolving to the mapped object.
+     *
+     */
+    registerDataIdentifierForTypePrimaryKey: {
+        value: function (dataIdentifier, type, primaryKey) {
+            var dataIdentifierMap = this._typeIdentifierMap.get(type);
+
+            if(!dataIdentifierMap) {
+                this._typeIdentifierMap.set(type,(dataIdentifierMap = new Map()));
+            }
+
+            dataIdentifierMap.set(primaryKey,dataIdentifier);
         }
     },
 
@@ -590,11 +649,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             var dataIdentifierMap = this._typeIdentifierMap.get(type),
                 dataIdentifier;
 
-                if(!dataIdentifierMap) {
-                    this._typeIdentifierMap.set(type,(dataIdentifierMap = new Map()));
-                }
-
-                dataIdentifier = dataIdentifierMap.get(primaryKey);
+                dataIdentifier = dataIdentifierMap
+                                    ? dataIdentifierMap.get(primaryKey)
+                                    : null;
 
                 if(!dataIdentifier) {
                     var typeName = type.typeName /*DataDescriptor*/ || type.name;
@@ -608,7 +665,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                         //dataIdentifier._identifier = dataIdentifier.primaryKey = primaryKey;
                         dataIdentifier.primaryKey = primaryKey;
 
-                        dataIdentifierMap.set(primaryKey,dataIdentifier);
+                        // dataIdentifierMap.set(primaryKey,dataIdentifier);
+                        this.registerDataIdentifierForTypePrimaryKey(dataIdentifier,type, primaryKey);
                 }
                 return dataIdentifier;
         }
@@ -718,6 +776,35 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
         }
     },
+
+    rawDataError: {
+        value: function (stream, error) {
+            var self = this,
+                dataToPersist = this._streamRawData.get(stream),
+                mappingPromises = this._streamMapDataPromises.get(stream),
+                dataReadyPromise = mappingPromises ? Promise.all(mappingPromises) : this.nullPromise;
+
+            if (mappingPromises) {
+                this._streamMapDataPromises.delete(stream);
+            }
+
+            if (dataToPersist) {
+                this._streamRawData.delete(stream);
+            }
+
+            dataReadyPromise.then(function (results) {
+
+                //return dataToPersist ? self.writeOfflineData(dataToPersist, stream.query, context) : null;
+            }).then(function () {
+                stream.dataError(error);
+                return null;
+            }).catch(function (e) {
+                console.error(e,stream);
+            });
+
+        }
+    },
+
 
         /**
      * To be called once for each [fetchData()]{@link RawDataService#fetchData}
@@ -948,7 +1035,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      *                             call that invoked this method.
      */
     _mapRawDataToObject: {
-        value: function (record, object, context, isUpdateToExistingObject) {
+        value: function (record, object, context, prefetchExpressions) {
             var self = this,
                 mapping = this.mappingForObject(object),
                 snapshot,
@@ -965,10 +1052,10 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                 this._objectsBeingMapped.add(object);
 
-                result = mapping.mapRawDataToObject(record, object, context, isUpdateToExistingObject);
+                result = mapping.mapRawDataToObject(record, object, context, prefetchExpressions);
                 if (result) {
                     result = result.then(function () {
-                        result = self.mapRawDataToObject(record, object, context);
+                        result = self.mapRawDataToObject(record, object, context, prefetchExpressions);
                         if (!self._isAsync(result)) {
                             self._objectsBeingMapped.delete(object);
 
@@ -993,7 +1080,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                         throw error;
                     });
                 } else {
-                    result = this.mapRawDataToObject(record, object, context);
+                    result = this.mapRawDataToObject(record, object, context, prefetchExpressions);
                     if (!this._isAsync(result)) {
 
                         self._objectsBeingMapped.delete(object);
@@ -1017,7 +1104,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                 this._objectsBeingMapped.add(object);
 
-                result = this.mapRawDataToObject(record, object, context);
+                result = this.mapRawDataToObject(record, object, context, prefetchExpressions);
 
                 if (!this._isAsync(result)) {
 

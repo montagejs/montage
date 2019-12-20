@@ -1,98 +1,136 @@
 var Montage = require("core/core").Montage,
+    MutableEvent = require("core/event/mutable-event").MutableEvent,
     Criteria = require("core/criteria").Criteria,
     Enum = require("core/enum").Enum,
     uuid = require("core/uuid"),
-    DataOperationType;
+    DataOperationType,
+    dataOperationTypes = [
+        "noop",
+        "create",
+        "createfailed",
+        "createcompleted",
+        "createcancelled",
+        //Additional
+        "copy",
+        "copyfailed",
+        "copycompleted",
+        /* Read is the first operation that mnodels a query */
+        "read",
+
+        /* ReadUpdated is pushed by server when a query's result changes due to data changes from others */
+        "readupdated",
+
+        /* ReadProgress / ReadUpdate / ReadSeek is used to instruct server that more data is required for a "live" read / query
+            Need a better name, and a symetric? Or is ReadUpdated enough if it referes to previous operation
+        */
+        "readprogress", //ReadUpdate
+        "readupdate", //ReadUpdate
+
+        /* ReadCancel is the operation that instructs baclkend that client isn't interested by a read operastion anymore */
+        "readcancel",
+
+        /* ReadCanceled is the operation that instructs the client that a read operation is canceled */
+        "readcanceled",
+
+         /* ReadFailed is the operation that instructs the client that a read operation has failed canceled */
+        "readfailed",
+        /* ReadCompleted is the operation that instructs the client that a read operation has returned all available data */
+        "readcompleted",
+        /* Request to update data, used either by the client sending the server or vice versa */
+        "update",
+        /* Confirmation that a Request to update data, used either by the client sending the server or vice versa*, has been completed */
+        "updatecompleted",
+        /* Confirmation that a Request to update data, used either by the client sending the server or vice versa*, has failed */
+        "updatefailed",
+        /* Request to cancel an update, used either by the client sending the server or vice versa */
+        "updatecancel",
+        /* Confirmation that a Request to cancel an update data, used either by the client sending the server or vice versa*, has completed */
+        "updatecanceled",
+        "delete",
+        "deletecompleted",
+        "deletefailed",
+
+        /* Lock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
+        "lock",
+        "kockcompleted",
+        "lockfailed",
+
+        /* Unlock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
+        "unlock",
+        "unlockcompleted",
+        "unlockfailed",
+
+        /* RemmoteProcedureCall models the ability to invoke code logic on the server-side, being a DB StoredProcedure, or an method/function in a service */
+        "remoteinvocation", /* Execute ? */
+        "remoteinvocationcompleted",  /* ExecuteCompleted ? */
+        "remoteinvocationfailed", /* ExecuteFailed ? */
+
+        /* Batch models the ability to group multiple operation. If a referrer is provided
+            to a BeginTransaction operation, then the batch will be executed within that transaction  */
+        /*
+        "batch",
+        "batchcompleted",
+        "batchfailed",
+        */
+
+        /* A transaction is a unit of work that is performed against a database.
+        Transactions are units or sequences of work accomplished in a logical order.
+        A transactions begins, operations are grouped, then it is either commited or rolled-back*/
+       /* Start/End Open/Close, Commit/Save, rollback/cancel
+        "begintransaction",
+        "begintransactioncompleted",
+        "begintransactionafiled",
+
+        "committransaction",
+        "committransactioncompleted",
+        "committransactionfailed",
+
+        "rollbacktransaction",
+        "rollbacktransactioncompleted",
+        "rollbacktransactionfailed",
+
+        */
+
+        /*
+            operations used for the bottom of the stack to get information from a user.
+            This useful for authenticating a user, refreshing a password,
+            could be used to coordinate and solve data conflicts if an update realizes
+            one of the values to change has been changed by someone else in the meantime.
+            Maybe to communicate data validation, like a field missing, or a value that
+            isn't correct. Such validations could then be run server side or in a
+            web/service worker on the client.
+
+            Data components shpuld add themselves as listeners to the data service for events/
+            data operations like that they know how to deal with / can help with.
+        */
+       "userauthentication",
+       "userauthenticationupdate",
+       "userauthenticationcompleted",
+       "userauthenticationfailed",
+       "userauthenticationtimedout",
+       "userinput",
+        "userinputcompleted",
+        "userinputfailed",
+        "userinputcanceled",
+        "userinputtimedout",
+
+        /*
+            Modeling validation operation, either executed locally or server-side.
+            This can be used for expressing that a password value is wrong, that an account
+            isn't confirmed with the Identity authority
+            that a mandatory value is missing, etc...
+
+
+        */
+        "validate",
+        "validatefailed",
+        "validatecompleted",
+        "validatecancelled"
+    ];
 
 
 
-exports.DataOperationType = DataOperationType = new Enum().initWithMembers(
-    "NoOp",
-    "Create",
-    "CreateFailed",
-    "CreateCompleted",
-    "CreateCancelled",
-    //Additional
-    "Copy",
-    "CopyFailed",
-    "CopyCompleted",
-    /* Read is the first operation that mnodels a query */
-    "Read",
-
-    /* ReadUpdated is pushed by server when a query's result changes due to data changes from others */
-    "ReadUpdated",
-
-    /* ReadProgress / ReadUpdate / ReadSeek is used to instruct server that more data is required for a "live" read / query
-        Need a better name, and a symetric? Or is ReadUpdated enough if it referes to previous operation
-    */
-   "ReadProgress", //ReadUpdate
-   "ReadUpdate", //ReadUpdate
-
-    /* ReadCancel is the operation that instructs baclkend that client isn't interested by a read operastion anymore */
-    "ReadCancel",
-
-    /* ReadCanceled is the operation that instructs the client that a read operation is canceled */
-    "ReadCanceled",
-
-     /* ReadFailed is the operation that instructs the client that a read operation has failed canceled */
-    "ReadFailed",
-    /* ReadCompleted is the operation that instructs the client that a read operation has returned all available data */
-    "ReadCompleted",
-    /* Request to update data, used either by the client sending the server or vice versa */
-    "Update",
-    /* Confirmation that a Request to update data, used either by the client sending the server or vice versa*, has been completed */
-    "UpdateCompleted",
-    /* Confirmation that a Request to update data, used either by the client sending the server or vice versa*, has failed */
-    "UpdateFailed",
-    /* Request to cancel an update, used either by the client sending the server or vice versa */
-    "UpdateCancel",
-    /* Confirmation that a Request to cancel an update data, used either by the client sending the server or vice versa*, has completed */
-    "UpdateCanceled",
-    "Delete",
-    "DeleteCompleted",
-    "DeleteFailed",
-
-    /* Lock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
-    "Lock",
-    "LockCompleted",
-    "LockFailed",
-
-    /* Unlock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
-    "Unlock",
-    "UnockCompleted",
-    "UnockFailed",
-
-    /* RemmoteProcedureCall models the ability to invoke code logic on the server-side, being a DB StoredProcedure, or an method/function in a service */
-    "RemoteProcedureCall", /* Execute ? */
-    "RemoteProcedureCallCompleted",  /* ExecuteCompleted ? */
-    "RemoteProcedureCallFailed" /* ExecuteFailed ? */
-
-    /* Batch models the ability to group multiple operation. If a referrer is provided
-        to a BeginTransaction operation, then the batch will be executed within that transaction  */
-    /*
-    "Batch",
-    "BatchCompleted",
-    "BatchFailed",
-    */
-
-    /* A transaction is a unit of work that is performed against a database.
-    Transactions are units or sequences of work accomplished in a logical order.
-    A transactions begins, operations are grouped, then it is either commited or rolled-back*/
-   /* Start/End Open/Close, Commit/Save, rollback/cancel
-    "BeginTransaction",
-    "BeginTransactionCompleted",
-    "BeginTransactionFailed",
-
-    "CommitTransaction",
-    "CommitTransactionCompleted",
-    "CommitTransactionFailed",
-
-    "RollbackTransaction",
-    "RollbackTransactionCompleted",
-    "RollbackTransactionFailed",
-
-    */
-);
+exports.DataOperationType = DataOperationType = new Enum().initWithMembersAndValues(dataOperationTypes,dataOperationTypes);
 
 /**
  * Represents
@@ -100,7 +138,7 @@ exports.DataOperationType = DataOperationType = new Enum().initWithMembers(
  * @class
  * @extends external:Montage
  */
-exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */ {
+exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototype */ {
 
     /***************************************************************************
      * Constructor
@@ -117,10 +155,18 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
         }
     },
 
+    bubbles: {
+        value: true
+    },
+
+    defaultPrevented: {
+        value: false
+    },
+
     serializeSelf: {
         value:function (serializer) {
             serializer.setProperty("id", this.id);
-            serializer.setProperty("type", this.type);
+            serializer.setProperty("type", DataOperationType.intValueForMember(this.type));
             serializer.setProperty("time", this.time);
             serializer.setProperty("dataDescriptor", this.dataDescriptor);
             if(this.referrerId) {
@@ -145,7 +191,7 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
 
             value = deserializer.getProperty("type");
             if (value !== void 0) {
-                this.type = value;
+                this.type = DataOperationType.memberWithIntValue(value);
             }
 
             value = deserializer.getProperty("time");
@@ -358,13 +404,24 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     },
 
     /**
-     * The authorization object representing an authenticated user, like a JWToken.
+     * The userIdentity object representing the authenticated user.
      *
      * @type {Object}
      */
-    authorization: {
+    userIdentity: {
         value: undefined
     },
+
+    /**
+     * a message about the operation meant for the user.
+     *
+     * @type {Object}
+     */
+    userMessage: {
+        value: undefined
+    },
+
+
 
     /**
      * Deprecate?  Make programatic, so that users doesn't have to worry about it.
@@ -573,52 +630,69 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
 
         */
         value: {
-            Create: DataOperationType.Create,
-            CreateFailed: DataOperationType.CreateFailed,
-            CreateCompleted: DataOperationType.CreateCompleted,
-            CreateCancelled: DataOperationType.CreateCancelled,
+            Create: DataOperationType.create,
+            CreateFailed: DataOperationType.createfailed,
+            CreateCompleted: DataOperationType.createcompleted,
+            CreateCancelled: DataOperationType.createcancelled,
             //Additional
-            Copy: DataOperationType.Copy,
-            CopyFailed: DataOperationType.CopyFailed,
-            CopyCompleted: DataOperationType.CopyCompleted,
+            Copy: DataOperationType.copy,
+            CopyFailed: DataOperationType.copyfailed,
+            CopyCompleted: DataOperationType.copycompleted,
             /* Read is the first operation that mnodels a query */
-            Read: DataOperationType.Read,
+            Read: DataOperationType.read,
 
             /* ReadUpdated is pushed by server when a query's result changes due to data changes from others */
-            ReadUpdated: DataOperationType.ReadUpdated,
+            ReadUpdated: DataOperationType.readupdated,
 
             /* ReadProgress / ReadUpdate / ReadSeek is used to instruct server that more data is required for a "live" read / query
                 Need a better name, and a symetric? Or is ReadUpdated enough if it referes to previous operation
             */
-            ReadProgress: DataOperationType.ReadProgress, //ReadUpdate
-            ReadUpdate: DataOperationType.ReadUpdate, //ReadUpdate
+            ReadProgress: DataOperationType.readprogress, //ReadUpdate
+            ReadUpdate: DataOperationType.readupdate, //ReadUpdate
 
             /* ReadCancel is the operation that instructs baclkend that client isn't interested by a read operastion anymore */
-            ReadCancel: DataOperationType.ReadCancel,
+            ReadCancel: DataOperationType.readcancel,
 
             /* ReadCanceled is the operation that instructs the client that a read operation is canceled */
-            ReadCanceled: DataOperationType.ReadCanceled,
+            ReadCanceled: DataOperationType.readcanceled,
 
              /* ReadFailed is the operation that instructs the client that a read operation has failed canceled */
-            ReadFailed: DataOperationType.ReadFailed,
+            ReadFailed: DataOperationType.readfailed,
             /* ReadCompleted is the operation that instructs the client that a read operation has returned all available data */
-            ReadCompleted: DataOperationType.ReadCompleted,
-            Update: DataOperationType.Update,
-            UpdateCompleted: DataOperationType.UpdateCompleted,
-            UpdateFailed: DataOperationType.UpdateFailed,
-            UpdateCancel: DataOperationType.UpdateCancel,
-            UpdateCanceled: DataOperationType.UpdateCanceled,
-            Delete: DataOperationType.Delete,
-            DeleteCompleted: DataOperationType.DeleteCompleted,
-            DeleteFailed: DataOperationType.DeleteFailed,
+            ReadCompleted: DataOperationType.readcompleted,
+            Update: DataOperationType.update,
+            UpdateCompleted: DataOperationType.updatecompleted,
+            UpdateFailed: DataOperationType.updatefailed,
+            UpdateCancel: DataOperationType.updatecancel,
+            UpdateCanceled: DataOperationType.updatecanceled,
+            Delete: DataOperationType.delete,
+            DeleteCompleted: DataOperationType.deletecompleted,
+            DeleteFailed: DataOperationType.deletefailed,
             /* Lock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
-            Lock: DataOperationType.Lock,
-            LockCompleted: DataOperationType.LockCompleted,
-            LockFailed: DataOperationType.LockFailed,
+            Lock: DataOperationType.lock,
+            LockCompleted: DataOperationType.lockcompleted,
+            LockFailed: DataOperationType.lockfailed,
             /* RemmoteProcedureCall models the ability to invoke code logic on the server-side, being a DB StoredProcedure, or an method/function in a service */
-            RemoteProcedureCall: DataOperationType.RemoteProcedureCall,
-            RemoteProcedureCallCompleted: DataOperationType.RemoteProcedureCallCompleted,
-            RemoteProcedureCallFailed: DataOperationType.RemoteProcedureCallFailed
+            RemoteProcedureCall: DataOperationType.remoteinvocation,
+            RemoteProcedureCallCompleted: DataOperationType.remoteinvocationcompleted,
+            RemoteProcedureCallFailed: DataOperationType.remoteinvocationfailed,
+            RemoteInvocation: DataOperationType.remoteinvocation,
+            RemoteInvocationCompleted: DataOperationType.remoteinvocationcompleted,
+            RemoteInvocationFailed: DataOperationType.remoteinvocationfailed,
+            UserAuthentication: DataOperationType.userauthentication,
+            UserAuthenticationUpdate: DataOperationType.userauthenticationupdate,
+            UserAuthenticationCompleted: DataOperationType.userauthenticationcompleted,
+            UserAuthenticationFailed: DataOperationType.userauthenticationfailed,
+            UserAuthenticationTimedout: DataOperationType.userauthenticationtimedout,
+            UserInput: DataOperationType.userinput,
+            UserInputCompleted: DataOperationType.userinputcompleted,
+            UserInputFailed: DataOperationType.userinputfailed,
+            UserInputCanceled: DataOperationType.userinputcanceled,
+            UserInputTimedOut: DataOperationType.userinputtimedout,
+            Validate: DataOperationType.validate,
+            ValidateFailed: DataOperationType.validatefailed,
+            validateCompleted: DataOperationType.validatecompleted,
+            validateCancelled: DataOperationType.validatecancelled,
 
             /* Batch models the ability to group multiple operation. If a referrer is provided
                 to a BeginTransaction operation, then the batch will be executed within that transaction  */

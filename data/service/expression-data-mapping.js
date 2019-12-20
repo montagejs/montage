@@ -9,7 +9,8 @@ var DataMapping = require("./data-mapping").DataMapping,
     Promise = require("core/promise").Promise,
     Scope = require("frb/scope"),
     Set = require("collections/set"),
-    deprecate = require("core/deprecate");
+    deprecate = require("core/deprecate"),
+    RawPropertyValueToObjectConverter = require("data/converter/raw-property-value-to-object-converter").RawPropertyValueToObjectConverter;
 
 var Montage = require("montage").Montage;
 
@@ -350,7 +351,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
                 if (this.requisitePropertyNames.size) {
                     while ((propertyName = iterator.next().value)) {
-                        objectRule = objectMappingRules.get(propertyName),
+                        objectRule = objectMappingRules.get(propertyName);
                         rule = rawDataMappingRules.get(objectRule.sourcePath);
 
                         if(rule) {
@@ -456,44 +457,191 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      * @argument {Object} object - An object whose properties must be set or
      *                             modified to represent the raw data.
      */
-    mapRawDataToObject: {
-        value: function (data, object, context, isUpdateToExistingObject) {
-            var iterator = this.requisitePropertyNames.values(),
-                promises, propertyName, result;
 
-            if(isUpdateToExistingObject) {
-                var dataKeys = Object.keys(data),
-                    i, countI = dataKeys.length,
-                    rawDataMappingRules = this.rawDataMappingRules,
-                    objectMappingRules = this.objectMappingRules,
+     /*
+        if we make this.requisitePropertyNames a default prefetchExpression
+        for a query, and pass an array to mapRawDataToObject, then we should
+        be able to unify both use cases
 
-                    iKey, iRule;
-                for(i=0;i<countI;i++) {
-                    iKey = dataKeys[i];
-                    iRule = this.rawDataMappingRules.get(iKey);
-                    if(iRule) {
-                        result = this.mapRawDataToObjectProperty(data, object, iRule.targetPath, context);
-                        if (this._isAsync(result)) {
-                            (promises || (promises = [])).push(result);
-                        }
+        1.If we have Cache Object.keys(rawData) -> the rules that matched
+            loop on that, else build the cache:
+
+            1. Loop on object rules:
+                forEach object side rule (they are property names so far):
+
+                    if(rule has an raw-property-value-to-object-converter && not in prerequiste && not in object/prefetchExpression) {
+                        skip;
+                    } else {
+                        get requirements (list of raw data properties)
+                        assess if Objec.keys(rawData) contains all of them.
+                            if(yes, that rule can and need to be mapped)
+                        //Cache Object.keys(rawData) -> the rules that matched
+
                     }
                 }
+     */
 
-            }
-            else {
-                if (this.requisitePropertyNames.size) {
-                    while ((propertyName = iterator.next().value)) {
-                        result = this.mapRawDataToObjectProperty(data, object, propertyName, context);
-                        if (this._isAsync(result)) {
-                            (promises || (promises = [])).push(result);
+    // _mappingRulesByRawDataProperty: {
+    //     value: undefined
+    // },
+
+    /**
+     * gather all ObjectMapping rules that require rawDataProperty
+     *
+     * @method
+     * @argument {Set} rawDataProperties - An set of RawData properties. Set vs Array as the order could depend on server
+     *                                      but we need an order agnostic data struture.
+     * @returns {DataStream|Promise|?}   - Either the value or a "promise" for it
+     *
+     */
+    // _buildMappingRulesForRawDataProperty: {
+    //     value: function (rawDataProperty) {
+    //         var objectMappingRules = this.objectMappingRules,
+    //             rulesIterator = objectMappingRules.values(),
+    //             allMappingRules = new Set;
+    //             aRule, aRulePropertyRequirements;
+
+    //         while ((aRule = iterator.next().value)) {
+    //             aRulePropertyRequirements = aRule.requirements;
+    //             if()
+
+    //             allMappingRules.add(aRule);
+    //         }
+    //         this._mappingRulesByRawDataProperty.set(rawDataProperty,allMappingRules);
+
+    //         ;
+
+    //     }
+    // },
+
+    // mappingRulesForRawDataProperty: {
+    //     value: function (rawDataProperty) {
+    //         return this._mappingRulesByRawDataProperty.get(rawDataProperty) ||
+    //                 this._buildMappingRulesForRawDataProperty(rawDataProperty);
+    //     }
+    // },
+
+    //Cache the union of all the object rules relevant to a set of RawDataKeys
+    __mappingRulesByRawDataProperties: {
+        value: undefined
+    },
+
+    _mappingRulesByRawDataProperties: {
+        get: function() {
+            return this.__mappingRulesByRawDataProperties || (this.__mappingRulesByRawDataProperties = new Map());
+        }
+    },
+
+    _buildMappingRulesForRawDataProperties: {
+        value: function (rawDataProperties) {
+            var objectMappingRules = this.objectMappingRules,
+                rawDataPropertiesSet = new Set(rawDataProperties),
+                rulesIterator = objectMappingRules.values(),
+                matchingRules = new Set(),
+                aRule, aRulePropertyRequirements, iMatch,
+                i, countI;
+
+            while ((aRule = rulesIterator.next().value)) {
+                aRulePropertyRequirements = aRule.requirements;
+                if(aRulePropertyRequirements) {
+                    iMatch = 0;
+                    for(i=0, countI = aRulePropertyRequirements.length;i<countI;i++) {
+                        if (rawDataPropertiesSet.has(aRulePropertyRequirements[i])) {
+                            iMatch++;
                         }
                     }
+                    if(iMatch === countI) {
+                        matchingRules.add(aRule);
+                    }
+                }
+            }
+            this._mappingRulesByRawDataProperties.set(rawDataProperties,matchingRules);
+            return matchingRules;
+        }
+    },
+
+    /**
+     * Returns all ObjectMapping rules that are can be mapped if one have these set of raw property keys
+     *
+     * @method
+     * @argument {Set} rawDataProperties - An set of RawData properties. Set vs Array as the order could depend on server
+     *                                      but we need an order agnostic data struture.
+     * @returns {DataStream|Promise|?}   - Either the value or a "promise" for it
+     *
+     */
+    mappingRulesForRawDataProperties: {
+        value: function (rawDataProperties) {
+            return this._mappingRulesByRawDataProperties.get(rawDataProperties) ||
+                        this._buildMappingRulesForRawDataProperties(rawDataProperties);
+        }
+    },
+
+    mapRawDataToObject: {
+        value: function (data, object, context, prefetchExpressions) {
+            var promises, result,
+                dataMatchingRules = this.mappingRulesForRawDataProperties(Object.keys(data)),
+                ruleIterator = dataMatchingRules.values(),
+                requisitePropertyNames = this.requisitePropertyNames,
+                aRule;
+
+            while ((aRule = ruleIterator.next().value)) {
+                if((aRule.converter && (aRule.converter instanceof RawPropertyValueToObjectConverter)) &&
+                    !requisitePropertyNames.has(aRule.sourcePath) &&
+                    (prefetchExpressions && prefetchExpressions.indexOf(aRule.targetPath) === -1)) {
+                        continue;
+                }
+
+                result = this.mapRawDataToObjectProperty(data, object, aRule.targetPath, context);
+                if (this._isAsync(result)) {
+                    (promises || (promises = [])).push(result);
                 }
             }
 
             return promises && promises.length && Promise.all(promises);
         }
     },
+
+
+    // mapRawDataToObject: {
+    //     value: function (data, object, context, isUpdateToExistingObject) {
+    //         var iterator = this.requisitePropertyNames.values(),
+    //             promises, propertyName, result;
+
+    //         if(isUpdateToExistingObject) {
+    //             var dataKeys = Object.keys(data),
+    //                 i, countI = dataKeys.length,
+    //                 rawDataMappingRules = this.rawDataMappingRules,
+    //                 objectMappingRules = this.objectMappingRules,
+
+    //                 iKey, iRule;
+    //             for(i=0;i<countI;i++) {
+
+
+    //                 iKey = dataKeys[i];
+    //                 iRule = this.rawDataMappingRules.get(iKey);
+    //                 if(iRule) {
+    //                     result = this.mapRawDataToObjectProperty(data, object, iRule.targetPath, context);
+    //                     if (this._isAsync(result)) {
+    //                         (promises || (promises = [])).push(result);
+    //                     }
+    //                 }
+    //             }
+
+    //         }
+    //         else {
+    //             if (this.requisitePropertyNames.size) {
+    //                 while ((propertyName = iterator.next().value)) {
+    //                     result = this.mapRawDataToObjectProperty(data, object, propertyName, context);
+    //                     if (this._isAsync(result)) {
+    //                         (promises || (promises = [])).push(result);
+    //                     }
+    //                 }
+    //             }
+    //         }
+
+    //         return promises && promises.length && Promise.all(promises);
+    //     }
+    // },
 
     /**
      * Maps the value of a single raw data property onto the model object
@@ -549,7 +697,10 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 data;
 
             return rule.evaluate(scope).then(function (result) {
-                if(propertyDescriptor.cardinality === 1 && result instanceof Array &&  result.length === 1) {
+                if(propertyDescriptor.cardinality === 1 &&
+                    result instanceof Array &&
+                    result.length === 1
+                ) {
                     data = result[0];
                 }
                 else {
