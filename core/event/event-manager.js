@@ -15,7 +15,7 @@
  */
 
 var Montage = require("../core").Montage,
-    MutableEvent = require("./mutable-event").MutableEvent, 
+    MutableEvent = require("./mutable-event").MutableEvent,
     Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
     Deserializer = require("../serialization/deserializer/montage-deserializer").MontageDeserializer,
     Map = require("collections/map"),
@@ -292,6 +292,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             this._elementEventHandlerByElement = new WeakMap();
             this.environment = currentEnvironment;
             this._trackingTouchTimeoutIDs = new Map();
+            this._functionType = "function";
             return this;
         }
     },
@@ -361,6 +362,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             focusin: {bubbles: true, cancelable: false}, //DOM3
             focusout: {bubbles: true, cancelable: false}, //DOM3
             input: {bubbles: true, cancelable: false}, // INPUT
+            invalid: {bubbles: false, cancelable: true}, // INPUT
             keydown: {bubbles: true, cancelable: false}, //DOM3
             keypress: {bubbles: true, cancelable: false}, //DOM3
             keyup: {bubbles: true, cancelable: false}, //DOM3
@@ -376,6 +378,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             mouseover: {bubbles: true, cancelable: true}, //DOM3
             mouseup: {bubbles: true, cancelable: true}, //DOM3
             mousewheel: {bubbles: true},
+            offline: {bubbles: false, cancelable: false}, //DOM3
+            online: {bubbles: false, cancelable: false}, //DOM3
+            open: {bubbles: false, cancelable: false}, //DOM3
             orientationchange: {bubbles: false},
             paste: {bubbles: true, cancelable: true}, //ClipboardEvent
             progress: {bubbles: false, cancelable: false}, //ProgressEvent
@@ -392,6 +397,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             select: {bubbles: true, cancelable: false}, //DOM2, DOM3
 
             submit: {bubbles: true, cancelable: true}, //DOM2
+            timeout: {bubbles: false, cancelable: false}, //DOM2
             touchcancel: {bubbles: true, cancelable: false}, //TouchEvent
             touchend: {bubbles: true, cancelable: true}, //TouchEvent
             touchmove: {bubbles: true, cancelable: true}, //TouchEvent
@@ -554,7 +560,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             if (aWindow.EventTarget) {
                 aWindow.EventTarget.prototype.nativeAddEventListener = aWindow.EventTarget.prototype.addEventListener;
             }
-            
+
             aWindow.Element.prototype.nativeAddEventListener = aWindow.Element.prototype.addEventListener;
             Object.defineProperty(aWindow, "nativeAddEventListener", {
                 configurable: true,
@@ -759,7 +765,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             if (aWindow.EventTarget) {
                 aWindow.EventTarget.prototype.removeEventListener = aWindow.EventTarget.prototype.nativeRemoveEventListener;
             }
-            
+
             aWindow.Element.prototype.removeEventListener = aWindow.Element.prototype.nativeRemoveEventListener;
             Object.defineProperty(aWindow, "removeEventListener", {
                 configurable: true,
@@ -801,7 +807,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             if (aWindow.EventTarget) {
                 delete aWindow.EventTarget.prototype.nativeAddEventListener;
             }
-            
+
             delete aWindow.Element.prototype.nativeAddEventListener;
             delete aWindow.nativeAddEventListener;
 
@@ -1277,10 +1283,18 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 }
                 this._observedTarget_byEventType_[eventType].set(listenerTarget,this);
 
-                var isPassiveEventType = this.isPassiveEventType(eventType),
-                    eventOpts = isPassiveEventType ? {
-                        passive: true
-                    } : true;
+                var eventDefinitions = this.eventDefinitions[eventType],
+                    eventOpts;
+
+                if(eventDefinitions) {
+                    console.debug("Event type "+eventType+" missed definition");
+                }
+
+                eventOpts = this.isPassiveEventType(eventType)
+                    ? {passive: true}
+                    : eventDefinitions
+                        ? eventDefinitions.bubbles
+                        : true; //by default
 
                 listenerTarget.nativeAddEventListener(eventType, this, eventOpts);
             }
@@ -1778,7 +1792,10 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             storeEvent: function (mutableEvent) {
                 var isBrowserSupportPointerEvents = currentEnvironment.isBrowserSupportPointerEvents,
                     event = mutableEvent instanceof MutableEvent ? mutableEvent._event : mutableEvent,
-                    pointerType = event.pointerType;
+                    pointerType = event
+                                    ? event.pointerType
+                                    : null;
+                if(!pointerType) return;
 
                 if ((isBrowserSupportPointerEvents &&
                     (pointerType === "mouse" || (window.MSPointerEvent && pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE))) ||
@@ -2694,19 +2711,29 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
      */
     _invokeTargetListenerForEvent: {
         value: function _invokeTargetListenerForEvent(iTarget, jListener, mutableEvent, identifierSpecificPhaseMethodName, phaseMethodName) {
-            var functionType = "function";
-            if (typeof jListener === functionType) {
-                jListener.call(iTarget, mutableEvent);
-            }
-            else if (identifierSpecificPhaseMethodName && typeof jListener[identifierSpecificPhaseMethodName] === functionType) {
-                jListener[identifierSpecificPhaseMethodName](mutableEvent);
-            }
-            else if (typeof jListener[phaseMethodName] === functionType) {
-                jListener[phaseMethodName](mutableEvent);
-            }
-            else if (typeof jListener.handleEvent === functionType) {
-                jListener.handleEvent(mutableEvent);
-            }
+            // var functionType = "function";
+            // if (typeof jListener === functionType) {
+            //     jListener.call(iTarget, mutableEvent);
+            // }
+            // else if (identifierSpecificPhaseMethodName && typeof jListener[identifierSpecificPhaseMethodName] === functionType) {
+            //     jListener[identifierSpecificPhaseMethodName](mutableEvent);
+            // }
+            // else if (typeof jListener[phaseMethodName] === functionType) {
+            //     jListener[phaseMethodName](mutableEvent);
+            // }
+            // else if (typeof jListener.handleEvent === functionType) {
+            //     jListener.handleEvent(mutableEvent);
+            // }
+
+            (identifierSpecificPhaseMethodName && typeof jListener[identifierSpecificPhaseMethodName] === this._functionType)
+            ? jListener[identifierSpecificPhaseMethodName](mutableEvent)
+            : (typeof jListener[phaseMethodName] === this._functionType)
+                ? jListener[phaseMethodName](mutableEvent)
+                : (typeof jListener.handleEvent === this._functionType)
+                    ? jListener.handleEvent(mutableEvent)
+                    : (typeof jListener === this._functionType)
+                        ? jListener.call(iTarget, mutableEvent)
+                        : void 0;
 
         }
     },
