@@ -1,4 +1,5 @@
 var Montage = require("../core").Montage,
+    Target = require("core/target").Target,
     DerivedDescriptor = require("./derived-descriptor").DerivedDescriptor,
     EventDescriptor = require("./event-descriptor").EventDescriptor,
     Map = require("collections/map"),
@@ -17,9 +18,9 @@ var Defaults = {
 
 /**
  * @class ObjectDescriptor
- * @extends Montage
+ * @extends Target
  */
-var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends ObjectDescriptor.prototype # */ {
+var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends ObjectDescriptor.prototype # */ {
 
     FileExtension: {
         value: ".mjson"
@@ -252,7 +253,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                 );
                 */
             } else {
-                var parentInstancePrototype = (this.parent ? this.parent.newInstancePrototype() : Montage );
+                var parentInstancePrototype = (this.parent ? this.parent.newInstancePrototype() : Target );
                 var newConstructor = parentInstancePrototype.specialize({
                     // Token class
                     init: {
