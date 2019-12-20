@@ -32,6 +32,38 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
         }
     },
 
+    __membersByValue: {
+        value: null
+    },
+
+    _membersByValue: {
+        get: function () {
+            return this.__membersByValue || (this.__membersByValue = []);
+        }
+    },
+
+    memberWithIntValue: {
+        value: function(intValue) {
+            return this[this._membersByValue[intValue]];
+        }
+    },
+
+    __membersIntValue: {
+        value: null
+    },
+
+    _membersIntValue: {
+        get: function () {
+            return this.__membersIntValue || (this.__membersIntValue = new Map());
+        }
+    },
+
+    intValueForMember: {
+        value: function(member) {
+            return this._membersIntValue.get(member);
+        }
+    },
+
     /**
      * @function
      * @returns itself
@@ -74,7 +106,7 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
                         return this;
                     }
 
-                    this._addMembers(members, values);
+                    this._addMembers(members, values, this._membersByValue, this._membersIntValue);
 
                 } else {
                     throw new Error("the number of members must equal to the number of values");
@@ -92,14 +124,18 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
      * @param value
      */
     addMember : {
-        value: function (member, value) {
+        value: function (member, value, /* private */ _membersByValue, _membersIntValue) {
             if (typeof this[member] === "undefined") {
+                var intValue = this._value++;
                 Object.defineProperty(this, member, {
                     writable: false,
                     configurable: false,
                     enumerable: true,
-                    value: value !== void 0 && value !== null ? value : this._value++
+                    value: value !== void 0 && value !== null ? value : intValue
                 });
+
+                (_membersByValue || this._membersByValue)[intValue] = member;
+                (_membersIntValue || this._membersIntValue).set(member, intValue);
             }
         }
     },
@@ -131,7 +167,7 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
 
     _addMembers: {
         value: function (members, values) {
-            var member, i, value;
+            var member, i, value, membersByValues = this.membersByValues;
 
             for (i = 0; typeof (member = members[i]) !== "undefined"; i++) {
                 if (member !== null) {
@@ -143,7 +179,7 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
                         }
                     }
 
-                    this.addMember(member, value);
+                    this.addMember(member, value, this._membersByValue, this._membersIntValue);
                 } else {
                     logger.error(this, "Member at index " + i + " is null");
                 }
