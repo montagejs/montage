@@ -211,10 +211,10 @@
             "helpKey": ""
         }
     },
-    "property_serializable": {
+    "property_isSerializable": {
         "prototype": "core/meta/property-descriptor",
         "values": {
-            "name": "serializable",
+            "name": "isSerializable",
             "objectDescriptor": {
                 "@": "root"
             },
@@ -225,14 +225,14 @@
             "valueType": "boolean",
             "enumValues": [],
             "helpKey": "",
-            "serializable": true
+            "isSerializable": true
         }
     },
 
-    "property_localizable": {
+    "property_isLocalizable": {
         "prototype": "core/meta/property-descriptor",
         "values": {
-            "name": "localizable",
+            "name": "isLocalizable",
             "objectDescriptor": {
                 "@": "root"
             },
@@ -243,7 +243,7 @@
             "valueType": "boolean",
             "enumValues": [],
             "helpKey": "",
-            "serializable": true
+            "isSerializable": true
         }
     },
 
@@ -261,7 +261,7 @@
             "valueType": "object",
             "enumValues": [],
             "helpKey": "",
-            "serializable": true
+            "isSerializable": true
         }
     },
 
@@ -308,6 +308,12 @@
                     "@": "property_enumValues"
                 },
                 {
+                    "@": "property_isSerializable"
+                },
+                {
+                    "@": "property_isLocalizable"
+                },
+                {
                     "@": "property_helpKey"
                 }
             ],
@@ -350,6 +356,12 @@
                         "@": "property_enumValues"
                     },
                     {
+                        "@": "property_isSerializable"
+                    },
+                    {
+                        "@": "property_isLocalizable"
+                    },
+                   {
                         "@": "property_helpKey"
                     }
                 ]

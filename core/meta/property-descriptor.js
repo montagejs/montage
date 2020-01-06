@@ -19,7 +19,7 @@ var Defaults = {
     enumValues: [],
     defaultValue: void 0,
     helpKey: "",
-    localizable: false,
+    isLocalizable: false,
     isSearcheable: false,
     isOrdered: false,
     hasUniqueValues: false,
@@ -140,7 +140,8 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._setPropertyWithDefaults(serializer, "helpKey", this.helpKey);
             this._setPropertyWithDefaults(serializer, "definition", this.definition);
             this._setPropertyWithDefaults(serializer, "inversePropertyName", this.inversePropertyName);
-            this._setPropertyWithDefaults(serializer, "localizable", this.localizable);
+            this._setPropertyWithDefaults(serializer, "isLocalizable", this.isLocalizable);
+            this._setPropertyWithDefaults(serializer, "isSerializable", this.isSerializable);
             this._setPropertyWithDefaults(serializer, "isSearcheable", this.isSearcheable);
             this._setPropertyWithDefaults(serializer, "isOrdered", this.isOrdered);
             this._setPropertyWithDefaults(serializer, "hasUniqueValues", this.hasUniqueValues);
@@ -179,7 +180,8 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._overridePropertyWithDefaults(deserializer, "helpKey");
             this._overridePropertyWithDefaults(deserializer, "definition");
             this._overridePropertyWithDefaults(deserializer, "inversePropertyName");
-            this._overridePropertyWithDefaults(deserializer, "localizable");
+            this._overridePropertyWithDefaults(deserializer, "isLocalizable");
+            this._overridePropertyWithDefaults(deserializer, "isSerializable");
             this._overridePropertyWithDefaults(deserializer, "isSearcheable");
             this._overridePropertyWithDefaults(deserializer, "isOrdered");
             this._overridePropertyWithDefaults(deserializer, "hasUniqueValues");
@@ -514,7 +516,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * possible values are: "reference" | "value" | "auto" | true | false,
      * @default false
      */
-    serializable: {
+    isSerializable: {
         value: true
     },
 
@@ -525,7 +527,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      *
      * @default false
      */
-    localizable: {
+    isLocalizable: {
         value: false
     },
 
