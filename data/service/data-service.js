@@ -132,7 +132,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
     },
 
     deserializedFromSerialization: {
-        value: function () {
+        value: function (label) {
             if(Array.isArray(this._childServices)) {
                 var childServices = this._childServices;
                 this._childServices = [];
