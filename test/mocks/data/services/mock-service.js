@@ -4,7 +4,7 @@ var Montage = require("montage").Montage,
     Settings = require('../models/settings').Settings,
     Check = require('../models/check').Check,
     Customer = require('../models/customer').Customer,
-    Department = require('../models/department').Department;    
+    Department = require('../models/department').Department;
 
 /**
  * @class Employee
@@ -104,7 +104,98 @@ exports.MockService = Montage.specialize({
                     'Johnny',
                     'Bailey',
                     'Management'
+                ),
+                new Employee(
+                    'Annette',
+                    'Alarcon',
+                    'Sales'
+                ),
+                new Employee(
+                    'Fredricka',
+                    'Fuss',
+                    'Accounting'
+                ),
+                new Employee(
+                    'Moriah',
+                    'Mcwhorter',
+                    'Logistics'
+                ),
+                new Employee(
+                    'Emanuel',
+                    'Sullivan',
+                    'Management'
+                ),
+                new Employee(
+                    'Gretchen',
+                    'Chapman',
+                    'Accounting'
+                ),
+                new Employee(
+                    'Courtney',
+                    'Simon',
+                    'Logistics'
+                ),
+                new Employee(
+                    'Brett',
+                    'Lucas',
+                    'Management'
+                ),
+                new Employee(
+                    'Mamie',
+                    'Henderson',
+                    'Sales'
+                ),
+                new Employee(
+                    'Shaun',
+                    'Davidson',
+                    'Accounting'
+                ),
+                new Employee(
+                    'Adam',
+                    'Owens',
+                    'Logistics'
+                ),
+                new Employee(
+                    'Jeffrey',
+                    'Cross',
+                    'Management'
+                ),
+                new Employee(
+                    'Flora',
+                    'Adkins',
+                    'Accounting'
+                ),
+                new Employee(
+                    'Rosemary',
+                    'Adams',
+                    'Logistics'
+                ),
+                new Employee(
+                    'Henrietta',
+                    'Silva',
+                    'Management'
+                ),
+                new Employee(
+                    'Alvin',
+                    'Jennings',
+                    'Management'
+                ),
+                new Employee(
+                    'Casey',
+                    'Norris',
+                    'Accounting'
+                ),
+                new Employee(
+                    'Santiago',
+                    'Peters',
+                    'Logistics'
+                ),
+                new Employee(
+                    'Johnny',
+                    'Bailey',
+                    'Management'
                 )
+
             ];
         }
     },
