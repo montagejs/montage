@@ -54,8 +54,22 @@ DataStream = exports.DataStream = DataProvider.specialize(/** @lends DataStream.
      *
      * @type {DataQuery}
      */
-    query: {
+    _query: {
         value: undefined
+    },
+    query: {
+        get: function () {
+            return this._query;
+        },
+        set: function (value) {
+            this._query = value;
+
+            //This will enable a better undertanding of what type of data is coming
+            //for objects using UserInterfaceDescriptors like the CascadingList
+            if(value && value.type) {
+                this.data.objectDescriptor = value.type;
+            }
+        }
     },
 
     /**
@@ -97,6 +111,9 @@ DataStream = exports.DataStream = DataProvider.specialize(/** @lends DataStream.
      * [DataProvider]{@link DataProvider} superclass. Calling this method has
      * no effect as data will come in the order in which it is added to the
      * stream and this order cannot be changed.
+     *
+     * TODO: this method should be used to fulfill undefined spots in an array
+     * or an iterative batch.
      *
      * @method
      * @argument {int} start  - See [superclass]{@link DataProvider#requestData}.
@@ -275,6 +292,7 @@ DataStream = exports.DataStream = DataProvider.specialize(/** @lends DataStream.
                 //and set its value
                 data = this._compiledDataExpression(new Scope(objects));
             }
+
 
             if (data && Array.isArray(data)) {
                 this.data.push.apply(this.data, data);
