@@ -747,7 +747,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     dragManager: {
         get: function () {
-            return _defaultDragManager || 
+            return _defaultDragManager ||
             ((_defaultDragManager = new DragManager()).initWithComponent(this.rootComponent));
         }
     },
@@ -1217,7 +1217,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 this.unregisterDroppable();
             }
 
-            if (this._inDocument && typeof this.exitDocument === "function") {                
+            if (this._inDocument && typeof this.exitDocument === "function") {
                 this.exitDocument();
                 this._inDocument = false;
             }
@@ -1901,7 +1901,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     },
 
     deserializedFromSerialization: {
-        value: function () {
+        value: function (label) {
             this.attachToParentComponent();
         }
     },
@@ -2384,7 +2384,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         for (i = 0; (component = components[i]); i++) {
                             component.attachToParentComponent();
                         }
-                    }    
+                    }
                 }
             }
         }
@@ -3389,7 +3389,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                             var _name = "_"+attributeName;
                             if ((this[_name] === null) && descriptor !== null && "value" in descriptor) {
                                 this[_name] = descriptor.value;
-                            }   
+                            }
                         }
                     }
                 }
@@ -3586,39 +3586,62 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 false
             );
 
-            if (typeof object === "object" &&
-                (constructor = object.constructor) &&
-                constructor.objectDescriptorModuleId
-            ) {
-                objectDescriptorModuleId = constructor.objectDescriptorModuleId;
+
+            objectDescriptor = object.objectDescriptor;
+            if(objectDescriptor) {
+                if(!Promise.is(objectDescriptor)) {
+                    promise = Promise.resolve(objectDescriptor);
+                }
+                else {
+                    promise = objectDescriptor;
+                    objectDescriptor = undefined;
+                }
             }
 
-            objectDescriptorModuleIdCandidate = this.callDelegateMethod(
-                "componentWillUseObjectDescriptorModuleIdForObject",
-                this,
-                objectDescriptorModuleId,
-                object
-            );
+            if(!promise && this.application.mainService) {
+                objectDescriptor = this.application.mainService.objectDescriptorForObject(object);
 
-            if (objectDescriptorModuleIdCandidate) {
-                infoDelegate = Montage.getInfoForObject(this.delegate);
-                objectDescriptorModuleId = objectDescriptorModuleIdCandidate;
+                if(objectDescriptor) {
+                    promise = Promise.resolve(objectDescriptor);
+                }
             }
 
-            if (objectDescriptorModuleId) {
-                if (objectDescriptorModuleIdCandidate) {
-                    objectDescriptor = getObjectDescriptorWithModuleId(
-                        objectDescriptorModuleId,
-                        infoDelegate ? infoDelegate.require : require
-                    );
-                } else {
-                    objectDescriptor = constructor.objectDescriptor;
+            if(!promise) {
+                if (typeof object === "object" &&
+                    (constructor = object.constructor) &&
+                    constructor.objectDescriptorModuleId
+                ) {
+                    objectDescriptorModuleId = constructor.objectDescriptorModuleId;
                 }
 
-                promise = objectDescriptor;
-            } else {
-                promise = Promise.resolve();
+                objectDescriptorModuleIdCandidate = this.callDelegateMethod(
+                    "componentWillUseObjectDescriptorModuleIdForObject",
+                    this,
+                    objectDescriptorModuleId,
+                    object
+                );
+
+                if (objectDescriptorModuleIdCandidate) {
+                    infoDelegate = Montage.getInfoForObject(this.delegate);
+                    objectDescriptorModuleId = objectDescriptorModuleIdCandidate;
+                }
+
+                if (objectDescriptorModuleId) {
+                    if (objectDescriptorModuleIdCandidate) {
+                        objectDescriptor = getObjectDescriptorWithModuleId(
+                            objectDescriptorModuleId,
+                            infoDelegate ? infoDelegate.require : require
+                        );
+                    } else {
+                        objectDescriptor = constructor.objectDescriptor;
+                    }
+
+                    promise = objectDescriptor;
+                } else {
+                    promise = Promise.resolve(objectDescriptor);
+                }
             }
+
 
             promise = promise.then(function (objectDescriptor) {
                 var moduleInfo = Montage.getInfoForObject(self),
@@ -3626,7 +3649,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     moduleId = packageName + "/" + moduleInfo.moduleId,
                     userInterfaceDescriptorModuleId,
                     userInterfaceDescriptorModuleIdCandidate;
-                
+
                 if (objectDescriptor && objectDescriptor.userInterfaceDescriptorModules) {
                     userInterfaceDescriptorModuleId =
                         objectDescriptor.userInterfaceDescriptorModules[moduleId];
@@ -3734,7 +3757,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         if (setter) {
                             setter.call(this, value);
                         } else {
-                            this[attributeName] = value;                            
+                            this[attributeName] = value;
                         }
 
                         this._elementAttributeValues[name] = value;
@@ -4055,7 +4078,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      * @function
      */
     requestAnimationFrame: {
-        value: (global.requestAnimationFrame || global.webkitRequestAnimationFrame || 
+        value: (global.requestAnimationFrame || global.webkitRequestAnimationFrame ||
                     global.mozRequestAnimationFrame ||  global.msRequestAnimationFrame),
         enumerable: false
     },
@@ -4065,7 +4088,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      * @function
      */
     cancelAnimationFrame: {
-        value: (global.cancelAnimationFrame ||  global.webkitCancelAnimationFrame || 
+        value: (global.cancelAnimationFrame ||  global.webkitCancelAnimationFrame ||
                     global.mozCancelAnimationFrame || global.msCancelAnimationFrame),
         enumerable: false
     },
@@ -4091,7 +4114,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         // Written by John Resig. Used under the Creative Commons Attribution 2.5 License.
         // http://ejohn.org/projects/javascript-diff-algorithm/
         value: function ( o, n ) {
-            var ns = {}, 
+            var ns = {},
                 os = {};
 
             function isNullOrUndefined(o) {
@@ -4100,9 +4123,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
             for (var i = 0; i < n.length; i++ ) {
                 if (isNullOrUndefined(ns[n[i]])) {
-                    ns[n[i]] = { 
-                        rows: [], 
-                        o: null 
+                    ns[n[i]] = {
+                        rows: [],
+                        o: null
                     };
                 }
                 ns[n[i]].rows.push( i );
@@ -4110,9 +4133,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
             for (i = 0; i < o.length; i++ ) {
                 if (isNullOrUndefined(os[o[i]])) {
-                    os[o[i]] = { 
-                        rows: [], 
-                        n: null 
+                    os[o[i]] = {
+                        rows: [],
+                        n: null
                     };
                 }
                 os[o[i]].rows.push(i);
@@ -4120,17 +4143,17 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
             for (i in ns ) {
                 if (
-                    ns[i].rows.length === 1 && 
-                        !isNullOrUndefined(os[i]) && 
+                    ns[i].rows.length === 1 &&
+                        !isNullOrUndefined(os[i]) &&
                             os[i].rows.length === 1
                 ) {
-                    n[ns[i].rows[0]] = { 
-                        text: n[ns[i].rows[0]], 
-                        row: os[i].rows[0] 
+                    n[ns[i].rows[0]] = {
+                        text: n[ns[i].rows[0]],
+                        row: os[i].rows[0]
                     };
-                    o[ os[i].rows[0] ] = { 
-                        text: o[ os[i].rows[0] ], 
-                        row: ns[i].rows[0]  
+                    o[ os[i].rows[0] ] = {
+                        text: o[ os[i].rows[0] ],
+                        row: ns[i].rows[0]
                     };
                 }
             }
@@ -4152,20 +4175,20 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                         n[i].row > 0 && isNullOrUndefined(o[ n[i].row - 1].text) &&
                             n[i - 1] === o[ n[i].row - 1 ]
                 ) {
-                    n[i - 1] = { 
-                        text: n[i - 1], 
-                        row: n[i].row - 1 
+                    n[i - 1] = {
+                        text: n[i - 1],
+                        row: n[i].row - 1
                     };
-                    o[n[i].row-1] = { 
-                        text: o[n[i].row-1], 
-                        row: i - 1 
+                    o[n[i].row-1] = {
+                        text: o[n[i].row-1],
+                        row: i - 1
                     };
                 }
             }
 
-            return { 
-                o: o, 
-                n: n 
+            return {
+                o: o,
+                n: n
             };
         }
     },
@@ -4214,8 +4237,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     addStyleSheetsFromTemplate: {
         value: function(template) {
             if(!this._addedStyleSheetsByTemplate.has(template)) {
-                var resources = template.getResources(), 
-                    ownerDocument = this.element.ownerDocument, 
+                var resources = template.getResources(),
+                    ownerDocument = this.element.ownerDocument,
                     styles = resources.createStylesForDocument(ownerDocument);
 
                 for (var i = 0, style; (style = styles[i]); i++) {
@@ -4574,7 +4597,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
 
 });
- 
+
 exports.__root__ = rootComponent = new RootComponent().init();
 
 //https://github.com/kangax/html-minifier/issues/63
