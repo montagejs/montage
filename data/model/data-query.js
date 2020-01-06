@@ -79,7 +79,7 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
     /**
      * The type of the data object to retrieve.
      *
-     * @type {DataObjectDescriptor}
+     * @type {ObjectDescriptor}
      */
     type: {
         serializable: "value",
