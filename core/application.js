@@ -16,7 +16,7 @@ var Target = require("./target").Target,
     DataStream = require("data/service/data-stream").DataStream,
     Criteria = require("core/criteria").Criteria,
     DataQuery = require("data/model/data-query").DataQuery,
-    UserIdentityService = require("data/service/user-identity-service").UserIdentityService,
+    UserIdentityService = undefined,
     UserIdentityManager = require("data/service/user-identity-manager").UserIdentityManager,
     Slot;
 
@@ -470,7 +470,10 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 */
 
                 //URGENT: We need to further test that we don't already have a valid Authorization to use before authenticating.
-
+                return require.async("data/service/user-identity-service");
+            })
+            .then(function(exports) {
+                UserIdentityService = exports.UserIdentityService;
 
                 var userIdentityServices = UserIdentityService.userIdentityServices,
                     userIdentityObjectDescriptors,
