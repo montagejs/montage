@@ -14,7 +14,7 @@ var Montage = require("core/core").Montage,
         "copy",
         "copyfailed",
         "copycompleted",
-        /* Read is the first operation that mnodels a query */
+        /* Read is the first operation that models a query */
         "read",
 
         /* ReadUpdated is pushed by server when a query's result changes due to data changes from others */
@@ -52,7 +52,7 @@ var Montage = require("core/core").Montage,
 
         /* Lock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
         "lock",
-        "kockcompleted",
+        "lockcompleted",
         "lockfailed",
 
         /* Unlock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
@@ -103,12 +103,12 @@ var Montage = require("core/core").Montage,
             Data components shpuld add themselves as listeners to the data service for events/
             data operations like that they know how to deal with / can help with.
         */
-       "userauthentication",
-       "userauthenticationupdate",
-       "userauthenticationcompleted",
-       "userauthenticationfailed",
-       "userauthenticationtimedout",
-       "userinput",
+        "userauthentication",
+        "userauthenticationupdate",
+        "userauthenticationcompleted",
+        "userauthenticationfailed",
+        "userauthenticationtimedout",
+        "userinput",
         "userinputcompleted",
         "userinputfailed",
         "userinputcanceled",
