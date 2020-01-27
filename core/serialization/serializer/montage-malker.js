@@ -1,4 +1,7 @@
-var Montage = require("../../core").Montage;
+var Montage = require("../../core").Montage,
+Set = require("collections/set");
+
+require("../../extras/date");
 
 var MontageWalker = exports.MontageWalker = Montage.specialize({
     _visitHandler: {value: null},
@@ -9,25 +12,25 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
         value: function Malker(visitHandler, legacyMode) {
             this._visitHandler = visitHandler;
             this.legacyMode = !!legacyMode;
-            this._enteredObjects = {};
+            this._enteredObjects = new Set();
         }
     },
 
     cleanup: {
         value: function() {
-            this._enteredObjects = {};
+            this._enteredObjects.clear();
         }
     },
 
     _isObjectEntered: {
         value: function(object) {
-            return Object.hash(object) in this._enteredObjects;
+            return this._enteredObjects.has(object);
         }
     },
 
     _markObjectAsEntered: {
         value: function(object) {
-            this._enteredObjects[Object.hash(object)] = true;
+            this._enteredObjects.add(object);
         }
     },
 
@@ -46,6 +49,8 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
                 return "regexp";
             } else if (value === null) {
                 return "null";
+            } else if(Date.isValidDate(value)) {
+                return "date";
             } else if (typeof value === "object" || typeof value === "function") {
                 return this._getObjectType(value);
             } else {
@@ -83,6 +88,8 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
                 this._visitRegExp(value, name);
             } else if (type === "number") {
                 this._visitNumber(value, name);
+            } else if (type === "date") {
+                this._visitDate(value, name);
             } else if (type === "string") {
                 this._visitString(value, name);
             } else if (type === "boolean") {
@@ -179,6 +186,12 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
     _visitString: {
         value: function(string, name) {
             this._callVisitorMethod("visitString", string, name);
+        }
+    },
+
+    _visitDate: {
+        value: function(date, name) {
+            this._callVisitorMethod("visitDate", date, name);
         }
     },
 

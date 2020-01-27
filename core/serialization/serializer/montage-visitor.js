@@ -614,6 +614,12 @@ var MontageVisitor = Montage.specialize({
         }
     },
 
+    visitDate: {
+        value: function(malker, date, name) {
+            this.storeValue(this.builder.createDate(date), date, name);
+        }
+    },
+
     visitNumber: {
         value: function(malker, number, name) {
             this.storeValue(this.builder.createNumber(number), number, name);

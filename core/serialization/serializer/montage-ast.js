@@ -56,7 +56,7 @@ var Root = exports.Root = Montage.specialize({
                         result[label] = object.toJSON(label, 1);
                     } else {
                         result[label] = object;
-                    }   
+                    }
                 }
             }
 
@@ -298,6 +298,21 @@ var RegExpObject = exports.RegExpObject = ReferenceableValue.specialize( /** @le
                 source: regexp.source,
                 flags: (regexp.global ? "g" : "") + (regexp.ignoreCase ? "i" : "") + (regexp.multiline ? "m" : "")
             }};
+        }
+    }
+});
+
+var DateObject = exports.DateObject = Value.specialize( /** @lends RegExpObject# */ {
+
+    constructor: {
+        value: function DateObject(root, date) {
+            Value.call(this, root, date);
+        }
+    },
+
+    _getSerializationValue: {
+        value: function() {
+            return this.value.toISOString();
         }
     }
 });

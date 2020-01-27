@@ -15,7 +15,7 @@ var Montage = require("montage/core/core").Montage,
             }
         });
     }
-    
+
     function createFakeModuleReference(id, _require) {
         return new ModuleReference().initWithIdAndRequire(id, _require || require);
     }
@@ -39,6 +39,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
         it("should serialize native types", function () {
             var object = {
                     string: "string",
+                    date: new Date('05 October 2011 14:48 UTC'),
                     number: 42,
                     regexp: /regexp/gi,
                     array: [1, 2, 3],
@@ -52,6 +53,7 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 object: {
                     value: {
                         string: "string",
+                        date: "2011-10-05T14:48:00.000Z",
                         number: 42,
                         regexp: {"/": {source: "regexp", flags: "gi"}},
                         array: {"@": "array"},
@@ -65,6 +67,9 @@ describe("spec/serialization/montage-serializer-spec", function () {
                 },
                 string: {
                     value: "string"
+                },
+                date: {
+                    value: "2011-10-05T14:48:00.000Z"
                 },
                 number: {
                     value: 42

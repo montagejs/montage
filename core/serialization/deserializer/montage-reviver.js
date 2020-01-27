@@ -14,6 +14,7 @@ var Montage = require("../../core").Montage,
     TWO_WAY = "<->";
 
 require("../../shim/string");
+require("core/extras/date");
 
 var PROXY_ELEMENT_MAP = new WeakMap();
 var DATA_ATTRIBUTES_MAP = new Map();
@@ -152,6 +153,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 return "null";
             } else if (Array.isArray(value)) {
                 return "array";
+            }
+            //TODO: would be great to optimize and not create twice a date as we do now. Once to parse
+            //and another time later when we need the value
+            else if(Date.parseRFC3339(value)) {
+                return "date";
             } else if (typeOf === "object" && Object.keys(value).length === 1) {
                 if ("@" in value) {
                     return "reference";
@@ -655,6 +661,12 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (context) {
             this._deserializeUnits(context);
             this._invokeDeserializedFromSerialization(context);
+
+            //We avoided calling deserializedFromSerialization()
+            //on pre-existing objects that are passed on deserializer.
+            //We special case that in template.js, calling
+            //templateDidLoad() on the owner. We could generalize
+            //this here.
         }
     },
 
@@ -854,6 +866,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
             if (type === "string" || type === "number" || type === "boolean" || type === "null" || type === "undefined") {
                 revived = this.reviveNativeValue(value, context, label);
+            } else if (type === "date") {
+                revived = this.reviveDate(value, context, label);
             } else if (type === "regexp") {
                 revived = this.reviveRegExp(value, context, label);
             } else if (type === "reference") {
@@ -945,6 +959,19 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             }
 
             return regexp;
+        }
+    },
+
+    reviveDate: {
+        value: function(value, context, label) {
+
+            var date = Date.parseRFC3339(value);
+
+            if (label) {
+                context.setObjectLabel(date, label);
+            }
+
+            return date;
         }
     },
 
