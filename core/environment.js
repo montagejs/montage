@@ -16,6 +16,10 @@ var Environment = exports.Environment = Montage.specialize({
         }
     },
 
+    isBrowser: {
+        value: (typeof window !== "undefined")
+    },
+
     _userAgent: {
         value: null
     },
