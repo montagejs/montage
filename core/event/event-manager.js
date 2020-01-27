@@ -20,9 +20,13 @@ var Montage = require("../core").Montage,
     Deserializer = require("../serialization/deserializer/montage-deserializer").MontageDeserializer,
     Map = require("collections/map"),
     WeakMap = require("collections/weak-map"),
-    currentEnvironment = require("../environment").currentEnvironment;
-
-var defaultEventManager;
+    currentEnvironment = require("../environment").currentEnvironment,
+    isBrowser = currentEnvironment.isBrowser,
+    Event_NONE = 0,
+    Event_CAPTURING_PHASE =	1,
+    Event_AT_TARGET	= 2,
+    Event_BUBBLING_PHASE = 3,
+    defaultEventManager;
 
 //This is a quick polyfill for IE10 that is not exposing CustomEvent as a function.
 //From https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
@@ -2521,9 +2525,11 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
     handleEvent: {
         enumerable: false,
         value: function (event) {
-            if ((window.MontageElement && event.target instanceof MontageElement) ||
-                (event instanceof UIEvent && !this._shouldDispatchEvent(event))) {
-                return void 0;
+            if(isBrowser) {
+                if ((window.MontageElement && event.target instanceof MontageElement) ||
+                    (event instanceof UIEvent && !this._shouldDispatchEvent(event))) {
+                    return void 0;
+                }
             }
 
             if (this.monitorDOMModificationInEventHandling) {
@@ -2572,7 +2578,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             }
 
             mutableEventTarget = mutableEvent.target;
-            if (Element.isElement(mutableEventTarget) || mutableEventTarget instanceof Document || mutableEventTarget === window) {
+            if (isBrowser && (Element.isElement(mutableEventTarget) || mutableEventTarget instanceof Document || mutableEventTarget === window)) {
                 eventPath = this._eventPathForDomTarget(mutableEventTarget);
             } else {
                 eventPath = this._eventPathForTarget(mutableEventTarget);
@@ -2601,7 +2607,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             }
 
             // Capture Phase Distribution
-            mutableEvent.eventPhase = Event.CAPTURING_PHASE;
+            mutableEvent.eventPhase = Event_CAPTURING_PHASE;
             // The event path we generate is from bottom to top, capture needs to traverse this backwards
             for (i = eventPath.length - 1; !mutableEvent.propagationStopped && (iTarget = eventPath[i]); i--) {
                 mutableEvent.currentTarget = iTarget;
@@ -2627,7 +2633,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
             // At Target Distribution
             if (!mutableEvent.propagationStopped) {
-                mutableEvent.eventPhase = Event.AT_TARGET;
+                mutableEvent.eventPhase = Event_AT_TARGET;
                 mutableEvent.currentTarget = iTarget = mutableEventTarget;
                 //Capture
                 listenerEntries = this._registeredEventListenersForEventType_onTarget_registeredEventListeners_(eventType, iTarget, registeredCaptureEventListeners);
@@ -2666,7 +2672,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             }
 
             // Bubble Phase Distribution
-            mutableEvent.eventPhase = Event.BUBBLING_PHASE;
+            mutableEvent.eventPhase = Event_BUBBLING_PHASE;
             for (i = 0; eventBubbles && !mutableEvent.propagationStopped && (iTarget = eventPath[i]); i++) {
                 mutableEvent.currentTarget = iTarget;
 
@@ -2689,7 +2695,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                   }
             }
 
-            mutableEvent.eventPhase = Event.NONE;
+            mutableEvent.eventPhase = Event_NONE;
             mutableEvent.currentTarget = null;
 
             if (this._isStoringPointerEvents) {
@@ -2741,6 +2747,8 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
     /**
      * Ensure that any components associated with DOM elements in the hierarchy between the
      * original activationEvent target and the window are preparedForActionEvents
+     *
+     * Benoit todo: Make this more generic and configurable to be applicable to different trees.
      *
      * @function
      * @private
