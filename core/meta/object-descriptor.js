@@ -305,10 +305,11 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
     identifier: {
         get: function () {
             // TODO convert UpperCase to lower-case instead of lowercase
-            return [
-                "objectDescriptor",
-                (this.name || "unnamed").toLowerCase()
-            ].join("_");
+            return this.name;
+            // return [
+            //     "objectDescriptor",
+            //     (this.name || "unnamed").toLowerCase()
+            // ].join("_");
         }
     },
 
@@ -355,6 +356,19 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
             this._parent = objectDescriptor;
         }
     },
+
+    /**
+     * An OjectDescriptor's next target is it's parent or in the end the mainService.
+     * @property {boolean} serializable
+     * @property {Component} value
+     */
+    nextTarget: {
+        serializable: false,
+        get: function() {
+            return this.parent || ObjectDescriptor.mainService;
+        }
+    },
+
 
     /**
      * Defines whether the object descriptor should use custom prototype for new
@@ -989,6 +1003,22 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
             for (name in this._propertyValidationRules) {
                 if (this._propertyValidationRules.hasOwnProperty(name)) {
                     rule = this._propertyValidationRules[name];
+                    //Benoit: It's likely that some rules might be async
+                    //or we might decide to differ the ones that are async
+                    //to be run on the server instead, but right now the code
+                    //doesn't anticipate any async rule.
+
+                    /*
+                        TODO
+                        Also to help reconciliate validation with HTML5 standards
+                        and its ValidityState object (https://developer.mozilla.org/en-US/docs/Web/API/ValidityState), or to know what key/expression failed validation, we need to return a map key/reason, and not just an array, so that each message can end-up being processed/communicated to the user by the component editing it.
+
+                        It might even make sense that each component editing a certain property of an object, or any combination of some
+                        would have to "observe/listen" to individual property validations.
+
+                        This one is meant to run on all as some rules can involve multiple properties.
+                    */
+
                     if (rule.evaluateRule(objectInstance)) {
                         messages.push(rule.messageKey);
                     }
