@@ -279,7 +279,7 @@ var wrapPropertyGetter = function (key, storageKey) {
          */
         defaultPrevented: {
             get: function () {
-                return (this._defaultPrevented !== void 0) ? this._defaultPrevented : this._event.defaultPrevented;
+                return (this._defaultPrevented !== void 0) ? this._defaultPrevented : (this._event ? this._event.defaultPrevented : false);
             },
             set: function (value) {
                 this._defaultPrevented = value;
