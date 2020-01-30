@@ -28,6 +28,7 @@ module.exports = require("montage-testing").run(require, [
     "spec/core/request-spec",
     "spec/core/selector-spec",
     "spec/core/criteria-spec",
+    "spec/core/date-spec",
     "spec/core/super-spec",
     "spec/core/super-for-spec",
     {name: "spec/core/undo-manager-spec", node: false},
