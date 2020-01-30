@@ -1,7 +1,36 @@
 var Montage = require("../core").Montage,
     Promise = require("../promise").Promise,
     deprecate = require("../deprecate"),
+    Enum = require("core/enum").Enum,
     logger = require("../logger").logger("objectDescriptor");
+
+/* TypeDescriptor */
+/* DeleteRules */
+
+/*
+ Deny
+ If there is at least one object at the relationship destination (employees), do not delete the source object (department).
+
+ For example, if you want to remove a department, you must ensure that all the employees in that department are first transferred elsewhere (or fired!); otherwise, the department cannot be deleted.
+
+ Nullify
+ Remove the relationship between the objects but do not delete either object.
+
+ This only makes sense if the department relationship for an employee is optional, or if you ensure that you set a new department for each of the employees before the next save operation.
+
+ Cascade
+ Delete the objects at the destination of the relationship when you delete the source.
+
+ For example, if you delete a department, fire all the employees in that department at the same time.
+
+ No Action -> IGNORE
+ Do nothing to the object at the destination of the relationship.
+
+ Default
+ Value that will be assigned ?
+
+ */
+exports.DeleteRule = DeleteRule = new Enum().initWithMembersAndValues(["NULLIFY","CASCADE","DENY","IGNORE"]);
 
 // TODO: Replace Defaults by leveraging the value set on the prototype which really is the natural default
 var Defaults = {
@@ -10,6 +39,7 @@ var Defaults = {
     mandatory: false,
     readOnly: false,
     denyDelete: false,
+    deleteRule: DeleteRule.Nullify,
     inversePropertyName: void 0,
     valueType: "string",
     collectionValueType: "list",
@@ -51,32 +81,6 @@ TODO:
 */
 
 
-/* TypeDescriptor */
-/* DeleteRules */
-
-/*
- Deny
- If there is at least one object at the relationship destination (employees), do not delete the source object (department).
-
- For example, if you want to remove a department, you must ensure that all the employees in that department are first transferred elsewhere (or fired!); otherwise, the department cannot be deleted.
-
- Nullify
- Remove the relationship between the objects but do not delete either object.
-
- This only makes sense if the department relationship for an employee is optional, or if you ensure that you set a new department for each of the employees before the next save operation.
-
- Cascade
- Delete the objects at the destination of the relationship when you delete the source.
-
- For example, if you delete a department, fire all the employees in that department at the same time.
-
- No Action
- Do nothing to the object at the destination of the relationship.
-
- Default
- Value that will be assigned ?
-
- */
 
 
 /**
@@ -128,6 +132,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._setPropertyWithDefaults(serializer, "mandatory", this.mandatory);
             this._setPropertyWithDefaults(serializer, "readOnly", this.readOnly);
             this._setPropertyWithDefaults(serializer, "denyDelete", this.denyDelete);
+            this._setPropertyWithDefaults(serializer, "deleteRule", this.deleteRule);
             this._setPropertyWithDefaults(serializer, "valueType", this.valueType);
             this._setPropertyWithDefaults(serializer, "collectionValueType", this.collectionValueType);
             this._setPropertyWithDefaults(serializer, "valueObjectPrototypeName", this.valueObjectPrototypeName);
@@ -145,6 +150,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._setPropertyWithDefaults(serializer, "isSearcheable", this.isSearcheable);
             this._setPropertyWithDefaults(serializer, "isOrdered", this.isOrdered);
             this._setPropertyWithDefaults(serializer, "hasUniqueValues", this.hasUniqueValues);
+            this._setPropertyWithDefaults(serializer, "description", this.description);
 
         }
     },
@@ -170,6 +176,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._overridePropertyWithDefaults(deserializer, "mandatory");
             this._overridePropertyWithDefaults(deserializer, "readOnly");
             this._overridePropertyWithDefaults(deserializer, "denyDelete");
+            this._overridePropertyWithDefaults(deserializer, "deleteRule");
             this._overridePropertyWithDefaults(deserializer, "valueType");
             this._overridePropertyWithDefaults(deserializer, "collectionValueType");
             this._overridePropertyWithDefaults(deserializer, "valueObjectPrototypeName");
@@ -185,6 +192,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._overridePropertyWithDefaults(deserializer, "isSearcheable");
             this._overridePropertyWithDefaults(deserializer, "isOrdered");
             this._overridePropertyWithDefaults(deserializer, "hasUniqueValues");
+            this._overridePropertyWithDefaults(deserializer, "description");
         }
     },
 
@@ -265,10 +273,21 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @type {string}
      */
     name: {
-        serializable:false,
+        serializable:true,
         get:function () {
             return this._name;
         }
+    },
+
+    /**
+     * Description of the property descriptor
+     * object.
+     * @readonly
+     * @type {string}
+     */
+    description: {
+        serializable:true,
+        value: undefined
     },
 
     /**
@@ -320,7 +339,17 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @default false
      */
     denyDelete: {
-        value: Defaults.denyDelete
+        get: function() {
+            return this.deleteRule === DeleteRule.DENY;
+        }
+    },
+
+    /**
+     * @type {boolean}
+     * @default false
+     */
+    deleteRule: {
+        value: Defaults.deleteRule
     },
 
     /**
