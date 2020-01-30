@@ -2975,6 +2975,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     /**
      * Register a component for beeing a drag destination.
+     * droppable is the name of the html5 attribrutes, acceptDrop/acceptsDrop might be better
      */
     registerDroppable: {
         value: function () {
