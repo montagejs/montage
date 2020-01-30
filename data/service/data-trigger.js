@@ -140,11 +140,13 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
             // To save memory a separate _isGlobal boolean is not maintained and
             // the _isGlobal value is derived from the _valueStatus type.
             return !(this._valueStatus instanceof WeakMap);
+            //return !(this._valueStatus instanceof Map);
         },
         set: function (global) {
             global = global ? true : false;
             if (global !== this._isGlobal) {
                 this._valueStatus = global ? undefined : new WeakMap();
+                //this._valueStatus = global ? undefined : new Map();
             }
         }
     },
@@ -161,10 +163,19 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
      * @private
      * @type {Object|WeakMap}
      */
-    _valueStatus: {
+    __valueStatus: {
         configurable: true,
         writable: true,
         value: undefined
+    },
+    _valueStatus: {
+        configurable: true,
+        get: function() {
+            return this.__valueStatus;
+        },
+        set: function(value) {
+            this.__valueStatus = value;
+        }
     },
 
     /**
@@ -366,7 +377,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
 //addRangeChangeListener
 
             //If we're not in the middle of a mapping...:
-            if(!this._service._objectsBeingMapped.has(object)) {
+            if(currentValue !== initialValue && !this._service._objectsBeingMapped.has(object)) {
                 //Dispatch update event
                 var changeEvent = new ChangeEvent;
                 changeEvent.target = object;

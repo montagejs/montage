@@ -731,7 +731,8 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 var inversePropertyDescriptor = objectDescriptor.propertyDescriptorForName(inversePropertyName);
 
                 if (data) {
-                    self._setObjectsValueForPropertyDescriptor(data, object, inversePropertyDescriptor);
+                    //Adding shouldFlagObjectBeingMapped argument to true.
+                    self._setObjectsValueForPropertyDescriptor(data, object, inversePropertyDescriptor, true);
                 }
                 return null;
             });
@@ -819,10 +820,14 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      *                             hold the model data.
      * @argument {Object} data   - An object whose properties must be set or
      *                             modified to represent the model data
+     * @argument {Iterator} keyIterator   - an iterator to loop over a subset
+     *                                      of object's properties that
+     *                                         must be mapped to raw data.
+
      */
     mapObjectToRawData: {
-        value: function (object, data) {
-            var keys = this.rawDataMappingRules.keys(),
+        value: function (object, data, keyIterator) {
+            var keys = keyIterator || this.rawDataMappingRules.keys(),
                 promises = [],
                 key, result;
 
@@ -877,15 +882,20 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     mapObjectPropertyToRawData: {
         value: function(object, propertyName, data) {
             var objectRule = this.objectMappingRules.get(propertyName),
-                rule = this.rawDataMappingRules.get(objectRule.sourcePath);
+                rule;
 
-            if(rule) {
-                return this._mapObjectToRawDataProperty(object,data,objectRule.sourcePath);
+            if(objectRule){
+                rule = this.rawDataMappingRules.get(objectRule.sourcePath)
+                if(rule) {
+                    return this._mapObjectToRawDataProperty(object,data,objectRule.sourcePath);
+                }
+                else {
+                    throw new Error("No rawDataMappingRule found to map property "+propertyName+" of object,", object, "to raw data");
+                }
             }
             else {
-                throw new Error("Can't map property "+propertyName+" of object,", object, "to raw data");
+                throw new Error("No objectMappingRules found to map property "+propertyName+" of object,", object, "to raw data");
             }
-
         }
     },
 
@@ -903,7 +913,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
         }
     },
-     /**
+    /**
      * Prefetches any object properties required to map the rawData property
      * and maps once the fetch is complete.
      *
@@ -924,13 +934,24 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
             if (this._isAsync(result)) {
                 self = this;
-                result = result.then(function () {
+                result = result.then(function (value) {
                     return self._mapObjectToRawDataProperty(object, data, propertyName);
                 });
             } else {
                 result = this._mapObjectToRawDataProperty(object, data, propertyName);
             }
-            return result;
+
+            //using delegation to allow dataService customization
+            if (this._isAsync(result)) {
+                self = this;
+                return result.then(function (value) {
+                     self.service.mappingDidMapObjectToRawDataProperty(self, object, data, propertyName);
+                     return value;
+                });
+            } else {
+                this.service.mappingDidMapObjectToRawDataProperty(this, object, data, propertyName);
+                return result;
+            }
         }
     },
 
@@ -998,19 +1019,23 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     },
 
     _setObjectsValueForPropertyDescriptor: {
-        value: function (objects, value, propertyDescriptor) {
+        value: function (objects, value, propertyDescriptor, shouldFlagObjectBeingMapped) {
             var i, n;
             for (i = 0, n = objects.length; i < n; i += 1) {
-                this._setObjectValueForPropertyDescriptor(objects[i], value, propertyDescriptor);
+                this._setObjectValueForPropertyDescriptor(objects[i], value, propertyDescriptor, shouldFlagObjectBeingMapped);
             }
         }
     },
 
     _setObjectValueForPropertyDescriptor: {
-        value: function (object, value, propertyDescriptor) {
+        value: function (object, value, propertyDescriptor, shouldFlagObjectBeingMapped) {
             var propertyName = propertyDescriptor.name,
                 isToMany;
             //Add checks to make sure that data matches expectations of propertyDescriptor.cardinality
+
+            if(shouldFlagObjectBeingMapped) {
+                this.service.rootService._objectsBeingMapped.add(object);
+            }
 
             if (Array.isArray(value)) {
                 isToMany = propertyDescriptor.cardinality !== 1;
@@ -1026,6 +1051,11 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             } else {
                 object[propertyName] = value;
             }
+
+            if(shouldFlagObjectBeingMapped) {
+                this.service.rootService._objectsBeingMapped.delete(object);
+            }
+
         }
     },
 
@@ -1075,6 +1105,9 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         }
     },
 
+    /*
+        Looks unused
+
     _assignDataToObjectProperty: {
         value: function (object, propertyDescriptor, data) {
             var hasData = data && data.length,
@@ -1101,6 +1134,8 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             }
         }
     },
+    */
+
     /***************************************************************************
      * Rules
      */

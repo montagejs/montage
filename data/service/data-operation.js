@@ -4,6 +4,8 @@ var Montage = require("core/core").Montage,
     Enum = require("core/enum").Enum,
     uuid = require("core/uuid"),
     DataOperationType,
+
+    /* todo: we shpuld add a ...timedout for all operations. */
     dataOperationTypes = [
         "noop",
         "create",
@@ -60,36 +62,50 @@ var Montage = require("core/core").Montage,
         "unlockcompleted",
         "unlockfailed",
 
-        /* RemmoteProcedureCall models the ability to invoke code logic on the server-side, being a DB StoredProcedure, or an method/function in a service */
+        /*
+            RemmoteProcedureCall models the ability to invoke code logic on the server-side, being a DB StoredProcedure, or an method/function in a service
+        */
         "remoteinvocation", /* Execute ? */
         "remoteinvocationcompleted",  /* ExecuteCompleted ? */
         "remoteinvocationfailed", /* ExecuteFailed ? */
 
-        /* Batch models the ability to group multiple operation. If a referrer is provided
-            to a BeginTransaction operation, then the batch will be executed within that transaction  */
         /*
+            Batch models the ability to group multiple operation. If a referrer is provided
+            to a BeginTransaction operation, then the batch will be executed within that transaction
+        */
         "batch",
         "batchcompleted",
         "batchfailed",
+
+        /*
+            A transaction is a unit of work that is performed atomically against a database.
+            Transactions are units or sequences of work accomplished in a logical order.
+            A transactions begins, operations are grouped, then it is either commited or rolled-back
         */
+        /*
+            begin/commit, Start/End Open/Close, Commit/Save, rollback/cancel
 
-        /* A transaction is a unit of work that is performed against a database.
-        Transactions are units or sequences of work accomplished in a logical order.
-        A transactions begins, operations are grouped, then it is either commited or rolled-back*/
-       /* Start/End Open/Close, Commit/Save, rollback/cancel
-        "begintransaction",
-        "begintransactioncompleted",
-        "begintransactionafiled",
+            as a lower-case event name, committransaction is hard to read, perform is equally easy to understand
+            and less technical.
 
-        "committransaction",
-        "committransactioncompleted",
-        "committransactionfailed",
+            so settling on create transaction and perform/rollback transaction
+        */
+        "createtransaction",
+        /* I don't think there's such a thing, keeping for symetry for now */
+        "createtransactioncompleted",
+
+        /* Attempting to create a transaction within an existing one will fail */
+        "createtransactionfailed",
+
+        "createsavepoint",
+
+        "performtransaction",
+        "performtransactioncompleted",
+        "performtransactionfailed",
 
         "rollbacktransaction",
         "rollbacktransactioncompleted",
         "rollbacktransactionfailed",
-
-        */
 
         /*
             operations used for the bottom of the stack to get information from a user.
@@ -179,6 +195,9 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             if(this.objectExpressions) {
                 serializer.setProperty("objectExpressions", this.objectExpressions);
             }
+            if(this.snapshot) {
+                serializer.setProperty("snapshot", this.snapshot);
+            }
         }
     },
     deserializeSelf: {
@@ -222,6 +241,11 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             value = deserializer.getProperty("objectExpressions");
             if (value !== void 0) {
                 this.objectExpressions = value;
+            }
+
+            value = deserializer.getProperty("snapshot");
+            if (value !== void 0) {
+                this.snapshot = value;
             }
 
         }
@@ -420,8 +444,6 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
     userMessage: {
         value: undefined
     },
-
-
 
     /**
      * Deprecate?  Make programatic, so that users doesn't have to worry about it.
@@ -630,94 +652,80 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
 
         */
         value: {
+            NoOp: DataOperationType.noop,
             Create: DataOperationType.create,
             CreateFailed: DataOperationType.createfailed,
             CreateCompleted: DataOperationType.createcompleted,
             CreateCancelled: DataOperationType.createcancelled,
-            //Additional
+
             Copy: DataOperationType.copy,
             CopyFailed: DataOperationType.copyfailed,
             CopyCompleted: DataOperationType.copycompleted,
-            /* Read is the first operation that mnodels a query */
+
             Read: DataOperationType.read,
-
-            /* ReadUpdated is pushed by server when a query's result changes due to data changes from others */
             ReadUpdated: DataOperationType.readupdated,
-
-            /* ReadProgress / ReadUpdate / ReadSeek is used to instruct server that more data is required for a "live" read / query
-                Need a better name, and a symetric? Or is ReadUpdated enough if it referes to previous operation
-            */
             ReadProgress: DataOperationType.readprogress, //ReadUpdate
             ReadUpdate: DataOperationType.readupdate, //ReadUpdate
-
-            /* ReadCancel is the operation that instructs baclkend that client isn't interested by a read operastion anymore */
             ReadCancel: DataOperationType.readcancel,
-
-            /* ReadCanceled is the operation that instructs the client that a read operation is canceled */
             ReadCanceled: DataOperationType.readcanceled,
-
-             /* ReadFailed is the operation that instructs the client that a read operation has failed canceled */
             ReadFailed: DataOperationType.readfailed,
-            /* ReadCompleted is the operation that instructs the client that a read operation has returned all available data */
             ReadCompleted: DataOperationType.readcompleted,
+
             Update: DataOperationType.update,
             UpdateCompleted: DataOperationType.updatecompleted,
             UpdateFailed: DataOperationType.updatefailed,
             UpdateCancel: DataOperationType.updatecancel,
             UpdateCanceled: DataOperationType.updatecanceled,
+
             Delete: DataOperationType.delete,
             DeleteCompleted: DataOperationType.deletecompleted,
             DeleteFailed: DataOperationType.deletefailed,
-            /* Lock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
+
             Lock: DataOperationType.lock,
             LockCompleted: DataOperationType.lockcompleted,
             LockFailed: DataOperationType.lockfailed,
-            /* RemmoteProcedureCall models the ability to invoke code logic on the server-side, being a DB StoredProcedure, or an method/function in a service */
+
             RemoteProcedureCall: DataOperationType.remoteinvocation,
             RemoteProcedureCallCompleted: DataOperationType.remoteinvocationcompleted,
             RemoteProcedureCallFailed: DataOperationType.remoteinvocationfailed,
             RemoteInvocation: DataOperationType.remoteinvocation,
             RemoteInvocationCompleted: DataOperationType.remoteinvocationcompleted,
             RemoteInvocationFailed: DataOperationType.remoteinvocationfailed,
+
             UserAuthentication: DataOperationType.userauthentication,
             UserAuthenticationUpdate: DataOperationType.userauthenticationupdate,
             UserAuthenticationCompleted: DataOperationType.userauthenticationcompleted,
             UserAuthenticationFailed: DataOperationType.userauthenticationfailed,
             UserAuthenticationTimedout: DataOperationType.userauthenticationtimedout,
+
             UserInput: DataOperationType.userinput,
             UserInputCompleted: DataOperationType.userinputcompleted,
             UserInputFailed: DataOperationType.userinputfailed,
             UserInputCanceled: DataOperationType.userinputcanceled,
             UserInputTimedOut: DataOperationType.userinputtimedout,
+
             Validate: DataOperationType.validate,
             ValidateFailed: DataOperationType.validatefailed,
             validateCompleted: DataOperationType.validatecompleted,
             validateCancelled: DataOperationType.validatecancelled,
 
-            /* Batch models the ability to group multiple operation. If a referrer is provided
-                to a BeginTransaction operation, then the batch will be executed within that transaction  */
-            /*
-            Batch: DataOperationType.Batch,
-            BatchCompleted: DataOperationType.BatchCompleted,
-            BatchFailed: DataOperationType.BatchFailed,
-            */
-            /* A transaction is a unit of work that is performed against a database.
-            Transactions are units or sequences of work accomplished in a logical order.
-            A transactions begins, operations are grouped, then it is either commited or rolled-back*/
-           /* Start/End Open/Close, Commit/Save, rollback/cancel
-            BeginTransaction: DataOperationType.BeginTransaction,
-            BeginTransactionCompleted: DataOperationType.BeginTransactionCompleted,
-            BeginTransactionFailed: DataOperationType.BeginTransactionFailed,
+            Batch: DataOperationType.batch,
+            BatchCompleted: DataOperationType.batchcompleted,
+            BatchFailed: DataOperationType.batchfailed,
 
-            CommitTransaction: DataOperationType.CommitTransaction,
-            CommitTransactionCompleted: DataOperationType.CommitTransactionCompleted,
-            CommitTransactionFailed: DataOperationType.CommitTransactionFailed,
+            CreateTransaction: DataOperationType.createtransaction,
+            CreateTransactionCompleted: DataOperationType.createtransactioncompleted,
+            CreateTransactionFailed: DataOperationType.createtransactionfailed,
 
-            RollbackTransaction: DataOperationType.RollbackTransaction,
-            RollbackTransactionCompleted: DataOperationType.RollbackTransactionCompleted,
-            RollbackTransactionFailed: DataOperationType.RollbackTransactionFailed,
+            CreateSavePoint: DataOperationType.createsavepoint,
 
-            */
+            PerformTransaction: DataOperationType.performtransaction,
+            PerformTransactionCompleted: DataOperationType.performtransactioncompleted,
+            PerformTransactionFailed: DataOperationType.performtransactionfailed,
+
+            RollbackTransaction: DataOperationType.rollbacktransaction,
+            RollbackTransactionCompleted: DataOperationType.rollbacktransactioncompleted,
+            RollbackTransactionFailed: DataOperationType.rollbacktransactionfailed,
         }
     }
 

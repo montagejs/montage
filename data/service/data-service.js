@@ -13,7 +13,12 @@ var Montage = require("core/core").Montage,
     ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor,
     Set = require("collections/set"),
     CountedSet = require("core/counted-set").CountedSet,
-    WeakMap = require("collections/weak-map");
+    WeakMap = require("collections/weak-map"),
+    ObjectPool = require("core/object-pool").ObjectPool,
+    defaultEventManager = require("core/event/event-manager").defaultEventManager,
+    DataEvent = require("data/model/data-event").DataEvent,
+    PropertyDescriptor = require("core/meta/property-descriptor").PropertyDescriptor,
+    DeleteRule = require("core/meta/property-descriptor").DeleteRule;
 
 
 var AuthorizationPolicyType = new Montage();
@@ -26,6 +31,12 @@ UserAuthenticationPolicy.NoAuthenticationPolicy = UserAuthenticationPolicy.NONE;
 UserAuthenticationPolicy.UpfrontAuthenticationPolicy = UserAuthenticationPolicy.UP_FRONT;
 UserAuthenticationPolicy.OnDemandAuthenticationPolicy = UserAuthenticationPolicy.ON_DEMAND;
 UserAuthenticationPolicy.OnFirstFetchAuthenticationPolicy = UserAuthenticationPolicy.ON_FIRST_FETCH;
+
+
+
+/**
+ * Future: Look at https://www.npmjs.com/package/broadcast-channel to implement cross-tab event distribution?
+ */
 
 /**
  * Provides data objects and manages changes to them.
@@ -41,6 +52,7 @@ UserAuthenticationPolicy.OnFirstFetchAuthenticationPolicy = UserAuthenticationPo
  * instance of DataService or a DataService subclasses must either be that root
  * service or be set as a descendent of that root service.
  *
+ *
  * @class
  * @extends external:Montage
  */
@@ -52,7 +64,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
     constructor: {
         value: function DataService() {
-            exports.DataService.mainService = exports.DataService.mainService || this;
+            exports.DataService.mainService = ObjectDescriptor.mainService = exports.DataService.mainService || this;
             if(this === DataService.mainService) {
                 UserIdentityManager.mainService = DataService.mainService;
             }
@@ -1409,6 +1421,12 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
 
                 expressions.forEach(function (expression) {
+                    /*
+                        This only works for expressions that are pure, chained
+                        property traversals, aka property path. A more general walk
+                        would be needed using the expression syntax to be totally
+                        generic and support any kind of expression.
+                    */
                     var split = expression.split(".");
                     // if (split.length == 1) {
                     //     promises.push(self.getObjectProperties(object, split[0]));
@@ -1790,6 +1808,9 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      */
     recordDataIdentifierForObject: {
         value: function(dataIdentifier, object) {
+            if(this._dataIdentifierByObject.has(object) && this._dataIdentifierByObject.get(object) !== dataIdentifier) {
+                throw new Error("recordDataIdentifierForObject when one already exists:"+JSON.stringify(object));
+            }
             this._dataIdentifierByObject.set(object, dataIdentifier);
         }
     },
@@ -1854,6 +1875,73 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             this._objectByDataIdentifier.delete(dataIdentifier);
         }
     },
+    _eventPoolFactoryForEventType: {
+        value: function () {
+            return new DataEvent();
+        }
+    },
+
+    __eventPoolByEventType: {
+        value: null
+    },
+    _eventPoolForEventType: {
+        value: function (eventType) {
+            var pool = (this.__eventPoolByEventType || (this.__eventPoolByEventType = new Map())).get(eventType);
+            if(!pool) {
+                this.__eventPoolByEventType.set(eventType,(pool = new ObjectPool(this._eventPoolFactoryForEventType)));
+            }
+            return pool;
+        }
+    },
+    __preparedConstructorsForDataEvents: {
+        value: null
+    },
+
+    isConstructorPreparedToHandleDataEvents: {
+        value: function (objectConstructor) {
+            return (this.__preparedConstructorsForDataEvents || (this.__preparedConstructorsForDataEvents = new Set())).has(objectConstructor);
+        }
+    },
+
+    prepareConstructorToHandleDataEvents: {
+        value: function (objectConstructor, event) {
+            objectConstructor.prepareToHandleDataEvents(event)
+            //prepareToHandleDataEvent or prepareToHandleCreateEvent
+            this.__preparedConstructorsForDataEvents.add(objectConstructor);
+        }
+    },
+
+    createDataObject: {
+        value: function (type) {
+
+        }
+    },
+
+    _dispatchEventTypeForObject: {
+        value: function (eventType, object) {
+            /*
+                This needs to be made more generic in EventManager, which has "prepareForActivationEvent,
+                but it's very specialized for components. Having all prototypes of DO register as eventListeners upfront
+                would be damaging performance wise. We should do it as things happen.
+            */
+
+            var eventPool = this._eventPoolForEventType(eventType),
+                objectDescriptor = this.objectDescriptorForObject(object),
+                objectConstructor = object.constructor,
+                dataEvent = eventPool.checkout();
+
+                dataEvent.type = eventType;
+                dataEvent.target = objectDescriptor;
+                dataEvent.dataService = this;
+                dataEvent.dataObject = object;
+
+            if(!this.isConstructorPreparedToHandleDataEvents(objectConstructor)) {
+                this.prepareConstructorToHandleDataEvents(objectConstructor, dataEvent);
+            }
+
+            objectDescriptor.dispatchEvent(dataEvent);
+        }
+    },
 
     /**
      * Create a new data object of the specified type.
@@ -1870,8 +1958,15 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
     createDataObject: {
         value: function (type) {
             if (this.isRootService) {
-                var object = this._createDataObject(type);
+                var service = this.childServiceForType(type),
+                    //Gives a chance to raw data service to provide a primary key for clien-side creation/
+                    //Especially useful for systems that use uuid as primary keys.
+                    //object = this._createDataObject(type, service.dataIdentifierForNewDataObject(type));
+                    object = this._createDataObject(type, service.dataIdentifierForNewDataObject(this.objectDescriptorForType(type)));
                 this.createdDataObjects.add(object);
+
+                this._dispatchEventTypeForObject(DataEvent.create, object);
+
                 return object;
             } else {
                 this.rootService.createDataObject(type);
@@ -1978,8 +2073,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
     changedDataObjects: {
         get: function () {
             if (this.isRootService) {
-                this._changedDataObjects = this._changedDataObjects || new Map();
-                return this._changedDataObjects;
+                return this._changedDataObjects || (this._changedDataObjects = new Map());
             }
             else {
                 return this.rootService.changedDataObjects;
@@ -2020,7 +2114,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
             if(!changesForDataObject) {
                 changesForDataObject = new Map();
-                this._changedDataObjects.set(dataObject,changesForDataObject);
+                this.changedDataObjects.set(dataObject,changesForDataObject);
             }
 
             /*
@@ -2039,10 +2133,13 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
 
             */
-            if(keyValue) {
+            if(changeEvent.hasOwnProperty("key") && changeEvent.hasOwnProperty("keyValue")) {
                 changesForDataObject.set(key,keyValue);
             }
-            else if(addedValues || removedValues) {
+
+            //A change event could carry both a key/value change and addedValues/remove, like a splice, where the key would be "length"
+
+            if(addedValues || removedValues) {
                 //For key that can have add/remove the value of they key is an object
                 //that itself has two keys: addedValues and removedValues
                 //which value will be a set;
@@ -2077,6 +2174,21 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                             registeredRemovedValues.delete(removedValues[i]);
                         }
                     }
+
+                    /*
+                        Work on local graph integrity. When objects are disassociated, it could mean some deletions may happen bases on delete rules.
+                        App side goal is to maintain the App graph, server's side is to maintain database integrity. Both needs to act on delete rules:
+                        - get object's descriptor
+                        - get PropertyDescriptor from key
+                        - get PropertyDescriptor's .deleteRule
+                            deleteRule can be:
+                                - DeleteRule.NULLIFY
+                                - DeleteRule.CASCADE
+                                - DeleteRule.DENY
+                                - DeleteRule.IGNORE
+                    */
+
+                    //,,,,,TODO
                 }
             }
         }
@@ -2505,11 +2617,14 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      */
     handleChange: {
         value: function(changeEvent) {
-            if(!this._createdDataObjects || (this._createdDataObjects && !this._createdDataObjects.has(changeEvent.target))) {
+            //Commentting out the restriction to exclude created objects as we might want to
+            //use it for them as well
+
+            // if(!this._createdDataObjects || (this._createdDataObjects && !this._createdDataObjects.has(changeEvent.target))) {
                 //Needs to register the change so saving changes / update operations can use it later to decise what to send
                 //console.log("handleChange:",changeEvent);
                 this.registerDataObjectChangesFromEvent(changeEvent);
-            }
+            //}
         }
     },
 
@@ -2564,6 +2679,13 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
     saveDataObject: {
         value: function (object) {
             //return this._updateDataObject(object, "saveDataObject");
+
+            //TODO
+            //First thing we should be doing here is run validation
+            //on the object, using objectDescriptor's
+            //draft: - could/should become async and return a promise.
+            //var validatity = this.objectDescriptorForObject(object).evaluateRules(object);
+
 
             var self = this,
                 service,
@@ -2666,6 +2788,19 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
     //     }
     // },
 
+    /**
+     * Returns a pomise of a DataOperation to save (create/updates) pending changes to an object
+     * @method
+     * @argument {Object} object - The object who will be reset.
+     * @returns {external:Promise} - A promise fulfilled when the data operation is ready.
+     */
+    saveDataOperationFoObject: {
+        value: function (object) {
+
+        }
+    },
+
+
     saveChanges: {
         value: function () {
             //We need a list of the changes happening (creates, updates, deletes) operations
@@ -2675,10 +2810,19 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             //createdDataObjects is a set
             var createdDataObjects = this.createdDataObjects,
                 changedDataObjects = this.changedDataObjects,
-                deletedDataObjects = this.deletedDataObjects;
+                deletedDataObjects = this.deletedDataObjects,
+                createTransaction = new DataOperation();
 
-            //Here we want to create a transaction to make sure everything is sent at the same time.
-            //Right now, we don't track what object fetched was changed that eventually needs to be included.
+                createTransaction.type = DataOperation.Type.CreateTransaction;
+
+                //Loop, get data operation, discard the no-ops (and clean changes)
+
+            /*
+                Here we want to create a transaction to make sure everything is sent at the same time.
+                - We wneed to act on delete rules in relationships on reverse. So an update could lead to a delete operatiom
+                so we need to process updates before we process deletes.
+                    - we need to check no deleted object is added to a relationoship to-one or to-many while we process updates
+            */
         }
     },
 
@@ -3061,6 +3205,57 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             return this.nullPromise;
         }
     },
+
+
+
+    /***************************************************************************
+     * Access Control methods
+     */
+
+    /**
+     * Answers wether logged-in application user can create a DataObject.
+     *
+     * Services overriding the (plural)
+     * @method
+     * @argument {ObjectDescriptor} dataObjectDescriptor
+     * @returns {Promise} - A promise fulfilled with a boolean value.
+     *
+     */
+    canUserCreateDataObject: {
+        value: function(dataObjectDescriptor) {
+            /*
+                TODO: implement by leveraging Expression Based Access Control mapping/rules if available
+            */
+            return Promise.resolve(true);
+        }
+    },
+
+    /**
+     * Answers wether logged-in application user can edit/update? a DataObject.
+     *
+     * Services overriding the (plural)
+     * @method
+     * @argument {Object} dataObject
+     * @returns {Promise} - A promise fulfilled with a boolean value.
+     *
+     */
+    canUserEditDataObject: {
+        value: function(dataObject) {
+            /*
+                	return this.canPerfomDataOperation(DataOperation.toUpdateDataObject(dataObject));
+            */
+           return Promise.resolve(true);
+        }
+    },
+    canUserDeleteDataObject: {
+        value: function(dataObject) {
+            /*
+                	return this.canPerfomDataOperation(DataOperation.toDeleteDataObject(dataObject));
+            */
+            return Promise.resolve(true);
+        }
+    },
+
 
     /***************************************************************************
      * Utilities

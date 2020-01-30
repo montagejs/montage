@@ -555,7 +555,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
             //Consolidation, recording snapshot even if we already had an object
             //Record snapshot before we may create an object
-            this.recordSnapshot(dataIdentifier, rawData);
+            //Benoit: commenting out, done twice when fetching now
+            //this.recordSnapshot(dataIdentifier, rawData);
 
             if(!object) {
                 //iDataIdentifier argument should be all we need later on
@@ -568,6 +569,45 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
     _typeIdentifierMap: {
         value: undefined
+    },
+
+    /**
+     * Called by [DataService createDataObject()]{@link DataService#createDataObject} to allow
+     * RawDataService to provide a primiary key on the client side as soon as an object is created.
+     * Especially useful for uuid based primary keys that can be generated eithe client or server side.
+     *
+     * @method
+     * @argument {DataStream} stream
+     *                           - The stream to which the data objects created
+     *                             from the raw data should be added.
+     * @argument {Object} rawData - An anonymnous object whose properties'
+     *                             values hold the raw data. This array
+     *                             will be modified by this method.
+     * @argument {?} context     - An arbitrary value that will be passed to
+     *                             [getDataObject()]{@link RawDataService#getDataObject}
+     *                             and
+     *                             [mapRawDataToObject()]{@link RawDataService#mapRawDataToObject}
+     *                             if it is provided.
+     *
+     * @returns {Promise<MappedObject>} - A promise resolving to the mapped object.
+     *
+     */
+
+    primaryKeyForNewDataObject: {
+        value: function (type) {
+            return undefined;
+        }
+    },
+
+    dataIdentifierForNewDataObject: {
+        value: function (type) {
+            var primaryKey = this.primaryKeyForNewDataObject(type);
+
+            if(primaryKey) {
+                return this.dataIdentifierForTypePrimaryKey(type,primaryKey);
+            }
+            return undefined;
+        }
     },
 
 
@@ -693,7 +733,18 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     recordSnapshot: {
         value: function (dataIdentifier, rawData) {
-            this._snapshot.set(dataIdentifier, rawData);
+            var snapshot = this._snapshot.get(dataIdentifier);
+            if(!snapshot) {
+                this._snapshot.set(dataIdentifier, rawData);
+            }
+            else {
+                var rawDataKeys = Object.keys(rawData),
+                    i, countI;
+
+                for(i=0, countI = rawDataKeys.length;(i<countI);i++) {
+                    snapshot[rawDataKeys[i]] = rawData[rawDataKeys[i]];
+                }
+            }
         }
     },
 
@@ -1249,33 +1300,54 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             return result;
         }
     },
+    /**
+     * Method called by mappings when a mapObjectToRawDataProperty is complete.
+     *
+     * @method
+     * @argument {Object} mapping        - the mapping object
+     * @argument {Object} object         - An object whose properties' values
+     *                                     hold the model data.
+     * @argument {Object} data           - The object on which to assign the property
+     * @argument {string} propertyName   - The name of the raw property to which
+     *                                     to assign the values.
+     */
+    mappingDidMapObjectToRawDataProperty: {
+        value: function (mapping, object, data, propertyName) {
 
+        }
+    },
     /**
      * @todo Document.
      * @todo Make this method overridable by type name with methods like
      * `mapHazardToRawData()` and `mapProductToRawData()`.
+     * @todo: context should be last, but that's a breaking change
+     * @todo: It would be much more efficient to drive the iteration from here
+     * instead of doing it once with the mapping and then offering the data service to loop again on the mapping's results.
+     *
      *
      * @method
      */
     _mapObjectToRawData: {
-        value: function (object, record, context) {
+        value: function (object, record, context, keyIterator) {
             var mapping = this.mappingForObject(object),
                 result;
 
             if (mapping) {
-                result = mapping.mapObjectToRawData(object, record, context);
+                //Benoit: third argument was context but it's not defined on
+                //ExpressionDataMapping's mapObjectToRawData method
+                result = mapping.mapObjectToRawData(object, record, keyIterator);
             }
 
             if (record) {
                 if (result) {
-                    var otherResult = this.mapObjectToRawData(object, record, context);
+                    var otherResult = this.mapObjectToRawData(object, record, context, keyIterator);
                     if (this._isAsync(result) && this._isAsync(otherResult)) {
                         result = Promise.all([result, otherResult]);
                     } else if (this._isAsync(otherResult)) {
                         result = otherResult;
                     }
                 } else {
-                    result = this.mapObjectToRawData(object, record, context);
+                    result = this.mapObjectToRawData(object, record, context, keyIterator);
                 }
             }
 
