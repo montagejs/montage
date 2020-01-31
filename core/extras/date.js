@@ -148,12 +148,10 @@ Number.prototype.toPaddedString = function(len , fillchar) {
    * extend Date with a method parsing ISO8601 / RFC 3339 date strings.
    * Usage: var d = Date.parseRFC3339( "2010-07-20T15:00:00Z" );
    */
-  Date.parseRFC3339_RegExp = /(\d\d\d\d)(-)?(\d\d)(-)?(\d\d)(T)?(\d\d)(:)?(\d\d)?(:)?(\d\d)?([\.,]\d+)?($|Z|([+-])(\d\d)(:)?(\d\d)?)/i;
-  Date.endsByZ = /Z$/i;
-  Date.parseRFC3339 = function(dString){
-    if (typeof dString != 'string' || !this.endsByZ.test(dString)) return;
+ function _parseRFC3339(dString) {
+    if (typeof dString != 'string' || !_parseRFC3339.endsByZ.test(dString)) return;
     var result,
-        d = dString.match(this.parseRFC3339_RegExp);
+        d = dString.match(_parseRFC3339.parseRFC3339_RegExp);
 
     if (d) {
       var year = parseInt(d[1],10);
@@ -184,6 +182,9 @@ Number.prototype.toPaddedString = function(len , fillchar) {
     }
     return result;
   };
+  _parseRFC3339.parseRFC3339_RegExp = /(\d\d\d\d)(-)?(\d\d)(-)?(\d\d)(T)?(\d\d)(:)?(\d\d)?(:)?(\d\d)?([\.,]\d+)?($|Z|([+-])(\d\d)(:)?(\d\d)?)/i;
+  _parseRFC3339.endsByZ = /Z$/i;
+  Date.parseRFC3339 = _parseRFC3339;
 
 /**********
  * Part of https://github.com/tardate/rfc3339date.js/.
