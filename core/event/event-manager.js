@@ -2552,6 +2552,8 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 bubbleMethodName,
                 identifierSpecificCaptureMethodName,
                 identifierSpecificBubbleMethodName,
+                currentTargetIdentifierSpecificCaptureMethodName,
+                currentTargetIdentifierSpecificBubbleMethodName,
                 capitalizedIdentifier,
                 mutableEvent,
                 mutableEventTarget,
@@ -2616,17 +2618,19 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 if (!listenerEntries) {
                     continue;
                 }
+
+                currentTargetIdentifierSpecificCaptureMethodName = this.methodNameForCapturePhaseOfEventType(eventType, iTarget.identifier, capitalizedEventType);
                 if (Array.isArray(listenerEntries)) {
                     j=0;
                     _currentDispatchedTargetListeners.set(listenerEntries,null);
                     while ((nextEntry = listenerEntries[j++]) && !mutableEvent.immediatePropagationStopped) {
-                        this._invokeTargetListenerForEvent(iTarget, nextEntry, mutableEvent, identifierSpecificCaptureMethodName, captureMethodName);
+                        this._invokeTargetListenerForEvent(iTarget, nextEntry, mutableEvent, currentTargetIdentifierSpecificCaptureMethodName, identifierSpecificCaptureMethodName, captureMethodName);
                     }
                     this._processCurrentDispatchedTargetListenersToRemove(iTarget, eventType, true, listenerEntries);
                     _currentDispatchedTargetListeners.delete(listenerEntries);
                 }
                 else {
-                    this._invokeTargetListenerForEvent(iTarget, listenerEntries, mutableEvent, identifierSpecificCaptureMethodName, captureMethodName);
+                    this._invokeTargetListenerForEvent(iTarget, listenerEntries, mutableEvent, currentTargetIdentifierSpecificCaptureMethodName, identifierSpecificCaptureMethodName, captureMethodName);
                 }
 
             }
@@ -2642,13 +2646,13 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                         j=0;
                         _currentDispatchedTargetListeners.set(listenerEntries,null);
                         while ((nextEntry = listenerEntries[j++]) && !mutableEvent.immediatePropagationStopped) {
-                            this._invokeTargetListenerForEvent(iTarget, nextEntry, mutableEvent, identifierSpecificCaptureMethodName, captureMethodName);
+                            this._invokeTargetListenerForEvent(iTarget, nextEntry, mutableEvent, identifierSpecificCaptureMethodName, identifierSpecificCaptureMethodName, captureMethodName);
                         }
                         this._processCurrentDispatchedTargetListenersToRemove(iTarget, eventType, true, listenerEntries);
                         _currentDispatchedTargetListeners.delete(listenerEntries);
                     }
                     else {
-                        this._invokeTargetListenerForEvent(iTarget, listenerEntries, mutableEvent, identifierSpecificCaptureMethodName, captureMethodName);
+                        this._invokeTargetListenerForEvent(iTarget, listenerEntries, mutableEvent, identifierSpecificCaptureMethodName, identifierSpecificCaptureMethodName, captureMethodName);
                     }
 
                 }
@@ -2659,13 +2663,13 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                         j=0;
                         _currentDispatchedTargetListeners.set(listenerEntries,null);
                         while ((nextEntry = listenerEntries[j++]) && !mutableEvent.immediatePropagationStopped) {
-                            this._invokeTargetListenerForEvent(iTarget, nextEntry, mutableEvent, identifierSpecificBubbleMethodName, bubbleMethodName);
+                            this._invokeTargetListenerForEvent(iTarget, nextEntry, mutableEvent, identifierSpecificBubbleMethodName, identifierSpecificBubbleMethodName, bubbleMethodName);
                         }
                         this._processCurrentDispatchedTargetListenersToRemove(iTarget, eventType, false, listenerEntries);
                         _currentDispatchedTargetListeners.delete(listenerEntries);
                     }
                     else {
-                        this._invokeTargetListenerForEvent(iTarget, listenerEntries, mutableEvent, identifierSpecificBubbleMethodName, bubbleMethodName);
+                        this._invokeTargetListenerForEvent(iTarget, listenerEntries, mutableEvent, identifierSpecificBubbleMethodName, identifierSpecificBubbleMethodName, bubbleMethodName);
                     }
 
                 }
@@ -2681,17 +2685,19 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     continue;
                 }
 
+                currentTargetIdentifierSpecificBubbleMethodName = this.methodNameForBubblePhaseOfEventType(eventType, iTarget.identifier, capitalizedEventType);
+
                 if (Array.isArray(listenerEntries)) {
                     j=0;
                     _currentDispatchedTargetListeners.set(listenerEntries,null);
                       while ((nextEntry = listenerEntries[j++]) && !mutableEvent.immediatePropagationStopped) {
-                          this._invokeTargetListenerForEvent(iTarget, nextEntry, mutableEvent, identifierSpecificBubbleMethodName, bubbleMethodName);
+                          this._invokeTargetListenerForEvent(iTarget, nextEntry, mutableEvent, currentTargetIdentifierSpecificBubbleMethodName, identifierSpecificBubbleMethodName, bubbleMethodName);
                       }
                       this._processCurrentDispatchedTargetListenersToRemove(iTarget, eventType, false, listenerEntries);
                       _currentDispatchedTargetListeners.delete(listenerEntries);
                   }
                   else {
-                      this._invokeTargetListenerForEvent(iTarget, listenerEntries, mutableEvent, identifierSpecificBubbleMethodName, bubbleMethodName);
+                      this._invokeTargetListenerForEvent(iTarget, listenerEntries, mutableEvent, currentTargetIdentifierSpecificBubbleMethodName, identifierSpecificBubbleMethodName, bubbleMethodName);
                   }
             }
 
@@ -2716,7 +2722,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
      * @private
      */
     _invokeTargetListenerForEvent: {
-        value: function _invokeTargetListenerForEvent(iTarget, jListener, mutableEvent, identifierSpecificPhaseMethodName, phaseMethodName) {
+        value: function _invokeTargetListenerForEvent(iTarget, jListener, mutableEvent, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName) {
             // var functionType = "function";
             // if (typeof jListener === functionType) {
             //     jListener.call(iTarget, mutableEvent);
@@ -2730,16 +2736,17 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             // else if (typeof jListener.handleEvent === functionType) {
             //     jListener.handleEvent(mutableEvent);
             // }
-
-            (identifierSpecificPhaseMethodName && typeof jListener[identifierSpecificPhaseMethodName] === this._functionType)
-            ? jListener[identifierSpecificPhaseMethodName](mutableEvent)
-            : (typeof jListener[phaseMethodName] === this._functionType)
-                ? jListener[phaseMethodName](mutableEvent)
-                : (typeof jListener.handleEvent === this._functionType)
-                    ? jListener.handleEvent(mutableEvent)
-                    : (typeof jListener === this._functionType)
-                        ? jListener.call(iTarget, mutableEvent)
-                        : void 0;
+        (currentTargetIdentifierSpecificPhaseMethodName && typeof jListener[currentTargetIdentifierSpecificPhaseMethodName] === this._functionType)
+            ? jListener[currentTargetIdentifierSpecificPhaseMethodName](mutableEvent)
+            : (targetIdentifierSpecificPhaseMethodName && typeof jListener[targetIdentifierSpecificPhaseMethodName] === this._functionType)
+                ? jListener[targetIdentifierSpecificPhaseMethodName](mutableEvent)
+                : (typeof jListener[phaseMethodName] === this._functionType)
+                    ? jListener[phaseMethodName](mutableEvent)
+                    : (typeof jListener.handleEvent === this._functionType)
+                        ? jListener.handleEvent(mutableEvent)
+                        : (typeof jListener === this._functionType)
+                            ? jListener.call(iTarget, mutableEvent)
+                            : void 0;
 
         }
     },

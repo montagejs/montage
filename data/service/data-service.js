@@ -609,12 +609,18 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             dataTriggers = DataTrigger.addTriggers(this, objectDescriptor, prototype, requisitePropertyNames),
             mainService = this.rootService;
 
-        Object.defineProperty(prototype,"identifier", {
+            Object.defineProperty(prototype,"dataIdentifier", {
                 enumerable: true,
                 get: function() {
                     return mainService.dataIdentifierForObject(this);
-            }
-        });
+                }
+            });
+            Object.defineProperty(prototype,"nextTarget", {
+                enumerable: true,
+                    get: function() {
+                        return objectDescriptor;
+                }
+            });
 
         this._dataObjectPrototypes.set(constructor, prototype);
         this._dataObjectPrototypes.set(objectDescriptor, prototype);
@@ -1905,7 +1911,9 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
     prepareConstructorToHandleDataEvents: {
         value: function (objectConstructor, event) {
-            objectConstructor.prepareToHandleDataEvents(event)
+            if(typeof objectConstructor.prepareToHandleDataEvents === "function") {
+                objectConstructor.prepareToHandleDataEvents(event);
+            }
             //prepareToHandleDataEvent or prepareToHandleCreateEvent
             this.__preparedConstructorsForDataEvents.add(objectConstructor);
         }
@@ -1939,7 +1947,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 this.prepareConstructorToHandleDataEvents(objectConstructor, dataEvent);
             }
 
-            objectDescriptor.dispatchEvent(dataEvent);
+            object.dispatchEvent(dataEvent);
         }
     },
 
@@ -2801,29 +2809,32 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
     },
 
 
+    /**
+     * Save all changes made since the last call. This method currently delegates to rawDataServices for the actual work
+     * Some of it might migrate back up here later when the dust settles.
+     *
+     * TEMPORARY implementation assuming a single RawDataService that creates
+     * operations. We might need to officially make that kind of subclass the
+     * mainService.
+     *
+     * @method
+     * @returns {external:Promise} - A promise fulfilled when the save operation is complete or failed.
+     */
+
     saveChanges: {
         value: function () {
-            //We need a list of the changes happening (creates, updates, deletes) operations
-            //to keep their natural order and be able to create a transaction operationn
-            //when saveChanges is called.
+            var self = this,
+                service,
+                promise = this.nullPromise,
 
-            //createdDataObjects is a set
-            var createdDataObjects = this.createdDataObjects,
-                changedDataObjects = this.changedDataObjects,
-                deletedDataObjects = this.deletedDataObjects,
-                createTransaction = new DataOperation();
-
-                createTransaction.type = DataOperation.Type.CreateTransaction;
-
-                //Loop, get data operation, discard the no-ops (and clean changes)
-
-            /*
-                Here we want to create a transaction to make sure everything is sent at the same time.
-                - We wneed to act on delete rules in relationships on reverse. So an update could lead to a delete operatiom
-                so we need to process updates before we process deletes.
-                    - we need to check no deleted object is added to a relationoship to-one or to-many while we process updates
-            */
-        }
+                service = this.childServices[0];
+                if (service && typeof service.saveChanges === "function") {
+                    return service.saveChanges();
+                }
+                else {
+                    return promise;
+                }
+            }
     },
 
 
