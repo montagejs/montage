@@ -341,6 +341,9 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     denyDelete: {
         get: function() {
             return this.deleteRule === DeleteRule.DENY;
+        },
+        set: function(value) {
+            this.deleteRule = DeleteRule.DENY;
         }
     },
 
