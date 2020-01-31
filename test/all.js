@@ -76,7 +76,8 @@ module.exports = require("montage-testing").run(require, [
     "spec/serialization/alias-spec",
     "spec/serialization/labeler-spec",
     "spec/serialization/reviver-spec",
-    "spec/serialization/interpreter-spec",
+    //deprecated
+    //"spec/serialization/interpreter-spec",
     "spec/serialization/visitor-spec",
     "spec/serialization/serialization-extractor-spec",
     "spec/serialization/bindings-spec",
