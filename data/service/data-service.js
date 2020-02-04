@@ -1097,6 +1097,10 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      * Returns an object descriptor for the provided object.  If this service
      * does not have an object descriptor for this object it will ask its
      * parent for one.
+     *
+     * TODO: looks like we're looping all the time and not caching a lookup"
+     * Why isn't objectDescriptorWithModuleId used??
+     *
      * @param {object}
      * @returns {ObjectDescriptor|null} if an object descriptor is not found this
      * method will return null.
@@ -1108,10 +1112,15 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 moduleId = objectInfo.moduleId,
                 objectName = objectInfo.objectName,
                 module, exportName, objectDescriptor, i, n;
+
+            objectDescriptor = this.objectDescriptorWithModuleId(moduleId);
             for (i = 0, n = types.length; i < n && !objectDescriptor; i += 1) {
                 module = types[i].module;
                 exportName = module && types[i].exportName;
                 if (module && moduleId === module.id && objectName === exportName) {
+                    if(objectDescriptor !== types[i]) {
+                        console.error("objectDescriptorWithModuleId cached an objectDescriptor and objectDescriptorForObject finds another")
+                    }
                     objectDescriptor = types[i];
                 }
             }
@@ -1887,14 +1896,14 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-    __eventPoolByEventType: {
+    __dataEventPoolByEventType: {
         value: null
     },
-    _eventPoolForEventType: {
+    _dataEventPoolForEventType: {
         value: function (eventType) {
-            var pool = (this.__eventPoolByEventType || (this.__eventPoolByEventType = new Map())).get(eventType);
+            var pool = (this.__dataEventPoolByEventType || (this.__dataEventPoolByEventType = new Map())).get(eventType);
             if(!pool) {
-                this.__eventPoolByEventType.set(eventType,(pool = new ObjectPool(this._eventPoolFactoryForEventType)));
+                this.__dataEventPoolByEventType.set(eventType,(pool = new ObjectPool(this._eventPoolFactoryForEventType)));
             }
             return pool;
         }
@@ -1925,15 +1934,15 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-    _dispatchEventTypeForObject: {
-        value: function (eventType, object) {
+    dispatchDataEventTypeForObject: {
+        value: function (eventType, object, detail) {
             /*
                 This needs to be made more generic in EventManager, which has "prepareForActivationEvent,
                 but it's very specialized for components. Having all prototypes of DO register as eventListeners upfront
                 would be damaging performance wise. We should do it as things happen.
             */
 
-            var eventPool = this._eventPoolForEventType(eventType),
+            var eventPool = this._dataEventPoolForEventType(eventType),
                 objectDescriptor = this.objectDescriptorForObject(object),
                 objectConstructor = object.constructor,
                 dataEvent = eventPool.checkout();
@@ -1942,6 +1951,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 dataEvent.target = objectDescriptor;
                 dataEvent.dataService = this;
                 dataEvent.dataObject = object;
+                dataEvent.detail = detail;
 
             if(!this.isConstructorPreparedToHandleDataEvents(objectConstructor)) {
                 this.prepareConstructorToHandleDataEvents(objectConstructor, dataEvent);
@@ -1973,7 +1983,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                     object = this._createDataObject(type, service.dataIdentifierForNewDataObject(this.objectDescriptorForType(type)));
                 this.createdDataObjects.add(object);
 
-                this._dispatchEventTypeForObject(DataEvent.create, object);
+                this.dispatchDataEventTypeForObject(DataEvent.create, object);
 
                 return object;
             } else {
@@ -2065,6 +2075,25 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
     },
 
     /**
+     * A set of the data objects moified by the user after they were fetched.
+     *     *
+     * @type {Set.<Object>}
+     */
+    changedDataObjects: {
+        get: function () {
+            if (this.isRootService) {
+                if (!this._changedDataObjects) {
+                    this._changedDataObjects = new Set();
+                }
+                return this._changedDataObjects;
+            }
+            else {
+                return this.rootService.changedDataObjects;
+            }
+        }
+    },
+
+    /**
      * A Map of the data objects managed by this service or any other descendent
      * of this service's [root service]{@link DataService#rootService} that have
      * been changed since that root service's data was last saved, or since the
@@ -2078,18 +2107,18 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      *
      * @type {Map.<Object>}
      */
-    changedDataObjects: {
+    dataObjectChanges: {
         get: function () {
             if (this.isRootService) {
-                return this._changedDataObjects || (this._changedDataObjects = new Map());
+                return this._dataObjectChanges || (this._dataObjectChanges = new Map());
             }
             else {
-                return this.rootService.changedDataObjects;
+                return this.rootService.dataObjectChanges;
             }
         }
     },
 
-    _changedDataObjects: {
+    _dataObjectChanges: {
         value: undefined
     },
 
@@ -2106,7 +2135,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
     changesForDataObject: {
         value: function (dataObject) {
-            return this.changedDataObjects.get(dataObject);
+            return this.dataObjectChanges.get(dataObject);
         }
     },
 
@@ -2118,11 +2147,15 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 keyValue = changeEvent.keyValue,
                 addedValues = changeEvent.addedValues,
                 removedValues = changeEvent.addedValues,
-                changesForDataObject = this.changedDataObjects.get(dataObject);
+                changesForDataObject = this.dataObjectChanges.get(dataObject);
+
+            if(!this.createdDataObjects.has(dataObject)) {
+                this.changedDataObjects.add(dataObject);
+            }
 
             if(!changesForDataObject) {
                 changesForDataObject = new Map();
-                this.changedDataObjects.set(dataObject,changesForDataObject);
+                this.dataObjectChanges.set(dataObject,changesForDataObject);
             }
 
             /*
@@ -2204,7 +2237,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
     clearRegisteredChangesForDataObject: {
         value: function (dataObject) {
-            this.changedDataObjects.set(dataObject,null);
+            this.dataObjectChanges.set(dataObject,null);
         }
     },
 
@@ -2227,7 +2260,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 return this._deletedDataObjects;
             }
             else {
-                return this.rootService.deletedDataObjects();
+                return this.rootService.deletedDataObjects;
             }
         }
     },
