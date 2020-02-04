@@ -232,6 +232,20 @@ MontageBoot.TemplateLoader = function (config, load) {
     };
 };
 
+
+Object.defineProperties(global,
+    {
+        _performance: {
+            value: undefined
+        },
+        performance: {
+            get: function() {
+                return this._performance || (this._performance = require('perf_hooks').performance);
+            }
+        }
+    }
+);
+
 // add the TemplateLoader to the middleware chain
 Require.makeLoader = (function (makeLoader) {
     return function (config) {

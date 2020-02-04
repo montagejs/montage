@@ -34,7 +34,7 @@ exports.DataEvent = MutableEvent.specialize({
 
     constructor: {
         value: function (type) {
-            this.type = type;
+            this.timestamp = performance.now();
         }
     },
 
@@ -55,35 +55,37 @@ exports.DataEvent = MutableEvent.specialize({
 
     dataObject: {
         value: undefined
+    },
+
+    detail: {
+        value: undefined
     }
 
 
 }, {
-    create: {
+    invalid: {
+        value: "invalid"
+    },
+
+   create: {
         value: "create"
     },
 
-    DRAG: {
-        value: "drag"
+    save: {
+        value: "save"
     },
 
-    DRAGENTER: {
-        value: "dragenter"
+    delete: {
+        value: "delete"
     },
 
-    DRAGEXIT: {
-        value: "dragexit"
+    revert: {
+        value: "revert"
     },
 
-    DRAGLEAVE: {
-        value: "dragleave"
-    },
-
-    DROP: {
-        value: "drop"
-    },
-
-    DRAGEND: {
-        value: "dragend"
+    /* when a change was made by someone else and it's making it's way to another user. */
+    update: {
+        value: "update"
     }
+
 });
