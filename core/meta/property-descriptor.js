@@ -131,7 +131,9 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             }
             this._setPropertyWithDefaults(serializer, "mandatory", this.mandatory);
             this._setPropertyWithDefaults(serializer, "readOnly", this.readOnly);
-            this._setPropertyWithDefaults(serializer, "denyDelete", this.denyDelete);
+            //Not needed anymore as it's now this.deleteRule === DeleteRule.DENY
+            //and deserializing denyDelete will set the equivallent on value deleteRule
+            // this._setPropertyWithDefaults(serializer, "denyDelete", this.denyDelete);
             this._setPropertyWithDefaults(serializer, "deleteRule", this.deleteRule);
             this._setPropertyWithDefaults(serializer, "valueType", this.valueType);
             this._setPropertyWithDefaults(serializer, "collectionValueType", this.collectionValueType);
