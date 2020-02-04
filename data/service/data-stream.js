@@ -7,7 +7,7 @@ var DataProvider = require("data/service/data-provider").DataProvider,
     parse = require("frb/parse"),
     Scope = require("frb/scope"),
     compile = require("frb/compile-evaluator"),
-    DataOperation= require("data/service/data-operation").DataOperation,
+    DataOperation = require("data/service/data-operation").DataOperation,
     DataStream;
 
 /**
