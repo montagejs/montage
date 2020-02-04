@@ -989,6 +989,64 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
         }
     },
 
+    _emptyValidityMap: {
+        value: new Map
+    },
+    /**
+     * Evaluates the validity of objectInstance and collects invalidity into invalidityStates if provides, or in a
+     * new Map created, which will be the resolved value. This is done using:
+     * - rules set on ObjectDescriptor
+     * - propertyDescriptor properties:
+     *      - mandatory: is a value there?
+     *      - readOnly: is the value changed?
+     *      - valueType, collectionValueType, valueDescriptor: Does the current value match?
+     *      - cardinality, is the current value match?
+     *
+     * - The result needs to be a promise as some validation might need a round-trip to
+     *  backend?
+     * - The result will need to be communicated through an "invalid" event that UI componenta
+     *  will use to communicate the validity issues and their corresponding messages.
+     * - there's a combination of isues matching 1 component's designated property to edit as well
+     * as rules failing that might concern multiple ones as well.
+     * @param {Object} object instance to evaluate the rule for
+     * @returns {Array.<string>} list of message key for rule that fired. Empty
+     * array otherwise.
+     */
+    evaluateObjectValidity: {
+        value: function (objectInstance) {
+
+            return Promise.resolve(this._emptyValidityMap);
+
+            var name, rule,
+            messages = [];
+            /* bypassing it all for now */
+            for (name in this._propertyValidationRules) {
+                if (this._propertyValidationRules.hasOwnProperty(name)) {
+                    rule = this._propertyValidationRules[name];
+                    //Benoit: It's likely that some rules might be async
+                    //or we might decide to differ the ones that are async
+                    //to be run on the server instead, but right now the code
+                    //doesn't anticipate any async rule.
+
+                    /*
+                        TODO
+                        Also to help reconciliate validation with HTML5 standards
+                        and its ValidityState object (https://developer.mozilla.org/en-US/docs/Web/API/ValidityState), or to know what key/expression failed validation, we need to return a map key/reason, and not just an array, so that each message can end-up being processed/communicated to the user by the component editing it.
+
+                        It might even make sense that each component editing a certain property of an object, or any combination of some
+                        would have to "observe/listen" to individual property validations.
+
+                        This one is meant to run on all as some rules can involve multiple properties.
+                    */
+
+                    if (rule.evaluateRule(objectInstance)) {
+                        messages.push(rule.messageKey);
+                    }
+                }
+            }
+            return messages;
+        }
+    },
     /**
      * Evaluates the rules based on the object and the properties.
      * @param {Object} object instance to evaluate the rule for
@@ -996,7 +1054,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
      * array otherwise.
      */
     evaluateRules: {
-        value: function (objectInstance) {
+        value: deprecate.deprecateMethod(void 0, function (objectInstance) {
             var name, rule,
                 messages = [];
 
@@ -1025,7 +1083,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
                 }
             }
             return messages;
-        }
+        }, "addEventBlueprint", "addEventDescriptor")
     },
 
     objectDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,
