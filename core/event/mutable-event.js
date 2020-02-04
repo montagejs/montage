@@ -275,7 +275,7 @@ var wrapPropertyGetter = function (key, storageKey) {
         },
         /**
          * @type {Property}
-         * @default {Element} null
+         * @default {boolean} false
          */
         defaultPrevented: {
             get: function () {
