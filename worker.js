@@ -1,7 +1,5 @@
 /*jshint node:true, worker:false */
-/*global importScripts, PATH_TO_MONTAGE */
-
-
+/*global importScripts, PATH_TO_MONTAGE, self */
 
 var worker;
 (function (root, factory) {
@@ -82,6 +80,7 @@ var worker;
         },
 
         getParams: function () {
+            var path;
             if (!this._params) {
                 //TODO
                 // 1. Replicate montage sniffing logic for worker
@@ -91,9 +90,16 @@ var worker;
 
                 // Find the <script> that loads us, so we can divine our
                 // parameters from its attributes.
+                path = PATH_TO_MONTAGE;
+                if (!path) {
+                    path = self.registration.scope.replace(/[^\/]*\.html$/, ""),
+                    path = path.replace(/[^\/]*\/?$/, "");
+                }
                 this._params = {
-                    montageLocation: PATH_TO_MONTAGE
+                    montageLocation: path
                 };
+
+
             }
             return this._params;
         },

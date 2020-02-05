@@ -1078,7 +1078,6 @@ describe("bindings/spec", function () {
 
             source.bar = 1;
             expect(target.foo).toBe(1);
-            debugger;
             Object.deleteBinding(target, "foo");
 
             source.bar = 2;

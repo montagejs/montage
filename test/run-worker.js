@@ -1,7 +1,7 @@
 
 
 
-var WORKER_PATH = "worker-bootstrap.js",
+var WORKER_PATH = "worker.js",
     initializeWorker, teardownWorker;
 (function () {
     var serviceWorker = window.navigator.serviceWorker,
@@ -80,7 +80,8 @@ var WORKER_PATH = "worker-bootstrap.js",
             return serviceWorkerIsReady();
         }).then(function (workerRegistration) {
             var worker = workerRegistration.active;
-            console.log("ServiceWorker initialization complete");
+            console.log("ServiceWorker initialization complete", worker);
+            // debugger;
             worker.postMessage(JSON.stringify({
                 options: {
                     parameters: parseQueryParameters(window.location.search.substring(1))

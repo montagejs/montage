@@ -17,7 +17,7 @@
 
  self.addEventListener("message", function (event) {
     var string = event.data,
-        data, name, options;
+        data, options;
     try {
         data = JSON.parse(string);
         name = data.name; //Included so other messages can be added in the future.
