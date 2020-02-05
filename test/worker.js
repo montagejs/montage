@@ -10,7 +10,7 @@
  //TODO Although the worker must reside in the application,
  // the code to register and manager the worker could be
  // moved to montage
- var PATH_TO_MONTAGE = "../";
+PATH_TO_MONTAGE = "../";
  importScripts("../node_modules/jasmine-core/lib/jasmine-core/jasmine.js");
  importScripts("jasmine-console-reporter.js");
 
@@ -38,7 +38,6 @@
  self.montageDidLoad = function () {
     var path = self.registration.scope.replace(/[^\/]*\.html$/, ""),
         pathToMain = path.replace(/[^\/]*\/?$/, "");
-
     // Load package
     Montage.Require.loadPackage(path, {
         mainPackageLocation: pathToMain

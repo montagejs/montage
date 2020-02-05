@@ -80,8 +80,6 @@ var WORKER_PATH = "worker.js",
             return serviceWorkerIsReady();
         }).then(function (workerRegistration) {
             var worker = workerRegistration.active;
-            console.log("ServiceWorker initialization complete", worker);
-            // debugger;
             worker.postMessage(JSON.stringify({
                 options: {
                     parameters: parseQueryParameters(window.location.search.substring(1))
