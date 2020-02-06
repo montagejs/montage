@@ -82,24 +82,19 @@ var worker;
         getParams: function () {
             var path;
             if (!this._params) {
-                //TODO
-                // 1. Replicate montage sniffing logic for worker
-                //    a. data-montage-location
-                //    b. Sniffing available scripts
-                // 2. Replicate dataset attribute in worker
 
-                // Find the <script> that loads us, so we can divine our
-                // parameters from its attributes.
-                path = PATH_TO_MONTAGE;
-                if (!path) {
-                    path = self.registration.scope.replace(/[^\/]*\.html$/, ""),
-                    path = path.replace(/[^\/]*\/?$/, "");
+                if (self.MontageParams) {
+                    this._params = Object.assign({}, self.MontageParams);
+                } else {
+                    path = PATH_TO_MONTAGE;
+                    if (!path) {
+                        path = self.registration.scope.replace(/[^\/]*\.html$/, ""),
+                        path = path.replace(/[^\/]*\/?$/, "");
+                    }
+                    this._params = {
+                        montageLocation: path
+                    };
                 }
-                this._params = {
-                    montageLocation: path
-                };
-
-
             }
             return this._params;
         },
@@ -215,6 +210,9 @@ var worker;
                         global.bootstrap("promise", function (require, exports) {
                             return global.Promise;
                         });
+                        // global.bootstrap("mini-url", function (require, exports) {
+                        //     exports.resolve = resolve;
+                        // });
                     }
                 });
             }
@@ -244,6 +242,7 @@ var worker;
             //Suppress Bluebird unhandled rejection error
             Promise.onPossiblyUnhandledRejection(function(e, promise) {
                 console.warn("[Bluebird] Unhandled Rejection: " + e.message);
+                console.warn(e);
             });
 
 

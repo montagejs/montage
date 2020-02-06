@@ -644,7 +644,7 @@
                 global.BUNDLE.forEach(function (bundleLocations) {
                     preloaded = preloaded.then(function () {
                         return Promise.all(bundleLocations.map(function (bundleLocation) {
-                            browser.load(bundleLocation);
+                            platform.load(bundleLocation);
                             return getDefinition(bundleLocation).promise;
                         }));
                     });
