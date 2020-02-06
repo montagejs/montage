@@ -186,7 +186,7 @@ var wrapPropertyGetter = function (key, storageKey) {
          */
         target: {
             get: function () {
-                return (this._target !== void 0) ? this._target : this._event.target;
+                return (this._target !== void 0) ? this._target : this._event ? this._event.target : undefined;
             },
             set: function (value) {
                 this._target = value;
