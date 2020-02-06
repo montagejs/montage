@@ -2548,7 +2548,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             dataServicePromise.then(function(dataService) {
                 try {
                     //Direct access for now
-                    stream = dataService.handleReadOperation(dataOperation);
+                    stream = dataService.handleRead(dataOperation);
                 } catch (e) {
                     stream.dataError(e);
                 }
