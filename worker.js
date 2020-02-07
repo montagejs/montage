@@ -210,10 +210,10 @@ var worker;
                         global.bootstrap("promise", function (require, exports) {
                             return global.Promise;
                         });
-                        // global.bootstrap("mini-url", function (require, exports) {
-                        //     exports.resolve = resolve;
-                        // });
                     }
+                });
+                global.bootstrap("mini-url", function (require, exports) {
+                    exports.resolve = resolve;
                 });
             }
 
