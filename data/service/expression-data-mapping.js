@@ -10,7 +10,7 @@ var DataMapping = require("./data-mapping").DataMapping,
     Scope = require("frb/scope"),
     Set = require("collections/set"),
     deprecate = require("core/deprecate"),
-    RawPropertyValueToObjectConverter = require("data/converter/raw-property-value-to-object-converter").RawPropertyValueToObjectConverter;
+    RawForeignValueToObjectConverter = require("data/converter/raw-foreign-value-to-object-converter").RawForeignValueToObjectConverter;
 
 var Montage = require("montage").Montage;
 
@@ -585,7 +585,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 aRule;
 
             while ((aRule = ruleIterator.next().value)) {
-                if((aRule.converter && (aRule.converter instanceof RawPropertyValueToObjectConverter)) &&
+                if((aRule.converter && (aRule.converter instanceof RawForeignValueToObjectConverter)) &&
                     !requisitePropertyNames.has(aRule.sourcePath) &&
                     (prefetchExpressions && prefetchExpressions.indexOf(aRule.targetPath) === -1)) {
                         continue;
@@ -1030,7 +1030,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     _setObjectValueForPropertyDescriptor: {
         value: function (object, value, propertyDescriptor, shouldFlagObjectBeingMapped) {
             var propertyName = propertyDescriptor.name,
-                isToMany;
+                isToMany = propertyDescriptor.cardinality !== 1;
             //Add checks to make sure that data matches expectations of propertyDescriptor.cardinality
 
             if(shouldFlagObjectBeingMapped) {
@@ -1038,7 +1038,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             }
 
             if (Array.isArray(value)) {
-                isToMany = propertyDescriptor.cardinality !== 1;
                 if (isToMany) {
                     object[propertyName] = value;
                 } else if (value.length) {
@@ -1049,7 +1048,17 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                     object[propertyName] = value[0];
                 }
             } else {
-                object[propertyName] = value;
+                if(isToMany) {
+                    if(!Array.isArray(object[propertyName])) {
+                        value = [value];
+                        object[propertyName] = value;
+                    }
+                    else {
+                        object[propertyName].push(value);
+                    }
+                } else {
+                    object[propertyName] = value;
+                }
             }
 
             if(shouldFlagObjectBeingMapped) {
