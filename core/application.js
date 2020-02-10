@@ -13,7 +13,6 @@
 var Target = require("./target").Target,
     Template = require("./template"),
     MontageWindow = require("../window-loader/montage-window").MontageWindow,
-    DataStream = require("data/service/data-stream").DataStream,
     Criteria = require("core/criteria").Criteria,
     DataQuery = require("data/model/data-query").DataQuery,
     UserIdentityService = undefined,
@@ -481,7 +480,6 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                     //    userObjectDescriptor = this.
                     selfUserCriteria,
                     userIdentityQuery;
-
 
                 if(userIdentityServices && userIdentityServices.length > 0) {
                     //Shortcut, there could be multiple one we need to flatten.
