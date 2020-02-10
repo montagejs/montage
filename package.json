@@ -53,7 +53,7 @@
     "frb": "~4.0.x",
     "htmlparser2": "~3.0.5",
     "q-io": "github:marchant/q-io.git#bluebird-q-io",
-    "mr": "montagejs/mr#master",
+    "mr": "marchant/mr#master",
     "weak-map": "^1.0.5",
     "lodash.kebabcase": "^4.1.1",
     "lodash.camelcase": "^4.3.0",
