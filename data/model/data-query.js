@@ -121,9 +121,10 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
      */
     criteria: {
         get: function () {
-            if (!this._criteria) {
-                this._criteria = {};
-            }
+            //Might be breaking, but we shouldn't create an empty object lile that, of the wrong type...
+            // if (!this._criteria) {
+            //     this._criteria = {};
+            // }
             return this._criteria;
         },
         set: function (criteria) {
