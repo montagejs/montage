@@ -50,7 +50,7 @@ var Defaults = {
     defaultValue: void 0,
     helpKey: "",
     isLocalizable: false,
-    isSearcheable: false,
+    isSearchable: false,
     isOrdered: false,
     hasUniqueValues: false,
 };
@@ -149,7 +149,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._setPropertyWithDefaults(serializer, "inversePropertyName", this.inversePropertyName);
             this._setPropertyWithDefaults(serializer, "isLocalizable", this.isLocalizable);
             this._setPropertyWithDefaults(serializer, "isSerializable", this.isSerializable);
-            this._setPropertyWithDefaults(serializer, "isSearcheable", this.isSearcheable);
+            this._setPropertyWithDefaults(serializer, "isSearchable", this.isSearchable);
             this._setPropertyWithDefaults(serializer, "isOrdered", this.isOrdered);
             this._setPropertyWithDefaults(serializer, "hasUniqueValues", this.hasUniqueValues);
             this._setPropertyWithDefaults(serializer, "description", this.description);
@@ -191,7 +191,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._overridePropertyWithDefaults(deserializer, "inversePropertyName");
             this._overridePropertyWithDefaults(deserializer, "isLocalizable");
             this._overridePropertyWithDefaults(deserializer, "isSerializable");
-            this._overridePropertyWithDefaults(deserializer, "isSearcheable");
+            this._overridePropertyWithDefaults(deserializer, "isSearchable");
             this._overridePropertyWithDefaults(deserializer, "isOrdered");
             this._overridePropertyWithDefaults(deserializer, "hasUniqueValues");
             this._overridePropertyWithDefaults(deserializer, "description");
@@ -397,7 +397,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @type {boolean}
      * @default false
      */
-    isSearcheable: {
+    isSearchable: {
          value: Defaults.readOnly
     },
 
