@@ -352,7 +352,11 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 if (this.requisitePropertyNames.size) {
                     while ((propertyName = iterator.next().value)) {
                         objectRule = objectMappingRules.get(propertyName);
-                        rule = rawDataMappingRules.get(objectRule.sourcePath);
+                        if(objectRule) {
+                            rule = rawDataMappingRules.get(objectRule.sourcePath);
+                        } else {
+                            console.error("expression-dat-mapping.js: - rawRequisitePropertyNames: couldn't find object rule for propertyName -"+propertyName+" of objectDescriptor "+this.objectDescriptor.name);
+                        }
 
                         if(rule) {
                             result.add(objectRule.sourcePath);
