@@ -1941,8 +1941,8 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 but it's very specialized for components. Having all prototypes of DO register as eventListeners upfront
                 would be damaging performance wise. We should do it as things happen.
             */
-
-            var eventPool = this._dataEventPoolForEventType(eventType),
+            if(object.dispatchEvent) {
+                var eventPool = this._dataEventPoolForEventType(eventType),
                 objectDescriptor = this.objectDescriptorForObject(object),
                 objectConstructor = object.constructor,
                 dataEvent = eventPool.checkout();
@@ -1953,11 +1953,12 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 dataEvent.dataObject = object;
                 dataEvent.detail = detail;
 
-            if(!this.isConstructorPreparedToHandleDataEvents(objectConstructor)) {
-                this.prepareConstructorToHandleDataEvents(objectConstructor, dataEvent);
-            }
+                if(!this.isConstructorPreparedToHandleDataEvents(objectConstructor)) {
+                    this.prepareConstructorToHandleDataEvents(objectConstructor, dataEvent);
+                }
 
-            object.dispatchEvent(dataEvent);
+                object.dispatchEvent(dataEvent);
+            }
         }
     },
 
