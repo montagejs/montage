@@ -36,7 +36,7 @@ exports.DeleteRule = DeleteRule = new Enum().initWithMembersAndValues(["NULLIFY"
 var Defaults = {
     name: "default",
     cardinality: 1,
-    mandatory: false,
+    isMandatory: false,
     readOnly: false,
     denyDelete: false,
     deleteRule: DeleteRule.Nullify,
@@ -52,6 +52,8 @@ var Defaults = {
     isLocalizable: false,
     isSearchable: false,
     isOrdered: false,
+    isUnique: false,
+    isSerializable: true,
     hasUniqueValues: false,
 };
 
@@ -129,7 +131,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             } else {
                 this._setPropertyWithDefaults(serializer, "cardinality", this.cardinality);
             }
-            this._setPropertyWithDefaults(serializer, "mandatory", this.mandatory);
+            this._setPropertyWithDefaults(serializer, "isMandatory", this.isMandatory);
             this._setPropertyWithDefaults(serializer, "readOnly", this.readOnly);
             //Not needed anymore as it's now this.deleteRule === DeleteRule.DENY
             //and deserializing denyDelete will set the equivallent on value deleteRule
@@ -151,6 +153,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._setPropertyWithDefaults(serializer, "isSerializable", this.isSerializable);
             this._setPropertyWithDefaults(serializer, "isSearchable", this.isSearchable);
             this._setPropertyWithDefaults(serializer, "isOrdered", this.isOrdered);
+            this._setPropertyWithDefaults(serializer, "isUnique", this.isUnique);
             this._setPropertyWithDefaults(serializer, "hasUniqueValues", this.hasUniqueValues);
             this._setPropertyWithDefaults(serializer, "description", this.description);
 
@@ -175,7 +178,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
                 this.cardinality = Infinity;
             }
 
-            this._overridePropertyWithDefaults(deserializer, "mandatory");
+            this._overridePropertyWithDefaults(deserializer, "isMandatory", "mandatory");
             this._overridePropertyWithDefaults(deserializer, "readOnly");
             this._overridePropertyWithDefaults(deserializer, "denyDelete");
             this._overridePropertyWithDefaults(deserializer, "deleteRule");
@@ -193,6 +196,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._overridePropertyWithDefaults(deserializer, "isSerializable");
             this._overridePropertyWithDefaults(deserializer, "isSearchable");
             this._overridePropertyWithDefaults(deserializer, "isOrdered");
+            this._overridePropertyWithDefaults(deserializer, "isUnique");
             this._overridePropertyWithDefaults(deserializer, "hasUniqueValues");
             this._overridePropertyWithDefaults(deserializer, "description");
         }
@@ -239,15 +243,16 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
 
             if (arguments.length > 2) {
                 propertyNames = Array.prototype.slice.call(arguments, 2, Infinity);
+
+                for (i = 0, n = propertyNames.length; i < n && !value; i++) {
+                    value = deserializer.getProperty(propertyNames[i]);
+                }
             } else {
-                propertyNames = [objectKey];
+                value = deserializer.getProperty(objectKey);
+
             }
 
-            for (i = 0, n = propertyNames.length; i < n && !value; i++) {
-                value = deserializer.getProperty(propertyNames[i]);
-            }
-
-            this[objectKey] = value === undefined ? Defaults[propertyNames[0]] : value;
+            this[objectKey] = value === undefined ? Defaults[propertyNames ? propertyNames[0] : objectKey] : value;
         }
     },
 
@@ -332,8 +337,8 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @type {boolean}
      * @default false
      */
-    mandatory: {
-        value: Defaults.mandatory
+    isMandatory: {
+        value: Defaults.isMandatory
     },
 
     /**
@@ -416,6 +421,18 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     isOrdered: {
         value: Defaults.isOrdered
    },
+
+    /**
+     * models if the value of the property is unique among all instances described
+     * by the propertyDescriptor's owner.
+     *
+     * @type {boolean}
+     * @default false
+     */
+    isUnique: {
+        value: Defaults.isUnique
+   },
+
 
     /**
      * models if the values of a collection / to-many property should be unique,
@@ -551,7 +568,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @default false
      */
     isSerializable: {
-        value: true
+        value: Defaults.isSerializable
     },
 
     /**
