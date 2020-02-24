@@ -47,7 +47,7 @@ var worker;
 
         _initializeGlobalListeners: function () {
             var self = this,
-                globalEvents = ["activate", "install", "message", "offline", "online", "sync"],
+                globalEvents = ["activate", "install", "message", "offline", "online","periodicsync", "sync"],
                 nativeAddEventListener = global.addEventListener;
 
             global.__MontageGlobalListeners__ = new Map();
