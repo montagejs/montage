@@ -921,6 +921,21 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      * Prefetches any object properties required to map the rawData property
      * and maps once the fetch is complete.
      *
+     * This is a bit overeaching. There are two reasons we want to mapObjectToRawDataProperty:
+     *  1. Create an object
+     *      1.1 If we create an object, properties that are not relations can't
+     *          be fetched. We need to make sure we don't actually try.
+     *      1.2 If a property is a relationship and it wasn't set on the object,
+     *          as an object, we can't get it either.
+     *      1.3 So, for created objects, validation rules should prevent the attempt to save if
+     *          mandory properties are missing.
+     *
+     *  2. Update an object.
+     *      2.1 We know what has changed
+     *      2.2 A property that is a relation to an object, especially without an object descriptor
+     *          but also with one can be stored inline as json.
+     *
+     *
      * @method
      * @argument {Object} object         - An object whose properties' values
      *                                     hold the model data.
@@ -931,10 +946,15 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     mapObjectToRawDataProperty: {
         value: function (object, data, propertyName) {
             var rule = this.rawDataMappingRules.get(propertyName),
-                requiredObjectProperties = rule ? rule.requirements : [],
+                //Adding a test for rawDataPrimaryKeys. Types that are meant to be
+                //embedded in others don't have a rawDataPrimaryKeys
+                //as they don't exists on their own.
+                requiredObjectProperties = (rule && this.rawDataPrimaryKeys) ? rule.requirements : null,
                 result, self;
 
-            result = this.service.rootService.getObjectPropertyExpressions(object, requiredObjectProperties);
+            if(requiredObjectProperties) {
+                result = this.service.rootService.getObjectPropertyExpressions(object, requiredObjectProperties);
+            }
 
             if (this._isAsync(result)) {
                 self = this;
