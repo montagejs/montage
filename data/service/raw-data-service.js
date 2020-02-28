@@ -111,23 +111,24 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
-    _objectDescriptorForObject: {
-        value: function (object) {
-            var types = this.types,
-                objectInfo = Montage.getInfoForObject(object),
-                moduleId = objectInfo.moduleId,
-                objectName = objectInfo.objectName,
-                module, exportName, objectDescriptor, i, n;
-            for (i = 0, n = types.length; i < n && !objectDescriptor; i += 1) {
-                module = types[i].module;
-                exportName = module && types[i].exportName;
-                if (module && moduleId === module.id && objectName === exportName) {
-                    objectDescriptor = types[i];
-                }
-            }
-            return objectDescriptor;
-        }
-    },
+    //Benoit: 2/25/2020 Doesn't seem to be used anywhere.
+    // _objectDescriptorForObject: {
+    //     value: function (object) {
+    //         var types = this.types,
+    //             objectInfo = Montage.getInfoForObject(object),
+    //             moduleId = objectInfo.moduleId,
+    //             objectName = objectInfo.objectName,
+    //             module, exportName, objectDescriptor, i, n;
+    //         for (i = 0, n = types.length; i < n && !objectDescriptor; i += 1) {
+    //             module = types[i].module;
+    //             exportName = module && types[i].exportName;
+    //             if (module && moduleId === module.id && objectName === exportName) {
+    //                 objectDescriptor = types[i];
+    //             }
+    //         }
+    //         return objectDescriptor;
+    //     }
+    // },
 
     _mapObjectPropertyValue: {
         value: function (object, propertyDescriptor, value) {
@@ -955,15 +956,14 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     /**
-     * Retrieve DataMapping for this object.
+     * Retrieve DataMapping for passed objectDescriptor.
      *
      * @method
      * @argument {Object} object - An object whose object descriptor has a DataMapping
      */
-    mappingForObject: {
-        value: function (object) {
-            var objectDescriptor = this.objectDescriptorForObject(object),
-                mapping = objectDescriptor && this.mappingWithType(objectDescriptor);
+    mappingForObjectDescriptor: {
+        value: function (objectDescriptor) {
+            var mapping = objectDescriptor && this.mappingWithType(objectDescriptor);
 
 
             if (!mapping) {
@@ -980,6 +980,18 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             }
 
             return mapping;
+        }
+    },
+
+    /**
+     * Retrieve DataMapping for this object.
+     *
+     * @method
+     * @argument {Object} object - An object whose object descriptor has a DataMapping
+     */
+    mappingForObject: {
+        value: function (object) {
+            return this.mappingForObjectDescriptor(this.objectDescriptorForObject(object));
         }
     },
 
