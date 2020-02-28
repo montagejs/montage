@@ -34,7 +34,7 @@ exports.DataEvent = MutableEvent.specialize({
 
     constructor: {
         value: function (type) {
-            this.timestamp = performance.now();
+            this.timeStamp = performance.now();
         }
     },
 
