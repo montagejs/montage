@@ -17,7 +17,7 @@ var Montage = require("core/core").Montage,
 var ChangeEvent = exports.ChangeEvent = Montage.specialize({
     constructor: {
         value: function ChangeEvent() {
-            this.timestamp = performance.now();
+            this.timeStamp = performance.now();
             return this;
         }
     },
