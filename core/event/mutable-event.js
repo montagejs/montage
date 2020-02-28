@@ -171,7 +171,11 @@ var wrapPropertyGetter = function (key, storageKey) {
          */
         eventPhase: {
             get: function () {
-                return (this._eventPhase !== void 0) ? this._eventPhase : this._event.eventPhase;
+                return (this._eventPhase !== void 0)
+                ? this._eventPhase
+                : this._event
+                    ? this._event.eventPhase
+                    : undefined;
             },
             set: function (value) {
                 this._eventPhase = value;
@@ -186,7 +190,11 @@ var wrapPropertyGetter = function (key, storageKey) {
          */
         target: {
             get: function () {
-                return (this._target !== void 0) ? this._target : this._event ? this._event.target : undefined;
+                return (this._target !== void 0)
+                    ? this._target
+                    : this._event
+                        ? this._event.target
+                        : undefined;
             },
             set: function (value) {
                 this._target = value;
@@ -247,7 +255,7 @@ var wrapPropertyGetter = function (key, storageKey) {
          */
         touches: {
             get: function () {
-                return this._event.touches;
+                return this._event ? this._event.touches : null;
             },
             set: function (value) {
                 this._event.touches = value;
@@ -259,7 +267,7 @@ var wrapPropertyGetter = function (key, storageKey) {
          */
         changedTouches: {
             get: function () {
-                return this._event.changedTouches;
+                return this._event ? this._event.changedTouches : null;
             },
             set: function (value) {
                 this._event.changedTouches = value;
@@ -271,7 +279,7 @@ var wrapPropertyGetter = function (key, storageKey) {
          */
         targetTouches: {
             get: function () {
-                return this._event.targetTouches;
+                return this._event ? this._event.targetTouches : null;
             }
         },
         _defaultPrevented: {
@@ -298,7 +306,11 @@ var wrapPropertyGetter = function (key, storageKey) {
          */
         timeStamp: {
             get: function () {
-                return (this._timeStamp !== void 0) ? this._timeStamp : this._event.timeStamp;
+                return (this._timeStamp !== void 0)
+                ? this._timeStamp
+                : this._event
+                    ? this._event.timeStamp
+                    : undefined;
             },
             set: function (value) {
                 this._timeStamp = value;
