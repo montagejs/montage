@@ -92,7 +92,7 @@
     "karma-jasmine": "^1.1.0",
     "karma-phantomjs-launcher": "^1.0.2",
     "karma-safari-launcher": "^1.0.0",
-    "montage-testing": "git://github.com/montagejs/montage-testing.git#master",
+    "montage-testing": "git://github.com/montagejs/montage-testing#features/worker",
     "mop-integration": "git://github.com/montagejs/mop-integration.git#master",
     "open": "0.0.5"
   },
