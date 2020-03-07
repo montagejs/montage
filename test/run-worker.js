@@ -1,43 +1,31 @@
-
-
-
 var WORKER_PATH = "worker.js",
     initializeWorker, teardownWorker;
 (function () {
     var serviceWorker = window.navigator.serviceWorker,
-        workerPath = WORKER_PATH,
-        workerURL = urlForPath(workerPath);
-
-
-    function urlForPath(path) {
-        var anchor = window.document.createElement("a");
-        anchor.href = path;
-        return anchor.href.toString();
-    }
-
-    function doesRegistrationMatchURL(registration, workerURL) {
-        var url = registration && registration.active && registration.active.scriptURL;
-        return url && String(url) === String(workerURL);
-    }
+        workerPath = WORKER_PATH;
 
     function pruneWorkerRegistrations() {
         var registrationsPromise = serviceWorker.getRegistrations ? serviceWorker.getRegistrations() : Promise.all([serviceWorker.getRegistration()]),
             promises = [];
 
         return registrationsPromise.then(function (workerRegistrations) {
-                if (workerRegistrations && workerRegistrations.length > 0) {
-                    registrationsToCheck = workerRegistrations.slice();
+            var registrationsToCheck, candidate;
+            if (workerRegistrations && workerRegistrations.length > 0) {
+                registrationsToCheck = workerRegistrations.slice();
 
-                    while (registrationsToCheck.length) {
-                        candidate = registrationsToCheck.shift();
-                        match = doesRegistrationMatchURL(candidate, workerURL);
-
-                        if (match) {
-                            promises.push(candidate.unregister());
-                        }
-                    }
+                while (registrationsToCheck.length) {
+                    candidate = registrationsToCheck.shift();
+                    promises.push(candidate.unregister());
                 }
-            return Promise.all(promises);
+            }
+            return Promise.all(promises).then(function (results) {
+                var didUnregister = true,
+                    i, n;
+                for (i = 0, n = results.length; i < n && didUnregister; i++) {
+                    didUnregister = didUnregister && results[i];
+                }
+                return didUnregister;
+            });
         });
     }
 
@@ -51,6 +39,7 @@ var WORKER_PATH = "worker.js",
     }
 
     var serviceWorkerIsReadyPromise;
+
     function serviceWorkerIsReady() {
         if (!serviceWorkerIsReadyPromise) {
             serviceWorkerIsReadyPromise = new Promise(function (resolve, reject) {
@@ -67,13 +56,17 @@ var WORKER_PATH = "worker.js",
             string = query.replace(/\+/g, " "),
             pattern = /([^&=]+)=?([^&]*)/g,
             match;
-            while (match = pattern.exec(string)) {
-                parameters[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
-            }
+        while (match = pattern.exec(string)) {
+            parameters[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
+        }
         return parameters;
     }
+    serviceWorker.addEventListener('message', function (event) {
+        console.log("Received Message from Worker: ", event.data);
+    });
 
-    initializeWorker = function() {
+
+    initializeWorker = function () {
         return pruneWorkerRegistrations().then(function () {
             return registerWorker();
         }).then(function () {
@@ -90,10 +83,23 @@ var WORKER_PATH = "worker.js",
         });
     };
 
-    teardownWorker = function() {
-        return pruneWorkerRegistrations().then(function () {
-            console.log("ServiceWorker teardown complete");
+    teardownWorker = function () {
+        return pruneWorkerRegistrations().then(function (unregisterSuccess) {
+            console.log("ServiceWorker teardown complete (" + unregisterSuccess + ")");
             return null;
         });
     };
+
+    window.onload = function () {
+        var registerButton = document.getElementById("register"),
+            unregisterButton = document.getElementById("unregister");
+
+        registerButton.addEventListener("click", function () {
+            initializeWorker();
+        });
+
+        unregisterButton.addEventListener("click", function () {
+            teardownWorker();
+        });
+    }
 })();

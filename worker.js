@@ -38,7 +38,7 @@ var worker;
          * Note: On a browser the loadCallback is called with the
          *       <script> tag as the argument
          */
-        load: function (location,loadCallback) {
+        load: function (location, loadCallback) {
             importScripts(location);
             if (loadCallback) {
                 loadCallback(location);
@@ -47,7 +47,7 @@ var worker;
 
         _initializeGlobalListeners: function () {
             var self = this,
-                globalEvents = ["activate", "install", "message", "offline", "online","periodicsync", "sync"],
+                globalEvents = ["activate", "install", "message", "offline", "online", "periodicsync", "sync"],
                 nativeAddEventListener = global.addEventListener;
 
             global.__MontageGlobalListeners__ = new Map();
@@ -69,7 +69,6 @@ var worker;
         },
 
         _initializeGlobalListener: function (eventName) {
-            var self = this;
             global.__MontageGlobalListeners__.set(eventName, []);
             global.addEventListener(eventName, function (event) {
                 var listeners = global.__MontageGlobalListeners__.get(eventName);
@@ -82,14 +81,13 @@ var worker;
         getParams: function () {
             var path;
             if (!this._params) {
-
                 if (self.MontageParams) {
                     this._params = Object.assign({}, self.MontageParams);
                 } else {
                     path = PATH_TO_MONTAGE;
                     if (!path) {
                         path = self.registration.scope.replace(/[^\/]*\.html$/, ""),
-                        path = path.replace(/[^\/]*\/?$/, "");
+                            path = path.replace(/[^\/]*\/?$/, "");
                     }
                     this._params = {
                         montageLocation: path
@@ -111,111 +109,122 @@ var worker;
                     callback(Require, Promise, URL);
                 }
             }
-
-            // determine which scripts to load
-            var pending = {
-                "require": "node_modules/mr/require.js",
-                "require/worker": "node_modules/mr/worker.js",
-                "promise": "node_modules/bluebird/js/browser/bluebird.min.js"
-                // "shim-string": "core/shim/string.js" // needed for the `endsWith` function.
-            };
-
-            // miniature module system
-            var definitions = {};
-            var bootModules = {};
-            function bootRequire(id) {
-                if (!bootModules[id] && definitions[id]) {
-                    var exports = bootModules[id] = {};
-                    bootModules[id] = definitions[id](bootRequire, exports) || exports;
-                }
-                return bootModules[id];
-            }
-
-            // execute bootstrap scripts
-            function allModulesLoaded() {
-                URL = bootRequire("mini-url");
-                Promise = bootRequire("promise");
-                Require = bootRequire("require");
-                exports.Require = Require;
-                // if we get past the for loop, bootstrapping is complete.  get rid
-                // of the bootstrap function and proceed.
-                delete global.bootstrap;
-
-                callbackIfReady();
-            }
-
-            // register module definitions for deferred,
-            // serial execution
-            global.bootstrap = function (id, factory) {
-                definitions[id] = factory;
-                delete pending[id];
-                for (var module in pending) {
-                    if (pending.hasOwnProperty(module)) {
-                        // this causes the function to exit if there are any remaining
-                        // scripts loading, on the first iteration.  consider it
-                        // equivalent to an array length check
-                        return;
-                    }
-                }
-
-
-                allModulesLoaded();
-            };
-
             this._initializeGlobalListeners();
+            self.addEventListener("install", function () {
+                self.skipWaiting();
+                var activeWorker = self.serviceWorker || self.registration.installing || self.registration.active,
+                    scriptURL = activeWorker.scriptURL,
+                    applicationPath = scriptURL.replace(/\/([\.A-Za-z0-9_-])*$/, "") + "/";
 
+                // determine which scripts to load
+                var pending = {
+                    "require": "node_modules/mr/require.js",
+                    "require/worker": "node_modules/mr/worker.js",
+                    "promise": "node_modules/bluebird/js/browser/bluebird.min.js"
+                    // "shim-string": "core/shim/string.js" // needed for the `endsWith` function.
+                };
 
-            // load in parallel, but only if we're not using a preloaded cache.
-            // otherwise, these scripts will be inlined after already
-            if (typeof global.BUNDLE === "undefined") {
-                var montageLocation = resolve(global.location, params.montageLocation);
+                // miniature module system
+                var definitions = {};
+                var bootModules = {};
 
-                //Special Case bluebird for now:
-                worker.load(resolve(montageLocation, pending.promise), function() {
+                function bootRequire(id) {
+                    if (!bootModules[id] && definitions[id]) {
+                        var exports = bootModules[id] = {};
+                        bootModules[id] = definitions[id](bootRequire, exports) || exports;
+                    }
+                    return bootModules[id];
+                }
 
-                    delete pending.promise;
+                // execute bootstrap scripts
+                function allModulesLoaded() {
+                    URL = bootRequire("mini-url");
+                    Promise = bootRequire("promise");
+                    Require = bootRequire("require");
+                    exports.Require = Require;
+                    Require.getLocation = function () {
+                        return applicationPath;
+                    };
+                    // if we get past the for loop, bootstrapping is complete.  get rid
+                    // of the bootstrap function and proceed.
+                    delete global.bootstrap;
 
-                    //global.bootstrap cleans itself from global once all known are loaded. "bluebird" is not known, so needs to do it first
-                    global.bootstrap("bluebird", function (require, exports) {
-                        return global.Promise;
-                    });
-                    global.bootstrap("promise", function (require, exports) {
-                        return global.Promise;
-                    });
+                    callbackIfReady();
+                }
 
-                    global.bootstrap("mini-url", function (require, exports) {
-                        exports.resolve = resolve;
-                    });
-
+                // register module definitions for deferred,
+                // serial execution
+                global.bootstrap = function (id, factory) {
+                    definitions[id] = factory;
+                    delete pending[id];
                     for (var module in pending) {
                         if (pending.hasOwnProperty(module)) {
-                            worker.load(resolve(montageLocation, pending[module]));
+                            // this causes the function to exit if there are any remaining
+                            // scripts loading, on the first iteration.  consider it
+                            // equivalent to an array length check
+                            return;
                         }
                     }
-                });
 
-            } else {
 
-                global.nativePromise = global.Promise;
-                Object.defineProperty(global, "Promise", {
-                    configurable: true,
-                    set: function(PromiseValue) {
-                        Object.defineProperty(global, "Promise", {
-                            value: PromiseValue
-                        });
+                    allModulesLoaded();
+                };
 
+
+
+
+                // load in parallel, but only if we're not using a preloaded cache.
+                // otherwise, these scripts will be inlined after already
+                if (typeof global.BUNDLE === "undefined") {
+                    var montageLocation = resolve(global.location, params.montageLocation);
+
+                    //Special Case bluebird for now:
+                    worker.load(resolve(montageLocation, pending.promise), function () {
+
+                        delete pending.promise;
+
+                        //global.bootstrap cleans itself from global once all known are loaded. "bluebird" is not known, so needs to do it first
                         global.bootstrap("bluebird", function (require, exports) {
                             return global.Promise;
                         });
                         global.bootstrap("promise", function (require, exports) {
                             return global.Promise;
                         });
-                    }
-                });
-                global.bootstrap("mini-url", function (require, exports) {
-                    exports.resolve = resolve;
-                });
-            }
+
+                        global.bootstrap("mini-url", function (require, exports) {
+                            exports.resolve = resolve;
+                        });
+
+                        for (var module in pending) {
+                            if (pending.hasOwnProperty(module)) {
+                                worker.load(resolve(montageLocation, pending[module]));
+                            }
+                        }
+                    });
+
+                } else {
+
+                    global.nativePromise = global.Promise;
+                    Object.defineProperty(global, "Promise", {
+                        configurable: true,
+                        set: function (PromiseValue) {
+                            Object.defineProperty(global, "Promise", {
+                                value: PromiseValue
+                            });
+
+                            global.bootstrap("bluebird", function (require, exports) {
+                                return global.Promise;
+                            });
+                            global.bootstrap("promise", function (require, exports) {
+                                return global.Promise;
+                            });
+                        }
+                    });
+                    global.bootstrap("mini-url", function (require, exports) {
+                        exports.resolve = resolve;
+                    });
+                }
+            });
 
             // global.bootstrap("shim-string");
 
@@ -233,21 +242,22 @@ var worker;
 
             var Promise = montageRequire("core/promise").Promise;
             var deepLoadPromises = [];
-            var self = this;
 
-            for (var i = 0, iDependency; (iDependency = dependencies[i]); i++) {
+            for (var i = 0, iDependency;
+                (iDependency = dependencies[i]); i++) {
                 deepLoadPromises.push(montageRequire.deepLoad(iDependency));
             }
 
             //Suppress Bluebird unhandled rejection error
-            Promise.onPossiblyUnhandledRejection(function(e, promise) {
+            Promise.onPossiblyUnhandledRejection(function (e, promise) {
                 console.warn("[Bluebird] Unhandled Rejection: " + e.message);
                 console.warn(e);
             });
 
 
             return Promise.all(deepLoadPromises).then(function () {
-                for (var i = 0, iDependency; (iDependency = dependencies[i]); i++) {
+                for (var i = 0, iDependency;
+                    (iDependency = dependencies[i]); i++) {
                     montageRequire(iDependency);
                 }
 
@@ -310,6 +320,3 @@ var worker;
 
     return exports;
 }));
-
-
-
