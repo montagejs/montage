@@ -148,6 +148,7 @@ Object.defineProperty(_RangeSelection.prototype, "swap_or_push", {
             // }, this);
 
 
+<<<<<<< HEAD
             plus = [];
             for(var indexInSelection, i=0, countI = itemsToAdd.length;(i<countI); i++) {
                 if (i in itemsToAdd) {
@@ -176,6 +177,18 @@ Object.defineProperty(_RangeSelection.prototype, "swap_or_push", {
             // if(JSON.stringify(plus) !== JSON.stringify(plus2)) {
             //     debug;
             // }
+=======
+                // if the same item appears twice in the add list, only add it once
+                if (itemsToAdd.findLastValue(item) > index) {
+                    return false;
+                }
+
+                // if the item is already in the selection, don't add it
+                // unless it's in the part that we're about to delete.
+                var indexInSelection = this.findValue(item);
+                return indexInSelection < 0 ||
+                        (indexInSelection >= start && indexInSelection < start + minusLength);
+>>>>>>> fix deprecation warnings from methods in collection's array additions
 
 		}
 		else {
