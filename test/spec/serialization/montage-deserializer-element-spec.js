@@ -66,9 +66,9 @@ describe("serialization/montage-deserializer-element-spec", function () {
             deserializer.init(serializationString, require);
 
             deserializer.deserialize(null, rootEl).then(function (objects) {
-                expect(defaultEventManager._registeredBubbleEventListeners.has("click")).toBe(true);
-                var registeredEventListeners = defaultEventManager._registeredBubbleEventListeners.get("click");
-                var proxyElement = registeredEventListeners.keysArray()[0];
+                var registeredEventListeners = defaultEventManager.registeredEventListenersForEventType_("click");
+                expect(registeredEventListeners).toBeDefined();
+                var proxyElement = registeredEventListeners[0];
                 return new Promise(function (resolve) {
                     expect(proxyElement).toBeTruthy();
                     objects.rootEl.addEventListener("action", function () {

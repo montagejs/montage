@@ -136,12 +136,12 @@ exports.Target = Montage.specialize( /** @lends Target.prototype */{
      * @function
      * @param {string} type The event type to listen for.
      * @param {object | function} listener The listener object or function.
-     * @param {boolean} useCapture Specifies whether to listen for the event during the bubble or capture phases.
+     * @param {object | boolean} useCapture Specifies whether to listen for the event during the bubble or capture phases.
      */
     addEventListener: {
-        value: function addEventListener(type, listener, useCapture) {
+        value: function addEventListener(type, listener, optionsOrUseCapture) {
             if (listener) {
-                defaultEventManager.registerEventListener(this, type, listener, useCapture);
+                defaultEventManager.registerTargetEventListener(this, type, listener, optionsOrUseCapture);
             }
         }
     },
@@ -151,12 +151,12 @@ exports.Target = Montage.specialize( /** @lends Target.prototype */{
      * @function
      * @param {string} type The event type.
      * @param {object | function} listener The listener object or function.
-     * @param {boolean} useCapture The phase of the event listener.
+     * @param {object | boolean} useCapture The phase of the event listener.
      */
     removeEventListener: {
-        value: function removeEventListener(type, listener, useCapture) {
+        value: function removeEventListener(type, listener, optionsOrUseCapture) {
             if (listener) {
-                defaultEventManager.unregisterEventListener(this, type, listener, useCapture);
+                defaultEventManager.unregisterTargetEventListener(this, type, listener, optionsOrUseCapture);
             }
         }
     },
