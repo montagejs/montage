@@ -1,105 +1,121 @@
 {
-  "name": "montage",
-  "version": "19.0.0",
-  "description": "Build your next application with a browser based platform that really gets the web.",
-  "license": "BSD-3-Clause",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/montagejs/montage.git"
-  },
-  "main": "montage",
-  "engines": {
-    "node": ">=10.16.2",
-    "npm": ">=6.9.0"
-  },
-  "overlay": {
-    "browser": {
-      "main": "core/core",
-      "redirects": {
-        "montage": "core/core"
-      },
-      "mappings": {
-        "mr": {
-          "name": "mr",
-          "location": "node_modules/mr"
-        },
-        "bluebird": {
-          "name": "bluebird",
-          "location": "node_modules/bluebird"
-        }
-      }
+    "name": "montage",
+    "version": "19.0.0",
+    "description": "Build your next application with a browser based platform that really gets the web.",
+    "license": "BSD-3-Clause",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/montagejs/montage.git"
     },
-    "node": {
-      "main": "core/core",
-      "redirects": {
-        "montage": "core/core"
-      },
-      "mappings": {
-        "mr": {
-          "name": "mr",
-          "location": "node_modules/mr"
+    "main": "montage",
+    "engines": {
+        "node": ">=10.16.2",
+        "npm": ">=6.9.0"
+    },
+    "overlay": {
+        "browser": {
+            "main": "core/core",
+            "redirects": {
+                "montage": "core/core"
+            },
+            "mappings": {
+                "mr": {
+                    "name": "mr",
+                    "location": "core/mr"
+                },
+                "bluebird": {
+                    "name": "bluebird",
+                    "location": "node_modules/bluebird"
+                }
+            }
         },
-        "bluebird": {
-          "name": "bluebird",
-          "location": "node_modules/bluebird"
+        "node": {
+            "main": "core/core",
+            "redirects": {
+                "montage": "core/core"
+            },
+            "mappings": {
+                "mr": {
+                    "name": "mr",
+                    "location": "core/mr"
+                },
+                "bluebird": {
+                    "name": "bluebird",
+                    "location": "node_modules/bluebird"
+                }
+            }
         }
-      }
-    }
-  },
-  "production": true,
-  "dependencies": {
-    "bluebird": "~3.5.5",
-    "collections": "~5.1.x",
-    "frb": "~4.0.x",
-    "htmlparser2": "~3.0.5",
-    "q-io": "github:marchant/q-io.git#bluebird-q-io",
-    "mr": "marchant/mr#master",
-    "weak-map": "^1.0.5",
-    "lodash.kebabcase": "^4.1.1",
-    "lodash.camelcase": "^4.3.0",
-    "lodash.trim": "^4.5.1",
-    "lodash.snakecase": "^4.1.1",
-    "proxy-polyfill": "~0.1.7",
-    "strange": "^1.7.2"
-  },
-  "devDependencies": {
-    "concurrently": "^3.4.0",
-    "http-server": "^0.10.0",
-    "xhr2": "^0.1.4",
-    "jasmine-console-reporter": "^1.2.7",
-    "jasmine-core": "^2.5.2",
-    "jshint": "^2.9.5",
-    "karma": "^4.2.0",
-    "karma-chrome-launcher": "^3.0.0",
-    "karma-coverage": "^1.1.2",
-    "karma-firefox-launcher": "^1.2.0",
-    "karma-ie-launcher": "^1.0.0",
-    "karma-jasmine": "^2.0.1",
-    "karma-phantomjs-launcher": "^1.0.4",
-    "karma-safari-launcher": "^1.0.0",
-    "montage-testing": "git://github.com/montagejs/montage-testing.git#master",
-    "mop-integration": "git://github.com/montagejs/mop-integration.git#master",
-    "open": "0.0.5"
-  },
-  "scripts": {
-    "test": "node test/run-node.js",
-    "jsdoc": "jsdoc -c jsdoc.json",
-    "start:demo": "concurrently \"http-server -p 8084\" \"open http://localhost:8084/demo/\"",
-    "integration": "MONTAGE_VERSION=${MONTAGE_VERSION:=./} MOP_VERSION=${MOP_VERSION:=#master} node node_modules/mop-integration/integration",
-    "lint": "jshint .",
-    "test:karma": "karma start --no-auto-watch --single-run",
-    "test:karma-travis": "karma start --no-auto-watch --single-run --browsers=Chrome_travis_ci",
-    "test:karma-firefox": "karma start --no-auto-watch --single-run --browsers=Firefox",
-    "test:karma-chrome": "karma start --no-auto-watch --single-run --browsers=Chrome",
-    "test:karma-debug": "karma start --auto-watch --no-single-run --browsers=PhantomJS_debug",
-    "test:karma-dev": "karma start --auto-watch --no-single-run --capture",
-    "test:jasmine": "concurrently \"http-server -p 8085\" \"open http://localhost:8085/test/run.html\""
-  },
-  "exclude": [
-    "demo",
-    "report",
-    "doc",
-    "test",
-    "tools"
-  ]
+    },
+    "production": true,
+    "dependencies": {
+        "mr": "./core/mr",
+        "collections": "./core/collections",
+        "q-io": "./core/promise-io",
+        "frb": "./core/frb",
+        "bluebird": "~3.5.5",
+        "htmlparser2": "~3.0.5",
+        "weak-map": "^1.0.5",
+        "lodash.kebabcase": "^4.1.1",
+        "lodash.camelcase": "^4.3.0",
+        "lodash.trim": "^4.5.1",
+        "lodash.snakecase": "^4.1.1",
+        "proxy-polyfill": "~0.1.7",
+        "strange": "^1.7.2",
+        "ical.js": "~1.4.0"
+    },
+    "devDependencies": {
+        "montage-testing": "./testing",
+        "concurrently": "^3.4.0",
+        "http-server": "^0.10.0",
+        "xhr2": "^0.1.4",
+        "jasmine-console-reporter": "^1.2.7",
+        "jasmine-core": "^2.5.2",
+        "jshint": "^2.9.5",
+        "karma": "^4.2.0",
+        "karma-chrome-launcher": "^3.0.0",
+        "karma-coverage": "^1.1.2",
+        "karma-firefox-launcher": "^1.2.0",
+        "karma-ie-launcher": "^1.0.0",
+        "karma-jasmine": "^2.0.1",
+        "karma-phantomjs-launcher": "^1.0.4",
+        "karma-safari-launcher": "^1.0.0",
+        "mop-integration": "git://github.com/montagejs/mop-integration.git#master",
+        "open": "0.0.5",
+        "jasmine-node": "montagestudio/jasmine-node#master",
+        "pegjs": "git://github.com/dmajda/pegjs.git"
+    },
+    "scripts": {
+        "test-mr": "node core/mr/test/run-node.js",
+        "lint-mr": "jshint core/mr",
+        "integration": "MONTAGE_VERSION=${MONTAGE_VERSION:=./} MOP_VERSION=${MOP_VERSION:=#master} node node_modules/mop-integration/integration",
+        "integration-debug": "node --inspect-brk=9229 node_modules/mop-integration/integration.js",
+        "test-mr:karma": "karma start --no-auto-watch --single-run",
+        "test-mr:karma-dev": "karma start --auto-watch --no-single-run",
+        "test-mr:jasmine": "concurrently \"http-server -p 8081 core/mr\" \"open http://localhost:8081/test/run.html\"",
+        "test-mr:demo": "concurrently \"http-server -a localhost -p 8082 core/mr\" \"open http://localhost:8082/demo/\"",
+        "test": "node test/run-node.js",
+        "jsdoc": "jsdoc -c jsdoc.json",
+        "start:demo": "concurrently \"http-server -p 8084\" \"open http://localhost:8084/demo/\"",
+        "lint": "jshint .",
+        "test:karma": "karma start --no-auto-watch --single-run",
+        "test:karma-travis": "karma start --no-auto-watch --single-run --browsers=Chrome_travis_ci",
+        "test:karma-firefox": "karma start --no-auto-watch --single-run --browsers=Firefox",
+        "test:karma-chrome": "karma start --no-auto-watch --single-run --browsers=Chrome",
+        "test:karma-debug": "karma start --auto-watch --no-single-run --browsers=PhantomJS_debug",
+        "test:karma-dev": "karma start --auto-watch --no-single-run --capture",
+        "test:jasmine": "concurrently \"http-server -p 8085\" \"open http://localhost:8085/test/run.html\"",
+        "test-collections": "node core/collections/test/run-node.js",
+        "test-frb": "jasmine-node core/frb/spec",
+        "build-frb-parser": "pegjs --allowed-start-rules expression,sheet core/frb/grammar.pegjs"
+    },
+    "bin": {
+        "mr": "core/mr/bin/mr"
+    },
+    "exclude": [
+        "demo",
+        "report",
+        "doc",
+        "test",
+        "tools"
+    ]
 }

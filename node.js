@@ -1,7 +1,7 @@
 /*jshint node:true, browser:false */
+var Require = require("mr");
 var FS = require("q-io/fs");
 var MontageBoot = require("./montage");
-var Require = require("mr");
 
 var URL = require("url");
 var htmlparser = require("htmlparser2");
@@ -63,6 +63,27 @@ MontageBoot.loadPackage = function (location, config) {
     config = config || {};
     config.overlays = ["node", "server", "montage"];
     config.location = URL.resolve(Require.getLocation(), location);
+
+    //The equivalent is done in montage.js for the browser:
+    //install the linter, which loads on the first error
+    function lint(module) {
+        if(!lint.JSHINT) {
+            lint.JSHINT = require("jshint");
+        }
+        if (!lint.JSHINT.JSHINT(module.text)) {
+            console.warn("JSHint Error: "+module.location);
+            lint.JSHINT.JSHINT.errors.forEach(function (error) {
+                if (error) {
+                    console.warn("Problem at line "+error.line+" character "+error.character+": "+error.reason);
+                    if (error.evidence) {
+                        console.warn("    " + error.evidence);
+                    }
+                }
+            });
+        }
+    };
+    config.lint = lint;
+
 
     return Require.loadPackage(config.location, config);
 };
