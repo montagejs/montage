@@ -39,7 +39,7 @@ var Defaults = {
     isMandatory: false,
     readOnly: false,
     denyDelete: false,
-    deleteRule: DeleteRule.Nullify,
+    deleteRule: DeleteRule.NULLIFY,
     inversePropertyName: void 0,
     valueType: "string",
     collectionValueType: "list",
