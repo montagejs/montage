@@ -48,10 +48,10 @@
     },
     "production": true,
     "dependencies": {
-        "mr": "./core/mr",
-        "collections": "./core/collections",
-        "q-io": "./core/promise-io",
-        "frb": "./core/frb",
+        "mr": "file:./core/mr",
+        "collections": "file:./core/collections",
+        "q-io": "file:./core/promise-io",
+        "frb": "file:./core/frb",
         "bluebird": "~3.5.5",
         "htmlparser2": "~3.0.5",
         "weak-map": "^1.0.5",
@@ -64,14 +64,14 @@
         "ical.js": "~1.4.0"
     },
     "files": [
-        "./core/mr",
-        "./core/collections",
-        "./core/promise-io",
-        "./core/frb",
-        "./testing"
+        "core/mr",
+        "core/collections",
+        "core/promise-io",
+        "core/frb",
+        "testing"
     ],
     "devDependencies": {
-        "montage-testing": "./testing",
+        "montage-testing": "file:./testing",
         "concurrently": "^3.4.0",
         "http-server": "^0.10.0",
         "xhr2": "^0.1.4",
@@ -113,7 +113,8 @@
         "test:jasmine": "concurrently \"http-server -p 8085\" \"open http://localhost:8085/test/run.html\"",
         "test-collections": "node core/collections/test/run-node.js",
         "test-frb": "jasmine-node core/frb/spec",
-        "build-frb-parser": "pegjs --allowed-start-rules expression,sheet core/frb/grammar.pegjs"
+        "build-frb-parser": "pegjs --allowed-start-rules expression,sheet core/frb/grammar.pegjs",
+        "size": "t=\"$(npm pack .)\"; wc -c \"${t}\"; tar tvf \"${t}\"; rm \"${t}\";"
     },
     "bin": {
         "mr": "core/mr/bin/mr"
