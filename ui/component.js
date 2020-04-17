@@ -1204,6 +1204,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     },
 
     _inDocument: {
+        get: function() {
+            return this.inDocument;
+        }
+    },
+    inDocument: {
         value: false
     },
 
@@ -1217,9 +1222,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 this.unregisterDroppable();
             }
 
-            if (this._inDocument && typeof this.exitDocument === "function") {
+            if (this.inDocument && typeof this.exitDocument === "function") {
                 this.exitDocument();
-                this._inDocument = false;
+                this.inDocument = false;
             }
         }
     },
@@ -1241,7 +1246,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         }
                     }
 
-                    if (component._inDocument) {
+                    if (component.inDocument) {
                         component.__exitDocument();
                     }
                 };
@@ -3079,7 +3084,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     }
                 }
                 this._shouldBuildOut = false;
-                if (this._inDocument) {
+                if (this.inDocument) {
                     this._buildIn();
                 }
             }
@@ -3099,7 +3104,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             this.__shouldBuildOut = value;
             if (value) {
                 this._shouldBuildIn = false;
-                if (this._inDocument) {
+                if (this.inDocument) {
                     this._buildOut();
                 }
             }
@@ -3295,7 +3300,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 bubbles: false
             });
             this.dispatchEvent(event);
-            this._inDocument = true;
+            this.inDocument = true;
             if (this.parentComponent) {
                 this.parentComponent._childWillEnterDocument();
             }
