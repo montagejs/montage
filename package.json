@@ -63,6 +63,13 @@
         "strange": "^1.7.2",
         "ical.js": "~1.4.0"
     },
+    "files": [
+        "./core/mr",
+        "./core/collections",
+        "./core/promise-io",
+        "./core/frb",
+        "./testing"
+    ],
     "devDependencies": {
         "montage-testing": "./testing",
         "concurrently": "^3.4.0",
