@@ -64,11 +64,11 @@
         "ical.js": "~1.4.0"
     },
     "files": [
-        "core/mr",
-        "core/collections",
-        "core/promise-io",
-        "core/frb",
-        "testing"
+        "core/mr/*",
+        "core/collections/*",
+        "core/promise-io/*",
+        "core/frb/*",
+        "testing/*"
     ],
     "devDependencies": {
         "montage-testing": "file:./testing",
@@ -92,7 +92,6 @@
         "pegjs": "git://github.com/dmajda/pegjs.git"
     },
     "scripts": {
-        "preinstall": "npm install core/mr",
         "test-mr": "node core/mr/test/run-node.js",
         "lint-mr": "jshint core/mr",
         "integration": "MONTAGE_VERSION=${MONTAGE_VERSION:=./} MOP_VERSION=${MOP_VERSION:=#master} node node_modules/mop-integration/integration",
