@@ -675,9 +675,12 @@ function __super(callerFn, methodPropertyName, isValue, isGetter, isSetter) {
  */
 function _super() {
     // Figure out which function called us.
-    var callerFn = ( _super && _super.caller ) ? _super.caller : arguments.callee.caller,
-        superFn = __super.call(this,callerFn);
-    return superFn ? superFn.apply(this, arguments) : undefined;
+    // var callerFn = ( _super && _super.caller ) ? _super.caller : arguments.callee.caller,
+    //     superFn = __super.call(this,callerFn);
+    // return superFn ? superFn.apply(this, arguments) : undefined;
+
+    return ((__super.call(this, /* callerFn - Figure out which function called us.*/ (( _super && _super.caller ) ? _super.caller : arguments.callee.caller))) || Function.noop).apply(this, arguments);
+
 }
 
 function _superForValue(methodName) {
