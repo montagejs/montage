@@ -1,0 +1,13 @@
+{
+    "mappings": {
+        "mr": "../../..",
+        "bluebird": "../../../node_modules/bluebird"
+    },
+    "redirects": {
+        "d": "a"
+    },
+
+    "dependencies": {
+        "dependency": "*"
+    }
+}

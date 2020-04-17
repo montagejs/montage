@@ -1,0 +1,9 @@
+{
+    "mappings": {
+        "dependency": {
+            "name": "dependency",
+            "hash": "xxx",
+            "location": "packages/dependency/"
+        }
+    }
+}
