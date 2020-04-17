@@ -80,7 +80,10 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
         value: function(value, name) {
             var type = this._getTypeOf(value);
 
-            if (type === "object") {
+            //Happens often so let's do that first
+            if (type === "MontageObject") {
+                this._visitCustomType(type, value, name);
+            } else if (type === "object") {
                 this._visitObject(value, name);
             } else if (type === "array") {
                 this._visitArray(value, name);
@@ -225,13 +228,28 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
                 args;
 
             if (typeof visitor[methodName] === "function") {
-                args = Array.prototype.slice.call(arguments, 1);
-                // the first parameter of the handler function is always the malker
-                args.unshift(this);
 
-                return visitor[methodName].apply(
-                    visitor,
-                    args);
+                if(arguments.length === 3) {
+                    visitor[methodName].call(
+                        visitor, this, arguments[1], arguments[2]);
+                }
+                else if(arguments.length === 2) {
+                    visitor[methodName].call(
+                        visitor, this, arguments[1]);
+                }
+                else if(arguments.length === 1) {
+                        visitor[methodName].call(
+                            visitor, this);
+                }
+                else {
+                    args = Array.prototype.slice.call(arguments, 1);
+                    // the first parameter of the handler function is always the malker
+                    args.unshift(this);
+
+                    return visitor[methodName].apply(
+                        visitor,
+                        args);
+                }
             }
         }
     }
