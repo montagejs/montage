@@ -5,6 +5,8 @@
 *  @see {external:Date}
 */
 
+var TimeZone = require("../date/time-zone");
+
 /**
  * @external
  */
@@ -185,6 +187,27 @@ Number.prototype.toPaddedString = function(len , fillchar) {
   _parseRFC3339.parseRFC3339_RegExp = /(\d\d\d\d)(-)?(\d\d)(-)?(\d\d)(T)?(\d\d)(:)?(\d\d)?(:)?(\d\d)?([\.,]\d+)?($|Z|([+-])(\d\d)(:)?(\d\d)?)/i;
   _parseRFC3339.endsByZ = /Z$/i;
   Date.parseRFC3339 = _parseRFC3339;
+
+
+
+/**
+ * Returns an equivalent CalendarDate to aDate (in UTC / local timeZone)in Calendar's timeZone.
+ *
+ * @function
+ * @param {Date} aDate The date for which to perform the calculation.
+ * @returns {CalendarDate} true if the given date matches the given components, otherwise false.
+ */
+
+Object.defineProperty(Date.prototype, "calendarDateInTimeZone", {
+    value: function (timeZone) {
+        var aCalendarDate  = CalendarDate.fromJSDate(this, true /*useUTC*/);
+        TimeZone.convertCalendarDateFromTimeZoneToTimeZone(aCalendarDate,Timezone.utcTimezone,timeZone);
+        return aCalendarDate;
+},
+    writable: true,
+    configurable: true
+});
+
 
 /**********
  * Part of https://github.com/tardate/rfc3339date.js/.
