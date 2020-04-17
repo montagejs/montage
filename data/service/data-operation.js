@@ -74,6 +74,7 @@ var Montage = require("core/core").Montage,
             to a BeginTransaction operation, then the batch will be executed within that transaction
         */
         "batch",
+        "batchupdate",
         "batchcompleted",
         "batchfailed",
 
@@ -96,6 +97,8 @@ var Montage = require("core/core").Montage,
 
         /* Attempting to create a transaction within an existing one will fail */
         "createtransactionfailed",
+
+        "transactioncancelled",
 
         "createsavepoint",
 
@@ -162,13 +165,16 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
 
     constructor: {
         value: function DataOperation() {
-            this.time = Date.now();
+            this.timeStamp = performance.now();
             this.id = uuid.generate();
 
-            //Not sure we need this, it's not used anywhere
-            //this.creationIndex = exports.DataOperation.prototype._currentIndex + 1 || 0;
-            //exports.DataOperation.prototype._currentIndex = this.creationIndex;
+            this.constructionIndex = exports.DataOperation.prototype.constructionSequence++;
+            exports.DataOperation.prototype.constructionSequence = this.constructionIndex;
         }
+    },
+
+    constructionSequence: {
+        value: 0
     },
 
     bubbles: {
@@ -183,7 +189,7 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
         value:function (serializer) {
             serializer.setProperty("id", this.id);
             serializer.setProperty("type", DataOperationType.intValueForMember(this.type));
-            serializer.setProperty("time", this.time);
+            serializer.setProperty("timeStamp", this.timeStamp);
             serializer.setProperty("dataDescriptor", this.dataDescriptor);
             if(this.referrerId) {
                 serializer.setProperty("referrerId", this.referrerId);
@@ -213,9 +219,9 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
                 this.type = DataOperationType.memberWithIntValue(value);
             }
 
-            value = deserializer.getProperty("time");
+            value = deserializer.getProperty("timeStamp");
             if (value !== void 0) {
-                this.time = value;
+                this.timeStamp = value;
             }
 
             value = deserializer.getProperty("dataDescriptor");
@@ -249,10 +255,6 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             }
 
         }
-    },
-
-    creationIndex: {
-        value: undefined
     },
 
     /***************************************************************************
@@ -370,27 +372,6 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
         value: undefined
     },
 
-
-    /**
-     * creationTime
-     * A number used to order operations according to when they were created.
-     * // Add deprecation of "time" bellow
-     * This is initialized when an operation is created to the value of
-     * [Date.now()]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now}.
-     * The value can then be changed, but it should only be changed to values
-     * returned by `Date.now()`.
-     *
-     * Two operations can have the same `time` value if they were created within
-     * a millisecond of each other, and if so the operations'
-     * [index]{@link DataOperation#index} can be used to determine which one was
-     * created first.
-     *
-     * @type {number}
-     */
-    creationTime: {
-        value: undefined
-    },
-
     /**
      * An operation that preceded and this one is related to. For a ReadUpdated, it would be the Read operation.
      *
@@ -477,7 +458,7 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
      *
      * @type {number}
      */
-    index: {
+    constructionIndex: {
         value: undefined
     },
 
@@ -710,6 +691,7 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             validateCancelled: DataOperationType.validatecancelled,
 
             Batch: DataOperationType.batch,
+            BatchUpdate: DataOperationType.batchupdate,
             BatchCompleted: DataOperationType.batchcompleted,
             BatchFailed: DataOperationType.batchfailed,
 

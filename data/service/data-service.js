@@ -1411,7 +1411,21 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      */
     getObjectProperties: {
         value: function (object, propertyNames) {
-             if (this.isRootService) {
+
+
+            /*
+                Benoit:
+
+                - If we create an object, properties that are not relations can't
+                be fetched. We need to make sure we don't actually try.
+
+                - If a property is a relationship and it wasn't set on the object,
+                as an object, we can't get it either.
+            */
+            if(this.isObjectCreated(object)) {
+                //Not much we can do there anyway, punt
+                return Promise.resolve(true);
+            } else if (this.isRootService) {
                 // Get the data, accepting property names as an array or as a list
                 // of string arguments while avoiding the creation of any new array.
                 var names = Array.isArray(propertyNames) ? propertyNames : arguments,
@@ -1928,12 +1942,6 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-    createDataObject: {
-        value: function (type) {
-
-        }
-    },
-
     dispatchDataEventTypeForObject: {
         value: function (eventType, object, detail) {
             /*
@@ -2072,6 +2080,12 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             else {
                 return this.rootService.createdDataObjects;
             }
+        }
+    },
+
+    isObjectCreated: {
+        value: function(object) {
+            return this.createdDataObjects.has(object);
         }
     },
 
@@ -2579,7 +2593,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
     _serviceIdentifierForQuery: {
         value: function (query) {
-            var parameters = query.criteria.parameters,
+            var parameters = (query && query.criteria) ? query.criteria.parameters : null,
                 serviceModuleID = parameters && parameters.serviceIdentifier,
                 mapping, propertyName;
 
