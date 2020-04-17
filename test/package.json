@@ -2,9 +2,10 @@
     "name": "montage-tests",
     "version": "0.0.0",
     "mappings": {
+        "mr": "../core/mr",
         "montage": "../",
-        "montage-testing": "../node_modules/montage-testing",
-        "collections": "../node_modules/collections",
+        "montage-testing": "../testing",
+        "collections": "../core/collections",
         "package-a": {
             "name": "package-a",
             "location": "package-a"

@@ -1,0 +1,9 @@
+{
+    "name": "montage-testing-test",
+    "version": "0.0.0",
+	"main": "all",
+  	"mappings": {
+    	"montage": "../node_modules/montage",
+    	"montage-testing": "../"
+  	}
+}

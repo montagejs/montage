@@ -98,7 +98,7 @@ describe("core/date-spec", function () {
         expected.setUTCSeconds(0);
         expected.setUTCMilliseconds(0);
         //Error message: "incorrect conversion of: '" + sourceString + "'" ;
-        expect(cresultDate.toUTCString()).toBe(expected.toUTCString());
+        expect(resultDate.toUTCString()).toBe(expected.toUTCString());
     });
 
     it("should parse not case sensitive", function () {
