@@ -92,6 +92,7 @@
         "pegjs": "git://github.com/dmajda/pegjs.git"
     },
     "scripts": {
+        "preinstall": "npm install core/mr",
         "test-mr": "node core/mr/test/run-node.js",
         "lint-mr": "jshint core/mr",
         "integration": "MONTAGE_VERSION=${MONTAGE_VERSION:=./} MOP_VERSION=${MOP_VERSION:=#master} node node_modules/mop-integration/integration",
