@@ -88,18 +88,68 @@ exports.RawEmbeddedValueToObjectConverter = RawValueToObjectConverter.specialize
      */
     revert: {
         value: function (v) {
+            var self = this,
+                revertedValue,
+                result;
+
             if (v) {
                 if (!this.compiledRevertSyntax) {
-                    return Promise.resolve(v);
+                    return Promise.all([this._descriptorToFetch, this.service]).then(function (values) {
+                        var objectDescriptor = values[0],
+                            service = values[1];
+
+                        if(Array.isArray(v)) {
+                            if(v.length) {
+                                revertedValue = [];
+                                for(var i=0, countI=v.length, promises;(i<countI);i++) {
+                                    result =  self._revertOneValue(v[i],objectDescriptor, service, revertedValue, i);
+                                    if (Promise.is(result)) {
+                                        (promises || (promises = [])).push(result);
+                                    }
+                                }
+                                return Promise.all(promises).then(function() {
+                                    return revertedValue;
+                                });
+                            }
+                            else {
+                                return Promise.resolve(v);
+                            }
+                        }
+                        else {
+                            if(v) {
+                                return self._revertOneValue(v,objectDescriptor, service);
+                            }
+                        }
+                    });
                 } else {
                     var scope = this.scope;
                     //Parameter is what is accessed as $ in expressions
                     scope.value = v;
                     return Promise.resolve(this.compiledRevertSyntax(scope));
                 }
-
             }
             return Promise.resolve();
+        }
+    },
+
+    _revertOneValue:  {
+        value: function (v, objectDescriptor, service, valueArray, index) {
+            var record = {},
+                mapResult = service._mapObjectToRawData(v, record);
+
+            if (Promise.is(mapResult)) {
+                return mapResult.then(function(rawData) {
+                    if(valueArray) {
+                        valueArray[index] = record;
+                    }
+                    return record;
+                });
+            } else {
+                if(valueArray) {
+                    valueArray[index] = record;
+                }
+                return record;
+            }
         }
     }
 
