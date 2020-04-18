@@ -42,8 +42,8 @@ exports.Main = Component.specialize({
 
             //Object.observe(component, function (changes) {
             //    changes.forEach(function (change) {
-            //        if (change.name === '_inDocument') {
-            //            console.log("Property " + '_inDocument' + " changed");
+            //        if (change.name === 'inDocument') {
+            //            console.log("Property " + 'inDocument' + " changed");
             //            console.log(change);
             //        }
             //    });

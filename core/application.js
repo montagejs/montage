@@ -481,6 +481,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                     selfUserCriteria,
                     userIdentityQuery;
 
+                //Bypassing to work offline:
                 if(userIdentityServices && userIdentityServices.length > 0) {
                     //Shortcut, there could be multiple one we need to flatten.
                     userIdentityObjectDescriptors = userIdentityServices[0].types;
@@ -649,7 +650,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                     popupSlot = self.popupSlots[type] = self._createPopupSlot(zIndex, className);
                 }
 
-                if(!popupSlot._inDocument) {
+                if(!popupSlot.inDocument) {
                     self.rootComponent.addChildComponent(popupSlot);
                 }
 
