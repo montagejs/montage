@@ -99,8 +99,13 @@
         var result;
         if (!(result = normalizeIdCache.get(id))) {
             result = normalizePattern.exec(id);
-            result = ( result ? result[1] : id);
-            normalizeIdCache.set(id, (config && config.mappings[id] ? id : result));
+            result = ( result
+                ? config && config.mappings[id]
+                    ? id
+                    : result[1]
+                : id);
+            normalizeIdCache.set(id, result);
+
         }
         return result;
     }
@@ -600,7 +605,7 @@
             }
             loading[topId] = true; // this has happened before
             return load(topId, viaId)
-            .then(function deepLoadhen() {
+            .then(function deepLoadThen() {
                 // load the transitive dependencies using the magic of
                 // recursion.
                 var promises , depId, iPromise,
