@@ -1,5 +1,5 @@
 
-var PropertyChanges = require("collections/listen/property-changes");
+var PropertyChanges = require("core/collections/listen/property-changes");
 
 // for whatever reason, HTMLInputElement is not the same as the global of the
 // same name, at least in Chrome

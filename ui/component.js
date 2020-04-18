@@ -27,9 +27,9 @@ var Montage = require("../core/core").Montage,
     drawListLogger = require("../core/logger").logger("drawing list").color.blue(),
     needsDrawLogger = require("../core/logger").logger("drawing needsDraw").color.violet(),
     drawLogger = require("../core/logger").logger("drawing").color.blue(),
-    WeakMap = require("collections/weak-map"),
-    Map = require("collections/map"),
-    Set = require("collections/set");
+    WeakMap = require("core/collections/weak-map"),
+    Map = require("core/collections/map"),
+    Set = require("core/collections/set");
 
 /**
  * @const

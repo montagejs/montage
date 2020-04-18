@@ -1,6 +1,6 @@
 
-require("collections/shim");
-var Map = require("collections/map");
+require("core/collections/shim");
+var Map = require("core/collections/map");
 var Observers = require("../observers");
 var Operators = require("../operators");
 var Scope = require("../scope");

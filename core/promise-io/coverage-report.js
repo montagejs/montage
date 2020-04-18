@@ -1,5 +1,5 @@
 
-require("collections/shim");
+require("core/collections/shim");
 var Q = require("q-bluebird");
 var FS = require("./fs");
 

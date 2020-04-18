@@ -1,9 +1,9 @@
-var Bindings = require("frb"),
-    stringify = require("frb/stringify"),
-    assign = require("frb/assign"),
-    evaluate = require("frb/evaluate"),
-    expand = require("frb/expand"),
-    Scope = require("frb/scope"),
+var Bindings = require("core/frb/bindings"),
+    stringify = require("core/frb/stringify"),
+    assign = require("core/frb/assign"),
+    evaluate = require("core/frb/evaluate"),
+    expand = require("core/frb/expand"),
+    Scope = require("core/frb/scope"),
     Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
@@ -98,7 +98,7 @@ var deserializeObjectBindings = exports.deserializeObjectBindings = function (de
 
         if (ONE_ASSIGNMENT in descriptor) {
             var value = descriptor[ONE_ASSIGNMENT];
-            
+
             assign(
                 object,
                 targetPath,

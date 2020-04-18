@@ -1,6 +1,6 @@
 /*jshint node:true, browser:false */
-var Require = require("mr");
-var FS = require("q-io/fs");
+var Require = require("./core/mr/require");
+var FS = require("./core/promise-io/fs");
 var MontageBoot = require("./montage");
 
 var URL = require("url");

@@ -1,6 +1,6 @@
 /* global console */
 var Montage = require("./core").Montage;
-    Map = require("collections/map");
+    Map = require("core/collections/map");
 
 var deprecatedFeaturesOnceMap = new Map();
 
@@ -79,7 +79,7 @@ exports.deprecateMethod = function deprecate(scope, deprecatedFunction, name, al
         } else {
             deprecationWarning(name, alternative, 3);
         }
-        
+
         return deprecatedFunction.apply(scope ? scope : this, arguments);
     };
     deprecationWrapper.deprecatedFunction = deprecatedFunction;

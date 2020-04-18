@@ -9,7 +9,7 @@
 */
 
 var Range = require("strange"),
-    Montage = require("./core").Montage;
+Montage = require("./core").Montage;
 
 exports.Range = Range;
 

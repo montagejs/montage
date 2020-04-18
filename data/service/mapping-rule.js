@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage,
-    compile = require("frb/compile-evaluator"),
-    parse = require("frb/parse"),
+    compile = require("core/frb/compile-evaluator"),
+    parse = require("core/frb/parse"),
     Promise = require("core/promise").Promise,
     deprecate = require("core/deprecate");
 

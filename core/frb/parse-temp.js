@@ -1,1 +1,1 @@
-exports = require("frb/parse");
+exports = require("core/frb/parse");

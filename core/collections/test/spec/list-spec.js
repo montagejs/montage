@@ -1,5 +1,5 @@
 
-var List = require("collections/list");
+var List = require("core/collections/list");
 var describeDeque = require("./deque");
 var describeCollection = require("./collection");
 var describeRangeChanges = require("./listen/range-changes");

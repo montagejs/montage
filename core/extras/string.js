@@ -1,4 +1,4 @@
-var Map = require("collections/map");
+var Map = require("core/collections/map");
 
 
 /**

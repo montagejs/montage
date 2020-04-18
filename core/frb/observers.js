@@ -1,12 +1,12 @@
 
-require("collections/shim"); // Function.noop
-var PropertyChanges = require("collections/listen/property-changes");
-require("collections/listen/array-changes");
-var SortedArray = require("collections/sorted-array");
-var SortedSet = require("collections/sorted-set");
-var Map = require("collections/map");
-var Set = require("collections/set");
-var Heap = require("collections/heap");
+require("core/collections/shim"); // Function.noop
+var PropertyChanges = require("core/collections/listen/property-changes");
+require("core/collections/listen/array-changes");
+var SortedArray = require("core/collections/sorted-array");
+var SortedSet = require("core/collections/sorted-set");
+var Map = require("core/collections/map");
+var Set = require("core/collections/set");
+var Heap = require("core/collections/heap");
 var Scope = require("./scope");
 var Operators = require("./operators");
 

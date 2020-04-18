@@ -1,6 +1,6 @@
 
 var Bindings = require("..");
-var Set = require("collections/set");
+var Set = require("core/collections/set");
 
 describe("only binder", function () {
 

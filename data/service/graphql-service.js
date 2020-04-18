@@ -1,12 +1,12 @@
 var HttpService = require("data/service/http-service").HttpService,
     DataQuery = require("data/model/data-query").DataQuery,
     Enumeration = require("data/model/enumeration").Enumeration,
-    Map = require("collections/map"),
+    Map = require("core/collections/map"),
     Montage = require("montage").Montage,
-    parse = require("frb/parse"),
-    compile = require("frb/compile-evaluator"),
-    evaluate = require("frb/evaluate"),
-    Scope = require("frb/scope"),
+    parse = require("core/frb/parse"),
+    compile = require("core/frb/compile-evaluator"),
+    evaluate = require("core/frb/evaluate"),
+    Scope = require("core/frb/scope"),
     Promise = require("core/promise").Promise;
 
 

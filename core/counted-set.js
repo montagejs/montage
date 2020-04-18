@@ -1,5 +1,5 @@
 // var Montage = require("./core").Montage;
-Set = require("collections/set");
+Set = require("core/collections/set");
 
 /**
  * The CountedSet keeps a counter associated with object inserted into it. It keeps track of the number of times objects are inserted and objects are really removed when they've been removed the same number of times.

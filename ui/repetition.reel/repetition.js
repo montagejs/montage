@@ -7,9 +7,9 @@ var RangeController = require("../../core/range-controller").RangeController;
 var Promise = require("../../core/promise").Promise;
 var PressComposer = require("../../composer/press-composer").PressComposer;
 
-var Map = require("collections/map");
-var Set = require("collections/set");
-var PropertyChanges = require("collections/listen/property-changes");
+var Map = require("core/collections/map");
+var Set = require("core/collections/set");
+var PropertyChanges = require("core/collections/listen/property-changes");
 
 var logger = require("../../core/logger").logger("repetition").color.magenta();
 

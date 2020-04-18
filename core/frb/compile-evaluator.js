@@ -1,7 +1,7 @@
 
-var Object = require("collections/shim-object");
-var Map = require("collections/map");
-var SortedSet = require("collections/sorted-set");
+var Object = require("core/collections/shim-object");
+var Map = require("core/collections/map");
+var SortedSet = require("core/collections/sorted-set");
 var Operators = require("./operators");
 var Scope = require("./scope");
 

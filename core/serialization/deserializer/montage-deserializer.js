@@ -2,7 +2,7 @@ var Montage = require("../../core").Montage,
     MontageContext = require("./montage-interpreter").MontageContext,
     MontageReviver = require("./montage-reviver").MontageReviver,
     BindingsModule = require("../bindings"),
-    Map = require("collections/map").Map,
+    Map = require("core/collections/map").Map,
     Promise = require("../../promise").Promise,
     deprecate = require("../../deprecate");
 

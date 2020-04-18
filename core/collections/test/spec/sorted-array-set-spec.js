@@ -1,5 +1,5 @@
 
-var SortedArraySet = require("collections/sorted-array-set");
+var SortedArraySet = require("core/collections/sorted-array-set");
 var describeDeque = require("./deque");
 var describeCollection = require("./collection");
 var describeSet = require("./set");

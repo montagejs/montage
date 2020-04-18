@@ -1,5 +1,5 @@
 
-require("collections/shim");
+require("core/collections/shim");
 var Merge = require("../merge");
 var ot = Merge.ot;
 var diff = Merge.diff;

@@ -6,7 +6,7 @@
  */
 var Montage = require("./core").Montage,
     logger = require("./logger").logger("gate"),
-    Map = require("collections/map");
+    Map = require("core/collections/map");
 
 /**
  * @class Gate
@@ -52,7 +52,7 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate.prototype # */ {
             this.reset();
             for (fieldName in propertyDescriptor) {
                 if (propertyDescriptor.hasOwnProperty(fieldName)) {
-                    this.setField(fieldName, propertyDescriptor[fieldName].value);   
+                    this.setField(fieldName, propertyDescriptor[fieldName].value);
                 }
             }
             return this;

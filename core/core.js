@@ -2,7 +2,7 @@
  * @module montage/core/core
  */
 
-require("collections/shim");
+require("core/collections/shim");
 require("./shim/object");
 require("./shim/array");
 require("./extras/object");
@@ -17,9 +17,9 @@ require("./extras/weak-map");
 require("proxy-polyfill/proxy.min");
 
 
-var Map = require("collections/map");
-var WeakMap = require("collections/weak-map");
-var Set = require("collections/set");
+var Map = require("core/collections/map");
+var WeakMap = require("core/collections/weak-map");
+var Set = require("core/collections/set");
 
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
@@ -1021,7 +1021,7 @@ Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
 
 // Property Changes
 
-var PropertyChanges = require("collections/listen/property-changes");
+var PropertyChanges = require("core/collections/listen/property-changes");
 Object.addEach(Montage, PropertyChanges.prototype);
 Object.addEach(Montage.prototype, PropertyChanges.prototype);
 
@@ -1136,7 +1136,7 @@ Object.addEach(Montage.prototype, PropertyChanges.prototype);
  * @extends frb
  * @typedef {string} FRBExpression
  */
-var Bindings = exports.Bindings = require("frb");
+var Bindings = exports.Bindings = require("core/frb/bindings");
 
 var bindingPropertyDescriptors = {
 
@@ -1249,13 +1249,13 @@ Montage.defineProperties(Montage.prototype, bindingPropertyDescriptors);
 
 // Paths
 
-var parse = require("frb/parse"),
-    evaluate = require("frb/evaluate"),
-    assign = require("frb/assign"),
-    bind = require("frb/bind"),
-    compileObserver = require("frb/compile-observer"),
-    Scope = require("frb/scope"),
-    Observers = require("frb/observers"),
+var parse = require("core/frb/parse"),
+    evaluate = require("core/frb/evaluate"),
+    assign = require("core/frb/assign"),
+    bind = require("core/frb/bind"),
+    compileObserver = require("core/frb/compile-observer"),
+    Scope = require("core/frb/scope"),
+    Observers = require("core/frb/observers"),
     autoCancelPrevious = Observers.autoCancelPrevious;
 
 

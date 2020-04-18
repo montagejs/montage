@@ -1,6 +1,6 @@
-require("collections/shim");
-require("collections/listen/array-changes");
-var GenericCollection = require("collections/generic-collection");
+require("core/collections/shim");
+require("core/collections/listen/array-changes");
+var GenericCollection = require("core/collections/generic-collection");
 var describeDeque = require("./deque");
 var describeCollection = require("./collection");
 var describeOrder = require("./order");

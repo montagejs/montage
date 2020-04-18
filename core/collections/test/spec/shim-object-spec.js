@@ -7,9 +7,9 @@
     https://github.com/motorola-mobility/montage/blob/master/LICENSE.md
 */
 
-require("collections/shim");
-var Dict = require("collections/dict");
-var Set = require("collections/set");
+require("core/collections/shim");
+var Dict = require("core/collections/dict");
+var Set = require("core/collections/set");
 
 describe("ObjectShim-spec", function () {
 

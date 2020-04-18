@@ -1,10 +1,10 @@
 
-var Bindings = require("frb");
+var Bindings = require("core/frb/bindings");
 var PrecisionConverter = require("./precision-converter");
 
 // the DOM module adds support for property change listeners to the DOM element
 // prototypes
-require("frb/dom");
+require("core/frb/dom");
 
 var bindings = Bindings.defineBindings({}, {
 

@@ -1,6 +1,6 @@
 
-var PropertyChanges = require("collections/listen/property-changes");
-var Map = require("collections/map");
+var PropertyChanges = require("core/collections/listen/property-changes");
+var Map = require("core/collections/map");
 var Bindings = require("../bindings");
 var bind = require("../bind");
 var observe = require("../observe");
@@ -451,7 +451,7 @@ describe("Tutorial", function () {
     });
 
     it("View", function () {
-        var SortedSet = require("collections/sorted-set");
+        var SortedSet = require("core/collections/sorted-set");
         var controller = {
             index: SortedSet([1, 2, 3, 4, 5, 6, 7, 8]),
             start: 2,
@@ -560,12 +560,12 @@ describe("Tutorial", function () {
         expect(object.hasNeedle).toBe(true);
 
         // Continued from above...
-        var Set = require("collections/set");
+        var Set = require("core/collections/set");
         object.haystack = new Set([1, 2, 3]);
         expect(object.hasNeedle).toBe(true);
 
         // Continued from above...
-        var Map = require("collections/map");
+        var Map = require("core/collections/map");
         object.haystack = new Map([[1, "a"], [2, "b"]]);
         object.needle = 2;
         expect(object.hasNeedle).toBe(true);
@@ -609,7 +609,7 @@ describe("Tutorial", function () {
     });
 
     it("Get (Map)", function () {
-        var Map = require("collections/map");
+        var Map = require("core/collections/map");
         var a = {id: 0}, b = {id: 1};
         var object = {
             source: new Map([[a, 10], [b, 20]]),
@@ -631,7 +631,7 @@ describe("Tutorial", function () {
         object.source.set(b, 30);
         expect(object.selected).toBe(30);
 
-        var SortedMap = require("collections/sorted-map");
+        var SortedMap = require("core/collections/sorted-map");
         object.source = SortedMap();
         expect(object.selected).toBe(undefined);
 
@@ -644,7 +644,7 @@ describe("Tutorial", function () {
     });
 
     it("Get (all content)", function () {
-        var Map = require("collections/map");
+        var Map = require("core/collections/map");
         var object = {
             a: Map.from({a: 10}),
             b: new Map()
@@ -663,7 +663,7 @@ describe("Tutorial", function () {
     });
 
     it("Keys, Values, Entries", function () {
-        var Map = require("collections/map");
+        var Map = require("core/collections/map");
         var object = Bindings.defineBindings({}, {
             keys: {"<-": "map.keysArray()"},
             values: {"<-": "map.valuesArray()"},
@@ -755,7 +755,7 @@ describe("Tutorial", function () {
         expect(object.last).toBe(2);
 
         // ... continued
-        var SortedSet = require("collections/sorted-set");
+        var SortedSet = require("core/collections/sorted-set");
         var object = {
             set: SortedSet(),
             array: []
@@ -767,7 +767,7 @@ describe("Tutorial", function () {
         expect(object.array).toEqual([1, 2, 3, 4, 5, 6]);
 
         // ... continued
-        var Map = require("collections/map");
+        var Map = require("core/collections/map");
         var object = {
             map: new Map(),
             array: []

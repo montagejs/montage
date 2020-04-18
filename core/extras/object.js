@@ -82,7 +82,7 @@ Object.defineProperty(Object.prototype, "clear", {
 if (Object.hasOwnProperty('deleteBinding') === false) {
     Object.defineProperty(Object, "deleteBinding", {
         value: function (target, targetPath) {
-            var Bindings = require("frb");
+            var Bindings = require("core/frb/bindings");
             Bindings.cancelBinding(target, targetPath);
         },
         writable: true,
@@ -95,7 +95,7 @@ if (Object.hasOwnProperty('deepFreeze') === false) {
         value: function (object) {
             var propertyNames = Object.getOwnPropertyNames(object),
                 property;
-            
+
             for (var i = 0, length = propertyNames.length; i < length; i++) {
                 if ((property = object[propertyNames[i]]) !== null &&
                     typeof property === 'object'
@@ -103,7 +103,7 @@ if (Object.hasOwnProperty('deepFreeze') === false) {
                     Object.deepFreeze(property);
                 }
             }
-            
+
             return Object.freeze(object);
         },
         writable: true,

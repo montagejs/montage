@@ -34,7 +34,7 @@ var Montage = require("montage").Montage,
     Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     deserialize = require("montage/core/serialization/deserializer/montage-deserializer").deserialize,
     Alias = require("montage/core/serialization/alias").Alias,
-    Bindings = require("montage/frb"),
+    Bindings = require("montage/core/frb/bindings"),
     Promise = require("montage/core/promise").Promise,
     objects = require("spec/serialization/testobjects-v2").objects;
 

@@ -1,7 +1,7 @@
 var Component = require("ui/component").Component,
     Promise  = require("core/promise").Promise,
     application = require("core/application").application,
-    Map = require("collections/map"),
+    Map = require("core/collections/map"),
     Montage = require("montage").Montage;
 
 /**

@@ -48,11 +48,8 @@
     },
     "production": true,
     "dependencies": {
-        "mr": "file:./core/mr",
-        "collections": "file:./core/collections",
-        "q-io": "file:./core/promise-io",
-        "frb": "file:./core/frb",
         "bluebird": "~3.5.5",
+        "q-bluebird": "0.0.1",
         "htmlparser2": "~3.0.5",
         "weak-map": "^1.0.5",
         "lodash.kebabcase": "^4.1.1",
@@ -63,15 +60,7 @@
         "strange": "^1.7.2",
         "ical.js": "~1.4.0"
     },
-    "files": [
-        "core/mr/*",
-        "core/collections/*",
-        "core/promise-io/*",
-        "core/frb/*",
-        "testing/*"
-    ],
     "devDependencies": {
-        "montage-testing": "file:./testing",
         "concurrently": "^3.4.0",
         "http-server": "^0.10.0",
         "xhr2": "^0.1.4",

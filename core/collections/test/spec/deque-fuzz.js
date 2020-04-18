@@ -1,6 +1,6 @@
 
-var Deque = require("collections/deque");
-require("collections/shim-array");
+var Deque = require("core/collections/deque");
+require("core/collections/shim-array");
 var prng = require("./prng");
 
 exports.fuzzDeque = fuzzDeque;

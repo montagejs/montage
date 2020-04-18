@@ -1,5 +1,5 @@
 
-var Set = require("collections/set");
+var Set = require("core/collections/set");
 var describeCollection = require("./collection");
 var describeSet = require("./set");
 

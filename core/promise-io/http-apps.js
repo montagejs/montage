@@ -39,7 +39,7 @@
  * @module
  */
 
-require("collections/shim");
+require("core/collections/shim");
 var Q = require("q-bluebird");
 var HTTP = require("./http");
 var FS = require("./fs");

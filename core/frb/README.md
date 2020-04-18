@@ -51,7 +51,7 @@ with [Node.js][] on the server side or [Mr][] on the client side.
 In this example, we bind `model.content` to `document.body.innerHTML`.
 
 ```javascript
-var bind = require("frb/bind");
+var bind = require("core/frb/bind");
 var model = {content: "Hello, World!"};
 var cancelBinding = bind(document, "body.innerHTML", {
     "<-": "content",
@@ -711,7 +711,7 @@ from that collection as an array.  The `view` binding reacts to changes
 to the collection and the position and length of the window.
 
 ```javascript
-var SortedSet = require("collections/sorted-set");
+var SortedSet = require("core/collections/sorted-set");
 var controller = {
     index: SortedSet([1, 2, 3, 4, 5, 6, 7, 8]),
     start: 2,
@@ -875,7 +875,7 @@ can be bound.
 
 ```javascript
 // Continued from above...
-var Set = require("collections/set");
+var Set = require("core/collections/set");
 object.haystack = new Set([1, 2, 3]);
 expect(object.hasNeedle).toBe(true);
 ```
@@ -885,7 +885,7 @@ to observe whether an entry exists with the given key.
 
 ```javascript
 // Continued from above...
-var Map = require("collections/map");
+var Map = require("core/collections/map");
 object.haystack = new Map([[1, "a"], [2, "b"]]);
 object.needle = 2;
 expect(object.hasNeedle).toBe(true);
@@ -955,7 +955,7 @@ SortedArrayMap, or anything that implements `get` and
 also be a variable.
 
 ```javascript
-var Map = require("collections/map");
+var Map = require("core/collections/map");
 var a = {id: 0}, b = {id: 1};
 var object = {
     source: new Map([[a, 10], [b, 20]]),
@@ -977,7 +977,7 @@ expect(object.selected).toBe(20);
 object.source.set(b, 30);
 expect(object.selected).toBe(30);
 
-var SortedMap = require("collections/sorted-map");
+var SortedMap = require("core/collections/sorted-map");
 object.source = SortedMap();
 expect(object.selected).toBe(undefined);
 
@@ -994,7 +994,7 @@ content of another.  Bear in mind that the content of the source
 replaces the content of the target initially.
 
 ```javascript
-var Map = require("collections/map");
+var Map = require("core/collections/map");
 var object = {
     a: new Map({a: 10}),
     b: new Map()
@@ -1023,7 +1023,7 @@ observers produce incrementally updated projections of the
 key-value-mappings onto an array.
 
 ```javascript
-var Map = require("collections/map");
+var Map = require("core/collections/map");
 var object = Bindings.defineBindings({}, {
     keys: {"<-": "map.keysArray()"},
     values: {"<-": "map.valuesArray()"},
@@ -1201,7 +1201,7 @@ collection that implements `splice` and `swap` can be a target for such
 changes.
 
 ```javascript
-var SortedSet = require("collections/sorted-set");
+var SortedSet = require("core/collections/sorted-set");
 var object = {
     set: SortedSet(),
     array: []
@@ -1220,7 +1220,7 @@ and apply the same change to the target.  The target and source can be
 arrays or map collections.
 
 ```javascript
-var Map = require("collections/map");
+var Map = require("core/collections/map");
 var object = {
     map: new Map(),
     array: []
@@ -1755,8 +1755,8 @@ to make some properties of DOM elements observable, like the `value` or
 `checked` attribute of an `input` or `textarea element`.
 
 ```javascript
-var Bindings = require("frb");
-require("frb/dom");
+var Bindings = require("core/frb/bindings");
+require("core/frb/dom");
 
 var controller = Bindings.defineBindings({}, {
 
@@ -1787,7 +1787,7 @@ providing a `document`, Montage provides a `serialization`, which in
 turn implements `getObjectForLabel`.
 
 ```javascript
-var Bindings = require("frb");
+var Bindings = require("core/frb/bindings");
 
 var controller = Bindings.defineBindings({}, {
 
@@ -1926,7 +1926,7 @@ FRB provides utilities for declaraing and managing multiple bindings on
 objects.  The `frb` (`frb/bindings`) module exports this interface.
 
 ```javascript
-var Bindings = require("frb");
+var Bindings = require("core/frb/bindings");
 ```
 
 The `Bindings` module provides `defineBindings` and `cancelBindings`,
@@ -2323,7 +2323,7 @@ and can be used to declare objects and define and cancel bindings on
 them with extended property descriptors.
 
 ```javascript
-var Bindings = require("frb");
+var Bindings = require("core/frb/bindings");
 
 // create an object
 var object = Bindings.defineBindings({
@@ -2418,7 +2418,7 @@ A binding descriptor contains:
 The `bind` module provides direct access to the `bind` function.
 
 ```javascript
-var bind = require("frb/bind");
+var bind = require("core/frb/bind");
 
 var source = [{numbers: [1,2,3]}, {numbers: [4,5,6]}];
 var target = {};
@@ -2444,7 +2444,7 @@ The `compute` module provides direct access to the `compute` function,
 used by `Bindings` to make computed properties.
 
 ```javascript
-var compute = require("frb/compute");
+var compute = require("core/frb/compute");
 
 var source = {operands: [10, 20]};
 var target = {};
@@ -2471,7 +2471,7 @@ The `observe` modules provides direct access to the `observe` function.
 `observers` module.
 
 ```javascript
-var observe = require("frb/observe");
+var observe = require("core/frb/observe");
 
 var source = [1, 2, 3];
 var sum;
@@ -2534,9 +2534,9 @@ components) and returns the corresponding value without all the cost or
 benefit of setting up incremental observers.
 
 ```javascript
-var parse = require("frb/parse");
-var compile = require("frb/compile-evaluator");
-var Scope = require("frb/scope");
+var parse = require("core/frb/parse");
+var compile = require("core/frb/compile-evaluator");
+var Scope = require("core/frb/scope");
 
 var syntax = parse("a.b");
 var evaluate = compile(syntax);
@@ -2549,7 +2549,7 @@ tree, a source value, and parameters and returns the corresponding
 value.
 
 ```javascript
-var evaluate = require("frb/evaluate");
+var evaluate = require("core/frb/evaluate");
 var c = evaluate("a.b", {a: {b: 10}})
 expect(c).toBe(10);
 ```
@@ -2561,7 +2561,7 @@ The `stringify` module returns a function that accepts a syntax tree and
 returns the corresponding path in normal form.
 
 ```javascript
-var stringify = require("frb/stringify");
+var stringify = require("core/frb/stringify");
 
 var syntax = {type: "and", args: [
     {type: "property", args: [
@@ -2877,9 +2877,9 @@ semantics.  Binders receive a target as well as a source.
 ### Language Interface
 
 ```javascript
-var parse = require("frb/parse");
-var compileObserver = require("frb/compile-observer");
-var compileBinder = require("frb/compile-binder");
+var parse = require("core/frb/parse");
+var compileObserver = require("core/frb/compile-observer");
+var compileBinder = require("core/frb/compile-binder");
 ```
 
 -   `parse(text)` returns a syntax tree.

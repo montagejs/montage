@@ -4,9 +4,9 @@ var DataProvider = require("data/service/data-provider").DataProvider,
     DataQuery = require("data/model/data-query").DataQuery,
     Promise = require("core/promise").Promise,
     deprecate = require("core/deprecate"),
-    parse = require("frb/parse"),
-    Scope = require("frb/scope"),
-    compile = require("frb/compile-evaluator"),
+    parse = require("core/frb/parse"),
+    Scope = require("core/frb/scope"),
+    compile = require("core/frb/compile-evaluator"),
     DataOperation = require("data/service/data-operation").DataOperation,
     DataStream;
 

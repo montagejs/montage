@@ -2,12 +2,12 @@ var Montage = require("../core").Montage,
     Target = require("core/target").Target,
     DerivedDescriptor = require("./derived-descriptor").DerivedDescriptor,
     EventDescriptor = require("./event-descriptor").EventDescriptor,
-    Map = require("collections/map"),
+    Map = require("core/collections/map"),
     ModelModule = require("./model"),
     Promise = require("../promise").Promise,
     PropertyDescriptor = require("./property-descriptor").PropertyDescriptor,
     PropertyValidationRule = require("./validation-rule").PropertyValidationRule,
-    Set = require("collections/set"),
+    Set = require("core/collections/set"),
     deprecate = require("../deprecate");
 
 

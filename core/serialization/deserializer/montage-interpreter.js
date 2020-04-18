@@ -2,7 +2,7 @@ var Montage = require("../../core").Montage,
     MontageReviver = require("./montage-reviver").MontageReviver,
     Promise = require("../../promise").Promise,
     deprecate = require("../../deprecate"),
-    Set = require("collections/set"),
+    Set = require("core/collections/set"),
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
     TWO_WAY = "<->";

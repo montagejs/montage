@@ -1,5 +1,5 @@
 var Montage = require("../../core").Montage,
-Set = require("collections/set");
+Set = require("core/collections/set");
 
 require("../../extras/date");
 

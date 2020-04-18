@@ -4,7 +4,7 @@
  * @module "montage/ui/flow.reel"
  */
 var Component = require("../component").Component,
-    observeProperty = require("frb/observers").observeProperty,
+    observeProperty = require("core/frb/observers").observeProperty,
     FlowBezierSpline = require("./flow-bezier-spline").FlowBezierSpline,
     RangeController = require("../../core/range-controller").RangeController;
 
@@ -252,7 +252,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 densities[i] = iPathKnot.previousDensity; // TODO: implement previous/next density
                 for (j in pathUnits) {
                     if (pathUnits.hasOwnProperty(j)) {
-                        splinePathParameters[j].data.push(iPathKnot[j]);   
+                        splinePathParameters[j].data.push(iPathKnot[j]);
                     }
                 }
             }
@@ -333,7 +333,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                         parametersLength = iSplinePath.parameters[j].data.length;
                         for (k = 0; k < parametersLength; k++) {
                             path.knots[k][j] = iSplinePath.parameters[j].data[k];
-                        }   
+                        }
                     }
                 }
                 if (this._paths[i].hasOwnProperty("headOffset")) {
@@ -1494,7 +1494,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
             // a good balance between precision and performance.
             time = timestamp;
             iterations = 6;
-            
+
             var interval1 = this.lastDrawTime ? (time - this.lastDrawTime) * 0.018 * this._elasticScrollingSpeed : 0,
                 interval = 1 - (interval1 / iterations),
                 offset1, offset2, resultOffset,

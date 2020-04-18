@@ -1,6 +1,6 @@
 "use strict";
 
-require("collections/shim");
+require("core/collections/shim");
 
 /*
  * See: Introduction to Algorithms, Longest Common Subsequence, Algorithms,

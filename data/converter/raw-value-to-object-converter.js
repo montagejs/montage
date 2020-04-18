@@ -2,9 +2,9 @@
 var ExpressionConverter = require("core/converter/expression-converter").ExpressionConverter,
     ObjectDescriptorReference = require("core/meta/object-descriptor-reference").ObjectDescriptorReference,
     Promise = require("core/promise").Promise,
-    Scope = require("frb/scope"),
-    parse = require("frb/parse"),
-    compile = require("frb/compile-evaluator");
+    Scope = require("core/frb/scope"),
+    parse = require("core/frb/parse"),
+    compile = require("core/frb/compile-evaluator");
 
 /**
  * @class RawValueToObjectConverter

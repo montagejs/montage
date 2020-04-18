@@ -2,8 +2,8 @@
  * @module montage/core/range-controller
  */
 var Montage = require("./core").Montage;
-var GenericCollection = require("collections/generic-collection");
-var observableArrayProperties = require("collections/listen/array-changes").observableArrayProperties;
+var GenericCollection = require("core/collections/generic-collection");
+var observableArrayProperties = require("core/collections/listen/array-changes").observableArrayProperties;
 
 // The content controller is responsible for determining which content from a
 // source collection are visible, their order of appearance, and whether they
@@ -308,6 +308,9 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * An FRB expression that determines how to filter content like
      * "name.startsWith('A')" to see only names starting with 'A'.
      * If the `filterPath` is null, all content is accepted.
+     *
+     * TODO: this needs to be at least renamed to filterExpression,
+     * but it should really be a criteria object.
      *
      * @property {string} value
      */
@@ -663,6 +666,27 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
             return content;
         }
     },
+
+
+    /**
+     * @private
+     */
+    _contentDescriptor: {
+        value: null
+    },
+    contentDescriptor: {
+        get: function () {
+            return this._contentDescriptor;
+        },
+        set: function (value) {
+            this._contentDescriptor = value;
+        }
+    },
+
+    /**
+     * TODO: reconciliate contentDescriptor's module with
+     * _contentConstructor when contentDescriptor is used.
+    */
 
     /**
      * @private

@@ -6,7 +6,7 @@ var AuthorizationManager = require("montage/data/service/authorization-manager")
     OnDemandService = require("spec/data/logic/authorization/on-demand-service").OnDemandService,
     OnFirstFetchService = require("spec/data/logic/authorization/on-first-fetch-service").OnFirstFetchService,
     UpFrontService = require("spec/data/logic/authorization/up-front-service").UpFrontService,
-    Map = require("collections/map");
+    Map = require("montage/core/collections/map");
 
 
 describe("An Authorization Manager", function () {
@@ -38,13 +38,13 @@ describe("An Authorization Manager", function () {
         expect(authorizationManager.hasPendingServices).toBe(false);
     });
 
-    
+
 
     describe("can skip authorization", function () {
 
         it("for service with AuthorizationPolicy.NONE", function (done) {
             var service = new NoneService();
-    
+
             authorizationManager.authorizeService(service).then(function (result) {
                 expect(result).toBeNull();
                 done();
@@ -53,7 +53,7 @@ describe("An Authorization Manager", function () {
 
         it("for service with AuthorizationPolicy.ON_DEMAND without failure", function (done) {
             var service = new OnDemandService();
-    
+
             authorizationManager.authorizeService(service).then(function (result) {
                 expect(result).toBeNull();
                 done();
@@ -64,17 +64,17 @@ describe("An Authorization Manager", function () {
     describe("can authorize individual service", function () {
         it("with AuthorizationPolicy.ON_FIRST_FETCH", function (done) {
             var service = new OnFirstFetchService();
-            
-            
+
+
             authorizationService.resolve();
             authorizationManager.authorizeService(service).then(function (result) {
                 expect(Array.isArray(result)).toBeTruthy();
                 expect(result[0] instanceof Authorization).toBeTruthy();
                 done();
             });
-            
+
         });
-    
+
         it("with AuthorizationPolicy.ON_DEMAND with failure", function (done) {
             var service = new OnDemandService()
             authorizationService.resolve();
@@ -83,9 +83,9 @@ describe("An Authorization Manager", function () {
                 expect(result[0] instanceof Authorization).toBeTruthy();
                 done();
             });
-            
+
         });
-    
+
         it("with AuthorizationPolicy.UP_FRONT", function (done) {
             var service = new UpFrontService();
             authorizationService.resolve();
@@ -94,8 +94,8 @@ describe("An Authorization Manager", function () {
                 expect(result[0] instanceof Authorization).toBeTruthy();
                 done();
             });
-            
-            
+
+
         });
 
         describe("after authorization expiration", function () {
@@ -108,7 +108,7 @@ describe("An Authorization Manager", function () {
                 var service = new OnFirstFetchService(),
                     didFail = false,
                     authorizations;
-                
+
                 authorizationService.reject();
                 authorizationManager.authorizeService(service).catch(function (e) {
                     didFail = true;
@@ -134,7 +134,7 @@ describe("An Authorization Manager", function () {
         it("with all of multiple authorization services", function (done) {
             var service = new OnFirstFetchService(),
                 authorizations;
-            
+
 
             service.authorizationServices = [
                 "spec/data/logic/authorization/authorization-service",
@@ -156,7 +156,7 @@ describe("An Authorization Manager", function () {
         xit("with one of multiple authorization services", function (done) {
             var service = new OnFirstFetchService(),
                 authorizations;
-            
+
 
             service.authorizationServices = [
                 "spec/data/logic/authorization/authorization-service",
@@ -177,14 +177,14 @@ describe("An Authorization Manager", function () {
 
     describe("can authorize multiple data services", function () {
 
-        // Array of descriptions of DataServices with a particular AuthorizationPolicy. 
+        // Array of descriptions of DataServices with a particular AuthorizationPolicy.
         // Each of the descriptions has the following structure
         //
-        //  constructor:   Constructor function to create the DataService 
-        //  name:          Human Readable name of the AuthorizationPolicy of this dataService 
+        //  constructor:   Constructor function to create the DataService
+        //  name:          Human Readable name of the AuthorizationPolicy of this dataService
         //  didFailResult: Boolean stating whether a result is expected after a preceding auth failure
         //  initialResult: Boolean stating whether a result is expected the first time Authorization is requested
-        //  
+        //
         //
         var serviceDescriptors = [
             {
@@ -256,7 +256,7 @@ describe("An Authorization Manager", function () {
             });
         }
 
-        
+
 
         describe("with same authorization service", function () {
 
@@ -347,7 +347,7 @@ describe("An Authorization Manager", function () {
                     expect(authorizationManager._authorizationsForDataService(serviceB).length).toBe(0);
                     done();
                 });
-                
+
             });
         });
 
@@ -375,9 +375,9 @@ describe("An Authorization Manager", function () {
                 expect(authorizationManager._authorizationsForDataService(service).length).toBe(0);
                 done();
             });
-            
+
         });
     });
-    
+
 
 });

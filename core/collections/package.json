@@ -60,7 +60,6 @@
   },
   "mappings": {
     "mr": "../mr",
-    "weak-map": "../../node_modules/weak-map",
     "montage-testing": "../../testing",
     "frb": "core/frb"
 },

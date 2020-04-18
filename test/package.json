@@ -2,10 +2,9 @@
     "name": "montage-tests",
     "version": "0.0.0",
     "mappings": {
-        "mr": "../core/mr",
         "montage": "../",
+        "ical.js": "../node_modules/ical.js",
         "montage-testing": "../testing",
-        "collections": "../core/collections",
         "package-a": {
             "name": "package-a",
             "location": "package-a"

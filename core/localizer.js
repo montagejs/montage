@@ -17,11 +17,11 @@ var Montage = require("./core").Montage,
     Deserializer = require("./serialization/deserializer/montage-deserializer").MontageDeserializer,
     Promise = require("./promise").Promise,
     Bindings = require("./core").Bindings,
-    FrbBindings = require("frb/bindings"),
-    stringify = require("frb/stringify"),
-    expand = require("frb/expand"),
-    Map = require("collections/map"),
-    Scope = require("frb/scope");
+    FrbBindings = require("core/frb/bindings"),
+    stringify = require("core/frb/stringify"),
+    expand = require("core/frb/expand"),
+    Map = require("core/collections/map"),
+    Scope = require("core/frb/scope");
 
 // Add all locales to MessageFormat object
 MessageFormat.locale = require("./messageformat-locale");
@@ -1165,7 +1165,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
 
             var scope,
                 syntax = input.sourceSyntax;
-                
+
             if (input.source !== object) {
                 var reference = serializer.addObjectReference(input.source);
                 scope = new Scope({
@@ -1221,7 +1221,7 @@ var createMessageBinding = function (object, prop, key, defaultMessage, data, de
                     Bindings.defineBinding(dataMap, ".get('" + d + "')", property, {
                         components: deserializer
                     });
-                }   
+                }
             }
         }
 

@@ -1,12 +1,12 @@
 
 var Montage = require("./core").Montage;
 
-var parse = require("frb/parse"),
-    stringify = require("frb/stringify"),
-    evaluate = require("frb/evaluate"),
-    precedence = require("frb/language").precedence,
-    Scope = require("frb/scope"),
-    compile = require("frb/compile-evaluator");
+var parse = require("core/frb/parse"),
+    stringify = require("core/frb/stringify"),
+    evaluate = require("core/frb/evaluate"),
+    precedence = require("core/frb/language").precedence,
+    Scope = require("core/frb/scope"),
+    compile = require("core/frb/compile-evaluator");
 
 var Criteria = exports.Criteria = Montage.specialize({
     _expression: {

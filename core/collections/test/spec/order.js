@@ -1,5 +1,5 @@
 
-var GenericCollection = require("collections/generic-collection");
+var GenericCollection = require("core/collections/generic-collection");
 
 module.exports = describeOrder;
 function describeOrder(Collection) {

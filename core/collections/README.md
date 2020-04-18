@@ -17,7 +17,7 @@ or bundler when using Collections in web browsers has the advantage of
 only incorporating the modules you need.  However, you can just embed
 `<script src="collections/collections.min.js">` and *all* of the
 collections will be introduced as globals.  :warning:
-`require("collections")` is not supported.
+`require("core/collections")` is not supported.
 
 ```
 npm install collections --save

@@ -1,5 +1,5 @@
 
-var Map = require("collections/map");
+var Map = require("core/collections/map");
 var Bindings = require("../bindings");
 
 describe("extensible logic gates", function () {
