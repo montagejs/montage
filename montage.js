@@ -215,8 +215,8 @@
 
             // determine which scripts to load
             var pending = {
-                "require": "node_modules/mr/require.js",
-                "require/browser": "node_modules/mr/browser.js",
+                "require": "core/mr/require.js",
+                "require/browser": "core/mr/browser.js",
                 "promise": "node_modules/bluebird/js/browser/bluebird.min.js"
                 // "shim-string": "core/shim/string.js" // needed for the `endsWith` function.
             };
