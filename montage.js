@@ -170,10 +170,19 @@
         },
 
         bootstrap: function (callback) {
-            var Require, DOM, Promise, URL;
+            var Require, DOM, Promise, URL,
+                params = this.getParams(),
+                resolve = this.makeResolve(),
+                montageLocation, appLocation;
 
-            var params = this.getParams();
-            var resolve = this.makeResolve();
+                montageLocation = montageLocation || resolve(global.location, params.montageLocation);
+                if(params.package) {
+                    appLocation = resolve(global.location, params.package);
+                    if(!appLocation.lastIndexOf("/") !== appLocation.length-1) {
+                        appLocation += "/";
+                    }
+                }
+
 
             // observe dom loading and load scripts in parallel
             function callbackIfReady() {
@@ -215,9 +224,9 @@
 
             // determine which scripts to load
             var pending = {
-                "require": "core/mr/require.js",
-                "require/browser": "core/mr/browser.js",
-                "promise": "node_modules/bluebird/js/browser/bluebird.min.js"
+                "require": montageLocation+"core/mr/require.js",
+                "require/browser": montageLocation+"core/mr/browser.js",
+                "promise": montageLocation+"node_modules/bluebird/js/browser/bluebird.min.js"
                 // "shim-string": "core/shim/string.js" // needed for the `endsWith` function.
             };
 
@@ -262,17 +271,7 @@
                 allModulesLoaded();
             };
 
-            var montageLocation, appLocation;
             function loadModuleScript(path, callback) {
-                if(!montageLocation) {
-                    montageLocation = montageLocation || resolve(global.location, params.montageLocation);
-                    if(params.package) {
-                        appLocation = resolve(global.location, params.package);
-                        if(!appLocation.lastIndexOf("/") !== appLocation.length-1) {
-                            appLocation += "/";
-                        }
-                    }
-                }
                 // try loading script relative to app first (npm 3+)
                 browser.load(resolve(appLocation || global.location, path), function (err, script) {
                     if (err) {
