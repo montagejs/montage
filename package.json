@@ -30,20 +30,20 @@
       }
     },
     "worker": {
-        "main": "core/core",
-        "redirects": {
-          "montage": "core/core"
+      "main": "core/core",
+      "redirects": {
+        "montage": "core/core"
+      },
+      "mappings": {
+        "mr": {
+          "name": "mr",
+          "location": "node_modules/mr"
         },
-        "mappings": {
-          "mr": {
-            "name": "mr",
-            "location": "node_modules/mr"
-          },
-          "bluebird": {
-            "name": "bluebird",
-            "location": "node_modules/bluebird"
-          }
+        "bluebird": {
+          "name": "bluebird",
+          "location": "node_modules/bluebird"
         }
+      }
     },
     "node": {
       "main": "core/core",

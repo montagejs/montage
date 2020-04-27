@@ -837,20 +837,25 @@
 
     // Bootstrapping for multiple-platforms
     exports.getPlatform = function () {
-        if (typeof window !== "undefined" && window && window.document) {
-            return browser;
-        } else if (typeof process !== "undefined") {
-            return require("./node.js");
-        } else if (typeof self !== "undefined" && typeof importScripts !== "undefined") {
+        // Workers (or polyfills thereof) may have window defined so we check for worker globals 'self' and 'importScripts'
+        // first to avoid bootstrapping browser code in a worker context
+        if (typeof self !== "undefined" && typeof importScripts !== "undefined") {
             //TODO Pass montage location without global variables
             importScripts(PATH_TO_MONTAGE + "worker.js");
             return worker;
-        } else {
+        } else if (typeof window !== "undefined" && window && window.document) {
+            return browser;
+        } else if (typeof process !== "undefined") {
+            return require("./node.js");
+        }  else {
             throw new Error("Platform not supported.");
         }
     };
-
-    if (typeof window !== "undefined") {
+    // Workers (or polyfills thereof) may have window defined so we check for worker globals 'self' and 'importScripts'
+    // first to avoid bootstrapping browser code in a worker context
+    if (typeof self !== "undefined" && typeof importScripts !== "undefined") {
+        exports.initMontage();
+    } else if (typeof window !== "undefined") {
         if (global.__MONTAGE_LOADED__) {
             console.warn("Montage already loaded!");
         } else {
@@ -858,11 +863,7 @@
             exports.initMontage();
             exports.initMontageCustomElement();
         }
-    } else if (typeof self !== "undefined" && typeof importScripts !== "undefined") {
-        //Is it necessary to do the __MONTAGE_LOADED__ check as is done for the browser?
-        //self.registration.scope.replace(/[^\/]*\.html$/, "");
-        exports.initMontage();
-    } else {
+    }  else {
         // may cause additional exports to be injected:
         exports.getPlatform();
     }

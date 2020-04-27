@@ -62,12 +62,23 @@ var worker,
             });
         },
 
+        _callListenerWithEvent:function (listener, event) {
+            if (typeof listener === "function") {
+                listener(event);
+            } else if (listener.handleEvent) {
+                listener.handleEvent(event);
+            } else {
+                console.warn("Worker platform could not call listener for event", event.type, listener);
+            }
+        },
+
         _initializeGlobalListeners: function () {
             var self = this,
                 globalEvents = ["activate", "install", "message", "offline", "online", "periodicsync", "sync"],
                 nativeAddEventListener = global.addEventListener;
 
             global.__MontageGlobalListeners__ = new Map();
+            global.__MontageGlobalEventsDispatched__ = new Map();
 
             globalEvents.forEach(function (eventName) {
                 self._initializeGlobalListener(eventName);
@@ -75,9 +86,18 @@ var worker,
 
             Object.defineProperty(global, "addEventListener", {
                 value: function () {
-                    var eventName = arguments[0];
+                    var eventName = arguments[0],
+                        handler = arguments[1],
+                        events = global.__MontageGlobalEventsDispatched__.has(eventName) && global.__MontageGlobalEventsDispatched__.get(eventName);
+
+                    if (events && Array.isArray(events)) {
+                        events.forEach(function (event) {
+                            self._callListenerWithEvent(handler, event);
+                        });
+                        global.__MontageGlobalEventsDispatched__.set(eventName, null);
+                    }
                     if (global.__MontageGlobalListeners__.has(eventName)) {
-                        global.__MontageGlobalListeners__.get(eventName).push(arguments[1]);
+                        global.__MontageGlobalListeners__.get(eventName).push(handler);
                     } else {
                         return nativeAddEventListener.apply(global, arguments);
                     }
@@ -86,11 +106,17 @@ var worker,
         },
 
         _initializeGlobalListener: function (eventName) {
+            var self = this;
             global.__MontageGlobalListeners__.set(eventName, []);
             global.addEventListener(eventName, function (event) {
                 var listeners = global.__MontageGlobalListeners__.get(eventName);
+                if (!global.__MontageGlobalEventsDispatched__.has(eventName)) {
+                    global.__MontageGlobalEventsDispatched__.set(eventName, [event]);
+                } else if (Array.isArray(global.__MontageGlobalEventsDispatched__.get(eventName))) {
+                    global.__MontageGlobalEventsDispatched__.get(eventName).push(event);
+                }
                 listeners.forEach(function (listener) {
-                    listener(event);
+                    self._callListenerWithEvent(listener, event);
                 });
             });
         },
@@ -103,8 +129,8 @@ var worker,
                 } else {
                     path = PATH_TO_MONTAGE;
                     if (!path) {
-                        path = self.registration.scope.replace(/[^\/]*\.html$/, ""),
-                            path = path.replace(/[^\/]*\/?$/, "");
+                        path = self.registration.scope.replace(/[^\/]*\.html$/, "");
+                        path = path.replace(/[^\/]*\/?$/, "");
                     }
                     this._params = {
                         montageLocation: path
@@ -210,6 +236,7 @@ var worker,
                 var activeWorker = self.serviceWorker || self.registration.installing || self.registration.active,
                     scriptURL = activeWorker.scriptURL;
                 applicationPath = scriptURL.replace(/\/([\.A-Za-z0-9_-])*$/, "") + "/";
+                applicationPath = applicationPath.replace(/\/*$/, "/");
                 self.skipWaiting();
                 isInstalled = true;
                 if (areModulesLoaded && isInstalled) {
