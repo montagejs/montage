@@ -841,7 +841,8 @@
         // first to avoid bootstrapping browser code in a worker context
         if (typeof self !== "undefined" && typeof importScripts !== "undefined") {
             //TODO Pass montage location without global variables
-            importScripts(PATH_TO_MONTAGE + "worker.js");
+            // importScripts(PATH_TO_MONTAGE + "worker.js");
+            importScripts("node_modules/montage/worker.js");
             return worker;
         } else if (typeof window !== "undefined" && window && window.document) {
             return browser;
