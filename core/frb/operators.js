@@ -1,8 +1,8 @@
 
-require("core/collections/shim-object"); // equals, compare
-require("core/collections/shim-regexp"); // escape
-var Map = require("core/collections/map");
-var Set = require("core/collections/set");
+require("../collections/shim-object"); // equals, compare
+require("../collections/shim-regexp"); // escape
+var Map = require("../collections/map");
+var Set = require("../collections/set");
 // from highest to lowest precedence
 
 exports.toNumber = function (s) {

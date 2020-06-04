@@ -1,7 +1,7 @@
 
 var bind = require("../bind");
-var SortedSet = require("core/collections/sorted-set");
-var Map = require("core/collections/map");
+var SortedSet = require("../../../core/collections/sorted-set");
+var Map = require("../../../core/collections/map");
 
 Error.stackTraceLimit = 100;
 

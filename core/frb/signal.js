@@ -1,5 +1,5 @@
 
-var Map = require("core/collections/map");
+var Map = require("../collections/map");
 
 module.exports = Signal;
 function Signal(value) {

@@ -1,6 +1,6 @@
 
 var assign = require("../assign");
-var Map = require("core/collections/map");
+var Map = require("../../../core/collections/map");
 
 describe("assign", function () {
 

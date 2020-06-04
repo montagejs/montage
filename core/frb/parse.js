@@ -1,7 +1,7 @@
 
-require("core/collections/shim");
+require("../collections/shim");
 var grammar = require("./grammar"),
-    Map = require("core/collections/map");
+    Map = require("../collections/map");
 
 var memo = new Map(); // could be Dict
 

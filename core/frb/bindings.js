@@ -1,5 +1,5 @@
 
-var Map = require("core/collections/map"),
+var Map = require("../collections/map"),
     bind = require("./bind"),
     compute = require("./compute"),
     observe = require("./observe"),
