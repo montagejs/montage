@@ -5,12 +5,15 @@
     https://github.com/motorola-mobility/montage/blob/master/LICENSE.md
 */
 /*jshint node:true */
-var Require = require("./require");
-var Promise = require("bluebird");
-var FS = require("fs");
-var URL = require("url");
-var PATH = require("path");
-var globalEval = eval;
+var Require = require("./require"),
+    Promise = require("bluebird"),
+    FS = require("fs"),
+    URL = require("url"),
+    PATH = require("path"),
+    globalEval = eval,
+    // esm = require("esm"),
+    emptyFactory = function () {
+    };
 
 Require.getLocation = function getLocation() {
     return URL.resolve("file:///", process.cwd() + "/");
@@ -120,8 +123,21 @@ Require.Loader = function Loader(config, load) {
     return function (location, module) {
         return config.read(location, module)
         .then(function (text) {
-            module.type = "javascript";
-            module.text = text;
+
+            if(text.indexOf("export ") !== -1) {
+
+                return import(location).then(function(esModule) {
+                    module.type = Require.ES_MODULE_TYPE;
+                    module.exports = esModule;
+                    module.factory = emptyFactory;
+                    //module.factory.displayName = displayName;
+                });
+
+
+            } else {
+                module.type = "javascript";
+                module.text = text;
+            }
             //module.location is now possibly changed by read if it encounters the pattern of
             //folder/index.js when it couldn't find folder.js, so we don't want to override that.
             //module.location = location;

@@ -6,6 +6,8 @@
 
 
     Bookmark: https://glebbahmutov.com/blog/subfolders-as-dependencies/
+    Bookmark for requiring modules that import/export with ES6:
+    https://github.com/babel/babel/tree/master/packages/babel-plugin-transform-modules-commonjs
 */
 /*global bootstrap, define, global */
 (function (definition) {
@@ -343,27 +345,62 @@
         var redirects,
             overlay = description.overlay || {};
 
-        // but first, convert "browser" field, as pioneered by Browserify, to
-        // an overlay
-        if (typeof description.browser === "string") {
-            overlay.browser = {
-                redirects: {"": description.browser}
-            };
-        } else if (typeof description.browser === "object") {
-            var bk, iBk, countBk,
-                browser = description.browser,
-                browserKeys = Object.keys(browser);
+        if (typeof process === "undefined") {
+            // but first, convert "browser" field, as pioneered by Browserify, to
+            // an overlay
+            if (typeof description.browser === "string") {
+                overlay.browser = {
+                    redirects: {"": description.browser}
+                };
+            } else if (typeof description.browser === "object") {
+                var bk, bkValue, iBk, countBk,
+                    browser = description.browser,
+                    browserKeys = Object.keys(browser);
 
-            overlay.browser = {redirects:{}};
-            redirects = overlay.browser.redirects;
-            for(iBk=0;(bk = browserKeys[iBk]);iBk++) {
-                if (browser[bk] !== false) {
-                    redirects[bk] = browser[bk];
+                overlay.browser = {redirects:{}};
+                redirects = overlay.browser.redirects;
+                for(iBk=0;(bk = browserKeys[iBk]);iBk++) {
+                    if (browser[bk] !== false) {
+                        bkValue = browser[bk];
+
+                        // if target is a relative path, then resolve
+                        // otherwise we assume target is a module
+                        if (bkValue[0] === '.') {
+                            bkValue = URL.resolve(location, bkValue);
+                            bkValue = bkValue.stringByRemovingPrefix(location);
+                        }
+
+                        // if (bkValue.lastIndexOf('.') !== -1) {
+                        //     //kValue = bkValue.stringByRemovingSuffix(".js");
+                        //Will remove if present
+                        bkValue = bkValue.stringByRemovingPathExtension();
+                        //}
+
+
+                    } else {
+                        //From https://github.com/defunctzombie/node-browser-resolve/blob/master/index.js
+                        //UNTESTED
+                        bkValue = normalizeId(__dirname + '/empty.js');
+                    }
+
+
+                    if (bk[0] === '/' || bk[0] === '.') {
+                        // if begins with / ../ or ./ then we must resolve to a full path
+                        bk = URL.resolve(location, bk);
+
+                        //Now remove location and file extension.
+                        bk = URL.resolve(location, bk);
+                        bk = bk.stringByRemovingPrefix(location);
+                        bk = bk.stringByRemovingPathExtension();
+                    }
+
+                    redirects[bk] = bkValue;
+
                 }
+                // overlay.browser = {
+                //     redirects: description.browser
+                // };
             }
-            // overlay.browser = {
-            //     redirects: description.browser
-            // };
         }
 
         // overlay continued...
@@ -1175,7 +1212,7 @@
                 module.dependencies = config.parseDependencies(module.text);
             }
             compile(module);
-            if (module && !module.dependencies) {
+            if (module && !module.dependencies && module.type !== Require.ES_MODULE_TYPE) {
                 if (module.text || module.factory) {
                     module.dependencies = Require.parseDependencies(module.text || module.factory);
                 } else {
@@ -1555,4 +1592,7 @@
             }
         };
     };
+
+    Require.ES_MODULE_TYPE = "javascript-module";
+
 });

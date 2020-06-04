@@ -1,4 +1,4 @@
-var Map = require("core/collections/map");
+var Map = require("../collections/map");
 
 
 /**
@@ -115,3 +115,42 @@ if (!String.prototype.toCamelCase) {
 
     String.prototype.toLowerCamelCase.cache = Object.create(null);
 }
+
+
+Object.defineProperty(String.prototype, 'stringByRemovingPrefix', {
+    value: function stringByRemovingPrefix (prefix) {
+        if(this.indexOf(prefix) === 0 ) {
+            return this.substring(prefix.length);
+        } else {
+            return this;
+        }
+    },
+    writable: true,
+    configurable: true
+});
+
+Object.defineProperty(String.prototype, 'stringByRemovingSuffix', {
+    value: function stringByRemovingPrefix (suffix) {
+        if(this.lastIndexOf(suffix) === (this.length - suffix.length) ) {
+            return this.substring(0,this.length - suffix.length);
+        } else {
+            return this;
+        }
+    },
+    writable: true,
+    configurable: true
+});
+
+Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
+    value: function stringByRemovingPathExtension () {
+        var lastIndex = this.lastIndexOf(".");
+        if(lastIndex !== -1 ) {
+            return this.substring(0,lastIndex);
+        } else {
+            return this;
+        }
+    },
+    writable: true,
+    configurable: true
+});
+

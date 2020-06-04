@@ -21,25 +21,31 @@ if (!String.prototype.endsWith) {
 
 bootstrap("require/browser", function (require) {
 
-    var Require = require("require");
-    var Promise = require("promise");
-    var URL = require("mini-url");
+    var Require = require("require"),
+        Promise = require("promise"),
+        miniURL = require("mini-url"),
 
-    var GET = "GET";
-    var APPLICATION_JAVASCRIPT_MIMETYPE = "application/javascript";
-    var FILE_PROTOCOL = "file:";
-    var JAVASCRIPT = "javascript";
+        GET = "GET",
+        APPLICATION_JAVASCRIPT_MIMETYPE = "application/javascript",
+        FILE_PROTOCOL = "file:",
+        JAVASCRIPT = "javascript",
+        ES6_IMPORT_REGEX = /import (\w+) from ('([^']+)')/g,
 
-    // By using a named "eval" most browsers will execute in the global scope.
-    // http://www.davidflanagan.com/2010/12/global-eval-in.html
-    // Unfortunately execScript doesn't always return the value of the evaluated expression (at least in Chrome)
-    var globalEval = /*this.execScript ||*/eval;
+        // By using a named "eval" most browsers will execute in the global scope.
+        // http://www.davidflanagan.com/2010/12/global-eval-in.html
+        // Unfortunately execScript doesn't always return the value of the evaluated expression (at least in Chrome)
+        globalEval = /*this.execScript ||*/eval,
 
-    /*jshint evil:true */
-    var global = globalEval('this');
-    /*jshint evil:false */
+        emptyFactory = function () {
+        };
 
-    var location;
+        /*jshint evil:true */
+        global = globalEval('this'),
+        /*jshint evil:false */
+
+        location;
+
+
     Require.getLocation = function() {
         if (!location) {
             var base = document.querySelector("head > base");
@@ -48,7 +54,7 @@ bootstrap("require/browser", function (require) {
             } else {
                 location = window.location;
             }
-            location = URL.resolve(location, ".");
+            location = miniURL.resolve(location, ".");
         }
         return location;
     };
@@ -67,13 +73,39 @@ bootstrap("require/browser", function (require) {
         // Determine if an XMLHttpRequest was successful
         // Some versions of WebKit return 0 for successful file:// URLs
         if (xhr.status === 200 || (xhr.status === 0 && xhr.responseText)) {
+            onload.xhrPool.push(xhr);
             if (module) {
                 module.type = JAVASCRIPT;
-                module.text = xhr.responseText;
                 module.location = xhr.url;
+
+                var capturedImports = ES6_IMPORT_REGEX.exec(xhr.responseText);
+                if(xhr.responseText.indexOf("export ") !== -1) {
+                    // var displayName = (`${DoubleUnderscore}${module.require.config.name}${Underscore}${module.id}`.replace(nameRegex, Underscore)),
+                    // src = `export default ${globalEvalConstantA}${displayName}${globalEvalConstantB}${xhr.responseText}${globalEvalConstantC}${module.location}`;
+
+                    import(xhr.url).then(function(esModule) {
+                        module.type = Require.ES_MODULE_TYPE;
+                        module.exports = esModule;
+                        module.factory = emptyFactory;
+                        //module.factory.displayName = displayName;
+                        xhr.resolve();
+                    });
+
+
+                } else {
+                    module.text = xhr.responseText;
+                    xhr.resolve(xhr.responseText);
+                }
+
+                //This is check in Compile, so we should be able to do it earlier
+                // if (module.factory || module.text === void 0) {
+                //     return module;
+                // }
+
+            } else {
+                xhr.resolve(xhr.responseText);
             }
-            xhr.resolve(xhr.responseText);
-            onload.xhrPool.push(xhr);
+
         } else {
             xhr.onerror(event);
         }
@@ -198,9 +230,20 @@ bootstrap("require/browser", function (require) {
                 module.text = globalConcatenator[1] = globalConcatenator[3] = globalConcatenator[5] = null;
             }
             else {
+
+                // var capturedImports = ES6_IMPORT_REGEX.exec(module.text),
                 var displayName = (`${DoubleUnderscore}${module.require.config.name}${Underscore}${module.id}`.replace(nameRegex, Underscore));
-                module.factory = globalEval(`${globalEvalConstantA}${displayName}${globalEvalConstantB}${module.text}${globalEvalConstantC}${module.location}`);
-                module.factory.displayName = displayName;
+
+                // if(capturedImports) {
+                //     import(URL.createObjectURL(new Blob([src], {type: 'text/javascript'}))).then(function(value) {
+                //         module.factory = value;
+                //         module.factory.displayName = displayName;
+                //     });
+                // } else {
+                    module.factory = globalEval(`${globalEvalConstantA}${displayName}${globalEvalConstantB}${module.text}${globalEvalConstantC}${module.location}`);
+                    module.factory.displayName = displayName;
+                //}
+
             }
 
         };
@@ -210,7 +253,9 @@ bootstrap("require/browser", function (require) {
         return function (url, module) {
             return config.read(url, module)
             .then(function (text) {
-                 module.type = JAVASCRIPT;
+                if(!module.type) {
+                    module.type = JAVASCRIPT;
+                }
                  module.text = text;
                  module.location = url;
             });
@@ -323,7 +368,7 @@ bootstrap("require/browser", function (require) {
                     module[name] = definition[name];
                 }
                 module.location = location;
-                module.directory = URL.resolve(location, ".");
+                module.directory = miniURL.resolve(location, ".");
                 /*jshint +W089 */
             });
         };
@@ -334,7 +379,7 @@ bootstrap("require/browser", function (require) {
     Require.loadPackageDescription = function (dependency, config) {
         if (dependency.hash) { // use script injection
             var definition = getDefinition(dependency.hash, "package.json");
-            var location = URL.resolve(dependency.location, "package.json.load.js");
+            var location = miniURL.resolve(dependency.location, "package.json.load.js");
 
             loadIfNotPreloaded(location, definition, config.preloaded);
 
