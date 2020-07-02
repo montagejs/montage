@@ -22,8 +22,9 @@ exports.bindings = bindingsForObject;
 exports.defineBindings = defineBindings;
 function defineBindings(object, descriptors, commonDescriptor) {
     if (descriptors) {
-        for (var name in descriptors) {
-            defineBinding(object, name, descriptors[name], commonDescriptor);
+        //for (var name in descriptors) {
+        for (var i=0, name, keys = Object.keys(descriptors); (name = keys[i]); i++) {
+                defineBinding(object, name, descriptors[name], commonDescriptor);
         }
     }
     return object;
