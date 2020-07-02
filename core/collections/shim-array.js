@@ -470,3 +470,9 @@ ArrayIterator.prototype.next = function () {
     }
     return this._iterationObject;
 };
+
+
+define("randomItem", function () {
+    return  this[Math.floor(Math.random() * this.length)];
+});
+
