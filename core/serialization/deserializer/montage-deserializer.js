@@ -144,7 +144,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                             );
                         }
                         locationDesc = MontageReviver.parseObjectLocationId(locationId);
-                        module = moduleLoader.getModule(locationDesc.moduleId, label);
+                        module = moduleLoader.getModule(locationDesc.moduleId, label, this);
                         if (Promise.is(module)) {
                             (promises || (promises = [])).push(module);
                         }

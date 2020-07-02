@@ -81,7 +81,7 @@ var ModuleLoader = Montage.specialize({
     },
 
     getModule: {
-        value: function (moduleId, label) {
+        value: function (moduleId, label, reviver) {
             var objectRequires = this._objectRequires,
                 _require, module;
 
@@ -98,7 +98,7 @@ var ModuleLoader = Montage.specialize({
                     module = this.getModuleDescriptor(_require, moduleId).text;
                 }
 
-                if (!module) {
+                if (!module && !reviver._isSync) {
                     module = _require.async(moduleId);
                 }
             }
@@ -470,7 +470,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 objectName = locationId;
             } else if (locationId) {
                 locationDesc = MontageReviver.parseObjectLocationId(locationId);
-                module = this.moduleLoader.getModule(locationDesc.moduleId, label);
+                module = this.moduleLoader.getModule(locationDesc.moduleId, label, this);
                 objectName = locationDesc.objectName;
             }
 
