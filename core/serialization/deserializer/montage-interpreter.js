@@ -2,7 +2,7 @@ var Montage = require("../../core").Montage,
     MontageReviver = require("./montage-reviver").MontageReviver,
     Promise = require("../../promise").Promise,
     deprecate = require("../../deprecate"),
-    Set = require("core/collections/set"),
+    Set = require("../../collections/set"),
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
     TWO_WAY = "<->";
@@ -47,26 +47,25 @@ var MontageInterpreter = Montage.specialize({
                 locationId,
                 locationDesc,
                 module,
-                promises = [];
+                promises = [],
+                i, keys, label;
 
-            for (var label in serialization) {
-                if (serialization.hasOwnProperty(label)) {
-                    object = serialization[label];
-                    locationId = object.prototype || object.object;
+            for (i =0, keys = Object.keys(serialization);(label = keys[i]); i++) {
+                object = serialization[label];
+                locationId = object.prototype || object.object;
 
-                    if (locationId) {
-                        if (typeof locationId !== "string") {
-                            throw new Error(
-                                "Property 'object' of the object with the label '" +
-                                label + "' must be a module id"
-                            );
-                        }
-                        locationDesc = MontageReviver.parseObjectLocationId(locationId);
-                        module = moduleLoader.getModule(
-                            locationDesc.moduleId, label);
-                        if (Promise.is(module)) {
-                            promises.push(module);
-                        }
+                if (locationId) {
+                    if (typeof locationId !== "string") {
+                        throw new Error(
+                            "Property 'object' of the object with the label '" +
+                            label + "' must be a module id"
+                        );
+                    }
+                    locationDesc = MontageReviver.parseObjectLocationId(locationId);
+                    module = moduleLoader.getModule(
+                        locationDesc.moduleId, label);
+                    if (Promise.is(module)) {
+                        promises.push(module);
                     }
                 }
             }
