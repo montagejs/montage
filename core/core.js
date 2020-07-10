@@ -2,7 +2,7 @@
  * @module montage/core/core
  */
 
-require("core/collections/shim");
+require("./collections/shim");
 require("./shim/object");
 require("./shim/array");
 require("./extras/object");
@@ -17,15 +17,17 @@ require("./extras/weak-map");
 require("proxy-polyfill/proxy.min");
 
 
-var Map = require("core/collections/map");
-var WeakMap = require("core/collections/weak-map");
-var Set = require("core/collections/set");
+var Map = require("./collections/map");
+var WeakMap = require("./collections/weak-map");
+var Set = require("./collections/set");
 
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
     PROTO = "__proto__",
     VALUE = "value",
+    WRITABLE = "writable",
     ENUMERABLE = "enumerable",
+    CONFIGURABLE = "configurable",
     SERIALIZABLE = "serializable",
     FUNCTION = "function",
     UNDERSCORE_UNICODE = 95,
@@ -425,9 +427,60 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
 
         var isValueDescriptor = (VALUE in descriptor);
 
+
         // reset defaults appropriately for framework.
         if (PROTO in descriptor) {
-            descriptor.__proto__ = (isValueDescriptor ? (typeof descriptor.value === FUNCTION ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
+            //Replaces the tweak of __proto__
+            if(isValueDescriptor) {
+                if(typeof descriptor.value === FUNCTION) {
+                    // _defaultFunctionValueProperty = {
+                    //     writable: true,
+                    //     enumerable: false,
+                    //     configurable: true
+                    //     /*,
+                    //     serializable: false
+                    //     */
+                    // };
+
+                    //Montage objects defineProperty function value : should be non-enumerable by default
+                    if(!hasProperty.call(descriptor, ENUMERABLE)) descriptor.enumerable = false;
+
+                    if(!hasProperty.call(descriptor, WRITABLE)) descriptor.writable = true;
+                    if(!hasProperty.call(descriptor, CONFIGURABLE)) descriptor.configurable = true;
+
+                } else {
+                    // var _defaultObjectValueProperty = {
+                    //     writable: true,
+                    //     enumerable: true,
+                    //     configurable: true,
+                    //     serializable: "reference"
+                    // };
+
+                    if(!hasProperty.call(descriptor, ENUMERABLE)) {
+                        descriptor.enumerable = prop.charCodeAt(0) === UNDERSCORE_UNICODE ? false : true;
+                    }
+
+                    if(!hasProperty.call(descriptor, WRITABLE)) descriptor.writable = true;
+                    if(!hasProperty.call(descriptor, CONFIGURABLE)) descriptor.configurable = true;
+                    if(!hasProperty.call(descriptor, SERIALIZABLE) && descriptor.enumerable && descriptor.writable) descriptor.serializable = "reference";
+
+                }
+            } else {
+                // var _defaultAccessorProperty = {s
+                //     enumerable: true,
+                //     configurable: true,
+                //     serializable: true
+                // };
+
+                if(!hasProperty.call(descriptor, ENUMERABLE)) {
+                    descriptor.enumerable = prop.charCodeAt(0) === UNDERSCORE_UNICODE ? false : true;
+                }
+
+                if(!hasProperty.call(descriptor, CONFIGURABLE)) descriptor.configurable = true;
+                if(!hasProperty.call(descriptor, SERIALIZABLE) && descriptor.enumerable && descriptor.writable) descriptor.serializable = true;
+            }
+
+            //descriptor.__proto__ = (isValueDescriptor ? (typeof descriptor.value === FUNCTION ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
         } else {
             var defaults;
             if (isValueDescriptor) {
@@ -448,19 +501,24 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
             }
         }
 
-        if (!hasProperty.call(descriptor, ENUMERABLE) && prop.charCodeAt(0) === UNDERSCORE_UNICODE) {
-            descriptor.enumerable = false;
+        // if (!hasProperty.call(descriptor, ENUMERABLE) && prop.charCodeAt(0) === UNDERSCORE_UNICODE) {
+        //     descriptor.enumerable = false;
+        // }
+
+        if(prop !== "_localization") {
+
+            if (!hasProperty.call(descriptor, SERIALIZABLE)) {
+                if (! descriptor.enumerable) {
+                    descriptor.serializable = false;
+                } else if (descriptor.get && !descriptor.set) {
+                    descriptor.serializable = false;
+                } else if (descriptor.writable === false) {
+                    descriptor.serializable = false;
+                }
+            }
+
         }
 
-        if (!hasProperty.call(descriptor, SERIALIZABLE)) {
-            if (! descriptor.enumerable) {
-                descriptor.serializable = false;
-            } else if (descriptor.get && !descriptor.set) {
-                descriptor.serializable = false;
-            } else if (descriptor.writable === false) {
-                descriptor.serializable = false;
-            }
-        }
 
         if (SERIALIZABLE in descriptor) {
             // get the _serializableAttributeProperties property or creates it through the entire chain if missing.
@@ -1021,7 +1079,7 @@ Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
 
 // Property Changes
 
-var PropertyChanges = require("core/collections/listen/property-changes");
+var PropertyChanges = require("./collections/listen/property-changes");
 Object.addEach(Montage, PropertyChanges.prototype);
 Object.addEach(Montage.prototype, PropertyChanges.prototype);
 
@@ -1136,7 +1194,7 @@ Object.addEach(Montage.prototype, PropertyChanges.prototype);
  * @extends frb
  * @typedef {string} FRBExpression
  */
-var Bindings = exports.Bindings = require("core/frb/bindings");
+var Bindings = exports.Bindings = require("./frb/bindings");
 
 var bindingPropertyDescriptors = {
 
@@ -1249,13 +1307,13 @@ Montage.defineProperties(Montage.prototype, bindingPropertyDescriptors);
 
 // Paths
 
-var parse = require("core/frb/parse"),
-    evaluate = require("core/frb/evaluate"),
-    assign = require("core/frb/assign"),
-    bind = require("core/frb/bind"),
-    compileObserver = require("core/frb/compile-observer"),
-    Scope = require("core/frb/scope"),
-    Observers = require("core/frb/observers"),
+var parse = require("./frb/parse"),
+    evaluate = require("./frb/evaluate"),
+    assign = require("./frb/assign"),
+    bind = require("./frb/bind"),
+    compileObserver = require("./frb/compile-observer"),
+    Scope = require("./frb/scope"),
+    Observers = require("./frb/observers"),
     autoCancelPrevious = Observers.autoCancelPrevious;
 
 
