@@ -8,6 +8,7 @@ var Montage = require("../core").Montage,
     ICAL = require("ical.js"),
     ICAL_Timezone = ICAL.Timezone,
     ICAL_Timezone_Prototype = ICAL.Timezone.prototype,
+    ICAL_Timezone_Prototype = ICAL.Timezone.prototype,
     ICAL_TimezoneService = ICAL.TimezoneService,
     currentEnvironment = require("../environment").currentEnvironment,
 
@@ -54,7 +55,19 @@ var Montage = require("../core").Montage,
 
 TimeZone.withIdentifier = function(timeZoneIdentifier) {
     return ICAL_TimezoneService.get(timeZoneIdentifier);
-}
+};
+
+Object.defineProperties(ICAL_Timezone_Prototype, {
+    "identifier": {
+        get: function() {
+            return this.tzid;
+        }
+    }
+});
+
+
+
+
 
 /**
  * Returns a TimeZone a given identifier.

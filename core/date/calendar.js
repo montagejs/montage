@@ -1,5 +1,6 @@
 var Montage = require("../core").Montage,
-    Locale = require("./locale"),
+    Enum = require("../enum").Enum,
+    Locale = require("../locale"),
     TimeZone = require("./time-zone"),
     CalendarDate = require("./calendar-date"),
     Range = require("../range").Range,
