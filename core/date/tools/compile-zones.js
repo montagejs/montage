@@ -85,33 +85,77 @@ parsed = ICAL.parse(`BEGIN:VCALENDAR\nPRODID:-//tzurl.org//NONSGML Olson 2012h//
 
 const fs = require('fs');
 const zonesJson = fs.readFileSync('../time-zone-data/zones.json');
-const zones = JSON.parse(zonesJson);
+var zones = JSON.parse(zonesJson);
+var fetchedZones, fetchedZonesJSONString = "";
+const https = require('https');
+
+
 
 function icsString(timeZoneId, icsData) {
     return `BEGIN:VCALENDAR\r\nPRODID:-//tzurl.org//NONSGML Olson 2012h//EN\r\nVERSION:2.0\r\nBEGIN:VTIMEZONE\r\nTZID:${timeZoneId}\r\nX-LIC-LOCATION:${timeZoneId}\r\n${icsData}\r\nEND:VTIMEZONE\r\nEND:VCALENDAR`;
 }
 
-const out = {};
-Object.keys(zones.zones).forEach((timeZoneId) => {
-    var icsData = zones.zones[timeZoneId].ics.join("\r\n");
-    out[timeZoneId] = icsString(timeZoneId,icsData);
-    //fs.writeFileSync('../time-zone-data/zones-compiled.json', JSON.stringify(out));
+function compileTimeZones(zones) {
+    const out = {};
+    Object.keys(zones.zones).forEach((timeZoneId) => {
+        var icsData = zones.zones[timeZoneId].ics.join("\r\n");
+        out[timeZoneId] = icsString(timeZoneId,icsData);
+        //fs.writeFileSync('../time-zone-data/zones-compiled.json', JSON.stringify(out));
 
+    });
+
+    Object.keys(zones.aliases).forEach((timeZoneId) => {
+      var previousAliasTo = zones.aliases[timeZoneId].aliasTo,
+            nextAliasTo,
+            icsData;
+      while(zones.aliases[previousAliasTo] && (nextAliasTo = zones.aliases[previousAliasTo].aliasTo)) {
+        previousAliasTo = nextAliasTo;
+      }
+      if (zones.zones[previousAliasTo]) {
+        icsData = zones.zones[previousAliasTo].ics.join("\r\n");
+        out[timeZoneId] = icsString(timeZoneId,icsData);
+      } else {
+        console.warn(`${previousAliasTo} (${timeZoneId}) not found, skipping`);
+      }
+    });
+
+    fs.writeFileSync('../time-zone-data/zones-compiled.json', JSON.stringify(out));
+};
+
+
+
+//https://hg.mozilla.org/comm-central/raw-file/tip/calendar/timezones/zones.json
+const options = {
+  hostname: 'hg.mozilla.org',
+  port: 443,
+  path: '/comm-central/raw-file/tip/calendar/timezones/zones.json',
+  method: 'GET'
+};
+
+const req = https.request(options, res => {
+  console.log(`statusCode: ${res.statusCode}`)
+
+    res.on('data', d => {
+        fetchedZonesJSONString += d;
+    });
+
+    res.on("end", () => {
+        try {
+            fetchedZones = JSON.parse(fetchedZonesJSONString);
+            compileTimeZones(fetchedZones);
+        } catch (error) {
+            console.error(error.message);
+            compileTimeZones(zones);
+        };
+    });
 });
 
-Object.keys(zones.aliases).forEach((timeZoneId) => {
-  var previousAliasTo = zones.aliases[timeZoneId].aliasTo,
-        nextAliasTo,
-        icsData;
-  while(zones.aliases[previousAliasTo] && (nextAliasTo = zones.aliases[previousAliasTo].aliasTo)) {
-    previousAliasTo = nextAliasTo;
-  }
-  if (zones.zones[previousAliasTo]) {
-    icsData = zones.zones[previousAliasTo].ics.join("\r\n");
-    out[timeZoneId] = icsString(timeZoneId,icsData);
-  } else {
-    console.warn(`${previousAliasTo} (${timeZoneId}) not found, skipping`);
-  }
+req.on('error', error => {
+  console.error(error);
+  compileTimeZones(zones);
 });
 
-fs.writeFileSync('../time-zone-data/zones-compiled.json', JSON.stringify(out));
+req.end();
+
+
+
