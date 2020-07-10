@@ -1,6 +1,6 @@
 
 var Bindings = require("../bindings");
-var SortedSet = require("core/collections/sorted-set");
+var SortedSet = require("../../collections/sorted-set");
 
 describe("group block", function () {
 

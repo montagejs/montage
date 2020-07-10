@@ -8,19 +8,26 @@ function solve(target, source) {
 
 solve.semantics = {
 
-    solve: function (target, source) {
+    memo: new Map(),
+
+    _cacheSolve: function (target, source, targetMemo) {
+        var targetSourceMemo,
+            simplification,
+            canRotateTargetToSource,
+            canRotateSourceToTarget;
+
         while (true) {
             // simplify the target
             while (this.simplifiers.hasOwnProperty(target.type)) {
-                var simplification = this.simplifiers[target.type](target);
+                simplification = this.simplifiers[target.type](target);
                 if (simplification) {
                     target = simplification;
                 } else {
                     break;
                 }
             }
-            var canRotateTargetToSource = this.rotateTargetToSource.hasOwnProperty(target.type);
-            var canRotateSourceToTarget = this.rotateSourceToTarget.hasOwnProperty(source.type);
+            canRotateTargetToSource = this.rotateTargetToSource.hasOwnProperty(target.type);
+            canRotateSourceToTarget = this.rotateSourceToTarget.hasOwnProperty(source.type);
             // solve for bindable target (rotate terms to source)
             if (!canRotateTargetToSource && !canRotateSourceToTarget) {
                 break;
@@ -32,8 +39,15 @@ solve.semantics = {
                 source = source.args[0];
             }
         }
+        //Trick to take care of all cases in one line:
+        return (targetMemo || ( this.memo.set(target, (targetMemo = new Map())) && targetMemo)).set(source,(targetSourceMemo = [target, source])) && targetSourceMemo;
 
-        return [target, source];
+    },
+
+    solve: function (target, source) {
+        var targetMemo = this.memo.get(target);
+
+        return (targetMemo && targetMemo.get(source)) || this._cacheSolve(target, source, targetMemo);
     },
 
     simplifiers: {

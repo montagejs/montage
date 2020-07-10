@@ -1,6 +1,6 @@
 
 var Bindings = require("../bindings");
-var Map = require("core/collections/map");
+var Map = require("../../collections/map");
 
 describe("items", function () {
     it("should work", function () {

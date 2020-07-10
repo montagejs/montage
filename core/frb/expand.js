@@ -63,9 +63,11 @@ expand.semantics = {
         } else if (this.reflexive.has(syntax.type)) {
             return syntax;
         } else {
-            return {type: syntax.type, args: syntax.args.map(function (arg) {
-                return expand(arg, scope, expand);
-            })};
+            for(var argsMapped = [], args = syntax.args, i=0, countI = args.length;i<countI;i++) {
+                argsMapped.push(expand(args[i], scope, expand));
+            }
+
+            return {type: syntax.type, args: argsMapped};
         }
     }
 

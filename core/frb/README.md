@@ -711,7 +711,7 @@ from that collection as an array.  The `view` binding reacts to changes
 to the collection and the position and length of the window.
 
 ```javascript
-var SortedSet = require("core/collections/sorted-set");
+var SortedSet = require("montage/core/collections/sorted-set");
 var controller = {
     index: SortedSet([1, 2, 3, 4, 5, 6, 7, 8]),
     start: 2,

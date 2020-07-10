@@ -518,11 +518,20 @@ function makeReplacingFilterBlockObserver(observeCollection, observePredicate) {
             function rangeChange(plusPredicates, minusPredicates, index) {
                 var plusValues = input.slice(index, index + plusPredicates.length);
                 var minusLength = minusPredicates.map(Boolean).sum();
-                var plusOutput = plusValues.filter(function (value, offset) {
-                    return plusPredicates[offset];
-                });
+                var plusOutput = [];
                 var start = cumulativeLengths[index];
                 var minusOutput = output.slice(start, start + minusLength);
+
+                // var plusOutput = plusValues.filter(function (value, offset) {
+                //     return plusPredicates[offset];
+                // });
+                for (var i = 0, countI = plusValues.length; (i < countI); i++) {
+                    if(plusPredicates[i]) {
+                        plusOutput.push(plusValues[i]);
+                    }
+                }
+
+
                 // avoid propagating a range change if the output would not be
                 // changed
                 if (
@@ -697,9 +706,14 @@ function makeReplacingFlattenObserver(observeArray) {
                 var length = end - start;
                 output.swap(start, length, []);
 
-                swap(indexRefs, i, minus.length, plus.map(function () {
-                    return {index: null};
-                }));
+                // plus.map(function () {
+                //     return {index: null};
+                // })
+                for(var plusMapped = [], j = 0, countJ = plus.length;(j<countJ);j++ ) {
+                    plusMapped.push({index: null});
+                }
+
+                swap(indexRefs, i, minus.length, plusMapped);
                 update(i);
 
                 // unroll cancelEach(cancelers.slice(i, minus.length))
@@ -1104,9 +1118,13 @@ function makeReplacingEnumerateObserver(observeArray) {
                 }
             }
             function rangeChange(plus, minus, index) {
-                output.swap(index, minus.length, plus.map(function (value, offset) {
-                    return [index + offset, value];
-                }));
+                for(var plusMapped = [], j = 0, countJ = plus.length;(j<countJ);j++ ) {
+                    plusMapped.push([index + j, plus[j]]);
+                }
+                // var plusMapped = plus.map(function (value, offset) {
+                //     return [index + offset, value];
+                // })
+                output.swap(index, minus.length, plusMapped);
                 update(index + plus.length);
             }
             var cancelRangeChange = observeRangeChange(input, rangeChange, scope);
@@ -1553,7 +1571,13 @@ function makeConverterObserver(observeValue, convert, thisp) {
     return function observeConversion(emit, scope) {
         emit = makeUniq(emit);
         return observeValue(function replaceValue(value) {
-            return emit(convert.call(thisp, value));
+            //Would be great to not have converter objects' methods using bind() in bind.js
+            //But since "this" - the converter object is baked in, we don't need to use call.
+            //Other code calling makeConverterObserver() don't paass a third argument.
+            //and calling code in bind.js passes a thisp that is sourceScope and doesn't have role
+            //in regular converter's designed way of working.
+            //return emit(convert.call(thisp, value));
+            return emit(convert(value));
         }, scope);
     };
 }

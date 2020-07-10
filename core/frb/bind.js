@@ -23,22 +23,17 @@ function bind(target, targetPath, descriptor) {
         twoWay = descriptor.twoWay = TWO_WAY in descriptor,
         sourcePath = descriptor.sourcePath = !twoWay ? descriptor[ONE_WAY] : descriptor[TWO_WAY] || "",
         parameters = descriptor.parameters = descriptor.parameters || source,
-        document = descriptor.document,
-        components = descriptor.components,
         trace = descriptor.trace,
 
     // TODO: consider the possibility that source and target have intrinsic
     // scope properties
 
-        sourceScope = /*descriptor.sourceScope =*/ new Scope(source),
-        targetScope = /*descriptor.targetScope =*/ new Scope(target);
+    sourceScope = /*descriptor.sourceScope =*/ new Scope(source),
+    targetScope = /*descriptor.targetScope =*/ new Scope(target);
 
-    sourceScope.parameters = parameters;
-    sourceScope.document = document;
-    sourceScope.components = components;
-    targetScope.parameters = parameters;
-    targetScope.document = document;
-    targetScope.components = components;
+    sourceScope.parameters = targetScope.parameters = parameters;
+    sourceScope.document = targetScope.document = descriptor.document;
+    sourceScope.components = targetScope.components = descriptor.components;
 
     // promote convert and revert from a converter object up to the descriptor
     if (descriptor.converter) {

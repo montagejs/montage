@@ -53,7 +53,13 @@ compile.semantics = {
                 return assignParent(value, scope.parent);
             };
         } else if (compilers.hasOwnProperty(syntax.type)) {
-            var argEvaluators = syntax.args.map(this.compileEvaluator, this.compileEvaluator.semantics);
+            var argEvaluators = [],
+                semantics = this.compileEvaluator.semantics;
+            for(var i=0, args = syntax.args, countI = args.length;i<countI;i++) {
+                argEvaluators.push(this.compileEvaluator.call(semantics,args[i]));
+            }
+
+
             if(argEvaluators.length === 1) {
                 return compilers[syntax.type].call(null, argEvaluators[0]);
             }

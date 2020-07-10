@@ -43,11 +43,15 @@ var compilers = {
     },
 
     tuple: function (syntax) {
-        var argEvaluators = syntax.args.map(this.compile, this);
+        for(var argEvaluators = [], args = syntax.args, i=0, countI = args.length;i<countI;i++) {
+            argEvaluators.push(this.compile(args[i]));
+        }
+
         return function (scope) {
-            return argEvaluators.map(function (evaluateArg) {
-                return evaluateArg(scope);
-            });
+            for(var result = [], i=0, countI = argEvaluators.length;i<countI;i++) {
+                result.push(argEvaluators[i](scope));
+            }
+            return result;
         };
     },
 
@@ -76,6 +80,8 @@ var argCompilers = {
     mapBlock: function (evaluateCollection, evaluateRelation) {
         return function (scope) {
             var  result = evaluateCollection(scope);
+
+            //result may not be an array, harder to optimize .map(here)
             return result
                 ?  result.map(function (value) {
                     return evaluateRelation(scope.nest(value));
@@ -339,12 +345,19 @@ var semantics = compile.semantics = {
 
                 };
             }
-            var operator = operators[syntax.type];
-            var argEvaluators = syntax.args.map(this.compile, this);
+            var operator = operators[syntax.type],
+                argEvaluators = [];
+
+            for(var i=0, args = syntax.args, countI = args.length;i<countI;i++) {
+                argEvaluators.push(this.compile(args[i]));
+            }
+
             return function (scope) {
-                var args = argEvaluators.map(function (evaluateArg) {
-                    return evaluateArg(scope);
-                });
+
+                for(var args = [], _argEvaluators = argEvaluators, i=0, countI = _argEvaluators.length;i<countI;i++) {
+                    args.push(_argEvaluators[i](scope));
+                }
+
                 if (!args.every(Operators.defined))
                     return;
 
