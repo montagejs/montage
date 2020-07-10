@@ -388,7 +388,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      */
     isDerived: {
         get: function () {
-            return false;
+            return !!this.definition;
         }
     },
 
@@ -403,7 +403,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @default false
      */
     isSearchable: {
-         value: Defaults.readOnly
+         value: Defaults.isSearchable
     },
 
     /**
