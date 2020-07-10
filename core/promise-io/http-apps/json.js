@@ -1,4 +1,4 @@
-var Q = require("q-bluebird");
+var Q = require("../../q");
 var Content = require("./content");
 var Status = require("./status");
 

@@ -1,7 +1,7 @@
 
 var HTTP = require("../http");
 var URL = require("url2");
-var Q = require("q-bluebird");
+var Q = require("../../q");
 
 exports.Proxy = function (app) {
     if (typeof app === "string") {

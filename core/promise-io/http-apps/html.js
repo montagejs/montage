@@ -1,5 +1,5 @@
 
-var Q = require("q-bluebird");
+var Q = require("../../q");
 // TODO negotiate text/html vs text/html+fragment (or other mime type)
 
 /**

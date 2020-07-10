@@ -1,4 +1,4 @@
-var Q = require("q-bluebird");
+var Q = require("../../q");
 var Negotiate = require("./negotiate");
 var QS = require("qs");
 var URL = require("url2");

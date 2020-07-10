@@ -1,5 +1,5 @@
 
-var Q = require("q-bluebird");
+var Q = require("../q");
 var BOOT = require("./fs-boot");
 var COMMON = require("./fs-common");
 

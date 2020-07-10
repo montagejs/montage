@@ -1,6 +1,6 @@
 
 require("../../lib/jasmine-promise");
-var Q = require("q-bluebird");
+var Q = require("../../../../q");
 var FS = require("../../../fs");
 
 describe("write and remove", function () {

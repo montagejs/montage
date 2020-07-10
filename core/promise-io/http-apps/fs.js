@@ -1,5 +1,5 @@
 
-var Q = require("q-bluebird");
+var Q = require("../../q");
 var URL = require("url2");
 var MimeTypes = require("mime");
 var FS = require("../fs");

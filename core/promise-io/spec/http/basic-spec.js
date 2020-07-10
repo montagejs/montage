@@ -1,6 +1,6 @@
 
 require("../lib/jasmine-promise");
-var Q = require("q-bluebird");
+var Q = require("../../../q");
 var HTTP = require("../../http");
 
 describe("http server and client", function () {
