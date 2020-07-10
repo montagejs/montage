@@ -37,7 +37,7 @@ var Montage = require("montage").Montage,
     TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Map = require("montage/core/collections/map"),
     Bindings = require("montage/core/core").Bindings,
-    FrbBindings = require("montage/frb/bindings");
+    FrbBindings = require("montage/core/frb/bindings");
 
 var stripPP = function stripPrettyPrintting(str) {
     return str.replace(/\n\s*/g, "");
