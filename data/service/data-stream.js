@@ -67,7 +67,12 @@ DataStream = exports.DataStream = DataProvider.specialize(/** @lends DataStream.
             //This will enable a better undertanding of what type of data is coming
             //for objects using UserInterfaceDescriptors like the CascadingList
             if(value && value.type) {
-                this.data.objectDescriptor = value.type;
+                Object.defineProperty(this.data,"objectDescriptor", {
+                    value: value.type,
+                    enumerable: false,
+                    configurable: true
+                })
+                // this.data.objectDescriptor = value.type;
             }
         }
     },
