@@ -186,6 +186,94 @@ Number.prototype.toPaddedString = function(len , fillchar) {
   _parseRFC3339.endsByZ = /Z$/i;
   Date.parseRFC3339 = _parseRFC3339;
 
+
+  if(!Object.getOwnPropertyDescriptor(Date.prototype, 'year')) {
+
+    Object.defineProperties(Date.prototype,{
+        "year": {
+            get: function() {
+                return this.getFullYear();
+            },
+            set: function(value) {
+                return this.setFullYear(value);
+            },
+            configurable: true
+        },
+        "month": {
+            get: function() {
+                //Date API is 0 based
+                return this.getMonth()+1;
+            },
+            set: function(value) {
+                //Date API is 0 based
+                return this.setMonth(value-1);
+            },
+            configurable: true
+        },
+        "day": {
+            get: function() {
+                return this.getDate();
+            },
+            set: function(value) {
+                return this.setDate(value);
+            },
+            configurable: true
+        },
+        "hour": {
+            get: function() {
+                return this.getHours();
+            },
+            set: function(value) {
+                return this.setHours(value);
+            },
+            configurable: true
+        },
+        "minute": {
+            get: function() {
+                return this.getMinutes();
+            },
+            set: function(value) {
+                return this.setMinutes(value);
+            },
+            configurable: true
+        },
+        "second": {
+            get: function() {
+                return this.getSeconds();
+            },
+            set: function(value) {
+                return this.setSeconds(value);
+            },
+            configurable: true
+        },
+        "millisecond": {
+            get: function() {
+                return this.getMilliseconds();
+            },
+            set: function(value) {
+                return this.setMilliseconds(value);
+            },
+            configurable: true
+        }
+    });
+}
+
+
+Object.defineProperty(Date.prototype, "isToday", {
+    get: function () {
+        var today = new Date();
+        return this.day === today.day &&
+        this.month === today.month &&
+        this.year === today.year;
+    },
+    configurable: true
+});
+
+
+
+
+
+
 /**********
  * Part of https://github.com/tardate/rfc3339date.js/.
  * But it not only conflicts with a Date.parse override currently done in date-converter.js,
@@ -220,36 +308,36 @@ Number.prototype.toPaddedString = function(len , fillchar) {
 */
 
 /*
-export const SECONDS_A_MINUTE = 60
-export const SECONDS_A_HOUR = SECONDS_A_MINUTE * 60
-export const SECONDS_A_DAY = SECONDS_A_HOUR * 24
-export const SECONDS_A_WEEK = SECONDS_A_DAY * 7
+export- const SECONDS_A_MINUTE = 60
+export- const SECONDS_A_HOUR = SECONDS_A_MINUTE * 60
+export- const SECONDS_A_DAY = SECONDS_A_HOUR * 24
+export- const SECONDS_A_WEEK = SECONDS_A_DAY * 7
 
-export const MILLISECONDS_A_SECOND = 1e3
-export const MILLISECONDS_A_MINUTE = SECONDS_A_MINUTE * MILLISECONDS_A_SECOND
-export const MILLISECONDS_A_HOUR = SECONDS_A_HOUR * MILLISECONDS_A_SECOND
-export const MILLISECONDS_A_DAY = SECONDS_A_DAY * MILLISECONDS_A_SECOND
-export const MILLISECONDS_A_WEEK = SECONDS_A_WEEK * MILLISECONDS_A_SECOND
+export- const MILLISECONDS_A_SECOND = 1e3
+export- const MILLISECONDS_A_MINUTE = SECONDS_A_MINUTE * MILLISECONDS_A_SECOND
+export- const MILLISECONDS_A_HOUR = SECONDS_A_HOUR * MILLISECONDS_A_SECOND
+export- const MILLISECONDS_A_DAY = SECONDS_A_DAY * MILLISECONDS_A_SECOND
+export- const MILLISECONDS_A_WEEK = SECONDS_A_WEEK * MILLISECONDS_A_SECOND
 
 // English locales
-export const MS = 'millisecond'
-export const S = 'second'
-export const MIN = 'minute'
-export const H = 'hour'
-export const D = 'day'
-export const W = 'week'
-export const M = 'month'
-export const Q = 'quarter'
-export const Y = 'year'
-export const DATE = 'date'
+export- const MS = 'millisecond'
+export- const S = 'second'
+export- const MIN = 'minute'
+export- const H = 'hour'
+export- const D = 'day'
+export- const W = 'week'
+export- const M = 'month'
+export- const Q = 'quarter'
+export- const Y = 'year'
+export- const DATE = 'date'
 
-export const FORMAT_DEFAULT = 'YYYY-MM-DDTHH:mm:ssZ'
+export- const FORMAT_DEFAULT = 'YYYY-MM-DDTHH:mm:ssZ'
 
-export const INVALID_DATE_STRING = 'Invalid Date'
+export- const INVALID_DATE_STRING = 'Invalid Date'
 
 // regex
-export const REGEX_PARSE = /^(\d{4})-?(\d{1,2})-?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?.?(\d{1,3})?$/
-export const REGEX_FORMAT = /\[([^\]]+)]|Y{2,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g
+export- const REGEX_PARSE = /^(\d{4})-?(\d{1,2})-?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?.?(\d{1,3})?$/
+export- const REGEX_FORMAT = /\[([^\]]+)]|Y{2,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g
 */
 
 /*
