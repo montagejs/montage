@@ -2,12 +2,12 @@ var Montage = require("../core").Montage,
     Target = require("core/target").Target,
     DerivedDescriptor = require("./derived-descriptor").DerivedDescriptor,
     EventDescriptor = require("./event-descriptor").EventDescriptor,
-    Map = require("core/collections/map"),
+    Map = require("../collections/map"),
     ModelModule = require("./model"),
     Promise = require("../promise").Promise,
     PropertyDescriptor = require("./property-descriptor").PropertyDescriptor,
     PropertyValidationRule = require("./validation-rule").PropertyValidationRule,
-    Set = require("core/collections/set"),
+    Set = require("../collections/set"),
     deprecate = require("../deprecate");
 
 
@@ -113,7 +113,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
                     deprecate.deprecationWarningOnce("parent reference via ObjectDescriptorReference", "direct reference with object syntax");
                     this._parentReference = parentReference;
                 } else {
-                    this._parent = parentReference;
+                    this.parent = parentReference;
                 }
             }
 
@@ -352,13 +352,100 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
         get: function () {
             return this._parent;
         },
-        set: function (objectDescriptor) {
-            this._parent = objectDescriptor;
+        set: function (value) {
+            if(this._parent !== value) {
+
+                //Remove from current parent
+                if(this._parent) {
+                    this._parent.removeChildObjectDescriptor(this);
+                }
+
+                this._parent = value;
+
+                //Add to new parent
+                if(value) {
+                    value.addChildObjectDescriptor(this);
+                }
+            }
+        }
+    },
+
+    _childObjectDescriptors: {
+        value: undefined
+    },
+    childObjectDescriptors: {
+        get: function () {
+            return this._childObjectDescriptors || (this._childObjectDescriptors = []);
+        },
+        set: function (value) {
+            if(value !== this._childObjectDescriptors) {
+                this._childObjectDescriptors = value;
+            }
+        }
+    },
+    addChildObjectDescriptor: {
+        value: function(value) {
+            if(value) {
+                if(this.childObjectDescriptors.indexOf(value) === -1) {
+                    this.childObjectDescriptors.push(value);
+                    this._clearDescendants();
+                }
+            }
+        }
+    },
+    removeChildObjectDescriptor: {
+        value: function(value) {
+            var index = this.childObjectDescriptors.indexOf(value);
+
+            if(index !== -1) {
+                this.childObjectDescriptors.splice(index,1);
+                this._clearDescendants();
+            }
+
+        }
+    },
+    _descendantDescriptors: {
+        value: undefined
+    },
+    _clearDescendants: {
+        value: function() {
+            this._descendantDescriptors = undefined;
+            if(this._parent) {
+                this._parent._clearDescendants();
+            }
+        }
+    },
+    descendantDescriptors: {
+        get: function () {
+            if(this._descendantDescriptors === undefined) {
+
+                var descendants = null,
+                    push = Array.prototype.push,
+                    currentChildren = this._childObjectDescriptors,
+                    i, countI, iChild, iDescendants;
+
+                if(currentChildren) {
+                    for(i=0, countI = currentChildren.length; (iChild = currentChildren[i]);i++) {
+                        (descendants || (descendants = [])).push(iChild);
+                        iDescendants = iChild.descendantDescriptors;
+                        if(iDescendants) {
+                            push.apply(descendants, iDescendants);
+                        }
+                    }
+                }
+                this._descendantDescriptors = descendants;
+            }
+            return this._descendantDescriptors;
+        },
+        set: function (value) {
+            if(value !== this._descendantDescriptors) {
+                this._descendantDescriptors = value;
+            }
         }
     },
 
     /**
-     * An OjectDescriptor's next target is it's parent or in the end the mainService.
+     * An ObjectDescriptor's next target is it's parent or in the end the mainService.
      * @property {boolean} serializable
      * @property {Component} value
      */
