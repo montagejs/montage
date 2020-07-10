@@ -1,5 +1,5 @@
-var Montage = require("../core").Montage,
-currentEnvironment = require("../environment").currentEnvironment;
+var Montage = require("./core").Montage,
+currentEnvironment = require("./environment").currentEnvironment;
 
 /*
 
@@ -24,6 +24,13 @@ getBrowserLocale: function () {
 
 */
 
+/*
+a valid source of all locales:
+
+https://github.com/unicode-cldr/cldr-core/blob/master/availableLocales.json
+
+*/
+
 
 /**
     Locale
@@ -33,6 +40,16 @@ getBrowserLocale: function () {
     - more to add as needed from by https://developer.apple.com/documentation/foundation/nslocale?language=objc
 
     Information about linguistic, cultural, and technological conventions for use in formatting data for presentation.
+
+
+    References:
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#Locale_identification_and_negotiation
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator/Collator
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/PluralRules/PluralRules (x Safari)
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/getCanonicalLocales
+
 
     @class module:montage/core/date/locale.Locale
     @extends module:montage/core/core.Montage
@@ -52,6 +69,9 @@ getBrowserLocale: function () {
  */
 
 var Locale = exports.Locale = Montage.specialize({
+    identifier: {
+        value: undefined
+    },
 
     /**
      * initializes a new calendar locale by a given identifier.
@@ -65,12 +85,13 @@ var Locale = exports.Locale = Montage.specialize({
      */
     initWithIdentifier: {
         value: function(localeIdentifier) {
-
+            this.identifier = localeIdentifier;
+            return this;
         }
     },
     _localeByIdentifier: {
         value: new Map()
-    }
+    },
 
     /* Instance properties */
 
@@ -178,10 +199,26 @@ var Locale = exports.Locale = Montage.specialize({
      *
      * @property {String}
      */
-    language: {
+    _language: {
         value: undefined
     },
-
+    language: {
+        get: function() {
+            if(!this._language) {
+                this._buildLanguageRegion();
+            }
+            return this._language;
+        }
+    },
+    _buildLanguageRegion: {
+        value: function() {
+            //Could be "en-Latn-US" in a browser? so we pick first for language
+            //and last for country
+            var split = this.identifier.split("-");
+            this._language = split[0];
+            this._region = split[split.length-1] || "*";
+        }
+    },
     /**
      * returns the numeral system used by the locale.
      *
@@ -211,8 +248,16 @@ var Locale = exports.Locale = Montage.specialize({
      *
      * @property {String}
      */
-    region: {
+    _region: {
         value: undefined
+    },
+    region: {
+        get: function() {
+            if(!this._region) {
+                this._buildLanguageRegion();
+            }
+            return this._region;
+        }
     },
 
     /**
@@ -254,7 +299,7 @@ var Locale = exports.Locale = Montage.specialize({
                 this._systemLocale = aLocale;
 
             }
-            return this._navigatorLocale;
+            return this._systemLocale;
         },
         set: function(value) {
             this._systemLocale = value;
