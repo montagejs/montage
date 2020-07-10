@@ -636,19 +636,22 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
                 trigger.propertyDescriptor = descriptor;
                 trigger._isGlobal = descriptor.isGlobal;
                 if (descriptor.definition) {
-                    Montage.defineProperty(prototype, descriptor.name, {
+                    var propertyDescriptor = {
                         get: function () {
                             if (!this.getBinding(descriptor.name)) {
                                 this.defineBinding(descriptor.name, {"<-": descriptor.definition});
                             }
                             return trigger._getValue(this);
                             // return (trigger||(trigger = DataTrigger._createTrigger(service, objectDescriptor, prototype, name,descriptor)))._getValue(this);
-                        },
-                        set: function (value) {
+                        }
+                    };
+                    if(!descriptor.readonly) {
+                        propertyDescriptor.set = function (value) {
                             trigger._setValue(this, value);
                             // (trigger||(trigger = DataTrigger._createTrigger(service, objectDescriptor, prototype, name,descriptor)))._setValue(this, value);
                         }
-                    });
+                    }
+                    Montage.defineProperty(prototype, descriptor.name, propertyDescriptor);
                 } else {
                     Montage.defineProperty(prototype, descriptor.name, {
                         get: function () {
