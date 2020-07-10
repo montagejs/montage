@@ -1755,8 +1755,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             stream.query = query;
             stream.dataExpression = query.selectExpression;
 
-            var stack = new Error().stack;
-
             this._dataServiceByDataStream.set(stream, this._childServiceRegistrationPromise.then(function() {
                 var service;
                 //This is a workaround, we should clean that up so we don't
@@ -1776,8 +1774,6 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                             stream = service.fetchData(query, stream) || stream;
                             self._dataServiceByDataStream.set(stream, service);
                         } else {
-                            console.log(stack);
-                            debugger;
                             throw new Error("Can't fetch data of unknown type - " + (query.type.typeName || query.type.name) + "/" + query.type.uuid);
                         }
                     } catch (e) {
