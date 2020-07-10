@@ -24,9 +24,9 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
                 this.orderings = value;
             }
 
-            value = deserializer.getProperty("prefetchExpressions");
+            value = deserializer.getProperty("readExpressions");
             if (value !== void 0) {
-                this.prefetchExpressions = value;
+                this.readExpressions = value;
             }
 
             value = deserializer.getProperty("selectBindings");
@@ -55,6 +55,12 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
                 }
             }
 
+            value = deserializer.getProperty("fetchLimit");
+            if (value !== void 0) {
+                this.fetchLimit = value;
+            }
+
+
             return result || Promise.resolve(this);
         }
     },
@@ -63,9 +69,10 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
         value: function (serializer) {
             serializer.setProperty("criteria", this.criteria);
             serializer.setProperty("orderings", this.orderings);
-            serializer.setProperty("prefetchExpressions", this.prefetchExpressions);
+            serializer.setProperty("readExpressions", this.readExpressions);
             serializer.setProperty("selectBindings", this.selectBindings);
             serializer.setProperty("selectExpression", this.selectExpression);
+            serializer.setProperty("fetchLimit", this.fetchLimit);
 
             if (this.type.objectDescriptorInstanceModule) {
                 serializer.setProperty("typeModule", this.type.objectDescriptorInstanceModule);
@@ -234,7 +241,9 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
      * @type {Array}
      */
 
-    prefetchExpressions: {
+    //fetchExpressions
+    //readExpressions
+    readExpressions: {
         value: null
     },
 
@@ -255,7 +264,22 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
         get: function() {
             return this._doesBatchResults || (typeof this.batchSize === "number");
         }
+    },
+    /**
+     * A property defining the maximum number of objets to retrieve.
+     * @type {Number}
+     *
+     * fetchLimit ? matches fetchData API, limit is SQL
+     *
+     * readLimit ? matches the operation?
+     *
+     * maximum ...
+     */
+
+    fetchLimit: {
+        value: null
     }
+
 
 
 
