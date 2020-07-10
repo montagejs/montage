@@ -13,6 +13,53 @@ Montage = require("./core").Montage;
 
 exports.Range = Range;
 
+
+
+// For doc/reference:
+
+// function Range(begin, end, bounds) {
+//   if (!(this instanceof Range)) return new Range(begin, end, bounds)
+
+//   /**
+//    * Range's beginning, or left endpoint.
+//    *
+//    * @property {Object} begin
+//    */
+//   this.begin = begin
+
+//   /**
+//    * Range's end, or right endpoint.
+//    *
+//    * @property {Object} end
+//    */
+//   this.end = end
+
+//   /**
+//    * Range's bounds.
+//    *
+//    * Bounds signify whether the range includes or excludes that particular
+//    * endpoint.
+//    *
+//    * Pair | Meaning
+//    * -----|--------
+//    * `()` | open
+//    * `[]` | closed
+//    * `[)` | left-closed, right-open
+//    * `(]` | left-open, right-closed
+//    *
+//    * @example
+//    * new Range(1, 5).bounds // => "[]"
+//    * new Range(1, 5, "[)").bounds // => "[)"
+//    *
+//    * @property {String} bounds
+//    */
+//    this.bounds = bounds = bounds === undefined ? "[]" : bounds
+//    if (!isValidBounds(bounds)) throw new RangeError(INVALID_BOUNDS_ERR + bounds)
+// }
+
+
+
+
 Range.prototype.equals = function(value, equals, memo) {
     if(value && this.compareBegin(value.begin) === 0 && this.compareEnd(value.end) === 0) {
         return true;
@@ -94,3 +141,13 @@ Range.prototype.deserializeSelf = function (deserializer) {
         this.bounds = value;
     }
 };
+
+Object.defineProperty(Range.prototype,"length", {
+    get: function (serializer) {
+        if(this.isFinite) {
+            return this.end - this.begin;
+        } else {
+            return Infinity;
+        }
+    }
+});
