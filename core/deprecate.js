@@ -1,6 +1,6 @@
 /* global console */
 var Montage = require("./core").Montage;
-    Map = require("core/collections/map");
+    Map = require("./collections/map");
 
 var deprecatedFeaturesOnceMap = new Map();
 
