@@ -48,12 +48,10 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate.prototype # */ {
     initWithDescriptor: {
         enumerable: false,
         value: function (propertyDescriptor) {
-            var fieldName;
+            var i, keys, fieldName;
             this.reset();
-            for (fieldName in propertyDescriptor) {
-                if (propertyDescriptor.hasOwnProperty(fieldName)) {
-                    this.setField(fieldName, propertyDescriptor[fieldName].value);
-                }
+            for (i=0, keys = Object.keys(propertyDescriptor); (fieldName = keys[i]); i++) {
+                this.setField(fieldName, propertyDescriptor[fieldName].value);
             }
             return this;
         }
@@ -100,7 +98,7 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate.prototype # */ {
                 fieldValue,
                 oldCount = this.count;
 
-            fieldValue = table[aFieldName];
+            fieldValue = table.get(aFieldName);
 
             if (typeof fieldValue === "undefined" && !value) {
                 // new field
@@ -114,7 +112,7 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate.prototype # */ {
             } else if (value && logger.isDebug) {
                 logger.debug(this, aFieldName + " was not set before.");
             }
-            table[aFieldName] = !!value;
+            table.set(aFieldName,!!value);
             if (this.count === 0 && oldCount > 0) {
                 this.callDelegateMethod(true);
             } else if (oldCount === 0 && this.count > 0) {
@@ -130,12 +128,12 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate.prototype # */ {
     removeField: {
         enumerable: false,
         value: function (aFieldName) {
-            var table = this.table, fieldValue = table[aFieldName];
+            var table = this.table, fieldValue = table.get(aFieldName);
             if (typeof fieldValue !== "undefined" && !fieldValue) {
                 // if the value was false decrement the count
                 this.count--;
             }
-            delete table[aFieldName];
+            table.delete(aFieldName);
         }
     },
 
@@ -179,7 +177,7 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate.prototype # */ {
     reset: {
         enumerable: false,
         value: function () {
-            this.table = {};
+            this.table = null;
             this.count = 0;
         }
     },
