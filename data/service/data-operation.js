@@ -195,11 +195,17 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
                 serializer.setProperty("referrerId", this.referrerId);
             }
             serializer.setProperty("criteria", this._criteria);
+            /*
+                Hack: this is neededed for now to represent a query's fetchLimit
+                But it's really relevant only for a read operation....
+                TODO: Needs to sort this out better...
+
+            */
+            if(this.readLimit) {
+                serializer.setProperty("readLimit", this.readLimit);
+            }
             if(this.data) {
                 serializer.setProperty("data", this.data);
-            }
-            if(this.objectExpressions) {
-                serializer.setProperty("objectExpressions", this.objectExpressions);
             }
             if(this.snapshot) {
                 serializer.setProperty("snapshot", this.snapshot);
@@ -242,11 +248,6 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             value = deserializer.getProperty("data");
             if (value !== void 0) {
                 this.data = value;
-            }
-
-            value = deserializer.getProperty("objectExpressions");
-            if (value !== void 0) {
-                this.objectExpressions = value;
             }
 
             value = deserializer.getProperty("snapshot");
