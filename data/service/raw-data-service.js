@@ -428,7 +428,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     addOneRawData: {
         value: function (stream, rawData, context) {
             var type = this._descriptorForParentAndRawData(stream.query.type, rawData),
-                prefetchExpressions = stream.query.prefetchExpressions,
+                readExpressions = stream.query.readExpressions,
                 dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData),
                 object,
                 //object = this.rootService.objectForDataIdentifier(dataIdentifier),
@@ -453,7 +453,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 this.recordSnapshot(dataIdentifier, rawData);
 
 
-                result = this._mapRawDataToObject(rawData, object, context, prefetchExpressions);
+                result = this._mapRawDataToObject(rawData, object, context, readExpressions);
 
             if (this._isAsync(result)) {
                 result = result.then(function () {
@@ -614,7 +614,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
     primaryKeyForTypeRawData: {
         value: function (type, rawData) {
-            var mapping = this.mappingWithType(type),
+            var mapping = this.mappingForType(type),
                 rawDataPrimaryKeys = mapping ? mapping.rawDataPrimaryKeyExpressions : null,
                 scope = new Scope(rawData),
                 rawDataPrimaryKeysValues,
@@ -963,7 +963,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     mappingForObjectDescriptor: {
         value: function (objectDescriptor) {
-            var mapping = objectDescriptor && this.mappingWithType(objectDescriptor);
+            var mapping = objectDescriptor && this.mappingForType(objectDescriptor);
 
 
             if (!mapping) {
@@ -1098,7 +1098,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      *                             call that invoked this method.
      */
     _mapRawDataToObject: {
-        value: function (record, object, context, prefetchExpressions) {
+        value: function (record, object, context, readExpressions) {
             var self = this,
                 mapping = this.mappingForObject(object),
                 snapshot,
@@ -1115,10 +1115,10 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                 this._objectsBeingMapped.add(object);
 
-                result = mapping.mapRawDataToObject(record, object, context, prefetchExpressions);
+                result = mapping.mapRawDataToObject(record, object, context, readExpressions);
                 if (result) {
                     result = result.then(function () {
-                        result = self.mapRawDataToObject(record, object, context, prefetchExpressions);
+                        result = self.mapRawDataToObject(record, object, context, readExpressions);
                         if (!self._isAsync(result)) {
                             self._objectsBeingMapped.delete(object);
 
@@ -1143,7 +1143,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                         throw error;
                     });
                 } else {
-                    result = this.mapRawDataToObject(record, object, context, prefetchExpressions);
+                    result = this.mapRawDataToObject(record, object, context, readExpressions);
                     if (!this._isAsync(result)) {
 
                         self._objectsBeingMapped.delete(object);
@@ -1167,7 +1167,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                 this._objectsBeingMapped.add(object);
 
-                result = this.mapRawDataToObject(record, object, context, prefetchExpressions);
+                result = this.mapRawDataToObject(record, object, context, readExpressions);
 
                 if (!this._isAsync(result)) {
 
@@ -1504,6 +1504,33 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     offlineService: {
         value: undefined
+    },
+
+    /**
+     * Allows DataService to provide a rawDataTypeId for a Mapping's
+     * ObjectDescriptor
+     *
+     * @method
+     * @param {DataMapping} aMapping
+     */
+
+    rawDataTypeIdForMapping: {
+        value: function (aMapping) {
+            console.warn("rawDataTypeIdForMapping() needs to be overriden with a concrete implementation by subclasses of RawDataService")
+        }
+    },
+    /**
+     * Allows DataService to provide a rawDataTypeId for a Mapping's
+     * ObjectDescriptor
+     *
+     * @method
+     * @param {DataMapping} aMapping
+     */
+
+    rawDataTypeNameForMapping: {
+        value: function (aMapping) {
+            console.warn("rawDataTypeNameForMapping() needs to be overriden with a concrete implementation by subclasses of RawDataService")
+        }
     }
 
 });
