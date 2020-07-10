@@ -1,7 +1,7 @@
 var test = require("test");
 var Promise = require("bluebird");
 
-var sandbox = require("core/mr/sandbox");
+var sandbox = require("mr/sandbox");
 
 var a = require("./a");
 var dep = require("dependency/main");

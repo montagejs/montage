@@ -124,7 +124,7 @@ Require.Loader = function Loader(config, load) {
         return config.read(location, module)
         .then(function (text) {
 
-            if(text.indexOf("export ") !== -1) {
+            if(/*faster*/(text.indexOf("export ") !== -1) && /*eliminate if in quotes*/(text.match(Require.detect_ES6_export_regex))) {
 
                 return import(location).then(function(esModule) {
                     module.type = Require.ES_MODULE_TYPE;

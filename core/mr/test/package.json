@@ -14,8 +14,21 @@
         "postinstall": "npm link ./.."
     },
     "mappings": {
-        "bluebird": "../node_modules/bluebird"
-    },
+        "bluebird": "../../../node_modules/bluebird",
+        "concurrently": "../../../node_modules/concurrently",
+        "http-server": "../../../node_modules/http-server",
+        "jasmine-console-reporter": "../../../node_modules/jasmine-console-reporter",
+        "jasmine-core": "../../../node_modules/jasmine-core",
+        "jshint": "../../../node_modules/jshint",
+        "karma": "../../../node_modules/karma",
+        "karma-chrome-launcher": "../../../node_modules/karma-chrome-launcher",
+        "karma-coverage": "../../../node_modules/karma-coverage",
+        "karma-firefox-launcher": "../../../node_modules/karma-firefox-launcher",
+        "karma-jasmine": "../../../node_modules/karma-jasmine",
+        "karma-phantomjs-launcher": "../../../node_modules/karma-phantomjs-launcher",
+        "mop-integration": "../../../node_modules/mop-integration",
+        "open": "../../../node_modules/open"
+        },
     "dependencies": {},
     "private": true
 }

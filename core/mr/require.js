@@ -9,6 +9,46 @@
     Bookmark for requiring modules that import/export with ES6:
     https://github.com/babel/babel/tree/master/packages/babel-plugin-transform-modules-commonjs
 */
+
+
+Object.defineProperty(String.prototype, 'stringByRemovingPrefix', {
+    value: function stringByRemovingPrefix (prefix) {
+        if(this.indexOf(prefix) === 0 ) {
+            return this.substring(prefix.length);
+        } else {
+            return this;
+        }
+    },
+    writable: true,
+    configurable: true
+});
+
+Object.defineProperty(String.prototype, 'stringByRemovingSuffix', {
+    value: function stringByRemovingPrefix (suffix) {
+        if(this.lastIndexOf(suffix) === (this.length - suffix.length) ) {
+            return this.substring(0,this.length - suffix.length);
+        } else {
+            return this;
+        }
+    },
+    writable: true,
+    configurable: true
+});
+
+Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
+    value: function stringByRemovingPathExtension () {
+        var lastIndex = this.lastIndexOf(".");
+        if(lastIndex !== -1 ) {
+            return this.substring(0,lastIndex);
+        } else {
+            return this;
+        }
+    },
+    writable: true,
+    configurable: true
+});
+
+
 /*global bootstrap, define, global */
 (function (definition) {
 
@@ -118,14 +158,9 @@
 
             _memoize = function _memoize(key, arg) {
                 var result;
-                if (!cache.has(key)) {
-                    result = callback(key, arg);
-                    cache.set(key, result);
-                } else {
-                    result = cache.get(key);
-                }
-                return result;
-                };
+
+                return cache.get(key) || (cache.set(key, (result = callback(key, arg))) && result) ;
+            };
             cache.set(callback,_memoize);
         }
         return _memoize;
@@ -164,7 +199,7 @@
     var _resolveStringtoArray = new Map();
     var _target = [];
 
-    function _resolveItem(source, part, target) {
+    function _resolveItem(source, part, target, EMPTY_STRING, DOT, DOT_DOT) {
         /*jshint -W035 */
         if (part === EMPTY_STRING || part === DOT) {
         } else if (part === DOT_DOT) {
@@ -182,33 +217,39 @@
         DOT = ".",
         DOT_DOT = "..";
 
+    function _cacheResolve(_id, baseId, resolved, baseIdMap) {
+        var id, i, ii, source, parts, resolveItem, result, target = _target, _EMPTY_STRING = EMPTY_STRING, _DOT = DOT, _DOT_DOT = DOT_DOT;
+
+        target.length = 0;
+
+        id = String(_id);
+        source = _resolveStringtoArray.get(id) || (_resolveStringtoArray.set(id, (source = id.split(SLASH))) && source);
+        parts = _resolveStringtoArray.get(baseId) || (_resolveStringtoArray.set(baseId,(parts = baseId.split(SLASH))) && parts);
+        resolveItem = _resolveItem;
+
+        if (source.length && source[0] === DOT || source[0] === DOT_DOT) {
+            for (i = 0, ii = parts.length-1; i < ii; i++) {
+                resolveItem(parts, parts[i], target, _EMPTY_STRING, _DOT, _DOT_DOT);
+            }
+        }
+        for (i = 0, ii = source.length; i < ii; i++) {
+            resolveItem(source, source[i], target, _EMPTY_STRING, _DOT, _DOT_DOT);
+        }
+
+        return (baseIdMap || ( resolved.set(baseId, (baseIdMap = new Map())) && baseIdMap)).set(id, (result = target.join(SLASH))) && result;
+
+    }
+
     function resolve(id, baseId) {
         if (id === EMPTY_STRING && baseId === EMPTY_STRING) {
             return EMPTY_STRING;
         }
-        var resolved = _resolved.get(id) || (_resolved.set(id, (resolved = new Map())) && resolved) || resolved;
-        var i, ii;
-        if (!(resolved.has(baseId)) || !(id in resolved.get(baseId))) {
-            id = String(id);
-            var source = _resolveStringtoArray.get(id) || (_resolveStringtoArray.set(id, (source = id.split(SLASH))) && source) || source,
-                parts = _resolveStringtoArray.get(baseId) || (_resolveStringtoArray.set(baseId,(parts = baseId.split(SLASH))) && parts || parts),
-                resolveItem = _resolveItem;
 
-            if (source.length && source[0] === DOT || source[0] === DOT_DOT) {
-                for (i = 0, ii = parts.length-1; i < ii; i++) {
-                    resolveItem(parts, parts[i], _target);
-                }
-            }
-            for (i = 0, ii = source.length; i < ii; i++) {
-                resolveItem(source, source[i], _target);
-            }
-            if (!resolved.get(baseId)) {
-                resolved.set(baseId, new Map());
-            }
-            resolved.get(baseId).set(id, _target.join(SLASH));
-            _target.length = 0;
-        }
-        return resolved.get(baseId).get(id);
+        var resolved = _resolved.get(id) || (_resolved.set(id, (resolved = new Map())) && resolved),
+            baseIdMap = resolved.get(baseId);
+
+        return (baseIdMap && baseIdMap.get(id)) || _cacheResolve(id, baseId, resolved, baseIdMap);
+
     }
 
     var NODE_MODULES_SLASH = "node_modules/";
@@ -473,6 +514,8 @@
     //
 
     var isLowercasePattern = /^[a-z]+$/;
+
+    Require.detect_ES6_export_regex = /(?<=^([^"]|"[^"]*")*)export /;
     Require.makeRequire = function (config) {
         var require, requireForId;
 
@@ -635,44 +678,47 @@
         function deepLoad(topId, viaId, loading) {
             // this is a memo of modules already being loaded so we don’t
             // data-lock on a cycle of dependencies.
-            loading = loading || Object.create(null);
+            var _loading = loading || Object.create(null);
             // has this all happened before?  will it happen again?
-            if (topId in loading) {
-                return null; // break the cycle of violence.
-            }
-            loading[topId] = true; // this has happened before
-            return load(topId, viaId)
-            .then(function deepLoadThen() {
-                // load the transitive dependencies using the magic of
-                // recursion.
-                var promises , depId, iPromise,
-                    module = getModuleDescriptor(topId),
-                    dependencies =  module.dependencies,
-                    scopedTopId = topId,
-                    scopedLoading = loading;
+            // if (topId in _loading) {
+            //     return null; // break the cycle of violence.
+            // }
+            return (_loading[topId])
+                ? null
+                : (_loading[topId] = true)
+                // this has happened before
+                && load(topId, viaId)
+                .then(function deepLoadThen() {
+                    // load the transitive dependencies using the magic of
+                    // recursion.
+                    var promises , depId, iPromise,
+                        module = getModuleDescriptor(topId),
+                        dependencies =  module.dependencies,
+                        scopedTopId = topId,
+                        scopedLoading = _loading;
 
-                if (dependencies && dependencies.length > 0) {
-                    for(var i=0;(depId = dependencies[i]);i++) {
-                        // create dependees set, purely for debug purposes
-                        // if (true) {
-                        //     var iModule = getModuleDescriptor(depId);
-                        //     var dependees = iModule.dependees = iModule.dependees || {};
-                        //     dependees[topId] = true;
-                        // }
-                        if ((iPromise = deepLoad(normalizeId(resolve(depId, scopedTopId), config), scopedTopId, scopedLoading))) {
-                            /* jshint expr: true */
-                            promises ? (promises.push ? promises.push(iPromise) :
-                                (promises = [promises, iPromise])) : (promises = iPromise);
-                            /* jshint expr: false */
+                    if (dependencies && dependencies.length > 0) {
+                        for(var i=0;(depId = dependencies[i]);i++) {
+                            // create dependees set, purely for debug purposes
+                            // if (true) {
+                            //     var iModule = getModuleDescriptor(depId);
+                            //     var dependees = iModule.dependees = iModule.dependees || {};
+                            //     dependees[topId] = true;
+                            // }
+                            if ((iPromise = deepLoad(normalizeId(resolve(depId, scopedTopId), config), scopedTopId, scopedLoading))) {
+                                /* jshint expr: true */
+                                promises ? (promises.push ? promises.push(iPromise) :
+                                    (promises = [promises, iPromise])) : (promises = iPromise);
+                                /* jshint expr: false */
+                            }
                         }
                     }
-                }
 
-                return promises ? (promises.push === void 0 ? promises :
-                            Promise.all(promises)) : null;
-            }, function (error) {
-                getModuleDescriptor(topId).error = error;
-            });
+                    return promises ? (promises.push === void 0 ? promises :
+                                Promise.all(promises)) : null;
+                }, function (error) {
+                    getModuleDescriptor(topId).error = error;
+                });
         }
 
         // Initializes a module by executing the factory function with a new

@@ -214,7 +214,7 @@
 
         // determine which scripts to load
         var pending = {
-            "promise": "node_modules/bluebird/js/browser/bluebird.min.js",
+            "promise": "../../../node_modules/bluebird/js/browser/bluebird.min.js",
             "require": "require.js",
             "require/browser": "browser.js",
         };

@@ -79,7 +79,7 @@ bootstrap("require/browser", function (require) {
                 module.location = xhr.url;
 
                 var capturedImports = ES6_IMPORT_REGEX.exec(xhr.responseText);
-                if(xhr.responseText.indexOf("export ") !== -1) {
+                if((xhr.responseText.indexOf("export ") !== -1) && (xhr.responseText.match(Require.detect_ES6_export_regex))) {
                     // var displayName = (`${DoubleUnderscore}${module.require.config.name}${Underscore}${module.id}`.replace(nameRegex, Underscore)),
                     // src = `export default ${globalEvalConstantA}${displayName}${globalEvalConstantB}${xhr.responseText}${globalEvalConstantC}${module.location}`;
 

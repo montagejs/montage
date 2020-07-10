@@ -1,7 +1,7 @@
 {
     "mappings": {
         "mr": "../../..",
-        "bluebird": "../../../node_modules/bluebird"
+        "bluebird": "../../../../../node_modules/bluebird"
     },
     "redirects": {
         "d": "a"
