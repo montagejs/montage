@@ -18,7 +18,8 @@ var Montage = require("core/core").Montage,
     defaultEventManager = require("core/event/event-manager").defaultEventManager,
     DataEvent = require("data/model/data-event").DataEvent,
     PropertyDescriptor = require("core/meta/property-descriptor").PropertyDescriptor,
-    DeleteRule = require("core/meta/property-descriptor").DeleteRule;
+    DeleteRule = require("core/meta/property-descriptor").DeleteRule,
+    deprecate = require("../../core/deprecate");
 
 
 var AuthorizationPolicyType = new Montage();
@@ -305,6 +306,11 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
     },
 
 
+    /**
+     * Adds child Services to the receiving service.
+     *
+     * @param {Array.<DataServices>} childServices. childServices to add.
+     */
 
     addChildServices: {
         value: function (childServices) {
@@ -604,7 +610,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
     __makePrototypeForType: {
         value: function (childService, objectDescriptor, constructor) {
             var prototype = Object.create(constructor.prototype),
-            mapping = childService.mappingWithType(objectDescriptor),
+            mapping = childService.mappingForType(objectDescriptor),
             requisitePropertyNames = mapping && mapping.requisitePropertyNames || new Set(),
             dataTriggers = DataTrigger.addTriggers(this, objectDescriptor, prototype, requisitePropertyNames),
             mainService = this.rootService;
@@ -868,16 +874,25 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      * @param {ObjectDescriptor} type.
      * @returns {DataMapping|null} returns the specified mapping or null
      * if a mapping is not defined for the specified type.
+     *
+     * If an immediate mapping isn't found, we look up the parent chain
      */
-    mappingWithType: {
+    mappingForType: {
         value: function (type) {
-            var mapping;
-            type = this.objectDescriptorForType(type);
-            mapping = this._mappingByType.has(type) && this._mappingByType.get(type);
+            var mapping, localType = this.objectDescriptorForType(type);
+
+            while(localType && !(mapping = this._mappingByType.has(localType) && this._mappingByType.get(localType))) {
+                localType = localType.parent;
+            }
             return mapping || null;
         }
     },
 
+    mappingWithType: {
+        value: deprecate.deprecateMethod(void 0, function (type) {
+            return this.mappingForType(type);
+        }, "mappingWithType", "mappingForType")
+    },
 
     _mappingByType: {
         get: function () {
@@ -1627,7 +1642,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         value: function (object, propertyName, propertyDescriptor) {
             var self = this,
                 objectDescriptor = propertyDescriptor.owner,
-                mapping = objectDescriptor && this.mappingWithType(objectDescriptor),
+                mapping = objectDescriptor && this.mappingForType(objectDescriptor),
                 data = {},
                 result;
 
@@ -2598,7 +2613,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 mapping, propertyName;
 
             if (!serviceModuleID) {
-                mapping = this.mappingWithType(query.type);
+                mapping = this.mappingForType(query.type);
                 propertyName = mapping && parameters && parameters.propertyName;
                 serviceModuleID = propertyName && mapping.serviceIdentifierForProperty(propertyName);
             }
