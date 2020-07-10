@@ -117,6 +117,38 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
         }
     },
 
+    serializeSelf: {
+        value: function (serializer) {
+            var memberIterator = this._membersIntValue.keys(),
+                members = []
+                aMember, aValue
+                values;
+            while ((aMember = memberIterator.next().value)) {
+                members.push(aMember);
+                aValue = this[aMember];
+                if(typeof aValue !== "number") {
+                    (values || (values = [])).push(aValue);
+                }
+            }
+
+            serializer.setProperty("members", members);
+            if(values) {
+                serializer.setProperty("values", values);
+            }
+        }
+    },
+
+    deserializeSelf: {
+        value: function (deserializer) {
+            var members, values;
+            members = deserializer.getProperty("members");
+            if (members !== void 0) {
+                values = deserializer.getProperty("values");
+                this._addMembers(members, values, this._membersByValue, this._membersIntValue);
+            }
+        }
+    },
+
 
     /**
      * @function
