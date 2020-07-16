@@ -5,6 +5,7 @@ var Montage = require("core/core").Montage,
     UserAuthenticationPolicy = require("data/service/user-authentication-policy").UserAuthenticationPolicy,
     UserIdentityManager = require("data/service/user-identity-manager").UserIdentityManager,
     DataObjectDescriptor = require("data/model/data-object-descriptor").DataObjectDescriptor,
+    Criteria = require("core/criteria").Criteria,
     DataQuery = require("data/model/data-query").DataQuery,
     DataStream = require("data/service/data-stream").DataStream,
     DataTrigger = require("data/service/data-trigger").DataTrigger,
@@ -19,8 +20,8 @@ var Montage = require("core/core").Montage,
     DataEvent = require("data/model/data-event").DataEvent,
     PropertyDescriptor = require("core/meta/property-descriptor").PropertyDescriptor,
     DeleteRule = require("core/meta/property-descriptor").DeleteRule,
-    deprecate = require("../../core/deprecate");
-
+    deprecate = require("../../core/deprecate"),
+    Locale = require("core/locale").Locale;
 
 var AuthorizationPolicyType = new Montage();
 AuthorizationPolicyType.NoAuthorizationPolicy = AuthorizationPolicy.NONE;
@@ -80,6 +81,9 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             if(this.providesUserIdentity === true) {
                 UserIdentityManager.registerUserIdentityService(this);
             }
+
+            this.addOwnPropertyChangeListener("userLocale", this);
+
 
             this._initializeOffline();
         }
@@ -3430,6 +3434,58 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             length = length || length === 0 ? length : Infinity;
             return insert ? array.splice.apply(array, [index, length].concat(insert)) :
                             array.splice(index, length);
+        }
+    },
+
+    /**
+     * Returns by default an array the Locale.systemLocale
+     * Subclasses have the opporyunity to oveorrides to get useLocale
+     * from more specific data objects (DO)
+     *
+     * @type {Locale}
+     */
+
+    _userLocale: {
+        value: undefined
+   },
+
+   userLocale: {
+       get: function() {
+           return this._userLocale || ((this._userLocale = Locale.systemLocale) && this._userLocale);
+       },
+       set: function(value) {
+           if(value !== this._userLocale) {
+               this._userLocale = value;
+           }
+       }
+   },
+
+   _userLocaleCriteria: {
+       value: undefined
+   },
+
+   userLocaleCriteria: {
+       get: function() {
+           return this._userLocaleCriteria || (this._userLocaleCriteria = this._createUserLocaleCriteria());
+       },
+       set: function(value) {
+           if(value !== this._userLocaleCriteria) {
+               this._userLocaleCriteria = value;
+           }
+       }
+   },
+
+   _createUserLocaleCriteria: {
+        value: function() {
+            return new Criteria().initWithExpression("locale == $locale", {
+                locale: this.userLocale
+            });
+        }
+   },
+
+    handleUserLocaleChange: {
+        value: function (value, key, object) {
+            this.userLocaleCriteria = this._createUserLocaleCriteria();
         }
     }
 
