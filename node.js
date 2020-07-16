@@ -198,6 +198,10 @@ function parseHtmlDependencies(text/*, location*/) {
     return dependencies;
 }
 
+var html_regex = /(.*\/)?(?=[^\/]+\.html$)/,
+    json_regex = /(?=[^\/]+\.json$)/,
+    mjson_regex = /(?=[^\/]+\.(?:mjson|meta)$)/,
+    reel_regex = /(.*\/)?([^\/]+)\.reel\/\2$/;
 MontageBoot.TemplateLoader = function (config, load) {
     return function (moduleId, module) {
 
@@ -214,10 +218,10 @@ MontageBoot.TemplateLoader = function (config, load) {
             id = moduleId;
         }
 
-        var html = id.match(/(.*\/)?(?=[^\/]+\.html$)/);
-        var serialization = id.match(/(?=[^\/]+\.json$)/); // XXX this is not necessarily a strong indicator of a serialization alone
-        var meta = id.match(/(?=[^\/]+\.(?:mjson|meta)$)/);
-        var reelModule = id.match(/(.*\/)?([^\/]+)\.reel\/\2$/);
+        var html = id.match(html_regex);
+        var serialization = id.match(json_regex); // XXX this is not necessarily a strong indicator of a serialization alone
+        var meta = id.match(mjson_regex);
+        var reelModule = id.match(reel_regex);
         if (html) {
             return load(id, module)
             .then(function () {
