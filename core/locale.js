@@ -1,4 +1,5 @@
 var Montage = require("./core").Montage,
+Calendar = require("./date/calendar").Calendar,
 currentEnvironment = require("./environment").currentEnvironment;
 
 /*
@@ -280,7 +281,7 @@ var Locale = exports.Locale = Montage.specialize({
             if(!this._systemLocale) {
                 var systemLocaleIdentifier = currentEnvironment.systemLocaleIdentifier,
                     //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat/resolvedOptions
-                    resolvedOptions = Intl.DateTimeFormat(navigatorLocaleIdentifier).resolvedOptions(),
+                    resolvedOptions = Intl.DateTimeFormat(systemLocaleIdentifier).resolvedOptions(),
                     calendar = resolvedOptions.calendar, /*"gregory"*/
                     day = resolvedOptions.day, /*"numeric"*/
                     month = resolvedOptions.month, /*"numeric"*/
@@ -326,3 +327,5 @@ var Locale = exports.Locale = Montage.specialize({
         }
     }
 });
+
+Locale.Calendar = Calendar;

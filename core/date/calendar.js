@@ -1,6 +1,6 @@
 var Montage = require("../core").Montage,
     Enum = require("../enum").Enum,
-    Locale = require("../locale"),
+    //Locale = require("../locale"),
     TimeZone = require("./time-zone"),
     CalendarDate = require("./calendar-date"),
     Range = require("../range").Range,
@@ -222,4 +222,4 @@ var Calendar = exports.Calendar = Montage.specialize({
 });
 
 //To avoid a cycle.
-Locale.Calendar = Calendar;
+// Locale.Calendar = Calendar;
