@@ -158,6 +158,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             //and another time later when we need the value
             else if(Date.parseRFC3339(value)) {
                 return "date";
+            //} else if (typeOf === "object" && Object.keys(value.__proto__).length === 1) {
             } else if (typeOf === "object" && Object.keys(value).length === 1) {
                 if ("@" in value) {
                     return "reference";
@@ -479,7 +480,12 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 module = context._require.async(locationDesc.moduleId);
             }
 
-            if (Promise.is(module)) {
+            if(!module && this._isSync) {
+                throw new Error(
+                    "Tried to revive montage object with label " + label +
+                    " synchronously but the module was not loaded: " + JSON.stringify(value)
+                );
+            } else if (Promise.is(module)) {
                 if (this._isSync) {
                     throw new Error(
                         "Tried to revive montage object with label " + label +
@@ -860,35 +866,25 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     },
 
     reviveValue: {
-        value: function(value, context, label) {
+        value: function reviveValue(value, context, label) {
             var type = this.getTypeOf(value),
-                revived;
-
-            if (type === "string" || type === "number" || type === "boolean" || type === "null" || type === "undefined") {
-                revived = this.reviveNativeValue(value, context, label);
-            } else if (type === "date") {
-                revived = this.reviveDate(value, context, label);
-            } else if (type === "regexp") {
-                revived = this.reviveRegExp(value, context, label);
-            } else if (type === "reference") {
-                revived = this.reviveObjectReference(value, context, label);
-            } else if (type === "array") {
-                revived = this.reviveArray(value, context, label);
-            } else if (type === "object") {
-                revived = this.reviveObjectLiteral(value, context, label);
-            } else if (type === "Element") {
-                revived = this.reviveElement(value, context, label);
-            } else if (type === "binding") {
-                revived = value;
-            } else {
-                revived = this._callReviveMethod("revive" + type, value, context, label);
-            }
+                revived = this[(reviveValue._methodByType[type] || ("revive" + type))](value, context, label);
 
             if (this._isSync && Promise.is(revived)) {
                 throw new Error("Unable to revive value with label " + label + " synchronously: " + value);
             } else {
                 return revived;
             }
+        }
+    },
+
+    _reviveMethodByType: {
+        value: {}
+    },
+
+    reviveBinding: {
+        value: function(value, context, label) {
+            return value;
         }
     },
 
@@ -987,7 +983,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     reviveArray: {
         value: function(value, context, label) {
             var item,
-                promises = [];
+                promises;
 
             if (label) {
                 context.setObjectLabel(value, label);
@@ -997,7 +993,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 item = this.reviveValue(value[i], context);
 
                 if (Promise.is(item)) {
-                    promises.push(
+                    (promises || (promises = [])).push(
                         item.then(this._createAssignValueFunction(value, i))
                     );
                 } else {
@@ -1005,7 +1001,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 }
             }
 
-            if (promises.length === 0) {
+            if (!promises || promises.length === 0) {
                 return value;
             } else {
                 return Promise.all(promises).then(function() {
@@ -1153,6 +1149,23 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
 });
 
+var MontageReviverProto = MontageReviver.prototype,
+    _reviveMethodByType =  MontageReviverProto._reviveMethodByType;
+
+_reviveMethodByType["string"] = _reviveMethodByType["number"] = _reviveMethodByType["boolean"] = _reviveMethodByType["null"] = _reviveMethodByType["undefined"] = "reviveNativeValue";
+_reviveMethodByType["date"] = "reviveDate";
+_reviveMethodByType["regexp"] = "reviveRegExp";
+_reviveMethodByType["reference"] = "reviveObjectReference";
+_reviveMethodByType["array"] = "reviveArray";
+_reviveMethodByType["object"] = "reviveObjectLiteral";
+_reviveMethodByType["Element"] = "reviveElement";
+_reviveMethodByType["binding"] = "reviveBinding";
+
+MontageReviverProto.reviveValue._methodByType = _reviveMethodByType;
+
+MontageReviverProto = _reviveMethodByType = null;
+
+
 MontageReviver.findProxyForElement = function (element) {
     return PROXY_ELEMENT_MAP.get(element);
 };
@@ -1194,7 +1207,7 @@ MontageReviver.defineUnitReviver("values", function (unitDeserializer, object, v
     else if(values) {
         context._reviver.deserializeMontageObjectValues(
             object,
-            montageObjectDesc.values || montageObjectDesc.properties, //deprecated
+            values || montageObjectDesc.properties, //deprecated
             context
         );
     }

@@ -87,7 +87,8 @@ var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ 
             var serializationObject = this.getSerializationObject(),
                 labels = [];
 
-            for (var label in serializationObject) {
+            //for (var label in serializationObject) {
+            for (var i=0, label, keys = Object.keys(serializationObject); (label = keys[i]); i++ ) {
                 if (Object.keys(serializationObject[label]).length === 0) {
                     labels.push(label);
                 }
@@ -577,8 +578,9 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
     _walkRootObjects: {
         value: function (visitor, objects) {
             /* jshint forin: true */
-            for (var label in objects) {
-            /* jshint forin: false */
+            //for (var label in objects) {
+            for (var i=0, label, keys = Object.keys(objects); (label = keys[i]); i++) {
+                    /* jshint forin: false */
                 this._walkRootObject(visitor, objects, label);
             }
         }
@@ -662,8 +664,9 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
                 parentObject[key] = object = value.data;
 
                 /* jshint forin: true */
-                for (var prop in object) {
-                /* jshint forin: false */
+                //for (var prop in object) {
+                for (var i=0, prop, keys = Object.keys(object);(prop = keys[i]); i++) {
+                        /* jshint forin: false */
                     this._walkObject(visitor, object, prop, null, value);
                 }
             }
@@ -723,7 +726,8 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
             parentObject.bindings = object = value.data;
 
             /* jshint forin: true */
-            for (var key in object) {
+            //for (var key in object) {
+            for (var i=0, key, keys = Object.keys(object);(key = keys[i]); i++) {
             /* jshint forin: false */
                 this._walkBinding(visitor, object, key, value);
             }
