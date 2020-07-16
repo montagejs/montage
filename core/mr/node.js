@@ -119,6 +119,8 @@ Require.Compiler = function Compiler(config) {
     };
 };
 
+//Temporary: only doing this in node as this regex doesn't work in WebKit
+Require.detect_ES6_export_regex = /(?<=^([^"]|"[^"]*")*)export /;
 Require.Loader = function Loader(config, load) {
     return function (location, module) {
         return config.read(location, module)

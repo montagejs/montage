@@ -11,12 +11,41 @@
 // This method has been added to the ECMAScript 6 specification and may not be available in all JavaScript implementations yet. However, you can polyfill String.prototype.endsWith() with the following snippet:
 
 if (!String.prototype.endsWith) {
-	String.prototype.endsWith = function(search, this_len) {
-		if (this_len === undefined || this_len > this.length) {
-			this_len = this.length;
-		}
-		return this.substring(this_len - search.length, this_len) === search;
-	};
+	// String.prototype.endsWith = function endsWith(search, this_len) {
+	// 	if (this_len === undefined || this_len > this.length) {
+	// 		this_len = this.length;
+	// 	}
+	// 	return this.substring(this_len - search.length, this_len) === search;
+    // };
+
+    String.prototype.endsWith = function endsWith(search, position) {
+        var stringLength = this.length;
+        var searchString = String(search);
+        var searchLength = searchString.length;
+        var pos = stringLength;
+
+        if (position !== undefined) {
+            // `ToInteger`
+            pos = position ? Number(position) : 0;
+            if (pos !== pos) { // better `isNaN`
+                pos = 0;
+            }
+        }
+
+        var end = Math.min(Math.max(pos, 0), stringLength);
+        var start = end - searchLength;
+        if (start < 0) {
+            return false;
+        }
+        var index = -1;
+        while (++index < searchLength) {
+            if (this.charCodeAt(start + index) !== searchString.charCodeAt(index)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
 
 bootstrap("require/browser", function (require) {
@@ -78,8 +107,17 @@ bootstrap("require/browser", function (require) {
                 module.type = JAVASCRIPT;
                 module.location = xhr.url;
 
-                var capturedImports = ES6_IMPORT_REGEX.exec(xhr.responseText);
-                if((xhr.responseText.indexOf("export ") !== -1) && (xhr.responseText.match(Require.detect_ES6_export_regex))) {
+                //var capturedImports = ES6_IMPORT_REGEX.exec(xhr.responseText);
+                if((xhr.responseText.indexOf("export ") !== -1)
+
+                    //Require.detect_ES6_export_regex doesn't worm in WebKit...
+                    //Need to find a new one
+                    /*
+                    && (xhr.responseText.match(Require.detect_ES6_export_regex))
+                    */
+
+
+                    ) {
                     // var displayName = (`${DoubleUnderscore}${module.require.config.name}${Underscore}${module.id}`.replace(nameRegex, Underscore)),
                     // src = `export default ${globalEvalConstantA}${displayName}${globalEvalConstantB}${xhr.responseText}${globalEvalConstantC}${module.location}`;
 

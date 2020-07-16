@@ -172,13 +172,13 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         var searchLength = searchString.length;
         var pos = stringLength;
 
-            if (position !== undefined) {
-                // `ToInteger`
-                pos = position ? Number(position) : 0;
-                if (pos !== pos) { // better `isNaN`
-                    pos = 0;
-                }
+        if (position !== undefined) {
+            // `ToInteger`
+            pos = position ? Number(position) : 0;
+            if (pos !== pos) { // better `isNaN`
+                pos = 0;
             }
+        }
 
         var end = Math.min(Math.max(pos, 0), stringLength);
         var start = end - searchLength;
@@ -295,7 +295,13 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             if (config.registry && config.registry.has(dependency.name)) {
                 dependency.location = config.registry.get(dependency.name);
             } else if (config.packageLock) {
-                configPath = config.location.slice(config.mainPackageLocation.length - 1);
+                //There's a bug in node where config.location starts with file://
+                //and config.mainPackageLocation doesn't.
+                //So looking for lastIndexOf() then adding length to workaround,
+                //But needs to figure out
+                //why config.mainPackageLocation in node doesn't start by file:// ??
+                //BUG: configPath = config.location.slice(config.mainPackageLocation.length - 1);
+                configPath = config.location.slice(config.location.lastIndexOf(config.mainPackageLocation)+config.mainPackageLocation.length - 1);
                 dependencyPath = findLongestDependencyPath(dependency.name, configPath, config.packageLock);
                 if (dependencyPath) {
                     dependency.location = URL.resolve(config.mainPackageLocation, dependencyPath);
@@ -515,7 +521,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
     var isLowercasePattern = /^[a-z]+$/;
 
-    Require.detect_ES6_export_regex = /(?<=^([^"]|"[^"]*")*)export /;
+    //Require.detect_ES6_export_regex = /(?<=^([^"]|"[^"]*")*)export /;
     Require.makeRequire = function (config) {
         var require, requireForId;
 
@@ -1418,7 +1424,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                 return;
             }
 
-            if (endsWith(location, dotHTML) || endsWith(location, dotHTMLLoadJs)) {
+            if (location.endsWith(dotHTML) || location.endsWith(dotHTMLLoadJs)) {
                 var match = location.match(directoryExpression);
 
                 if (match) {
@@ -1552,16 +1558,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             }
 
             var mappings = config.mappings;
-            var prefixes = Object.keys(mappings);
-            var length = prefixes.length;
 
-            function loadMapping(mappingRequire) {
-                var rest = id.slice(prefix.length + 1);
-                config.mappings[prefix].mappingRequire = mappingRequire;
-                module.mappingRedirect = rest;
-                module.mappingRequire = mappingRequire;
-                return mappingRequire.deepLoad(rest, config.location);
-            }
 
             // TODO: remove this when all code has been migrated off of the autonomous name-space problem
             if (
@@ -1571,7 +1568,11 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             ) {
                 console.warn("Package reflexive module ignored:", id);
             }
-            var i, prefix;
+
+            /*
+            var prefixes = Object.keys(mappings),
+            length = prefixes.length,
+            i, prefix;
             for (i = 0; i < length; i++) {
                 prefix = prefixes[i];
                 if (
@@ -1583,6 +1584,22 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                     return config.loadPackage(mappings[prefix], config).then(loadMapping);
                 }
             }
+            */
+
+            var aPackage, prefix;
+            //It's more likely to require a package+path than the package name itself.
+            if((aPackage = mappings[(prefix = id.substring(0,id.indexOf("/")))]) || (aPackage = mappings[(prefix = id)])) {
+                return config.loadPackage(aPackage, config)
+                    .then(function loadMapping(mappingRequire) {
+                        var rest = id.slice(prefix.length + 1);
+                        config.mappings[prefix].mappingRequire = mappingRequire;
+                        module.mappingRedirect = rest;
+                        module.mappingRequire = mappingRequire;
+                        return mappingRequire.deepLoad(rest, config.location);
+                    }
+                )
+            }
+
             return load(id, module);
         };
     };
@@ -1624,11 +1641,14 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
      * @param config
      * @param loader the next loader in the chain
      */
-    var reelExpression = /([^\/]+)\.reel$/,
-        dotREEL = ".reel";
+    var _reelExpression = /([^\/]+)\.reel$/,
+        _dotREEL = ".reel";
     Require.ReelLoader = function(config, load) {
+        var reelExpression = _reelExpression,
+            dotREEL = _dotREEL;
+
         return function reelLoader(id, module) {
-            if (endsWith(id, dotREEL)) {
+            if (id.endsWith(dotREEL)) {
                 module.redirect = id;
                 module.redirect += SLASH;
                 module.redirect += reelExpression.exec(id)[1];
