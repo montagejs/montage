@@ -1704,6 +1704,21 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         this._expandComponentPromise = this._instantiateTemplate().then(function() {
                             self._isComponentExpanded = true;
                             self._addTemplateStylesIfNeeded();
+
+                            /*
+                                Javier found out that there was a double draw in repetition.
+                                Commenting out self.needsDraw = true here fixes it,
+                                which seems to particularly improve performance for repetition
+                                where items’s templates contain repetitions that themselves
+                                have items with templates that contains repetitions, etc …
+                                the impact is on component that have templates. To be benchmarked.
+
+                                But: comenting it out causes 1 repetition tests to fail:
+
+                                repetition/repetition ui/repetition-spec Repetition in a external component should draw the repetition of the 'component repetition'
+
+                                So more to look at before we can enjoy that win.
+                            */
                             self.needsDraw = true;
                         }).catch(function (error) {
                             console.error(error);
@@ -3352,6 +3367,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 // have been set on it.
                 originalElement = this.originalElement;
 
+                /*
+                    Original
+                */
+
                 var attributes, i, length, name, value, attributeName, descriptor;
                 attributes = originalElement.attributes;
                 if (attributes) {
@@ -3373,6 +3392,31 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         }
                     }
                 }
+
+
+/*
+                var attributes, i, length, name, value, attributeName, descriptor;
+                attributes = originalElement.attributes;
+                if (attributes) {
+                    length = attributes.length;
+                    // Iterate over element's attributes
+                    for (name of originalElement.getAttributeNames()) {
+
+                        descriptor = this._getElementAttributeDescriptor(name, this);
+                        // check if this attribute from the markup is a well-defined attribute of the component
+                        if (descriptor || (typeof this[name] !== 'undefined')) {
+                            // only set the value if a value has not already been set by binding
+                            if (typeof this._elementAttributeValues[name] === 'undefined') {
+                                value = originalElement.getAttribute(name);
+                                this._elementAttributeValues[name] = value;
+                                if(this[name] === null || this[name] === undefined) {
+                                    this[name] = value;
+                                }
+                            }
+                        }
+                    }
+                }
+*/
 
                 // textContent is a special case since it isn't an attribute
                 descriptor = this._getElementAttributeDescriptor('textContent', this);
