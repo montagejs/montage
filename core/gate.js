@@ -188,13 +188,15 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate.prototype # */ {
      */
     toString: {
         value: function () {
-            var fieldNames = this._fields,
-                i,
+            var table = this.table,
+                fieldNameEnumetator = table.keys(),
                 iField,
                 result = "";
-            for (i = 0; (iField = fieldNames[i]); i++) {
-                result += iField + "[" + (this._value & fieldNames[iField]) + "], ";
-            }
+
+                while ((iField = fieldNameEnumetator.next().value)) {
+                    result += iField + "[" + (this._value & table.get(iField)) + "], ";
+                }
+
             return result;
         }
     }
