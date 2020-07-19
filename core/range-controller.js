@@ -123,24 +123,55 @@ Object.defineProperty(_RangeSelection.prototype, "swap_or_push", {
 
             itemsToAdd.contentEquals = this.contentEquals;
 
-            plus = itemsToAdd.filter(function(item, index){
-                // do not add items to the selection if they aren't in content
-                if (content && !content.has(item)) {
-                    return false;
+            // plus = itemsToAdd.filter(function(item, index){
+            //     // do not add items to the selection if they aren't in content
+            //     if (content && !content.has(item)) {
+            //         return false;
+            //     }
+
+            //     // if the same item appears twice in the add list, only add it once
+            //     if (itemsToAdd.findLast(item) > index) {
+            //         return false;
+            //     }
+
+            //     // if the item is already in the selection, don't add it
+            //     // unless it's in the part that we're about to delete.
+            //     var indexInSelection = this.find(item);
+            //     return indexInSelection < 0 ||
+            //             (indexInSelection >= start && indexInSelection < start + minusLength);
+
+            // }, this);
+
+
+            plus = [];
+            for(var indexInSelection, i=0, countI = itemsToAdd.length;(i<countI); i++) {
+                if (i in itemsToAdd) {
+
+                    // do not add items to the selection if they aren't in content
+                    if (content && !content.has(itemsToAdd[i])) {
+                        continue;
+                    }
+
+                    // if the same item appears twice in the add list, only add it once
+                    if (itemsToAdd.findLast(itemsToAdd[i]) > i) {
+                        continue;
+                    }
+
+                    // if the item is already in the selection, don't add it
+                    // unless it's in the part that we're about to delete.
+                    indexInSelection = this.find(itemsToAdd[i]);
+                    if(indexInSelection < 0 ||
+                            (indexInSelection >= start && indexInSelection < start + minusLength)) {
+                                plus.push(itemsToAdd[i]);
+                            }
                 }
 
-                // if the same item appears twice in the add list, only add it once
-                if (itemsToAdd.findLast(item) > index) {
-                    return false;
-                }
+            }
 
-                // if the item is already in the selection, don't add it
-                // unless it's in the part that we're about to delete.
-                var indexInSelection = this.find(item);
-                return indexInSelection < 0 ||
-                        (indexInSelection >= start && indexInSelection < start + minusLength);
+            // if(JSON.stringify(plus) !== JSON.stringify(plus2)) {
+            //     debug;
+            // }
 
-            }, this);
 		}
 		else {
 			plus = EMPTY_ARRAY;
