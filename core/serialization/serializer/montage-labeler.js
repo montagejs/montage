@@ -95,11 +95,11 @@ exports.MontageLabeler = Montage.specialize({
      */
     initWithObjects: {
         value: function(labels) {
-            for (var label in labels) {
-                if (labels.hasOwnProperty(label)) {
-                    this.setObjectLabel(labels[label], label);
-                    this._userDefinedLabels[label] = true;
-                }
+            var keys = Object.keys(labels),
+                i, label;
+            for(i=0;(label = keys[i]); i++) {
+                this.setObjectLabel(labels[label], label);
+                this._userDefinedLabels[label] = true;
             }
         }
     },
