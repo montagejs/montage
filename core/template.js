@@ -68,11 +68,12 @@ var Template = Montage.specialize( /** @lends Template# */ {
             return deserializer;
         }
     },
-    getDeserializer: {
-        value: function () {
-            return this._deserializer;
-        }
-    },
+    //Unused anywhere
+    // getDeserializer: {
+    //     value: function () {
+    //         return this._deserializer;
+    //     }
+    // },
 
     _serialization: {
         value: null
@@ -316,7 +317,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 part.objects = objects;
                 self._invokeDelegates(part, instances);
                 part.stopActingAsTopComponent();
-                
+
                 return part;
             });
         }
@@ -488,11 +489,10 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 object,
                 owner = objects.owner || instances && instances.owner,
                 objectOwner,
-                objectLabel;
+                objectLabel,
+                i, keys, label;
 
-            /* jshint forin: true */
-            for (var label in objects) {
-            /* jshint forin: false */
+            for (i=0, keys = Object.keys(objects);(label = keys[i]); i++) {
 
                 // Don't call delegate methods on objects that were passed to
                 // the instantiation.
@@ -1008,7 +1008,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
                             break;
                         }
                     }
-                    
+
                     // Store all element ids of the argument, we need to create
                     // a serialization with the components that point to them.
                     argumentsElementIds.push.apply(argumentsElementIds,
@@ -1025,7 +1025,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
                         /* jshint forin: false */
                             argumentElementsCollisionTable[key] = collisionTable[key];
                         }
-                    }   
+                    }
                 }
             }
 
@@ -1551,7 +1551,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
                 documentResources = DocumentResources.getInstanceForDocument(targetDocument);
                 return documentResources.preloadResource(url);
             }
-            
+
             return this.resolvedPromise;
         }
     },
