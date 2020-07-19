@@ -149,7 +149,8 @@ exports.element = function (_document) {
         focus: function () {},
         blur: function () {},
         ownerDocument: _document || exports.document(),
-        tagName: "MOCK"
+        tagName: "MOCK",
+        validity: {}
     };
     Object.addEach(result, EventTarget);
 
