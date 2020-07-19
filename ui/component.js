@@ -1206,6 +1206,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     _inDocument: {
         get: function() {
             return this.inDocument;
+        },
+        set: function(value) {
+            this.inDocument = value;
         }
     },
     inDocument: {
