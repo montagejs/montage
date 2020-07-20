@@ -482,25 +482,25 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                     userIdentityQuery;
 
                 //Temporarily Bypassing authentication:
-                // if(userIdentityServices && userIdentityServices.length > 0) {
-                //     //Shortcut, there could be multiple one we need to flatten.
-                //     userIdentityObjectDescriptors = userIdentityServices[0].types;
+                if(userIdentityServices && userIdentityServices.length > 0) {
+                    //Shortcut, there could be multiple one we need to flatten.
+                    userIdentityObjectDescriptors = userIdentityServices[0].types;
 
-                //     if(userIdentityObjectDescriptors.length > 0) {
-                //         //selfUserCriteria = new Criteria().initWithExpression("identity == $", "self");
-                //         userIdentityQuery = DataQuery.withTypeAndCriteria(userIdentityObjectDescriptors[0]);
+                    if(userIdentityObjectDescriptors.length > 0) {
+                        //selfUserCriteria = new Criteria().initWithExpression("identity == $", "self");
+                        userIdentityQuery = DataQuery.withTypeAndCriteria(userIdentityObjectDescriptors[0]);
 
-                //         authenticationPromise = self.mainService.fetchData(userIdentityQuery)
-                //         .then(function(userIdenties) {
-                //             self.userIdentity = userIdenties[0];
-                //         });
+                        authenticationPromise = self.mainService.fetchData(userIdentityQuery)
+                        .then(function(userIdenties) {
+                            self.userIdentity = userIdenties[0];
+                        });
 
-                //     }
-                // }
-                // else {
+                    }
+                }
+                else {
                     //Needs to beef-up the case we have a first anonymous user who could come back later.
                     authenticationPromise = Promise.resolve(true);
-                // }
+                }
 
                 return authenticationPromise.finally(function() {
                     // if (typeof document !== "undefined") {
