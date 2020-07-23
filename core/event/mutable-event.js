@@ -90,10 +90,14 @@ var wrapPropertyGetter = function (key, storageKey) {
          */
         getPreventDefault: {
             value: function () {
-                if (this._event.getPreventDefault) {
-                    return this._event.getPreventDefault();
+                if (this._event) {
+                    if (this._event.getPreventDefault) {
+                        return this._event.getPreventDefault();
+                    }
+                    return this._event.defaultPrevented;
+                } else {
+                    return this.defaultPrevented;
                 }
-                return this._event.defaultPrevented;
             }
         },
 
@@ -243,7 +247,7 @@ var wrapPropertyGetter = function (key, storageKey) {
          */
         bubbles: {
             get: function () {
-                return (this._bubbles !== void 0) ? this._bubbles : this._event.bubbles;
+                return (this._bubbles !== void 0) ? this._bubbles : (this._event && this._event.bubbles);
             },
             set: function (value) {
                 this._bubbles = value;
@@ -282,6 +286,23 @@ var wrapPropertyGetter = function (key, storageKey) {
                 return this._event ? this._event.targetTouches : null;
             }
         },
+
+        _cancelable: {
+            value: void 0
+        },
+        /**
+         * @type {Property}
+         * @default {boolean} should be false by default
+         */
+        cancelable: {
+            get: function () {
+                return (this._cancelable !== void 0) ? this._cancelable : this._event && this._event.cancelable;
+            },
+            set: function (value) {
+                this._cancelable = value;
+            }
+        },
+
         _defaultPrevented: {
             value: void 0
         },
@@ -314,6 +335,21 @@ var wrapPropertyGetter = function (key, storageKey) {
             },
             set: function (value) {
                 this._timeStamp = value;
+            }
+        },
+        _detail: {
+            value: void 0
+        },
+        /**
+         * @type {Property}
+         * @default {Object} null
+         */
+        detail: {
+            get: function () {
+                return (this._detail !== void 0) ? this._detail : (this._event && this._event.detail);
+            },
+            set: function (value) {
+                this._detail = value;
             }
         }
 
@@ -352,8 +388,17 @@ var wrapPropertyGetter = function (key, storageKey) {
          * @returns this.fromEvent(anEvent)
          */
         fromType: {
-            value: function (type, canBubbleArg, cancelableArg, detail) {
-                return this.fromEvent(new CustomEvent(type, {bubbles: canBubbleArg, cancelable:cancelableArg, detail:detail}));
+            value: function MutableEvent_fromType(type, canBubbleArg, cancelableArg, detail) {
+                var newEvent = new this();
+
+                newEvent.type = type;
+                newEvent.bubbles = typeof canBubbleArg === "boolean" ? canBubbleArg : false;
+                newEvent.cancelable = typeof cancelableArg === "boolean" ? cancelableArg : false;
+                if(detail) newEvent.detail = detail;
+
+                return newEvent;
+
+                //return this.fromEvent(new CustomEvent(type, {bubbles: canBubbleArg, cancelable:cancelableArg, detail:detail}));
             }
         }
 
