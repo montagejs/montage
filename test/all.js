@@ -1,6 +1,6 @@
 console.log('montage-testing', 'Start');
 
-module.exports = require("montage-testing").run(require, [
+module.exports = require("montage/testing/run").run(require, [
     // App
     {name: "spec/application-spec", node: false},
     // Internal
