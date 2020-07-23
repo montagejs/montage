@@ -227,7 +227,9 @@
                 "require": montageLocation+"core/mr/require.js",
                 "require/browser": montageLocation+"core/mr/browser.js",
                 //"promise": montageLocation+"node_modules/bluebird/js/browser/bluebird.min.js"
-                "promise": montageLocation+"../bluebird/js/browser/bluebird.min.js"
+                "promise": (params.montageLocation === (global.location.origin+"/"))
+                            ? montageLocation+"node_modules/bluebird/js/browser/bluebird.min.js" //montage in test
+                            : montageLocation+"../bluebird/js/browser/bluebird.min.js" //anything else
                 // "shim-string": "core/shim/string.js" // needed for the `endsWith` function.
             };
 
