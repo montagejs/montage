@@ -1529,7 +1529,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
     rawDataTypeNameForMapping: {
         value: function (aMapping) {
-            console.warn("rawDataTypeNameForMapping() needs to be overriden with a concrete implementation by subclasses of RawDataService")
+            // console.warn("rawDataTypeNameForMapping() needs to be overriden with a concrete implementation by subclasses of RawDataService")
         }
     }
 
