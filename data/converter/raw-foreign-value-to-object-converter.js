@@ -127,7 +127,7 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
 
             if((v && !(v instanceof Array )) || (v instanceof Array && v.length > 0)) {
                 var self = this,
-                criteria = this.convertCriteriaForValue(v),
+                criteria,
                 query;
 
                 if(this.foreignDescriptorMappings) {
@@ -178,6 +178,8 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                     }
 
                 } else {
+                    criteria = this.convertCriteriaForValue(v);
+
                     return this._descriptorToFetch.then(function (typeToFetch) {
 
                         return self._fetchConvertedDataForObjectDescriptorCriteria(typeToFetch, criteria);
