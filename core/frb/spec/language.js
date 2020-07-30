@@ -554,6 +554,16 @@ module.exports = [
             {type: "literal", value: 4}
         ]}
     },
+    {
+        path: "2 + 2 == $",
+        syntax: {type: "equals", args: [
+            {type: "add", args: [
+                {type: "literal", value: 2},
+                {type: "literal", value: 2}
+            ]},
+            {type: "parameters"}
+        ]}
+    },
 
     {
         path: "!0",
