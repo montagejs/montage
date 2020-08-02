@@ -34,6 +34,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
             this._propertyDescriptorGroups = {};
             this._eventPropertyDescriptorsTable = new Map();
             this.defineBinding("eventDescriptors", {"<-": "_eventDescriptors.concat(parent.eventDescriptors)"});
+            this.defineBinding("localizablePropertyNames", {"<-": "localizablePropertyDescriptors.name"});
         }
     },
 
@@ -492,8 +493,9 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
                     if(descriptor.isLocalizable) {
                         descriptor.removeOwnPropertyChangeListener("isLocalizable", this);
 
-                        index = this.localizablePropertyDescriptors.indexOf(descriptor);
-                        this.localizablePropertyDescriptors.splice(index, 1);
+                        // index = this.localizablePropertyDescriptors.indexOf(descriptor);
+                        // this.localizablePropertyDescriptors.splice(index, 1);
+                        this.localizablePropertyDescriptors.delete(descriptor);
                     }
                 }
             }
@@ -510,7 +512,9 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
                     descriptor._owner = descriptor._owner || this;
 
                     if(descriptor.isLocalizable) {
-                        this.localizablePropertyDescriptors.push(descriptor);
+                        //this.localizablePropertyDescriptors.push(descriptor);
+                        this.localizablePropertyDescriptors.add(descriptor);
+
                     }
                 }
             }
@@ -525,9 +529,11 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
     handleIsLocalizablePropertyChange: {
         value: function(changeValue, key, object) {
             if(object.isLocalizable) {
-                this.localizablePropertyDescriptors.push(object);
+                //this.localizablePropertyDescriptors.push(object);
+                this.localizablePropertyDescriptors.add(object);
             } else {
-                this.localizablePropertyDescriptors.splice(this.localizablePropertyDescriptors.indexOf(object), 1);
+                //this.localizablePropertyDescriptors.splice(this.localizablePropertyDescriptors.indexOf(object), 1);
+                this.localizablePropertyDescriptors.delete(object);
             }
         }
     },
@@ -556,7 +562,8 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
 
                         if(descriptor.isLocalizable) {
 
-                            this.localizablePropertyDescriptors.push(descriptor);
+                            //this.localizablePropertyDescriptors.push(descriptor);
+                            this.localizablePropertyDescriptors.add(descriptor);
                             descriptor.addOwnPropertyChangeListener("isLocalizable", this);
 
                         }
@@ -588,19 +595,25 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
         value: false
     },
 
-    /**
-     * A non-observed cache of an object descriptor's Property Descriptors
-     *
-     * @private
-     * @property {Array<PropertyDescriptor>}
-     */
     _localizablePropertyDescriptors: {
         value: undefined
     },
+
+    /**
+     * A Set  of an ObjectDescriptor's Property Descriptors that are localizable
+     *
+     * @private
+     * @property {Set<PropertyDescriptor>}
+     */
     localizablePropertyDescriptors: {
         get: function() {
-            return this._localizablePropertyDescriptors || (this._localizablePropertyDescriptors = []);
+            //return this._localizablePropertyDescriptors || (this._localizablePropertyDescriptors = []);
+            return this._localizablePropertyDescriptors || (this._localizablePropertyDescriptors = new Set());
         }
+    },
+
+    localizablePropertyNames: {
+        value: undefined
     },
 
     /**
