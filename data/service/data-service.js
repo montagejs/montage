@@ -69,6 +69,8 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             exports.DataService.mainService = ObjectDescriptor.mainService = exports.DataService.mainService || this;
             if(this === DataService.mainService) {
                 UserIdentityManager.mainService = DataService.mainService;
+                //this.addOwnPropertyChangeListener("userLocales", this);
+                this.addRangeAtPathChangeListener("userLocales", this, "handleUserLocalesRangeChange");
             }
 
             //Deprecated now
@@ -81,9 +83,6 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             if(this.providesUserIdentity === true) {
                 UserIdentityManager.registerUserIdentityService(this);
             }
-
-            this.addOwnPropertyChangeListener("userLocale", this);
-
 
             this._initializeOffline();
         }
@@ -3445,47 +3444,58 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      * @type {Locale}
      */
 
-    _userLocale: {
+    _userLocales: {
         value: undefined
    },
 
-   userLocale: {
+   userLocales: {
        get: function() {
-           return this._userLocale || ((this._userLocale = Locale.systemLocale) && this._userLocale);
+           return this.isRootService
+                ? this._userLocales || ((this._userLocales = [Locale.systemLocale]) && this._userLocales)
+                : this.rootService.userLocales;
        },
        set: function(value) {
-           if(value !== this._userLocale) {
-               this._userLocale = value;
+           if(value !== this._userLocales) {
+               this._userLocales = value;
            }
        }
    },
 
-   _userLocaleCriteria: {
+   _userLocalesCriteria: {
        value: undefined
    },
 
-   userLocaleCriteria: {
+   userLocalesCriteria: {
        get: function() {
-           return this._userLocaleCriteria || (this._userLocaleCriteria = this._createUserLocaleCriteria());
+        return this.isRootService
+            ?  this._userLocalesCriteria || (this._userLocalesCriteria = this._createUserLocalesCriteria())
+            : this.rootService.userLocalesCriteria;
+
        },
        set: function(value) {
-           if(value !== this._userLocaleCriteria) {
-               this._userLocaleCriteria = value;
+           if(value !== this._userLocalesCriteria) {
+               this._userLocalesCriteria = value;
            }
        }
    },
 
-   _createUserLocaleCriteria: {
+   _createUserLocalesCriteria: {
         value: function() {
-            return new Criteria().initWithExpression("locale == $locale", {
-                locale: this.userLocale
+            return new Criteria().initWithExpression("locales == $DataServiceUserLocales", {
+                DataServiceUserLocales: this.userLocales
             });
         }
    },
 
-    handleUserLocaleChange: {
+    handleUserLocalesChange: {
         value: function (value, key, object) {
-            this.userLocaleCriteria = this._createUserLocaleCriteria();
+            this.userLocalesCriteria = this._createUserLocalesCriteria();
+        }
+    },
+
+    handleUserLocalesRangeChange: {
+        value: function (plus, minus){
+            this.userLocalesCriteria = this._createUserLocalesCriteria();
         }
     }
 
