@@ -21,7 +21,11 @@ var Criteria = exports.Criteria = Montage.specialize({
      */
     expression: {
         get: function() {
-            return this._expression;
+            return this._expression || (
+                this._syntax
+                    ? (this._expression = stringify(this._syntax))
+                    : this._expression
+                );
         }
     },
     /**
@@ -39,12 +43,26 @@ var Criteria = exports.Criteria = Montage.specialize({
     },
     /**
      * The parsed expression, a syntactic tree.
+     * Now mutable to avoid creating new objects when appropriate
      *
      * @type {object}
      */
    syntax: {
         get: function() {
             return this._syntax || (this._syntax = parse(this._expression));
+        },
+        set: function(value) {
+            if(value !== this._syntax) {
+                //We need to reset:
+                //expression if we have one:
+                this._expression = null;
+
+                //_compiledSyntax
+                this._compiledSyntax = null;
+
+                this._syntax = value;
+            }
+
         }
     },
     _compiledSyntax: {
@@ -168,6 +186,196 @@ var Criteria = exports.Criteria = Montage.specialize({
             this._scope.value = value;
             return this.compiledSyntax(this._scope);
         }
+    },
+
+    /**
+     * Walks a criteria's syntactic tree to assess if one of more an expression
+     * involving propertyName.
+     *
+     * @method
+     * @argument {string} propertyName - a propertyName.
+     *
+     * @returns {boolean} - boolean wether the criteri qualifies a value on propertyName.
+     */
+
+    syntaxesQualifyingPropertyName: {
+        value: function(propertyName) {
+            console.warn("syntaxesQualifyingPropertyName() implementation missing");
+        }
+    },
+
+    /**
+     * Walks a criteria's syntax to assess if one of it contains an expression
+     * involving propertyName.
+     *
+     * @method
+     * @argument {string} propertyName - a propertyName.
+     *
+     * @returns {boolean} - boolean wether the criteri qualifies a value on propertyName.
+     */
+
+    qualifiesPropertyName: {
+        value: function(propertyName) {
+            console.warn("qualifiesPropertyName() implementation missing");
+        }
+    },
+
+
+
+    /**
+     * Walks a criteria's syntax:
+     *  - replace $ parameter by {key:value}
+     *  - alias own's parameter keys if conclicting with
+     *
+     * for example expression: "(firstName= $firstName) && (lastName = $lastName)"
+     *             parameters: {
+     *                  "firstName": "Han",
+     *                  "lastName": "Solo"
+     *             }
+     *
+     * @method
+     * @argument {object} aliasedParameters - an object containg parameters that the receiver needs to become compatible with.
+     * @argument {object} parameterCounters - an object containing a paramater root name and an incremented integer
+     *                                      used to build a unique key as close to author's intent
+     *
+     * @returns {Criteria} - The Criteria initialized.
+     */
+
+    _syntaxByAliasingSyntaxWithParameters: {
+        value: function (syntax, aliasedParameters, parameterCounter, _thisParameters) {
+            var aliasedSyntax = {},
+                syntaxKeys = Object.keys(syntax),
+                i, iKey,
+                syntaxArg0 = syntax.args && syntax.args[0],
+                aliasedSyntaxArg0,
+                syntaxArg1 = syntax.args && syntax.args[1],
+                aliasedSyntaxArg1,
+                parameter,
+                parameterValue,
+                aliasedParameter;
+
+            for(i=0;(iKey = syntaxKeys[i]);i++) {
+
+
+                if(iKey === "args") {
+                    aliasedSyntax.args = [];
+
+                    if(syntaxArg0.type === "parameters") {
+                        if (syntaxArg1.type !== "literal") {
+
+                            //We replace $ syntax by the $key/$.key syntax:
+                            aliasedSyntaxArg0 = {};
+                            aliasedSyntaxArg0.type = "property";
+                            aliasedParameter = "parameter"+(++parameterCounter);
+                            aliasedSyntaxArg0.args = [
+                                {
+                                    "type":"parameters"
+                                },
+                                {
+                                    "type":"literal",
+                                    "value": aliasedParameter
+                                }
+                            ];
+                            aliasedSyntax.args[0] = aliasedSyntaxArg0;
+                            aliasedSyntax.args[1] = this._syntaxByAliasingSyntaxWithParameters(syntaxArg1, aliasedParameters, parameterCounter, _thisParameters);
+
+                            //and we register the criteria's parameter _thisParameters under the new key;
+                            aliasedParameters[aliasedParameter] = _thisParameters;
+                        } else {
+                            //We need to make sure there's no conflict with aliasedParameters
+                            parameter = syntaxArg1.value;
+                            parameterValue = _thisParameters[parameter];
+                            if(aliasedParameters.hasOwnProperty(parameter) && aliasedParameters[parameter] !== parameterValue) {
+                                aliasedParameter = parameter+(++parameterCounter);
+                                aliasedParameters[aliasedParameter] = parameterValue;
+                            } else {
+                                aliasedParameter = parameter;
+                            }
+                            aliasedSyntax.args[0] = {
+                                    "type":"parameters"
+                            };
+
+                            aliasedSyntax.args[1] = {
+                                    "type":"literal",
+                                    "value":aliasedParameter
+                            };
+                            aliasedParameters[aliasedParameter] = parameterValue;
+                        }
+
+                    } else {
+                        aliasedSyntax.args[0] = this._syntaxByAliasingSyntaxWithParameters(syntaxArg0, aliasedParameters, parameterCounter, _thisParameters);
+                        aliasedSyntax.args[1] = this._syntaxByAliasingSyntaxWithParameters(syntaxArg1, aliasedParameters, parameterCounter, _thisParameters);
+                    }
+                } else {
+                    aliasedSyntax[iKey] = syntax[iKey];
+                }
+
+            }
+
+            /*
+                                    JSON.stringify(d.syntax)
+                                    //$key.has(id)", {"key":"123"}
+                                    {
+                                        "type":"has",
+                                        "args":[
+                                            {
+                                                "type":"property",
+                                                "args":[
+                                                    {
+                                                        "type":"parameters"
+                                                    },
+                                                    {
+                                                        "type":"literal","
+                                                        value":"key"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "type":"property",
+                                                "args":[
+                                                    {
+                                                        "type":"value"
+                                                    },{
+                                                        "type":"literal"
+                                                        ,"value":"id"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+
+                                    JSON.stringify(f.syntax)
+                                    "$.has(id)", "123"
+                                    {
+                                        "type":"has",
+                                        "args":[
+                                            {
+                                                "type":"parameters"
+                                            },
+                                            {
+                                                "type":"property",
+                                                "args":[
+                                                    {
+                                                        "type":"value"
+                                                    },
+                                                    {
+                                                        "type":"literal",
+                                                        "value":"id"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+
+            */
+            return aliasedSyntax;
+        }
+    },
+
+    syntaxByAliasingSyntaxWithParameters: {
+        value: function (aliasedParameters, parameterCounters) {
+            return this._syntaxByAliasingSyntaxWithParameters(this.syntax, aliasedParameters||0, 0, this.parameters);
+        }
     }
 
 },{
@@ -232,44 +440,126 @@ var Criteria = exports.Criteria = Montage.specialize({
 
 });
 
+function _combinedCriteriaFromArguments(type, receiver, _arguments) {
+    // var args = Array.prototype.map.call(_arguments, function (argument) {
+    //     if (typeof argument === "string") {
+    //         return parse(argument);
+    //     } else if (argument.syntax) {
+    //         return argument.syntax;
+    //     } else if (typeof argument === "object") {
+    //         return argument;
+    //     }
+    // });
+    var args = [],
+        isInstanceReceiver = (typeof receiver === "object"),
+        parameters = isInstanceReceiver ? receiver.parameters : null,
+        i = 0, argument, countI,
+        j, countJ, argumentParameters, argumentParametersKeys, argumentParameter,
+        aliasedParameters = {};
+
+    for(countI = _arguments.length; (i<countI) ; i++ ) {
+        argument = _arguments[i];
+        if (typeof argument === "string") {
+            //If it's a string, there can't really be a parameter argument with it, s olikely safe to just parse it
+            args.push(parse(argument));
+        } else if (argument.syntax) {
+            //We alias anyway, as there could be an need in subsequent arguments.
+            //if that's too expensive we can do a quick first pass to avoid creating new syntaxes.
+            //at the same time, it might be safer that the new combined criteria has it's own independent syntactic tree.
+            args.push(argument.syntaxByAliasingSyntaxWithParameters(aliasedParameters));
+
+            // if(argumentParameters = argument.parameters) {
+            //     if(parameters) {
+
+
+                    /*
+                        Both sides have parameters. We need to merge them, but we could have on either the case where one parameter is like
+                        {
+                            paramKey1: paramValue1,
+                            paramKey2: paramValue2
+                        }
+                        referred in expression form as $paramKey1 or $.paramKey1
+                        and syntax should looks like: ,"args":[{"type":"parameters"},{"type":"literal","value":"paramKey1"}]
+
+                        and the other parameter could be uses a itself and be anything, like an array.
+                        referred in expression form as $ = [1]
+                         and syntax should looks like: "{"type":"has","args":[{"type":"parameters"},{"type":"property","args":[{"type":"value"},{"type":"literal","value":"id"}]}]}"
+
+                         Example of a syntactic tree using the whole parameter object:
+                         "$.has(id)"
+                         JSON.stringify(argument._syntax)
+                            "{"type":"has","args":[{"type":"parameters"},{"type":"property","args":[{"type":"value"},{"type":"literal","value":"id"}]}]}"
+
+                        Example of a syntactic tree using a parameter object's entries:
+                        "locale == $locale"
+                        JSON.stringify(receiver.syntax)
+                            "{"type":"equals","args":[{"type":"property","args":[{"type":"value"},{"type":"literal","value":"locale"}]},{"type":"property","args":[{"type":"parameters"},{"type":"literal","value":"locale"}]}]}"
+
+                        In which case, the single parameter construct needs to be replaced by a key/value syntax
+                        and put on the shared parameters.
+
+                        or parameters could conflicts, with the same parameters key pointing to different values, in which case one should change.
+
+                    */
+
+
+                //     argumentParametersKeys = Object.keys(argumentParameters);
+                //     for(j=0, countJ = argumentParametersKeys.length;(argumentParameter = argumentParametersKeys[j]); j++) {
+                //         if(argumentParameter in parameters) {
+                //             if(argumentParameters[argumentParameter] !== parameters[argumentParameter]) {
+                //                 /*
+                //                     TODO: In this situation, argument.parameters and argument.syntax needs to be walked to replace the confliciting symbols by a different unique one. In the mean time, flag it until we need to address that.
+                //                 */
+                //                 throw "!!! Criteria combined with "+type+" both have a parameter named the same but with different values but there is no aliasing implemented to guard against this so they don't conflic";
+                //             }
+                //             //Otherwise, nothing to do, same parameter with same value on both sides
+                //         } else {
+                //             //Move argumentParameter to parameters:
+                //             parameters[argumentParameter] = argumentParameters[argumentParameter];
+                //         }
+                //     }
+                // } else {
+                //     //this didn't have a parameter, so we use the first one as the combined one.
+                //     parameters = argumentParameters;
+                // }
+            //}
+
+        } else if (typeof argument === "object") {
+            args.push(argument);
+        }
+    }
+
+    //When called from aCriteria.and("b") pattern
+    if(isInstanceReceiver) {
+        return new (receiver.constructor)().initWithSyntax({
+            type: type,
+
+            //args: [receiver.syntax].concat(args)
+            args: [receiver.syntaxByAliasingSyntaxWithParameters(aliasedParameters)].concat(args)
+        }, aliasedParameters);
+    }
+    //When called from the Criteria.and("a", "b") pattern
+    else {
+        // invoked as class method
+        return new receiver().initWithSyntax({
+            type: type,
+            args: args
+        }, aliasedParameters);
+    }
+}
+
 // generate methods on Criteria for each of the tokens of the language.
 // support invocation both as class and instance methods like
-// Selector.and("a", "b") and aSelector.and("b")
+// Criteria.and("a", "b") and aCriteria.and("b")
 precedence.forEach(function (value,type, precedence) {
     Montage.defineProperty(Criteria.prototype, type, {
         value: function () {
-            var args = Array.prototype.map.call(arguments, function (argument) {
-                if (typeof argument === "string") {
-                    return parse(argument);
-                } else if (argument.syntax) {
-                    return argument.syntax;
-                } else if (typeof argument === "object") {
-                    return argument;
-                }
-            });
-            // invoked as instance method
-            return new (this.constructor)().initWithSyntax({
-                type: type,
-                args: [this.syntax].concat(args)
-            });
+            return _combinedCriteriaFromArguments(type, this, arguments);
         }
     });
     Montage.defineProperty(Criteria, type, {
         value: function () {
-            var args = Array.prototype.map.call(arguments, function (argument) {
-                if (typeof argument === "string") {
-                    return parse(argument);
-                } else if (argument.syntax) {
-                    return argument.syntax;
-                } else if (typeof argument === "object") {
-                    return argument;
-                }
-            });
-            // invoked as class method
-            return new this().initWithSyntax({
-                type: type,
-                args: args
-            });
+            return _combinedCriteriaFromArguments(type, this, arguments);
         }
     });
 });
