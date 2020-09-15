@@ -1,5 +1,5 @@
 
-var Iterator = require("core/collections/iterator");
+var Iterator = require("montage/core/collections/iterator");
 
 describe("Iterator-spec", function () {
 

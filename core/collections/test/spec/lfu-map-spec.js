@@ -1,5 +1,5 @@
 
-var LfuMap = require("core/collections/lfu-map");
+var LfuMap = require("montage/core/collections/lfu-map");
 var describeDict = require("./dict");
 var describeMap = require("./map");
 var describeToJson = require("./to-json");

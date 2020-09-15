@@ -1,5 +1,5 @@
 
-require("core/collections/shim-array");
+require("montage/core/collections/shim-array");
 
 describe("ArrayShim-spec", function () {
 

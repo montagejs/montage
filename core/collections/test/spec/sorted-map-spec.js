@@ -1,5 +1,5 @@
 
-var SortedMap = require("core/collections/sorted-map");
+var SortedMap = require("montage/core/collections/sorted-map");
 var describeDict = require("./dict");
 var describeToJson = require("./to-json");
 

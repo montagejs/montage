@@ -1,5 +1,5 @@
 
-require("core/collections/listen/array-changes");
+require("montage/core/collections/listen/array-changes");
 var describeRangeChanges = require("./range-changes");
 
 describe("Array change dispatch", function () {

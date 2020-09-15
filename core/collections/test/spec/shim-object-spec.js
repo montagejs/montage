@@ -7,9 +7,9 @@
     https://github.com/motorola-mobility/montage/blob/master/LICENSE.md
 */
 
-require("core/collections/shim");
-var Dict = require("core/collections/dict");
-var Set = require("core/collections/set");
+require("montage/core/collections/shim");
+var Dict = require("montage/core/collections/dict");
+var Set = require("montage/core/collections/set");
 
 describe("ObjectShim-spec", function () {
 
@@ -394,6 +394,21 @@ describe("ObjectShim-spec", function () {
                 });
             });
         });
+
+        var a = {
+                "a": "a",
+                "b": "b",
+                "c": "c",
+                "d": "d"
+            },
+            b = {
+                "d": "d",
+                "c": "c",
+                "b": "b",
+                "a": "a"
+            };
+        expect(Object.equals(a, b)).toBe(true);
+
 
     });
 

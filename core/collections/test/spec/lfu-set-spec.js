@@ -1,4 +1,4 @@
-var LfuSet = require("core/collections/lfu-set");
+var LfuSet = require("montage/core/collections/lfu-set");
 var describeCollection = require("./collection");
 var describeSet = require("./set");
 var describeToJson = require("./to-json");

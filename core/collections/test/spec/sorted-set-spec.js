@@ -1,5 +1,5 @@
 
-require("core/collections/shim-array");
+require("montage/core/collections/shim-array");
 var SortedSet = require("../../collections/sorted-set");
 var TreeLog = require("../../collections/tree-log");
 var describeDeque = require("./deque");

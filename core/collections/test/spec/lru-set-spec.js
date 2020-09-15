@@ -1,5 +1,5 @@
 
-var LruSet = require("core/collections/lru-set");
+var LruSet = require("montage/core/collections/lru-set");
 var describeCollection = require("./collection");
 var describeSet = require("./set");
 var describeToJson = require("./to-json");

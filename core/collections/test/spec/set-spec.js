@@ -1,5 +1,5 @@
 
-var Set = require("core/collections/set");
+var Set = require("montage/core/collections/set");
 var describeCollection = require("./collection");
 var describeSet = require("./set");
 

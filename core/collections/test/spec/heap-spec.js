@@ -1,5 +1,5 @@
 
-var Heap = require("core/collections/heap");
+var Heap = require("montage/core/collections/heap");
 var permute = require("./permute");
 var describeToJson = require("./to-json");
 

@@ -1,5 +1,5 @@
 
-var FastMap = require("core/collections/fast-map");
+var FastMap = require("montage/core/collections/fast-map");
 var describeDict = require("./dict");
 var describeMap = require("./map");
 var describeToJson = require("./to-json");

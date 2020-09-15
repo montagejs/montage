@@ -1,5 +1,5 @@
 
-var Deque = require("core/collections/deque");
+var Deque = require("montage/core/collections/deque");
 var describeDeque = require("./deque");
 var describeOrder = require("./order");
 var describeToJson = require("./to-json");
