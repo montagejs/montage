@@ -63,10 +63,15 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
      */
     requirements: {
         get: function () {
-            if (!this._requirements && this.sourcePathSyntax) {
-                this._requirements = this._parseRequirementsFromSyntax(this.sourcePathSyntax);
-            }
-            return this._requirements;
+            return this._requirements || (
+                this._requirements === undefined && this.sourcePathSyntax
+                ?  (this._requirements = this._parseRequirementsFromSyntax(this.sourcePathSyntax))
+                : this._requirements = null
+            );
+            // if (!this._requirements && this.sourcePathSyntax) {
+            //     this._requirements = this._parseRequirementsFromSyntax(this.sourcePathSyntax);
+            // }
+            // return this._requirements;
         }
     },
 
@@ -84,33 +89,35 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
     _parseRequirementsFromSyntax: {
         value: function (syntax, requirements) {
             var args = syntax.args,
-                type = syntax.type;
-
-            requirements = requirements || [];
+                type = syntax.type,
+                _requirements = requirements || null;
 
             if (type === "property" && args[0].type === "value") {
-                requirements.push(args[1].value);
+                (_requirements || (_requirements = [])).push(args[1].value);
             } else if (type === "property" && args[0].type === "property") {
                 var subProperty = [args[1].value];
                 this._parseRequirementsFromSyntax(args[0], subProperty);
-                requirements.push(subProperty.reverse().join("."));
+                (_requirements || (_requirements = [])).push(subProperty.reverse().join("."));
             } else if (type === "record") {
-                this._parseRequirementsFromRecord(syntax, requirements);
+                _requirements = this._parseRequirementsFromRecord(syntax, _requirements);
             }
 
-            return requirements;
+            return _requirements;
         }
     },
 
     _parseRequirementsFromRecord: {
         value: function (syntax, requirements) {
-            var self = this,
-                args = syntax.args,
-                keys = Object.keys(args);
+            var args = syntax.args,
+                keys = Object.keys(args),
+                _requirements = requirements || null,
+                i, countI;
 
-            keys.forEach(function (key) {
-                self._parseRequirementsFromSyntax(args[key], requirements);
-            });
+            for(i=0, countI = keys.length;(i<countI); i++) {
+                _requirements = this._parseRequirementsFromSyntax(args[keys[i]], _requirements);
+            };
+
+            return _requirements;
         }
     },
 
@@ -187,17 +194,59 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
 
 
     /**
+     * TODO - put this in a shared place....
+     * @type {boolean}
+     */
+
+    _isAsync: {
+        value: function (object) {
+            return object && object.then && typeof object.then === "function";
+        }
+    },
+
+    /**
      * Return the value of the property for this rule
      * @type {Scope}
      */
     evaluate: {
         value: function (scope) {
             var value = this.expression(scope);
-            return this.converter ? this.converter.convert(value) :
-                                    this.reverter ?
-                                    this.reverter.revert(value) :
-                                    //Promise.resolve(value);
-                                    value;
+            // return this.converter ? (this.converter.convert(value) :
+            //                         this.reverter ?
+            //                         this.reverter.revert(value) :
+            //                         //Promise.resolve(value);
+            //                         value;
+
+            /*
+                When converters are shared among multiple rules, they may need to know which rule is invoking their convert/revert method in order to do their conversion job.
+            */
+            if(this.converter) {
+                this.converter.currentRule = this;
+                value = this.converter.convert(value);
+                if(this._isAsync(value)) {
+                    var self = this;
+                    return value.then(function(value) {
+                        self.converter.currentRule = null;
+                        return value;
+                    });
+                } else {
+                    this.converter.currentRule = null;
+                }
+            } else if(this.reverter) {
+                this.reverter.currentRule = this;
+                value = this.reverter.revert(value);
+                if(this._isAsync(value)) {
+                    var self = this;
+                    return value.then(function(value) {
+                        self.reverter.currentRule = null;
+                        return value;
+                    });
+                } else {
+                    this.reverter.currentRule = null;
+                }
+            }
+
+            return value;
         }
     },
 
@@ -206,15 +255,14 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
 
     withRawRuleAndPropertyName: {
         value: function (rawRule, propertyName, addOneWayBindings) {
-            var rule = new this(),
-                sourcePath = addOneWayBindings ? rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING] : propertyName,
-                targetPath = addOneWayBindings && propertyName || rawRule[TWO_WAY_BINDING];
+            var rule = new this();
 
-                rule.serviceIdentifier = rawRule.serviceIdentifier;
-                rule.sourcePath = sourcePath;
-                rule.targetPath = targetPath;
+            rule.sourcePath = addOneWayBindings ? rawRule[ONE_WAY_BINDING] || rawRule[TWO_WAY_BINDING] : propertyName;
+            rule.targetPath  = addOneWayBindings && propertyName || rawRule[TWO_WAY_BINDING];
 
-                return rule;
+            rule.serviceIdentifier = rawRule.serviceIdentifier;
+
+            return rule;
         }
     },
 

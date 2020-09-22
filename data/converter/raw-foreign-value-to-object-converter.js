@@ -1,6 +1,7 @@
 var RawValueToObjectConverter = require("./raw-value-to-object-converter").RawValueToObjectConverter,
     Criteria = require("core/criteria").Criteria,
-        DataQuery = require("data/model/data-query").DataQuery,
+    DataQuery = require("data/model/data-query").DataQuery,
+    Map = require("core/collections/map").Map,
     Promise = require("core/promise").Promise;
 /**
  * @class RawForeignValueToObjectConverter
@@ -79,9 +80,91 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                 criteria.parameters.serviceIdentifier = this.serviceIdentifier;
             }
 
-            var query = DataQuery.withTypeAndCriteria(typeToFetch, criteria);
+            var query = DataQuery.withTypeAndCriteria(typeToFetch, criteria),
+                self = this;
 
             return this.service ? this.service.then(function (service) {
+                /*
+                    When we fetch objects that have inverse relationships on each others none can complete their mapRawDataProcess because the first one's promise for mapping the relationship to the second never commpletes because the second one itself has it's raw data the foreignKey to the first and attemps to do so by default on processing operations, where the previous way was only looping on requisite proprties. If both relationships were requisite, on each side we'd end up with the same problem.
+
+                    When the second try to map it's foreignKey relationship back to the first, the first exists, and is being mapped, which we can know by checking:
+                            if(!this.service._objectsBeingMapped.has(object)) {}
+
+                    So let's try to find a local object that we may already have. This is a specific converter to resolve foreign keys, but we should be able to run the criteria on all local instances' snapshots. We don't have right now an indexation of the snapshots by type, just by dataIdentifier.
+
+                    However, we could start by identifying if the criteria's property involves the typeToFetch's primary key.
+
+                    We also now know currentRule = this.currentRule;
+
+                    Quick draft bellow, un-tested to be refined and continued to.
+
+                    One more thought that's been on my mind. We want to leverage indexedDB anyway so the app has data offline as needed, or to be able to do edge machine learning or keep private data there. If we need to build an index to find objects known client side, we might be able to kill 2 birds with one stone to look for them in the indexedDB directly, where we wou;d build index to match foreign relationships etc...
+                */
+
+                /*
+
+                var criteria = query.criteria;
+
+                if(criteria.syntax.type === "equals") {
+                    var args = criteria.syntax.args,
+                        parameters = criteria.parameters,
+                        parameterValue,
+                        propertySyntax;
+
+                        // propertySyntax = args[0].type === "property"
+                        //     ? args[0]
+                        //     : args[1].type === "property"
+                        //         ? args[1]
+                        //         : null;
+                    if(args[0].type === "property") {
+                        if(args[1].type === "parameters") {
+                            //parameterSyntax = args[1];
+                            parameterValue = parameters;
+                            propertySyntax = args[0];
+                        } else if(args[1].type === "property") {
+                            if(args[1].args[0].type === "parameters") {
+                                parameterValue = parameters[args[1].args[1].value];
+                                propertySyntax = args[0];
+                            } else {
+                                parameterValue = parameters[args[0].args[1].value];
+                                propertySyntax = args[1];
+                            }
+                        }
+                    } else if(args[1].type === "property") {
+                        if(args[0].type === "parameters") {
+                            //parameterSyntax = args[1];
+                            parameterValue = parameters;
+                            propertySyntax = args[1];
+                        } else if(args[0].type === "property") {
+                            if(args[0].args[0].type === "parameters") {
+                                parameterValue = parameters[args[0].args[1].value];
+                                propertySyntax = args[1];
+                            } else {
+                                parameterValue = parameters[args[1].args[1].value];
+                                propertySyntax = args[0];
+                            }
+                        }
+                    }
+
+                    if(propertySyntax) {
+                        var propertyArgs = propertySyntax.args,
+                            propertyName = propertyArgs[0].type === "literal"
+                                ? propertyArgs[0].value
+                                : propertyArgs[1].type === "literal"
+                                    ? propertyArgs[1].value
+                                    : null;
+
+                        if(propertyName && self._owner.rawDataPrimaryKeys.indexOf(propertyName) !== -1) {
+                            //Our criteria is about a primary key, let's find the value:
+                            var primaryKeyValue = parameterValue;
+
+                        }
+                    }
+                }
+
+                */
+
+
                 return service.rootService.fetchData(query);
             }) : null;
 
@@ -120,6 +203,31 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
         value: function(value) {
             return new Criteria().initWithSyntax(this.convertSyntax, value);
         }
+    },
+
+    __foreignDescriptorMappingsByObjectyDescriptor: {
+        value: undefined
+    },
+    _foreignDescriptorMappingsByObjectyDescriptor: {
+        get: function() {
+            if(!this.__foreignDescriptorMappingsByObjectyDescriptor) {
+                for(var i=0, mappings = this.foreignDescriptorMappings, countI = mappings.length, iMapping, mappingByObjectDescriptor = new Map();(i<countI);i++) {
+                    mappingByObjectDescriptor.set(mappings[i].type,mappings[i]);
+                }
+                this.__foreignDescriptorMappingsByObjectyDescriptor = mappingByObjectDescriptor;
+            }
+            return this.__foreignDescriptorMappingsByObjectyDescriptor;
+        }
+    },
+
+    rawDataTypeMappingForForeignDescriptor: {
+        value: function(anObjectDescriptor) {
+            return this._foreignDescriptorMappingsByObjectyDescriptor.get(anObjectDescriptor);
+        }
+    },
+
+    _convertFetchPromisesByValue: {
+        value: undefined
     },
 
     convert: {
@@ -175,10 +283,21 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                             return result;
                         })
 
+                    } else {
+                        /*
+                            if valueDescriptor were a Promise, we'd have a problem.
+                            Keep an eye on that.
+                        */
+                        var valueDescriptor = this.foreignDescriptorForValue(v),
+                            aCriteria = this.convertCriteriaForValue(v);
+
+                        return this._fetchConvertedDataForObjectDescriptorCriteria(valueDescriptor, aCriteria);
                     }
 
                 } else {
                     criteria = this.convertCriteriaForValue(v);
+
+                    // console.log("RawForeignValueToObjectConverter fetching for value:",v);
 
                     return this._descriptorToFetch.then(function (typeToFetch) {
 
@@ -202,6 +321,44 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
         }
     },
 
+    _rawDataPropertyByForeignDescriptor: {
+        value: undefined
+    },
+    rawDataPropertyForForeignDescriptor: {
+        value: function(anObjectDescriptor) {
+            var rawProperty;
+
+            if(!anObjectDescriptor) return null;
+
+            if(!this._rawDataPropertyByForeignDescriptor) {
+                this._rawDataPropertyByForeignDescriptor = new Map();
+            } else {
+                rawProperty = this._rawDataPropertyByForeignDescriptor.get(anObjectDescriptor);
+            }
+
+            if(!rawProperty) {
+                var rawDataTypeMapping = this.rawDataTypeMappingForForeignDescriptor(anObjectDescriptor),
+                    rawDataTypeMappingExpressionSyntax = rawDataTypeMapping.expressionSyntax;
+
+                /*
+                    Assuming the raw-data-type-mapping expressions are of the form: "aForeignKeyId.defined()"
+                */
+
+                if(rawDataTypeMappingExpressionSyntax.type === "defined" && rawDataTypeMappingExpressionSyntax.args[0].type === "property") {
+                    rawProperty = rawDataTypeMappingExpressionSyntax.args[0].args[1].value;
+
+                    this._rawDataPropertyByForeignDescriptor.set(anObjectDescriptor,rawProperty);
+
+                } else {
+                    console.error("Couldn't map mapObjectPropertyToRawProperty with rawDataTypeMappingExpressionSyntax", object, property, rawDataTypeMappingExpressionSyntax);
+                }
+            }
+
+            return rawProperty;
+
+        }
+
+    },
 
 
     /**
@@ -215,21 +372,44 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
             if (v) {
                 //No specific instruction, so we return the primary keys using default assumptions.
                 if (!this.compiledRevertSyntax) {
+                    var self = this,
+                        //We put it in a local variable so we have the right value in the closure
+                        currentRule = this.currentRule;
                     return this.service ? this.service.then(function (service) {
 
                         if(v instanceof Array) {
                             var result=[];
                             //forEach skipps over holes of a sparse array
                             v.forEach(function(value) {
-                                result.push(service.dataIdentifierForObject(value).primaryKey);
+                                /*
+                                    Make sure we have a valid data object anf not null nor undefined before  trying to get their primary key
+                                */
+                                if(value) {
+                                    result.push(service.dataIdentifierForObject(value).primaryKey);
+                                }
                             });
+                            currentRule = null;
                             return result;
                         }
                         else {
-                            return service.dataIdentifierForObject(v).primaryKey;
+                            if(self.foreignDescriptorMappings) {
+                                var valueObjectDescriptor = service.objectDescriptorForObject(v),
+                                    rawDataProperty = self.rawDataPropertyForForeignDescriptor(valueObjectDescriptor);
+
+                                if(rawDataProperty === currentRule.targetPath) {
+                                    currentRule = null;
+                                    return service.dataIdentifierForObject(v).primaryKey;
+                                } else {
+                                    currentRule = null;
+                                    return undefined;
+                                }
+                            } else {
+                                currentRule = null;
+                                return service.dataIdentifierForObject(v).primaryKey;
+                            }
                         }
 
-                    }) : Promise.resolve(v);
+                    }) : (currentRule = null) && Promise.resolve(service.dataIdentifierForObject(v).primaryKey);
                 } else {
                     var scope = this.scope;
                     //Parameter is what is accessed as $ in expressions

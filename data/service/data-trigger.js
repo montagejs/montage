@@ -275,8 +275,9 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
     _setValue: {
         configurable: true,
         writable: true,
-        value: function (object, value) {
-            var status, prototype, descriptor, getter, setter = this._valueSetter, writable, currentValue, isToMany, isArray, initialValue;
+        value: function (object, value, _dispatchChange) {
+            var status, prototype, descriptor, getter, setter = this._valueSetter, writable, currentValue, isToMany, isArray, initialValue,
+            dispatchChange = (arguments.length === 3) ? _dispatchChange : true;
 
             // Get the value's current status and update that status to indicate
             // the value has been obtained. This way if the setter called below
@@ -346,9 +347,16 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
                                         var changeEvent = new ChangeEvent;
                                         changeEvent.target = object;
                                         changeEvent.key = self._propertyName;
+
+                                        //This
                                         changeEvent.index = index;
                                         changeEvent.addedValues = plus;
                                         changeEvent.removedValues = minus;
+
+                                        //Or this?
+                                        //changeEvent.rangeChange = [plus, minus, index];
+
+                                        //Or both with a getter/setter for index, addedValues and removedValues on top of rangeChange?
 
                                         //To deal with changes happening to an array value of that property,
                                         //we'll need to add/cancel observing on the array itself
@@ -377,7 +385,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
 //addRangeChangeListener
 
             //If we're not in the middle of a mapping...:
-            if(currentValue !== initialValue && !this._service._objectsBeingMapped.has(object)) {
+            if(currentValue !== initialValue && dispatchChange && !this._service._objectsBeingMapped.has(object)) {
                 //Dispatch update event
                 var changeEvent = new ChangeEvent;
                 changeEvent.target = object;
@@ -434,10 +442,21 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
      */
     getObjectProperty: {
         value: function (object) {
-            var status = this._getValueStatus(object);
-            return  status ?             status.promise :
-                    status === null ?   this._service.nullPromise :
-                                        this.updateObjectProperty(object);
+            //If the object is not created and not saved, we fetch the value
+            if(!this._service.createdDataObjects.has(object)) {
+                var status = this._getValueStatus(object);
+                return  status ?             status.promise :
+                        status === null ?   this._service.nullPromise :
+                                            this.updateObjectProperty(object);
+            } else {
+                /*
+                    else the object is just created, not saved, no point fetching
+                    we wouldn't find anything anyway
+                */
+
+              this._setValueStatus(object, null);
+                return this._service.nullPromise;
+            }
         }
     },
 
@@ -501,7 +520,8 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
 
 });
 
-Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
+var DataTriggerClassMethods;
+Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ (DataTriggerClassMethods = {
 
     /**
      * @method
@@ -720,4 +740,7 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
         }
     }
 
-});
+}));
+
+//Temporary share on exports for subclasses to use.
+exports._DataTriggerClassMethods = DataTriggerClassMethods;

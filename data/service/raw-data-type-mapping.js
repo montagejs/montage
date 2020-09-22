@@ -6,7 +6,7 @@ var Montage = require("montage").Montage,
 /**
  * Instructions for a [RawDataService]{@link RawDataService} to use
  * to determine if a rawData object corresponds to a particular class.
- * 
+ *
  * @class RawDataTypeMapping
  * @extends Montage
  */
@@ -23,11 +23,11 @@ exports.RawDataTypeMapping = Montage.specialize({
             } else {
                 value = deserializer.getProperty("expression");
                 this.expression = value;
-            }            
-            
+            }
+
         }
     },
-    
+
 
     serializeSelf: {
         value: function (serializer) {
@@ -36,8 +36,8 @@ exports.RawDataTypeMapping = Montage.specialize({
     },
 
     /**
-     * Criteria to evaluate against the rawData object to determine 
-     * if it represents an instance of the class defined by the 
+     * Criteria to evaluate against the rawData object to determine
+     * if it represents an instance of the class defined by the
      * object descriptor assigned to RawDataTypeMapping.type.
      * @type {Criteria}
      */
@@ -47,8 +47,8 @@ exports.RawDataTypeMapping = Montage.specialize({
 
 
     /**
-     * Expression to evaluate against the rawData object to determine 
-     * if it represents an instance of the class defined by the 
+     * Expression to evaluate against the rawData object to determine
+     * if it represents an instance of the class defined by the
      * object descriptor assigned to RawDataTypeMapping.type.
      * @type {string}
      */
@@ -66,6 +66,13 @@ exports.RawDataTypeMapping = Montage.specialize({
     },
 
 
+    expressionSyntax: {
+        get: function() {
+            return this.criteria.syntax;
+        }
+    },
+
+
     /**
      * Class to create an instance of when RawDataTypeMapping.criteria.evaluate
      * evaluates a rawData object to true
@@ -79,12 +86,12 @@ exports.RawDataTypeMapping = Montage.specialize({
     /**
      * Return whether a rawDataObject matches this.criteria
      * @method
-     * @param {Object} rawData 
+     * @param {Object} rawData
      */
     match: {
         value: function (rawData) {
             return !!this.criteria.evaluate(rawData);
-        }  
+        }
     },
 
 }, {
@@ -107,4 +114,4 @@ exports.RawDataTypeMapping = Montage.specialize({
         }
     }
 
-}); 
+});

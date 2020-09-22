@@ -14,6 +14,8 @@ var DataService = require("data/service/data-service").DataService,
     compile = require("core/frb/compile-evaluator"),
     Promise = require("../../core/promise").Promise;
 
+    require("core/collections/shim-object");
+
 /**
  * Provides data objects of certain types and manages changes to them based on
  * "raw" data obtained from or sent to one or more other services, typically
@@ -448,15 +450,13 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     isUpdateToExistingObject = true;
                 }
 
-                //Recording snapshot even if we already had an object
-                //Record snapshot before we may create an object
-                this.recordSnapshot(dataIdentifier, rawData);
-
 
                 result = this._mapRawDataToObject(rawData, object, context, readExpressions);
 
             if (this._isAsync(result)) {
                 result = result.then(function () {
+                    // console.log(object.dataIdentifier.objectDescriptor.name +" addOneRawData id:"+rawData.id+"  MAPPING PROMISE RESOLVED -> stream.addData(object)");
+
                     stream.addData(object);
                     return object;
                 });
@@ -464,6 +464,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 stream.addData(object);
                 result = Promise.resolve(object);
             }
+
             this._addMapDataPromiseForStream(result, stream);
 
 
@@ -806,7 +807,11 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             var self = this,
                 dataToPersist = this._streamRawData.get(stream),
                 mappingPromises = this._streamMapDataPromises.get(stream),
-                dataReadyPromise = mappingPromises ? Promise.all(mappingPromises) : this.nullPromise;
+                dataReadyPromise = mappingPromises
+                                        ? mappingPromises.length === 1
+                                           ? mappingPromises[0]
+                                           : Promise.all(mappingPromises)
+                                        : this.nullPromise;
 
             if (mappingPromises) {
                 this._streamMapDataPromises.delete(stream);
@@ -816,10 +821,13 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 this._streamRawData.delete(stream);
             }
 
-            dataReadyPromise.then(function (results) {
+            //console.log("rawDataDone for "+stream.query.type.name);
 
+            dataReadyPromise.then(function (results) {
+                // console.log("dataReadyPromise for "+stream.query.type.name);
                 return dataToPersist ? self.writeOfflineData(dataToPersist, stream.query, context) : null;
             }).then(function () {
+                // console.log("stream.dataDone() for "+stream.query.type.name);
                 stream.dataDone();
                 return null;
             }).catch(function (e) {
@@ -1104,22 +1112,43 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 snapshot,
                 result;
 
+            // console.log(object.dataIdentifier.objectDescriptor.name +" _mapRawDataToObject id:"+record.id);
             if (mapping) {
 
-                //Check if this isn't already being done, if it is, it's redundant and we bail
+                /*
+                    When we fetch objects that have inverse relationships on each others none could complete their mapRawDataProcess because the first one's promise for mapping the relationship to the second never commpletes because the second one itself has it's raw data's foreignKey value to the first one converted/fetched, unique object is found, but that second mapping attenpt to map it gets stuck on the reverse to the second, etc...
+
+                    So to break the cycle, if there's a known snapshot and the object is being mapped, then we don't return a promise, knowing there's already one pending for the first pass.
+                */
                 snapshot = this.snapshotForObject(object);
-                if(snapshot === record && this._objectsBeingMapped.has(object)) {
-                    return result;
+                if(Object.equals(snapshot,record) ) {
+                    return undefined;
+
+                    if(this._objectsBeingMapped.has(object)) {
+                        console.log(object.dataIdentifier.objectDescriptor.name +" _mapRawDataToObject id:"+record.id+" FOUND EXISTING MAPPING PROMISE");
+                        return undefined;
+                        return Promise.resolve(object);
+                        return this._getMapRawDataToObjectPromise(snapshot,object);
+                    } else {
+                        //rawData is un-changed, no point doing anything...
+                        return undefined;
+                    }
                 }
 
+                //Recording snapshot even if we already had an object
+                //Record snapshot before we may create an object
+                this.recordSnapshot(object.dataIdentifier, record);
 
                 this._objectsBeingMapped.add(object);
 
                 result = mapping.mapRawDataToObject(record, object, context, readExpressions);
+                // console.log(object.dataIdentifier.objectDescriptor.name +" _mapRawDataToObject id:"+record.id+" FIRST NEW MAPPING PROMISE");
+
                 if (result) {
                     result = result.then(function () {
                         result = self.mapRawDataToObject(record, object, context, readExpressions);
                         if (!self._isAsync(result)) {
+                            // self._deleteMapRawDataToObjectPromise(record, object);
                             self._objectsBeingMapped.delete(object);
 
                             return result;
@@ -1127,11 +1156,13 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                         else {
                             result = result.then(function(resolved) {
 
+                                // self._deleteMapRawDataToObjectPromise(record, object);
                                 self._objectsBeingMapped.delete(object);
 
                                 return resolved;
                             }, function(failed) {
 
+                                // self._deleteMapRawDataToObjectPromise(record, object);
                                 self._objectsBeingMapped.delete(object);
 
                             });
@@ -1139,6 +1170,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                         }
 
                     }, function(error) {
+                        // self._deleteMapRawDataToObjectPromise(record, object);
                         self._objectsBeingMapped.delete(object);
                         throw error;
                     });
@@ -1152,14 +1184,16 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     else {
                         result = result.then(function(resolved) {
 
+                            // self._deleteMapRawDataToObjectPromise(record, object);
                             self._objectsBeingMapped.delete(object);
 
                             return resolved;
                         }, function(failed) {
+                            // self._deleteMapRawDataToObjectPromise(record, object);
                             self._objectsBeingMapped.delete(object);
 
                         });
-                        return result;
+                        //return result;
                     }
                 }
             } else {
@@ -1171,22 +1205,26 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                 if (!this._isAsync(result)) {
 
+                    // self._deleteMapRawDataToObjectPromise(record, object);
                     self._objectsBeingMapped.delete(object);
 
                     return result;
                 }
                 else {
                     result = result.then(function(resolved) {
-
+                        // self._deleteMapRawDataToObjectPromise(record, object);
                         self._objectsBeingMapped.delete(object);
 
                         return resolved;
                     }, function(failed) {
+                        // self._deleteMapRawDataToObjectPromise(record, object);
                         self._objectsBeingMapped.delete(object);
                     });
-                    return result;
+                    //return result;
                 }
             }
+
+            //this._setMapRawDataToObjectPromise(record, object, result);
 
             return result;
 

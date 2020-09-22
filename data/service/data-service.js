@@ -615,7 +615,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             var prototype = Object.create(constructor.prototype),
             mapping = childService.mappingForType(objectDescriptor),
             requisitePropertyNames = mapping && mapping.requisitePropertyNames || new Set(),
-            dataTriggers = DataTrigger.addTriggers(this, objectDescriptor, prototype, requisitePropertyNames),
+            dataTriggers = this.DataTrigger.addTriggers(this, objectDescriptor, prototype, requisitePropertyNames),
             mainService = this.rootService;
 
             Object.defineProperty(prototype,"dataIdentifier", {
@@ -1256,7 +1256,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
                 this._dataObjectPrototypes.set(type, prototype);
                 if (type instanceof ObjectDescriptor || type instanceof DataObjectDescriptor) {
-                    triggers = DataTrigger.addTriggers(this, type, prototype);
+                    triggers = this.DataTrigger.addTriggers(this, type, prototype);
                 } else {
                     info = Montage.getInfoForObject(type.prototype);
                     console.warn("Data Triggers cannot be created for this type. (" + (info && info.objectName) + ") is not an ObjectDescriptor");
@@ -1641,6 +1641,50 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         value: new CountedSet()
     },
 
+    _rawDataToObjectMappingPromiseByObject: {
+        value: new Map()
+    },
+
+    _setMapRawDataToObjectPromise: {
+        value: function (rawData, object, promise) {
+            var objectMap = this._rawDataToObjectMappingPromiseByObject.get(object),
+                rawDataPromise;
+            if(!objectMap) {
+                objectMap = new Map();
+                this._rawDataToObjectMappingPromiseByObject.set(object,objectMap);
+            }
+
+            if(!objectMap.has(rawData)) {
+                objectMap.set(rawData,promise);
+            } else {
+                if(objectMap.get(rawData) !== promise) {
+                    console.error("Overriding existing mapping promise for object:",object," rawData:",rawData," existing Promise:",objectMap.get(rawData)," new Promise:", promise) ;
+                } else {
+                    console.error("Overriding existing mapping promise with same promise for object:",object," rawData:",rawData," existing Promise:",objectMap.get(rawData));
+                }
+            }
+        }
+    },
+
+    _getMapRawDataToObjectPromise: {
+        value: function (rawData, object) {
+            var objectMap = this._rawDataToObjectMappingPromiseByObject.get(object);
+            return objectMap && objectMap.get(rawData);
+        }
+    },
+
+    _deleteMapRawDataToObjectPromise: {
+        value: function (rawData, object) {
+            var objectMap = this._rawDataToObjectMappingPromiseByObject.get(object);
+            // console.log(object.dataIdentifier.objectDescriptor.name+" _deleteMapRawDataToObjectPromise: id: "+object.dataIdentifier.primaryKey);
+            // if(!objectMap.has(rawData)) {
+            //     console.log(object.dataIdentifier.objectDescriptor.name+" _deleteMapRawDataToObjectPromise: id: "+object.dataIdentifier.primaryKey+" !!! COULDN'T FIND rawData entry");
+            // }
+            return objectMap && objectMap.delete(rawData);
+        }
+    },
+
+
     _fetchObjectPropertyWithPropertyDescriptor: {
         value: function (object, propertyName, propertyDescriptor) {
             var self = this,
@@ -1752,6 +1796,22 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             return !promises ?     this.nullPromise :
                    !promises.set ? promises.array[0] :
                                    Promise.all(promises.array).then(this.nullFunction);
+        }
+    },
+
+    /**
+     * @private
+     * @method
+     */
+    _setObjectPropertyValue: {
+        value: function (object, propertyName, propertyValue, updateInverse) {
+            var triggers = this._getTriggersForObject(object),
+                trigger = triggers ? triggers[propertyName] : null;
+
+            if(trigger) {
+                trigger._setValue(object,propertyValue, false)
+            }
+
         }
     },
 
@@ -2172,15 +2232,325 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /**
+     * handles the propagation of a value set to a property's inverse property, fka "addToBothSidesOfRelationship..."
+     * This doesn't handle range changes, which is done in another method.
+     *
+     * @private
+     * @method
+     * @argument {Object} dataObject
+     * @returns {Promise}
+
+     */
+    _setDataObjectPropertyDescriptorValueForInversePropertyName: {
+        value: function (dataObject, propertyDescriptor, value, inversePropertyName) {
+            //Now set the inverse if any
+            if(inversePropertyName) {
+                var inversePropertyDescriptor = propertyDescriptor._inversePropertyDescriptor /* Sync */;
+                if(!inversePropertyDescriptor) {
+                    var self = this;
+                    return propertyDescriptor.inversePropertyDescriptor.then(function(inversePropertyDescriptorResolved) {
+                        self._setDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, value, inversePropertyDescriptorResolved);
+                    })
+                } else {
+                    this._setDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, value, inversePropertyDescriptor);
+                    return Promise.resolveTrue;
+                }
+            }
+       }
+    },
+
+    _setDataObjectPropertyDescriptorValueForInversePropertyDescriptor: {
+        value: function (dataObject, propertyDescriptor, value, inversePropertyDescriptor, previousValue) {
+            if(!inversePropertyDescriptor) {
+                return;
+            }
+
+            var inversePropertyName = inversePropertyDescriptor.name,
+                inversePropertyCardinality = inversePropertyDescriptor.cardinality,
+                inverseValue;
+
+            if(propertyDescriptor.cardinality === 1) {
+                //value should not be an array
+                if(Array.isArray(value)) {
+                    console.warn("Something's off...., the value of propertyDescriptor:",propertyDescriptor, " of data object:",dataObject," should not be an array");
+                }
+
+                if(value) {
+                    if(inversePropertyCardinality > 1) {
+                        /*
+                            value needs to be added to the other's side:
+                        */
+                        inverseValue = value[inversePropertyName];
+                        if(inverseValue) {
+                            /*
+                                We might be looping back, but in any case, we shouldn't add the same object again, so we need to check if it is there. I really don't like doinf indexOf() here, but it's not a set...
+                            */
+                           if(inverseValue.indexOf(dataObject) === -1) {
+                            inverseValue.push(dataObject)
+                           }
+                        } else {
+                            //No existing array so we create one on the fly
+                            value[inversePropertyName] = [dataObject];
+                        }
+                    } else {
+                        /*
+                            A 1-1 then. Let's not set if it's the same...
+                        */
+                        if(value[inversePropertyName] !== dataObject) {
+                            value[inversePropertyName] = dataObject;
+                        }
+                    }
+                }
+
+                if(previousValue) {
+                    if(inversePropertyCardinality > 1) {
+                        /*
+                            previousValue needs to be removed from the other's side:
+                        */
+                        inverseValue = previousValue[inversePropertyName];
+                        if(inverseValue) {
+                            /*
+                                Assuming it only exists once in the array as it should...
+                            */
+                            inverseValue.delete(dataObject)
+                        }
+                        // else {
+                        //     //No existing array so nothing to do....
+                        // }
+                    } else {
+                        //A 1-1 then
+                        previousValue[inversePropertyName] = null;
+                    }
+
+                }
+
+            } else if(propertyDescriptor.cardinality > 1) {
+                //value should  be an array
+                if(!Array.isArray(value)) {
+                    console.warn("Something's off...., the value of propertyDescriptor:",propertyDescriptor, " of data object:",dataObject," should be an array");
+                }
+
+                this._addDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, value, inversePropertyDescriptor);
+
+                if(previousValue) {
+                    this._removeDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, previousValue, inversePropertyDescriptor);
+                }
+                // for(var i=0, countI = value.length, iValue; (i<countI); i++) {
+                //     iValue = value[i];
+
+                //     if(inversePropertyCardinality > 1) {
+                //         //many to many:
+                //         //value needs to be added to the other's side:
+                //         inverseValue = value[inversePropertyName];
+                //         if(inverseValue) {
+                //             inverseValue.push(dataObject)
+                //         } else {
+                //             //No existing array so we create one on the fly
+                //             value[inversePropertyName] = [dataObject];
+                //         }
+
+                //     } else {
+                //         //A many-to-one
+                //         iValue[inversePropertyName] = dataObject;
+                //     }
+
+                // }
+
+            }
+        }
+    },
+
+
+    /**
+     * handles the propagation of a values added to a property's array value to it's inverse property, fka "addToBothSidesOfRelationship..."
+     *
+     * @private
+     * @method
+     * @argument {Object} dataObject
+     * @returns {Promise}
+
+     */
+    _addDataObjectPropertyDescriptorValuesForInversePropertyName: {
+        value: function (dataObject, propertyDescriptor, value, inversePropertyName) {
+            //Now set the inverse if any
+            if(inversePropertyName) {
+                var inversePropertyDescriptor = propertyDescriptor._inversePropertyDescriptor /* Sync */;
+                if(!inversePropertyDescriptor) {
+                    var self = this;
+                    return propertyDescriptor.inversePropertyDescriptor.then(function(inversePropertyDescriptorResolved) {
+                        self._addDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, value, inversePropertyDescriptorResolved);
+                    })
+                } else {
+                    this._addDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, value, inversePropertyDescriptor);
+                    return Promise.resolveTrue;
+                }
+            }
+       }
+    },
+
+    _addDataObjectPropertyDescriptorValuesForInversePropertyDescriptor: {
+        value: function (dataObject, propertyDescriptor, values, inversePropertyDescriptor) {
+            if(inversePropertyDescriptor) {
+                //value should  be an array
+                if(!Array.isArray(values) || !(propertyDescriptor.cardinality > 0)) {
+                    console.warn("Something's off...., values added to propertyDescriptor:",propertyDescriptor, " of data object:",dataObject," should be an array");
+                }
+
+                var inversePropertyName = inversePropertyDescriptor.name,
+                    inversePropertyCardinality = inversePropertyDescriptor.cardinality,
+                    i, countI;
+
+                for(i=0, countI = values.length; (i<countI); i++) {
+                    this._addDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, values[i], inversePropertyDescriptor, inversePropertyCardinality, inversePropertyName);
+
+                }
+                }
+        }
+    },
+
+    _addDataObjectPropertyDescriptorValueForInversePropertyDescriptor: {
+        value: function (dataObject, propertyDescriptor, value, inversePropertyDescriptor, _inversePropertyCardinality, _inversePropertyName) {
+            if(inversePropertyDescriptor && value) {
+
+                if((_inversePropertyCardinality || inversePropertyDescriptor.cardinality) > 1) {
+                    //many to many:
+                    //value, if there is one, needs to be added to the other's side:
+                    inverseValue = value[_inversePropertyName || inversePropertyDescriptor.name];
+                    if(inverseValue) {
+                        /*
+                            We shouldn't add the same object again, so we need to check if it is there. I really don't like doinf indexOf() here, but it's not a set...
+                        */
+                        if(inverseValue.indexOf(dataObject) === -1) {
+                            inverseValue.push(dataObject);
+                        }
+                    } else {
+                        //No existing array so we create one on the fly
+                        value[_inversePropertyName || inversePropertyDescriptor.name] = [dataObject];
+                    }
+
+                } else {
+                    //A many-to-one
+                    if(value[_inversePropertyName || inversePropertyDescriptor.name] !== dataObject) {
+                        value[_inversePropertyName || inversePropertyDescriptor.name] = dataObject;
+                    }
+                }
+            }
+        }
+    },
+
+
+    /**
+     * handles the propagation of a values added to a property's array value to it's inverse property, fka "addToBothSidesOfRelationship..."
+     *
+     * @private
+     * @method
+     * @argument {Object} dataObject
+     * @returns {Promise}
+
+     */
+    _removeDataObjectPropertyDescriptorValuesForInversePropertyName: {
+        value: function (dataObject, propertyDescriptor, value, inversePropertyName) {
+            //Now set the inverse if any
+            if(inversePropertyName) {
+                var inversePropertyDescriptor = propertyDescriptor._inversePropertyDescriptor /* Sync */;
+                if(!inversePropertyDescriptor) {
+                    var self = this;
+                    return propertyDescriptor.inversePropertyDescriptor.then(function(inversePropertyDescriptorResolved) {
+                        self._removeDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, value, inversePropertyDescriptorResolved);
+                    })
+                } else {
+                    this._removeDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, value, inversePropertyDescriptor);
+                    return Promise.resolveTrue;
+                }
+            }
+       }
+    },
+
+
+    _removeDataObjectPropertyDescriptorValuesForInversePropertyDescriptor: {
+        value: function (dataObject, propertyDescriptor, values, inversePropertyDescriptor) {
+            if(inversePropertyDescriptor) {
+
+                //value should  be an array
+                if(!Array.isArray(values) || !(propertyDescriptor.cardinality > 0)) {
+                    console.warn("Something's off...., values added to propertyDescriptor:",propertyDescriptor, " of data object:",dataObject," should be an array");
+                }
+
+                var inversePropertyName = inversePropertyDescriptor.name,
+                    inversePropertyCardinality = inversePropertyDescriptor.cardinality,
+                    i, countI;
+
+                for(i=0, countI = values.length; (i<countI); i++) {
+                    this._removeDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, values[i], inversePropertyDescriptor, inversePropertyCardinality, inversePropertyName);
+                }
+            }
+        }
+    },
+
+    _removeDataObjectPropertyDescriptorValueForInversePropertyDescriptor: {
+        value: function (dataObject, propertyDescriptor, value, inversePropertyDescriptor, _inversePropertyCardinality, _inversePropertyName) {
+            if(inversePropertyDescriptor && value) {
+
+                if((_inversePropertyCardinality || inversePropertyDescriptor.cardinality) > 1) {
+                    /*
+                        many to many:
+                        value needs to be renoved to the other's side, unless it doesn't exists (which would be the case if it wasn't fetched).
+                    */
+                    inverseValue = value[_inversePropertyName || inversePropertyDescriptor.name];
+                    if(inverseValue) {
+                        inverseValue.delete(dataObject);
+                    }
+
+                } else {
+                    //A many-to-one, sever the ties
+                    value[_inversePropertyName || inversePropertyDescriptor.name] = null;
+                }
+            }
+        }
+    },
+
     registerDataObjectChangesFromEvent: {
         value: function (changeEvent) {
+            var dataObject =  changeEvent.target,
+                key = changeEvent.key,
+                objectDescriptor = this.objectDescriptorForObject(dataObject),
+                propertyDescriptor = objectDescriptor.propertyDescriptorForName(key),
+                inversePropertyName = propertyDescriptor.inversePropertyName,
+                inversePropertyDescriptor;
+
+            if(inversePropertyName) {
+                inversePropertyDescriptor = propertyDescriptor._inversePropertyDescriptor /* Sync */;
+                if(!inversePropertyDescriptor) {
+                    var self = this;
+                    return propertyDescriptor.inversePropertyDescriptor.then(function(_inversePropertyDescriptor) {
+                        if(!_inversePropertyDescriptor) {
+                            console.error("objectDescriptor "+objectDescriptor.name+"'s propertyDescriptor "+propertyDescriptor.name+ " declares an inverse property named "+inversePropertyName+" on objectDescriptor "+propertyDescriptor._valueDescriptorReference.name+", no matching propertyDescriptor could be found on "+propertyDescriptor._valueDescriptorReference.name);
+                        } else {
+                            self._registerDataObjectChangesFromEvent(changeEvent, propertyDescriptor, _inversePropertyDescriptor);
+                        }
+                    });
+                } else {
+                    this._registerDataObjectChangesFromEvent(changeEvent, propertyDescriptor, inversePropertyDescriptor);
+                }
+            } else {
+                this._registerDataObjectChangesFromEvent(changeEvent, propertyDescriptor, inversePropertyDescriptor);
+            }
+
+        }
+    },
+
+    _registerDataObjectChangesFromEvent: {
+        value: function (changeEvent, propertyDescriptor, inversePropertyDescriptor) {
 
             var dataObject =  changeEvent.target,
                 key = changeEvent.key,
                 keyValue = changeEvent.keyValue,
                 addedValues = changeEvent.addedValues,
-                removedValues = changeEvent.addedValues,
-                changesForDataObject = this.dataObjectChanges.get(dataObject);
+                removedValues = changeEvent.removedValues,
+                changesForDataObject = this.dataObjectChanges.get(dataObject),
+                inversePropertyDescriptor,
+                self = this;
 
             if(!this.createdDataObjects.has(dataObject)) {
                 this.changedDataObjects.add(dataObject);
@@ -2190,6 +2560,9 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 changesForDataObject = new Map();
                 this.dataObjectChanges.set(dataObject,changesForDataObject);
             }
+
+
+
 
             /*
                 While a single change Event should be able to model both a range change
@@ -2207,8 +2580,14 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
 
             */
-            if(changeEvent.hasOwnProperty("key") && changeEvent.hasOwnProperty("keyValue")) {
-                changesForDataObject.set(key,keyValue);
+            if( changeEvent.hasOwnProperty("key") && changeEvent.hasOwnProperty("keyValue") && key !== "length" &&
+            /* new for blocking re-entrant */ changesForDataObject.get(key) !== keyValue) {
+            changesForDataObject.set(key,keyValue);
+
+                //Now set the inverse if any
+                if(inversePropertyDescriptor) {
+                    self._setDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, keyValue, inversePropertyDescriptor, changeEvent.previousKeyValue);
+                }
             }
 
             //A change event could carry both a key/value change and addedValues/remove, like a splice, where the key would be "length"
@@ -2233,9 +2612,12 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                     var registeredAddedValues = manyChanges.addedValues;
                     if(!registeredAddedValues) {
                         manyChanges.addedValues = (registeredAddedValues = new Set(addedValues));
+                        self._addDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, addedValues, inversePropertyDescriptor);
+
                     } else {
                         for(i=0, countI=addedValues.length;i<countI;i++) {
                             registeredAddedValues.add(addedValues[i]);
+                            self._addDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, addedValues[i], inversePropertyDescriptor);
                         }
                     }
                 }
@@ -2243,9 +2625,11 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                     var registeredRemovedValues = manyChanges.removedValues;
                     if(!registeredRemovedValues) {
                         manyChanges.removedValues = (registeredRemovedValues = new Set(removedValues));
+                        self._removeDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, removedValues, inversePropertyDescriptor);
                     } else {
                         for(i=0, countI=removedValues.length;i<countI;i++) {
                             registeredRemovedValues.delete(removedValues[i]);
+                            self._removeDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, removedValues[i], inversePropertyDescriptor);
                         }
                     }
 
@@ -2265,6 +2649,9 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                     //,,,,,TODO
                 }
             }
+
+
+
         }
     },
 
@@ -3441,7 +3828,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      * Subclasses have the opporyunity to oveorrides to get useLocale
      * from more specific data objects (DO)
      *
-     * @type {Locale}
+     * @property Array {Locale}
      */
 
     _userLocales: {
@@ -3497,10 +3884,52 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         value: function (plus, minus){
             this.userLocalesCriteria = this._createUserLocalesCriteria();
         }
-    }
+    },
 
+    /**
+     * Returns the locales for a specific object's locale. Default implementation
+     * returns userLocales. Subclasses can override to offer a per-object
+     * localization to be different than the session's one.
+     * Subclasses have the opporyunity to oveorrides to get useLocale
+     * from more specific data objects (DO)
+     *
+     * @returns Array{Locale}
+     */
+
+    localesForObject: {
+        value: function(object) {
+            return this.userLocales;
+        }
+    },
+
+    /**
+     * Returns a criteria the locales for a specific object. Default implementation
+     * returns userLocales. Subclasses can override to offer a per-object
+     * localization to be different than the session's one.
+     * Subclasses have the opporyunity to oveorrides to get useLocale
+     * from more specific data objects (DO)
+     *
+     * @returns Array{Locale}
+     */
+
+    localesCriteriaForObject: {
+        value: function(object) {
+            return this.userLocalesCriteria;
+        }
+    },
+
+    /**
+     * The DataTrigger class used by the montage data stack
+     *
+     * @property {DataTrigger}
+     */
+
+    DataTrigger: {
+        value: DataTrigger
+    },
 
 }, /** @lends DataService */ {
+
 
     /***************************************************************************
      * Service Hierarchy

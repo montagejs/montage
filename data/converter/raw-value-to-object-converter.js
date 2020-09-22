@@ -361,6 +361,14 @@ exports.RawValueToObjectConverter = ExpressionConverter.specialize( /** @lends R
         value: function (v) {
             return Promise.resolve(v);
         }
+    },
+
+    /**
+     * The current Mapping rule calling convert or revert
+     */
+    currentRule: {
+        value: undefined
     }
+
 
 });
