@@ -83,6 +83,28 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
         }
     },
 
+    equals: {
+        value: function (otherQuery) {
+            /*
+                take care of the ones where we can use === first
+
+                not including selectBindings for now, nor selectExpression as we need to see if we'll keep it
+
+            */
+            if(
+                (this.type === otherQuery.type) &&
+                (this.fetchLimit === otherQuery.fetchLimit) &&
+                (this.readExpressions && this.readExpressions.equals(otherQuery.readExpressions)) &&
+                (this.orderings && this.orderings.equals(otherQuery.orderings)) &&
+                (this.criteria && this.criteria.equals(otherQuery.criteria))
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
+
     /**
      * The type of the data object to retrieve.
      *
