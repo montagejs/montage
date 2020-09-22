@@ -217,7 +217,7 @@ var Locale = exports.Locale = Montage.specialize({
             //and last for country
             var split = this.identifier.split("-");
             this._language = split[0];
-            this._region = split[split.length-1] || "*";
+            this._region = split.length > 1 ? split[split.length-1] : "*";
         }
     },
     /**
