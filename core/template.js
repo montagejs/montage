@@ -8,6 +8,7 @@ var Montage = require("./core").Montage,
     URL = require("./mini-url"),
     logger = require("./logger").logger("template"),
     defaultEventManager = require("./event/event-manager").defaultEventManager,
+    currentEnvironment = require("./environment").currentEnvironment,
     defaultApplication;
 
 /**
@@ -1451,21 +1452,173 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
         }
     },
 
+    /*
+        uses <link rel="preload" href="https://cdnjs.cloudflare.com/somescript.js" as="script" type="text/javascript" crossorigin>
+
+        Similar to what's done in document-resources, and using it, but doing it here with links so it works cross origin
+    */
+
+    preloadScript: {
+        value: function (script, targetDocument) {
+            var documentResources = DocumentResources.getInstanceForDocument(targetDocument);
+
+            if(documentResources.isResourcePreloaded(script.src)) {
+                return Promise.resolve(script.src)
+            } else if (documentResources.isResourcePreloading(script.src)) {
+                return documentResources.getResourcePreloadedPromise(script.src);
+            } else {
+
+                var promise = new Promise(function(resolve, reject){
+
+                    var preloadLink = document.createElement("link");
+                    preloadLink.href = script.src;
+                    preloadLink.rel = "preload";
+                    preloadLink.as = "script";
+                    preloadLink.type = "text/javascript";
+                    preloadLink.crossOrigin = true;
+                    targetDocument.head.appendChild(preloadLink);
+
+                    var loadingTimeout;
+                    // We wait until all scripts are loaded, this is important
+                    // because templateDidLoad might need to access objects that
+                    // are defined in these scripts, the downsize is that it takes
+                    // more time for the template to be considered loaded.
+                    var scriptLoadedFunction = function scriptLoaded(event) {
+                        documentResources.setResourcePreloaded(script.src);
+                        preloadLink.removeEventListener("load", scriptLoaded, false);
+                        preloadLink.removeEventListener("error", scriptLoaded, false);
+
+                        clearTimeout(loadingTimeout);
+                        resolve(event);
+                    };
+
+                    preloadLink.addEventListener("load", scriptLoadedFunction, false);
+                    preloadLink.addEventListener("error", scriptLoadedFunction, false);
+
+                    // Setup the timeout to wait for the script until the resource
+                    // is considered loaded. The template doesn't fail loading just
+                    // because a single script didn't load.
+                    //Benoit: It is odd that we act as if everything was fine here...
+                    loadingTimeout = setTimeout(function () {
+                        documentResources.setResourcePreloaded(script.src);
+                        resolve();
+                    }, documentResources._SCRIPT_TIMEOUT);
+
+
+                });
+
+                documentResources.setResourcePreloadedPromise(script.src, promise);
+
+                return promise;
+
+            }
+
+        }
+    },
+
+    _loadSyncScripts: {
+        value: function (script, targetDocument, syncScriptPromises) {
+            var self = this,
+                previousPromise = syncScriptPromises[syncScriptPromises.length-1] || Promise.resolve(true);
+
+                if(false) {
+                //if(currentEnvironment.supportsLinkPreload) {
+
+            //Preload,
+            //require.read used XHR which doesn't work without CORS cooperation from server
+            // syncScriptPromises.push(require.read(script.src)
+            //     .then( function() {
+            //         return previousPromise
+            //         .then( function() {
+            //             self.loadScript(script, targetDocument);
+            //         }, function(sriptsWithSrcLoadError) {
+            //             return Promise.reject(sriptsWithSrcLoadError);
+            //         });
+            //     }, function(sriptsWithSrcLoadError) {
+            //         return Promise.reject(sriptsWithSrcLoadError);
+            //     }));
+
+            syncScriptPromises.push(this.preloadScript(script, targetDocument)
+                .then( function() {
+                    return previousPromise
+                    .then( function() {
+                        self.loadScript(script, targetDocument);
+                    }, function(sriptsWithSrcLoadError) {
+                        return Promise.reject(sriptsWithSrcLoadError);
+                    });
+                }, function(sriptsWithSrcLoadError) {
+                    return Promise.reject(sriptsWithSrcLoadError);
+                }));
+
+
+            } else {
+                //We have no choice but load/execute serially to respect the spec.
+                syncScriptPromises.push(previousPromise
+                    .then( function() {
+                        return self.loadScript(script, targetDocument);
+                    }, function(sriptsWithSrcLoadError) {
+                        return Promise.reject(sriptsWithSrcLoadError);
+                    })
+                );
+
+            }
+
+
+        }
+    },
     loadScripts: {
         value: function (targetDocument) {
             var scripts = this.getScripts(),
-                ii = scripts.length;
+                iScript,
+                ii = scripts.length,
+                self = this;
 
             if (ii) {
-                var promises = [];
+                var promises,
+                    asyncPromises,
+                    syncScriptPromises,
+                    inlineScripts = [];
 
                 for (var i = 0; i < ii; i++) {
-                    promises.push(
-                        this.loadScript(scripts[i], targetDocument)
-                    );
+                    if((iScript = scripts[i]).src) {
+                        //If async, we load & insert at once
+                        if(iScript.async) {
+                            (asyncPromises || (asyncPromises = [])).push(
+                                this.loadScript(iScript, targetDocument)
+                            );
+                        } else {
+                            this._loadSyncScripts(iScript, targetDocument, (syncScriptPromises || (syncScriptPromises = [])));
+                        }
+                    } else {
+                        inlineScripts.push(iScript);
+                        self = self || this;
+                    }
                 }
 
-                return Promise.all(promises);
+                if(asyncPromises && syncScriptPromises) {
+                    promises = asyncPromises.concat(syncScriptPromises);
+                } else {
+                    promises = asyncPromises || syncScriptPromises;
+                }
+
+                return Promise.all(promises)
+                    .then(
+                        function(resolvedScriptsWithSrc) {
+                            var inlineScriptsPromises = [];
+
+                            for (i = 0, ii=inlineScripts.length; i < ii; i++) {
+                                inlineScriptsPromises.push(
+                                    self.loadScript(inlineScripts[i], targetDocument)
+                                );
+                            }
+
+                            return Promise.all(inlineScriptsPromises);
+
+                        },
+                        function(sriptsWithSrcLoadError) {
+                            return sriptsWithSrcLoadError;
+                        }
+                    );
             }
 
             return this.resolvedPromise;

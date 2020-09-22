@@ -67,6 +67,41 @@ var Environment = exports.Environment = Montage.specialize({
         }
     },
 
+    _supportsLinkRel: {
+        value: function _supportsLinkRel(feature){
+            var tokenList;
+            var fakeLink = document.createElement('link');
+            try {
+                if(fakeLink.relList && _.isFunction(fakeLink.relList.supports)){
+                    return  fakeLink.relList.supports(feature);
+                }
+            } catch(err){
+                return false;
+            }
+        }
+    },
+
+    _supportsLinkPrefetch: {
+        value: undefined
+    },
+    supportsLinkPrefetch: {
+        value: function() {
+            return typeof this._supportsLinkPrefetch === "boolean"
+                ? this._supportsLinkPrefetch
+                : (this._supportsLinkPrefetch = (this.isBrowser && this._supportsLinkRel('prefetch')));
+        }
+    },
+    _supportsLinkPreload: {
+        value: undefined
+    },
+    supportsLinkPreload: {
+        value: function() {
+            return typeof this._supportsLinkPreload === "boolean"
+                ? this._supportsLinkPreload
+                : (this._supportsLinkPreload = (this.isBrowser && this._supportsLinkRel('preload')));
+        }
+    },
+
     _supportsPointerEvents: {
         value: null
     },
