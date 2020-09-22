@@ -79,6 +79,22 @@ GenericSet.prototype.toggle = function (value) {
     }
 };
 
+GenericSet.prototype.join = function (separator) {
+    if (this.size) {
+        var setIterator = this.values(), aValue, aNextValue, joinValue = "";
+        while((aValue = setIterator.next().value) && (aNextValue = setIterator.next().value)) {
+            joinValue += aValue;
+            joinValue += separator;
+            joinValue += aNextValue;
+        }
+        joinValue += aValue;
+        return joinValue;
+    } else {
+        return "";
+    }
+};
+
+
 var _valuesArrayFunction = function(value,key) {return value;};
 GenericSet.prototype.valuesArray = function() {
     return this.map(_valuesArrayFunction);
