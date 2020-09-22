@@ -598,6 +598,29 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
         value: undefined
     },
 
+
+    inversePropertyDescriptor: {
+        get: function() {
+            var self = this;
+
+            return this.inversePropertyName
+                ?   this.valueDescriptor.then(function (objectDescriptor) {
+                        return self._inversePropertyDescriptor;
+                    })
+                :   Promise.resolveUndefined;
+
+        }
+    },
+
+    _inversePropertyDescriptor: {
+        get: function() {
+            return (this.inversePropertyName && this._valueDescriptorReference)
+                ? this._valueDescriptorReference.propertyDescriptorForName(this.inversePropertyName)
+                : undefined;
+        }
+    },
+
+
     /********************************************************
      * Deprecated functions
      */
