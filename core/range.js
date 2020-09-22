@@ -151,3 +151,21 @@ Object.defineProperty(Range.prototype,"length", {
         }
     }
 });
+
+/**
+ * Creates a new range representing the full 24 hours of the date passed as an argument
+ * from midnight/0h to 23:59:59:999 of the day of the date passed as argument.
+ *
+ * @function
+ * @param {Date} date The date to build the range on.
+ *
+ * @returns {Range}    a new Range instance.
+ */
+
+Range.fullDayTimeRangeFromDate = function(date) {
+    var dayStart  = new Date(date);
+    dayStart.setHours(0,0,0,0);
+    var dayEnd = new Date(dayStart);
+    dayEnd.setHours(23,59,59,999);
+    return  new Range(dayStart,dayEnd);
+};
