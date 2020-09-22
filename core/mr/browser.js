@@ -184,7 +184,7 @@ bootstrap("require/browser", function (require) {
 
         if (!xhr) {
             xhr = new RequireRead.XMLHttpRequest();
-            if (xhr.overrideMimeType) {
+            if (xhr.overrideMimeType && url.endsWith(".js")) {
                 xhr.overrideMimeType(APPLICATION_JAVASCRIPT_MIMETYPE);
             }
             xhr.onload = RequireRead.onload;
