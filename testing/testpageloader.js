@@ -327,7 +327,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.specialize( {
 
             return new Promise(function (resolve, reject) {
                 (function waitForDraw(done) {
-                  
+
                     var hasDraw = component.draw.drawHappened === numDraws;
                     if (hasDraw) {
                         resolve(theTestPage.drawHappened);
@@ -335,6 +335,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.specialize( {
                         // wait a little bit before resolving the promise
                         // Make sure the DOM changes have been applied.
                         setTimeout(function () {
+                            //Hello!!
                             resolve(theTestPage.drawHappened);
                         }, 50);
                     }

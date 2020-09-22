@@ -3,9 +3,11 @@
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter,
-    Range = require("../range"),
-    Range = require("../extras/date"),
+    Range = require("../range").Range,
     singleton;
+
+    //for Date.parseRFC3339
+    require("../extras/date");
 
 /**
  * @class RFC3339UTCRangeStringToRangeConverter
@@ -35,6 +37,7 @@ var RFC3339UTCRangeStringToRangeConverter = exports.RFC3339UTCRangeStringToRange
      */
     convert: {
         value: function (v) {
+            return Range.parse(v,Date);
             return Range.parse(v,Date.parseRFC3339);
         //return  Date.parseRFC3339(v);
         }
