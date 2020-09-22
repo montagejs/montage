@@ -25,4 +25,53 @@ if (Promise.prototype.hasOwnProperty('finally') === false) {
 	};
 }
 
+if(!Promise.resolveNull) {
+    /**
+     * A shared promise resolved with a value of null
+     *
+     * @type {external:Promise}
+     */
+    Object.defineProperty(Promise, "resolveNull", {
+        value: Promise.resolve(null),
+        enumerable: false
+    });
+}
+
+if(!Promise.resolveUndefined) {
+    /**
+     * A shared promise resolved with a value of undefined
+     *
+     * @type {external:Promise}
+     */
+    Object.defineProperty(Promise, "resolveUndefined", {
+        value: Promise.resolve(undefined),
+        enumerable: false
+    });
+}
+
+if(!Promise.resolveTrue) {
+    /**
+     * A shared promise resolved with a value of undefined
+     *
+     * @type {external:Promise}
+     */
+    Object.defineProperty(Promise, "resolveTrue", {
+        value: Promise.resolve(true),
+        enumerable: false
+    });
+}
+
+if(!Promise.resolveFalse) {
+    /**
+     * A shared promise resolved with a value of undefined
+     *
+     * @type {external:Promise}
+     */
+    Object.defineProperty(Promise, "resolveFalse", {
+        value: Promise.resolve(false),
+        enumerable: false
+    });
+}
+
+
 exports.Promise = Promise;
