@@ -557,7 +557,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                 var aModule = modules[lookupId] = new Module();
                 aModule.id = id;
                 aModule.display = (config.name || config.location); // EXTENSION
-                aModule.display += "#"; // EXTENSION
+                aModule.display += "/"; // EXTENSION
                 aModule.display += id; // EXTENSION
                 aModule.require = require;
             }
