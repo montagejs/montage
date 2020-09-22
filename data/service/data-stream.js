@@ -71,7 +71,7 @@ DataStream = exports.DataStream = DataProvider.specialize(/** @lends DataStream.
                     value: value.type,
                     enumerable: false,
                     configurable: true
-                })
+                });
                 // this.data.objectDescriptor = value.type;
             }
         }
