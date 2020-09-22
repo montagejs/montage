@@ -31,9 +31,21 @@ var Criteria = exports.Criteria = Montage.specialize({
     /**
      * @type {object}
      */
-    parameters: {
+    _parameters: {
         value: null
     },
+    parameters: {
+        get: function() {
+            return this._parameters;
+        },
+        set: function(value) {
+            debugger;
+            if(value !== this._parameters) {
+                this._parameters = value;
+            }
+        }
+    },
+
     /**
      * @private
      * @type {object}
@@ -172,6 +184,38 @@ var Criteria = exports.Criteria = Montage.specialize({
             }
         }
     },
+
+    equals: {
+        value: function (otherCriteria) {
+            if(this._expression && otherCriteria._expression) {
+                if(
+                    (this._expression === otherCriteria._expression) &&
+                    Object.equals(this.parameters, otherCriteria.parameters)
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else if(this._syntax && otherCriteria._syntax) {
+                if(
+                    Object.equals(this._syntax, otherCriteria._syntax) &&
+                    Object.equals(this.parameters, otherCriteria.parameters)
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else if(
+                    //This will force an eventual stringification of a syntax
+                    (this.expression === otherCriteria.expression) &&
+                    Object.equals(this.parameters, otherCriteria.parameters)
+                ) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
     __scope: {
         value: null
     },
@@ -241,6 +285,54 @@ var Criteria = exports.Criteria = Montage.specialize({
      * @returns {Criteria} - The Criteria initialized.
      */
 
+    __syntaxByAliasingSyntaxWithParameters: {
+        value: function (aliasedSyntax, parameterArg, parameterArgIndex, otherArg, otherArgIndex, aliasedParameters, parameterCounter, _thisParameters) {
+            var aliasedParameter;
+
+            if (otherArg.type !== "literal") {
+
+                //We replace $ syntax by the $key/$.key syntax:
+                aliasedSyntaxparameterArg = {};
+                aliasedSyntaxparameterArg.type = "property";
+                aliasedParameter = "parameter"+(++parameterCounter);
+                aliasedSyntaxparameterArg.args = [
+                    {
+                        "type":"parameters"
+                    },
+                    {
+                        "type":"literal",
+                        "value": aliasedParameter
+                    }
+                ];
+                aliasedSyntax.args[parameterArgIndex] = aliasedSyntaxparameterArg;
+                aliasedSyntax.args[otherArgIndex] = this._syntaxByAliasingSyntaxWithParameters(otherArg, aliasedParameters, parameterCounter, _thisParameters);
+
+                //and we register the criteria's parameter _thisParameters under the new key;
+                aliasedParameters[aliasedParameter] = _thisParameters;
+            } else {
+                //We need to make sure there's no conflict with aliasedParameters
+                parameter = otherArg.value;
+                parameterValue = _thisParameters[parameter];
+                if(aliasedParameters.hasOwnProperty(parameter) && aliasedParameters[parameter] !== parameterValue) {
+                    aliasedParameter = parameter+(++parameterCounter);
+                    aliasedParameters[aliasedParameter] = parameterValue;
+                } else {
+                    aliasedParameter = parameter;
+                }
+                aliasedSyntax.args[parameterArgIndex] = {
+                        "type":"parameters"
+                };
+
+                aliasedSyntax.args[otherArgIndex] = {
+                        "type":"literal",
+                        "value":aliasedParameter
+                };
+                aliasedParameters[aliasedParameter] = parameterValue;
+            }
+
+        }
+    },
+
     _syntaxByAliasingSyntaxWithParameters: {
         value: function (syntax, aliasedParameters, parameterCounter, _thisParameters) {
             var aliasedSyntax = {},
@@ -261,46 +353,52 @@ var Criteria = exports.Criteria = Montage.specialize({
                     aliasedSyntax.args = [];
 
                     if(syntaxArg0.type === "parameters") {
-                        if (syntaxArg1.type !== "literal") {
+                        this.__syntaxByAliasingSyntaxWithParameters(aliasedSyntax, syntaxArg0, 0, syntaxArg1, 1, aliasedParameters, parameterCounter, _thisParameters);
 
-                            //We replace $ syntax by the $key/$.key syntax:
-                            aliasedSyntaxArg0 = {};
-                            aliasedSyntaxArg0.type = "property";
-                            aliasedParameter = "parameter"+(++parameterCounter);
-                            aliasedSyntaxArg0.args = [
-                                {
-                                    "type":"parameters"
-                                },
-                                {
-                                    "type":"literal",
-                                    "value": aliasedParameter
-                                }
-                            ];
-                            aliasedSyntax.args[0] = aliasedSyntaxArg0;
-                            aliasedSyntax.args[1] = this._syntaxByAliasingSyntaxWithParameters(syntaxArg1, aliasedParameters, parameterCounter, _thisParameters);
+                        // if (syntaxArg1.type !== "literal") {
 
-                            //and we register the criteria's parameter _thisParameters under the new key;
-                            aliasedParameters[aliasedParameter] = _thisParameters;
-                        } else {
-                            //We need to make sure there's no conflict with aliasedParameters
-                            parameter = syntaxArg1.value;
-                            parameterValue = _thisParameters[parameter];
-                            if(aliasedParameters.hasOwnProperty(parameter) && aliasedParameters[parameter] !== parameterValue) {
-                                aliasedParameter = parameter+(++parameterCounter);
-                                aliasedParameters[aliasedParameter] = parameterValue;
-                            } else {
-                                aliasedParameter = parameter;
-                            }
-                            aliasedSyntax.args[0] = {
-                                    "type":"parameters"
-                            };
+                        //     //We replace $ syntax by the $key/$.key syntax:
+                        //     aliasedSyntaxArg0 = {};
+                        //     aliasedSyntaxArg0.type = "property";
+                        //     aliasedParameter = "parameter"+(++parameterCounter);
+                        //     aliasedSyntaxArg0.args = [
+                        //         {
+                        //             "type":"parameters"
+                        //         },
+                        //         {
+                        //             "type":"literal",
+                        //             "value": aliasedParameter
+                        //         }
+                        //     ];
+                        //     aliasedSyntax.args[0] = aliasedSyntaxArg0;
+                        //     aliasedSyntax.args[1] = this._syntaxByAliasingSyntaxWithParameters(syntaxArg1, aliasedParameters, parameterCounter, _thisParameters);
 
-                            aliasedSyntax.args[1] = {
-                                    "type":"literal",
-                                    "value":aliasedParameter
-                            };
-                            aliasedParameters[aliasedParameter] = parameterValue;
-                        }
+                        //     //and we register the criteria's parameter _thisParameters under the new key;
+                        //     aliasedParameters[aliasedParameter] = _thisParameters;
+                        // } else {
+                        //     //We need to make sure there's no conflict with aliasedParameters
+                        //     parameter = syntaxArg1.value;
+                        //     parameterValue = _thisParameters[parameter];
+                        //     if(aliasedParameters.hasOwnProperty(parameter) && aliasedParameters[parameter] !== parameterValue) {
+                        //         aliasedParameter = parameter+(++parameterCounter);
+                        //         aliasedParameters[aliasedParameter] = parameterValue;
+                        //     } else {
+                        //         aliasedParameter = parameter;
+                        //     }
+                        //     aliasedSyntax.args[0] = {
+                        //             "type":"parameters"
+                        //     };
+
+                        //     aliasedSyntax.args[1] = {
+                        //             "type":"literal",
+                        //             "value":aliasedParameter
+                        //     };
+                        //     aliasedParameters[aliasedParameter] = parameterValue;
+                        // }
+
+                    }
+                    else if(syntaxArg1.type === "parameters") {
+                        this.__syntaxByAliasingSyntaxWithParameters(aliasedSyntax, syntaxArg1, 1, syntaxArg0, 0, aliasedParameters, parameterCounter, _thisParameters);
 
                     } else {
                         aliasedSyntax.args[0] = this._syntaxByAliasingSyntaxWithParameters(syntaxArg0, aliasedParameters, parameterCounter, _thisParameters);
@@ -374,7 +472,7 @@ var Criteria = exports.Criteria = Montage.specialize({
 
     syntaxByAliasingSyntaxWithParameters: {
         value: function (aliasedParameters, parameterCounters) {
-            return this._syntaxByAliasingSyntaxWithParameters(this.syntax, aliasedParameters||0, 0, this.parameters);
+            return this._syntaxByAliasingSyntaxWithParameters(this.syntax, aliasedParameters, parameterCounters||0, this.parameters);
         }
     }
 
