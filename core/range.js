@@ -42,8 +42,8 @@ exports.Range = Range;
 //    *
 //    * Pair | Meaning
 //    * -----|--------
-//    * `()` | open
-//    * `[]` | closed
+//    * `()` | open - excludes bounds
+//    * `[]` | closed - iclude bounds
 //    * `[)` | left-closed, right-open
 //    * `(]` | left-open, right-closed
 //    *
@@ -115,6 +115,42 @@ Range.prototype.intersection = function (other) {
 
 Range.prototype.overlaps = Range.prototype.intersects;
 
+/**
+ * Check if a given value or range of values is contained within this range.
+ * Returns `true` or `false`. Overrides super to add support for Range as argument.
+ *
+ * @example
+ * new Range(0, 10).contains(5) // => true
+ * new Range(0, 10).contains(5) // => true
+ * new Range(0, 10).contains(10) // => true
+ * new Range(0, 10, "[)").contains(10) // => false
+ *
+ * @method contains
+ * @param {Object} value
+ */
+Range.prototype._contains = Range.prototype.contains;
+
+Range.prototype.contains = function(value) {
+    if(value instanceof Range) {
+        if (this.isEmpty()) return Range.empty;
+        if (value.isEmpty()) return Range.empty;
+
+        /*
+            Range.compareBeginToBegin(new Range(0, 10), new Range(5, 15)) // => -1
+            Range.compareBeginToBegin(new Range(0, 10), new Range(0, 15)) // => 0
+            Range.compareBeginToBegin(new Range(0, 10), new Range(0, 15, "()")) // => 1
+
+            Range.compareEndToEnd(new Range(0, 10), new Range(5, 15)) // => -1
+            Range.compareEndToEnd(new Range(0, 10), new Range(5, 10)) // => 0
+            Range.compareEndToEnd(new Range(0, 10), new Range(5, 10, "()")) // => 1
+        */
+       return ((Range.compareBeginToBegin(this,value) >= 0) && (Range.compareEndToEnd(this,value) >= 0))
+       ? true
+       : false;
+    } else {
+        return this._contains(value)
+    }
+}
 
 Range.getInfoForObject = function(object) {
     return Montage.getInfoForObject(object);
