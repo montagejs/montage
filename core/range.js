@@ -144,7 +144,7 @@ Range.prototype.contains = function(value) {
             Range.compareEndToEnd(new Range(0, 10), new Range(5, 10)) // => 0
             Range.compareEndToEnd(new Range(0, 10), new Range(5, 10, "()")) // => 1
         */
-       return ((Range.compareBeginToBegin(this,value) >= 0) && (Range.compareEndToEnd(this,value) >= 0))
+       return ((Range.compareBeginToBegin(this,value) <= 0) && (Range.compareEndToEnd(this,value) >= 0))
        ? true
        : false;
     } else {
