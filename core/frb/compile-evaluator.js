@@ -279,6 +279,8 @@ var argCompilers = {
 
 };
 
+argCompilers.evaluate = argCompilers.path;
+
 var operators = Object.clone(Operators, 1);
 
 Object.addEach(operators, {

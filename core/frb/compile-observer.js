@@ -19,6 +19,7 @@ var semantics = compile.semantics = {
     compilers: {
         property: Observers.makePropertyObserver,
         get: Observers.makeGetObserver,
+        evaluate: Observers.makePathObserver,
         path: Observers.makePathObserver,
         "with": Observers.makeWithObserver,
         "if": Observers.makeConditionalObserver,
