@@ -15,7 +15,11 @@ exports.UserIdentityService = UserIdentityService = RawDataService.specialize( /
     constructor: {
         value: function UserIdentityService() {
             RawDataService.call(this);
-            UserIdentityService.userIdentityServices.push(this);
+            /*
+                This is done in DataService's constructor as well,
+                needs to decide where is best, but not do it twice.
+            */
+            //UserIdentityService.userIdentityServices.push(this);
         }
     },
     providesUserIdentity: {
