@@ -34,7 +34,7 @@ if(!Array.nativeFrom ) {
 // }
 var isSymbolDefined = typeof Symbol !== "undefined";
 Array.from = function (values, mapFn, thisArg) {
-    if(isSymbolDefined && values && typeof values[Symbol.iterator] === "function") {
+    if(isSymbolDefined && values && (typeof values[Symbol.iterator] === "function" || typeof mapFn === "function")) {
         return Array.nativeFrom(values, mapFn, thisArg);
     }
     //Now we add support for values that implement forEach:
