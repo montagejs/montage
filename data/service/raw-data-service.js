@@ -12,6 +12,9 @@ var DataService = require("data/service/data-service").DataService,
     parse = require("core/frb/parse"),
     Scope = require("core/frb/scope"),
     compile = require("core/frb/compile-evaluator"),
+    DataOrdering = require("data/model/data-ordering").DataOrdering,
+    DESCENDING = DataOrdering.DESCENDING,
+    evaluate = require("core/frb/evaluate"),
     Promise = require("../../core/promise").Promise;
 
     require("core/collections/shim-object");
@@ -525,13 +528,14 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 //Retrieves an existing object is responsible data service is uniquing, or creates one
                 object, result;
 
-            //Record snapshot before we may create an object
-            this.recordSnapshot(dataIdentifier, rawData);
 
             //Retrieves an existing object is responsible data service is uniquing, or creates one
             object = this.getDataObject(type, rawData, context, dataIdentifier);
 
             result = this._mapRawDataToObject(rawData, object, context);
+
+            //Record snapshot when done mapping
+            this.recordSnapshot(dataIdentifier, rawData);
 
             if (Promise.is(result)) {
                 return result.then(function () {
@@ -735,6 +739,10 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     recordSnapshot: {
         value: function (dataIdentifier, rawData) {
+            if(!dataIdentifier) {
+                return;
+            }
+
             var snapshot = this._snapshot.get(dataIdentifier);
             if(!snapshot) {
                 this._snapshot.set(dataIdentifier, rawData);
@@ -787,6 +795,58 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     /**
+     * Returns true as default so data are sorted according to a query's
+     * orderings. Subclasses can override this if they cam delegate sorting
+     * to another system, like a database for example, or an API, entirely,
+     * or selectively, using the aDataStream passed as an argument, wbich can
+     * help conditionally decide what to do based on the query's objectDescriptor
+     * or the quwery's orderings themselves.
+     *
+     * @public
+     * @argument {DataStream} dataStream
+     */
+
+    shouldSortDataStream: {
+        value: function (dataStream) {
+            return true;
+        }
+    },
+
+    sortDataStream: {
+        value: function (dataStream) {
+            var query = dataStream.query,
+                orderings = query.orderings;
+
+            if (orderings) {
+                var expression = "",
+                    data = dataStream.data;
+
+                //Build combined expression
+                for (var i=0,iDataOrdering,iExpression;(iDataOrdering = orderings[i]);i++) {
+                    iExpression = iDataOrdering.expression;
+
+                    if (expression.length) {
+                        expression += ".";
+                    }
+
+                    expression += "sorted{";
+                    expression += iExpression;
+                    expression += "}";
+
+                    if (iDataOrdering.order === DESCENDING) {
+                        expression += ".reversed()";
+                    }
+                }
+                results = evaluate(expression, data);
+
+                //Now change the data array
+                Array.prototype.splice.apply(data, [0,data.length].concat(results));
+            }
+
+        }
+    },
+
+    /**
      * To be called once for each [fetchData()]{@link RawDataService#fetchData}
      * or [fetchRawData()]{@link RawDataService#fetchRawData} call received to
      * indicate that all the raw data meant for the specified stream has been
@@ -828,6 +888,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 return dataToPersist ? self.writeOfflineData(dataToPersist, stream.query, context) : null;
             }).then(function () {
                 // console.log("stream.dataDone() for "+stream.query.type.name);
+                if(stream.query.orderings && self.shouldSortDataStream(stream)) {
+                    self.sortDataStream(stream);
+                }
                 stream.dataDone();
                 return null;
             }).catch(function (e) {
@@ -1135,13 +1198,15 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     }
                 }
 
-                //Recording snapshot even if we already had an object
-                //Record snapshot before we may create an object
-                this.recordSnapshot(object.dataIdentifier, record);
 
                 this._objectsBeingMapped.add(object);
 
                 result = mapping.mapRawDataToObject(record, object, context, readExpressions);
+
+                //Recording snapshot even if we already had an object
+                //Record snapshot before we may create an object
+                this.recordSnapshot(object.dataIdentifier, record);
+
                 // console.log(object.dataIdentifier.objectDescriptor.name +" _mapRawDataToObject id:"+record.id+" FIRST NEW MAPPING PROMISE");
 
                 if (result) {

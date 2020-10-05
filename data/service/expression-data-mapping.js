@@ -696,12 +696,13 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 dataMatchingRules = this.mappingRulesForRawDataProperties(Object.keys(data)),
                 ruleIterator = dataMatchingRules.values(),
                 requisitePropertyNames = this.requisitePropertyNames,
+                hasSnapshot = !!this.service.snapshotForObject(object),
                 aRule;
 
             while ((aRule = ruleIterator.next().value)) {
-                if((aRule.converter && (aRule.converter instanceof RawForeignValueToObjectConverter)) &&
-                    !requisitePropertyNames.has(aRule.sourcePath) &&
-                    (readExpressions && readExpressions.indexOf(aRule.targetPath) === -1)) {
+                if((!hasSnapshot && !requisitePropertyNames.has(aRule.targetPath)) || ((aRule.converter && (aRule.converter instanceof RawForeignValueToObjectConverter)) &&
+                    !requisitePropertyNames.has(aRule.targetPath) &&
+                    (readExpressions && readExpressions.indexOf(aRule.targetPath) === -1))) {
                         continue;
                 }
 
@@ -1458,6 +1459,18 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                     Benoit: adding  && value to the condition as we don't want arrays with null in it
                 */
                 if(isToMany && value) {
+                    /*
+                        When we arrive here coming from _assignInversePropertyValue()
+                        doing object[propertyName] causes the trigger to go fetch the value of object's propertyName, which is async.
+
+                        So we should either continue to trigger that property , with
+
+                        mainService.getObjectProperties(object, [propertyName])
+
+                        and when that promise resolves we continue the assignment, which might be unnecessary as we'd have that data in the result as this is propagation of fecthed data, not new,
+
+                        or find a way to jut access the local state without triggering the fetch and just update it.
+                    */
                     if(!Array.isArray(object[propertyName])) {
                         value = [value];
                         object[propertyName] = value;

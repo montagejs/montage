@@ -100,6 +100,20 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
                 (_requirements || (_requirements = [])).push(subProperty.reverse().join("."));
             } else if (type === "record") {
                 _requirements = this._parseRequirementsFromRecord(syntax, _requirements);
+            } else if(type === "value" && !args && this.sourcePath === "this") {
+                /*
+                    added for pattern used for polymorphic relationship, where we have multiple foreignKeys for each possible destination, and we need to look at the converter and it's foreignDescriptorMappings for their expression syntax.
+                */
+
+                var converter = this.converter,
+                foreignDescriptorMappings = converter && converter.foreignDescriptorMappings;
+
+                if(foreignDescriptorMappings) {
+                    for(var i=0, countI = foreignDescriptorMappings.length, iRawDataTypeMapping;(i<countI);i++) {
+                        iRawDataTypeMapping = foreignDescriptorMappings[i];
+                        _requirements = this._parseRequirementsFromRecord(iRawDataTypeMapping.expressionSyntax, _requirements);
+                    }
+                }
             }
 
             return _requirements;
