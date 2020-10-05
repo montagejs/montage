@@ -289,7 +289,9 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                             Keep an eye on that.
                         */
                         var valueDescriptor = this.foreignDescriptorForValue(v),
-                            aCriteria = this.convertCriteriaForValue(v);
+                            rawDataProperty = self.rawDataPropertyForForeignDescriptor(valueDescriptor),
+                            foreignKeyValue = v[rawDataProperty],
+                            aCriteria = this.convertCriteriaForValue(foreignKeyValue);
 
                         return this._fetchConvertedDataForObjectDescriptorCriteria(valueDescriptor, aCriteria);
                     }
