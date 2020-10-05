@@ -423,8 +423,7 @@ Object.is = function (x, y) {
     @returns {Boolean} whether the values are deeply equivalent
     @function external:Object.equals
 */
-Object.equals = function (a, b, equals, memo) {
-    equals = equals || Object.equals;
+Object.equals = function ObjectEquals(a, b, equals, memo) {
     //console.log("Object.equals: a:",a, "b:",b, "equals:",equals);
     // unbox objects, but do not confuse object literals
     a = Object.getValueOf(a);
@@ -438,6 +437,8 @@ Object.equals = function (a, b, equals, memo) {
         }
         memo.set(a, true);
     }
+
+
     if (Object.isObject(a) && typeof a.equals === "function") {
         return a.equals(b, equals, memo);
     }
@@ -447,6 +448,9 @@ Object.equals = function (a, b, equals, memo) {
     }
     if (Object.isObject(a) && Object.isObject(b)) {
         if (Object.getPrototypeOf(a) === Object.prototype && Object.getPrototypeOf(b) === Object.prototype) {
+
+            equals = equals || ObjectEquals;
+
             for (var name in a) {
                 if (!equals(a[name], b[name], equals, memo)) {
                     return false;
