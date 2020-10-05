@@ -1,3 +1,6 @@
+var Range = require("../range").Range;
+
+
 /**
 *  Defines extensions to intrinsic `Date` object.
  *
@@ -20,8 +23,83 @@ Object.defineProperty(Date.prototype, "clone", {
         return new Date(this);
     },
     writable: true,
+    enumerable: false,
     configurable: true
 });
+
+Object.defineProperty(Date.prototype,"fullDayRange",{
+
+    get: function(date) {
+        var dayStart  = this.clone();
+        dayStart.setHours(0,0,0,0);
+        var dayEnd = dayStart.clone();
+        dayEnd.setHours(23,59,59,999);
+        return new Range(dayStart,dayEnd);
+    },
+    enumerable: false,
+    configurable: true
+});
+Object.defineProperty(Date.prototype,"adjustComponentValues", {
+    value: function(year, monthIndex, days, hours, minutes, seconds, milliseconds) {
+
+        // because of the duration optimizations it is much
+        // more efficient to grab all the values up front
+        // then set them directly (which will avoid a normalization call).
+        // So we don't actually normalize until we need it.
+        var millisecond,
+            second,
+            minute,
+            hour,
+            myDay,
+            month,
+            myYear;
+
+        if(Number.isFinite(milliseconds)) {
+            millisecond = this.millisecond;
+            millisecond += milliseconds;
+            this.millisecond = milliseconds;
+        }
+
+        if(Number.isFinite(seconds)) {
+            second = this.second;
+            second += seconds;
+            this.second = second;
+        }
+
+        if(Number.isFinite(minutes)) {
+            inute = this.minute;
+            minute += minutes;
+            this.minute = minute;
+        }
+
+        if(Number.isFinite(hours)) {
+            hour = this.hour;
+            hour += hours;
+            this.hour = hour;
+        }
+
+        if(Number.isFinite(days)) {
+            myDay = this.day;
+            myDay += days;
+            this.day = myDay;
+        }
+
+        if(Number.isFinite(monthIndex)) {
+            month = this.month;
+            month += monthIndex;
+            this.month = month;
+        }
+
+        if(Number.isFinite(year)) {
+            myYear = this.year;
+            myYear += year;
+            this.year = myYear;
+        }
+    },
+    enumerable: false,
+    configurable: true
+});
+
 
 /**
  *  Assess if an instance a date is valid
@@ -42,6 +120,7 @@ Object.defineProperty(Date, "isValidDate", {
         return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
     },
     writable: true,
+    enumerable: false,
     configurable: true
 });
 
@@ -59,6 +138,7 @@ Object.defineProperty(Date, "isValidDateString", {
         return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
     },
     writable: true,
+    enumerable: false,
     configurable: true
 });
 
