@@ -159,7 +159,7 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
                 this.__dataQuery = null;
 
                 //If we're active for trhe user, we re-fetch
-                if(this.inDocument) {
+                if(this.inDocument && this._dataQuery) {
                     this.fetchData();
                 }
         }
