@@ -173,9 +173,12 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
      */
     orderings: {
         get: function () {
-            if (!this._orderings) {
-                this._orderings = [];
-            }
+            /*
+                Benoit, could break backward compatibility but it doesn't look like we relied on this. No point creating an empty attay just for checking if orderings have been set on a data query.
+            */
+            // if (!this._orderings) {
+            //     this._orderings = [];
+            // }
             return this._orderings;
         },
         set: function (orderings) {
