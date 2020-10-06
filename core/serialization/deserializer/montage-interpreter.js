@@ -285,8 +285,7 @@ var MontageContext = Montage.specialize({
                         value = values[key];
 
                         //An expression based property
-                        if ((typeof value === "object" && value &&
-                            Object.keys(value).length === 1 &&
+                        if (value && (typeof value === "object" &&
                             (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) ||
                             key.indexOf('.') > -1
                         ) {
