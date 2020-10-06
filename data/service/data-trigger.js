@@ -242,8 +242,28 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
         writable: true,
         value: function (object) {
             var prototype, descriptor, getter, propertyName = this._propertyName;
-            // Start an asynchronous fetch of the property's value if necessary.
-            this.getObjectProperty(object);
+
+            /*
+                Experiment to see if it would make sense to avoid triggering getObjectProperty during mapping?
+            */
+            // if(!this._service.rootService._objectsBeingMapped.has(object)
+            // ) {
+                if(!this.propertyDescriptor.definition) {
+
+
+                /*
+                    if the trigger's property descriptor has a definition, there are 2 cases:
+                    1. this._service.childServiceForType(this.propertyDescriptor.owner) might know how to process the whole expression server side, in which case we don't do anything and it will be handled in teh back-end.
+
+                    2. We have to yake care of it client side, which means we have to get all expression requirements individually before it can be evaluated, so we'd have to do the equivalent of getObjectProperties() rather than just the usual this.getObjectProperty(object)
+                */
+
+
+                // Start an asynchronous fetch of the property's value if necessary.
+                this.getObjectProperty(object);
+            }
+
+            //}
 
             // Search the prototype chain for a getter for this property,
             // starting just after the prototype that called this method.
