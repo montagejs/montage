@@ -50,7 +50,6 @@
     "dependencies": {
         "bluebird": "~3.5.5",
         "htmlparser2": "~3.0.5",
-        "weak-map": "^1.0.5",
         "lodash.kebabcase": "^4.1.1",
         "lodash.camelcase": "^4.3.0",
         "lodash.trim": "^4.5.1",
