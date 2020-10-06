@@ -62,5 +62,5 @@ var InternationalDateToStringFormatter = exports.InternationalDateToStringFormat
         value: function (v) {
             return this._dayDateFormatter.format(v);
         }
-    },
+    }
 });
