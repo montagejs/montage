@@ -78,13 +78,23 @@ Object.defineProperties(ICAL_Timezone_Prototype, {
  * @returns {Calendar} a new Calendar instance.
  */
 Object.defineProperties(TimeZone, {
-
-    "systemTimeZone": {
+    "_systemTimeZone": {
+        value: undefined,
+        enumerable: false,
+        writable: true,
+        configurable: true
+    },
+    "_createSystemTimeZone": {
         get: function() {
             var systemLocaleIdentifier = currentEnvironment.systemLocaleIdentifier,
                 resolvedOptions = Intl.DateTimeFormat(systemLocaleIdentifier).resolvedOptions(),
                 timeZone = resolvedOptions.timeZone; /* "America/Los_Angeles" */
-            return ICAL_TimezoneService.get(timeZone);
+            return (this._systemTimeZone = ICAL_TimezoneService.get(timeZone));
+        }
+    },
+    "systemTimeZone": {
+        get: function() {
+            return this._systemTimeZone || this._createSystemTimeZone;
         }
     }
 
