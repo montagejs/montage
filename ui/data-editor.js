@@ -76,7 +76,12 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
             if(!this.__dataQuery) {
                 if(this.type) {
                     this.__dataQuery = DataQuery.withTypeAndCriteria(this.type,this.criteria);
-                    this.__dataQuery.orderings = this.orderings;
+                    if(this.orderings) {
+                        this.__dataQuery.orderings = this.orderings;
+                    }
+                    if(this.fetchLimit) {
+                        this.__dataQuery.fetchLimit = this.fetchLimit;
+                    }
                 }
             }
             return this.__dataQuery;
@@ -237,6 +242,10 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
                 this._orderings = value;
             }
         }
+    },
+
+    fetchLimit: {
+        value: undefined
     },
 
     /**
