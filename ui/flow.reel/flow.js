@@ -1296,7 +1296,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
     _updateVisibleIndexes: {
         value: function (newVisibleIndexes, newContentIndexes) {
             var oldVisibleIndexes = this._visibleIndexes,
-                oldIndexesLength = oldVisibleIndexes && !isNaN(oldVisibleIndexes.length) ? oldVisibleIndexes.length : 0,
+                oldIndexesLength,
                 holes,
                 j,
                 i;
@@ -1305,7 +1305,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 this._visibleIndexes.splice(newVisibleIndexes.length, Infinity);
                 this._needsClearVisibleIndexes = false;
             }
-
+            oldIndexesLength = oldVisibleIndexes && !isNaN(oldVisibleIndexes.length) ? oldVisibleIndexes.length : 0;
             // Search for viable holes, leave content at the same visible index
             // whenever possible.
             for (i = 0; i < oldIndexesLength; i++) {
