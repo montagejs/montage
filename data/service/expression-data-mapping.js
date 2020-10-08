@@ -538,10 +538,42 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      * Used to create fetches for relationships.
      * @type {DataService}
      */
-    service: {
+    _service: {
         value: undefined
     },
 
+    _propagateServiceToMappingRulesConverter: {
+        value: function(service, mappingRules) {
+            if(service && mappingRules) {
+                var valuesIterator = mappingRules.values(),
+                iRule;
+
+                while((iRule = valuesIterator.next().value)) {
+                    if(iRule.converter) {
+                        iRule.converter.service = service;
+                    }
+                    if(iRule.reverter) {
+                        iRule.reverter.service = service;
+                    }
+                }
+            }
+        }
+    },
+
+    service: {
+        get: function () {
+            return this._service;
+        },
+        set: function (value) {
+            if(value !== this._service) {
+                this._service = value;
+
+                //Propagate to rules one and for all
+                this._propagateServiceToMappingRulesConverter(value, this.objectMappingRules);
+                this._propagateServiceToMappingRulesConverter(value, this.rawDataMappingRules);
+            }
+        }
+    },
 
 
 
