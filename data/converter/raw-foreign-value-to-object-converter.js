@@ -61,29 +61,141 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
         value: undefined
     },
 
-    /*********************************************************************
-     * Public API
-     */
 
-    /**
-     * Converts the fault for the relationship to an actual object that has an ObjectDescriptor.
-     * @function
-     * @param {Property} v The value to format.
-     * @returns {Promise} A promise for the referenced object.  The promise is
-     * fulfilled after the object is successfully fetched.
-     *
-     */
+    /*
+        cache:
 
+        Map: ObjectDescriptor -> Map: criteriaExpression -> Map: JSON.stringify(criteria.parameters) -> Promise
+
+    */
+    _fetchPromiseByObjectDescriptorByCriteriaExpressionByCriteriaParameters: {
+        value: new Map()
+    },
+
+    _fetchPromiseMapForObjectDescriptor: {
+        value: function(objectDescriptor) {
+            var map = this._fetchPromiseByObjectDescriptorByCriteriaExpressionByCriteriaParameters.get(objectDescriptor);
+            if(!map) {
+                map = new Map();
+                this._fetchPromiseByObjectDescriptorByCriteriaExpressionByCriteriaParameters.set(objectDescriptor,map);
+            }
+            return map;
+        }
+    },
+
+    _fetchPromiseMapForObjectDescriptorCriteria: {
+        value: function(objectDescriptor, criteria) {
+            var objectDescriptorMap = this._fetchPromiseMapForObjectDescriptor(objectDescriptor),
+                criteriaExpressionMap = objectDescriptorMap.get(criteria.expression);
+            if(!criteriaExpressionMap) {
+                criteriaExpressionMap = new Map();
+                objectDescriptorMap.set(criteria.expression,criteriaExpressionMap);
+            }
+            return criteriaExpressionMap;
+        }
+    },
+
+    _registeredFetchPromiseMapForObjectDescriptorCriteria: {
+        value: function(objectDescriptor, criteria) {
+            var criteriaExpressionMap = this._fetchPromiseMapForObjectDescriptorCriteria(objectDescriptor,criteria),
+                parametersKey = typeof criteria.parameters === "string" ? criteria.parameters : JSON.stringify(criteria.parameters);
+
+            return fetchPromise = criteriaExpressionMap.get(parametersKey);
+        }
+    },
+
+    _registerFetchPromiseForObjectDescriptorCriteria: {
+        value: function(fetchPromise, objectDescriptor, criteria) {
+            var criteriaExpressionMap = this._fetchPromiseMapForObjectDescriptorCriteria(objectDescriptor,criteria),
+                parametersKey = typeof criteria.parameters === "string" ? criteria.parameters : JSON.stringify(criteria.parameters);
+
+            return criteriaExpressionMap.set(parametersKey,fetchPromise);
+        }
+    },
+    _unregisterFetchPromiseForObjectDescriptorCriteria: {
+        value: function(objectDescriptor, criteria) {
+            var criteriaExpressionMap = this._fetchPromiseMapForObjectDescriptorCriteria(objectDescriptor,criteria),
+            parametersKey = typeof criteria.parameters === "string" ? criteria.parameters : JSON.stringify(criteria.parameters);
+
+            return criteriaExpressionMap.delete(parametersKey);
+        }
+    },
+    _lookupExistingObjectForObjectDescriptorCriteria: {
+        value: function(typeToFetch, criteria, service) {
+            var dataIdentifier, existingObject = null;
+            /*
+            1) dataIdentifierForTypePrimaryKey(type, primaryKey)
+
+            2) objectForDataIdentifier
+            */
+           /*
+            Simplifying assumptions for now:
+            if parameters is a string, it's the primary key
+            if parameters is an array, it's an array of primaryKeys
+            */
+            if(typeof criteria.parameters === "string") {
+                dataIdentifier = service.dataIdentifierForTypePrimaryKey(typeToFetch,criteria.parameters);
+                existingObject = service.rootService.objectForDataIdentifier(dataIdentifier);
+            } else if(Array.isArray(criteria.parameters)) {
+                var rootService = service.rootService,
+                    array = criteria.parameters, i=0, countI = array.length, iObject;
+
+                for(; (i<countI); i++) {
+                    dataIdentifier = service.dataIdentifierForTypePrimaryKey(typeToFetch,array[i]);
+                    iObject = rootService.objectForDataIdentifier(dataIdentifier);
+                    if(iObject) {
+                        //Add to result
+                        (existingObject || (existingObject = [])).push(iObject);
+                        //remove from criteria since found
+                        array.splice(i,1);
+                    }
+                }
+
+            }
+            return existingObject;
+        }
+    },
     _fetchConvertedDataForObjectDescriptorCriteria: {
         value: function(typeToFetch, criteria) {
-            if (this.serviceIdentifier) {
-                criteria.parameters.serviceIdentifier = this.serviceIdentifier;
-            }
-
-            var query = DataQuery.withTypeAndCriteria(typeToFetch, criteria),
-                self = this;
+            var self = this;
 
             return this.service ? this.service.then(function (service) {
+
+                var localResult = self._lookupExistingObjectForObjectDescriptorCriteria(typeToFetch, criteria, service),
+                //var localResult,
+                    localPartialResultPromise;
+
+                if(localResult) {
+                    if(Array.isArray(localResult)) {
+                        if(criteria.parameters.length > 0) {
+                            if(localResult.length) {
+                                //We found some locally but not all
+                                localPartialResultPromise = Promise.resolve(localResult);
+                            } else {
+                                //we didn't find anything locally
+                                localPartialResultPromise = null;
+                            }
+                        } else {
+                            //We found everything locally, we're done:
+                            return Promise.resolve(localResult);
+                        }
+
+                    } else {
+                        //We found it, we're done:
+                        return Promise.resolve(localResult);
+                    }
+                }
+
+
+                if (self.serviceIdentifier) {
+                    criteria.parameters.serviceIdentifier = this.serviceIdentifier;
+                }
+
+                var fetchPromise = self._registeredFetchPromiseMapForObjectDescriptorCriteria(typeToFetch,criteria);
+
+                if(!fetchPromise) {
+                    var query = DataQuery.withTypeAndCriteria(typeToFetch, criteria);
+
                 /*
                     When we fetch objects that have inverse relationships on each others none can complete their mapRawDataProcess because the first one's promise for mapping the relationship to the second never commpletes because the second one itself has it's raw data the foreignKey to the first and attemps to do so by default on processing operations, where the previous way was only looping on requisite proprties. If both relationships were requisite, on each side we'd end up with the same problem.
 
@@ -164,8 +276,20 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
 
                 */
 
+                    fetchPromise = service.rootService.fetchData(query)
+                            .then(function(value) {
+                                self._unregisterFetchPromiseForObjectDescriptorCriteria(typeToFetch, criteria);
+                                return value;
+                            });
 
-                return service.rootService.fetchData(query);
+                    self._registerFetchPromiseForObjectDescriptorCriteria(fetchPromise, typeToFetch, criteria);
+                }
+
+                if(localPartialResultPromise) {
+                    fetchPromise = Promise.all([localPartialResultPromise,fetchPromise]);
+                }
+
+                return fetchPromise;
             }) : null;
 
         }
@@ -201,7 +325,9 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
 
     convertCriteriaForValue: {
         value: function(value) {
-            return new Criteria().initWithSyntax(this.convertSyntax, value);
+            var criteria = new Criteria().initWithSyntax(this.convertSyntax, value);
+            criteria._expression = this.convertExpression;
+            return criteria;
         }
     },
 
@@ -229,6 +355,19 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
     _convertFetchPromisesByValue: {
         value: undefined
     },
+
+    /*********************************************************************
+     * Public API
+     */
+
+    /**
+     * Converts the fault for the relationship to an actual object that has an ObjectDescriptor.
+     * @function
+     * @param {Property} v The value to format.
+     * @returns {Promise} A promise for the referenced object.  The promise is
+     * fulfilled after the object is successfully fetched.
+     *
+     */
 
     convert: {
         value: function (v) {
