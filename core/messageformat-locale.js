@@ -253,6 +253,12 @@ exports.ln = function (n) {
   }
   return 'other';
 };
+exports.lo = function (n) {
+    if (n === 1) {
+      return 'one';
+    }
+    return 'other';
+  };
 exports.lt = function (n) {
   if ((n % 10) === 1 && ((n % 100) < 11 || (n % 100) > 19)) {
     return 'one';
