@@ -2,6 +2,7 @@ var RawValueToObjectConverter = require("./raw-value-to-object-converter").RawVa
     Criteria = require("core/criteria").Criteria,
     DataQuery = require("data/model/data-query").DataQuery,
     Map = require("core/collections/map").Map,
+    syntaxProperties = require("core/frb/syntax-properties"),
     Promise = require("core/promise").Promise;
 /**
  * @class RawForeignValueToObjectConverter
@@ -120,9 +121,21 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
             return criteriaExpressionMap.delete(parametersKey);
         }
     },
+    __areCriteriaSyntaxPropertiesRawDataPrimaryKeys: {
+        value: undefined
+    },
+    _areCriteriaSyntaxPropertiesRawDataPrimaryKeys: {
+        value: function(typeToFetch, criteria, service) {
+            if(this.__areCriteriaSyntaxPropertiesRawDataPrimaryKeys === undefined) {
+                this.__areCriteriaSyntaxPropertiesRawDataPrimaryKeys = service.mappingForType(typeToFetch).rawDataPrimaryKeys.equals(syntaxProperties(criteria.syntax))
+            }
+            return this.__areCriteriaSyntaxPropertiesRawDataPrimaryKeys
+        }
+    },
     _lookupExistingObjectForObjectDescriptorCriteria: {
         value: function(typeToFetch, criteria, service) {
             var dataIdentifier, existingObject = null;
+
             /*
             1) dataIdentifierForTypePrimaryKey(type, primaryKey)
 
@@ -133,25 +146,29 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
             if parameters is a string, it's the primary key
             if parameters is an array, it's an array of primaryKeys
             */
-            if(typeof criteria.parameters === "string") {
-                dataIdentifier = service.dataIdentifierForTypePrimaryKey(typeToFetch,criteria.parameters);
-                existingObject = service.rootService.objectForDataIdentifier(dataIdentifier);
-            } else if(Array.isArray(criteria.parameters)) {
-                var rootService = service.rootService,
-                    array = criteria.parameters, i=0, countI = array.length, iObject;
+           if(this._areCriteriaSyntaxPropertiesRawDataPrimaryKeys(typeToFetch, criteria, service)) {
 
-                for(; (i<countI); i++) {
-                    dataIdentifier = service.dataIdentifierForTypePrimaryKey(typeToFetch,array[i]);
-                    iObject = rootService.objectForDataIdentifier(dataIdentifier);
-                    if(iObject) {
-                        //Add to result
-                        (existingObject || (existingObject = [])).push(iObject);
-                        //remove from criteria since found
-                        array.splice(i,1);
+                if(typeof criteria.parameters === "string") {
+                        dataIdentifier = service.dataIdentifierForTypePrimaryKey(typeToFetch,criteria.parameters);
+                        existingObject = service.rootService.objectForDataIdentifier(dataIdentifier);
+                } else if(Array.isArray(criteria.parameters)) {
+                    var rootService = service.rootService,
+                        array = criteria.parameters, i=0, countI = array.length, iObject;
+
+                    for(; (i<countI); i++) {
+                        dataIdentifier = service.dataIdentifierForTypePrimaryKey(typeToFetch,array[i]);
+                        iObject = rootService.objectForDataIdentifier(dataIdentifier);
+                        if(iObject) {
+                            //Add to result
+                            (existingObject || (existingObject = [])).push(iObject);
+                            //remove from criteria since found
+                            array.splice(i,1);
+                        }
                     }
-                }
 
+                }
             }
+
             return existingObject;
         }
     },
