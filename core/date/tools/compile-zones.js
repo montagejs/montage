@@ -89,6 +89,39 @@ var zones = JSON.parse(zonesJson);
 var fetchedZones, fetchedZonesJSONString = "";
 const https = require('https');
 
+function writeFileSyncRecursive(filename, content, charset) {
+  // -- normalize path separator to '/' instead of path.sep,
+  // -- as / works in node for Windows as well, and mixed \\ and / can appear in the path
+  let filepath = filename.replace(/\\/g,'/');
+
+  // -- preparation to allow absolute paths as well
+  let root = '';
+  if (filepath[0] === '/') {
+    root = '/';
+    filepath = filepath.slice(1);
+  }
+  else if (filepath[1] === ':') {
+    root = filepath.slice(0,3);   // c:\
+    filepath = filepath.slice(3);
+  }
+
+  // -- create folders all the way down
+  const folders = filepath.split('/').slice(0, -1);  // remove last item, file
+  folders.reduce(
+    (acc, folder) => {
+      const folderPath = acc + folder + '/';
+      if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath);
+      }
+      return folderPath
+    },
+    root // first 'acc', important
+  );
+
+  // -- write file
+  fs.writeFileSync(root + filepath, content, charset);
+}
+
 
 
 function icsString(timeZoneId, icsData) {
@@ -98,15 +131,19 @@ function icsString(timeZoneId, icsData) {
 function compileTimeZones(zones) {
     const out = {};
     Object.keys(zones.zones).forEach((timeZoneId) => {
-        var icsData = zones.zones[timeZoneId].ics.join("\r\n");
+        var icsData = zones.zones[timeZoneId].ics.join("\r\n"),
+            singleOut = {};
         out[timeZoneId] = icsString(timeZoneId,icsData);
-        //fs.writeFileSync('../time-zone-data/zones-compiled.json', JSON.stringify(out));
+        singleOut[timeZoneId] = out[timeZoneId];
+
+        writeFileSyncRecursive('../time-zone-data/'+timeZoneId+'.json', JSON.stringify(singleOut));
 
     });
 
     Object.keys(zones.aliases).forEach((timeZoneId) => {
       var previousAliasTo = zones.aliases[timeZoneId].aliasTo,
             nextAliasTo,
+            singleOut,
             icsData;
       while(zones.aliases[previousAliasTo] && (nextAliasTo = zones.aliases[previousAliasTo].aliasTo)) {
         previousAliasTo = nextAliasTo;
@@ -114,6 +151,11 @@ function compileTimeZones(zones) {
       if (zones.zones[previousAliasTo]) {
         icsData = zones.zones[previousAliasTo].ics.join("\r\n");
         out[timeZoneId] = icsString(timeZoneId,icsData);
+
+        singleOut = {};
+        singleOut[timeZoneId] = out[timeZoneId];
+
+        writeFileSyncRecursive('../time-zone-data/'+timeZoneId+'.json', JSON.stringify(singleOut));
       } else {
         console.warn(`${previousAliasTo} (${timeZoneId}) not found, skipping`);
       }
