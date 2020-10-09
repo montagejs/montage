@@ -52,7 +52,7 @@ if( (global.Set !== void 0) && (typeof global.Set.prototype.values === "function
                 if (this.dispatchesRangeChanges) {
                     clearing = this.toArray();
                     this.dispatchBeforeRangeChange(this._dispatchEmptyArray, clearing, 0);
-                    
+
                 }
 
                 set_clear.call(this);
@@ -138,113 +138,113 @@ if( (global.Set !== void 0) && (typeof global.Set.prototype.values === "function
     Object.defineEach(Set.prototype, MapChanges.prototype, false, /*configurable*/true, /*enumerable*/ false, /*writable*/true);
 
     //This is really only for testing
-    Object.defineProperty(Set, "_setupCollectionSet", {
-        value: setupCollectionSet,
-        writable: true,
-        configurable: true,
-        enumerable: false
-    });
+    // Object.defineProperty(Set, "_setupCollectionSet", {
+    //     value: setupCollectionSet,
+    //     writable: true,
+    //     configurable: true,
+    //     enumerable: false
+    // });
 
 }
-else {
-    setupCollectionSet();
-}
+// else {
+//     setupCollectionSet();
+// }
 
-function setupCollectionSet() {
-    var _CollectionsSet = Set.CollectionsSet;
+// function setupCollectionSet() {
+//     var _CollectionsSet = Set.CollectionsSet;
 
-    var CollectionsSet = function CollectionsSet(values, equals, hash, getDefault) {
-        return _CollectionsSet._init(CollectionsSet, this, values, equals, hash, getDefault);
-    }
+//     var CollectionsSet = function CollectionsSet(values, equals, hash, getDefault) {
+//         return _CollectionsSet._init(CollectionsSet, this, values, equals, hash, getDefault);
+//     }
 
-    // hack so require("set").Set will work in MontageJS
-    CollectionsSet.Set = CollectionsSet;
-    CollectionsSet.from = _CollectionsSet.from;
-    Set.CollectionsSet = CollectionsSet;
+//     // hack so require("set").Set will work in MontageJS
+//     CollectionsSet.Set = CollectionsSet;
+//     CollectionsSet.from = _CollectionsSet.from;
+//     Set.CollectionsSet = CollectionsSet;
 
-    CollectionsSet.prototype = new _CollectionsSet();
-    CollectionsSet.prototype.constructor = CollectionsSet;
+//     CollectionsSet.prototype = new _CollectionsSet();
+//     CollectionsSet.prototype.constructor = CollectionsSet;
 
-    var List = require("./list");
-    var FastSet = require("./fast-set");
-    CollectionsSet.prototype.Order = List;
-    CollectionsSet.prototype.Store = FastSet;
+//     var List = require("./list");
+//     var FastSet = require("./fast-set");
+//     CollectionsSet.prototype.Order = List;
+//     CollectionsSet.prototype.Store = FastSet;
 
-    Object.defineProperty(CollectionsSet.prototype,"_dispatchEmptyArray", {
-        value: []
-    });
+//     Object.defineProperty(CollectionsSet.prototype,"_dispatchEmptyArray", {
+//         value: []
+//     });
 
-    CollectionsSet.prototype.add = function (value) {
-        var node = new this.order.Node(value);
-        if (!this.store.has(node)) {
-            var index = this.length;
-            var dispatchValueArray = [value];
-            this.dispatchBeforeOwnPropertyChange(SIZE, index);
-            if (this.dispatchesRangeChanges) {
-                this.dispatchBeforeRangeChange(dispatchValueArray, this._dispatchEmptyArray, index);
-            }
-            this.order.add(value);
-            node = this.order.head.prev;
-            this.store.add(node);
-            this.length++;
-            if (this.dispatchesRangeChanges) {
-                this.dispatchRangeChange(dispatchValueArray, this._dispatchEmptyArray, index);
-            }
-            this.dispatchOwnPropertyChange(SIZE, index + 1);
-            return true;
-        }
-        return false;
-    };
-    CollectionsSet.prototype["delete"] = function (value, equals) {
-        if (equals) {
-            throw new Error("Set#delete does not support second argument: equals");
-        }
-        var node = new this.order.Node(value);
-        if (this.store.has(node)) {
-            node = this.store.get(node);
-            var dispatchValueArray = [value];
-            this.dispatchBeforeOwnPropertyChange(SIZE, this.length);
-            if (this.dispatchesRangeChanges) {
-                this.dispatchBeforeRangeChange(this._dispatchEmptyArray, dispatchValueArray, node.index);
-            }
-            this.store["delete"](node); // removes from the set
-            this.order.splice(node, 1); // removes the node from the list
-            this.length--;
-            if (this.dispatchesRangeChanges) {
-                this.dispatchRangeChange(this._dispatchEmptyArray, dispatchValueArray, node.index);
-            }
-            this.dispatchOwnPropertyChange(SIZE, this.length);
-            return true;
-        }
-        return false;
-    };
-    CollectionsSet.prototype.clear = function () {
-        var clearing;
-        var length = this.length;
-        if (length) {
-            this.dispatchBeforeOwnPropertyChange(SIZE, length);
-        }
-        if (this.dispatchesRangeChanges) {
-            clearing = this.toArray();
-            this.dispatchBeforeRangeChange(this._dispatchEmptyArray, clearing, 0);
-        }
-        this._clear();
-        if (this.dispatchesRangeChanges) {
-            this.dispatchRangeChange(this._dispatchEmptyArray, clearing, 0);
-        }
-        if (length) {
-            this.dispatchOwnPropertyChange(SIZE, 0);
-        }
-    };
+//     CollectionsSet.prototype.add = function (value) {
+//         var node = new this.order.Node(value);
+//         if (!this.store.has(node)) {
+//             var index = this.length;
+//             var dispatchValueArray = [value];
+//             this.dispatchBeforeOwnPropertyChange(SIZE, index);
+//             if (this.dispatchesRangeChanges) {
+//                 this.dispatchBeforeRangeChange(dispatchValueArray, this._dispatchEmptyArray, index);
+//             }
+//             this.order.add(value);
+//             node = this.order.head.prev;
+//             this.store.add(node);
+//             this.length++;
+//             if (this.dispatchesRangeChanges) {
+//                 this.dispatchRangeChange(dispatchValueArray, this._dispatchEmptyArray, index);
+//             }
+//             this.dispatchOwnPropertyChange(SIZE, index + 1);
+//             return true;
+//         }
+//         return false;
+//     };
+//     CollectionsSet.prototype["delete"] = function (value, equals) {
+//         if (equals) {
+//             throw new Error("Set#delete does not support second argument: equals");
+//         }
+//         var node = new this.order.Node(value);
+//         if (this.store.has(node)) {
+//             node = this.store.get(node);
+//             var dispatchValueArray = [value];
+//             this.dispatchBeforeOwnPropertyChange(SIZE, this.length);
+//             if (this.dispatchesRangeChanges) {
+//                 this.dispatchBeforeRangeChange(this._dispatchEmptyArray, dispatchValueArray, node.index);
+//             }
+//             this.store["delete"](node); // removes from the set
+//             this.order.splice(node, 1); // removes the node from the list
+//             this.length--;
+//             if (this.dispatchesRangeChanges) {
+//                 this.dispatchRangeChange(this._dispatchEmptyArray, dispatchValueArray, node.index);
+//             }
+//             this.dispatchOwnPropertyChange(SIZE, this.length);
+//             return true;
+//         }
+//         return false;
+//     };
+//     CollectionsSet.prototype.clear = function () {
+//         var clearing;
+//         var length = this.length;
+//         if (length) {
+//             this.dispatchBeforeOwnPropertyChange(SIZE, length);
+//         }
+//         if (this.dispatchesRangeChanges) {
+//             clearing = this.toArray();
+//             this.dispatchBeforeRangeChange(this._dispatchEmptyArray, clearing, 0);
+//         }
+//         this._clear();
+//         if (this.dispatchesRangeChanges) {
+//             this.dispatchRangeChange(this._dispatchEmptyArray, clearing, 0);
+//         }
+//         if (length) {
+//             this.dispatchOwnPropertyChange(SIZE, 0);
+//         }
+//     };
 
-    Object.addEach(Set.CollectionsSet.prototype, PropertyChanges.prototype);
-    Object.addEach(Set.CollectionsSet.prototype, RangeChanges.prototype);
-    Set.CollectionsSet.prototype.makeObservable = function () {
-        this.order.makeObservable();
-    };
+//     Object.addEach(Set.CollectionsSet.prototype, PropertyChanges.prototype);
+//     Object.addEach(Set.CollectionsSet.prototype, RangeChanges.prototype);
+//     Set.CollectionsSet.prototype.makeObservable = function () {
+//         this.order.makeObservable();
+//     };
 
-    module.exports = CollectionsSet;
-}
+//     module.exports = CollectionsSet;
+// }
 
 
 
