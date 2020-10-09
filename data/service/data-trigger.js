@@ -240,7 +240,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
     _getValue: {
         configurable: true,
         writable: true,
-        value: function (object) {
+        value: function (object, shouldFetch) {
             var prototype, descriptor, getter, propertyName = this._propertyName;
 
             /*
@@ -248,7 +248,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
             */
             // if(!this._service.rootService._objectsBeingMapped.has(object)
             // ) {
-                if(!this.propertyDescriptor.definition) {
+                if(shouldFetch !== false && !this.propertyDescriptor.definition) {
 
 
                 /*
@@ -623,8 +623,8 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ (DataTrig
                 trigger.propertyDescriptor = descriptor;
                 trigger._isGlobal = descriptor.isGlobal;
                 Montage.defineProperty(prototype, name, {
-                    get: function () {
-                        return trigger._getValue(this);
+                    get: function (shouldFetch) {
+                        return trigger._getValue(this,shouldFetch);
                     },
                     set: function (value) {
                         trigger._setValue(this, value);
@@ -677,11 +677,11 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ (DataTrig
                 trigger._isGlobal = descriptor.isGlobal;
                 if (descriptor.definition) {
                     var propertyDescriptor = {
-                        get: function () {
+                        get: function (shouldFetch) {
                             if (!this.getBinding(descriptor.name)) {
                                 this.defineBinding(descriptor.name, {"<-": descriptor.definition});
                             }
-                            return trigger._getValue(this);
+                            return trigger._getValue(this,shouldFetch);
                             // return (trigger||(trigger = DataTrigger._createTrigger(service, objectDescriptor, prototype, name,descriptor)))._getValue(this);
                         }
                     };
@@ -694,8 +694,8 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ (DataTrig
                     Montage.defineProperty(prototype, descriptor.name, propertyDescriptor);
                 } else {
                     Montage.defineProperty(prototype, descriptor.name, {
-                        get: function () {
-                            return trigger._getValue(this);
+                        get: function (shouldFetch) {
+                            return trigger._getValue(this,shouldFetch);
                             // return (trigger||(trigger = DataTrigger._createTrigger(service, objectDescriptor, prototype, name,descriptor)))._getValue(this);
                         },
                         set: function (value) {
