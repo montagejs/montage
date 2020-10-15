@@ -1596,6 +1596,19 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                         module.mappingRedirect = rest;
                         module.mappingRequire = mappingRequire;
                         return mappingRequire.deepLoad(rest, config.location);
+                        /*
+                            TODO/FixMe:
+
+                            There's a bug where if a module id contains a path
+                            that happens to be the name of a top level package,
+                            the rest of the path after that part is tried to be loaded
+                            from that package, ignoring anything before that,
+
+                            This is where I discovered that bug, the actual cause
+                            might be somewhere else.
+                        */
+                        //return mappingRequire.deepLoad(rest, mappingRequire.config.location);
+
                     }
                 )
             }
