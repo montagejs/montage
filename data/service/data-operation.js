@@ -1,14 +1,22 @@
 var Montage = require("core/core").Montage,
     MutableEvent = require("core/event/mutable-event").MutableEvent,
+    ModuleObjectDescriptor = require("core/meta/module-object-descriptor").ModuleObjectDescriptor,
     Criteria = require("core/criteria").Criteria,
     Enum = require("core/enum").Enum,
     uuid = require("core/uuid"),
+    defaultEventManager = require("../../core/event/event-manager").defaultEventManager,
     DataOperationType,
 
     /* todo: we shpuld add a ...timedout for all operations. */
     dataOperationTypes = [
         "noop",
+        "connect",
+        "disconnect",
         "create",
+        /*
+            Request to cancel a previous create operation, dispatched by the actor that dispatched the matching create
+        */
+        "createcancel",
         "createfailed",
         "createcompleted",
         "createcancelled",
@@ -48,6 +56,16 @@ var Montage = require("core/core").Montage,
         "updatecancel",
         /* Confirmation that a Request to cancel an update data, used either by the client sending the server or vice versa*, has completed */
         "updatecanceled",
+
+        "merge",
+        /*
+            Request to cancel a previous create operation, dispatched by the actor that dispatched the matching create
+        */
+        "mergecancel",
+        "mergefailed",
+        "mergecompleted",
+        "mergecancelled",
+
         "delete",
         "deletecompleted",
         "deletefailed",
@@ -167,7 +185,6 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
         value: function DataOperation() {
             this.timeStamp = performance.now();
             this.id = uuid.generate();
-
             this.constructionIndex = exports.DataOperation.prototype.constructionSequence++;
             exports.DataOperation.prototype.constructionSequence = this.constructionIndex;
         }
@@ -176,6 +193,17 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
     constructionSequence: {
         value: 0
     },
+
+    _mainService: {
+        value: 0
+    },
+
+    mainService: {
+        get: function() {
+            return this._mainService || (this.constructor.prototype._mainService = defaultEventManager.application.mainService)
+        }
+    },
+
 
     bubbles: {
         value: true
@@ -188,9 +216,22 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
     serializeSelf: {
         value:function (serializer) {
             serializer.setProperty("id", this.id);
-            serializer.setProperty("type", DataOperationType.intValueForMember(this.type));
+            //serializer.setProperty("type", DataOperationType.intValueForMember(this.type));
+            serializer.setProperty("type", this.type);
             serializer.setProperty("timeStamp", this.timeStamp);
-            serializer.setProperty("dataDescriptor", this.dataDescriptor);
+
+            if(this.target) {
+                if(Array.isArray(this.target)) {
+                    serializer.setProperty("targetModuleId", this.target.map((objectDescriptor) => {return objectDescriptor.module.id}));
+                } else {
+                    if(this.target instanceof ModuleObjectDescriptor) {
+                        serializer.setProperty("targetModuleId", this.target.module.id);
+                    } else {
+                        serializer.addObjectReference(this.target);
+                    }
+                }
+            }
+            // serializer.setProperty("dataDescriptor", this.dataDescriptor);
             if(this.referrerId) {
                 serializer.setProperty("referrerId", this.referrerId);
             }
@@ -222,7 +263,7 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
 
             value = deserializer.getProperty("type");
             if (value !== void 0) {
-                this.type = DataOperationType.memberWithIntValue(value);
+                this.type = DataOperationType[value];
             }
 
             value = deserializer.getProperty("timeStamp");
@@ -230,9 +271,13 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
                 this.timeStamp = value;
             }
 
-            value = deserializer.getProperty("dataDescriptor");
+            value = deserializer.getProperty("targetModuleId") || deserializer.getProperty("dataDescriptor");
             if (value !== void 0) {
-                this.dataDescriptor = value;
+                if(Array.isArray(value)) {
+                    this.target = value.map((objectDescriptorModuleIid) => {return this.mainService.objectDescriptorWithModuleId(objectDescriptorModuleIid)});
+                } else {
+                    this.target = this.mainService.objectDescriptorWithModuleId(value);
+                }
             }
 
             value = deserializer.getProperty("referrerId");
@@ -464,7 +509,7 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
     },
 
     /**
-     * Benoit: This property's role is a bit fuzzy. context can be changing and arbitrary. Keep??
+     * Information about the context surrounding the data operation
      * @type {Object}
      */
     context: {
@@ -635,6 +680,8 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
         */
         value: {
             NoOp: DataOperationType.noop,
+            Connect: DataOperationType.connect,
+            Disconnect: DataOperationType.disconnect,
             Create: DataOperationType.create,
             CreateFailed: DataOperationType.createfailed,
             CreateCompleted: DataOperationType.createcompleted,
@@ -658,6 +705,12 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             UpdateFailed: DataOperationType.updatefailed,
             UpdateCancel: DataOperationType.updatecancel,
             UpdateCanceled: DataOperationType.updatecanceled,
+
+            Merge: DataOperationType.merge,
+            MergeCancel: DataOperationType.mergecancel,
+            MergeFailed: DataOperationType.mergefailed,
+            MergeCompleted: DataOperationType.mergecompleted,
+            MergeCancelled: DataOperationType.mergecancelled,
 
             Delete: DataOperationType.delete,
             DeleteCompleted: DataOperationType.deletecompleted,
