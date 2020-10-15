@@ -557,7 +557,11 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 }
 
                 jModule = jObjectDescriptor.module;
-                jModuleId = [jModule.id, jObjectDescriptor.exportName].join("/");
+                if(!jModule) {
+                    jModuleId = Montage.getInfoForObject(this).moduleId;
+                } else {
+                    jModuleId = [jModule.id, jObjectDescriptor.exportName].join("/");
+                }
                 map[jModuleId] = jObjectDescriptor;
 
                 //Setup the event propagation chain
@@ -603,9 +607,13 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             } else {
                 var self = this,
                 module = objectDescriptor.module;
-                return module.require.async(module.id).then(function (exports) {
-                    return self.__makePrototypeForType(childService, objectDescriptor, exports[objectDescriptor.exportName]);
-                });
+                if(module) {
+                    return module.require.async(module.id).then(function (exports) {
+                        return self.__makePrototypeForType(childService, objectDescriptor, exports[objectDescriptor.exportName]);
+                    });
+                } else {
+                    return Promise.resolveNull;
+                }
             }
         }
     },
