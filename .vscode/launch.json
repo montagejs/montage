@@ -55,7 +55,7 @@
             "type": "node",
             "request": "launch",
             "name": "compile time zones",
-            "runtimeExecutable": "~/.nvm/versions/node/v12.16.1/bin/node",
+            "runtimeVersion": "default",
             "cwd": "${workspaceFolder}/core/date/tools/",
             "program": "${workspaceFolder}/core/date/tools/compile-zones.js"
         },
