@@ -4,7 +4,17 @@
     https://hg.mozilla.org/comm-central/raw-file/tip/calendar/timezones/zones.json
 
 */
+// require("ical.js/lib/ical/helpers");
+// require("ical.js/lib/ical/component");
+// require("ical.js/lib/ical/design");
+// require("ical.js/lib/ical/property");
+// require("ical.js/lib/ical/parse");
+// require("ical.js/lib/ical/timezone");
+// require("ical.js/lib/ical/timezone_service");
+// require("ical.js/lib/ical/time");
+// require("ical.js/lib/ical/recur");
 var Montage = require("../core").Montage,
+
     ICAL = require("ical.js"),
     ICAL_Timezone = ICAL.Timezone,
     ICAL_Timezone_Prototype = ICAL.Timezone.prototype,
@@ -20,6 +30,8 @@ var Montage = require("../core").Montage,
     //  4. http://worldtimeapi.org
     //  5. https://timezoneapi.io/developers/timezone
     timeZonesData = require("./time-zone-data/zones-compiled.json"),
+    // systemTimeZonesData = require("./time-zone-data/"+Intl.DateTimeFormat(navigator.languages[0]).resolvedOptions().timeZone+".json"),
+
     TimeZone = exports.TimeZone = ICAL_Timezone,
     TimeZonePrototype = TimeZone.prototype;
 
@@ -89,7 +101,7 @@ Object.defineProperties(TimeZone, {
             var systemLocaleIdentifier = currentEnvironment.systemLocaleIdentifier,
                 resolvedOptions = Intl.DateTimeFormat(systemLocaleIdentifier).resolvedOptions(),
                 timeZone = resolvedOptions.timeZone; /* "America/Los_Angeles" */
-            return (this._systemTimeZone = ICAL_TimezoneService.get(timeZone));
+            return (this._systemTimeZone = TimeZone.withIdentifier(timeZone));
         }
     },
     "systemTimeZone": {
