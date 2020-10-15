@@ -62,6 +62,10 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
      */
     deserialize: {
         value: function (instances, element) {
+            if(!this._serializationString || this._serializationString === "") {
+                return null;
+            }
+
             var context = this._module && MontageDeserializer.moduleContexts.get(this._module),
                 circularError;
             if (context) {
