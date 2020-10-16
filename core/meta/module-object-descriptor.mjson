@@ -30,7 +30,7 @@
                 "@": "root"
             },
             "mandatory": true,
-            "valueType": "object"
+            "valueType": "object",
             "helpKey": ""
         }
     },
