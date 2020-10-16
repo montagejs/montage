@@ -22,7 +22,7 @@ describe("write", function () {
     it("should write bytewise", function () {
         var path = FS.join(__dirname, "fixtures/so-it-is-written.txt");
         var content = "Good bye, cruel World!\n";
-        return FS.write(path, new Buffer(content, "utf-8"))
+        return FS.write(path, Buffer.from(content, "utf-8"))
         .then(function (result) {
             expect(result).toBe(undefined);
             return FS.read(path)

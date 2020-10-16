@@ -45,7 +45,7 @@ into memory.  It returns a promise for the whole file contents.  By
 default, `read` provides a string decoded from UTF-8.  With the bytewise
 mode flag, provides a `Buffer`.
 
-The options argument is identical to that of `open`.  
+The options argument is identical to that of `open`.
 
 ```javascript
 return FS.read(__filename, "b")
@@ -396,7 +396,7 @@ var mockFs = MockFs({
             "c.txt": "Content of a/b/c.txt"
         }
     },
-    "a/b/d.txt": new Buffer("Content of a/b/d.txt", "utf-8")
+    "a/b/d.txt": Buffer.from("Content of a/b/d.txt", "utf-8")
 })
 ```
 
@@ -594,7 +594,7 @@ returns a Q writer.
 
 ```javascript
 var BufferStream = require("q-io/buffer-stream");
-var stream = BufferStream(new Buffer("Hello, World!\n", "utf-8"), "utf-8")
+var stream = BufferStream(Buffer.from("Hello, World!\n", "utf-8"), "utf-8")
 ```
 
 ## HTTP Applications

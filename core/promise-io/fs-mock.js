@@ -50,7 +50,7 @@ MockFs.prototype._init = function (files, tree) {
                 this._init(content, path);
                 return;
             } else {
-                content = new Buffer(String(content), "utf-8");
+                content = Buffer.from(String(content), "utf-8");
             }
         }
         directoryNode._entries[base] = fileNode;

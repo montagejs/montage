@@ -44,7 +44,7 @@ function Writer(_stream, charset) {
         if (!_stream.writeable && !_stream.writable)
             return Q.reject(new Error("Can't write to non-writable (possibly closed) stream"));
         if (typeof content !== "string") {
-            content = new Buffer(content);
+            content = Buffer.from(content);
         }
         if (!_stream.write(content)) {
             return drained.promise;

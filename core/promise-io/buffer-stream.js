@@ -37,7 +37,7 @@ BufferStream.prototype.read = function () {
 
 BufferStream.prototype.write = function (chunk) {
     if (this._charset) {
-        chunk = new Buffer(String(chunk), this._charset);
+        chunk = Buffer.from(String(chunk), this._charset);
     } else {
         if (!(chunk instanceof Buffer)) {
             throw new Error("Can't write strings to buffer stream without a charset: " + chunk);

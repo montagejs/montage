@@ -74,7 +74,7 @@ exports.update = function (exports, workingDirectory) {
         flags = options.flags || "w";
         if (flags.indexOf("b") !== -1) {
             if (!(content instanceof Buffer)) {
-                content = new Buffer(content);
+                content = Buffer.from(content);
             }
         } else if (content instanceof Buffer) {
             flags += "b";

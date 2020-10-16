@@ -120,7 +120,7 @@ function join(buffers) {
         buffer = buffers[i];
         length += buffer.length;
     }
-    result = new Buffer(length);
+    result = Buffer.alloc(length);
     at = 0;
     for (i = 0; i < ii; i++) {
         buffer = buffers[i];
