@@ -450,10 +450,14 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
      * @property {boolean} serializable
      * @property {Component} value
      */
+    _nextTarget: {
+        value: false
+    },
+
     nextTarget: {
         serializable: false,
         get: function() {
-            return this.parent || ObjectDescriptor.mainService;
+            return this._nextTarget || (this._nextTarget = (this.parent || ObjectDescriptor.mainService.childServiceForType(this)));
         }
     },
 
