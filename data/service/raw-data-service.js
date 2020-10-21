@@ -79,6 +79,22 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             var value = deserializer.getProperty("rawDataTypeMappings");
             this._registerRawDataTypeMappings(value || []);
 
+            value = deserializer.getProperty("connectionDescriptor");
+            if (value) {
+                this.connectionDescriptor = value;
+            }
+
+            /*
+                setting connectionIdentifier will set the current connection
+                based on connectionDescriptor.
+
+                I can still be overriden by the direct setting of connection bellow
+            */
+            value = deserializer.getProperty("connectionIdentifier");
+            if (value) {
+                this.connectionIdentifier = value;
+            }
+
             value = deserializer.getProperty("connection");
             if (value) {
                 this.connection = value;
@@ -87,13 +103,99 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
+
     /*
      * The ConnectionDescriptor object where possible connections will be found
      *
      * @type {ConnectionDescriptor}
      */
-    connectionDescriptor: {
+    _connectionDescriptor: {
         value: undefined
+    },
+    connectionDescriptor: {
+        get: function() {
+            return this._connectionDescriptor;
+        },
+        set: function(value) {
+            if(value !== this._connectionDescriptor) {
+                this._connectionDescriptor = value;
+                this._registeredConnectionsByIdentifier = null;
+                this.registerConnections(value);
+            }
+        }
+    },
+    /**
+     * Description...
+     *
+     * @method
+     * @argument {Array} [connectionDescription] - The different known connections to the database
+     *
+     */
+    _registeredConnectionsByIdentifier: {
+        value: undefined,
+    },
+    registerConnections: {
+        value: function(connectionDescriptor) {
+
+            this._registeredConnectionsByIdentifier = connectionDescriptor;
+
+            for(var i=0, connections = Object.keys(connectionDescriptor), countI = connections.length, iConnectionIdentifier, iConnection;(i<countI); i++) {
+                iConnectionIdentifier = connections[i];
+                iConnection = connectionDescriptor[iConnectionIdentifier];
+
+                Object.defineProperty(iConnection, "identifier", {
+                    value: iConnectionIdentifier,
+                    enumerable: false,
+                    configurable: true,
+                    writable: true
+                });
+
+                //this._registeredConnectionsByIdentifier.set(iConnectionIdentifier,iConnection);
+            }
+        }
+    },
+
+    connectionForIdentifier: {
+        value: function(connectionIdentifier) {
+            return this._registeredConnectionsByIdentifier[connectionIdentifier];
+            //return this._registeredConnectionsByIdentifier.get(connectionIdentifier);
+        }
+    },
+
+    connectionWithKeyValue: {
+        value: function(connectionKey, conectionValue) {
+            for(var i=0, connections = Object.keys(connectionDescriptor), countI = connections.length, iConnection;(i<countI); i++) {
+                iConnection = connectionDescriptor[connections[i]];
+                if(iConnection[connectionKey] === conectionValue) {
+                    return iConnection;
+                }
+            }
+            return null;
+        }
+    },
+    /*
+     * The current DataConnection object used to connect to data source
+     *
+     * @type {DataConnection}
+     */
+    _connectionIdentifier: {
+        value: undefined
+    },
+
+    connectionIdentifier: {
+        get: function() {
+            return this._connectionIdentifier;
+        },
+        set: function(value) {
+            if(value !== this._connectionIdentifier) {
+                this._connectionIdentifier = value;
+
+                /*
+                    The region where the database lives is in the resourceArn, no need to add it on top
+                */
+                this.connection = this.connectionForIdentifier(value);
+            }
+        }
     },
 
     /*
