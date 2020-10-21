@@ -48,8 +48,8 @@ if(_WebSocket) {
         _connect: {
             value: function () {
                 this._webSocket = new _WebSocket(this._url, this._protocols);
-                this._webSocket.addEventListener("error", this, false);
-                this._webSocket.addEventListener("open", this, false);
+                this._webSocket.addEventListener("error", event => this.handleEvent(event), false);
+                this._webSocket.addEventListener("open", event => this.handleEvent(event), false);
             }
         },
 
@@ -110,8 +110,8 @@ if(_WebSocket) {
                     case "open":
                         this._reconnectionInterval = 100;
                         if (this._webSocket) {
-                            this._webSocket.addEventListener("message", this, false);
-                            this._webSocket.addEventListener("close", this, false);
+                            this._webSocket.addEventListener("message", event => this.handleEvent(event), false);
+                            this._webSocket.addEventListener("close", event => this.handleEvent(event), false);
                         }
                         this.dispatchEvent(event);
                         this._sendNextMessage();
