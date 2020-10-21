@@ -23,6 +23,8 @@ var Montage = require("core/core").Montage,
     deprecate = require("../../core/deprecate"),
     Locale = require("core/locale").Locale;
 
+    require("core/extras/string");
+
 var AuthorizationPolicyType = new Montage();
 AuthorizationPolicyType.NoAuthorizationPolicy = AuthorizationPolicy.NONE;
 AuthorizationPolicyType.UpfrontAuthorizationPolicy = AuthorizationPolicy.UP_FRONT;
@@ -130,7 +132,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
             value = deserializer.getProperty("childServices");
             if (value) {
-                this._childServices = value;
+                this._deserializedChildServices = value;
             }
 
             value = deserializer.getProperty("authorizationPolicy");
@@ -147,12 +149,18 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    _deserializedChildServices: {
+        value: undefined
+    },
+
     deserializedFromSerialization: {
         value: function (label) {
-            if(Array.isArray(this._childServices)) {
-                var childServices = this._childServices;
-                this._childServices = [];
-                this.addChildServices(childServices);
+            if(Array.isArray(this._deserializedChildServices) && this._deserializedChildServices.length > 0) {
+                //var childServices = this._childServices;
+                if(!this._childServices) {
+                    this._childServices = [];
+                }
+                this.addChildServices(this._deserializedChildServices);
             }
 
             if (this.authorizationPolicy === AuthorizationPolicyType.UpfrontAuthorizationPolicy) {
@@ -321,6 +329,10 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
             for(i=0, countI = childServices.length;(i<countI);i++) {
                 iChild = childServices[i];
+
+                if(this._childServices.indexOf(iChild) !== -1) {
+                    continue;
+                }
 
                 if((types = iChild.types)) {
                     this._registerTypesForService(types,iChild);
@@ -565,7 +577,10 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 map[jModuleId] = jObjectDescriptor;
 
                 //Setup the event propagation chain
-                jObjectDescriptor.nextTarget = service;
+                /*
+                    this is now done in objectDescriptor as it follows the hierachy of objectDescriptor before getting to DataServices.
+                */
+                // jObjectDescriptor.nextTarget = service;
             }
 
             // types.forEach(function (objectDescriptor) {
@@ -1157,15 +1172,28 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
     _objectDescriptorByModuleId: {
         value:undefined
     },
+    _mjsonExtension: {
+        value: ".mjson"
+    },
     objectDescriptorWithModuleId: {
         value: function (objectDescriptorModuleId) {
 
             if(!this._objectDescriptorByModuleId) {
                 var map = this._objectDescriptorByModuleId = new Map();
 
-                var types = this.types, i, n;
+                var types = this.types, i, n, iType, iInfo, iModuleId, mjsonExtension = this._mjsonExtension;
                 for (i = 0, n = types.length; i < n; i++) {
-                    map.set(types[i].module.id,types[i]);
+                    iType = types[i];
+                    if(!iType.module) {
+                        iInfo = Montage.getInfoForObject(iType);
+                        iModuleId = iInfo.moduleId;
+                        if(iModuleId.endsWith(mjsonExtension)) {
+                            iModuleId = iModuleId.removeSuffix(mjsonExtension);
+                        }
+                        map.set(iModuleId,types[i]);
+                    } else {
+                        map.set(iType.module.id,types[i]);
+                    }
                 }
 
             }
