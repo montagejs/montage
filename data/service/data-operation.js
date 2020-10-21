@@ -16,85 +16,85 @@ var Montage = require("core/core").Montage,
         /*
             Request to cancel a previous create operation, dispatched by the actor that dispatched the matching create
         */
-        "createcancel",
-        "createfailed",
-        "createcompleted",
-        "createcancelled",
+        "createCancel",
+        "createFailed",
+        "createCompleted",
+        "createCancelled",
         //Additional
         "copy",
-        "copyfailed",
-        "copycompleted",
+        "copyFailed",
+        "copyCompleted",
         /* Read is the first operation that models a query */
         "read",
 
         /* ReadUpdated is pushed by server when a query's result changes due to data changes from others */
-        "readupdated",
+        "readUpdated",
 
         /* ReadProgress / ReadUpdate / ReadSeek is used to instruct server that more data is required for a "live" read / query
             Need a better name, and a symetric? Or is ReadUpdated enough if it referes to previous operation
         */
-        "readprogress", //ReadUpdate
-        "readupdate", //ReadUpdate
+        "readProgress", //ReadUpdate
+        "readUpdate", //ReadUpdate
 
         /* ReadCancel is the operation that instructs baclkend that client isn't interested by a read operastion anymore */
-        "readcancel",
+        "readCancel",
 
         /* ReadCanceled is the operation that instructs the client that a read operation is canceled */
-        "readcanceled",
+        "readCanceled",
 
          /* ReadFailed is the operation that instructs the client that a read operation has failed canceled */
-        "readfailed",
+        "readFailed",
         /* ReadCompleted is the operation that instructs the client that a read operation has returned all available data */
-        "readcompleted",
+        "readCompleted",
         /* Request to update data, used either by the client sending the server or vice versa */
         "update",
         /* Confirmation that a Request to update data, used either by the client sending the server or vice versa*, has been completed */
-        "updatecompleted",
+        "updateCompleted",
         /* Confirmation that a Request to update data, used either by the client sending the server or vice versa*, has failed */
-        "updatefailed",
+        "updateFailed",
         /* Request to cancel an update, used either by the client sending the server or vice versa */
-        "updatecancel",
+        "updateCancel",
         /* Confirmation that a Request to cancel an update data, used either by the client sending the server or vice versa*, has completed */
-        "updatecanceled",
+        "updateCanceled",
 
         "merge",
         /*
             Request to cancel a previous create operation, dispatched by the actor that dispatched the matching create
         */
-        "mergecancel",
-        "mergefailed",
-        "mergecompleted",
-        "mergecancelled",
+        "mergeCancel",
+        "mergeFailed",
+        "mergeCompleted",
+        "mergeCancelled",
 
         "delete",
-        "deletecompleted",
-        "deletefailed",
+        "deleteCompleted",
+        "deleteFailed",
 
         /* Lock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
         "lock",
-        "lockcompleted",
-        "lockfailed",
+        "lockCompleted",
+        "lockFailed",
 
         /* Unlock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
         "unlock",
-        "unlockcompleted",
-        "unlockfailed",
+        "unlockCompleted",
+        "unlockFailed",
 
         /*
             RemmoteProcedureCall models the ability to invoke code logic on the server-side, being a DB StoredProcedure, or an method/function in a service
         */
-        "remoteinvocation", /* Execute ? */
-        "remoteinvocationcompleted",  /* ExecuteCompleted ? */
-        "remoteinvocationfailed", /* ExecuteFailed ? */
+        "remoteInvocation", /* Execute ? */
+        "remoteInvocationCompleted",  /* ExecuteCompleted ? */
+        "remoteInvocationFailed", /* ExecuteFailed ? */
 
         /*
             Batch models the ability to group multiple operation. If a referrer is provided
             to a BeginTransaction operation, then the batch will be executed within that transaction
         */
         "batch",
-        "batchupdate",
-        "batchcompleted",
-        "batchfailed",
+        "batchUpdate",
+        "batchCompleted",
+        "batchFailed",
 
         /*
             A transaction is a unit of work that is performed atomically against a database.
@@ -109,24 +109,25 @@ var Montage = require("core/core").Montage,
 
             so settling on create transaction and perform/rollback transaction
         */
-        "createtransaction",
+        "createTransaction",
         /* I don't think there's such a thing, keeping for symetry for now */
-        "createtransactioncompleted",
+        "createTransactionCompleted",
 
         /* Attempting to create a transaction within an existing one will fail */
-        "createtransactionfailed",
+        "createTransactionFailed",
 
-        "transactioncancelled",
+        "transactionUpdated",
+        "transactionCancelled",
 
-        "createsavepoint",
+        "createSavePoint",
 
-        "performtransaction",
-        "performtransactioncompleted",
-        "performtransactionfailed",
+        "performTransaction",
+        "performTransactionCompleted",
+        "performTransactionFailed",
 
-        "rollbacktransaction",
-        "rollbacktransactioncompleted",
-        "rollbacktransactionfailed",
+        "rollbackTransaction",
+        "rollbackTransactionCompleted",
+        "rollbackTransactionFailed",
 
         /*
             operations used for the bottom of the stack to get information from a user.
@@ -140,16 +141,16 @@ var Montage = require("core/core").Montage,
             Data components shpuld add themselves as listeners to the data service for events/
             data operations like that they know how to deal with / can help with.
         */
-        "userauthentication",
-        "userauthenticationupdate",
-        "userauthenticationcompleted",
-        "userauthenticationfailed",
-        "userauthenticationtimedout",
-        "userinput",
-        "userinputcompleted",
-        "userinputfailed",
-        "userinputcanceled",
-        "userinputtimedout",
+        "userAuthentication",
+        "userAuthenticationUpdate",
+        "userAuthenticationCompleted",
+        "userAuthenticationFailed",
+        "userAuthenticationTimedout",
+        "userInput",
+        "userInputCompleted",
+        "userInputFailed",
+        "userInputCanceled",
+        "userInputTimedout",
 
         /*
             Modeling validation operation, either executed locally or server-side.
@@ -160,9 +161,9 @@ var Montage = require("core/core").Montage,
 
         */
         "validate",
-        "validatefailed",
-        "validatecompleted",
-        "validatecancelled"
+        "validateFailed",
+        "validateCompleted",
+        "validateCancelled"
     ];
 
 
@@ -200,7 +201,7 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
 
     mainService: {
         get: function() {
-            return this._mainService || (this.constructor.prototype._mainService = defaultEventManager.application.mainService)
+            return this._mainService || (this.constructor.prototype._mainService = defaultEventManager.application && defaultEventManager.application.mainService)
         }
     },
 
@@ -222,16 +223,17 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
 
             if(this.target) {
                 if(Array.isArray(this.target)) {
-                    serializer.setProperty("targetModuleId", this.target.map((objectDescriptor) => {return objectDescriptor.module.id}));
+                    serializer.setProperty("targetModuleId", this.target.map((objectDescriptor) => {return typeof objectDescriptor === "string" ? objectDescriptor : objectDescriptor.module.id}));
                 } else {
                     if(this.target instanceof ModuleObjectDescriptor) {
                         serializer.setProperty("targetModuleId", this.target.module.id);
                     } else {
-                        serializer.addObjectReference(this.target);
+                        //This is not working as I thought it would yet
+                        //serializer.addObjectReference(this.target);
+                        serializer.setProperty("targetModuleId", null);
                     }
                 }
             }
-            // serializer.setProperty("dataDescriptor", this.dataDescriptor);
             if(this.referrerId) {
                 serializer.setProperty("referrerId", this.referrerId);
             }
@@ -270,13 +272,20 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             if (value !== void 0) {
                 this.timeStamp = value;
             }
-
+            /* keeping dataDescriptor here for temporary backward compatibility */
             value = deserializer.getProperty("targetModuleId") || deserializer.getProperty("dataDescriptor");
             if (value !== void 0) {
                 if(Array.isArray(value)) {
                     this.target = value.map((objectDescriptorModuleIid) => {return this.mainService.objectDescriptorWithModuleId(objectDescriptorModuleIid)});
+                } else if(this.mainService) {
+                    if(value === null) {
+                        this.target = this.mainService
+                    } else {
+                        this.target = this.mainService.objectDescriptorWithModuleId(value);
+                    }
                 } else {
-                    this.target = this.mainService.objectDescriptorWithModuleId(value);
+                    //Last resort, if we can't construct the target, let's carry the data that was supposed to help us do so
+                    this.targetModuleId = value;
                 }
             }
 
@@ -541,10 +550,6 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
         value: undefined
     },
 
-    dataDescriptor: {
-        value: undefined
-    },
-
     /**
      * data is designed to carry the "meat" of an operation's specifics. For a create, it would be all properties
      * of a new object (I'm assuming a create operation is modeling only 1 object's creation).
@@ -683,85 +688,88 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             Connect: DataOperationType.connect,
             Disconnect: DataOperationType.disconnect,
             Create: DataOperationType.create,
-            CreateFailed: DataOperationType.createfailed,
-            CreateCompleted: DataOperationType.createcompleted,
-            CreateCancelled: DataOperationType.createcancelled,
+            CreateFailed: DataOperationType.createFailed,
+            CreateCompleted: DataOperationType.createCompleted,
+            CreateCancelled: DataOperationType.createCancelled,
 
             Copy: DataOperationType.copy,
-            CopyFailed: DataOperationType.copyfailed,
-            CopyCompleted: DataOperationType.copycompleted,
+            CopyFailed: DataOperationType.copyFailed,
+            CopyCompleted: DataOperationType.copyCompleted,
 
             Read: DataOperationType.read,
-            ReadUpdated: DataOperationType.readupdated,
-            ReadProgress: DataOperationType.readprogress, //ReadUpdate
-            ReadUpdate: DataOperationType.readupdate, //ReadUpdate
-            ReadCancel: DataOperationType.readcancel,
-            ReadCanceled: DataOperationType.readcanceled,
-            ReadFailed: DataOperationType.readfailed,
-            ReadCompleted: DataOperationType.readcompleted,
+            ReadUpdated: DataOperationType.readUpdated,
+            ReadProgress: DataOperationType.readProgress, //ReadUpdate
+            ReadUpdate: DataOperationType.readUpdate, //ReadUpdate
+            ReadCancel: DataOperationType.readCancel,
+            ReadCanceled: DataOperationType.readCanceled,
+            ReadFailed: DataOperationType.readFailed,
+            ReadCompleted: DataOperationType.readCompleted,
 
             Update: DataOperationType.update,
-            UpdateCompleted: DataOperationType.updatecompleted,
-            UpdateFailed: DataOperationType.updatefailed,
-            UpdateCancel: DataOperationType.updatecancel,
-            UpdateCanceled: DataOperationType.updatecanceled,
+            UpdateCompleted: DataOperationType.updateCompleted,
+            UpdateFailed: DataOperationType.updateFailed,
+            UpdateCancel: DataOperationType.updateCancel,
+            UpdateCanceled: DataOperationType.updateCanceled,
 
             Merge: DataOperationType.merge,
-            MergeCancel: DataOperationType.mergecancel,
-            MergeFailed: DataOperationType.mergefailed,
-            MergeCompleted: DataOperationType.mergecompleted,
-            MergeCancelled: DataOperationType.mergecancelled,
+            MergeCancel: DataOperationType.mergeCancel,
+            MergeFailed: DataOperationType.mergeFailed,
+            MergeCompleted: DataOperationType.mergeCompleted,
+            MergeCancelled: DataOperationType.mergeCancelled,
 
             Delete: DataOperationType.delete,
-            DeleteCompleted: DataOperationType.deletecompleted,
-            DeleteFailed: DataOperationType.deletefailed,
+            DeleteCompleted: DataOperationType.deleteCompleted,
+            DeleteFailed: DataOperationType.deleteFailed,
 
             Lock: DataOperationType.lock,
-            LockCompleted: DataOperationType.lockcompleted,
-            LockFailed: DataOperationType.lockfailed,
+            LockCompleted: DataOperationType.lockCompleted,
+            LockFailed: DataOperationType.lockFailed,
 
-            RemoteProcedureCall: DataOperationType.remoteinvocation,
-            RemoteProcedureCallCompleted: DataOperationType.remoteinvocationcompleted,
-            RemoteProcedureCallFailed: DataOperationType.remoteinvocationfailed,
-            RemoteInvocation: DataOperationType.remoteinvocation,
-            RemoteInvocationCompleted: DataOperationType.remoteinvocationcompleted,
-            RemoteInvocationFailed: DataOperationType.remoteinvocationfailed,
+            RemoteProcedureCall: DataOperationType.remoteInvocation,
+            RemoteProcedureCallCompleted: DataOperationType.remoteInvocationCompleted,
+            RemoteProcedureCallFailed: DataOperationType.remoteInvocationFailed,
+            RemoteInvocation: DataOperationType.remoteInvocation,
+            RemoteInvocationCompleted: DataOperationType.remoteInvocationCompleted,
+            RemoteInvocationFailed: DataOperationType.remoteInvocationFailed,
 
-            UserAuthentication: DataOperationType.userauthentication,
-            UserAuthenticationUpdate: DataOperationType.userauthenticationupdate,
-            UserAuthenticationCompleted: DataOperationType.userauthenticationcompleted,
-            UserAuthenticationFailed: DataOperationType.userauthenticationfailed,
-            UserAuthenticationTimedout: DataOperationType.userauthenticationtimedout,
+            UserAuthentication: DataOperationType.userAuthentication,
+            UserAuthenticationUpdate: DataOperationType.userAuthenticationUpdate,
+            UserAuthenticationCompleted: DataOperationType.userAuthenticationCompleted,
+            UserAuthenticationFailed: DataOperationType.userAuthenticationFailed,
+            UserAuthenticationTimedout: DataOperationType.userAuthenticationTimedout,
 
-            UserInput: DataOperationType.userinput,
-            UserInputCompleted: DataOperationType.userinputcompleted,
-            UserInputFailed: DataOperationType.userinputfailed,
-            UserInputCanceled: DataOperationType.userinputcanceled,
-            UserInputTimedOut: DataOperationType.userinputtimedout,
+            UserInput: DataOperationType.userInput,
+            UserInputCompleted: DataOperationType.userInputCompleted,
+            UserInputFailed: DataOperationType.userInputFailed,
+            UserInputCanceled: DataOperationType.userInputCanceled,
+            UserInputTimedOut: DataOperationType.userInputTimedout,
 
             Validate: DataOperationType.validate,
-            ValidateFailed: DataOperationType.validatefailed,
-            validateCompleted: DataOperationType.validatecompleted,
-            validateCancelled: DataOperationType.validatecancelled,
+            ValidateFailed: DataOperationType.validateFailed,
+            validateCompleted: DataOperationType.validateCompleted,
+            validateCancelled: DataOperationType.validateCancelled,
 
             Batch: DataOperationType.batch,
-            BatchUpdate: DataOperationType.batchupdate,
-            BatchCompleted: DataOperationType.batchcompleted,
-            BatchFailed: DataOperationType.batchfailed,
+            BatchUpdate: DataOperationType.batchUpdate,
+            BatchCompleted: DataOperationType.batchCompleted,
+            BatchFailed: DataOperationType.batchFailed,
 
-            CreateTransaction: DataOperationType.createtransaction,
-            CreateTransactionCompleted: DataOperationType.createtransactioncompleted,
-            CreateTransactionFailed: DataOperationType.createtransactionfailed,
+            CreateTransaction: DataOperationType.createTransaction,
+            CreateTransactionCompleted: DataOperationType.createTransactionCompleted,
+            CreateTransactionFailed: DataOperationType.createTransactionFailed,
 
-            CreateSavePoint: DataOperationType.createsavepoint,
+            TransactionUpdated: DataOperationType.transactionUpdated,
 
-            PerformTransaction: DataOperationType.performtransaction,
-            PerformTransactionCompleted: DataOperationType.performtransactioncompleted,
-            PerformTransactionFailed: DataOperationType.performtransactionfailed,
 
-            RollbackTransaction: DataOperationType.rollbacktransaction,
-            RollbackTransactionCompleted: DataOperationType.rollbacktransactioncompleted,
-            RollbackTransactionFailed: DataOperationType.rollbacktransactionfailed,
+            CreateSavePoint: DataOperationType.createSavePoint,
+
+            PerformTransaction: DataOperationType.performTransaction,
+            PerformTransactionCompleted: DataOperationType.performTransactionCompleted,
+            PerformTransactionFailed: DataOperationType.performTransactionFailed,
+
+            RollbackTransaction: DataOperationType.rollbackTransaction,
+            RollbackTransactionCompleted: DataOperationType.rollbackTransactionCompleted,
+            RollbackTransactionFailed: DataOperationType.rollbackTransactionFailed,
         }
     }
 
