@@ -19,6 +19,7 @@ Object.defineProperty(String.prototype, "equals", {
     value: function (that) {
         return this.valueOf() === Object.getValueOf(that);
     },
+    enumerable: false,
     writable: true,
     configurable: true
 });
@@ -34,6 +35,7 @@ Object.defineProperty(String.prototype, "contains", {
     value: function (substring) {
         return this.indexOf(substring) !== -1;
     },
+    enumerable: false,
     writable: true,
     configurable: true
 });
@@ -54,10 +56,27 @@ Object.defineProperty(String.prototype, "toCapitalized", {
         var value;
         return toCapitalized.cache.get(String(this)) || (toCapitalized.cache.set(String(this),(value = this[0].toUpperCase() + this.slice(1))) ? value : null);
     },
+    enumerable: false,
     writable: true,
     configurable: true
 });
 String.prototype.toCapitalized.cache = new Map();
+
+/*
+    TODO: implement toLocaleCapitalized
+    str.toLocaleCapitalized()
+    str.toLocaleCapitalized(locale)
+    str.toLocaleCapitalized([locale, locale, ...])
+
+*/
+Object.defineProperty(String.prototype, "toLocaleCapitalized", {
+    value: function toLocaleCapitalized() {
+        return (this[0].toLocaleCapitalized.apply(this,arguments) + this.slice(1));
+    },
+    enumerable: false,
+    writable: true,
+    configurable: true
+});
 
 
 
@@ -98,6 +117,7 @@ if (!String.prototype.toCamelCase) {
         value: function toCamelCase() {
             return _toCamelCase(this, toCamelCase.cache);
         },
+        enumerable: false,
         writable: true,
         configurable: true
     });
@@ -109,9 +129,38 @@ if (!String.prototype.toCamelCase) {
         value: function toLowerCamelCase () {
             return _toCamelCase(this, toLowerCamelCase.cache, true);
         },
+        enumerable: false,
         writable: true,
         configurable: true
     });
 
     String.prototype.toLowerCamelCase.cache = Object.create(null);
 }
+
+if(typeof String.prototype.removeSuffix !== "function") {
+    Object.defineProperty(String.prototype, "removeSuffix", {
+        value: function (suffix) {
+
+            if (this.length) {
+                if (suffix && suffix.length) {
+                    var index = this.lastIndexOf(suffix);
+
+                    if (index !== -1) {
+                        return this.substring(0, index);
+                    } else {
+                        return this;
+                    }
+                } else {
+                    return this;
+                }
+            } else {
+                return this;
+            }
+        },
+        enumerable: false,
+        writable: true,
+        configurable: true,
+    });
+
+}
+
