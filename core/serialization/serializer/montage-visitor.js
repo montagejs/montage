@@ -338,8 +338,21 @@ var MontageVisitor = Montage.specialize({
         value: function (object) {
             var moduleId = this.getObjectModuleId(object),
                 defaultObjectName,
-                objectInfo = Montage.getInfoForObject(object),
-                objectName = objectInfo.objectName;
+                objectInfo,
+                objectName;
+
+            /*
+                If the object was deserialized from an .mjson, we need to re-serialize it as it's conatructor's moduleId
+            */
+            if(moduleId.endsWith(".mjson")) {
+                moduleId = this.getObjectModuleId(object.constructor);
+                objectInfo = Montage.getInfoForObject(object.constructor);
+            } else {
+                objectInfo = Montage.getInfoForObject(object);
+            }
+
+            objectName = objectInfo.objectName;
+
 
             defaultObjectName = MontageSerializerModule.MontageSerializer.getDefaultObjectNameForModuleId(moduleId);
 
