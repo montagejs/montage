@@ -28,8 +28,14 @@ exports.RawEmbeddedValueToObjectConverter = RawValueToObjectConverter.specialize
                 convertedValue,
                 result;
 
-
-            return Promise.all([this._descriptorToFetch, this.service]).then(function (values) {
+            /*
+                besides returning a default value, or a shared "Missing value" singleton, a feature we don't have, there's not much we can do here:
+            */
+            if(v === null) {
+                return Promise.resolveNull;
+            } else if( v === undefined) {
+                return Promise.resolveUndefined;
+            } else return Promise.all([this._descriptorToFetch, this.service]).then(function (values) {
                 var typeToFetch = values[0],
                     service = values[1];
 
