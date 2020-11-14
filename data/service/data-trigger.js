@@ -463,7 +463,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
     getObjectProperty: {
         value: function (object) {
             //If the object is not created and not saved, we fetch the value
-            if(!this._service.createdDataObjects.has(object)) {
+            if(!this._service.isObjectCreated(object)) {
                 var status = this._getValueStatus(object);
                 return  status ?             status.promise :
                         status === null ?   this._service.nullPromise :
