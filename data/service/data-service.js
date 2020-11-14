@@ -1466,7 +1466,9 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
     getObjectProperties: {
         value: function (object, propertyNames) {
 
-
+            if(!object) {
+                return Promise.resolveNull;
+            }
             /*
                 Benoit:
 
@@ -1482,7 +1484,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             } else if (this.isRootService) {
                 // Get the data, accepting property names as an array or as a list
                 // of string arguments while avoiding the creation of any new array.
-                var names = Array.isArray(propertyNames) ? propertyNames : arguments,
+                var names = Array.isArray(propertyNames) ? propertyNames : Array.prototype.slice.call(arguments, 1),
                     start = names === propertyNames ? 0 : 1;
                 return this._getOrUpdateObjectProperties(object, names, start, false);
             }
@@ -2199,7 +2201,17 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
     isObjectCreated: {
         value: function(object) {
-            return this.createdDataObjects.has(object);
+            var isObjectCreated = this.createdDataObjects.has(object);
+
+            if(!isObjectCreated) {
+                var service = this._getChildServiceForObject(object);
+                if(service) {
+                    isObjectCreated = service.isObjectCreated(object);
+                } else {
+                    isObjectCreated = false;
+                }
+            }
+            return isObjectCreated;
         }
     },
 
@@ -2580,6 +2592,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         value: function (changeEvent, propertyDescriptor, inversePropertyDescriptor) {
 
             var dataObject =  changeEvent.target,
+                isCreatedObject = this.isObjectCreated(dataObject),
                 key = changeEvent.key,
                 keyValue = changeEvent.keyValue,
                 addedValues = changeEvent.addedValues,
@@ -2588,7 +2601,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 inversePropertyDescriptor,
                 self = this;
 
-            if(!this.createdDataObjects.has(dataObject)) {
+            if(!isCreatedObject) {
                 this.changedDataObjects.add(dataObject);
             }
 
@@ -2645,30 +2658,47 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 //We later need to convert these into dataIdentifers, we could avoid a loop later
                 //doing so right here.
                 if(addedValues) {
-                    var registeredAddedValues = manyChanges.addedValues;
-                    if(!registeredAddedValues) {
-                        manyChanges.addedValues = (registeredAddedValues = new Set(addedValues));
-                        self._addDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, addedValues, inversePropertyDescriptor);
 
+                    /*
+                        In this case, the array already contains the added value and we'll save it all anyway. So we just propagate.
+                    */
+                    if(Array.isArray(manyChanges) && isCreatedObject) {
+                        self._addDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, addedValues, inversePropertyDescriptor);
                     } else {
-                        for(i=0, countI=addedValues.length;i<countI;i++) {
-                            registeredAddedValues.add(addedValues[i]);
-                            self._addDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, addedValues[i], inversePropertyDescriptor);
+                        var registeredAddedValues = manyChanges.addedValues;
+                        if(!registeredAddedValues) {
+
+                            manyChanges.addedValues = (registeredAddedValues = new Set(addedValues));
+                            self._addDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, addedValues, inversePropertyDescriptor);
+
+                        } else {
+
+                            for(i=0, countI=addedValues.length;i<countI;i++) {
+                                registeredAddedValues.add(addedValues[i]);
+                                self._addDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, addedValues[i], inversePropertyDescriptor);
+                            }
                         }
                     }
                 }
+
                 if(removedValues) {
-                    var registeredRemovedValues = manyChanges.removedValues;
-                    if(!registeredRemovedValues) {
-                        manyChanges.removedValues = (registeredRemovedValues = new Set(removedValues));
+                    /*
+                        In this case, the array already contains the added value and we'll save it all anyway. So we just propagate.
+                    */
+                    if(Array.isArray(manyChanges) && isCreatedObject) {
                         self._removeDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, removedValues, inversePropertyDescriptor);
                     } else {
-                        for(i=0, countI=removedValues.length;i<countI;i++) {
-                            registeredRemovedValues.delete(removedValues[i]);
-                            self._removeDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, removedValues[i], inversePropertyDescriptor);
+                        var registeredRemovedValues = manyChanges.removedValues;
+                        if(!registeredRemovedValues) {
+                            manyChanges.removedValues = (registeredRemovedValues = new Set(removedValues));
+                            self._removeDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, removedValues, inversePropertyDescriptor);
+                        } else {
+                            for(i=0, countI=removedValues.length;i<countI;i++) {
+                                registeredRemovedValues.delete(removedValues[i]);
+                                self._removeDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, removedValues[i], inversePropertyDescriptor);
+                            }
                         }
                     }
-
                     /*
                         Work on local graph integrity. When objects are disassociated, it could mean some deletions may happen bases on delete rules.
                         App side goal is to maintain the App graph, server's side is to maintain database integrity. Both needs to act on delete rules:
@@ -2783,6 +2813,11 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      */
     fetchData: {
         value: function (queryOrType, optionalCriteria, optionalStream) {
+
+            if(!queryOrType) {
+                return Promise.resolveNull;
+            }
+
             var self = this,
                 isSupportedType = !(queryOrType instanceof DataQuery),
                 type = isSupportedType && queryOrType,
@@ -3139,7 +3174,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      */
     deleteDataObject: {
         value: function (object) {
-            var saved = !this.createdDataObjects.has(object);
+            var saved = !this.isObjectCreated(object);
             this.deletedDataObjects.add(object);
             return this._updateDataObject(object, saved && "deleteDataObject");
         }
