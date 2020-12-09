@@ -2134,6 +2134,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 operations.sort(this._compareOfflineOperations);
                 return self.performOfflineOperations(operations);
             }).catch(function (e) {
+                console.error("Failed to go online (" + e.message + ")");
                 console.error(e);
             });
         }
@@ -2175,24 +2176,47 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             var self = this,
                 dummy = new WeakMap(),
                 services = this._offlineOperationServices,
-                array, promises;
+                servicesArray;
+
             this.childServices.forEach(function (child) {
-                var promise = child.readOfflineOperations(dummy);
-                if (promise !== self.emptyArrayPromise) {
-                    array = array || [];
-                    promises = promises || [];
-                    promises.push(promise.then(function(operations) {
-                        var i, n;
-                        for (i = 0, n = operations && operations.length; i < n; i += 1) {
-                            services.set(operations[i], child);
-                            array.push(operations[i]);
-                        }
-                        return null;
-                    }));
-                }
+                servicesArray = servicesArray || [];
+                servicesArray.push(child);
             });
-            return promises ? Promise.all(promises).then(function () { return array; }) :
-                              this.emptyArrayPromise;
+            return servicesArray ? this._readNextOfflineOperations(servicesArray) : this.emptyArrayPromise;
+        }
+    },
+
+    _readNextOfflineOperations: {
+        value: function (servicesArray, operations, index) {
+            var self = this,
+                services = this._offlineOperationServices,
+                child, promise;
+            index = index || 0;
+            child = servicesArray[index];
+            promise = child.readOfflineOperations();
+            if (promise !== this.emptyArrayPromise) {
+                operations = operations || [];
+                return promise.then(function (childOperations) {
+                    var i, n;
+                    for (i = 0, n = childOperations && childOperations.length; i < n; i += 1) {
+                        services.set(childOperations[i], child);
+                        operations.push(childOperations[i]);
+                    }
+                    return self._continueReadNextOfflineOperations(servicesArray, operations, index);
+                }).catch(function (e) {
+                    console.error("DataService._readNextOfflineOperations FAILED", e);
+                    return self._continueReadNextOfflineOperations(servicesArray, operations, index);
+                });
+            } else {
+                return self._continueReadNextOfflineOperations(servicesArray, operations, index);
+            }
+        }
+    },
+
+    _continueReadNextOfflineOperations: {
+        value: function (servicesArray, operations, index) {
+            index++;
+            return index < servicesArray.length ? this._readNextOfflineOperations(servicesArray, operations, index) : this.emptyArrayPromise;
         }
     },
 
