@@ -70,7 +70,7 @@ MontageBoot.loadPackage = function (location, config) {
         if(!lint.JSHINT) {
             lint.JSHINT = require("jshint");
         }
-        if (!lint.JSHINT.JSHINT(module.text)) {
+        if (!lint.JSHINT.JSHINT(module.text,{esversion: 6})) {
             console.warn("JSHint Error: "+module.location);
             lint.JSHINT.JSHINT.errors.forEach(function (error) {
                 if (error) {
