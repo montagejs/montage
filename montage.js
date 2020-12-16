@@ -406,7 +406,11 @@
                     } else {
                         //mainDatareelModulePromise = applicationRequire.makeRequire("data/main.datareel/main.mjson").async("data/main.datareel/main.mjson");
                         mainDatareelLocation = "data/main.datareel/main.mjson";
-                        mainDatareelModulePromise = applicationRequire.async("data/main.datareel/main.mjson");
+
+                        //Check if we have a redirection in mappings. Mr does that, when we bring mr inside montage.js, we should be able to simplify this.
+                        // mainDatareelLocation = applicationRequire.mappings[mainDatareelLocation].location || mainDatareelLocation;
+
+                        mainDatareelModulePromise = applicationRequire.async(mainDatareelLocation);
                         //mainDatareelModulePromise = mrPromise.resolve();
                     }
 
@@ -465,7 +469,14 @@
                     root;
                 module.deserializer = deserializer;
                 deserializer.init(module.text, deserializerRequire, void 0, module, true);
-                root = deserializer.deserializeObject();
+
+                try {
+                    root = deserializer.deserializeObject();
+                } catch(error) {
+                    console.log(module.id+" deserializeObject() failed with error:",error);
+
+                    throw error;
+                }
 
                 // console.log("********MJSONCompilerFactory END compileMJSONFile",module.id);
 
