@@ -16,11 +16,53 @@ var Environment = exports.Environment = Montage.specialize({
         }
     },
 
+    /*
+        set by EventManager to avoid circular dependencies... Should environment be exposed only via application and live inside application.js?
+    */
+    application: {
+        value: null
+    },
+
     systemLocaleIdentifier: {
         get: function () {
             return typeof navigator === "object"
                 ? (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en'
                 : "en"
+        }
+    },
+
+    /**
+     * The name of the stage the code is running.
+     *
+     * this.application.url.searchParams.get("stage");
+     *
+     * @property {string}
+     */
+    _stage: {
+        value: undefined
+    },
+    stage: {
+        get: function() {
+            if(this._stage === undefined) {
+                //Check if we have an argument:
+                var stageArgument = this.application.url && this.application.url.searchParams.get("stage");
+
+                if(stageArgument) {
+                    this._stage = stageArgument;
+                } else if(global.location.hostname === "127.0.0.1" || global.location.hostname === "localhost" || global.location.hostname.endsWith(".local") ) {
+                    this._stage = "dev";
+                } else {
+                    /*
+                        could be staging or production or anything else, we don't know and stop the guessing game.
+                    */
+                   this._stage = null;
+                }
+            }
+
+            return this._stage;
+        },
+        set: function(value) {
+            this._stage = value;
         }
     },
 
