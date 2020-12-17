@@ -1493,24 +1493,24 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @method
      */
     _mapObjectPropertyToRawData: {
-        value: function (object, propertyName, record, context) {
+        value: function (object, propertyName, record, context, added, removed, lastReadSnapshot, rawDataSnapshot) {
             var mapping = this.mappingForObject(object),
                 result;
 
             if (mapping) {
-                result = mapping.mapObjectPropertyToRawData(object, propertyName, record, context);
+                result = mapping.mapObjectPropertyToRawData(object, propertyName, record, context, added, removed, lastReadSnapshot, rawDataSnapshot);
             }
 
             if (record) {
                 if (result) {
-                    var otherResult = this.mapObjectPropertyToRawData(object, propertyName, record, context);
+                    var otherResult = this.mapObjectPropertyToRawData(object, propertyName, record, context, added, removed, lastReadSnapshot, rawDataSnapshot);
                     if (this._isAsync(result) && this._isAsync(otherResult)) {
                         result = Promise.all([result, otherResult]);
                     } else if (this._isAsync(otherResult)) {
                         result = otherResult;
                     }
                 } else {
-                    result = this.mapObjectPropertyToRawData(object, propertyName, record, context);
+                    result = this.mapObjectPropertyToRawData(object, propertyName, record, context, added, removed);
                 }
             }
 
@@ -1533,6 +1533,39 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
         }
     },
+
+    /**
+    * Method called by mappings when a mapObjectPropertyToRawData is complete.
+    *
+    * @method
+    * @argument {Object} mapping        - the mapping object
+    * @argument {Object} object         - An object whose properties' values
+    *                                     hold the model data.
+    * @argument {string} propertyName   - The name of the property being mapped
+    * @argument {Object} data           - The raw data object on which to assign the property
+    * @argument {string} propertyName   - The name of the raw property to which
+    *                                     to assign the values.
+    */
+   mappingDidMapObjectPropertyToRawDataProperty: {
+       value: function (mapping, object, propertyName, data, rawPropertyName) {
+
+       }
+   },
+
+    /**
+     * Method called by mappings when asked for a schemaDescriptor and don't have one.
+     *
+     * @method
+     * @argument {Object} mapping        - the mapping object
+     *                                     to assign the values.
+     * @returns {ObjectDescriptor}  -
+     */
+    // mappingRequestsSchemaDescriptor: {
+    //     value: function (mapping) {
+    //         return null;
+    //     }
+    // },
+
     /**
      * @todo Document.
      * @todo Make this method overridable by type name with methods like
