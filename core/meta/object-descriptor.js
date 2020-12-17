@@ -678,6 +678,19 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
         }
     },
 
+    /*
+        s = new Set(m.keys())
+        Set(2) {"a", "b"}
+
+        a = Array.from(m.keys())
+        (2) ["a", "b"]
+    */
+    propertyDescriptorNamesIterator: {
+        get: function() {
+            return this._propertyDescriptorsTable.keys();
+        }
+    },
+
     /**
      * Adds a new property descriptor to this object descriptor.
      *
