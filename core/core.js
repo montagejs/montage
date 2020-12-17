@@ -1240,7 +1240,12 @@ var bindingPropertyDescriptors = {
      */
     defineBindings: {
         value: function (descriptors, commonDescriptor) {
-            return Bindings.defineBindings(this, descriptors, commonDescriptor);
+            if (descriptors) {
+                for (var i=0, name, keys = Object.keys(descriptors); (name = keys[i]); i++) {
+                        this.defineBinding(name, descriptors[name], commonDescriptor);
+                }
+            }
+            //return Bindings.defineBindings(this, descriptors, commonDescriptor);
         }
     },
 
