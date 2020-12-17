@@ -37,17 +37,6 @@ var FIRST_LOAD_KEY_SUFFIX = "-is-first-load";
 var Application = exports.Application = Target.specialize( /** @lends Application.prototype # */ {
 
     /**
-     * Provides a reference to the Montage event manager used in the
-     * application.
-     *
-     * @property {EventManager} value
-     * @default null
-     */
-    eventManager: {
-        value: null
-    },
-
-    /**
      * Provides a reference to the parent application.
      *
      * @property {Application} value
@@ -68,6 +57,14 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     isFirstLoad: {
         get: function () {
             return this._isFirstLoad;
+        }
+    },
+
+    url: {
+        get: function() {
+            return document && document.location
+                        ? new URL(document.location)
+                        :  null;
         }
     },
 
