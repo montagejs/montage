@@ -483,6 +483,8 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
         },
         set: function (application) {
             this._application = application;
+            //To avoid circular depenencies, we set it on environment
+            this.environment.application = application;
         }
     },
 
