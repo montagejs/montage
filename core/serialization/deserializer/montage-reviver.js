@@ -70,10 +70,12 @@ var ModuleLoader = Montage.specialize({
             }
 
             if (moduleDescriptor.mappingRedirect !== void 0) {
-                return this.getExports(
-                    moduleDescriptor.mappingRequire,
-                    moduleDescriptor.mappingRedirect
-                );
+                return moduleDescriptor.mappingRequire.getModuleDescriptor(moduleDescriptor.mappingRedirect);
+
+                // return this.getExports(
+                //     moduleDescriptor.mappingRequire,
+                //     moduleDescriptor.mappingRedirect
+                // );
             }
 
             return moduleDescriptor;
@@ -100,6 +102,8 @@ var ModuleLoader = Montage.specialize({
 
                 if (!module && !reviver._isSync) {
                     module = _require.async(moduleId);
+                } else {
+                    throw err;
                 }
             }
 
