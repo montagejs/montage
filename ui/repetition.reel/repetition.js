@@ -755,15 +755,15 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * for corresponding keys.
      * @private
      */
-    _superMakePropertyObservable : {
-        value: PropertyChanges.prototype.makePropertyObservable
-    },
+    // _superMakePropertyObservable : {
+    //     value: PropertyChanges.prototype.makePropertyObservable
+    // },
     makePropertyObservable: {
         value: function(key) {
             if(key === "selection") {
                 this.isSelectionEnabled = true;
             }
-            this._superMakePropertyObservable( key);
+            this.super(key);
         }
     },
 
