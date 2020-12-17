@@ -1,14 +1,16 @@
 /**
- * @module montage/core/converter/internationalDateToStringFormatter
+ * @module montage/core/converter/international-date-to-string-formatter
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter,
     Locale = require("../locale").Locale;
 
 /**
- * Inverts the value of a boolean value.
+ * Formats a Date to a String using standard Intl.DateTimeFormat.
  *
- * @class InvertConverter
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat
+ *
+ * @class InternationalDateToStringFormatter
  * @extends Converter
  */
 var InternationalDateToStringFormatter = exports.InternationalDateToStringFormatter = Converter.specialize({
@@ -60,7 +62,7 @@ var InternationalDateToStringFormatter = exports.InternationalDateToStringFormat
     },
     convert: {
         value: function (v) {
-            return this._dayDateFormatter.format(v);
+            return v ? this._dayDateFormatter.format(v) : "";
         }
     }
 });
