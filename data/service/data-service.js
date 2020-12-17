@@ -905,12 +905,22 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      */
     mappingForType: {
         value: function (type) {
-            var mapping, localType = this.objectDescriptorForType(type);
 
-            while(localType && !(mapping = this._mappingByType.has(localType) && this._mappingByType.get(localType))) {
-                localType = localType.parent;
+            if(this.isRootService) {
+                var childService = this.childServiceForType(type);
+                if(childService) {
+                    return childService.mappingForType(type);
+                } else {
+                    return null;
+                }
+            } else {
+                var mapping, localType = this.objectDescriptorForType(type);
+
+                while(localType && !(mapping = this._mappingByType.has(localType) && this._mappingByType.get(localType))) {
+                    localType = localType.parent;
+                }
+                return mapping || null;
             }
-            return mapping || null;
         }
     },
 
@@ -1467,7 +1477,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         value: function (object, propertyNames) {
 
             if(!object) {
-                return Promise.resolveNull;
+                return Promise.resolve(null);
             }
             /*
                 Benoit:
@@ -1484,8 +1494,9 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             } else if (this.isRootService) {
                 // Get the data, accepting property names as an array or as a list
                 // of string arguments while avoiding the creation of any new array.
-                var names = Array.isArray(propertyNames) ? propertyNames : Array.prototype.slice.call(arguments, 1),
-                    start = names === propertyNames ? 0 : 1;
+                //var names = Array.isArray(propertyNames) ? propertyNames : Array.prototype.slice.call(arguments, 1),
+                var names = Array.isArray(propertyNames) ? propertyNames : arguments,
+                start = names === propertyNames ? 0 : 1;
                 return this._getOrUpdateObjectProperties(object, names, start, false);
             }
             else {
@@ -2328,6 +2339,20 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                     if(inversePropertyCardinality > 1) {
                         /*
                             value needs to be added to the other's side:
+
+                            BUT - TODO - doing value[inversePropertyName] actually fires the trigger if wasn't there alredy.
+                            In some cases, we rely on the value being there so it gets saved properly, by putting a foreignKey in for example.
+                            It might be possible to handle that when we save only, or we could do the lookup using the property getter's secret shouldFetch argument.
+
+                             inverseValue = Object.getPropertyDescriptor(value,inversePropertyName).get(false); //<-shouldFetch false
+
+                            If we add the value and we don't know what was there (because we didn't fetch), we won't be able to do optimistic locking
+                            We also would need to mark that property as "incommplete?", which we would need to do to able to add to a relationship without resolving it.
+                            such that if the user actually fetch that property we can re-apply what was added/removed locally to what was actually fetched.
+
+                            Also value[inversePropertyName] does fire the trigger, but it's async, so we're likely missing the value here and we migh need to use a promise with
+                            getObjectProperty/ies
+
                         */
                         inverseValue = value[inversePropertyName];
                         if(inverseValue) {
@@ -2563,8 +2588,16 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             var dataObject =  changeEvent.target,
                 key = changeEvent.key,
                 objectDescriptor = this.objectDescriptorForObject(dataObject),
-                propertyDescriptor = objectDescriptor.propertyDescriptorForName(key),
-                inversePropertyName = propertyDescriptor.inversePropertyName,
+                propertyDescriptor = objectDescriptor.propertyDescriptorForName(key);
+
+
+            //Property with definitions are read-only shortcuts, we don't want to treat these as changes the raw layers will want to know about
+            if(propertyDescriptor.definition) {
+                return;
+            }
+
+
+            var inversePropertyName = propertyDescriptor.inversePropertyName,
                 inversePropertyDescriptor;
 
             if(inversePropertyName) {
