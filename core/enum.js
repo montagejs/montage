@@ -166,6 +166,8 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
                     value: value !== void 0 && value !== null ? value : intValue
                 });
 
+                (this._members || (this._members = [])).push(member);
+
                 (_membersByValue || this._membersByValue)[intValue] = member;
                 (_membersIntValue || this._membersIntValue).set(member, intValue);
             }
