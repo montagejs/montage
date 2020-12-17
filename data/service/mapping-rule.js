@@ -2,6 +2,7 @@ var Montage = require("montage").Montage,
     compile = require("core/frb/compile-evaluator"),
     parse = require("core/frb/parse"),
     Promise = require("core/promise").Promise,
+    syntaxProperties = require("core/frb/syntax-properties"),
     deprecate = require("core/deprecate");
 
 
@@ -92,15 +93,7 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
                 type = syntax.type,
                 _requirements = requirements || null;
 
-            if (type === "property" && args[0].type === "value") {
-                (_requirements || (_requirements = [])).push(args[1].value);
-            } else if (type === "property" && args[0].type === "property") {
-                var subProperty = [args[1].value];
-                this._parseRequirementsFromSyntax(args[0], subProperty);
-                (_requirements || (_requirements = [])).push(subProperty.reverse().join("."));
-            } else if (type === "record") {
-                _requirements = this._parseRequirementsFromRecord(syntax, _requirements);
-            } else if(type === "value" && !args && this.sourcePath === "this") {
+            if(type === "value" && !args && this.sourcePath === "this") {
                 /*
                     added for pattern used for polymorphic relationship, where we have multiple foreignKeys for each possible destination, and we need to look at the converter and it's foreignDescriptorMappings for their expression syntax.
                 */
@@ -111,29 +104,69 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
                 if(foreignDescriptorMappings) {
                     for(var i=0, countI = foreignDescriptorMappings.length, iRawDataTypeMapping;(i<countI);i++) {
                         iRawDataTypeMapping = foreignDescriptorMappings[i];
-                        _requirements = this._parseRequirementsFromRecord(iRawDataTypeMapping.expressionSyntax, _requirements);
+                        //I think these 2 are functionally equivalent, keeping here for more testing
+                        _requirements = syntaxProperties(iRawDataTypeMapping.expressionSyntax, _requirements);
+                        //_requirements = this._parseRequirementsFromRecord(iRawDataTypeMapping.expressionSyntax, _requirements);
                     }
                 }
+            } else {
+                _requirements = syntaxProperties(syntax);
             }
 
             return _requirements;
         }
     },
 
-    _parseRequirementsFromRecord: {
-        value: function (syntax, requirements) {
-            var args = syntax.args,
-                keys = Object.keys(args),
-                _requirements = requirements || null,
-                i, countI;
 
-            for(i=0, countI = keys.length;(i<countI); i++) {
-                _requirements = this._parseRequirementsFromSyntax(args[keys[i]], _requirements);
-            };
 
-            return _requirements;
-        }
-    },
+    // _parseRequirementsFromSyntax: {
+    //     value: function (syntax, requirements) {
+    //         var args = syntax.args,
+    //             type = syntax.type,
+    //             _requirements = requirements || null;
+
+    //         if (type === "property" && args[0].type === "value") {
+    //             (_requirements || (_requirements = [])).push(args[1].value);
+    //         } else if (type === "property" && args[0].type === "property") {
+    //             var subProperty = [args[1].value];
+    //             this._parseRequirementsFromSyntax(args[0], subProperty);
+    //             (_requirements || (_requirements = [])).push(subProperty.reverse().join("."));
+    //         } else if (type === "record") {
+    //             _requirements = this._parseRequirementsFromRecord(syntax, _requirements);
+    //         } else if(type === "value" && !args && this.sourcePath === "this") {
+    //             /*
+    //                 added for pattern used for polymorphic relationship, where we have multiple foreignKeys for each possible destination, and we need to look at the converter and it's foreignDescriptorMappings for their expression syntax.
+    //             */
+
+    //             var converter = this.converter,
+    //             foreignDescriptorMappings = converter && converter.foreignDescriptorMappings;
+
+    //             if(foreignDescriptorMappings) {
+    //                 for(var i=0, countI = foreignDescriptorMappings.length, iRawDataTypeMapping;(i<countI);i++) {
+    //                     iRawDataTypeMapping = foreignDescriptorMappings[i];
+    //                     _requirements = this._parseRequirementsFromRecord(iRawDataTypeMapping.expressionSyntax, _requirements);
+    //                 }
+    //             }
+    //         }
+
+    //         return _requirements;
+    //     }
+    // },
+
+    // _parseRequirementsFromRecord: {
+    //     value: function (syntax, requirements) {
+    //         var args = syntax.args,
+    //             keys = Object.keys(args),
+    //             _requirements = requirements || null,
+    //             i, countI;
+
+    //         for(i=0, countI = keys.length;(i<countI); i++) {
+    //             _requirements = this._parseRequirementsFromSyntax(args[keys[i]], _requirements);
+    //         };
+
+    //         return _requirements;
+    //     }
+    // },
 
     /**
      * Identifier for the child service of ExpressionDataMapping.service
