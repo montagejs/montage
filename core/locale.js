@@ -77,6 +77,8 @@ var Locale = exports.Locale = Montage.specialize({
     /**
      * initializes a new calendar locale by a given identifier.
      *
+     * TODO: don't loose info about options....
+     *
      * @function
      * @param {String} localeIdentifier The module id of the HTML page to load.
      * @param {Object} options          An object that contains configuration for the Locale. Keys are Unicode locale tags,
@@ -85,13 +87,29 @@ var Locale = exports.Locale = Montage.specialize({
      * @returns {Locale}                a new Locale instance.
      */
     initWithIdentifier: {
-        value: function(localeIdentifier) {
+        value: function(localeIdentifier, options) {
             this.identifier = localeIdentifier;
             return this;
         }
     },
     _localeByIdentifier: {
         value: new Map()
+    },
+
+    serializeSelf: {
+        value: function (serializer) {
+            serializer.setProperty("identifier", this.identifier);
+        }
+    },
+
+    deserializeSelf: {
+        value: function (deserializer) {
+            var value;
+            value = deserializer.getProperty("identifier");
+            if (value !== void 0) {
+                this.identifier = value;
+            }
+        }
     },
 
     /* Instance properties */
