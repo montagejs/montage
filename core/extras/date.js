@@ -12,6 +12,22 @@ var Range = require("../range").Range;
  * @external
  */
 
+
+
+/**
+ *  Returns a date UnixTime, which is the number of seconds since the Unix Epoch.
+ *
+ *  @property external:Date#unixTime
+ *  @returns {Number} - the UnixTime
+*/
+Object.defineProperty(Date.prototype, "unixTime", {
+    get: function () {
+        return this.getTime()/1000|0;
+    },
+    enumerable: true,
+    configurable: true
+});
+
 /**
  *  Creates a copy of a date.
  *
@@ -54,48 +70,59 @@ Object.defineProperty(Date.prototype,"adjustComponentValues", {
             month,
             myYear;
 
-        if(Number.isFinite(milliseconds)) {
+        if(Number.isFinite(milliseconds) && milliseconds !== 0) {
             millisecond = this.millisecond;
             millisecond += milliseconds;
             this.millisecond = milliseconds;
         }
 
-        if(Number.isFinite(seconds)) {
+        if(Number.isFinite(seconds) && seconds !== 0) {
             second = this.second;
             second += seconds;
             this.second = second;
         }
 
-        if(Number.isFinite(minutes)) {
-            inute = this.minute;
+        if(Number.isFinite(minutes) && minutes !== 0) {
+            minute = this.minute;
             minute += minutes;
             this.minute = minute;
         }
 
-        if(Number.isFinite(hours)) {
+        if(Number.isFinite(hours) && hours !== 0) {
             hour = this.hour;
             hour += hours;
             this.hour = hour;
         }
 
-        if(Number.isFinite(days)) {
+        if(Number.isFinite(days) && days !== 0) {
             myDay = this.day;
             myDay += days;
             this.day = myDay;
         }
 
-        if(Number.isFinite(monthIndex)) {
+        if(Number.isFinite(monthIndex) && monthIndex !== 0) {
             month = this.month;
             month += monthIndex;
             this.month = month;
         }
 
-        if(Number.isFinite(year)) {
+        if(Number.isFinite(year) && year !== 0) {
             myYear = this.year;
             myYear += year;
             this.year = myYear;
         }
     },
+    enumerable: false,
+    configurable: true
+});
+
+Object.defineProperty(Date.prototype,"dateByAdjustingComponentValues", {
+    value: function dateByAdjustingComponentValues(year, monthIndex, day, hours, minutes, seconds, milliseconds) {
+        var calendarDate = this.clone();
+        calendarDate.adjustComponentValues(year, monthIndex, day, hours, minutes, seconds, milliseconds);
+        return calendarDate;
+    },
+    writable: true,
     enumerable: false,
     configurable: true
 });
