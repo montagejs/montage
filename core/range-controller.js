@@ -113,6 +113,11 @@ Object.defineProperty(_RangeSelection.prototype, "swap_or_push", {
     configurable: false,
     value: function(start, howMany, itemsToAdd) {
         var content = this.rangeController.content;
+
+        if(!content) {
+            return;
+        }
+
         this.contentEquals = content && content.contentEquals || Object.is;
         start = start >= 0 ? start : this.length + start;
         var plus;
@@ -153,13 +158,13 @@ Object.defineProperty(_RangeSelection.prototype, "swap_or_push", {
                     }
 
                     // if the same item appears twice in the add list, only add it once
-                    if (itemsToAdd.findLast(itemsToAdd[i]) > i) {
+                    if (itemsToAdd.findLastValue(itemsToAdd[i]) > i) {
                         continue;
                     }
 
                     // if the item is already in the selection, don't add it
                     // unless it's in the part that we're about to delete.
-                    indexInSelection = this.find(itemsToAdd[i]);
+                    indexInSelection = this.findValue(itemsToAdd[i]);
                     if(indexInSelection < 0 ||
                             (indexInSelection >= start && indexInSelection < start + minusLength)) {
                                 plus.push(itemsToAdd[i]);
@@ -773,14 +778,14 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
                 if (this.selection.length) {
                     this.selection.deleteEach(diff);
-
-                    // ensure selection always has content
-                    if (this.selection.length === 0 && this.content && this.content.length &&
-                        this.avoidsEmptySelection && !this.allowsMultipleSelection) {
-                        // selection can't contain previous content value as content already changed
-                        this.selection.add(this.content[this.content.length - 1]);
-                    }
                 }
+            }
+
+            // ensure selection always has content
+            if (this.selection.length === 0 && this.content && this.content.length &&
+                this.avoidsEmptySelection && !this.allowsMultipleSelection) {
+                // selection can't contain previous content value as content already changed
+                this.selection.add(this.content[this.content.length - 1]);
             }
         }
     },
