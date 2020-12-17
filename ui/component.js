@@ -29,7 +29,9 @@ var Montage = require("../core/core").Montage,
     drawLogger = require("../core/logger").logger("drawing").color.blue(),
     WeakMap = require("core/collections/weak-map"),
     Map = require("core/collections/map"),
-    Set = require("core/collections/set");
+    Set = require("core/collections/set"),
+    currentEnvironment = require("core/environment").currentEnvironment,
+    PropertyChanges = require("core/collections/listen/property-changes");
 
 /**
  * @const
@@ -859,6 +861,18 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
+    _environment: {
+        value: null
+    },
+
+    environment: {
+        enumerable: false,
+        get: function () {
+            return this._environment || (Component.prototype._environment = currentEnvironment);
+        }
+    },
+
+
     /**
      * Convenience to access the defaultEventManager object.
      * @type {EventManager}
@@ -1326,6 +1340,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     _isTemplateLoaded: {
         enumerable: false,
         value: false
+    },
+    isTemplateLoaded: {
+        enumerable: false,
+        get: function() {
+            return this._isTemplateLoaded;
+        }
     },
 
     _isTemplateInstantiated: {
@@ -2582,6 +2602,53 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         value: Function.noop
     },
 
+
+    _didDraw: {
+        enumerable: false,
+        value: function(frameTime) {
+            if(this._updatesLayoutProperties) {
+                var ownerStyle = this.ownerComponent && this.ownerComponent.element && this.ownerComponent.element.style;
+
+                if(ownerStyle) {
+                    var boundingRect = this.element.getBoundingClientRect(),
+                        identifier = this.identifier;
+                }
+
+
+
+                if(this._updatesLayoutPropertyX) {
+                    ownerStyle.setProperty(`--${identifier}X`, boundingRect.x);
+                }
+                if(this._updatesLayoutPropertyY) {
+                    ownerStyle.setProperty(`--${identifier}Y`, boundingRect.y);
+                }
+                if(this._updatesLayoutPropertyWidth) {
+                    ownerStyle.setProperty(`--${identifier}Width`, boundingRect.width);
+                }
+                if(this._updatesLayoutPropertyHeight) {
+                    ownerStyle.setProperty(`--${identifier}Height`, boundingRect.height);
+                }
+                if(this._updatesLayoutPropertyTop) {
+                    ownerStyle.setProperty(`--${identifier}Top`, boundingRect.top);
+                    this.top = boundingRect.top;
+                }
+                if(this._updatesLayoutPropertyRight) {
+                    ownerStyle.setProperty(`--${identifier}Right`, boundingRect.right);
+                    this.right = boundingRect.right;
+                }
+                if(this._updatesLayoutPropertyBottom) {
+                    ownerStyle.setProperty(`--${identifier}Bottom`, boundingRect.bottom);
+                    this.bottom = boundingRect.bottom;
+                }
+                if(this._updatesLayoutPropertyLeft) {
+                    ownerStyle.setProperty(`--${identifier}Left`, boundingRect.left);
+                    this.left = boundingRect.left;
+                }
+            }
+            this.didDraw(frameTime);
+        }
+    },
+
     /**
      * Records whether or not we have been added to the parent's drawList.
      * @private
@@ -3498,6 +3565,24 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
             // classList
             this._drawClassListIntoComponent();
+
+            //Layout
+            var style = this.element && this.element.style;
+            if(style) {
+                if(this.top) {
+                    style.setProperty("top", this.top);
+                }
+                if(this.right) {
+                    style.setProperty("right", this.right);
+                }
+                if(this.bottom) {
+                    style.setProperty("bottom", this.bottom);
+                }
+                if(this.left) {
+                    style.setProperty("left", this.left);
+                }
+            }
+
         }
     },
 
@@ -3750,7 +3835,285 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 );
             });
         }
+    },
+
+    /**
+     * As dispatching has been implemented in key  setters, limit use of default method
+     * for corresponding keys.
+     * @private
+     */
+    _superMakePropertyObservable : {
+        value: PropertyChanges.prototype.makePropertyObservable
+    },
+    makePropertyObservable: {
+        value: function(key) {
+
+            switch(key) {
+                case 'x':
+                    this._updatesLayoutProperties = true;
+                    this._updatesLayoutPropertyX = true;
+                    break;
+
+                case 'y':
+                    this._updatesLayoutProperties = true;
+                    this._updatesLayoutPropertyY = true;
+                    break;
+
+                case 'width':
+                    this._updatesLayoutProperties = true;
+                    this._updatesLayoutPropertyWidth = true;
+                    break;
+
+                case 'height':
+                    this._updatesLayoutProperties = true;
+                    this._updatesLayoutPropertyHeight = true;
+                    break;
+
+               case 'top':
+                    this._updatesLayoutProperties = true;
+                    this._updatesLayoutPropertyTop = true;
+                    break;
+
+                case 'right':
+                    this._updatesLayoutProperties = true;
+                    this._updatesLayoutPropertyRight = true;
+                    break;
+
+                case 'bottom':
+                    this._updatesLayoutProperties = true;
+                    this._updatesLayoutPropertyBottom = true;
+                    break;
+
+               case 'left':
+                this._updatesLayoutProperties = true;
+                this._updatesLayoutPropertyLeft = true;
+                break;
+        }
+            this._superMakePropertyObservable( key);
+        }
+    },
+
+    _updatesLayoutProperties: {
+        value: 0
+    },
+    _updatesLayoutPropertyX: {
+        value: false
+    },
+    updatesLayoutPropertyX: {
+        get: function () {
+            return this._updatesLayoutPropertyX;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyX !== value) {
+                this._updatesLayoutPropertyX = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    _updatesLayoutPropertyY: {
+        value: false
+    },
+    updatesLayoutPropertyY: {
+        get: function () {
+            return this._updatesLayoutPropertyY;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyY !== value) {
+                this._updatesLayoutPropertyY = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    _updatesLayoutPropertyWidth: {
+        value: false
+    },
+    updatesLayoutPropertyWidth: {
+        get: function () {
+            return this._updatesLayoutPropertyWidth;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyWidth !== value) {
+                this._updatesLayoutPropertyWidth = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
     }
+    },
+
+    _updatesLayoutPropertyHeight: {
+        value: false
+    },
+    updatesLayoutPropertyHeight: {
+        get: function () {
+            return this._updatesLayoutPropertyHeight;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyHeight !== value) {
+                this._updatesLayoutPropertyHeight = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    _updatesLayoutPropertyTop: {
+        value: false
+    },
+    updatesLayoutPropertyTop: {
+        get: function () {
+            return this._updatesLayoutPropertyTop;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyTop !== value) {
+                this._updatesLayoutPropertyTop = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    _updatesLayoutPropertyRight: {
+        value: false
+    },
+    updatesLayoutPropertyRight: {
+        get: function () {
+            return this._updatesLayoutPropertyRight;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyRight !== value) {
+                this._updatesLayoutPropertyRight = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    _updatesLayoutPropertyBottom: {
+        value: false
+    },
+    updatesLayoutPropertyBottom: {
+        get: function () {
+            return this._updatesLayoutPropertyBottom;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyBottom !== value) {
+                this._updatesLayoutPropertyBottom = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+
+    _updatesLayoutPropertyLeft: {
+        value: false
+    },
+    updatesLayoutPropertyLeft: {
+        get: function () {
+            return this._updatesLayoutPropertyLeft;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyLeft !== value) {
+                this._updatesLayoutPropertyLeft = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    _top: {
+        value: undefined
+    },
+    top: {
+        get: function () {
+            return this._top;
+        },
+        set: function (value) {
+            if (this._top !== value) {
+                this._top = value;
+                this.needsDraw = true;
+            }
+        }
+    },
+    _right: {
+        value: undefined
+    },
+    right: {
+        get: function () {
+            return this._right;
+        },
+        set: function (value) {
+            if (this._right !== value) {
+                this._right = value;
+                this.needsDraw = true;
+            }
+        }
+    },
+    _bottom: {
+        value: undefined
+    },
+    bottom: {
+        get: function () {
+            return this._bottom;
+        },
+        set: function (value) {
+            if (this._bottom !== value) {
+                this._bottom = value;
+                this.needsDraw = true;
+            }
+        }
+    },
+    _left: {
+        value: undefined
+    },
+    left: {
+        get: function () {
+            return this._left;
+        },
+        set: function (value) {
+            if (this._left !== value) {
+                this._left = value;
+                this.needsDraw = true;
+            }
+        }
+    }
+
 
 }, {
 
@@ -4587,8 +4950,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             }
             for (i = 0; i < j; i++) {
                 component = needsDrawList[i];
+                component._didDraw(this._frameTime);
                 component.dispatchEvent(this._didDrawEvent);
-                component.didDraw(this._frameTime);
                 if (!component._completedFirstDraw) {
                     firstDrawEvent = document.createEvent("CustomEvent");
                     firstDrawEvent.initCustomEvent("firstDraw", true, false, null);
