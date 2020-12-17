@@ -85,6 +85,25 @@ var Converter = exports.Converter = Montage.specialize( /** @lends Converter# */
     },
 
     /**
+     * Specifies whether the converter can convert an array of the type of values it can handle individually .
+     * @type {boolean}
+     * @default false
+     */
+    canConvertValueArray: {
+        value: false
+    },
+
+    /**
+     * Specifies whether the converter can convert an array of the type of values it can handle individually .
+     * @type {boolean}
+     * @default false
+     */
+    canRevertValueArray: {
+        value: false
+    },
+
+
+    /**
      * Converts values from the input domain into the output range.
      * @function
      * @default null

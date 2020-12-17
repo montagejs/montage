@@ -11,6 +11,13 @@ var RawValueToObjectConverter = require("./raw-value-to-object-converter").RawVa
  */
 exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize( /** @lends RawForeignValueToObjectConverter# */ {
 
+    canConvertValueArray: {
+        value: true
+    },
+
+    canRevertValueArray: {
+        value: true
+    },
 
     /*********************************************************************
      * Serialization
@@ -153,9 +160,9 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                         existingObject = service.rootService.objectForDataIdentifier(dataIdentifier);
                 } else if(Array.isArray(criteria.parameters)) {
                     var rootService = service.rootService,
-                        array = criteria.parameters, i=0, countI = array.length, iObject;
+                        array = criteria.parameters, i=0, iObject;
 
-                    for(; (i<countI); i++) {
+                    while( i < array.length ) {
                         dataIdentifier = service.dataIdentifierForTypePrimaryKey(typeToFetch,array[i]);
                         iObject = rootService.objectForDataIdentifier(dataIdentifier);
                         if(iObject) {
@@ -163,6 +170,8 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                             (existingObject || (existingObject = [])).push(iObject);
                             //remove from criteria since found
                             array.splice(i,1);
+                        } else {
+                            i++;
                         }
                     }
 
@@ -180,17 +189,21 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
 
                 var localResult = self._lookupExistingObjectForObjectDescriptorCriteria(typeToFetch, criteria, service),
                 //var localResult,
-                    localPartialResultPromise;
+                    localPartialResult;
 
+                /*
+
+                    Leaving a trace of localPartialResult here. Unless I'm missing something, the problem with a partial result is that we don't really have an easy way to return a partial result with the promise-based API, and we still need to get the rest, and that will brinf all values back, the mapping will be faster for the objects that already are in memnory thoygh
+                */
                 if(localResult) {
                     if(Array.isArray(localResult)) {
                         if(criteria.parameters.length > 0) {
                             if(localResult.length) {
                                 //We found some locally but not all
-                                localPartialResultPromise = Promise.resolve(localResult);
+                                localPartialResult = localResult;
                             } else {
                                 //we didn't find anything locally
-                                localPartialResultPromise = null;
+                                localPartialResult = null;
                             }
                         } else {
                             //We found everything locally, we're done:
@@ -300,10 +313,6 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                             });
 
                     self._registerFetchPromiseForObjectDescriptorCriteria(fetchPromise, typeToFetch, criteria);
-                }
-
-                if(localPartialResultPromise) {
-                    fetchPromise = Promise.all([localPartialResultPromise,fetchPromise]);
                 }
 
                 return fetchPromise;
@@ -474,7 +483,66 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                 }
             }
             else {
-                return Promise.resolve(null);
+                /*
+                    if we don't have a foreign key value, where we can do:
+
+                            We're already using in fetchObjectProperty:
+                                    objectCriteria = new Criteria().initWithExpression("id == $id", {id: object.dataIdentifier.primaryKey});
+                            on the client side to do so, id here is on the table fetched, for gettin more inline values.
+
+
+                    we have the primary key, and the foreign key, so we should be able to do something with it:
+
+                    For example, with Event having a property
+                        "respondentQuestionnaires": {
+                        "<->": "respondentQuestionnaireIds",
+                        "converter": {"@": "respondentQuestionnairesForeignKeyConverter"}
+                    }
+                    and
+                    "convertExpression": "$.has(id)"
+
+                        if we replace $ which so far has been a value, by the type qualified symbol, it would becomes:
+                        "$type.respondentQuestionnaireIds.has(id)", {
+                            "type":"data/main.datareel/model/event"
+                        }
+
+                    Adding what we do for readExpression:
+                    Type to fetch is RespondentQuestionnaire
+                        "$type.respondentQuestionnaireIds.has(id) && id == $id", {
+                            "type":"data/main.datareel/model/event",
+                            "id": object.dataIdentifier.primaryKey
+                        }
+
+                */
+
+                // var currentRule = this.currentRule,
+                //     requirements = currentRule && currentRule.requirements,
+                //     self = this;
+
+                // // if(requirements && requirements.length > 0) {
+                //     //Loop and call fetchObjectProperty
+                //     (this.service
+                //         ? this.service.then(function (service) {
+                //             var promises;
+
+                //             for(var i=0, countI = requirements.length;(i<countI); i++) {
+                //                 //This should use a readExpression and get us the raw value
+                //                 (promises || (promises = [])).push(service.fetchObjectProperty(currentRule.targetPath);
+                //             }
+                //             return Promise.all(promises);
+                //         })
+                //         : Promise.resolve(null)
+                //     )
+                //     .then(function(values) {
+                //         //Have they been added to the snapshot? Needs to check.
+
+                //         //Now have the foreignKey we need, we can just call our convert() method again passing that value and we're done.
+
+                //     });
+                // } else {
+                    return Promise.resolve(null);
+                //}
+
             }
         }
     },
