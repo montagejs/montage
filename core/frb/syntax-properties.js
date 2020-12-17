@@ -31,11 +31,17 @@ function _parseRequirementsFromSyntax(syntax, requirements) {
         _requirements = requirements || null;
 
     if (type === "property" && args[0].type === "value") {
-        (_requirements || (_requirements = [])).push(args[1].value);
+        if(!_requirements || (_requirements && _requirements.indexOf(args[1].value) === -1)) {
+            (_requirements || (_requirements = [])).push(args[1].value);
+        }
     } else if (type === "property" && args[0].type === "property") {
-        var subProperty = [args[1].value];
+        var subProperty = [args[1].value],
+            result;
         _parseRequirementsFromSyntax(args[0], subProperty);
-        (_requirements || (_requirements = [])).push(subProperty.reverse().join("."));
+        result = subProperty.reverse().join(".");
+        if(!_requirements || (_requirements && _requirements.indexOf(result) === -1)) {
+            (_requirements || (_requirements = [])).push(result);
+        }
     } else if (type === "record") {
         _requirements = _parseRequirementsFromRecord(syntax, _requirements);
     } else if (args) {
