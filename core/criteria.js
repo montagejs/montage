@@ -4,7 +4,7 @@ var Montage = require("./core").Montage;
 var parse = require("core/frb/parse"),
     stringify = require("core/frb/stringify"),
     evaluate = require("core/frb/evaluate"),
-    precedence = require("core/frb/language").precedence,
+    operatorTypes = require("core/frb/language").operatorTypes,
     Scope = require("core/frb/scope"),
     compile = require("core/frb/compile-evaluator");
 
@@ -39,7 +39,6 @@ var Criteria = exports.Criteria = Montage.specialize({
             return this._parameters;
         },
         set: function(value) {
-            debugger;
             if(value !== this._parameters) {
                 this._parameters = value;
             }
@@ -229,6 +228,30 @@ var Criteria = exports.Criteria = Montage.specialize({
             this._scope.parameters = parameters || this.parameters;
             this._scope.value = value;
             return this.compiledSyntax(this._scope);
+        }
+    },
+
+
+    /**
+     * Returns a function that performs evaluate on the criteria, allowing it to be used in array.filter for example.
+     *
+     * @method
+     *
+     * @returns {function} - boolean wether the criteri qualifies a value on propertyName.
+     */
+
+    _predicateFunction: {
+        value: undefined
+    },
+
+    predicateFunction: {
+        get: function () {
+            var self = this;
+            return this._predicateFunction || (
+                this._predicateFunction = function(value) {
+                    return self.evaluate(value);
+                }
+            );
         }
     },
 
@@ -649,15 +672,15 @@ function _combinedCriteriaFromArguments(type, receiver, _arguments) {
 // generate methods on Criteria for each of the tokens of the language.
 // support invocation both as class and instance methods like
 // Criteria.and("a", "b") and aCriteria.and("b")
-precedence.forEach(function (value,type, precedence) {
-    Montage.defineProperty(Criteria.prototype, type, {
+operatorTypes.forEach(function (value,operator, operatorTypes) {
+    Montage.defineProperty(Criteria.prototype, operator, {
         value: function () {
-            return _combinedCriteriaFromArguments(type, this, arguments);
+            return _combinedCriteriaFromArguments(operator, this, arguments);
         }
     });
-    Montage.defineProperty(Criteria, type, {
+    Montage.defineProperty(Criteria, operator, {
         value: function () {
-            return _combinedCriteriaFromArguments(type, this, arguments);
+            return _combinedCriteriaFromArguments(operator, this, arguments);
         }
     });
 });
