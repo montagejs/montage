@@ -576,7 +576,7 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                     this._rawDataPropertyByForeignDescriptor.set(anObjectDescriptor,rawProperty);
 
                 } else {
-                    console.error("Couldn't map mapObjectPropertyToRawProperty with rawDataTypeMappingExpressionSyntax", object, property, rawDataTypeMappingExpressionSyntax);
+                    console.error("Couldn't find raw data Property for foreign descriptor", anObjectDescriptor, "rawDataTypeMapping:",rawDataTypeMapping);
                 }
             }
 
