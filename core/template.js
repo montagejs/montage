@@ -1283,6 +1283,12 @@ var Template = Montage.specialize( /** @lends Template# */ {
                             if (url !== "" && !absoluteUrlRegExp.test(url)) {
                                 node.setAttribute('href', URL.resolve(baseUrl, url));
                             }
+                        } else if (node.hasAttribute("data")) {
+                            // Stylesheets
+                            url = node.getAttribute('data');
+                            if (url !== "" && !absoluteUrlRegExp.test(url)) {
+                                node.setAttribute('data', URL.resolve(baseUrl, url));
+                            }
                         }
                     }
                 }
@@ -1354,7 +1360,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     _NORMALIZED_TAG_NAMES: {
-        value: ["IMG", "image", "IFRAME", "link","script"]
+        value: ["IMG", "image", "object", "IFRAME", "link", "script"]
     },
 
     __NORMALIZED_TAG_NAMES_SELECTOR: {
