@@ -6,7 +6,7 @@ var Promise = require("bluebird");
 
 // Patch "Promise.is" to support native promise
 Promise.is = function (obj) {
-	return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
+	return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function' && typeof obj.catch === 'function';
 };
 
 // Polyfill "Promise.prototypefinally" to support finally
