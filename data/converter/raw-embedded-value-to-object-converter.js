@@ -94,47 +94,65 @@ exports.RawEmbeddedValueToObjectConverter = RawValueToObjectConverter.specialize
      */
     revert: {
         value: function (v) {
-            var self = this,
-                revertedValue,
-                result;
+            var self = this;
 
-            if (v) {
-                if (!this.compiledRevertSyntax) {
-                    return Promise.all([this._descriptorToFetch, this.service]).then(function (values) {
-                        var objectDescriptor = values[0],
-                            service = values[1];
+            if(!v) {
+                return v;
+            } else {
+                return Promise.all([this._descriptorToFetch, this.service]).then(function (values) {
+                    var revertedValue,
+                    result,
+                    revertedValuePromise;
 
-                        if(Array.isArray(v)) {
-                            if(v.length) {
-                                revertedValue = [];
-                                for(var i=0, countI=v.length, promises;(i<countI);i++) {
-                                    result =  self._revertOneValue(v[i],objectDescriptor, service, revertedValue, i);
-                                    if (Promise.is(result)) {
-                                        (promises || (promises = [])).push(result);
-                                    }
+
+                    var objectDescriptor = values[0],
+                        service = values[1];
+
+                    if(Array.isArray(v)) {
+                        if(v.length) {
+                            revertedValue = [];
+                            for(var i=0, countI=v.length, promises;(i<countI);i++) {
+                                result =  self._revertOneValue(v[i],objectDescriptor, service, revertedValue, i);
+                                if (Promise.is(result)) {
+                                    (promises || (promises = [])).push(result);
                                 }
-                                return Promise.all(promises).then(function() {
-                                    return revertedValue;
-                                });
                             }
-                            else {
-                                return Promise.resolve(v);
-                            }
+                            revertedValuePromise =  Promise.all(promises).then(function() {
+                                return revertedValue;
+                            });
                         }
                         else {
-                            if(v) {
-                                return self._revertOneValue(v,objectDescriptor, service);
-                            }
+                            revertedValuePromise = Promise.resolve(v);
                         }
-                    });
-                } else {
-                    var scope = this.scope;
-                    //Parameter is what is accessed as $ in expressions
-                    scope.value = v;
-                    return Promise.resolve(this.compiledRevertSyntax(scope));
-                }
+                    }
+                    else {
+                        if(v) {
+                            revertedValuePromise = self._revertOneValue(v,objectDescriptor, service);
+                        }
+                    }
+
+                    if (self.compiledRevertSyntax) {
+                        if (Promise.is(revertedValuePromise)) {
+                            return revertedValuePromise.then(function(value) {
+                                return self._revertValueWithExpression(value);
+                            });
+                        } else {
+                            return self._revertValueWithExpression(revertedValuePromise);
+                        }
+                    } else {
+                        return revertedValuePromise;
+                    }
+                });
             }
-            return Promise.resolve();
+        }
+    },
+
+    _revertValueWithExpression: {
+        value: function(value) {
+            var scope = this.scope;
+            //Parameter is what is accessed as $ in expressions
+            scope.value = value;
+            return Promise.resolve(this.compiledRevertSyntax(scope));
         }
     },
 
