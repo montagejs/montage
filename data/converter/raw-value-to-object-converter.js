@@ -219,7 +219,11 @@ exports.RawValueToObjectConverter = ExpressionConverter.specialize( /** @lends R
                    this._foreignDescriptorReference && this._foreignDescriptorReference.promise(require);
         },
         set: function (descriptor) {
-            this._foreignDescriptor = descriptor;
+            if(descriptor !== this._foreignDescriptor) {
+                this._foreignDescriptor = descriptor;
+                //Clear the cache in case it's shared
+                this.__descriptorToFetch = null;
+            }
         }
     },
 
