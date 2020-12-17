@@ -45,6 +45,26 @@ DataOrdering = require("data/model/data-ordering").DataOrdering;
 
 
 exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
+    constructor: {
+        value: function DataEditor () {
+            this.super();
+            this.canDrawGate.setField("dataLoaded", false);
+            // console.log("---------- "+this.constructor.name+" inDocument:"+this.inDocument+" —— dataLoaded: false",value);
+
+            return this;
+        }
+    },
+    defineBinding: {
+        value: function (targetPath, descriptor, commonDescriptor) {
+            var result = this.super(targetPath, descriptor, commonDescriptor);
+
+            if(targetPath.startsWith("data")) {
+                console.log(this.constructor.name+" has ["+targetPath+"] bound to ["+descriptor.sourcePath+"]"+", parentComponent:",this.parentComponent);
+            }
+            return result;
+        }
+    },
+
     /**
      * A DataService used to fetch data. By default uses application.mainService
      * But when we support nested editing context / data services, could be a
@@ -82,6 +102,10 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
                     if(this.fetchLimit) {
                         this.__dataQuery.fetchLimit = this.fetchLimit;
                     }
+                    if(this.readExpressions) {
+                        this.__dataQuery.readExpressions = this.readExpressions;
+                }
+
                 }
             }
             return this.__dataQuery;
@@ -135,12 +159,13 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
 
     fetchData: {
         value: function() {
+
+            if(this._dataQuery) {
             var dataService = this.dataService,
                 currentDataStream = this.dataStream,
                 dataStream,
                 self = this;
-
-
+                //console.log(this.constructor.name+" fetchData() >>>>> ");
             dataStream = dataService.fetchData(this._dataQuery);
             dataStream.then(function(data) {
                 //console.log("Data fetched:",data);
@@ -149,13 +174,25 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
                 //We need to
                 dataService.cancelDataStream(currentDataStream);
 
+                    self.didFetchData(data);
+
             },
             function(error) {
                 console.log("fetchData failed:",error);
 
+                })
+                .finally(() => {
+                    this.canDrawGate.setField("dataLoaded", true);
             });
         }
+        }
     },
+
+    didFetchData: {
+        value: function (data) {
+        }
+    },
+
 
     fetchDataIfNeeded: {
         value: function() {
@@ -164,7 +201,8 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
                 this.__dataQuery = null;
 
                 //If we're active for trhe user, we re-fetch
-                if(this.inDocument && this._dataQuery) {
+                //if(this.inDocument && this._dataQuery) {
+                if(this.isTemplateLoaded && this._dataQuery) {
                     this.fetchData();
                 }
         }
@@ -187,7 +225,7 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
 
     templateDidLoad: {
         value: function () {
-            this.fetchData();
+            this.fetchDataIfNeeded();
         }
     },
 
@@ -287,6 +325,11 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
             return this._data;
         },
         set: function (value) {
+            // console.log(this.constructor.name+ " set data:",value, " inDocument:"+this.inDocument+", parentComponent:",this.parentComponent);
+            if(this._data === undefined && value !== undefined) {
+                // console.log("++++++++++ "+this.constructor.name+" inDocument:"+this.inDocument+" —— dataLoaded: true",value);
+                this.canDrawGate.setField("dataLoaded", true);
+            }
             if(value !== this._data) {
                 this._data = value;
             }
