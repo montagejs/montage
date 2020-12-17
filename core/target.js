@@ -11,6 +11,19 @@ var Montage = require("./core").Montage,
  * @extends Montage
  */
 exports.Target = Montage.specialize( /** @lends Target.prototype */{
+
+    /**
+     * Provides a reference to the Montage event manager used in the
+     * application.
+     *
+     * @property {EventManager} value
+     * @default defaultEventManager
+     */
+
+    eventManager: {
+        value: defaultEventManager,
+        serializable: false
+    },
     /**
      * Whether or not this target can accept user focus and become the
      * activeTarget This matches up with the `document.activeElement` property
