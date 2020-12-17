@@ -41,11 +41,13 @@ var Defaults = {
     denyDelete: false,
     deleteRule: DeleteRule.NULLIFY,
     inversePropertyName: void 0,
+    keyType: void 0,
     valueType: "string",
     collectionValueType: "list",
     valueObjectPrototypeName: "",
     valueObjectModuleId: "",
     valueDescriptor: void 0,
+    keyDescriptor: void 0,
     enumValues: [],
     defaultValue: void 0,
     helpKey: "",
@@ -137,11 +139,13 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             //and deserializing denyDelete will set the equivallent on value deleteRule
             // this._setPropertyWithDefaults(serializer, "denyDelete", this.denyDelete);
             this._setPropertyWithDefaults(serializer, "deleteRule", this.deleteRule);
+            this._setPropertyWithDefaults(serializer, "keyType", this.keyType);
             this._setPropertyWithDefaults(serializer, "valueType", this.valueType);
             this._setPropertyWithDefaults(serializer, "collectionValueType", this.collectionValueType);
             this._setPropertyWithDefaults(serializer, "valueObjectPrototypeName", this.valueObjectPrototypeName);
             this._setPropertyWithDefaults(serializer, "valueObjectModuleId", this.valueObjectModuleId);
             this._setPropertyWithDefaults(serializer, "valueDescriptor", this._valueDescriptorReference);
+            this._setPropertyWithDefaults(serializer, "keyDescriptor", this._valueDescriptorReference);
             if (this.enumValues.length > 0) {
                 this._setPropertyWithDefaults(serializer, "enumValues", this.enumValues);
             }
@@ -182,11 +186,13 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._overridePropertyWithDefaults(deserializer, "readOnly");
             this._overridePropertyWithDefaults(deserializer, "denyDelete");
             this._overridePropertyWithDefaults(deserializer, "deleteRule");
+            this._overridePropertyWithDefaults(deserializer, "keyType");
             this._overridePropertyWithDefaults(deserializer, "valueType");
             this._overridePropertyWithDefaults(deserializer, "collectionValueType");
             this._overridePropertyWithDefaults(deserializer, "valueObjectPrototypeName");
             this._overridePropertyWithDefaults(deserializer, "valueObjectModuleId");
             this._overridePropertyWithDefaults(deserializer, "_valueDescriptorReference", "valueDescriptor", "targetBlueprint");
+            this._overridePropertyWithDefaults(deserializer, "_keyDescriptorReference", "keyDescriptor");
             this._overridePropertyWithDefaults(deserializer, "enumValues");
             this._overridePropertyWithDefaults(deserializer, "defaultValue");
             this._overridePropertyWithDefaults(deserializer, "helpKey");
@@ -469,6 +475,16 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
 
     /**
      * @type {string}
+     * TODO: This is semantically similar to keyDescriptor
+     * We should check if keyDescriptor can do the same job and eliminate
+     * this.
+     */
+    keyType: {
+        value: Defaults.keyType
+    },
+
+    /**
+     * @type {string}
      * TODO: This is semantically similar to valueDescriptor
      * We should check if valueDescriptor can do the same job and eliminate
      * this.
@@ -477,10 +493,11 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
         value: Defaults.valueType
     },
 
+
     /**
      * @type {string}
      *
-     * This property specifies the type of collectinon this property should use.
+     * This property specifies the type of collection this property should use.
      * Default is an Array, but this could be a Set or other type of collection.
      */
     collectionValueType: {
@@ -508,6 +525,9 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * return a promise.
      * @type {string}
      */
+    _valueDescriptorReference: {
+        value: undefined
+    },
     valueDescriptor: {
         serializable: false,
         get: function () {
@@ -524,6 +544,34 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._valueDescriptorReference = descriptor;
         }
     },
+
+    /**
+     * Promise for the descriptor of objects found as key of the property when it is a Map
+     *
+     * **Note**: The setter expects an actual descriptor but the getter will
+     * return a promise.
+     * @type {string}
+     */
+    _keyDescriptorReference: {
+        value: undefined
+    },
+    keyDescriptor: {
+        serializable: false,
+        get: function () {
+            // TODO: Needed for backwards compatibility with ObjectDescriptorReference.
+            // Remove eventually, this can become completely sync
+            if (this._keyDescriptorReference && typeof this._keyDescriptorReference.promise === "function") {
+                deprecate.deprecationWarningOnce("valueDescriptor reference via ObjectDescriptorReference", "direct reference via object syntax");
+                return this._keyDescriptorReference.promise(this.require);
+            } else {
+                return this._keyDescriptorReference && Promise.resolve(this._keyDescriptorReference);
+            }
+        },
+        set: function (descriptor) {
+            this._keyDescriptorReference = descriptor;
+        }
+    },
+
 
     _targetObjectDescriptorReference: {
         value: null
