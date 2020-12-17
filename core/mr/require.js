@@ -929,6 +929,14 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         config.requireForId = requireForId = memoize(makeRequire,config.requireById);
 
         require = makeRequire("");
+
+
+        var globalModule = modules["global"] = new Module();
+        globalModule.id = "global";
+        globalModule.display = "global";
+        globalModule.exports = global;
+        globalModule.require = require;
+
         return require;
     };
 
@@ -1492,7 +1500,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             module.directory     // __dirname
         );
 
-        return returnValue;``
+        return returnValue;
     };
 
 
