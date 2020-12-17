@@ -27,7 +27,7 @@
         }
     },
     "range": {
-        "object": "core/range"
+        "object": "./range"
     },
     "root": {
         "prototype": "core/meta/module-object-descriptor",
@@ -46,9 +46,9 @@
                 ]
             },
             "propertyValidationRules": {},
-            "objectDescriptorModule": { "%": "core/range.meta" },
+            "objectDescriptorModule": { "%": "./core/range.mjson" },
             "exportName": "Range",
-            "module": { "%": "core/range" },
+            "module": { "%": "./range" },
             "object":{ "@": "range" }
         }
     }
