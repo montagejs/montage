@@ -67,11 +67,12 @@ var Environment = exports.Environment = Montage.specialize({
         get: function() {
             if(this._stage === undefined) {
                 //Check if we have an argument:
-                var stageArgument = this.application.url && this.application.url.searchParams.get("stage");
+                var applicationURL = this.application.url,
+                    stageArgument = applicationURL && applicationURL.searchParams.get("stage");
 
                 if(stageArgument) {
                     this._stage = stageArgument;
-                } else if(global.location.hostname === "127.0.0.1" || global.location.hostname === "localhost" || global.location.hostname.endsWith(".local") ) {
+                } else if(applicationURL && (applicationURL.hostname === "127.0.0.1" || applicationURL.hostname === "localhost" || applicationURL.hostname.endsWith(".local")) ) {
                     this._stage = "dev";
                 } else {
                     /*
