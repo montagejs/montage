@@ -21,6 +21,7 @@ var Montage = require("core/core").Montage,
     PropertyDescriptor = require("core/meta/property-descriptor").PropertyDescriptor,
     DeleteRule = require("core/meta/property-descriptor").DeleteRule,
     deprecate = require("../../core/deprecate"),
+    currentEnvironment = require("core/environment").currentEnvironment,
     Locale = require("core/locale").Locale;
 
     require("core/extras/string");
@@ -168,6 +169,10 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             }
 
         }
+    },
+
+    currentEnvironment: {
+        value: currentEnvironment
     },
 
     delegate: {

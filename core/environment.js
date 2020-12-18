@@ -25,10 +25,32 @@ var Environment = exports.Environment = Montage.specialize({
 
     systemLocaleIdentifier: {
         get: function () {
-            return typeof navigator === "object"
-                ? (navigator.languages && navigator.languages.length) ? navigator.languages[0] : navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en'
-                : "en"
+            return this.languages[0];
         }
+    },
+
+    _languages: {
+        value: undefined
+    },
+
+    languages: {
+        get: function() {
+            if(!this._languages) {
+                this._languages = typeof navigator === "object"
+                    ? (navigator.languages && navigator.languages.length)
+                        ? navigator.languages
+                        : [navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en']
+                    : ["en"];
+            }
+            return this._languages;
+        },
+        set: function(value) {
+            this._languages = value;
+        }
+    },
+
+    userAgentIPAddress: {
+        value: undefined
     },
 
     /**
