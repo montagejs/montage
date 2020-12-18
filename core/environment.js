@@ -99,7 +99,10 @@ var Environment = exports.Environment = Montage.specialize({
 
     userAgent: {
         set: function (userAgent) {
-            userAgent = userAgent.toLowerCase();
+
+            if(userAgent) {
+                userAgent = userAgent.toLowerCase();
+            }
 
             if (userAgent !== this._userAgent) {
                 this._userAgent = userAgent;
