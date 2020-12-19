@@ -933,6 +933,10 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             return require;
         }
 
+        if ((typeof process !== "undefined") && config.name === "montage") {
+            inject("bluebird", Promise);
+        }
+
         config.requireForId = requireForId = memoize(makeRequire,config.requireById);
 
         require = makeRequire("");
