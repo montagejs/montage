@@ -134,6 +134,13 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
     Module.prototype.dependees = null;
     Module.prototype.extraDependencies = void 0;
     Module.prototype.uuid = null;
+    Module.prototype._json = undefined;
+
+    Object.defineProperty(Module.prototype,"json", {
+        get: function() {
+            return this._json || (this._json = JSON.parse(this.text))
+        }
+    });
 
     var normalizePattern = /^(.*)\.js$/,
         normalizeIdCache = new Map();

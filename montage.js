@@ -469,6 +469,7 @@
                     root;
                 module.deserializer = deserializer;
                 deserializer.init(module.text, deserializerRequire, void 0, module, true);
+                // deserializer.init(module.json, deserializerRequire, void 0, module, true, true);
 
                 try {
                     root = deserializer.deserializeObject();
@@ -581,7 +582,7 @@
             if (isMJSON) {
                 if (typeof module.exports !== "object" && typeof module.text === "string") {
                     try {
-                        module.parsedText = JSON.parse(module.text);
+                        module.parsedText = module.json;
                     } catch (e) {
                         if (e instanceof SyntaxError) {
                             console.error("SyntaxError parsing JSON at "+location);

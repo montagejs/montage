@@ -158,10 +158,9 @@ function parsePrototypeForModule(prototype) {
     return prototype.replace(/\[[^\]]+\]$/, "");
 }
 
-function collectSerializationDependencies(text, dependencies) {
-    var serialization = JSON.parse(text);
-    Object.keys(serialization).forEach(function (label) {
-        var description = serialization[label];
+function collectSerializationDependencies(serializationJSON, dependencies) {
+    Object.keys(serializationJSON).forEach(function (label) {
+        var description = serializationJSON[label];
         if (description.lazy) {
             return;
         }
@@ -180,7 +179,7 @@ function collectHtmlDependencies(dom, dependencies) {
         if (DomUtils.isTag(element)) {
             if (element.name === "script") {
                 if (getAttribute(element, "type") === "text/montage-serialization") {
-                    collectSerializationDependencies(getText(element), dependencies);
+                    collectSerializationDependencies(JSON.parse(getText(element)), dependencies);
                 }
             } else if (element.name === "link") {
                 if (getAttribute(element, "type") === "text/montage-serialization") {
@@ -231,7 +230,7 @@ MontageBoot.TemplateLoader = function (config, load) {
         } else if (serialization) {
             return load(id, module)
             .then(function () {
-                module.dependencies = collectSerializationDependencies(module.text, []);
+                module.dependencies = collectSerializationDependencies(module.json, []);
                 return module;
             });
         } else if (meta) {

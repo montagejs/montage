@@ -145,15 +145,12 @@ var MontageContext = Montage.specialize({
 
     getObject: {
         value: function(label) {
-            var serialization = this._serialization,
-                reviver = this._reviver,
-                objects = this._objects,
-                object, notFoundError;
+            var objects = this._objects;
 
             if (label in objects) {
                 return objects[label];
-            } else if (label in serialization) {
-                object = reviver.reviveRootObject(serialization[label], this, label);
+            } else if (label in this._serialization) {
+                var object = this._reviver.reviveRootObject(this._serialization[label], this, label);
                 // If no object has been set by the reviver we safe its
                 // return, it could be a value or a promise, we need to
                 // make sure the object won't be revived twice.
@@ -163,7 +160,7 @@ var MontageContext = Montage.specialize({
 
                 return object;
             } else {
-                notFoundError = new Error("Object with label '" + label + "' was not found.");
+                var notFoundError = new Error("Object with label '" + label + "' was not found.");
                 if (this._isSync) {
                     throw notFoundError;
                 } else {

@@ -151,7 +151,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     getTypeOf: {
         value: function (value) {
-            var typeOf = typeof value;
+            var typeOf;
 
             if (value === null) {
                 return "null";
@@ -163,7 +163,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             else if(Date.parseRFC3339(value)) {
                 return "date";
             //} else if (typeOf === "object" && Object.keys(value.__proto__).length === 1) {
-            } else if (typeOf === "object" && Object.keys(value).length === 1) {
+            } else if ((typeOf = typeof value) === "object" && Object.keys(value).length === 1) {
                 if ("@" in value) {
                     return "reference";
                 } else if ("/" in value) {
@@ -903,7 +903,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     },
 
     reviveObjectLiteral: {
-        value: function(value, context, label, filterKeys) {
+        value: function reviveObjectLiteral(value, context, label, filterKeys) {
             var item,
                 promises,
                 propertyNames = context.propertyToReviveForObjectLiteralValue(value),
@@ -977,10 +977,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     reviveObjectReference: {
         value: function(value, context, label) {
-            var valuePath = value["@"],
-                object = context.getObject(valuePath);
-
-            return object;
+            return context.getObject(value["@"]);
         }
     },
 
@@ -1164,6 +1161,8 @@ _reviveMethodByType["array"] = "reviveArray";
 _reviveMethodByType["object"] = "reviveObjectLiteral";
 _reviveMethodByType["Element"] = "reviveElement";
 _reviveMethodByType["binding"] = "reviveBinding";
+_reviveMethodByType["Module"] = "reviveModule";
+
 
 MontageReviverProto.reviveValue._methodByType = _reviveMethodByType;
 

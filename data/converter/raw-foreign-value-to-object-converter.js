@@ -134,7 +134,8 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
     _areCriteriaSyntaxPropertiesRawDataPrimaryKeys: {
         value: function(typeToFetch, criteria, service) {
             if(this.__areCriteriaSyntaxPropertiesRawDataPrimaryKeys === undefined) {
-                this.__areCriteriaSyntaxPropertiesRawDataPrimaryKeys = service.mappingForType(typeToFetch).rawDataPrimaryKeys.equals(syntaxProperties(criteria.syntax))
+                var mapping = service.mappingForType(typeToFetch);
+                this.__areCriteriaSyntaxPropertiesRawDataPrimaryKeys = mapping && mapping.rawDataPrimaryKeys && mapping.rawDataPrimaryKeys.equals(syntaxProperties(criteria.syntax))
             }
             return this.__areCriteriaSyntaxPropertiesRawDataPrimaryKeys
         }

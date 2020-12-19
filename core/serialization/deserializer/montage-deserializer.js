@@ -25,11 +25,15 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
     },
 
     init: {
-        value: function (serialization, _require, objectRequires, module, isSync) {
+        value: function (serialization, _require, objectRequires, module, isSync, useParsedSerialization) {
             if (typeof serialization === "string") {
                 this._serializationString = serialization;
             } else {
-                this._serializationString = JSON.stringify(serialization);
+                if(useParsedSerialization) {
+                    this._serialization = serialization;
+                } else {
+                    this._serializationString = JSON.stringify(serialization);
+                }
             }
             this._require = _require;
             this._module = module;
@@ -62,7 +66,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
      */
     deserialize: {
         value: function (instances, element) {
-            if(!this._serializationString || this._serializationString === "") {
+            if((!this._serializationString || this._serializationString === "") && !this._serialization) {
                 return null;
             }
 
@@ -86,7 +90,11 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
             }
 
             try {
-                var serialization = JSON.parse(this._serializationString);
+                var serialization = this._serialization || JSON.parse(this._serializationString);
+                //We need a new JSON.parse every time, so if we had one, we use it, but we trash it after.
+                if(this._serialization) {
+                    this._serialization = null;
+                }
                 context = new MontageContext()
                     .init(serialization, this._reviver, instances, element, this._require, this._isSync);
                 if (this._locationId) {
