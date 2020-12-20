@@ -1082,7 +1082,9 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
                 if(lastReadSnapshot[rawDataPropertyName] !== rawDataPropertValue) {
                     rawData[rawDataPropertyName] = rawDataPropertValue;
-                    rawDataSnapshot[rawDataPropertyName] = lastReadSnapshot[rawDataPropertyName];
+                    if(lastReadSnapshot[rawDataPropertyName] !== undefined) {
+                        rawDataSnapshot[rawDataPropertyName] = lastReadSnapshot[rawDataPropertyName];
+                    }
                 }
             } else {
             /*
