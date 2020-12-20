@@ -1440,6 +1440,9 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                         } else {
                             return;
                         }
+                    } else {
+                        //There was only one rule, so we have one result;
+                        return result;
                     }
                 }
                 return;
