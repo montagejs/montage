@@ -1329,7 +1329,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             rule = _rule ? _rule : this.rawDataMappingRules.get(propertyName),
             result,
                 propertyDescriptor = rule && rule.propertyDescriptor,
-                isRelationship = propertyDescriptor && propertyDescriptor.value,
+                isRelationship = propertyDescriptor && propertyDescriptor.valueDescriptor,
                 value;
 
 
