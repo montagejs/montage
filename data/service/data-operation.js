@@ -229,6 +229,7 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
                         serializer.setProperty("targetModuleId", this.target.module.id);
                     } else {
                         //This is not working as I thought it would yet
+                        //We use DataService.mainService as the target for transaction related operations. That should really be the model.
                         //serializer.addObjectReference(this.target);
                         serializer.setProperty("targetModuleId", null);
                     }
