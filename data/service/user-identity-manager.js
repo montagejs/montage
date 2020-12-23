@@ -1,5 +1,6 @@
 var Montage = require("core/core").Montage,
     DataOperation = require("data/service/data-operation").DataOperation,
+    defaultEventManager = require("core/event/event-manager").defaultEventManager,
     UserIdentityManager;
 
 
@@ -10,6 +11,11 @@ var Montage = require("core/core").Montage,
  * @deprecated The Authorization API was moved to DataService itself.
  */
 UserIdentityManager = Montage.specialize( /** @lends AuthorizationService.prototype */ {
+    constructor: {
+        value: function DataService() {
+            this.defineBinding("mainService", {"<-": "mainService", source: defaultEventManager.application});
+        }
+    },
 
     registerUserIdentityService: {
         value: function(aService) {
@@ -87,8 +93,10 @@ UserIdentityManager = Montage.specialize( /** @lends AuthorizationService.protot
             //We have a circular depency such that when mainService setter is called, DataOperation isn't yet on the exports symbol...
             // this._mainService.addEventListener(DataOperation.Type.UserAuthentication, this);
             // this._mainService.addEventListener(DataOperation.Type.UserAuthenticationCompleted, this);
-            this._mainService.addEventListener("userauthentication", this);
-            this._mainService.addEventListener("userauthenticationcompleted", this);
+            if(this._mainService) {
+                this._mainService.addEventListener("userauthentication", this);
+                this._mainService.addEventListener("userauthenticationcompleted", this);
+            }
 
         }
     },

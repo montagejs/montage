@@ -69,9 +69,12 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
     constructor: {
         value: function DataService() {
-            exports.DataService.mainService = ObjectDescriptor.mainService = exports.DataService.mainService || this;
+
+            this.defineBinding("mainService", {"<-": "mainService", source: defaultEventManager.application});
+
+            exports.DataService.mainService = exports.DataService.mainService || this;
             if(this === DataService.mainService) {
-                UserIdentityManager.mainService = DataService.mainService;
+                // UserIdentityManager.mainService = DataService.mainService;
                 //this.addOwnPropertyChangeListener("userLocales", this);
                 this.addRangeAtPathChangeListener("userLocales", this, "handleUserLocalesRangeChange");
             }

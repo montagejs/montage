@@ -457,7 +457,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
     nextTarget: {
         serializable: false,
         get: function() {
-            return this._nextTarget || (this._nextTarget = (this.parent || ObjectDescriptor.mainService.childServiceForType(this)));
+            return this._nextTarget || (this._nextTarget = (this.parent || this.eventManager.application.mainService.childServiceForType(this) || this.eventManager.application.mainService));
         }
     },
 
