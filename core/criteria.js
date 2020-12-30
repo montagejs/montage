@@ -6,6 +6,7 @@ var parse = require("core/frb/parse"),
     evaluate = require("core/frb/evaluate"),
     operatorTypes = require("core/frb/language").operatorTypes,
     Scope = require("core/frb/scope"),
+    syntaxProperties = require("core/frb/syntax-properties"),
     compile = require("core/frb/compile-evaluator");
 
 var Criteria = exports.Criteria = Montage.specialize({
@@ -70,6 +71,10 @@ var Criteria = exports.Criteria = Montage.specialize({
 
                 //_compiledSyntax
                 this._compiledSyntax = null;
+
+                //Reset qualifiedProperties cache
+                this._qualifiedProperties = null;
+
 
                 this._syntax = value;
             }
@@ -252,6 +257,20 @@ var Criteria = exports.Criteria = Montage.specialize({
                     return self.evaluate(value);
                 }
             );
+        }
+    },
+
+    _qualifiedProperties: {
+        value: undefined
+    },
+    /**
+     * returns all properties used in criteria's expression/syntax
+     *
+     * @property {string}
+     */
+    qualifiedProperties: {
+        get: function() {
+            return this._qualifiedProperties || (this._qualifiedProperties = syntaxProperties(this.syntax));
         }
     },
 
