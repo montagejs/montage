@@ -76,6 +76,24 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
         }
     },
 
+    hasRawDataRequiredValues: {
+        value: function(rawData) {
+            var requirements = this.requirements,
+                i, countI, iRequirenent;
+
+            for(i=0, countI = requirements.length; (i<countI); i++) {
+                iRequirenent = requirements[i];
+
+                if(!rawData.hasOwnProperty(iRequirenent)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+    },
+
     /**
      * A converter that takes in the the output of #expression and returns the destination value.
      * When a reverter is specified the conversion use the revert method when mapping from
@@ -295,7 +313,7 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
 
             return value;
         }
-    },
+    }
 
 
 }, {
@@ -311,7 +329,7 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
 
             return rule;
         }
-    },
+    }
 
 
 

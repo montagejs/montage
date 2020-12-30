@@ -1638,7 +1638,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      *                                     to assign the values.
      */
     mapObjectToRawDataProperty: {
-        value: function (object, data, propertyName, lastReadSnapshot, rawDataSnapshot) {
+        value: function (object, data, propertyName, lastReadSnapshot, rawDataSnapshot, ignoreRequiredObjectProperties) {
             var rule = this.rawDataMappingRules.get(propertyName),
                 //Adding a test for rawDataPrimaryKeys. Types that are meant to be
                 //embedded in others don't have a rawDataPrimaryKeys
@@ -1646,7 +1646,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 requiredObjectProperties = (rule && this.rawDataPrimaryKeys) ? rule.requirements : null,
                 result, self;
 
-            if(requiredObjectProperties) {
+            if(!ignoreRequiredObjectProperties && requiredObjectProperties) {
                 result = this.service.rootService.getObjectPropertyExpressions(object, requiredObjectProperties);
             }
 
@@ -1691,6 +1691,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 rule = this.objectMappingRules.get(propertyName),
                 requiredRawProperties = rule ? rule.requirements : [],
                 rawRequirementsToMap = new Set(requiredRawProperties),
+                ignoreRequiredObjectProperties = true,
                 promises, key, result;
 
             while ((key = keys.next().value)) {
@@ -1700,7 +1701,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                     This is better to do anywaym, and it avoids to get into mapObjectToRawDataProperty trying to fecth the object property that we're precisely trying to fetch, as this method is only called by dataService._fetchObjectPropertyWithPropertyDescriptor(), which seems to lock the stack as it's logically re-entrant. So this blocks it here before it happens there
                 */
                 if (rawRequirementsToMap.has(key) && !data.hasOwnProperty(key)) {
-                    result = this.mapObjectToRawDataProperty(object, data, key);
+                    result = this.mapObjectToRawDataProperty(object, data, key, undefined, undefined, ignoreRequiredObjectProperties);
                     if (this._isAsync(result)) {
                         promises = promises || [];
                         promises.push(result);
@@ -1942,10 +1943,48 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         }
     },
 
+    _overrideParentRuleForPropertyDescriptor: {
+        value: function(parentRule, ownPropertyDescriptor) {
+            var myRule = new MappingRule();
+            myRule.sourcePath = parentRule.sourcePath;
+            myRule.targetPath = parentRule.targetPath;
+            if(parentRule.serviceIdentifier) {
+                myRule.serviceIdentifier = parentRule.serviceIdentifier;
+            }
+            if(parentRule.converter) {
+                myRule.converter = parentRule.converter;
+            }
+            if(parentRule.reverter) {
+                myRule.reverter = parentRule.reverter;
+            }
+
+            myRule.propertyDescriptor = ownPropertyDescriptor;
+
+            return myRule;
+        }
+    },
+
     _assignAllEntriesTo: {
-        value: function (source, target) {
-            var service = this.service;
+        value: function (source, target, isObjectMappingRule, sourceIsParent) {
+            var service = this.service,
+                myObjectDescriptor = this.objectDescriptor,
+                self = this;
             source.forEach(function (value, key) {
+
+                if(sourceIsParent) {
+                    var myPropertyDescriptor = myObjectDescriptor.propertyDescriptorForName(
+                        isObjectMappingRule
+                            ? value.targetPath
+                            : value.sourcePath
+                        );
+
+                    //Check if the property was overriden:
+                    if(myPropertyDescriptor && myPropertyDescriptor !== value.propertyDescriptor) {
+                        //If it is, we need to clone the rule and assign it our propertyDescriptor
+                        value = self._overrideParentRuleForPropertyDescriptor(value,myPropertyDescriptor);
+                    }
+                }
+
                 target.set(key, value);
 
                 /* value is a MappingRule */
@@ -1995,9 +2034,9 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             if (!this._objectMappingRules) {
                 this._objectMappingRules = new Map();
                 if (this.parent) {
-                    this._assignAllEntriesTo(this.parent.objectMappingRules, this._objectMappingRules);
+                    this._assignAllEntriesTo(this.parent.objectMappingRules, this._objectMappingRules, /*isObjectMappingRule*/ true,/*sourceIsParent*/true);
                 }
-                this._assignAllEntriesTo(this._ownObjectMappingRules, this._objectMappingRules);
+                this._assignAllEntriesTo(this._ownObjectMappingRules, this._objectMappingRules, /*isObjectMappingRule*/ true);
             }
             return this._objectMappingRules;
         }
@@ -2022,9 +2061,9 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             if (!this._rawDataMappingRules) {
                 this._rawDataMappingRules = new Map();
                 if (this.parent) {
-                    this._assignAllEntriesTo(this.parent.rawDataMappingRules, this._rawDataMappingRules);
+                    this._assignAllEntriesTo(this.parent.rawDataMappingRules, this._rawDataMappingRules,  /*isObjectMappingRule*/ false,/*sourceIsParent*/true);
                 }
-                this._assignAllEntriesTo(this._ownRawDataMappingRules, this._rawDataMappingRules);
+                this._assignAllEntriesTo(this._ownRawDataMappingRules, this._rawDataMappingRules, /*isObjectMappingRule*/ false);
             }
             return this._rawDataMappingRules;
         }
