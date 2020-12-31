@@ -2708,6 +2708,13 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                     } else {
                         var registeredAddedValues = manyChanges.addedValues;
                         if(!registeredAddedValues) {
+                            /*
+                                FIXME: we ended up here with manyChanges being an array, containing the same value as addedValues. And we end up setting addedValues property on that array. So let's correct it. We might not want to track toMany as set at all, and just stick to added /remove. This might happens on remove as well, we need to check further.
+                            */
+                           if(Array.isArray(manyChanges) && manyChanges.equals(addedValues)) {
+                                manyChanges = {};
+                                changesForDataObject.set(key, manyChanges);
+                           }
 
                             manyChanges.addedValues = (registeredAddedValues = new Set(addedValues));
                             self._addDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, addedValues, inversePropertyDescriptor);
