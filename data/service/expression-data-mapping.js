@@ -1255,20 +1255,20 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
     _mapObjectPropertyToRawDataProperty: {
         value: function(object, propertyName, data,  rawPropertyName, added, removed, _rule, lastReadSnapshot, rawDataSnapshot) {
 
-            if(added || removed) {
+            if((added && added.size > 0) || (removed && removed.size > 0 )) {
                 //We derived object so we can pretend the value of the property is alternatively added, then removed, to get the mapping done.
-                var tmpExtendObject = Object.createobject(),
+                var tmpExtendObject = Object.create(object),
                     diffData = Object.create(null),
                     mappedKeys,
                     i, countI, iKey,
                     aPropertyChanges = {},
-                    addedResult, addedResultIsPromise
+                    addedResult, addedResultIsPromise,
                     removedResult, removedResultIsPromise,
                     result;
 
                 data[rawPropertyName] = aPropertyChanges;
 
-                if(added) {
+                if(added && added.size > 0) {
                     //added is a set, regular properties are array, not ideal but we need to convert to be able to map.
                     tmpExtendObject[propertyName] = Array.from(added);
                     addedResult = this.__mapObjectToRawDataProperty(tmpExtendObject, diffData, rawPropertyName, _rule, lastReadSnapshot, rawDataSnapshot);
@@ -1283,7 +1283,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                     }
                 }
 
-                if(removed) {
+                if(removed && removed.size > 0 ) {
                     tmpExtendObject[propertyName] = Array.from(result);
 
                     removedResult = this.__mapObjectToRawDataProperty(tmpExtendObject, diffData, rawPropertyName, _rule, lastReadSnapshot, rawDataSnapshot);
@@ -1291,10 +1291,10 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                     if (this._isAsync(removedResult)) {
                         removedResultIsPromise = true;
                         removedResult = removedResult.then(() => {
-                            this._assignMappedDiffDataToPropertyChangesObjectKey(diffData, aPropertyChanges,"addedValues");
+                            this._assignMappedDiffDataToPropertyChangesObjectKey(diffData, aPropertyChanges,"removedValues");
                         });
                     } else {
-                        this._assignMappedDiffDataToPropertyChangesObjectKey(diffData, aPropertyChanges,"addedValues");
+                        this._assignMappedDiffDataToPropertyChangesObjectKey(diffData, aPropertyChanges,"removedValues");
                     }
                 }
 
@@ -1319,7 +1319,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             var mappedKeys = Object.keys(diffData),
                 i, countI;
 
-            for(i=0, count = mappedKeys.length; (i <countI); i++) {
+            for(i=0, countI = mappedKeys.length; (i <countI); i++) {
                 aPropertyChanges[key] = diffData[mappedKeys[i]];
             }
         }
