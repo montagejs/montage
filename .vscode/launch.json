@@ -14,8 +14,10 @@
             "type": "node",
             "request": "launch",
             "name": "npm test",
-            "runtimeExecutable": "~/.nvm/versions/node/v12.16.1/bin/node",
-            "program": "${workspaceFolder}/test/run-node.js"
+            "runtimeVersion": "12.18.4",
+            "runtimeArgs": [
+                "${workspaceFolder}/test/run-node.js",
+            ]
         },
         {
             "type": "node",
@@ -48,7 +50,7 @@
             "type": "node",
             "request": "launch",
             "name": "npm test mr",
-            "runtimeExecutable": "~/.nvm/versions/node/v12.16.1/bin/node",
+            "runtimeExecutable": "~/.nvm/versions/node/v12.18.4/bin/node",
             "program": "${workspaceFolder}/core/mr/test/run-node.js"
         },
         {
@@ -63,7 +65,7 @@
             "type": "node",
             "request": "launch",
             "name": "Run promise-io Jasmine Tests",
-            "runtimeExecutable": "~/.nvm/versions/node/v12.16.1/bin/node",
+            "runtimeExecutable": "~/.nvm/versions/node/v12.18.4/bin/node",
             "autoAttachChildProcesses": true,
             "program": "${workspaceFolder}/node_modules/jasmine-node/bin/jasmine-node",
             "args": [ "${workspaceFolder}/core/promise-io/spec", "--verbose"],
