@@ -555,6 +555,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     isUpdateToExistingObject = true;
                 }
 
+                //Record the snapshot before we map.
+                this.recordSnapshot(object.dataIdentifier, rawData);
+
 
                 result = this._mapRawDataToObject(rawData, object, context, readExpressions);
 
@@ -634,10 +637,13 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             //Retrieves an existing object is responsible data service is uniquing, or creates one
             object = this.getDataObject(type, rawData, context, dataIdentifier);
 
+            //Record snapshot before mapping
+            this.recordSnapshot(dataIdentifier, rawData);
+
             result = this._mapRawDataToObject(rawData, object, context);
 
-            //Record snapshot when done mapping
-            this.recordSnapshot(dataIdentifier, rawData);
+            // //Record snapshot when done mapping
+            // this.recordSnapshot(dataIdentifier, rawData);
 
             if (Promise.is(result)) {
                 return result.then(function () {
@@ -1286,8 +1292,12 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     So to break the cycle, if there's a known snapshot and the object is being mapped, then we don't return a promise, knowing there's already one pending for the first pass.
                 */
                 snapshot = this.snapshotForObject(object);
-                if(Object.equals(snapshot,record) ) {
-                    return undefined;
+                //Changed order of snapshot being set before mapping so thqt doesn't work
+                //if(Object.equals(snapshot,record) ) {
+
+                //Replacing with:
+                if(this._objectsBeingMapped.has(object)) {
+                        return undefined;
 
                     if(this._objectsBeingMapped.has(object)) {
                         console.log(object.dataIdentifier.objectDescriptor.name +" _mapRawDataToObject id:"+record.id+" FOUND EXISTING MAPPING PROMISE");
@@ -1307,7 +1317,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                 //Recording snapshot even if we already had an object
                 //Record snapshot before we may create an object
-                this.recordSnapshot(object.dataIdentifier, record);
+                //this.recordSnapshot(object.dataIdentifier, record);
 
                 // console.log(object.dataIdentifier.objectDescriptor.name +" _mapRawDataToObject id:"+record.id+" FIRST NEW MAPPING PROMISE");
 
