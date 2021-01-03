@@ -122,6 +122,7 @@ var Montage = require("core/core").Montage,
         "createSavePoint",
 
         "performTransaction",
+        "performTransactionProgress",
         "performTransactionCompleted",
         "performTransactionFailed",
 
@@ -238,6 +239,9 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             if(this.referrerId) {
                 serializer.setProperty("referrerId", this.referrerId);
             }
+            if(this.clientId) {
+                serializer.setProperty("clientId", this.clientId);
+            }
             serializer.setProperty("criteria", this._criteria);
             /*
                 Hack: this is neededed for now to represent a query's fetchLimit
@@ -298,6 +302,10 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             value = deserializer.getProperty("referrerId");
             if (value !== void 0) {
                 this.referrerId = value;
+            }
+            value = deserializer.getProperty("clientId");
+            if (value !== void 0) {
+                this.clientId = value;
             }
 
             value = deserializer.getProperty("criteria");
@@ -770,6 +778,7 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             CreateSavePoint: DataOperationType.createSavePoint,
 
             PerformTransaction: DataOperationType.performTransaction,
+            PerformTransactionProgress: DataOperationType.performTransactionProgress,
             PerformTransactionCompleted: DataOperationType.performTransactionCompleted,
             PerformTransactionFailed: DataOperationType.performTransactionFailed,
 
