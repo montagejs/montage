@@ -164,7 +164,8 @@ var Montage = require("core/core").Montage,
         "validate",
         "validateFailed",
         "validateCompleted",
-        "validateCancelled"
+        "validateCancelled",
+        "keepAlive"
     ];
 
 
@@ -239,9 +240,6 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             if(this.referrerId) {
                 serializer.setProperty("referrerId", this.referrerId);
             }
-            if(this.clientId) {
-                serializer.setProperty("clientId", this.clientId);
-            }
             serializer.setProperty("criteria", this._criteria);
             /*
                 Hack: this is neededed for now to represent a query's fetchLimit
@@ -302,10 +300,6 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             value = deserializer.getProperty("referrerId");
             if (value !== void 0) {
                 this.referrerId = value;
-            }
-            value = deserializer.getProperty("clientId");
-            if (value !== void 0) {
-                this.clientId = value;
             }
 
             value = deserializer.getProperty("criteria");
@@ -785,6 +779,9 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             RollbackTransaction: DataOperationType.rollbackTransaction,
             RollbackTransactionCompleted: DataOperationType.rollbackTransactionCompleted,
             RollbackTransactionFailed: DataOperationType.rollbackTransactionFailed,
+            KeepAlive: DataOperationType.keepAlive,
+
+
         }
     }
 
