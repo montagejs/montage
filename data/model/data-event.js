@@ -86,6 +86,10 @@ exports.DataEvent = MutableEvent.specialize({
     /* when a change was made by someone else and it's making it's way to another user. */
     update: {
         value: "update"
+    },
+
+    saveChangesProgress: {
+        value: "saveChangesProgress"
     }
 
 });
