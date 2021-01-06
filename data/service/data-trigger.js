@@ -669,7 +669,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
             var self = this;
             //console.log("data-trigger: _fetchObjectProperty "+this._propertyName,object );
             this._service.fetchObjectProperty(object, this._propertyName).then(function (propertyValue) {
-                console.log(propertyValue);
+                // console.log(propertyValue);
                 if(propertyValue && !object[self._privatePropertyName]) {
                     if(self.propertyDescriptor.cardinality > 1) {
                         object[self._propertyName] = propertyValue;
