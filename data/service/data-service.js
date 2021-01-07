@@ -2642,6 +2642,9 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 inversePropertyDescriptor,
                 self = this;
 
+
+
+
             if(!isCreatedObject) {
                 this.changedDataObjects.add(dataObject);
             }
@@ -2650,6 +2653,21 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 changesForDataObject = new Map();
                 this.dataObjectChanges.set(dataObject,changesForDataObject);
             }
+
+
+            /*
+
+                TODO / WARNING / FIX: If an object's property that has not been fetched, mapped and assigned is accessed, it will be undefined and will trigger a fetch to get it. If the business logic then assumes it's not there and set a value synchronously, when the fetch comes back, we will have a value and the set will look like an update.
+
+                This situation is poorly handled and should be made more robust, here and in DataTrigger.
+
+                Should we look into the snapshot to help? Then map what's there first, and then compare before acting?
+
+                var dataObjectSnapshot = this._getChildServiceForObject(dataObject)._snapshot.get(dataObject.dataIdentifier);
+
+                Just because it's async, doesn't mean we couldn't get it right, since we can act after the sync code action and reconciliate the 2 sides.
+
+            */
 
 
 
