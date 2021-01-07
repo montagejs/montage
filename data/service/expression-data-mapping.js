@@ -803,7 +803,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 ruleIterator = dataMatchingRules.values(),
                 requisitePropertyNames = this.requisitePropertyNames,
                 isNotRequiredRule,
-                hasSnapshot = !!this.service.snapshotForObject(object),
+                hasSnapshot = this.service.hasSnapshotForObject(object),
                 aRule,
                 aRuleRequirements, i, countI,
                 dataHasRuleRequirements;
