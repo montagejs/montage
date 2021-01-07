@@ -161,30 +161,29 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
         value: function() {
 
             if(this._dataQuery) {
-            var dataService = this.dataService,
-                currentDataStream = this.dataStream,
-                dataStream,
-                self = this;
-                //console.log(this.constructor.name+" fetchData() >>>>> ");
-            dataStream = dataService.fetchData(this._dataQuery);
-            dataStream.then(function(data) {
-                //console.log("Data fetched:",data);
-                self.dataStream = dataStream;
+                var dataService = this.dataService,
+                    currentDataStream = this.dataStream,
+                    dataStream,
+                    self = this;
+                    //console.log(this.constructor.name+" fetchData() >>>>> ");
+                dataStream = dataService.fetchData(this._dataQuery);
+                dataStream.then(function(data) {
+                    //console.log("Data fetched:",data);
+                    self.dataStream = dataStream;
 
-                //We need to
-                dataService.cancelDataStream(currentDataStream);
+                    //We need to
+                    dataService.cancelDataStream(currentDataStream);
 
-                    self.didFetchData(data);
+                        self.didFetchData(data);
 
-            },
-            function(error) {
-                console.log("fetchData failed:",error);
-
+                },
+                function(error) {
+                    console.log("fetchData failed:",error);
                 })
                 .finally(() => {
-                    this.canDrawGate.setField("dataLoaded", true);
-            });
-        }
+                        this.canDrawGate.setField("dataLoaded", true);
+                });
+            }
         }
     },
 
