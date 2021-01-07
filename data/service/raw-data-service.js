@@ -551,7 +551,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                 //If we're already have a snapshot, we've already fetched and
                 //instanciated an object for that identifier previously.
-                if(this.snapshotForDataIdentifier(dataIdentifier)) {
+                if(this.hasSnapshotForDataIdentifier(dataIdentifier)) {
                     isUpdateToExistingObject = true;
                 }
 
@@ -846,7 +846,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @argument  {Object} rawData
      */
     recordSnapshot: {
-        value: function (dataIdentifier, rawData) {
+        value: function (dataIdentifier, rawData, isFromUpdate) {
             if(!dataIdentifier) {
                 return;
             }
@@ -857,10 +857,68 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             }
             else {
                 var rawDataKeys = Object.keys(rawData),
-                    i, countI;
+                    i, countI, iUpdatedRawDataValue, iCurrentRawDataValue, iDiffValues, iRemovedValues,
+                    j, countJ, jDiffValue, jDiffValueIndex;
 
-                for(i=0, countI = rawDataKeys.length;(i<countI);i++) {
-                    snapshot[rawDataKeys[i]] = rawData[rawDataKeys[i]];
+                for(i=0, countI = rawDataKeys.length; (i<countI); i++) {
+                    iUpdatedRawDataValue = rawData[rawDataKeys[i]];
+                    if(isFromUpdate) {
+                        iCurrentRawDataValue = snapshot[rawDataKeys[i]];
+
+                        if(iUpdatedRawDataValue.hasOwnProperty("addedValues")) {
+                            iDiffValues = iUpdatedRawDataValue.addedValues;
+
+                            if(iCurrentRawDataValue) {
+                                if(Array.isArray(iCurrentRawDataValue)) {
+                                    for(j=0, countJ = iDiffValues.length; (j<countJ); j++) {
+                                        jDiffValue = iDiffValues[j];
+                                        /*
+                                            We shouldn't have to worry about the value alredy being in iCurrentRawDataValue, but we're going to safe and check
+                                        */
+                                        if(iCurrentRawDataValue.indexOf(jDiffValue) === -1) {
+                                            iCurrentRawDataValue.push(jDiffValue);
+                                        }
+                                    }
+                                } else {
+                                    console.warn("recordSnapshot from Update: snapshot for '"+awDataKeys[i]+"' is not an Array but addedValues:",iDiffValues);
+                                    snapshot[rawDataKeys[i]] = iDiffValues;
+                                }
+                            } else {
+                                console.error("recordSnapshot from Update: No entry in snapshot for '"+awDataKeys[i]+"' but addedValues:",iDiffValues);
+                                /*
+                                    We could reconstruct from the object value, but we should relly not be here.
+                                */
+                                snapshot[rawDataKeys[i]] = iDiffValues;
+                            }
+                        }
+
+                        if(iUpdatedRawDataValue.hasOwnProperty("removedValues")) {
+                            iDiffValues = iUpdatedRawDataValue.removedValues;
+
+                            if(iCurrentRawDataValue) {
+                                if(Array.isArray(iCurrentRawDataValue)) {
+                                    for(j=0, countJ = iDiffValues.length; (j<countJ); j++) {
+                                        jDiffValue = iDiffValues[j];
+                                        /*
+                                            We shouldn't have to worry about the value alredy being in iCurrentRawDataValue, but we're going to safe and check
+                                        */
+                                        if((jDiffValueIndex = iCurrentRawDataValue.indexOf(jDiffValue)) !== -1) {
+                                            iCurrentRawDataValue.splice(jDiffValueIndex,1);
+                                        }
+                                    }
+                                } else {
+                                    console.warn("recordSnapshot from Update: snapshot for '"+awDataKeys[i]+"' is not an Array but removedValues:",iDiffValues);
+                                    console.error("removedValues but no entry in snapshot for ")
+                                    //snapshot[rawDataKeys[i]] = iDiffValues;
+                                }
+                            } else {
+                                console.warn("recordSnapshot from Update: No entry in snapshot for '"+awDataKeys[i]+"' but removedValues:",iDiffValues);
+                            }
+                        }
+
+                    } else {
+                        snapshot[rawDataKeys[i]] = iUpdatedRawDataValue;
+                    }
                 }
             }
         }
@@ -884,14 +942,26 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @private
      * @argument {DataIdentifier} dataIdentifier
      */
-   snapshotForDataIdentifier: {
+    snapshotForDataIdentifier: {
         value: function (dataIdentifier) {
             return this._snapshot.get(dataIdentifier);
        }
     },
 
     /**
-     * Returns the snapshot associated with the DataIdentifier argument if available
+     * Returns wether a snapshot is associated with the DataIdentifier argument
+     *
+     * @private
+     * @argument {DataIdentifier} dataIdentifier
+     */
+    hasSnapshotForDataIdentifier: {
+        value: function (dataIdentifier) {
+            return this._snapshot.has(dataIdentifier);
+        }
+    },
+
+    /**
+     * Returns the snapshot associated with the object argument if available
      *
      * @private
      * @argument {DataIdentifier} dataIdentifier
@@ -899,6 +969,18 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
    snapshotForObject: {
         value: function (object) {
             return this.snapshotForDataIdentifier(this.dataIdentifierForObject(object));
+        }
+    },
+
+    /**
+     * Returns wether a snapshot is associated with the object argument
+     *
+     * @private
+     * @argument {DataIdentifier} dataIdentifier
+     */
+    hasSnapshotForObject: {
+        value: function (object) {
+            return this.hasSnapshotForDataIdentifier(this.dataIdentifierForObject(object));
         }
     },
 
@@ -1520,7 +1602,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                         result = otherResult;
                     }
                 } else {
-                    result = this.mapObjectPropertyToRawData(object, propertyName, record, context, added, removed);
+                    result = this.mapObjectPropertyToRawData(object, propertyName, record, context, added, removed, lastReadSnapshot, rawDataSnapshot);
                 }
             }
 
