@@ -20,7 +20,11 @@ exports.StringToURLConverter = Converter.specialize( /** @lends StringToURLConve
      */
     convert: {
         value: function (v) {
-            return new URL(v);
+            if(v == null) {
+                return null;
+            } else {
+                return new URL(v);
+            }
         }
     },
 
