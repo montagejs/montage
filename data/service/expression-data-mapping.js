@@ -806,6 +806,8 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 hasSnapshot = this.service.hasSnapshotForObject(object),
                 aRule,
                 aRuleRequirements, i, countI,
+                service = this.service,
+                objectDescriptor = this.objectDescriptor,
                 dataHasRuleRequirements;
 
             while ((aRule = ruleIterator.next().value)) {
@@ -836,11 +838,21 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 */
 
                 /*
-                    If the rule isn't required, or if we don't have what we need to fullfill, we bail out.
+                    if we don't have what we need to fullfill, we bail out.
+
+                    Previously if the rule isn't required, we would bail out, but if it's been sent ny the server, me might as well make it useful than stay unused in the snapshot, as long as we can.
                 */
-                if(!isRequiredRule || !dataHasRuleRequirements) {
+
+                // if(service.canMapObjectDescriptorRawDataToObjectPropertyWithoutFetch(objectDescriptor, aRule.targetPath) && dataHasRuleRequirements) {
+                //     console.log("Now mapping property "+aRule.targetPath+" of "+objectDescriptor.name);
+                // }
+
+                if((!isRequiredRule && !service.canMapObjectDescriptorRawDataToObjectPropertyWithoutFetch(objectDescriptor, aRule.targetPath)) || !dataHasRuleRequirements) {
                     continue;
                 }
+                // if(!isRequiredRule || !dataHasRuleRequirements) {
+                //     continue;
+                // }
 
                 result = this.mapRawDataToObjectProperty(data, object, aRule.targetPath, context);
                 if (this._isAsync(result)) {
@@ -1074,7 +1086,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
                 and that can't be directly compared to the structure of lastReadSnapshot....
 
-                So we check for that. That said, it might be cleaner to pass on the relevant property descriptor which is available in the methods colling this as there might be richer semantics there.
+                So we check for that. That said, it might be cleaner to pass on the relevant property descriptor which is available in the methods calling this as there might be richer semantics there.
             */
 
            if(lastReadSnapshot && rawDataSnapshot &&

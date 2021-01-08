@@ -1745,8 +1745,8 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
     _fetchObjectPropertyWithPropertyDescriptor: {
         value: function (object, propertyName, propertyDescriptor) {
             var self = this,
-                objectDescriptor = propertyDescriptor.owner,
-                mapping = objectDescriptor && this.mappingForType(objectDescriptor),
+            objectDescriptor = this.objectDescriptorForObject(object),
+            mapping = objectDescriptor && this.mappingForType(objectDescriptor),
                 data = {},
                 result;
 

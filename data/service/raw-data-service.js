@@ -15,6 +15,7 @@ var DataService = require("data/service/data-service").DataService,
     DataOrdering = require("data/model/data-ordering").DataOrdering,
     DESCENDING = DataOrdering.DESCENDING,
     evaluate = require("core/frb/evaluate"),
+    RawForeignValueToObjectConverter = require("data/converter/raw-foreign-value-to-object-converter").RawForeignValueToObjectConverter,
     Promise = require("../../core/promise").Promise;
 
     require("core/collections/shim-object");
@@ -1793,6 +1794,23 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             }
 
             return subType ? this._descriptorForParentAndRawData(subType, rawData) : parent;
+        }
+    },
+
+    canMapObjectDescriptorRawDataToObjectPropertyWithoutFetch: {
+
+        value: function(objectDescriptor, propertyName) {
+            var mapping = this.mappingForType(objectDescriptor),
+                objectRule = mapping.objectMappingRules.get(propertyName),
+                objectRuleConverter = objectRule && objectRule.converter,
+                valueDescriptor = objectRule && objectRule.propertyDescriptor._valueDescriptorReference;
+
+            return (
+            objectRule && (
+                !valueDescriptor ||
+                (valueDescriptor && objectRuleConverter && !(objectRuleConverter instanceof RawForeignValueToObjectConverter))
+                )
+            );
         }
     },
 
