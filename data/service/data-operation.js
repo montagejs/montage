@@ -276,23 +276,33 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
                 this.timeStamp = value;
             }
             /* keeping dataDescriptor here for temporary backward compatibility */
-            value = deserializer.getProperty("target") || deserializer.getProperty("targetModuleId") || deserializer.getProperty("dataDescriptor");
+            value = deserializer.getProperty("target");
+            if(value === undefined) {
+                value = deserializer.getProperty("targetModuleId");
+            }
+            if(value === undefined) {
+                value = deserializer.getProperty("dataDescriptor");
+            }
             if (value !== void 0) {
                 if(Array.isArray(value)) {
                     this.target = value.map((objectDescriptorModuleIid) => {return this.mainService.objectDescriptorWithModuleId(objectDescriptorModuleIid)});
                 } else if(typeof value === "string") {
 
                     if(this.mainService) {
-                        if(value === null) {
-                            this.target = this.mainService
-                        } else {
-                            this.target = this.mainService.objectDescriptorWithModuleId(value);
-                        }
+                        this.target = this.mainService.objectDescriptorWithModuleId(value);
                     } else {
                         //Last resort, if we can't construct the target, let's carry the data that was supposed to help us do so
                         this.targetModuleId = value;
                     }
-                } else {
+                } else if(value === null) {
+                    if(this.mainService) {
+                        this.target = this.mainService;
+                    } else {
+                        //Last resort, if we can't construct the target, let's carry the data that was supposed to help us do so
+                        this.targetModuleId = value;
+                    }
+                }
+                else {
                     this.target = value;
                 }
             }
