@@ -82,7 +82,20 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate.prototype # */ {
         enumerable: false,
         value: function (aFieldName) {
             var table = this.table;
-            return !table || table[aFieldName];
+            return !table || table.get(aFieldName);
+        }
+    },
+
+    /**
+     * @function
+     * @param {Array} aFieldName The aFieldName array.
+     * @returns boolean
+     */
+    hasField: {
+        enumerable: false,
+        value: function (aFieldName) {
+            var table = this.table;
+            return !table || table.has(aFieldName);
         }
     },
 
