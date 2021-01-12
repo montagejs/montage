@@ -48,7 +48,7 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
     constructor: {
         value: function DataEditor () {
             this.super();
-            this.canDrawGate.setField("dataLoaded", false);
+            // this.canDrawGate.setField("dataLoaded", false);
             // console.log("---------- "+this.constructor.name+" inDocument:"+this.inDocument+" —— dataLoaded: false",value);
 
             return this;
@@ -324,6 +324,9 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
             return this._data;
         },
         set: function (value) {
+            if(!this.hasOwnProperty("_data") && value === undefined) {
+                this.canDrawGate.setField("dataLoaded", true);
+            }
             // console.log(this.constructor.name+ " set data:",value, " inDocument:"+this.inDocument+", parentComponent:",this.parentComponent);
             if(this._data === undefined && value !== undefined) {
                 // console.log("++++++++++ "+this.constructor.name+" inDocument:"+this.inDocument+" —— dataLoaded: true",value);
