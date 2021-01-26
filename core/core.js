@@ -17,9 +17,10 @@ require("./extras/weak-map");
 require("proxy-polyfill/proxy.min");
 
 
-var Map = require("./collections/map");
-var WeakMap = require("./collections/weak-map");
-var Set = require("./collections/set");
+var Map = require("./collections/map"),
+    WeakMap = require("./collections/weak-map"),
+    Set = require("./collections/set"),
+    deprecate = require("./deprecate");
 
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
@@ -1351,19 +1352,19 @@ Object.defineProperties(PathChangeDescriptor.prototype, {
 
 var pathChangeDescriptors = new WeakMap();
 
-var pathPropertyDescriptors = {
+var expressionPropertyDescriptors = {
 
     /**
      * Evaluates an FRB expression from this object and returns the value.
      * The evaluator does not establish any change listeners.
-     * @function Montage#getPath
+     * @function Montage#valueForExpression
      * @param {string} path an FRB expression
      * @returns the current value of the expression
      */
-    getPath: {
-        value: function (path, parameters, document, components) {
+    valueForExpression: {
+        value: function (expression, parameters, document, components) {
             return evaluate(
-                path,
+                expression,
                 this,
                 parameters || this,
                 document,
@@ -1371,20 +1372,26 @@ var pathPropertyDescriptors = {
             );
         }
     },
+    getPath: {
+        value: deprecate.deprecateMethod(void 0, function (path, parameters, document, components) {
+            this.valueForExpression(path, parameters, document, components);
+        }, "getPath", "valueForExpression", true)
+    },
+
 
     /**
      * Assigns a value to the FRB expression from this object. Not all
      * expressions can be assigned to. Property chains will work, but will
      * silently fail if the target object does not exist.
-     * @function Montage#setPath
+     * @function Montage#setValueForExpression
      * @param {string} path an FRB expression designating the value to replace
      * @param value the new value
      */
-    setPath: {
-        value: function (path, value, parameters, document, components) {
+    setValueForExpression: {
+        value: function (value, expression, parameters, document, components) {
             return assign(
                 this,
-                path,
+                expression,
                 value,
                 parameters || this,
                 document,
@@ -1392,11 +1399,17 @@ var pathPropertyDescriptors = {
             );
         }
     },
+    setPath: {
+        value: deprecate.deprecateMethod(void 0, function (path, value, parameters, document, components) {
+            console.warn("setValueForExpression arguments 'value' and 'path' are now in reverse order of setPath()");
+            this.setValueForExpression(value, path, parameters, document, components);
+        }, "setPath", "setValueForExpression", true)
+    },
 
     /**
      * Observes changes to the value of an FRB expression.  The content of the
      * emitted value may react to changes, particularly if it is an array.
-     * @function Montage#observePath
+     * @function Montage#observeExpression
      * @param {string} path an FRB expression
      * @param {function} emit a function that receives new values in response
      * to changes.  The emitter may return a `cancel` function if it manages
@@ -1405,12 +1418,17 @@ var pathPropertyDescriptors = {
      * change listeners, prevent new values from being observed, and prevent
      * previously emitted values from reacting to any further changes.
      */
-    observePath: {
-        value: function (path, emit) {
-            var syntax = parse(path);
+    observeExpression: {
+        value: function (expression, emit) {
+            var syntax = parse(expression);
             var observe = compileObserver(syntax);
             return observe(autoCancelPrevious(emit), new Scope(this));
         }
+    },
+    observePath: {
+        value: deprecate.deprecateMethod(void 0, function (path, emit) {
+            this.observeExpression(path, emit);
+        }, "observePath", "observeExpression", true)
     },
 
     /**
@@ -1676,8 +1694,8 @@ var pathPropertyDescriptors = {
 
 };
 
-Montage.defineProperties(Montage, pathPropertyDescriptors);
-Montage.defineProperties(Montage.prototype, pathPropertyDescriptors);
+Montage.defineProperties(Montage, expressionPropertyDescriptors);
+Montage.defineProperties(Montage.prototype, expressionPropertyDescriptors);
 
 /*
  * Defines the module Id for object descriptors. This is externalized so that it can be subclassed.
