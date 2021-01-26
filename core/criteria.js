@@ -27,6 +27,12 @@ var Criteria = exports.Criteria = Montage.specialize({
                     ? (this._expression = stringify(this._syntax))
                     : this._expression
                 );
+        },
+        set: function(value) {
+            if(value !== this._expression) {
+                this._reset();
+                this._expression = value;
+            }
         }
     },
     /**
@@ -43,6 +49,18 @@ var Criteria = exports.Criteria = Montage.specialize({
             if(value !== this._parameters) {
                 this._parameters = value;
             }
+        }
+    },
+
+    _reset: {
+        value: function() {
+            this._expression = null;
+            this._compiledSyntax = null;
+
+            //Reset qualifiedProperties cache
+            this._qualifiedProperties = null;
+
+            this._syntax = null;
         }
     },
 
@@ -66,16 +84,7 @@ var Criteria = exports.Criteria = Montage.specialize({
         set: function(value) {
             if(value !== this._syntax) {
                 //We need to reset:
-                //expression if we have one:
-                this._expression = null;
-
-                //_compiledSyntax
-                this._compiledSyntax = null;
-
-                //Reset qualifiedProperties cache
-                this._qualifiedProperties = null;
-
-
+                this._reset();
                 this._syntax = value;
             }
 
@@ -439,12 +448,17 @@ var Criteria = exports.Criteria = Montage.specialize({
                         // }
 
                     }
-                    else if(syntaxArg1.type === "parameters") {
+                    else if(syntaxArg1 && syntaxArg1.type === "parameters") {
                         this.__syntaxByAliasingSyntaxWithParameters(aliasedSyntax, syntaxArg1, 1, syntaxArg0, 0, aliasedParameters, parameterCounter, _thisParameters);
 
                     } else {
-                        aliasedSyntax.args[0] = this._syntaxByAliasingSyntaxWithParameters(syntaxArg0, aliasedParameters, parameterCounter, _thisParameters);
-                        aliasedSyntax.args[1] = this._syntaxByAliasingSyntaxWithParameters(syntaxArg1, aliasedParameters, parameterCounter, _thisParameters);
+                        if(syntaxArg0) {
+                            aliasedSyntax.args[0] = this._syntaxByAliasingSyntaxWithParameters(syntaxArg0, aliasedParameters, parameterCounter, _thisParameters);
+                        }
+
+                        if(syntaxArg1) {
+                            aliasedSyntax.args[1] = this._syntaxByAliasingSyntaxWithParameters(syntaxArg1, aliasedParameters, parameterCounter, _thisParameters);
+                        }
                     }
                 } else {
                     aliasedSyntax[iKey] = syntax[iKey];
