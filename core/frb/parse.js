@@ -7,7 +7,7 @@ var memo = new Map(); // could be Dict
 
 module.exports = parse;
 function parse(text, options) {
-    var cache;
+    var syntax;
     if (Array.isArray(text)) {
         return {
             type: "tuple",
@@ -15,11 +15,11 @@ function parse(text, options) {
                 return parse(text, options);
             })
         };
-    } else if (!options && (cache = memo.get(text))) {
-        return cache;
+    } else if (!options && (syntax = memo.get(text))) {
+        return syntax;
     } else {
         try {
-            var syntax = grammar.parse(text, options || Object.empty);
+            syntax = grammar.parse(text, options || Object.empty);
             if (!options) {
                 memo.set(text,syntax);
             }
@@ -33,4 +33,3 @@ function parse(text, options) {
         }
     }
 }
-
