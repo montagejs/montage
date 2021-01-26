@@ -2,6 +2,7 @@ var Montage = require("../core").Montage,
     Promise = require("../promise").Promise,
     deprecate = require("../deprecate"),
     Enum = require("core/enum").Enum,
+    parse = require("core/frb/parse"),
     logger = require("../logger").logger("objectDescriptor");
 
 /* TypeDescriptor */
@@ -472,6 +473,17 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     definition: {
         value: null
     },
+
+    _definitionSyntax: {
+        value: null
+    },
+
+    definitionSyntax: {
+        get: function() {
+            return this._definitionSyntax || (this._definitionSyntax = parse(this.definition));
+        }
+    },
+
 
     /**
      * @type {string}
