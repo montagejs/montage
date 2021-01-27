@@ -17,6 +17,7 @@ var DataService = require("data/service/data-service").DataService,
     evaluate = require("core/frb/evaluate"),
     RawForeignValueToObjectConverter = require("data/converter/raw-foreign-value-to-object-converter").RawForeignValueToObjectConverter,
     DataOperation = require("./data-operation").DataOperation,
+    DataOperationType = require("./data-operation").DataOperationType,
     Promise = require("../../core/promise").Promise,
     SyntaxInOrderIterator = require("core/frb/syntax-iterator").SyntaxInOrderIterator;
 
@@ -936,7 +937,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                                     snapshot[rawDataKeys[i]] = iDiffValues;
                                 }
                             } else {
-                                console.error("recordSnapshot from Update: No entry in snapshot for '"+awDataKeys[i]+"' but addedValues:",iDiffValues);
+                                console.warn("recordSnapshot from Update: No entry in snapshot for '"+rawDataKeys[i]+"' but addedValues:",iDiffValues);
                                 /*
                                     We could reconstruct from the object value, but we should relly not be here.
                                 */
@@ -1865,7 +1866,44 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
+
+    responseOperationForReadOperation: {
+        value: function(readOperation, err, data, isNotLast) {
+            var operation = new DataOperation();
+
+            operation.referrerId = readOperation.id;
+            operation.target = readOperation.target;
+
+            //Carry on the details needed by the coordinator to dispatch back to client
+            // operation.connection = readOperation.connection;
+            operation.clientId = readOperation.clientId;
+            //console.log("executed Statement err:",err, "data:",data);
+
+            if (err) {
+                // an error occurred
+                //console.log("!!! handleRead FAILED:", err, err.stack, rawDataOperation.sql);
+                operation.type = DataOperation.Type.ReadFailed;
+                //Should the data be the error?
+                operation.data = err;
+            }
+            else {
+                // successful response
+
+                //If we need to take care of readExpressions, we can't send a ReadCompleted until we have returnes everything that we asked for.
+                if(isNotLast) {
+                    operation.type = DataOperation.Type.ReadUpdate;
                 } else {
+                    operation.type = DataOperation.Type.ReadCompleted;
+                }
+
+                //We provide the inserted record as the operation's payload
+                operation.data = data;
+            }
+            return operation;
+        }
+    },
+
+
     /***************************************************************************
      * Deprecated
      */
