@@ -235,9 +235,13 @@ GenericCollection.prototype.concat = function () {
 GenericCollection.prototype.flatten = function () {
     var self = this;
     return this.reduce(function (result, array) {
-        array.forEach(function (value) {
-            this.push(value);
-        }, result, self);
+        if(array.forEach) {
+            array.forEach(function (value) {
+                this.push(value);
+            }, result, self);
+        } else {
+            result.push(array);
+        }
         return result;
     }, []);
 };
