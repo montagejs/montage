@@ -614,21 +614,25 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
      */
     getObjectProperty: {
         value: function (object) {
-            //If the object is not created and not saved, we fetch the value
-            if(!this._service.isObjectCreated(object)) {
+            /*
+                If the object is not created and not saved, we fetch the value
+
+                In some cases, a new object created in-memory, with enough data set on it might be able to read some propery that might be derived from the raw values of the property already set on it. So let's leave the bottom layers to figure that out.
+            */
+            // if(!this._service.isObjectCreated(object)) {
                 var status = this._getValueStatus(object);
                 return  status ?             status.promise :
                         status === null ?   this._service.nullPromise :
                                             this.updateObjectProperty(object);
-            } else {
-                /*
-                    else the object is just created, not saved, no point fetching
-                    we wouldn't find anything anyway
-                */
+            // } else {
+            //     /*
+            //         else the object is just created, not saved, no point fetching
+            //         we wouldn't find anything anyway
+            //     */
 
-              this._setValueStatus(object, null);
-                return this._service.nullPromise;
-            }
+            //   this._setValueStatus(object, null);
+            //     return this._service.nullPromise;
+            // }
         }
     },
 
@@ -669,6 +673,9 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
             var self = this;
             //console.log("data-trigger: _fetchObjectProperty "+this._propertyName,object );
             this._service.fetchObjectProperty(object, this._propertyName).then(function (propertyValue) {
+                /*
+                    If there's a propertyValue, it's the actual result of the fetch and bipassed the existing path where the mapping would have added the value on object by the time we get back here. So since it wasn't done, we do it here.
+                */
                 // console.log(propertyValue);
                 if(propertyValue && !object[self._privatePropertyName]) {
                     if(self.propertyDescriptor.cardinality > 1) {
@@ -837,6 +844,15 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ (DataTrig
                 trigger.propertyDescriptor = descriptor;
                 trigger._isGlobal = descriptor.isGlobal;
                 if (descriptor.definition) {
+                    /*
+                        As we create the binding for a definition like "propertyA.propertyB", we will endup doing fetchObjectProperty for propertyA, and later calling propertyB on the result of fetching propertyA. This is highly inneficient and we need to find a way to fetch propertyA with a readExpression of propertyB.
+
+                        By the time we reach fetchObjectProperty, that info is lost, so we need to find a way to carry it in.
+
+                        Every property change observer/listener is an opportunity to collect what "comes next", but it's only available on defineBinding, as after it's dynamically added once instances are in memory which is too late.
+                    */
+
+
                     var propertyDescriptor = {
                         get: function (shouldFetch) {
                             if (!this.getBinding(descriptor.name)) {

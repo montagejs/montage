@@ -2,6 +2,7 @@ var DataMapping = require("./data-mapping").DataMapping,
     assign = require("core/frb/assign"),
     compile = require("core/frb/compile-evaluator"),
     DataService = require("data/service/data-service").DataService,
+    Criteria = require("core/criteria").Criteria,
     ObjectDescriptorReference = require("core/meta/object-descriptor-reference").ObjectDescriptorReference,
     parse = require("core/frb/parse"),
     Map = require("core/collections/map"),
@@ -1090,7 +1091,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             */
 
            if(lastReadSnapshot && rawDataSnapshot &&
-            !(typeof rawDataPropertValue === "object" && (rawDataPropertValue.hasOwnProperty("addedValues") || rawDataPropertValue.hasOwnProperty("addedValues")))) {
+            !(typeof rawDataPropertValue === "object" && (rawDataPropertValue.hasOwnProperty("addedValues") || rawDataPropertValue.hasOwnProperty("removedValues")))) {
 
                 if(lastReadSnapshot[rawDataPropertyName] !== rawDataPropertValue) {
                     rawData[rawDataPropertyName] = rawDataPropertValue;
@@ -1268,21 +1269,36 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         value: function(object, propertyName, data,  rawPropertyName, added, removed, _rule, lastReadSnapshot, rawDataSnapshot) {
 
             if((added && added.size > 0) || (removed && removed.size > 0 )) {
-                //We derived object so we can pretend the value of the property is alternatively added, then removed, to get the mapping done.
-                var tmpExtendObject = Object.create(object),
+                var tmpExtendObject,
+                    //We derived object so we can pretend the value of the property is alternatively added, then removed, to get the mapping done.
+                    //tmpExtendObject = Object.create(object),
                     diffData = Object.create(null),
                     mappedKeys,
                     i, countI, iKey,
                     aPropertyChanges = {},
                     addedResult, addedResultIsPromise,
                     removedResult, removedResultIsPromise,
+                    requirements,
                     result;
 
                 data[rawPropertyName] = aPropertyChanges;
 
                 if(added && added.size > 0) {
-                    //added is a set, regular properties are array, not ideal but we need to convert to be able to map.
-                    tmpExtendObject[propertyName] = Array.from(added);
+                    /*
+                        Here we have a situation where in the most common case object[propertyName] is not equal to the content of added, like if there were pre-exising values.
+
+                        Since we want to only send the diff if possible (we might need to add a flag on RawDataService to know if it can handle diffs or if needs the whole thing.). If there were a notion of order in the propertyDescriptor, that might also be a reason to not send a diff.
+
+                        First we tried to use an extension of the object, but that still modifies it. So we're going to build just a payload object with the values for _rule.requirements.
+                    */
+                    requirements = _rule.requirements;
+                    tmpExtendObject = {};
+                    for(i=0, countI = requirements.length; ( i<countI); i++ ) {
+                        //added is a set, regular properties are array, not ideal but we need to convert to be able to map.
+                        tmpExtendObject[requirements[i]] = (requirements[i] === propertyName) ? Array.from(added) : object[requirements[i]];
+                    }
+
+                    //tmpExtendObject[propertyName] = Array.from(added);
                     addedResult = this.__mapObjectToRawDataProperty(tmpExtendObject, diffData, rawPropertyName, _rule, lastReadSnapshot, rawDataSnapshot);
 
                     if (this._isAsync(addedResult)) {
@@ -1296,7 +1312,15 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 }
 
                 if(removed && removed.size > 0 ) {
-                    tmpExtendObject[propertyName] = Array.from(result);
+
+                    requirements = (requirements || _rule.requirements);
+                    // tmpExtendObject[propertyName] = Array.from(result);
+                    tmpExtendObject = (tmpExtendObject || {});
+
+                    for(i=0, countI = requirements.length; ( i<countI); i++ ) {
+                        //added is a set, regular properties are array, not ideal but we need to convert to be able to map.
+                        tmpExtendObject[requirements[i]] = (requirements[i] === propertyName) ? Array.from(removed) : object[requirements[i]];
+                    }
 
                     removedResult = this.__mapObjectToRawDataProperty(tmpExtendObject, diffData, rawPropertyName, _rule, lastReadSnapshot, rawDataSnapshot);
 
@@ -2269,6 +2293,67 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         value: function (sourceType, destinationType) {
             var converters = exports.ExpressionDataMapping.defaultConverters;
             return converters[sourceType] && converters[sourceType][destinationType] || null;
+        }
+    },
+
+    __rawDataPrimaryKeyCriteriaSyntax: {
+        value: undefined
+    },
+
+    _rawDataPrimaryKeyCriteriaSyntax: {
+        get: function() {
+            if(!this.__rawDataPrimaryKeyCriteriaSyntax) {
+                var rawDataPrimaryKeys = this.rawDataPrimaryKeys,
+                    i, iKey, countI, expression = "";
+
+                for(i=0, countI = rawDataPrimaryKeys.length; (i<countI); i++) {
+                    iKey = rawDataPrimaryKeys[i];
+                    if(expression.length > 0) {
+                        expression += " && ";
+                    }
+                    expression += `${iKey} == $${iKey}`;
+                }
+
+                this.__rawDataPrimaryKeyCriteriaSyntax = parse(expression);
+            }
+            return  this.__rawDataPrimaryKeyCriteriaSyntax;
+        }
+    },
+
+    rawDataPrimaryKeyCriteriaForObject: {
+        value: function(object) {
+            var rawDataPrimaryKeys = this.rawDataPrimaryKeys,
+                isObjectCreated = this.service.isObjectCreated(object),
+                snapshot = !isObjectCreated && this.service.snapshotForObject(object),
+                criteriaParameters,
+                i, iKey, iKeyRawRule, countI;
+
+            /*
+                If the object has been fetched, we should have the values in the snapshot, otherwise if they are natural primiary keys, we might be able to get them by mapping back
+            */
+           for(i=0, countI = rawDataPrimaryKeys.length; (i<countI); i++) {
+                iKey = rawDataPrimaryKeys[i];
+                if(!isObjectCreated && snapshot) {
+                    (criteriaParameters || (criteriaParameters = {}))[iKey] = snapshot[iKey];
+                } else {
+                    if(countI === 1 && object.dataIdentifier) {
+                        (criteriaParameters || (criteriaParameters = {}))[iKey] = object.dataIdentifier.primaryKey;
+                    } else {
+                        iKeyRawRule = this.rawDataMappingRules.get(iKey);
+                        if(iKeyRawRule) {
+                            this.__mapObjectToRawDataProperty(object, (criteriaParameters || (criteriaParameters = {})), iKey, iKeyRawRule, snapshot);
+                        }
+                    }
+                }
+            }
+
+            if(criteriaParameters) {
+                return new Criteria().initWithSyntax(this._rawDataPrimaryKeyCriteriaSyntax, criteriaParameters);
+            } else {
+                return null;
+            }
+
+
         }
     },
 

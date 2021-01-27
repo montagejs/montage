@@ -183,7 +183,7 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
         }
     },
     _fetchConvertedDataForObjectDescriptorCriteria: {
-        value: function(typeToFetch, criteria) {
+        value: function(typeToFetch, criteria, currentRule) {
             var self = this;
 
             return this.service ? this.service.then(function (service) {
@@ -226,6 +226,13 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
 
                 if(!fetchPromise) {
                     var query = DataQuery.withTypeAndCriteria(typeToFetch, criteria);
+
+                    /*
+                        Sounds twisted, but this is to deal with the case where we need to fetch to resolve a priperty of the object itself.
+                    */
+                    if(currentRule && !currentRule.propertyDescriptor._valueDescriptorReference) {
+                        query.readExpressions = [currentRule.targetPath];
+                    }
 
                 /*
                     When we fetch objects that have inverse relationships on each others none can complete their mapRawDataProcess because the first one's promise for mapping the relationship to the second never commpletes because the second one itself has it's raw data the foreignKey to the first and attemps to do so by default on processing operations, where the previous way was only looping on requisite proprties. If both relationships were requisite, on each side we'd end up with the same problem.
@@ -350,6 +357,13 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
         }
     },
 
+    /*
+        To open the ability to get derived values from non-saved objects, some failsafes blocking a non-saved created object to get any kind of property resolved/fetched were removed. So we need to be smarter here and do the same.
+
+        If an object is created (which we don't know here, but we can check), fetching a property relies on the primary key and that the primarty key is one property only (like a uuid) and there's already a value (client-side generated like uuid can be), than it can't be fetched and we shoould resolve to undefined.
+
+    */
+
     convertCriteriaForValue: {
         value: function(value) {
             var criteria = new Criteria().initWithSyntax(this.convertSyntax, value);
@@ -401,8 +415,10 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
 
             if((v && !(v instanceof Array )) || (v instanceof Array && v.length > 0)) {
                 var self = this,
-                criteria,
-                query;
+                    //We put it in a local variable so we have the right value in the closure
+                    currentRule = this.currentRule,
+                    criteria,
+                    query;
 
                 if(this.foreignDescriptorMappings) {
                     /*
@@ -469,7 +485,7 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
 
                     return this._descriptorToFetch.then(function (typeToFetch) {
 
-                        return self._fetchConvertedDataForObjectDescriptorCriteria(typeToFetch, criteria);
+                        return self._fetchConvertedDataForObjectDescriptorCriteria(typeToFetch, criteria, currentRule);
 
                         // if (self.serviceIdentifier) {
                         //     criteria.parameters.serviceIdentifier = self.serviceIdentifier;
@@ -480,6 +496,9 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                         // return self.service ? self.service.then(function (service) {
                         //     return service.rootService.fetchData(query);
                         // }) : null;
+                    }, function(error) {
+                        console.log(error);
+                        return error;
                     });
                 }
             }

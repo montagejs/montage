@@ -22,6 +22,7 @@ var Montage = require("core/core").Montage,
     DeleteRule = require("core/meta/property-descriptor").DeleteRule,
     deprecate = require("../../core/deprecate"),
     currentEnvironment = require("core/environment").currentEnvironment,
+    PropertyChanges = require("../../core/collections/listen/property-changes"),
     Locale = require("core/locale").Locale;
 
     require("core/extras/string");
@@ -816,6 +817,12 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         value: undefined
     },
 
+    handlesType: {
+        value: function(type) {
+            return (this.rootService._childServicesByType.get(type).indexOf(this) !== -1);
+        }
+    },
+
     _childServicesByIdentifier: {
         get: function () {
             if (!this.__childServicesByIdentifier) {
@@ -1493,13 +1500,19 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 - If we create an object, properties that are not relations can't
                 be fetched. We need to make sure we don't actually try.
 
+
+                COUNTER: If an object created already has the info to make it's primary key, we should go forward.
+
+                The real test could be that if it's mapped as a relationship, then we might be able to get something.
+
                 - If a property is a relationship and it wasn't set on the object,
                 as an object, we can't get it either.
             */
-            if(this.isObjectCreated(object)) {
-                //Not much we can do there anyway, punt
-                return Promise.resolve(true);
-            } else if (this.isRootService) {
+            // if(this.isObjectCreated(object)) {
+            //     //Not much we can do there anyway, punt
+            //     return Promise.resolve(true);
+            // } else
+            if (this.isRootService) {
                 // Get the data, accepting property names as an array or as a list
                 // of string arguments while avoiding the creation of any new array.
                 //var names = Array.isArray(propertyNames) ? propertyNames : Array.prototype.slice.call(arguments, 1),
@@ -1641,21 +1654,26 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      * this method.
      *
      * @method
-     * @argument {object} object   - The object whose property value is being
-     *                               requested.
-     * @argument {string} name     - The name of the single property whose value
-     *                               is being requested.
+     * @argument {object} object            - The object whose property value is being
+     *                                      requested.
+     *
+     * @argument {string} name              - The name of the single property whose value
+     *                                      is being requested.
+     *
+     * @argument {array} readExpressions    - A list of object[propertyName] properties to get
+     *                                      at the same time we're getting object[propertyName].
      * @returns {external:Promise} - A promise fulfilled when the requested
      * value has been received and set on the specified property of the passed
      * in object.
      */
     fetchObjectProperty: {
-        value: function (object, propertyName) {
+        value: function (object, propertyName, isObjectCreated, readExpressions) {
             var isHandler = this.parentService && this.parentService._getChildServiceForObject(object) === this,
                 useDelegate = isHandler && typeof this.fetchRawObjectProperty === "function",
                 delegateFunction = !useDelegate && isHandler && this._delegateFunctionForPropertyName(propertyName),
                 propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
                 childService = !isHandler && this._getChildServiceForObject(object),
+                isObjectCreated = this.isObjectCreated(object),
                 debug = exports.DataService.debugProperties.has(propertyName);
 
 
@@ -1670,7 +1688,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                         :   delegateFunction
                                 ?   delegateFunction.call(this, object)
                                 :   isHandler && propertyDescriptor
-                                    ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor)
+                                    ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor, isObjectCreated)
                                     : childService
                                         ?   childService.fetchObjectProperty(object, propertyName)
                                         :   this.nullPromise;
@@ -1743,7 +1761,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
 
     _fetchObjectPropertyWithPropertyDescriptor: {
-        value: function (object, propertyName, propertyDescriptor) {
+        value: function (object, propertyName, propertyDescriptor, isObjectCreated) {
             var self = this,
             objectDescriptor = this.objectDescriptorForObject(object),
             mapping = objectDescriptor && this.mappingForType(objectDescriptor),
@@ -1752,6 +1770,30 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
 
             if (mapping) {
+
+                /*
+                    To open the ability to get derived values from non-saved objects, some failsafes blocking a non-saved created object to get any kind of property resolved/fetched were removed. So we need to be smarter here and do the same.
+
+                    If an object is created (which we don't know here, but we can check), fetching a property relies on the primary key and that the primarty key is one property only (like a uuid) and there's already a value (client-side generated like uuid can be), than it can't be fetched and we shoould resolve to null.
+
+                    Another approch would be to map all dependencies and let the rule's converter assess if it has everytrhing it needs to do the job, but at that level, the converter doesn't know the object, but it has the primaryKey in the criteria's syntax and the value in the associated parameters, so it could find out if there's a corresponding object that is created. It might be needed, let's see if this first heuristic works first.
+                */
+                if(isObjectCreated) {
+                    var rule = mapping.objectMappingRules.get(propertyName),
+                        rawDataPrimaryKeys = mapping.rawDataPrimaryKeys,
+                        requiredRawProperties = rule && rule.requirements;
+
+                    /*
+                        rawDataPrimaryKeys.length === 1 is to assess if it's a traditional id with no intrinsic meaning
+                    */
+                    if(rawDataPrimaryKeys.length === 1 && requiredRawProperties.indexOf(rawDataPrimaryKeys[0] !== -1)){
+                        /*
+                            Fetching depends on something that doesn't exists on the other side, we bail:
+                        */
+                       return this.nullPromise;
+                    }
+                }
+
                 /*
                     @marchant: Why aren't we passing this.snapshotForObject(object) instead of copying everying in a new empty object?
 
@@ -1776,6 +1818,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                         result = mapping.mapRawDataToObjectProperty(data, object, propertyName);
 
                         if (!self._isAsync(result)) {
+                            result = this.nullPromise;
                             self._objectsBeingMapped.delete(object);
                         }
                         else {
@@ -2225,7 +2268,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             if(!isObjectCreated) {
                 var service = this._getChildServiceForObject(object);
                 if(service) {
-                    isObjectCreated = service.isObjectCreated(object);
+                    isObjectCreated = (service.isObjectCreated(object) || !service.hasSnapshotForObject(object));
                 } else {
                     isObjectCreated = false;
                 }
