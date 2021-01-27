@@ -16,7 +16,9 @@ var DataService = require("data/service/data-service").DataService,
     DESCENDING = DataOrdering.DESCENDING,
     evaluate = require("core/frb/evaluate"),
     RawForeignValueToObjectConverter = require("data/converter/raw-foreign-value-to-object-converter").RawForeignValueToObjectConverter,
-    Promise = require("../../core/promise").Promise;
+    DataOperation = require("./data-operation").DataOperation,
+    Promise = require("../../core/promise").Promise,
+    SyntaxInOrderIterator = require("core/frb/syntax-iterator").SyntaxInOrderIterator;
 
     require("core/collections/shim-object");
 
@@ -512,6 +514,51 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     /**
+     * When we fetch to complete an object, we know client side for which object it is,
+     * so the backend may not have to send it back and save data.
+     * So here we check if rawData has primaryKey entries. If it doesn't, we try to find it
+     * in the query criteria. We can't rely on just looking up the parameters as we're
+     * sometine alias the criteria parameters when we combine them. Only the property value
+     * in the expression is reliable.
+     */
+
+    _addRawDataPrimaryKeyValuesIfNeeded: {
+        value: function(rawData, type, query) {
+            var mapping = this.mappingForObjectDescriptor(type),
+            rawDataPrimaryKeys = mapping.rawDataPrimaryKeys,
+            i, countI, iKey,
+            iterator, parentSyntax, currentSyntax, propertyName, propertyValue, firstArgSyntax, propertyName, secondArgSyntax,
+            criteriaParameters,
+            criteriaSyntax,
+            syntaxPropertyByName;
+
+            for(i=0, countI = rawDataPrimaryKeys.length; (i<countI); i++ ) {
+                if(!rawData.hasOwnProperty(rawDataPrimaryKeys[i])) {
+                    //Needs to find among the equals syntax the one that matches the current key.
+                    iterator = new SyntaxInOrderIterator(query.criteria.syntax, "equals");
+                    criteriaParameters = query.criteria.parameters;
+                    while ((currentSyntax = iterator.next("equals").value)) {
+                        firstArgSyntax = currentSyntax.args[0];
+                        secondArgSyntax = currentSyntax.args[1];
+
+                        if(firstArgSyntax.type === "property" && firstArgSyntax.args[0].type === "value") {
+                            propertyName = firstArgSyntax.args[1].value;
+                            propertyValue = criteriaParameters[secondArgSyntax.args[1].value];
+                        } else {
+                            propertyName = secondArgSyntax.args[1].value;
+                            propertyValue = criteriaParameters[firstArgSyntax.args[1].value];
+                        }
+
+                        if(rawDataPrimaryKeys.indexOf(propertyName) !== -1) {
+                            rawData[propertyName] = propertyValue;
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    /**
      * Called by [addRawData()]{@link RawDataService#addRawData} to add an object
      * for the passed record to the stream. This method both takes care of doing
      * mapRawDataToObject and add the object to the stream.
@@ -537,11 +584,15 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: function (stream, rawData, context) {
             var type = this._descriptorForParentAndRawData(stream.query.type, rawData),
                 readExpressions = stream.query.readExpressions,
-                dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData),
+                dataIdentifier,
                 object,
                 //object = this.rootService.objectForDataIdentifier(dataIdentifier),
                 isUpdateToExistingObject = false,
                 result;
+
+                this._addRawDataPrimaryKeyValuesIfNeeded(rawData, type, stream.query);
+
+                dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData),
 
                 // if(!object) {
                 object = this.objectForTypeRawData(type, rawData, context);
@@ -1814,6 +1865,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
+                } else {
     /***************************************************************************
      * Deprecated
      */
