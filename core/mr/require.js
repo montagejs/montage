@@ -634,7 +634,8 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
         // Ensures a module definition is loaded, compiled, analyzed
         var load = memoize(function (topId, viaId) {
-            var module = getModuleDescriptor(topId);
+            var module = getModuleDescriptor(topId),
+                promise;
 
             /*
                 Equivallent to:
@@ -643,32 +644,37 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
                 without the need to be dependent on non-standard Promise.try method
             */
-           return new Promise(function(resolve, reject) {
-                resolve((function () {
-                    // if not already loaded, already instantiated, or
-                    // configured as a redirection to another module
-                    if (
-                        module.factory === void 0 &&
-                            module.exports === void 0 &&
-                                module.redirect === void 0
-                    ) {
-                        //return Promise.try(config.load, [topId, module]);
-                        return config.load(topId, module);
-                    }
-                })());
-            })
-            // return Promise.try(function () {
-            //     // if not already loaded, already instantiated, or
-            //     // configured as a redirection to another module
-            //     if (
-            //         module.factory === void 0 &&
-            //             module.exports === void 0 &&
-            //                 module.redirect === void 0
-            //     ) {
-            //         //return Promise.try(config.load, [topId, module]);
-            //         return config.load(topId, module);
-            //     }
-            // })
+        //    return new Promise(function(resolve, reject) {
+        //         resolve((function () {
+        //             // if not already loaded, already instantiated, or
+        //             // configured as a redirection to another module
+        //             if (
+        //                 module.factory === void 0 &&
+        //                     module.exports === void 0 &&
+        //                         module.redirect === void 0
+        //             ) {
+        //                 //return Promise.try(config.load, [topId, module]);
+        //                 return config.load(topId, module);
+        //             }
+        //         })());
+        //     })
+
+
+            // if not already loaded, already instantiated, or
+            // configured as a redirection to another module
+            if (
+                module.factory === void 0 &&
+                    module.exports === void 0 &&
+                        module.redirect === void 0
+            ) {
+                promise = config.load(topId, module);
+            }
+
+            if(!promise || typeof promise.then !== "function") {
+                promise = Promise.resolve(promise);
+            }
+
+            return promise
             .then(function () {
                 // compile and analyze dependencies
                 return config.compile(module).then(function () {
