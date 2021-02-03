@@ -2182,6 +2182,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 servicesArray = servicesArray || [];
                 servicesArray.push(child);
             });
+
             return servicesArray ? this._readNextOfflineOperations(servicesArray) : this.emptyArrayPromise;
         }
     },
@@ -2204,7 +2205,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     }
                     return self._continueReadNextOfflineOperations(servicesArray, operations, index);
                 }).catch(function (e) {
-                    console.error("DataService._readNextOfflineOperations FAILED", e);
+                    console.error("Failed to read offline operations for child service (" + child.identifier + ")\n", e);
                     return self._continueReadNextOfflineOperations(servicesArray, operations, index);
                 });
             } else {

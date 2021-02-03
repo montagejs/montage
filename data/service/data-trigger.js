@@ -215,7 +215,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
             var prototype, descriptor, getter;
             // Start an asynchronous fetch of the property's value if necessary.
             this.getObjectProperty(object);
-            
+
             // Search the prototype chain for a getter for this property,
             // starting just after the prototype that called this method.
             prototype = Object.getPrototypeOf(this._objectPrototype);
@@ -344,7 +344,6 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
             this._service.fetchObjectProperty(object, this._propertyName).then(function () {
                 return self._fulfillObjectPropertyFetch(object);
             }).catch(function (error) {
-                console.error(error);
                 return self._fulfillObjectPropertyFetch(object, error);
             });
         }
@@ -357,7 +356,6 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
             if (status && !error) {
                 status.resolve(null);
             } else if (status && error) {
-                console.error(error);
                 status.reject(error);
             }
             return null;
@@ -404,7 +402,7 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
 
     _addTriggers: {
         value: function (service, objectDescriptor, prototype, requisitePropertyNames) {
-            var triggers = {}, 
+            var triggers = {},
                 propertyDescriptors = objectDescriptor.propertyDescriptors,
                 propertyDescriptor, trigger, name, i;
 
