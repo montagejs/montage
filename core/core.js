@@ -2,6 +2,16 @@
  * @module montage/core/core
  */
 
+ /**
+ * The Montage constructor provides conveniences for sub-typing
+ * ([specialize]{@link Montage.specialize}) and common methods for Montage
+ * prototype chains.
+ *
+ * @class Montage
+ * @classdesc The basis of all types using the MontageJS framework.
+ */
+var Montage = exports.Montage = function Montage() {};
+
 require("./collections/shim");
 require("./shim/object");
 require("./shim/array");
@@ -71,15 +81,6 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
         });
     }
 
-/**
- * The Montage constructor provides conveniences for sub-typing
- * ([specialize]{@link Montage.specialize}) and common methods for Montage
- * prototype chains.
- *
- * @class Montage
- * @classdesc The basis of all types using the MontageJS framework.
- */
-var Montage = exports.Montage = function Montage() {};
 
 var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;
 var PROTO_PROPERTIES_BLACKLIST = {"_montage_metadata": 1, "__state__": 1, "_hasUserDefinedConstructor": 1};
@@ -616,7 +617,7 @@ function __findSuperMethodImplementation( method, classFn, isFunctionSuper, meth
                     if ((property = Object.getOwnPropertyDescriptor(context, propertyName))) {
                         func = property.value;
                         if (func !== undefined && func !== null) {
-                            if (func === method || func.deprecatedFunction === method) {
+                            if (func === method || (isValueArg && methodPropertyNameArg && propertyName === methodPropertyNameArg) || func.deprecatedFunction === method) {
                                 methodPropertyName = propertyName;
                                 isValue = true;
                                 break;
@@ -625,7 +626,7 @@ function __findSuperMethodImplementation( method, classFn, isFunctionSuper, meth
                         else {
                             func = property.get;
                             if (func !== undefined && func !== null) {
-                                if (func === method || func.deprecatedFunction === method) {
+                                if (func === method || (isGetterArg && methodPropertyNameArg && propertyName === methodPropertyNameArg) || func.deprecatedFunction === method) {
                                     methodPropertyName = propertyName;
                                     isGetter = true;
                                     break;
@@ -633,7 +634,7 @@ function __findSuperMethodImplementation( method, classFn, isFunctionSuper, meth
                             }
                             func = property.set;
                             if (func !== undefined && func !== null) {
-                                if (func === method || func.deprecatedFunction === method) {
+                                if (func === method || (isSetterArg && methodPropertyNameArg && propertyName === methodPropertyNameArg) || func.deprecatedFunction === method) {
                                     methodPropertyName = propertyName;
                                     isSetter = true;
                                     break;
