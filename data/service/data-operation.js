@@ -5,6 +5,7 @@ var Montage = require("core/core").Montage,
     Enum = require("core/enum").Enum,
     uuid = require("core/uuid"),
     defaultEventManager = require("../../core/event/event-manager").defaultEventManager,
+    Locale = require("core/locale").Locale,
     DataOperationType,
 
     /* todo: we shpuld add a ...timedout for all operations. */
@@ -241,14 +242,15 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
                 serializer.setProperty("referrerId", this.referrerId);
             }
             serializer.setProperty("criteria", this._criteria);
-            /*
-                Hack: this is neededed for now to represent a query's fetchLimit
-                But it's really relevant only for a read operation....
-                TODO: Needs to sort this out better...
 
+            /*
+                Inlining locales for speed and compactness instead of letting locales serialize themselves
             */
-            if(this.readLimit) {
-                serializer.setProperty("readLimit", this.readLimit);
+            if(this.locales) {
+                for(var locales = [], i=0, countI = this.locales.length; (i < countI); i++) {
+                    locales.push(this.locales[i].identifier);
+                }
+                serializer.setProperty("locales", locales);
             }
             if(this.data) {
                 serializer.setProperty("data", this.data);
@@ -320,6 +322,18 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             value = deserializer.getProperty("data");
             if (value !== void 0) {
                 this.data = value;
+            }
+
+            /*
+                Inlining locales for speed and compactness instead of letting locales deserialize themselves
+            */
+            value = deserializer.getProperty("locales");
+            if (value !== void 0) {
+
+                for(var locales = [], i=0, countI = value.length; (i < countI); i++) {
+                    locales.push(Locale.withIdentifier(value[i]));
+                }
+                this.locales = locales;
             }
 
             value = deserializer.getProperty("snapshot");
@@ -489,6 +503,16 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
     userIdentity: {
         value: undefined
     },
+
+    /**
+     * The locales relevant to this operation. In an authoring mode/context, there could be multiple ones.
+     *
+     * @type {Array<Locale>}
+     */
+   locales: {
+        value: undefined
+    },
+
 
     /**
      * a message about the operation meant for the user.
