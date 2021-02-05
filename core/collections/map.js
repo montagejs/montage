@@ -1,10 +1,11 @@
 "use strict";
 
 var Map = require("./_map");
+module.exports = Map;
+
 var PropertyChanges = require("./listen/property-changes");
 var MapChanges = require("./listen/map-changes");
 
-module.exports = Map;
 
 if((global.Map === void 0) || (typeof global.Set.prototype.values !== "function")) {
     Object.addEach(Map.prototype, PropertyChanges.prototype);
