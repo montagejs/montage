@@ -1627,26 +1627,47 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         }
     },
 
-
     mapObjectPropertyNameToRawPropertyName: {
         value: function(property) {
-            var objectRule = this.objectMappingRules.get(property),
-                rule = objectRule && this.rawDataMappingRules.get(objectRule.sourcePath);
+            var objectRule = this.objectMappingRules.get(property);
 
-            if(rule) {
-                //A sourcePath that's part the primary key doesn't sounds good, it has to be a relationship...
-                if(this.rawDataPrimaryKeys.indexOf(objectRule.sourcePath) === -1) {
-                    return objectRule.sourcePath;
-                } else {
-                    return null;
+            if(objectRule) {
+                if(objectRule.sourcePathSyntax.type === "record") {
+                    throw "Support for objecy properties mapped to multiple columns isn't properly implemented";
                 }
+                return objectRule.sourcePath;
             }
             else {
+            /*
+                It's a bit weird, this can happens if a column is used as part of a compound source expresssion along other columns to produce an object property. This shouldn't be handled here...
+            */
               return property;
             }
 
         }
     },
+
+    // mapObjectPropertyNameToRawPropertyName: {
+    //     value: function(property) {
+    //         var objectRule = this.objectMappingRules.get(property),
+    //             rule = objectRule && this.rawDataMappingRules.get(objectRule.sourcePath);
+
+    //         if(rule) {
+    //             //A sourcePath that's part the primary key doesn't sounds good, it has to be a relationship...
+    //             if(this.rawDataPrimaryKeys.indexOf(objectRule.sourcePath) === -1) {
+    //                 return objectRule.sourcePath;
+    //             } else {
+    //                 return null;
+    //             }
+    //         }
+    //         else {
+    //           return property;
+    //         }
+
+    //     }
+    // },
+
+
     /**
      * Prefetches any object properties required to map the rawData property
      * and maps once the fetch is complete.
