@@ -148,7 +148,6 @@ Object.defineProperty(_RangeSelection.prototype, "swap_or_push", {
             // }, this);
 
 
-<<<<<<< HEAD
             plus = [];
             for(var indexInSelection, i=0, countI = itemsToAdd.length;(i<countI); i++) {
                 if (i in itemsToAdd) {
@@ -177,18 +176,6 @@ Object.defineProperty(_RangeSelection.prototype, "swap_or_push", {
             // if(JSON.stringify(plus) !== JSON.stringify(plus2)) {
             //     debug;
             // }
-=======
-                // if the same item appears twice in the add list, only add it once
-                if (itemsToAdd.findLastValue(item) > index) {
-                    return false;
-                }
-
-                // if the item is already in the selection, don't add it
-                // unless it's in the part that we're about to delete.
-                var indexInSelection = this.findValue(item);
-                return indexInSelection < 0 ||
-                        (indexInSelection >= start && indexInSelection < start + minusLength);
->>>>>>> fix deprecation warnings from methods in collection's array additions
 
 		}
 		else {
@@ -791,16 +778,6 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
                 if (this.selection.length) {
                     this.selection.deleteEach(diff);
-<<<<<<< HEAD
-=======
-
-                    // ensure selection always has content
-                    if (this.selection.length === 0 && this.content && this.content.length &&
-                        this.avoidsEmptySelection && !this.allowsMultipleSelection) {
-                        // selection can't contain previous content value as content already changed
-                        this.selection.add(this.content[this.content.length - 1]);
-                    }
->>>>>>> Fix a bug in handleOrganizedContentRangeChange
                 }
             }
 
