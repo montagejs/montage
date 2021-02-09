@@ -358,7 +358,7 @@ DataStream = exports.DataStream = DataProvider.specialize(/** @lends DataStream.
             //This is probably should come from lower layers, the RawDataService in the Worker, but until then:
             if(!readUpdatedOperation) {
                 var readUpdatedOperation = new DataOperation();
-                readUpdatedOperation.type = DataOperation.Type.ReadUpdated;
+                readUpdatedOperation.type = DataOperation.Type.ReadUpdatedOperation;
                 readUpdatedOperation.objectDescriptor = readUpdatedOperation.dataType = this.query.type;
                 readUpdatedOperation.cursor = this._cursor;
                 readUpdatedOperation.batchSize = this.query.batchSize;
@@ -371,7 +371,7 @@ DataStream = exports.DataStream = DataProvider.specialize(/** @lends DataStream.
             //Kick starts the request for the next batch:
             if(this.hasPendingData) {
                 var readUpdateOperation = new DataOperation();
-                readUpdateOperation.type = DataOperation.Type.ReadUpdate;
+                readUpdateOperation.type = DataOperation.Type.ReadUpdateOperation;
                 readUpdateOperation.objectDescriptor = readUpdateOperation.dataType = this.query.type;
                 readUpdateOperation.cursor = this._cursor;
                 readUpdateOperation.batchSize = this.query.batchSize;

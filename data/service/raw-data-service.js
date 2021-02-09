@@ -1882,7 +1882,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             if (err) {
                 // an error occurred
                 //console.log("!!! handleRead FAILED:", err, err.stack, rawDataOperation.sql);
-                operation.type = DataOperation.Type.ReadFailed;
+                operation.type = DataOperation.Type.ReadFailedOperation;
                 //Should the data be the error?
                 operation.data = err;
             }
@@ -1891,9 +1891,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                 //If we need to take care of readExpressions, we can't send a ReadCompleted until we have returnes everything that we asked for.
                 if(isNotLast) {
-                    operation.type = DataOperation.Type.ReadUpdate;
+                    operation.type = DataOperation.Type.ReadUpdateOperation;
                 } else {
-                    operation.type = DataOperation.Type.ReadCompleted;
+                    operation.type = DataOperation.Type.ReadCompletedOperation;
                 }
 
                 //We provide the inserted record as the operation's payload
