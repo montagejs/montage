@@ -28,7 +28,8 @@ var Montage = require("../core").Montage,
     Event_BUBBLING_PHASE = 3,
     defaultEventManager,
     browserSupportsCaptureOption = false,
-    browserSupportsPassiveOption = false;
+    browserSupportsPassiveOption = false,
+    MontageElement = window ? window.MontageElement : null;
 
 
 
@@ -3069,11 +3070,11 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             //     console.log("handleEvent "+event.type,event.target);
             // }
             //console.log("----> handleEvent "+event.type);
-            if(isBrowser) {
-                if ((window.MontageElement && event.target instanceof MontageElement) ||
-                    (event instanceof UIEvent && !this._shouldDispatchEvent(event))) {
+            if(isBrowser && (
+                    (MontageElement && event.target instanceof MontageElement) ||
+                    (event instanceof UIEvent && !this._shouldDispatchEvent(event))
+                )) {
                     return void 0;
-                }
             }
 
             // performance.mark('event-manager:handleEvent:start');
@@ -3094,18 +3095,18 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 eventType = event.type,
                 // capitalizedEventType = eventType.toCapitalized(),
                 eventBubbles = event.bubbles,
-                captureMethodName,
-                bubbleMethodName,
-                identifierSpecificCaptureMethodName,
-                identifierSpecificBubbleMethodName,
-                currentTargetIdentifierSpecificCaptureMethodName,
-                currentTargetIdentifierSpecificBubbleMethodName,
-                capitalizedIdentifier,
+                // captureMethodName,
+                // bubbleMethodName,
+                // identifierSpecificCaptureMethodName,
+                // identifierSpecificBubbleMethodName,
+                // currentTargetIdentifierSpecificCaptureMethodName,
+                // currentTargetIdentifierSpecificBubbleMethodName,
+                // capitalizedIdentifier,
                 mutableEvent,
                 mutableEventTarget,
                 _currentDispatchedTargetListeners = this._currentDispatchedTargetListeners,
-                registeredCaptureEventListeners = this._registeredCaptureEventListeners,
-                registeredBubbleEventListeners = this._registeredBubbleEventListeners,
+                // registeredCaptureEventListeners = this._registeredCaptureEventListeners,
+                // registeredBubbleEventListeners = this._registeredBubbleEventListeners,
 
                 //New stuff
                 CAPTURING_PHASE = Event_CAPTURING_PHASE,
@@ -3171,8 +3172,10 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             // Capture Phase Distribution
             mutableEvent.eventPhase = CAPTURING_PHASE;
             // The event path we generate is from bottom to top, capture needs to traverse this backwards
-            for (i = eventPath.length - 1; !mutableEvent.propagationStopped && (iTarget = eventPath[i]); i--) {
-                mutableEvent.currentTarget = iTarget;
+            i = eventPath.length;
+            while (!mutableEvent.propagationStopped && (iTarget = eventPath[--i])) {
+            //for (i = eventPath.length - 1; !mutableEvent.propagationStopped && (iTarget = eventPath[i]); i--) {
+                    mutableEvent.currentTarget = iTarget;
 
                 listenerEntries = this._registeredEventListenersOnTarget_eventType_eventPhase(iTarget, eventType, CAPTURING_PHASE);
                 if (!listenerEntries) {
@@ -3325,7 +3328,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
 
             //TEST, shutting currentTargetIdentifierSpecificPhaseMethodName down:
-            currentTargetIdentifierSpecificPhaseMethodName = null;
+            //currentTargetIdentifierSpecificPhaseMethodName = null;
 
             if(typeof listener === this._functionType) {
                 listener.call(iTarget, mutableEvent);
