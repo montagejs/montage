@@ -2527,7 +2527,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
      */
     handleEvent: {
         enumerable: false,
-        value: function (event) {
+        value: function handleEvent(event) {
             if(isBrowser) {
                 if ((window.MontageElement && event.target instanceof MontageElement) ||
                     (event instanceof UIEvent && !this._shouldDispatchEvent(event))) {
