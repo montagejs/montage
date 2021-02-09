@@ -1416,10 +1416,10 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     optionsOrUseCapture.passive;
 
                 }
-                else {
-                    console.log(target.toString(),"registerTargetEventListener "+eventType);
+                // else {
+                //     console.log(target.toString(),"registerTargetEventListener "+eventType);
 
-                }
+                // }
             // }
 
             listenerOptions.listener = listener;
