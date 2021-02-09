@@ -3092,7 +3092,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 nextEntry,
                 eventPath,
                 eventType = event.type,
-                capitalizedEventType = eventType.toCapitalized(),
+                // capitalizedEventType = eventType.toCapitalized(),
                 eventBubbles = event.bubbles,
                 captureMethodName,
                 bubbleMethodName,
@@ -3138,17 +3138,17 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             }
 
             // use most specific handler method available, possibly based upon the identifier of the event target
-            if (mutableEventTarget.identifier) {
-                capitalizedIdentifier = mutableEventTarget.identifier.toCapitalized();
-                identifierSpecificCaptureMethodName = this.methodNameForCapturePhaseOfEventType(eventType, mutableEventTarget.identifier, capitalizedEventType, capitalizedIdentifier);
-                identifierSpecificBubbleMethodName = this.methodNameForBubblePhaseOfEventType(eventType, mutableEventTarget.identifier, capitalizedEventType, capitalizedIdentifier);
-            } else {
-                identifierSpecificCaptureMethodName = null;
-                identifierSpecificBubbleMethodName = null;
-            }
+            // if (mutableEventTarget.identifier) {
+            //     capitalizedIdentifier = mutableEventTarget.identifier.toCapitalized();
+            //     identifierSpecificCaptureMethodName = this.methodNameForCapturePhaseOfEventType(eventType, mutableEventTarget.identifier, capitalizedEventType, capitalizedIdentifier);
+            //     identifierSpecificBubbleMethodName = this.methodNameForBubblePhaseOfEventType(eventType, mutableEventTarget.identifier, capitalizedEventType, capitalizedIdentifier);
+            // } else {
+            //     identifierSpecificCaptureMethodName = null;
+            //     identifierSpecificBubbleMethodName = null;
+            // }
 
-            captureMethodName = this.methodNameForCapturePhaseOfEventType(eventType, null, capitalizedEventType);
-            bubbleMethodName = this.methodNameForBubblePhaseOfEventType(eventType, null, capitalizedEventType);
+            // captureMethodName = this.methodNameForCapturePhaseOfEventType(eventType, null, capitalizedEventType);
+            // bubbleMethodName = this.methodNameForBubblePhaseOfEventType(eventType, null, capitalizedEventType);
 
             // Let the delegate handle the event first
             if (this.delegate && typeof this.delegate.willDistributeEvent === "function") {
@@ -3179,18 +3179,18 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     continue;
                 }
 
-                currentTargetIdentifierSpecificCaptureMethodName = this.methodNameForCapturePhaseOfEventType(eventType, iTarget.identifier, capitalizedEventType);
+                // currentTargetIdentifierSpecificCaptureMethodName = this.methodNameForCapturePhaseOfEventType(eventType, iTarget.identifier, capitalizedEventType);
                 if (Array.isArray(listenerEntries)) {
                     j=0;
                     _currentDispatchedTargetListeners.set(listenerEntries,null);
                     while ((nextEntry = listenerEntries[j++]) && !mutableEvent.immediatePropagationStopped) {
-                        this._invokeTargetListenerEntryForEvent(iTarget, nextEntry, mutableEvent, currentTargetIdentifierSpecificCaptureMethodName, identifierSpecificCaptureMethodName, captureMethodName);
+                        this._invokeTargetListenerEntryForEvent(iTarget, nextEntry, mutableEvent, undefined/*currentTargetIdentifierSpecificCaptureMethodName*/, undefined/*identifierSpecificCaptureMethodName*/, undefined/*captureMethodName*/);
                     }
                     this._processCurrentDispatchedTargetListenersToRemove(iTarget, eventType, true, listenerEntries);
                     _currentDispatchedTargetListeners.delete(listenerEntries);
                 }
                 else {
-                    this._invokeTargetListenerEntryForEvent(iTarget, listenerEntries, mutableEvent, currentTargetIdentifierSpecificCaptureMethodName, identifierSpecificCaptureMethodName, captureMethodName);
+                    this._invokeTargetListenerEntryForEvent(iTarget, listenerEntries, mutableEvent, undefined/*currentTargetIdentifierSpecificCaptureMethodName*/, undefined/*identifierSpecificCaptureMethodName*/, undefined/*captureMethodName*/);
                 }
 
             }
@@ -3206,13 +3206,13 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                         j=0;
                         _currentDispatchedTargetListeners.set(listenerEntries,null);
                         while ((nextEntry = listenerEntries[j++]) && !mutableEvent.immediatePropagationStopped) {
-                            this._invokeTargetListenerEntryForEvent(iTarget, nextEntry, mutableEvent, identifierSpecificCaptureMethodName, identifierSpecificCaptureMethodName, captureMethodName);
+                            this._invokeTargetListenerEntryForEvent(iTarget, nextEntry, mutableEvent, undefined/*identifierSpecificCaptureMethodName*/, undefined/*identifierSpecificCaptureMethodName*/, undefined/*captureMethodName*/);
                         }
                         this._processCurrentDispatchedTargetListenersToRemove(iTarget, eventType, true, listenerEntries);
                         _currentDispatchedTargetListeners.delete(listenerEntries);
                     }
                     else {
-                        this._invokeTargetListenerEntryForEvent(iTarget, listenerEntries, mutableEvent, identifierSpecificCaptureMethodName, identifierSpecificCaptureMethodName, captureMethodName);
+                        this._invokeTargetListenerEntryForEvent(iTarget, listenerEntries, mutableEvent, undefined/*identifierSpecificCaptureMethodName*/, undefined/*identifierSpecificCaptureMethodName*/, undefined/*captureMethodName*/);
                     }
 
                 }
@@ -3223,13 +3223,13 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                         j=0;
                         _currentDispatchedTargetListeners.set(listenerEntries,null);
                         while ((nextEntry = listenerEntries[j++]) && !mutableEvent.immediatePropagationStopped) {
-                            this._invokeTargetListenerEntryForEvent(iTarget, nextEntry, mutableEvent, identifierSpecificBubbleMethodName, identifierSpecificBubbleMethodName, bubbleMethodName);
+                            this._invokeTargetListenerEntryForEvent(iTarget, nextEntry, mutableEvent, undefined/*identifierSpecificBubbleMethodName*/, undefined/*identifierSpecificBubbleMethodName*/, undefined/*bubbleMethodName*/);
                         }
                         this._processCurrentDispatchedTargetListenersToRemove(iTarget, eventType, false, listenerEntries);
                         _currentDispatchedTargetListeners.delete(listenerEntries);
                     }
                     else {
-                        this._invokeTargetListenerEntryForEvent(iTarget, listenerEntries, mutableEvent, identifierSpecificBubbleMethodName, identifierSpecificBubbleMethodName, bubbleMethodName);
+                        this._invokeTargetListenerEntryForEvent(iTarget, listenerEntries, mutableEvent, undefined/*identifierSpecificBubbleMethodName*/, undefined/*identifierSpecificBubbleMethodName*/, undefined/*bubbleMethodName*/);
                     }
 
                 }
@@ -3245,19 +3245,19 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     continue;
                 }
 
-                currentTargetIdentifierSpecificBubbleMethodName = this.methodNameForBubblePhaseOfEventType(eventType, iTarget.identifier, capitalizedEventType);
+                //currentTargetIdentifierSpecificBubbleMethodName = this.methodNameForBubblePhaseOfEventType(eventType, iTarget.identifier, capitalizedEventType);
 
                 if (Array.isArray(listenerEntries)) {
                     j=0;
                     _currentDispatchedTargetListeners.set(listenerEntries,null);
                       while ((nextEntry = listenerEntries[j++]) && !mutableEvent.immediatePropagationStopped) {
-                          this._invokeTargetListenerEntryForEvent(iTarget, nextEntry, mutableEvent, currentTargetIdentifierSpecificBubbleMethodName, identifierSpecificBubbleMethodName, bubbleMethodName);
+                          this._invokeTargetListenerEntryForEvent(iTarget, nextEntry, mutableEvent, undefined/*currentTargetIdentifierSpecificBubbleMethodName*/, undefined/*identifierSpecificBubbleMethodName*/, undefined/*bubbleMethodName*/);
                       }
                       this._processCurrentDispatchedTargetListenersToRemove(iTarget, eventType, false, listenerEntries);
                       _currentDispatchedTargetListeners.delete(listenerEntries);
                   }
                   else {
-                      this._invokeTargetListenerEntryForEvent(iTarget, listenerEntries, mutableEvent, currentTargetIdentifierSpecificBubbleMethodName, identifierSpecificBubbleMethodName, bubbleMethodName);
+                      this._invokeTargetListenerEntryForEvent(iTarget, listenerEntries, mutableEvent, undefined/*currentTargetIdentifierSpecificBubbleMethodName*/, undefined/*identifierSpecificBubbleMethodName*/, undefined/*bubbleMethodName*/);
                   }
             }
 
@@ -3319,7 +3319,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
      * @private
      */
     _invokeTargetListenerEntryForEvent: {
-        value: function _invokeTargetListenerForEvent(iTarget, listenerEntry, mutableEvent, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName) {
+        value: function _invokeTargetListenerEntryForEvent(iTarget, listenerEntry, mutableEvent, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName) {
             var listener = listenerEntry.listener,
                 callback;
 
@@ -3343,11 +3343,12 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     //                 ? callback
                     //                 : void 0;
 
-                    callback = (currentTargetIdentifierSpecificPhaseMethodName && typeof listener[currentTargetIdentifierSpecificPhaseMethodName] === this._functionType)
+
+                    callback = ((currentTargetIdentifierSpecificPhaseMethodName = this._currentTargetIdentifierSpecificPhaseMethodName(listenerEntry.capture, mutableEvent.type, iTarget.identifier)) && typeof listener[currentTargetIdentifierSpecificPhaseMethodName] === this._functionType)
                     ? currentTargetIdentifierSpecificPhaseMethodName
-                    : (targetIdentifierSpecificPhaseMethodName && typeof listener[targetIdentifierSpecificPhaseMethodName] === this._functionType)
+                    : ((targetIdentifierSpecificPhaseMethodName =  this._currentTargetIdentifierSpecificPhaseMethodName(listenerEntry.capture,mutableEvent.type,mutableEvent.target.identifier)) && typeof listener[targetIdentifierSpecificPhaseMethodName] === this._functionType)
                         ? targetIdentifierSpecificPhaseMethodName
-                        : (typeof listener[phaseMethodName] === this._functionType)
+                        : (typeof listener[(phaseMethodName = this._currentTargetIdentifierSpecificPhaseMethodName(listenerEntry.capture,mutableEvent.type, null))] === this._functionType)
                             ? phaseMethodName
                             : (typeof listener.handleEvent === this._functionType)
                                 ? "handleEvent"
@@ -3367,6 +3368,14 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     }
                 }
             }
+        }
+    },
+
+    _currentTargetIdentifierSpecificPhaseMethodName: {
+        value: function(capture, eventType, targetIdentifier) {
+            return capture
+                ? this.methodNameForCapturePhaseOfEventType(eventType, targetIdentifier)
+                : this.methodNameForBubblePhaseOfEventType(eventType, targetIdentifier);
         }
     },
 
