@@ -407,6 +407,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             touchmove: {bubbles: true, cancelable: true}, //TouchEvent
             touchstart: {bubbles: true, cancelable: true}, //TouchEvent
             unload: {bubbles: false, cancelable: false}, //DOM2, DOM3
+            visibilitychange: {bubbles: true, cancelable: false}, //DOM2, DOM3
             wheel: {bubbles: true, cancelable: true}, //DOM3
             pointerdown: {bubbles: true, cancelable: true}, //PointerEvent
             pointerup: {bubbles: true, cancelable: true}, //PointerEvent
