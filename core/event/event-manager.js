@@ -1293,7 +1293,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 var eventDefinitions = this.eventDefinitions[eventType],
                     eventOpts;
 
-                if(eventDefinitions) {
+                if(!eventDefinitions) {
                     console.debug("Event type "+eventType+" missed definition");
                 }
 
