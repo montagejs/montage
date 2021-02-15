@@ -3,7 +3,13 @@ Criteria = require("core/criteria").Criteria,
 DataQuery = require("data/model/data-query").DataQuery,
 DataStream = require("data/service/data-stream").DataStream,
 ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor,
-DataOrdering = require("data/model/data-ordering").DataOrdering;
+DataOrdering = require("data/model/data-ordering").DataOrdering,
+Montage = require("core/core").Montage,
+//UUID = require("core/uuid"),
+ONE_WAY = "<-",
+ONE_WAY_RIGHT = "->",
+TWO_WAY = "<->";
+
 
 
 /**
@@ -51,19 +57,27 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
             // this.canDrawGate.setField("dataLoaded", false);
             // console.log("---------- "+this.constructor.name+" inDocument:"+this.inDocument+" —— dataLoaded: false",value);
 
+            // this.addPathChangeListener(
+            //     "data",
+            //     this,
+            //     "handleDataChange"
+            // );
+
             return this;
         }
     },
-    defineBinding: {
-        value: function (targetPath, descriptor, commonDescriptor) {
-            var result = this.super(targetPath, descriptor, commonDescriptor);
+    // defineBinding: {
+    //     value: function (targetPath, descriptor, commonDescriptor) {
+    //         var result = this.super(targetPath, descriptor, commonDescriptor),
+    //             twoWay = TWO_WAY in descriptor,
+    //             sourcePath = !twoWay ? descriptor[ONE_WAY] : descriptor[TWO_WAY] || "";
 
-            if(targetPath.startsWith("data")) {
-                console.log(this.constructor.name+" has ["+targetPath+"] bound to ["+descriptor.sourcePath+"]"+", parentComponent:",this.parentComponent);
-            }
-            return result;
-        }
-    },
+    //         // if(targetPath.startsWith("data") || sourcePath.indexOf(".data") !== -1) {
+    //             // console.log(Object.keys(descriptor)[0]+" "+this.constructor.name+" has ["+targetPath+"] bound to ["+descriptor.sourcePath+"]"+", parentComponent:",this.parentComponent);
+    //         // }
+    //         return result;
+    //     }
+    // },
 
     /**
      * A DataService used to fetch data. By default uses application.mainService
@@ -165,7 +179,8 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
                     currentDataStream = this.dataStream,
                     dataStream,
                     self = this;
-                    //console.log(this.constructor.name+" fetchData() >>>>> ");
+                console.log(this.constructor.name+" fetchData() >>>>> setField('dataLoaded', false)");
+                this.canDrawGate.setField("dataLoaded", false);
                 dataStream = dataService.fetchData(this._dataQuery);
                 dataStream.then(function(data) {
                     //console.log("Data fetched:",data);
@@ -173,22 +188,19 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
 
                     //We need to
                     dataService.cancelDataStream(currentDataStream);
-
-                        self.didFetchData(data);
-
                 },
                 function(error) {
                     console.log("fetchData failed:",error);
                 })
                 .finally(() => {
-                        this.canDrawGate.setField("dataLoaded", true);
+                        // this.canDrawGate.setField("dataLoaded", true);
                 });
             }
         }
     },
 
-    didFetchData: {
-        value: function (data) {
+    dataDidChange: {
+        value: function () {
         }
     },
 
@@ -285,6 +297,10 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
         value: undefined
     },
 
+    readExpressions: {
+        value: undefined
+    },
+
     /**
      * A RangeController, TreeController, or equivalent object that provides sorting, filtering,
      * selection handling of a collection of object.
@@ -316,6 +332,36 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
         }
     },
 
+    /**
+     * This is the property that makes the dataLoaded gate works hierarchically,
+     * as long as nested DataEditors are capable of knowing when to signal that data is loaded.
+     * If bindings in tenplates just do their thing organially, DataEditor component owner
+     * is out of the loop, besides receiving ad. To know, he possibly could (we don't have a way for this right now):
+     *      - listen somehow for the fact that a DataTrigger gets what's needed, in cascade....?
+     *      DataTrigger/DataService could dispacth events when they're triggered? That's equivallent of using
+     *      addPathChangeListener/addRangeAtPathChangeListener
+     *
+     *
+     *      - figure out what property of chid components is bound to something off their data property, and observe that
+     *          - (might need a new dataLoadedGate that combine into the canDraw-dataLoaded now),
+     *          - and when the value is set ( null or otherwise) then flip the flag to true
+     *          - that doesn't help load faster
+     *          - that adds observing that has no other purpose than coordinating display
+     *
+     *      - If child component would setCanDraw dataLoaded false when they don't have data,
+     *      like a text receiving set value of undefined when initially bound, which is a problem unsolved when
+     *      components are used in a repetition. The ones in the template received bindings but are used as template
+     *      and never received actual data that would unlock things.
+     *
+     * objectDescriptor's that's in dataMapping
+     * as dataMapping.objectDescriptor.
+     */
+
+
+    _blocksOwnerComponentDraw: {
+        value: true
+    },
+
     _data: {
         value: undefined
     },
@@ -324,19 +370,38 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
             return this._data;
         },
         set: function (value) {
-            if(!this.hasOwnProperty("_data") && value === undefined) {
-                this.canDrawGate.setField("dataLoaded", true);
-            }
-            // console.log(this.constructor.name+ " set data:",value, " inDocument:"+this.inDocument+", parentComponent:",this.parentComponent);
-            if(this._data === undefined && value !== undefined) {
-                // console.log("++++++++++ "+this.constructor.name+" inDocument:"+this.inDocument+" —— dataLoaded: true",value);
-                this.canDrawGate.setField("dataLoaded", true);
-            }
+
             if(value !== this._data) {
-                this._data = value;
+            /*
+                By checking for readExpressions, we assess wether the DataEditor has everything it needs with it's data, or, if it has readExpressions, then it means it needs a subgraph off data.
+
+                By default, the readExpressions are sent in the query, but some DataServices may not be able to satisfy them all in one-shot. If not, then the DataService should ideally be able to hide the multiple round-trips to one or more RawDataService(s) to get all readExpressions asked.
+
+                The readExpressions should ideally be dynamically gathered from what components exressed they needs to display, which is typically expressed by binding their property, like "value" for Text, to expressions off the DataEditor's owner data property. This isn't done yet.
+            */
+            if(this.readExpressions && this.readExpressions.length > 0) {
+                // console.log("************** "+this.constructor.name+"["+this.uuid+'].setField("dataLoaded", false)');
+                this.canDrawGate.setField("dataLoaded", false);
+            } else {
+                this.canDrawGate.setField("dataLoaded", true);
             }
+
+
+                this._data = value;
+
+                this.dataDidChange(value);
+
+            }
+        }
+    },
+
+    handleDataChange: {
+        value: function (data) {
         }
     }
 
 
 });
+
+
+//Montage.defineUuidProperty(exports.DataEditor.prototype);
