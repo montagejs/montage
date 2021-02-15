@@ -31,6 +31,22 @@ var DragManager = exports.DragManager = Montage.specialize({
         }
     },
 
+    _shouldListenForEvents: {
+        value: false
+    },
+
+    shouldListenForEvents: {
+        get: function() {
+            return this._shouldListenForEvents;
+        },
+        set: function(value) {
+            if(value !== this._shouldListenForEvents) {
+                this._shouldListenForEvents = value;
+                this._registerEventsIfNeeded();
+            }
+        }
+    },
+
     __rootComponent: {
         value: null
     },
@@ -44,11 +60,12 @@ var DragManager = exports.DragManager = Montage.specialize({
                     );
                 }
 
-                if (component) {
-                    component.addComposerForElement(
-                        this._translateComposer, component.element
-                    );
-                }
+                // if (component) {
+                //     component.addComposerForElement(
+                //         this._translateComposer, component.element
+                //     );
+                // }
+                this._eventsRegistered = false;
 
                 this.__rootComponent = component;
             }
@@ -132,18 +149,39 @@ var DragManager = exports.DragManager = Montage.specialize({
                 DragManager.cssTransform = "transform";
             }
 
-            if (window.PointerEvent) {
-                element.addEventListener("pointerdown", this, true);
-            } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
-                element.addEventListener("MSPointerDown", this, true);
-            } else {
-                element.addEventListener("touchstart", this, true);
-            }
-
-            this._translateComposer.addEventListener("translateStart", this);
-            element.addEventListener("dragenter", this, true);
+            this._registerEventsIfNeeded();
 
             return this;
+        }
+    },
+
+    _eventsRegistered: {
+        value: false
+    },
+    _registerEventsIfNeeded: {
+        value: function() {
+
+            if(this._rootComponent && this._shouldListenForEvents && !this._eventsRegistered) {
+                var element = this._rootComponent.element;
+
+                if (window.PointerEvent) {
+                    element.addEventListener("pointerdown", this, true);
+                } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                    element.addEventListener("MSPointerDown", this, true);
+                } else {
+                    element.addEventListener("touchstart", this, true);
+                }
+
+                this._translateComposer.addEventListener("translateStart", this);
+                element.addEventListener("dragenter", this, true);
+
+                this._rootComponent.addComposerForElement(
+                    this._translateComposer, element
+                );
+
+                this._eventsRegistered = true;
+            }
+
         }
     },
 
@@ -214,6 +252,15 @@ var DragManager = exports.DragManager = Montage.specialize({
 
                 if (components.indexOf(component) === -1) {
                     components.push(component);
+                }
+
+                /*
+                    There's only something to do if there's at l est a source and a destination
+                */
+                if(this._draggables.length > 0 && this._droppables.length > 0) {
+                    this.shouldListenForEvents = true
+                } else {
+                    this.shouldListenForEvents = false;
                 }
             }
         }
