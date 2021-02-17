@@ -105,6 +105,7 @@ exports.Target = Montage.specialize( /** @lends Target.prototype */{
      */
     dispatchEvent: {
         value: function (event) {
+            if(!event) return;
             var targettedEvent = (event instanceof MutableEvent) ? event : MutableEvent.fromEvent(event);
             targettedEvent.target = this;
             defaultEventManager.handleEvent(targettedEvent);
