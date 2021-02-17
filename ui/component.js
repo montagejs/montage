@@ -4703,7 +4703,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             if (this.requestedAnimationFrame === null) { // 0 is a valid requestedAnimationFrame value
                 var requestAnimationFrame = this.requestAnimationFrame;
                 if (requestAnimationFrame) {
-                    this.requestedAnimationFrame = requestAnimationFrame.call(window, this._drawTree);
+                    this.requestedAnimationFrame = requestAnimationFrame(this._drawTree);
                 } else {
                     // Shim based in Erik Möller's code at
                     // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
