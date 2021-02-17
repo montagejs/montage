@@ -1526,6 +1526,37 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /**
+     * perform getObjectProperties for each object with propertyNames
+     * @method
+     * @argument {object[]} objects       - The objects whose property values are
+     *                                      being requested.
+     * @argument {string[]} propertyNames - The names of each of the properties
+     *                                      whose values are being requested.
+     *                                      These can be provided as an array of
+     *                                      strings or as a list of string
+     *                                      arguments following the object
+     *                                      argument.
+     * @returns {external:Promise} - A promise fulfilled when all of the
+     * requested data has been received and set on the specified properties of
+     * the passed in object.
+     */
+
+    getObjectsProperties: {
+        value: function (objects, propertyNames) {
+            var promises = [], i, countI;
+
+            if(!objects || objects.length === 0) {
+                return Promise.resolve(null);
+            }
+            for(i=0, countI = objects.length; (i<countI); i++) {
+                promises.push(this.getObjectProperties(objects[i],propertyNames));
+            }
+
+            return Promise.all(promises);
+        }
+    },
+
     getObjectPropertyExpressions: {
         value: function (object, propertyValueExpressions) {
             if (this.isRootService) {
