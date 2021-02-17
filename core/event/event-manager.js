@@ -1410,8 +1410,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 if(typeof optionsOrUseCapture === "object") {
 
                     if(optionsOrUseCapture.passive) {
-                        console.log(target,"registerTargetEventListener "+eventType," listener:",listener, "optionsOrUseCapture:",optionsOrUseCapture);
-
+                        // console.log(target,"registerTargetEventListener "+eventType," listener:",listener, "optionsOrUseCapture:",optionsOrUseCapture);
                     }
                     //trigger passive:
                     optionsOrUseCapture.passive;
@@ -1454,9 +1453,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
     unregisterTargetEventListener: {
         enumerable: false,
         value: function unregisterTargetEventListener(target, eventType, listener, optionsOrUseCapture) {
-            if(typeof optionsOrUseCapture === "object") {
-                console.log(target,"unregisterTargetEventListener "+eventType," listener:",listener, "optionsOrUseCapture:",optionsOrUseCapture);
-            }
+            // if(typeof optionsOrUseCapture === "object") {
+            //     console.log(target,"unregisterTargetEventListener "+eventType," listener:",listener, "optionsOrUseCapture:",optionsOrUseCapture);
+            // }
 
             var listenerOptions = typeof optionsOrUseCapture === "object" ? optionsOrUseCapture : {capture: !!optionsOrUseCapture},
                 targetEntry = this._targetEventListeners.get(target),
