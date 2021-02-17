@@ -4866,6 +4866,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         value: function drawIfNeeded() {
             var needsDrawList = this._readyToDrawList, component, i, j, start = 0, firstDrawEvent,
                 composerList = this._composerList, composer, composerListLength,
+                frameTime,
                 isDrawLoggerDebug = drawLogger.isDebug;
 
             needsDrawList.length = 0;
@@ -4879,7 +4880,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                 for (i = 0; i < composerListLength; i++) {
                     composer = composerList[i];
                     composer.needsFrame = false;
-                    composer.frame(this._frameTime);
+                    composer.frame((frameTime || (frameTime = this._frameTime)));
                 }
 
                 composerList.length = 0;
@@ -4900,7 +4901,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                 for (i = start; i < j; i++) {
                     component = needsDrawList[i];
                     if (typeof component.willDraw === "function") {
-                        component.willDraw(this._frameTime);
+                        component.willDraw((frameTime || (frameTime = this._frameTime)));
                     }
                     if (isDrawLoggerDebug) {
                         drawLogger.debug("Level " + component._treeLevel + " " + loggerToString(component));
@@ -4929,8 +4930,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             // TODO: add the possibility to display = "none" the body during development (IKXARIA-3631).
             for (i = j-1; i >= 0; i--) {
                 component = needsDrawList[i];
-                component._draw(this._frameTime);
-                component.draw(this._frameTime);
+                component._draw((frameTime || (frameTime = this._frameTime)));
+                component.draw((frameTime || (frameTime = this._frameTime)));
                 if (isDrawLoggerDebug) {
                     drawLogger.debug("Level " + component._treeLevel + " " + loggerToString(component));
                 }
@@ -4950,7 +4951,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             }
             for (i = 0; i < j; i++) {
                 component = needsDrawList[i];
-                component._didDraw(this._frameTime);
+                component._didDraw((frameTime || (frameTime = this._frameTime)));
                 component.dispatchEvent(this._didDrawEvent);
                 if (!component._completedFirstDraw) {
                     firstDrawEvent = document.createEvent("CustomEvent");
