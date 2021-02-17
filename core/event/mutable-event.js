@@ -114,7 +114,7 @@ var wrapPropertyGetter = function (key, storageKey) {
          */
         stopImmediatePropagation: {
             value: function () {
-                this._event.stopImmediatePropagation();
+                if(this._event) this._event.stopImmediatePropagation();
                 // TODO only if the event is cancellable?
                 this.propagationStopped = true;
                 this.immediatePropagationStopped = true;
@@ -150,7 +150,7 @@ var wrapPropertyGetter = function (key, storageKey) {
          */
         stopPropagation: {
             value: function () {
-                this._event.stopPropagation();
+                if(this._event) this._event.stopPropagation();
                 // TODO only if the event is cancellable?
                 this.propagationStopped = true;
             }
@@ -165,6 +165,15 @@ var wrapPropertyGetter = function (key, storageKey) {
                 this.stopPropagation();
             }
         },
+
+        /**
+         * @type {Property}
+         * @default {Promise} null
+         */
+        propagationPromise: {
+            value: null
+        },
+
 
         _eventPhase: {
             value: void 0
