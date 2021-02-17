@@ -241,6 +241,11 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             if(this.referrerId) {
                 serializer.setProperty("referrerId", this.referrerId);
             }
+
+            if(this.referrer) {
+                serializer.setProperty("referrer", this.referrer);
+            }
+
             serializer.setProperty("criteria", this._criteria);
 
             /*
@@ -257,6 +262,9 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             }
             if(this.snapshot) {
                 serializer.setProperty("snapshot", this.snapshot);
+            }
+            if(this.context) {
+                serializer.setProperty("context", this.context);
             }
         }
     },
@@ -314,6 +322,12 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
                 this.referrerId = value;
             }
 
+            value = deserializer.getProperty("referrer");
+            if (value !== void 0) {
+                this.referrer = value;
+            }
+
+
             value = deserializer.getProperty("criteria");
             if (value !== void 0) {
                 this.criteria = value;
@@ -339,6 +353,11 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             value = deserializer.getProperty("snapshot");
             if (value !== void 0) {
                 this.snapshot = value;
+            }
+
+            value = deserializer.getProperty("context");
+            if (value !== void 0) {
+                this.context = value;
             }
 
         }
@@ -552,11 +571,23 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
     },
 
     /**
-     * Information about the context surrounding the data operation
+     * Information about the context surrounding the data operation. Useful to carry server-side state
+     * back and forth between serverless executions and client. Like a DB transaction Id if multiple
+     * round trips are needeed.
      * @type {Object}
      */
-    context: {
+    _context: {
         value: undefined
+    },
+    context: {
+        get: function () {
+            return this._context || (this._context = {});
+        },
+        set: function (value) {
+            if(value !== this._context) {
+                this._context = value;
+            }
+        }
     },
 
     /***************************************************************************
