@@ -466,7 +466,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 */
 
                 //URGENT: We need to further test that we don't already have a valid Authorization to use before authenticating.
-                return require.async("data/service/user-identity-service");
+                return require.async("data/service/identity-service");
             })
             .then(function(exports) {
                 IdentityService = exports.IdentityService;
