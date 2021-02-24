@@ -7,16 +7,16 @@ var Component = require("./component").Component;
 exports.AuthenticationPanel = Component.specialize(/** @lends AuthenticationPanel# */ {
 
 
-    _userIdentity: {
+    _identity: {
         value: undefined
     },
 
-    userIdentity: {
+    identity: {
         get: function () {
-            return this._userIdentity;
+            return this._identity;
         },
         set: function(value) {
-            this._userIdentity = value;
+            this._identity = value;
         }
     },
 

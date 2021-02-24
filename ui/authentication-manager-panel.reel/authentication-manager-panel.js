@@ -22,7 +22,7 @@ exports.AuthenticationManagerPanel = Component.specialize({
         }
     },
 
-    userIdentityManager: {
+    identityManager: {
         value: undefined
     },
 

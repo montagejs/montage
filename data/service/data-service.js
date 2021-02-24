@@ -3,7 +3,7 @@ var Montage = require("core/core").Montage,
     AuthorizationManager = require("data/service/authorization-manager").defaultAuthorizationManager,
     AuthorizationPolicy = require("data/service/authorization-policy").AuthorizationPolicy,
     UserAuthenticationPolicy = require("data/service/user-authentication-policy").UserAuthenticationPolicy,
-    UserIdentityManager = require("data/service/user-identity-manager").UserIdentityManager,
+    IdentityManager = require("data/service/identity-manager").IdentityManager,
     DataObjectDescriptor = require("data/model/data-object-descriptor").DataObjectDescriptor,
     Criteria = require("core/criteria").Criteria,
     DataQuery = require("data/model/data-query").DataQuery,
@@ -75,7 +75,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
             exports.DataService.mainService = exports.DataService.mainService || this;
             if(this === DataService.mainService) {
-                // UserIdentityManager.mainService = DataService.mainService;
+                // IdentityManager.mainService = DataService.mainService;
                 //this.addOwnPropertyChangeListener("userLocales", this);
                 this.addRangeAtPathChangeListener("userLocales", this, "handleUserLocalesRangeChange");
             }
@@ -87,8 +87,8 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 exports.DataService.authorizationManager.registerAuthorizationService(this);
             }
 
-            if(this.providesUserIdentity === true) {
-                UserIdentityManager.registerUserIdentityService(this);
+            if(this.providesIdentity === true) {
+                IdentityManager.registerIdentityService(this);
             }
 
             this._initializeOffline();
@@ -1094,7 +1094,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      * @type {boolean}
      */
 
-    providesUserIdentity: {
+    providesIdentity: {
         value: false
     },
 
@@ -1116,7 +1116,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      * @type {Object}
      */
 
-    userIdentity: {
+    identity: {
         value: undefined
     },
 
@@ -1127,7 +1127,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      * @type {Object}
      */
 
-    userIdentityPromise: {
+    identityPromise: {
         value: Promise.resolve()
     },
 
@@ -1140,7 +1140,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      *
      * @type {string[]}
      */
-    userIdentityServices: {
+    identityServices: {
         value: null
     },
 
@@ -3017,13 +3017,13 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             } else {
                 //this is the new path for services with a userAuthenticationPolicy
                 if (this.userAuthenticationPolicy) {
-                    var userIdentityPromise,
+                    var identityPromise,
                         shouldAuthenticate;
-                    //If this is the service providing providesUserIdentity for the query's type: UserIdentityService for the UserIdentity type required.
-                    //the query is either for the UserIdentity itself, or something else.
+                    //If this is the service providing providesIdentity for the query's type: IdentityService for the Identity type required.
+                    //the query is either for the Identity itself, or something else.
                     //If it's for the user identity itself, it's a simple fetch
                     //but if it's for something else, we may need to fetch the identity first, and then move on to the query at hand.
-                    if(this.providesUserIdentity) {
+                    if(this.providesIdentity) {
                         //Regardless of the policy, we're asked to fetch a user identity
                         var streamQuery = stream.query;
                         if(stream.query.criteria) {
@@ -3034,9 +3034,9 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                         stream.query = streamQuery;
                     }
                     else {
-                        if(!this.userIdentity) {
-                            if(this.userIdentityPromise) {
-                                userIdentityPromise = this.userIdentityPromise;
+                        if(!this.identity) {
+                            if(this.identityPromise) {
+                                identityPromise = this.identityPromise;
                             }
                             else if ((this.authenticationPolicy === AuthenticationPolicyType.UpfrontAuthenticationPolicy) ||
                                     (
@@ -3044,22 +3044,22 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                                         (shouldAuthenticate = typeof this.queryRequireAuthentication === "function") && this.queryRequireAuthentication(stream.query)
                                     )) {
 
-                                        this.userIdentityPromise = userIdentityPromise = new Promise(function(resolve,reject) {
-                                        var userIdentityServices = this.userIdentityServices,
-                                        userIdentityObjectDescriptors,
+                                        this.identityPromise = identityPromise = new Promise(function(resolve,reject) {
+                                        var identityServices = this.identityServices,
+                                        identityObjectDescriptors,
                                         selfUserCriteria,
-                                        userIdentityQuery;
+                                        identityQuery;
 
 
                                         //Shortcut, there could be multiple one we need to flatten.
-                                        userIdentityObjectDescriptors = userIdentityServices[0].types;
+                                        identityObjectDescriptors = identityServices[0].types;
                                         //selfUserCriteria = new Criteria().initWithExpression("identity == $", "self");
-                                        userIdentityQuery = DataQuery.withTypeAndCriteria(userIdentityObjectDescriptors[0]);
+                                        identityQuery = DataQuery.withTypeAndCriteria(identityObjectDescriptors[0]);
 
-                                        this.rootService.fetchData(userIdentityQuery)
+                                        this.rootService.fetchData(identityQuery)
                                         .then(function(userIdenties) {
-                                            self.userIdentity = userIdenties[0];
-                                            resolve(self.userIdentity);
+                                            self.identity = userIdenties[0];
+                                            resolve(self.identity);
                                         },
                                         function(error) {
                                             console.error(error);
@@ -3069,20 +3069,20 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                                     });
 
                                 }
-                                else userIdentityPromise = Promise.resolve(true);
+                                else identityPromise = Promise.resolve(true);
                         }
                         else {
-                            userIdentityPromise = Promise.resolve(true);
+                            identityPromise = Promise.resolve(true);
                         }
 
-                        userIdentityPromise.then(function (authorization) {
+                        identityPromise.then(function (authorization) {
                             var streamSelector = stream.query;
                             stream.query = self.mapSelectorToRawDataQuery(streamSelector);
                             self.fetchRawData(stream);
                             stream.query = streamSelector;
                         }).catch(function (e) {
                             stream.dataError(e);
-                            self.userIdentityPromise = Promise.resolve(null);
+                            self.identityPromise = Promise.resolve(null);
                         });
 
                     }

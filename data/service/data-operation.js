@@ -507,11 +507,11 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
     },
 
     /**
-     * The userIdentity object representing the authenticated user.
+     * The identity object representing the authenticated user.
      *
      * @type {Object}
      */
-    userIdentity: {
+    identity: {
         value: undefined
     },
 

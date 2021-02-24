@@ -15,8 +15,8 @@ var Target = require("./target").Target,
     MontageWindow = require("../window-loader/montage-window").MontageWindow,
     Criteria = require("core/criteria").Criteria,
     DataQuery = require("data/model/data-query").DataQuery,
-    UserIdentityService = undefined,
-    UserIdentityManager = require("data/service/user-identity-manager").UserIdentityManager,
+    IdentityService = undefined,
+    IdentityManager = require("data/service/identity-manager").IdentityManager,
     Slot;
 
 require("./dom");
@@ -430,7 +430,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 this.parentApplication = window.loadInfo.parent.document.application;
             }
 
-            UserIdentityManager.delegate = this;
+            IdentityManager.delegate = this;
         }
     },
 
@@ -469,27 +469,27 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 return require.async("data/service/user-identity-service");
             })
             .then(function(exports) {
-                UserIdentityService = exports.UserIdentityService;
+                IdentityService = exports.IdentityService;
 
-                var userIdentityServices = UserIdentityService.userIdentityServices,
-                    userIdentityObjectDescriptors,
+                var identityServices = IdentityService.identityServices,
+                    identityObjectDescriptors,
                     authenticationPromise,
                     //    userObjectDescriptor = this.
                     selfUserCriteria,
-                    userIdentityQuery;
+                    identityQuery;
 
                 //Temporarily Bypassing authentication:
-                if(userIdentityServices && userIdentityServices.length > 0) {
+                if(identityServices && identityServices.length > 0) {
                     //Shortcut, there could be multiple one we need to flatten.
-                    userIdentityObjectDescriptors = userIdentityServices[0].types;
+                    identityObjectDescriptors = identityServices[0].types;
 
-                    if(userIdentityObjectDescriptors.length > 0) {
+                    if(identityObjectDescriptors.length > 0) {
                         //selfUserCriteria = new Criteria().initWithExpression("identity == $", "self");
-                        userIdentityQuery = DataQuery.withTypeAndCriteria(userIdentityObjectDescriptors[0]);
+                        identityQuery = DataQuery.withTypeAndCriteria(identityObjectDescriptors[0]);
 
-                        authenticationPromise = self.mainService.fetchData(userIdentityQuery)
+                        authenticationPromise = self.mainService.fetchData(identityQuery)
                         .then(function(userIdenties) {
-                            self.userIdentity = userIdenties[0];
+                            self.identity = userIdenties[0];
                         });
 
                     }

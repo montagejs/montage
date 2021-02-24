@@ -1,25 +1,25 @@
 var Montage = require("core/core").Montage,
     DataOperation = require("data/service/data-operation").DataOperation,
     defaultEventManager = require("core/event/event-manager").defaultEventManager,
-    UserIdentityManager;
+    IdentityManager;
 
 
 /**
  *
  * @class
- * @extends RawDataService
+ * @extends Montage
  * @deprecated The Authorization API was moved to DataService itself.
  */
-UserIdentityManager = Montage.specialize( /** @lends AuthorizationService.prototype */ {
+IdentityManager = Montage.specialize( /** @lends AuthorizationService.prototype */ {
     constructor: {
         value: function DataService() {
             this.defineBinding("mainService", {"<-": "mainService", source: defaultEventManager.application});
         }
     },
 
-    registerUserIdentityService: {
+    registerIdentityService: {
         value: function(aService) {
-            this.userIdentityServices.push(aService);
+            this.identityServices.push(aService);
         }
     },
 
@@ -66,11 +66,11 @@ UserIdentityManager = Montage.specialize( /** @lends AuthorizationService.protot
 
     _panelForConstructorAndProvider: {
         value: function (constructor, dataServiceModuleId) {
-            return this.callDelegateMethod("userIdentityManagerWillInstantiateAuthorizationPanelForDataService", this, constructor, dataServiceModuleId) || new constructor();
+            return this.callDelegateMethod("identityManagerWillInstantiateAuthorizationPanelForDataService", this, constructor, dataServiceModuleId) || new constructor();
         }
     },
 
-    userIdentityServices: {
+    identityServices: {
         value: []
     },
 
@@ -94,8 +94,8 @@ UserIdentityManager = Montage.specialize( /** @lends AuthorizationService.protot
             // this._mainService.addEventListener(DataOperation.Type.UserAuthentication, this);
             // this._mainService.addEventListener(DataOperation.Type.UserAuthenticationCompleted, this);
             if(this._mainService) {
-                this._mainService.addEventListener("userauthentication", this);
-                this._mainService.addEventListener("userauthenticationcompleted", this);
+                this._mainService.addEventListener("userAuthentication", this);
+                this._mainService.addEventListener("userAuthenticationCompleted", this);
             }
 
         }
@@ -118,12 +118,12 @@ UserIdentityManager = Montage.specialize( /** @lends AuthorizationService.protot
                 this.authenticationManagerPanel.authorizationManager = this;
                 this._managerPanelPromise = Promise.resolve(this.authenticationManagerPanel);
             } else if (!this._managerPanelPromise) {
-                moduleId = this.callDelegateMethod("userIdentityManagerWillLoadAuthenticationManagerPanel", this, this.authenticationManagerPanelModule) || this.authenticationManagerPanelModule;
+                moduleId = this.callDelegateMethod("identityManagerWillLoadAuthenticationManagerPanel", this, this.authenticationManagerPanelModule) || this.authenticationManagerPanelModule;
                 this._managerPanelPromise = require.async(moduleId).bind(this).then(function (exports) {
                     var panel = new exports.AuthenticationManagerPanel();
 
                     self.authenticationManagerPanel = panel;
-                    panel.userIdentityManager = self;
+                    panel.identityManager = self;
                     return panel;
                 }).catch(function(error) {
                     console.log(error);
@@ -146,7 +146,7 @@ UserIdentityManager = Montage.specialize( /** @lends AuthorizationService.protot
                     userAuthenticationOperation.dataServiceModuleId)
                 .then(function (authenticationPanel){
                     console.log("authenticationPanel: ",authenticationPanel);
-                    authenticationPanel.userIdentity = userAuthenticationOperation.data;
+                    authenticationPanel.identity = userAuthenticationOperation.data;
                     self.authenticationManagerPanel.runModal();
                 })
             });
@@ -163,4 +163,4 @@ UserIdentityManager = Montage.specialize( /** @lends AuthorizationService.protot
 });
 
 //Exports the singleton
-exports.UserIdentityManager = new UserIdentityManager
+exports.IdentityManager = new IdentityManager

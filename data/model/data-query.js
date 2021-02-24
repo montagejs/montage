@@ -131,9 +131,9 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
      * or not. RawDataServices use this to communicate to servers the identity of
      * who is requiring data so it can be evaluated in term of access contol.
      *
-     * @type {UserIdentity}
+     * @type {Identity}
      */
-    userIdentity: {
+    identity: {
         value: undefined
     },
 
