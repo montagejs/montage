@@ -4,8 +4,8 @@ var Montage = require("core/core").Montage;
  * AuthorizationPolicyType
  *
  * UpfrontAuthorizationPolicy
- *     Authorization is asked upfront, immediately after data service is
- *     created / launch of an app.
+ *     Authorization is assessed upfront, immediately after data service is
+ *     created / launch of an app/data worker .
  *
  * OnDemandAuthorizationPolicy
  *     Authorization is required when a request fails because of lack of
@@ -28,7 +28,7 @@ var AuthorizationPolicy = exports.AuthorizationPolicy = Montage.specialize({
         }
     }
 });
-AuthorizationPolicy.ON_DEMAND = AuthorizationPolicy.withID("ON_DEMAND");
-AuthorizationPolicy.ON_FIRST_FETCH = AuthorizationPolicy.withID("ON_FIRST_FETCH");
-AuthorizationPolicy.NONE = AuthorizationPolicy.withID("NONE");
-AuthorizationPolicy.UP_FRONT = AuthorizationPolicy.withID("UP_FRONT");
+AuthorizationPolicy.ON_DEMAND = AuthorizationPolicy.OnDemand = AuthorizationPolicy.withID("OnDemand");
+AuthorizationPolicy.ON_FIRST_FETCH = AuthorizationPolicy.OnFirstFetch = AuthorizationPolicy.withID("OnFirstFetch");
+AuthorizationPolicy.NONE = AuthorizationPolicy.None = AuthorizationPolicy.withID("None");
+AuthorizationPolicy.UP_FRONT = AuthorizationPolicy.UpFront = AuthorizationPolicy.withID("UpFront");

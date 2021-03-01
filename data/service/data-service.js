@@ -95,6 +95,12 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    application: {
+        get: function() {
+            return defaultEventManager.application;
+        }
+    },
+
     /***************************************************************************
      * Serialization
      */
@@ -170,6 +176,12 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
             if (this.authorizationPolicy === AuthorizationPolicyType.UpfrontAuthorizationPolicy) {
                 exports.DataService.authorizationManager.registerServiceWithUpfrontAuthorizationPolicy(this);
+            }
+
+            if(this.isRootService && this.currentEnvironment.isNode) {
+                this.application.addEventListener(DataOperation.Type.AuthorizeConnectionOperation, function (event) {
+                    self.rootService.isOffline = false;
+                });
             }
 
         }
@@ -3884,8 +3896,46 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
 
     /***************************************************************************
-     * Access Control methods
+     *
+     * Access Control related methods
+     *
+     ***************************************************************************/
+
+    /**
+     * Assess authorization for an AuthorizeConnectionOperation for a DataIdentity.
+     *
+     * Services overriding the (plural)
+     * @method
+     * @argument {DataOperation} authorizeConnectionOperation
+     * @returns {Promise} - A promise fulfilled with a boolean value.
+     *
      */
+    handleDataIdentityAuthorizeConnectionOperation: {
+        value: function(authorizeConnectionOperation) {
+            /*
+                A root service on the client could authorize access to an indexedDB?
+                Let's be restrictive for now and see how we expand that to the client.
+
+                Behind the AWS API Gateway using WebSockets, this can only be received following the execution of a connect's authorizer function.
+            */
+            if(this.currentEnvironment.isNode) {
+                var authorizationPolicy = this.authorizationPolicy,
+                    identity = authorizeConnectionOperation.identity,
+                    allowedDataIdentities;
+
+                if(authorizationPolicy === AuthorizationPolicy.UpFront) {
+                    /*
+                        First we need to check that if we have allowedDataIdentities.
+
+                        If there aren't any restriction, then everything is open from a data stand point.
+                    */
+
+                }
+            }
+
+
+        }
+    },
 
     /**
      * Answers wether logged-in application user can create a DataObject.

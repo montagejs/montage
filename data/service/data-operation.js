@@ -11,6 +11,15 @@ var Montage = require("core/core").Montage,
     /* todo: we shpuld add a ...timedout for all operations. */
     dataOperationTypes = [
         "noop",
+         /*
+            authorizeConnection's target is an identity object.
+        */
+        "authorizeConnectionOperation",
+        "authorizeConnectionFailedOperation",
+        "authorizeConnectionCompletedOperation",
+        "authorizeOperation",
+        "authorizeFailedOperation",
+        "authorizeCompletedOperation",
         "connectOperation",
         "disconnectOperation",
         "createOperation",
@@ -750,6 +759,12 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
         */
         value: {
             NoOp: DataOperationType.noop,
+            AuthorizeConnectionOperation: DataOperationType.authorizeConnectionOperation,
+            AuthorizeConnectionFailedOperation: DataOperationType.authorizeConnectionFailedOperation,
+            AuthorizeConnectionCompletedOperation: DataOperationType.authorizeConnectionCompletedOperation,
+            AuthorizeOperation: DataOperationType.authorizeOperation,
+            AuthorizeFailedOperation: DataOperationType.authorizeFailedOperation,
+            AuthorizeCompletedOperation: DataOperationType.authorizeCompletedOperation,
             ConnectOperation: DataOperationType.connectOperation,
             DisconnectOperation: DataOperationType.disconnectOperation,
             CreateOperation: DataOperationType.createOperation,
