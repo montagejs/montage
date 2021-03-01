@@ -93,6 +93,16 @@ var Environment = exports.Environment = Montage.specialize({
         value: (typeof window !== "undefined")
     },
 
+    _isNode: {
+        value: undefined
+    },
+    isNode: {
+        get: function() {
+            return this._isNode || (this._isNode = ((typeof process !== 'undefined') &&
+(process.release.name.search(/node|io.js/) !== -1)));
+        }
+    },
+
     _userAgent: {
         value: null
     },
