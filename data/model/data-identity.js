@@ -21,10 +21,32 @@ exports.DataIdentity = Identity.specialize(/** @lends DataIdentity.prototype */ 
     identifier: {
         value: "DataIdentity"
     },
+
+    deserializeSelf: {
+        value: function (deserializer) {
+            this.super(deserializer);
+
+            var result, value;
+            value = deserializer.getProperty("query");
+            if (value !== void 0) {
+                this.query = value;
+            }
+        }
+
+    },
+    serializeSelf: {
+        value: function (serializer) {
+            this.super(serializer);
+
+            serializer.setProperty("query", this.query);
+        }
+    },
     /**
-     * The DataService that created this DataIdenty
+     * The Query that defines the scope of what a client can do.
+     * Once authorized, passing the token delivered to the server side
+     * a client shouldn't be able to access data it's not supposed to.
      *
-     * @type {DataService}
+     * @type {DataQuery}
      */
     query: {
         value: undefined
