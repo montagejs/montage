@@ -67,12 +67,24 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
 
     serializeSelf: {
         value: function (serializer) {
-            serializer.setProperty("criteria", this.criteria);
-            serializer.setProperty("orderings", this.orderings);
-            serializer.setProperty("readExpressions", this.readExpressions);
-            serializer.setProperty("selectBindings", this.selectBindings);
-            serializer.setProperty("selectExpression", this.selectExpression);
-            serializer.setProperty("fetchLimit", this.fetchLimit);
+            if(this.criteria) {
+                serializer.setProperty("criteria", this.criteria);
+            }
+            if(this.orderings) {
+                serializer.setProperty("orderings", this.orderings);
+            }
+            if(this.readExpressions) {
+                serializer.setProperty("readExpressions", this.readExpressions);
+            }
+            if(this.selectBindings) {
+                serializer.setProperty("selectBindings", this.selectBindings);
+            }
+            if(this.selectExpression) {
+                serializer.setProperty("selectExpression", this.selectExpression);
+            }
+            if(this.fetchLimit) {
+                serializer.setProperty("fetchLimit", this.fetchLimit);
+            }
 
             if (this.type.objectDescriptorInstanceModule) {
                 serializer.setProperty("typeModule", this.type.objectDescriptorInstanceModule);

@@ -1,0 +1,89 @@
+{
+
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "DataQuery",
+            "propertyDescriptors": [
+                { "@": "criteriaDescriptor" },
+                { "@": "orderingsDescriptor" },
+                { "@": "readExpressionsDescriptor" },
+                { "@": "typeDescriptor" },
+                { "@": "fetchLimitDescriptor" }
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                    { "@": "criteriaDescriptor" },
+                    { "@": "orderingsDescriptor" },
+                    { "@": "readExpressionsDescriptor" },
+                    { "@": "typeDescriptor" },
+                    { "@": "fetchLimitDescriptor" }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "./data-query.mjson" },
+            "exportName": "DataQuery",
+            "module": { "%": "./data-query" },
+            "object":{ "@": "DataQuery" }
+        }
+    },
+    "DataQuery": {
+        "object": "./data-query"
+    },
+    "criteriaDescriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "criteria",
+            "cardinality": 1,
+            "valueType": "object",
+            "valueDescriptor": { "@": "CriteriaDescriptor" }
+        }
+    },
+    "CriteriaDescriptor": {
+        "object": "core/criteria.mjson"
+    },
+
+    "orderingsDescriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "orderings",
+            "cardinality": -1,
+            "valueType": "array",
+            "valueDescriptor": { "@": "DataOrderingDescriptor" }
+        }
+    },
+    "DataOrderingDescriptor": {
+        "object": "data/model/data-ordering.mjson"
+    },
+
+    "readExpressionsDescriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "readExpressions",
+            "cardinality": -1,
+            "valueType": "string"
+        }
+    },
+
+    "typeDescriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "type",
+            "valueType": "object",
+            "valueDescriptor": { "@": "ObjectDescriptor" }
+        }
+    },
+    "ObjectDescriptor": {
+        "object": "core/meta/module-object-descriptor.mjson"
+    },
+
+    "fetchLimitDescriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "fetchLimit",
+            "cardinality": 1,
+            "valueType": "number"
+        }
+    }
+
+}
