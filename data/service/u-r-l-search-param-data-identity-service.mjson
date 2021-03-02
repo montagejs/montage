@@ -1,0 +1,16 @@
+{
+    "root": {
+        "prototype": "./u-r-l-search-param-data-identity-service",
+        "values": {
+            "name": "URLSearchParamDataIdentityService",
+            "mappings": [
+            ],
+            "types": [
+                {"@": "DataIdentity"}
+            ]
+        }
+    },
+    "DataIdentity": {
+        "object": "../model/data-identity.mjson"
+    }
+}
