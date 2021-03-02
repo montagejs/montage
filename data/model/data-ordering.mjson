@@ -1,0 +1,40 @@
+{
+    "expressionDescriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "expression",
+            "valueType": "string"
+        }
+    },
+    "orderDescriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "order",
+            "valueType": "object"
+        }
+    },
+    "DataOrdering": {
+        "object": "data/model/data-ordering"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "DataOrdering",
+            "propertyDescriptors": [
+                { "@": "expressionDescriptor" },
+                { "@": "orderDescriptor" }
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                    { "@": "expressionDescriptor" },
+                    { "@": "orderDescriptor" }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "data/model/data-ordering.mjson" },
+            "exportName": "DataOrdering",
+            "module": { "%": "data/model/data-ordering" },
+            "object":{ "@": "DataOrdering" }
+        }
+    }
+}

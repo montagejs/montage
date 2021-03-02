@@ -1,0 +1,35 @@
+{
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "DataIdentity",
+            "propertyDescriptors": [
+                {"@": "query"}
+            ],
+            "objectDescriptorModule": {
+                "%": "data/model/data-identity.mjson"
+            },
+            "exportName": "DataIdentity",
+            "module": {
+                "%": "data/model/data-identity"
+            },
+            "object":{"@": "DataIdentity"}
+        }
+    },
+    "DataIdentity": {
+        "object": "data/model/data-identity"
+    },
+    "query": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "query",
+            "valueType": "object",
+            "cardinality": 1,
+            "valueDescriptor": {"@": "queryDescriptor"}
+       }
+    },
+    "queryDescriptor": {
+        "object": "data/model/data-query.mjson"
+    }
+
+}

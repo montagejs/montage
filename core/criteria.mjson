@@ -1,0 +1,49 @@
+{
+    "expressionDescriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "expression",
+            "valueType": "string"
+        }
+    },
+    "parametersDescriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "parameters",
+            "valueType": "object"
+        }
+    },
+    "syntaxDescriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "syntax",
+            "valueType": "object"
+        }
+    },
+    "Criteria": {
+        "object": "core/criteria"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "Criteria",
+            "propertyDescriptors": [
+                { "@": "expressionDescriptor" },
+                { "@": "parametersDescriptor" },
+                { "@": "syntaxDescriptor" }
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                    { "@": "expressionDescriptor" },
+                    { "@": "parametersDescriptor" },
+                    { "@": "syntaxDescriptor" }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "core/criteria.mjson" },
+            "exportName": "Criteria",
+            "module": { "%": "core/criteria" },
+            "object":{ "@": "Criteria" }
+        }
+    }
+}
