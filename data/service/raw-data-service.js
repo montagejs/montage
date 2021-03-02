@@ -533,7 +533,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             criteriaSyntax,
             syntaxPropertyByName;
 
-            for(i=0, countI = rawDataPrimaryKeys.length; (i<countI); i++ ) {
+            for(i=0, countI = rawDataPrimaryKeys ? rawDataPrimaryKeys.length : 0; (i<countI); i++ ) {
                 if(!rawData.hasOwnProperty(rawDataPrimaryKeys[i])) {
                     //Needs to find among the equals syntax the one that matches the current key.
                     iterator = new SyntaxInOrderIterator(query.criteria.syntax, "equals");
@@ -1902,6 +1902,50 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             return operation;
         }
     },
+
+    /***************************************************************************
+     *
+     * Authorization / Access Control
+     *
+     ***************************************************************************/
+
+    /**
+     * The access token delivered once an identity has been authorized
+     * to access a data service. Type stays open/abstract as it can take many forms
+     *
+     * @type {Object}
+     */
+    __accessTokenBydentity: {
+        value: undefined
+    },
+
+    _accessTokenBydentity: {
+        get: function() {
+            return (this._accessTokenBydentity || (this._accessTokenBydentity = new WeakMap()));
+        }
+    },
+
+    accessTokenForIdentity: {
+        get: function(identity) {
+            return this._accessTokenBydentity.get(identity);
+        }
+    },
+
+    registerAccessTokenForIdentity:{
+        get: function(accessToken, identity) {
+            return this._accessTokenBydentity.set(identity, accessToken);
+        }
+    },
+
+    unregisterAccessTokenForIdentity:{
+        get: function(identity, accessToken) {
+            /*
+                TODO: Verify that accessToken is equal to this._accessTokenBydentity.get(identity) first?
+            */
+            return this._accessTokenBydentity.delete(identity);
+        }
+    },
+
 
 
     /***************************************************************************
