@@ -1,4 +1,5 @@
-var Montage = require("core/core").Montage;
+var Montage = require("core/core").Montage,
+    Identity;
 
 /**
  * An Identity represents an object that defined who is using the app.
@@ -8,7 +9,7 @@ var Montage = require("core/core").Montage;
  * @class
  * @extends external:Montage
  */
-exports.Identity = Montage.specialize(/** @lends Identity.prototype */ {
+Identity = exports.Identity = Montage.specialize(/** @lends Identity.prototype */ {
 
 }, {
     AnonymousIdentity: {
