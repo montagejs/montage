@@ -23,6 +23,7 @@ var Montage = require("core/core").Montage,
     deprecate = require("../../core/deprecate"),
     currentEnvironment = require("core/environment").currentEnvironment,
     PropertyChanges = require("../../core/collections/listen/property-changes"),
+    DataOperation = require("data/service/data-operation").DataOperation,
     Locale = require("core/locale").Locale;
 
     require("core/extras/string");
