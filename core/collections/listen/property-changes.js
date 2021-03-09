@@ -367,7 +367,7 @@ PropertyChanges.prototype.makePropertyObservable = function (key) {
 
         propertyListener.enumerable = overriddenDescriptor.enumerable;
 
-        propertyListener.configurable = true
+        propertyListener.configurable = true;
 
     } else { // 'get' or 'set', but not necessarily both
             propertyListener.get = overriddenDescriptor.get;
