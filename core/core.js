@@ -1375,7 +1375,7 @@ var expressionPropertyDescriptors = {
     },
     getPath: {
         value: deprecate.deprecateMethod(void 0, function (path, parameters, document, components) {
-            this.valueForExpression(path, parameters, document, components);
+            return this.valueForExpression(path, parameters, document, components);
         }, "getPath", "valueForExpression", true)
     },
 
