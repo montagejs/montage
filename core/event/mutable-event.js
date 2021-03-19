@@ -34,6 +34,12 @@ if (typeof window !== "undefined") {
         @class MutableEvent
     */
     var MutableEvent = exports.MutableEvent = Montage.specialize(/** @lends MutableEvent# */ {
+        constructor: {
+            value: function() {
+                this._currentTarget = void 0;
+                return this;
+            }
+        },
 
     /**
       @private
