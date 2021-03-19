@@ -1,0 +1,7 @@
+{
+  "name": "text.info",
+  "private": true,
+  "dependencies": {
+    "montage": "../.."
+  }
+}
