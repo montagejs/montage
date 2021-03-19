@@ -31,6 +31,22 @@ var DragManager = exports.DragManager = Montage.specialize({
         }
     },
 
+    _shouldListenForEvents: {
+        value: false
+    },
+
+    shouldListenForEvents: {
+        get: function() {
+            return this._shouldListenForEvents;
+        },
+        set: function(value) {
+            if(value !== this._shouldListenForEvents) {
+                this._shouldListenForEvents = value;
+                this._registerEventsIfNeeded();
+            }
+        }
+    },
+
     __rootComponent: {
         value: null
     },
@@ -44,11 +60,12 @@ var DragManager = exports.DragManager = Montage.specialize({
                     );
                 }
 
-                if (component) {
-                    component.addComposerForElement(
-                        this._translateComposer, component.element
-                    );
-                }
+                // if (component) {
+                //     component.addComposerForElement(
+                //         this._translateComposer, component.element
+                //     );
+                // }
+                this._eventsRegistered = false;
 
                 this.__rootComponent = component;
             }
@@ -121,7 +138,7 @@ var DragManager = exports.DragManager = Montage.specialize({
         value: function (component) {
             this._rootComponent = component;
             var element = this._rootComponent.element;
-                
+
             if ("webkitTransform" in element.style) {
                 DragManager.cssTransform = "webkitTransform";
             } else if ("MozTransform" in element.style) {
@@ -132,18 +149,39 @@ var DragManager = exports.DragManager = Montage.specialize({
                 DragManager.cssTransform = "transform";
             }
 
-            if (window.PointerEvent) {
-                element.addEventListener("pointerdown", this, true);
-            } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
-                element.addEventListener("MSPointerDown", this, true);
-            } else {
-                element.addEventListener("touchstart", this, true);
-            }
-
-            this._translateComposer.addEventListener("translateStart", this);
-            element.addEventListener("dragenter", this, true);
+            this._registerEventsIfNeeded();
 
             return this;
+        }
+    },
+
+    _eventsRegistered: {
+        value: false
+    },
+    _registerEventsIfNeeded: {
+        value: function() {
+
+            if(this._rootComponent && this._shouldListenForEvents && !this._eventsRegistered) {
+                var element = this._rootComponent.element;
+
+                if (window.PointerEvent) {
+                    element.addEventListener("pointerdown", this, true);
+                } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                    element.addEventListener("MSPointerDown", this, true);
+                } else {
+                    element.addEventListener("touchstart", this, true);
+                }
+
+                this._translateComposer.addEventListener("translateStart", this);
+                element.addEventListener("dragenter", this, true);
+
+                this._rootComponent.addComposerForElement(
+                    this._translateComposer, element
+                );
+
+                this._eventsRegistered = true;
+            }
+
         }
     },
 
@@ -215,6 +253,15 @@ var DragManager = exports.DragManager = Montage.specialize({
                 if (components.indexOf(component) === -1) {
                     components.push(component);
                 }
+
+                /*
+                    There's only something to do if there's at l est a source and a destination
+                */
+                if(this._draggables.length > 0 && this._droppables.length > 0) {
+                    this.shouldListenForEvents = true
+                } else {
+                    this.shouldListenForEvents = false;
+                }
             }
         }
     },
@@ -243,7 +290,7 @@ var DragManager = exports.DragManager = Montage.specialize({
     /**
      * @private
      * @function
-     * @param {Element} draggedImage - node element that will be used 
+     * @param {Element} draggedImage - node element that will be used
      * as a dragged image
      * @param {Object} startPosition - coordinates of the start position
      * @description set some default css style on the dragged image.
@@ -264,7 +311,7 @@ var DragManager = exports.DragManager = Montage.specialize({
      /**
      * @private
      * @function
-     * @param {Element} draggedImage - node element that will be used 
+     * @param {Element} draggedImage - node element that will be used
      * as a dragged image
      * @description set some default css style on the dragged image.
      */
@@ -338,7 +385,7 @@ var DragManager = exports.DragManager = Montage.specialize({
     /**
      * @private
      * @function
-     * @param {DraggingOperationContext} draggingOperationContext - current dragging 
+     * @param {DraggingOperationContext} draggingOperationContext - current dragging
      * operation info object
      * @description Dispatch Drag End Event
      */
@@ -361,7 +408,7 @@ var DragManager = exports.DragManager = Montage.specialize({
     /**
      * @private
      * @function
-     * @param {DraggingOperationContext} draggingOperationContext - current dragging 
+     * @param {DraggingOperationContext} draggingOperationContext - current dragging
      * operation info object
      * @description Dispatch Drop Event
      */
@@ -423,7 +470,7 @@ var DragManager = exports.DragManager = Montage.specialize({
     /**
      * @private
      * @function
-     * @param {DraggingOperationContext} draggingOperationContext - current dragging 
+     * @param {DraggingOperationContext} draggingOperationContext - current dragging
      * operation info object
      * @description Dispatch Drag Leave Event
      */
@@ -453,7 +500,7 @@ var DragManager = exports.DragManager = Montage.specialize({
         value: function (positionX, positionY) {
             return this._findRegisteredComponentAtPosistion(
                 positionX,
-                positionY, 
+                positionY,
                 DRAGGABLE
             );
         }
@@ -471,7 +518,7 @@ var DragManager = exports.DragManager = Montage.specialize({
         value: function (positionX, positionY) {
             return this._findRegisteredComponentAtPosistion(
                 positionX,
-                positionY, 
+                positionY,
                 DROPABBLE
             );
         }
@@ -494,7 +541,7 @@ var DragManager = exports.DragManager = Montage.specialize({
             registeredComponent = null;
 
             if (targetComponent) {
-                var components = role === DRAGGABLE ? 
+                var components = role === DRAGGABLE ?
                     this._draggables : this._droppables,
                     index;
 
@@ -526,7 +573,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                 component = null;
 
             // that is done at several place in the framework
-            // we should re-organize that 
+            // we should re-organize that
             while (element && !(component = element.component)) {
                 element = element.parentElement;
             }
@@ -616,8 +663,8 @@ var DragManager = exports.DragManager = Montage.specialize({
 
     capturePointerdown: {
         value: function (event) {
-            if (event.pointerType === TOUCH_POINTER || 
-                (window.MSPointerEvent && 
+            if (event.pointerType === TOUCH_POINTER ||
+                (window.MSPointerEvent &&
                     event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)
             ) {
                 this.captureTouchstart(event);
@@ -638,7 +685,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                         "pointermove", this, true
                     );
                 } else if (
-                    window.MSPointerEvent && 
+                    window.MSPointerEvent &&
                     window.navigator.msPointerEnabled
                 ) {
                     this._rootComponent.element.addEventListener(
@@ -688,7 +735,7 @@ var DragManager = exports.DragManager = Montage.specialize({
 
                 this._draggingOperationContext = (draggingOperationContext = (
                     this._createDraggingOperationContextWithDraggableAndPosition(
-                        null, 
+                        null,
                         event
                     )
                 ));
@@ -702,12 +749,12 @@ var DragManager = exports.DragManager = Montage.specialize({
                 draggingOperationContext.dragEffect = (
                     dragStartEvent.dataTransfer.dragEffect
                 );
-                
+
                 this._addDragListeners();
                 draggingOperationContext.isDragging = true;
                 this._rootComponent.needsDraw = true;
             }
-            
+
             this._dragEnterCounter++;
         }
     },
@@ -745,7 +792,7 @@ var DragManager = exports.DragManager = Montage.specialize({
         value: function (event) {
             event.preventDefault();
             event.stopPropagation();
-            
+
             this._draggingOperationContext.deltaX = (
                 event.pageX - this._draggingOperationContext.startPositionX
             );
@@ -757,7 +804,7 @@ var DragManager = exports.DragManager = Montage.specialize({
             this._draggingOperationContext.dataTransfer = (
                 DataTransfer.fromDataTransfer(event.dataTransfer)
             );
-            
+
             this._removeDragListeners();
             this.handleTranslateEnd();
         }
@@ -786,13 +833,13 @@ var DragManager = exports.DragManager = Montage.specialize({
 
                 this._draggingOperationContext = (draggingOperationContext = (
                     this._createDraggingOperationContextWithDraggableAndPosition(
-                        draggable, 
+                        draggable,
                         startPosition
                     )
                 ));
 
                 var dragStartEvent = this._dispatchDragStart();
-                
+
                 this._draggingOperationContext.dataTransfer = dragStartEvent.dataTransfer;
                 this._draggingOperationContext.dragEffect = dragStartEvent.dataTransfer.dragEffect;
                 this._draggingOperationContext.showPlaceholder = (
@@ -839,7 +886,7 @@ var DragManager = exports.DragManager = Montage.specialize({
 
     handleTranslateCancel: {
         value: function () {
-            this.draggingOperationContext.currentDropTarget = null;
+            this._draggingOperationContext.currentDropTarget = null;
             this._willTerminateDraggingOperation = true;
             this._rootComponent.needsDraw = true;
         }
@@ -849,7 +896,7 @@ var DragManager = exports.DragManager = Montage.specialize({
      * Draw Cycles Management
      */
 
-    willDraw: { 
+    willDraw: {
         value: function () {
             var draggingOperationContext;
 
@@ -859,14 +906,14 @@ var DragManager = exports.DragManager = Montage.specialize({
             ) {
                 var draggable = draggingOperationContext.draggable;
 
-                if ( 
-                    !this._draggedImageBoundingRect && 
+                if (
+                    !this._draggedImageBoundingRect &&
                     draggingOperationContext.draggable
                 ) {
                     this._draggedImageBoundingRect = (
                         draggingOperationContext.draggable.element.getBoundingClientRect()
                     );
-    
+
                     if (draggable.draggableContainer) {
                         this._draggableContainerBoundingRect = (
                             draggable.draggableContainer.getBoundingClientRect()
@@ -878,7 +925,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                         draggingOperationContext.positionY
                     );
 
-                    if (droppable && 
+                    if (droppable &&
                         !draggingOperationContext.dropTargetCandidates.has(
                             droppable
                         )
@@ -890,13 +937,13 @@ var DragManager = exports.DragManager = Montage.specialize({
                         this._invalidDroppable.classList.remove('invalid-drop-target');
                         this._invalidDroppable = null;
                     }
-                    
+
                     if (draggable) {
                         draggable.dispatchEvent(this._createDragEvent(
                             "drag", draggingOperationContext
                         ));
                     }
-                            
+
                     if (droppable !== draggingOperationContext.currentDropTarget) {
                         if (draggingOperationContext.currentDropTarget) {
                             this._dispatchDragLeave(
@@ -959,48 +1006,48 @@ var DragManager = exports.DragManager = Montage.specialize({
 
                         if (draggingOperationContext.positionX - (
                             deltaPointerLeft = (
-                                draggingOperationContext.startPositionX - 
+                                draggingOperationContext.startPositionX -
                                 this._draggedImageBoundingRect.left
                             )
                         ) < rect.left) {
                             translateX = (
-                                rect.left - 
-                                draggingOperationContext.startPositionX + 
+                                rect.left -
+                                draggingOperationContext.startPositionX +
                                 deltaPointerLeft
                             );
                         } else if (draggingOperationContext.positionX + (
                             deltaPointerRight = (
-                                this._draggedImageBoundingRect.right - 
+                                this._draggedImageBoundingRect.right -
                                 draggingOperationContext.startPositionX
                             )
                         ) > rect.right) {
                             translateX = (
-                                rect.right - 
-                                draggingOperationContext.startPositionX - 
+                                rect.right -
+                                draggingOperationContext.startPositionX -
                                 deltaPointerRight
                             );
                         }
-                        
+
                         if (draggingOperationContext.positionY - (
                             deltaPointerTop = (
-                                draggingOperationContext.startPositionY - 
+                                draggingOperationContext.startPositionY -
                                 this._draggedImageBoundingRect.top
                             )
                         ) < rect.top) {
                             translateY = (
-                                rect.top - 
-                                draggingOperationContext.startPositionY + 
+                                rect.top -
+                                draggingOperationContext.startPositionY +
                                 deltaPointerTop
                             );
                         } else if (draggingOperationContext.positionY + (
                             deltaPointerBottom = (
-                                this._draggedImageBoundingRect.bottom - 
+                                this._draggedImageBoundingRect.bottom -
                                 draggingOperationContext.startPositionY
                             )
                         ) > rect.bottom) {
                             translateY = (
-                                rect.bottom - 
-                                draggingOperationContext.startPositionY - 
+                                rect.bottom -
+                                draggingOperationContext.startPositionY -
                                 deltaPointerBottom
                             );
                         }
@@ -1015,7 +1062,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                     draggedImage.style[DragManager.cssTransform] = translate;
 
                     this._scrollIfNeeded(
-                        draggingOperationContext.positionX, 
+                        draggingOperationContext.positionX,
                         draggingOperationContext.positionY
                     );
                 }
@@ -1037,7 +1084,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                 this._dispatchDrop(
                     draggingOperationContext
                 );
-                
+
                 this._resetTranslateContext();
                 draggingOperationContext.currentDropTarget = null;
                 this._dispatchDragEnd(draggingOperationContext);
@@ -1049,9 +1096,9 @@ var DragManager = exports.DragManager = Montage.specialize({
                     this._shouldRemovePlaceholder = true;
                     this._rootComponent.needsDraw = true;
                     // Wait for the next draw cycle to remove the placeholder,
-                    // or in order to be synchronised with the draw cyle when 
+                    // or in order to be synchronised with the draw cyle when
                     // the draggable component will become visible again.
-                    // Plus it allows the receiver to perform any necessary clean-up. 
+                    // Plus it allows the receiver to perform any necessary clean-up.
                     return void 0;
                 } else {
                     this._draggingOperationContext = null;
@@ -1107,7 +1154,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                 if (draggingOperationContext.dragEffect === "move") {
                     var draggableElement = draggingOperationContext.draggable.element;
                     this._oldDraggableDisplayStyle = draggableElement.style.display;
-                    draggableElement.style.display = 'none'; 
+                    draggableElement.style.display = 'none';
 
                     if (draggingOperationContext.showPlaceholder) {
                         var placeholderElement = document.createElement('div'),
@@ -1122,7 +1169,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                         );
 
                         draggableElement.parentNode.insertBefore(
-                            placeholderElement, 
+                            placeholderElement,
                             draggableElement
                         );
 
@@ -1145,8 +1192,8 @@ var DragManager = exports.DragManager = Montage.specialize({
 
                 if (draggingOperationContext && draggingOperationContext.draggable) {
                     var draggableElement = draggingOperationContext.draggable.element;
-                    draggableElement.style.display = this._oldDraggableDisplayStyle; 
-    
+                    draggableElement.style.display = this._oldDraggableDisplayStyle;
+
                     if (draggingOperationContext.showPlaceholder) {
                         draggableElement.parentNode.removeChild(
                             this._placeholderElement
@@ -1163,7 +1210,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                 containerBoundingRect = this._draggableContainerBoundingRect,
                 scrollThreshold = this._scrollThreshold,
                 stopSearchingX = false,
-                stopSearchingY = false, 
+                stopSearchingY = false,
                 rect, height, width, top, bottom, right, left, scrollWidth,
                 scrollLeft, scrollHeight, scrollTop, outsideBoundariesCounter,
                 notScrollable;
@@ -1172,13 +1219,13 @@ var DragManager = exports.DragManager = Montage.specialize({
                 rect = element.getBoundingClientRect();
                 height = rect.height;
                 width = rect.width;
-                
+
                 if (
-                    (!height || !width) || 
-                    ((notScrollable = (scrollHeight = element.scrollHeight) <= height)) || 
+                    (!height || !width) ||
+                    ((notScrollable = (scrollHeight = element.scrollHeight) <= height)) ||
                     (notScrollable && (scrollWidth = element.scrollWidth) <= width)
                 ) {
-                    // if no height or width 
+                    // if no height or width
                     // or not scrollable pass to to the next parent.
                     element = element.parentElement;
                     continue;
@@ -1193,7 +1240,7 @@ var DragManager = exports.DragManager = Montage.specialize({
 
                 // Check for horizontal scroll up
                 if (
-                    positionY >= top && 
+                    positionY >= top &&
                     (!containerBoundingRect || positionY >= containerBoundingRect.top)
                 ) {
                     if (positionY <= top + scrollThreshold) {
@@ -1202,7 +1249,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                         // if not already reached the bottom edge
                         if (scrollTop) {
                             element.scrollTop = (
-                                scrollTop - 
+                                scrollTop -
                                 this._getScrollMultiplier(positionY - top)
                             );
 
@@ -1219,7 +1266,7 @@ var DragManager = exports.DragManager = Montage.specialize({
 
                 // Check for horizontal scroll down
                 if (
-                    !stopSearchingY && positionY <= bottom && 
+                    !stopSearchingY && positionY <= bottom &&
                     (!containerBoundingRect || positionY <= containerBoundingRect.bottom)
                 ) {
                     if (positionY >= bottom - scrollThreshold) {
@@ -1228,7 +1275,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                         // if not already reached the bottom edge
                         if (scrollTop < scrollHeight) {
                             element.scrollTop = (
-                                scrollTop + 
+                                scrollTop +
                                 this._getScrollMultiplier(bottom - positionY)
                             );
                             this._rootComponent.needsDraw = true;
@@ -1244,7 +1291,7 @@ var DragManager = exports.DragManager = Montage.specialize({
 
                 // Check for vertical scroll left
                 if (
-                    positionX >= left && 
+                    positionX >= left &&
                     (!containerBoundingRect || positionX >= containerBoundingRect.left)
                 ) {
                     if (positionX <= left + scrollThreshold) {
@@ -1253,7 +1300,7 @@ var DragManager = exports.DragManager = Montage.specialize({
                         // if not already reached the left edge
                         if (scrollLeft) {
                             element.scrollLeft = (
-                                scrollLeft - 
+                                scrollLeft -
                                 this._getScrollMultiplier(positionX - left)
                             );
 
@@ -1270,7 +1317,7 @@ var DragManager = exports.DragManager = Montage.specialize({
 
                 // Check for horizontal scroll right
                 if (
-                    !stopSearchingX && positionX <= right && 
+                    !stopSearchingX && positionX <= right &&
                     (!containerBoundingRect || positionX <= containerBoundingRect.right)
                 ) {
                     if (positionX >= right - scrollThreshold) {
@@ -1278,9 +1325,9 @@ var DragManager = exports.DragManager = Montage.specialize({
                         scrollWidth = scrollWidth || element.scrollWidth;
 
                         // if not already reached the right edge
-                        if (scrollLeft < scrollWidth) {   
+                        if (scrollLeft < scrollWidth) {
                             element.scrollLeft = (
-                                scrollLeft + 
+                                scrollLeft +
                                 this._getScrollMultiplier(right - positionX)
                             );
                             this._rootComponent.needsDraw = true;

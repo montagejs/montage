@@ -164,7 +164,7 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
             }
         }
     },
-    
+
 
     /**
      * Show the overlay. The overlay is displayed at the position determined by
@@ -240,7 +240,7 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
 
     shouldComposerSurrenderPointerToComponent: {
         value: function (composer, pointer, component) {
-            if (component && component.element && !this.element.contains(component.element)) {
+            if (this.dismissOnExternalInteractioncomponent && component.element && !this.element.contains(component.element)) {
                 this.hide();
             }
 
@@ -335,12 +335,12 @@ var Overlay = exports.Overlay = Component.specialize( /** @lends Overlay.prototy
 
                 this.element.style.top = position.top + "px";
                 this.element.style.left = position.left + "px";
-                this.element.style.visibility = "visible";
+                // this.element.style.visibility = "visible";
 
                 this.callDelegateMethod("didShowOverlay", this);
 
             } else {
-                this.element.style.visibility = "hidden";
+                // this.element.style.visibility = "hidden";
             }
         }
     },

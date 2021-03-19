@@ -1,0 +1,34 @@
+{
+
+    "id_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "id",
+            "objectDescriptor": { "@": "root" },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+    "module-reference": {
+        "object": "core/module-reference"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "ModuleReference",
+            "propertyDescriptors": [
+                { "@": "id_descriptor" }
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                { "@": "id_descriptor" }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "core/module-reference.mjson" },
+            "exportName": "ModuleReference",
+            "module": { "%": "core/module-reference" },
+            "object":{ "@": "module-reference" }
+        }
+    }
+}

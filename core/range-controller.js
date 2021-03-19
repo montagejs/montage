@@ -2,8 +2,8 @@
  * @module montage/core/range-controller
  */
 var Montage = require("./core").Montage;
-var GenericCollection = require("collections/generic-collection");
-var observableArrayProperties = require("collections/listen/array-changes").observableArrayProperties;
+var GenericCollection = require("core/collections/generic-collection");
+var observableArrayProperties = require("core/collections/listen/array-changes").observableArrayProperties;
 
 // The content controller is responsible for determining which content from a
 // source collection are visible, their order of appearance, and whether they
@@ -113,6 +113,11 @@ Object.defineProperty(_RangeSelection.prototype, "swap_or_push", {
     configurable: false,
     value: function(start, howMany, itemsToAdd) {
         var content = this.rangeController.content;
+
+        if(!content) {
+            return;
+        }
+
         this.contentEquals = content && content.contentEquals || Object.is;
         start = start >= 0 ? start : this.length + start;
         var plus;
@@ -123,24 +128,55 @@ Object.defineProperty(_RangeSelection.prototype, "swap_or_push", {
 
             itemsToAdd.contentEquals = this.contentEquals;
 
-            plus = itemsToAdd.filter(function(item, index){
-                // do not add items to the selection if they aren't in content
-                if (content && !content.has(item)) {
-                    return false;
+            // plus = itemsToAdd.filter(function(item, index){
+            //     // do not add items to the selection if they aren't in content
+            //     if (content && !content.has(item)) {
+            //         return false;
+            //     }
+
+            //     // if the same item appears twice in the add list, only add it once
+            //     if (itemsToAdd.findLast(item) > index) {
+            //         return false;
+            //     }
+
+            //     // if the item is already in the selection, don't add it
+            //     // unless it's in the part that we're about to delete.
+            //     var indexInSelection = this.find(item);
+            //     return indexInSelection < 0 ||
+            //             (indexInSelection >= start && indexInSelection < start + minusLength);
+
+            // }, this);
+
+
+            plus = [];
+            for(var indexInSelection, i=0, countI = itemsToAdd.length;(i<countI); i++) {
+                if (i in itemsToAdd) {
+
+                    // do not add items to the selection if they aren't in content
+                    if (content && !content.has(itemsToAdd[i])) {
+                        continue;
+                    }
+
+                    // if the same item appears twice in the add list, only add it once
+                    if (itemsToAdd.findLastValue(itemsToAdd[i]) > i) {
+                        continue;
+                    }
+
+                    // if the item is already in the selection, don't add it
+                    // unless it's in the part that we're about to delete.
+                    indexInSelection = this.findValue(itemsToAdd[i]);
+                    if(indexInSelection < 0 ||
+                            (indexInSelection >= start && indexInSelection < start + minusLength)) {
+                                plus.push(itemsToAdd[i]);
+                            }
                 }
 
-                // if the same item appears twice in the add list, only add it once
-                if (itemsToAdd.findLast(item) > index) {
-                    return false;
-                }
+            }
 
-                // if the item is already in the selection, don't add it
-                // unless it's in the part that we're about to delete.
-                var indexInSelection = this.find(item);
-                return indexInSelection < 0 ||
-                        (indexInSelection >= start && indexInSelection < start + minusLength);
+            // if(JSON.stringify(plus) !== JSON.stringify(plus2)) {
+            //     debug;
+            // }
 
-            }, this);
 		}
 		else {
 			plus = EMPTY_ARRAY;
@@ -308,6 +344,9 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * An FRB expression that determines how to filter content like
      * "name.startsWith('A')" to see only names starting with 'A'.
      * If the `filterPath` is null, all content is accepted.
+     *
+     * TODO: this needs to be at least renamed to filterExpression,
+     * but it should really be a criteria object.
      *
      * @property {string} value
      */
@@ -664,6 +703,27 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
         }
     },
 
+
+    /**
+     * @private
+     */
+    _contentDescriptor: {
+        value: null
+    },
+    contentDescriptor: {
+        get: function () {
+            return this._contentDescriptor;
+        },
+        set: function (value) {
+            this._contentDescriptor = value;
+        }
+    },
+
+    /**
+     * TODO: reconciliate contentDescriptor's module with
+     * _contentConstructor when contentDescriptor is used.
+    */
+
     /**
      * @private
      */
@@ -709,21 +769,23 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     handleContentRangeChange: {
         value: function (plus, minus, index) {
             if (this.selection.length > 0) {
-                var equals = this.content && this.content.contentEquals || Object.is;
+                var equals = this.content && this.content.contentEquals || Object.is,
+                    diff = minus.clone(1);
+
                 // remove all values from the selection that were removed (but
                 // not added back)
-                minus.deleteEach(plus, equals);
+                diff.deleteEach(plus, equals);
 
                 if (this.selection.length) {
-                    this.selection.deleteEach(minus);
-
-                    // ensure selection always has content
-                    if (this.selection.length === 0 && this.content && this.content.length &&
-                        this.avoidsEmptySelection && !this.allowsMultipleSelection) {
-                        // selection can't contain previous content value as content already changed
-                        this.selection.add(this.content[this.content.length - 1]);
-                    }
+                    this.selection.deleteEach(diff);
                 }
+            }
+
+            // ensure selection always has content
+            if (this.selection.length === 0 && this.content && this.content.length &&
+                this.avoidsEmptySelection && !this.allowsMultipleSelection) {
+                // selection can't contain previous content value as content already changed
+                this.selection.add(this.content[this.content.length - 1]);
             }
         }
     },
@@ -772,7 +834,11 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
             if (this.deselectInvisibleContent && this.selection) {
                 var diff = minus.clone(1);
                 diff.deleteEach(plus);
-                this.selection.deleteEach(minus);
+                //Benoit, checking along with fixing a bug with the same pattern in handleContentRangeChange
+                //This feels wrong we would clone minus to remove what's re-added and still pass minus to
+                //this.selection.deleteEach instead of diff here.
+                //this.selection.deleteEach(minus);
+                this.selection.deleteEach(diff);
             }
         }
     },

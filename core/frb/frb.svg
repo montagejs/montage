@@ -1,0 +1,15 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+
+ <g>
+  <title>Layer 1</title>
+  <text font-weight="bold" stroke="#000000" xml:space="preserve" text-anchor="middle" font-family="Sans-serif" font-size="35" id="svg_15" y="46" x="97" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" fill="#000000">FRB</text>
+  <polygon id="svg_16" points="50.63873291015625,171.42718505859375 40.32281494140625,55.72187805175781 153.67718505859375,55.72187805175781 143.350341796875,171.4090576171875 96.93063354492188,184.27810668945312 " fill="#E44D26"/>
+  <polygon id="svg_17" points="97,174.44155883789062 134.50936889648438,164.04248046875 143.3343505859375,65.1824951171875 97,65.1824951171875 " fill="#F16529"/>
+  <metadata id="svg_32">image/svg+xml</metadata>
+
+  <path stroke="#c4c4c4" fill="#c4c4c4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" stroke-dashoffset="1.1248" id="svg_31" d="m70.06311,130.062714l7.957428,0.038849l21.902374,-38.108368l31.363098,52.265045l3.897583,-7.108917l-35.153961,-59.625076l-29.966522,52.538467z"/>
+  <path stroke="#e2e2e2" fill="#e2e2e2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" stroke-dashoffset="1.1248" id="svg_30" d="m57.81601,137.398987l3.687988,6.947998l69.80899,-0.047974l-31.385986,-52.30101l-3.938995,6.854996l22.72699,38.503998l-60.898987,0.041992z"/>
+  <path stroke="#ffffff" fill="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" stroke-dashoffset="1.1248" id="svg_29" d="m91.487976,77.443695l-33.667297,59.943848l60.903595,-0.0177l-4.311279,-7.284027l-44.385162,0.006256l30.036285,-52.566635l-8.576141,-0.081741z"/>
+ </g>
+</svg>

@@ -23,7 +23,7 @@ log.txt
 atlassian-ide-plugin.xml
 
 ### VisualStudioCode ###
-.vscode/*
+#.vscode/*
 .vscode-upload.json
 .eslintrc.json
 

@@ -1,0 +1,25 @@
+{
+    "converter_descriptor": {
+        "object": "montage/core/converter/converter.mjson"
+    },
+    "root": {
+        "prototype": "montage/core/meta/module-object-descriptor",
+        "values": {
+            "name": "RFC3339UTCRangeStringToRangeConverter",
+            "customPrototype": false,
+            "parent": {
+                "@": "converter_descriptor"
+            },
+            "propertyDescriptors": [],
+            "propertyDescriptorGroups": {},
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/converter/RFC3339UTC-range-string-to-range-converter.mjson"
+            },
+            "exportName": "RFC3339UTCRangeStringToRangeConverter",
+            "module": {
+                "%": "core/converter/RFC3339UTC-range-string-to-range-converter"
+            }
+        }
+    }
+}

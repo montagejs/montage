@@ -1,5 +1,5 @@
 
-var Set = require("montage/collections/set");
+var Set = require("montage/core/collections/set");
 
 describe("test/core/set-spec", function () {
 

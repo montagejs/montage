@@ -13,6 +13,10 @@
 var Target = require("./target").Target,
     Template = require("./template"),
     MontageWindow = require("../window-loader/montage-window").MontageWindow,
+    Criteria = require("core/criteria").Criteria,
+    DataQuery = require("data/model/data-query").DataQuery,
+    UserIdentityService = undefined,
+    UserIdentityManager = require("data/service/user-identity-manager").UserIdentityManager,
     Slot;
 
 require("./dom");
@@ -31,17 +35,6 @@ var FIRST_LOAD_KEY_SUFFIX = "-is-first-load";
  * @extends Target
  */
 var Application = exports.Application = Target.specialize( /** @lends Application.prototype # */ {
-
-    /**
-     * Provides a reference to the Montage event manager used in the
-     * application.
-     *
-     * @property {EventManager} value
-     * @default null
-     */
-    eventManager: {
-        value: null
-    },
 
     /**
      * Provides a reference to the parent application.
@@ -64,6 +57,14 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     isFirstLoad: {
         get: function () {
             return this._isFirstLoad;
+        }
+    },
+
+    url: {
+        get: function() {
+            return document && document.location
+                        ? new URL(document.location)
+                        :  null;
         }
     },
 
@@ -428,6 +429,8 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             ) {
                 this.parentApplication = window.loadInfo.parent.document.application;
             }
+
+            UserIdentityManager.delegate = this;
         }
     },
 
@@ -443,13 +446,85 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             exports.application = self;
 
             return require.async("ui/component").then(function(exports) {
+                var authorizationPromise;
 
-                rootComponent = exports.__root__;
+                self.rootComponent = rootComponent = exports.__root__;
+                if (typeof document !== "undefined") {
+                    rootComponent.element = document;
+                }
+
+
+                /*
+
+                    TODO!!! Modify loading sequence to combine loader -> Authorization Panel -> Main
+
+                    While bringing the login panel up when there's an UpfrontAuthorizationPolicy before loading Main
+                    makes sense from both security and performance stand point, we shouldn't be skipping the loader.
+
+                    We should deserialize the loader, set the authentication panel as loader's Main, show the AuthenticationManager panel,
+                    and then bring the Main in
+                */
+
+                //URGENT: We need to further test that we don't already have a valid Authorization to use before authenticating.
+                return require.async("data/service/user-identity-service");
+            })
+            .then(function(exports) {
+                UserIdentityService = exports.UserIdentityService;
+
+                var userIdentityServices = UserIdentityService.userIdentityServices,
+                    userIdentityObjectDescriptors,
+                    authenticationPromise,
+                    //    userObjectDescriptor = this.
+                    selfUserCriteria,
+                    userIdentityQuery;
+
+                //Temporarily Bypassing authentication:
+                if(userIdentityServices && userIdentityServices.length > 0) {
+                    //Shortcut, there could be multiple one we need to flatten.
+                    userIdentityObjectDescriptors = userIdentityServices[0].types;
+
+                    if(userIdentityObjectDescriptors.length > 0) {
+                        //selfUserCriteria = new Criteria().initWithExpression("identity == $", "self");
+                        userIdentityQuery = DataQuery.withTypeAndCriteria(userIdentityObjectDescriptors[0]);
+
+                        authenticationPromise = self.mainService.fetchData(userIdentityQuery)
+                        .then(function(userIdenties) {
+                            self.userIdentity = userIdenties[0];
+                        });
+
+                    }
+                }
+                else {
+                    //Needs to beef-up the case we have a first anonymous user who could come back later.
+                    authenticationPromise = Promise.resolve(true);
+                }
+
+                return authenticationPromise.finally(function() {
+                    // if (typeof document !== "undefined") {
+                    //     rootComponent.element = document;
+                    // }
+
+                    if (typeof document !== "undefined") {
+                        return Template.instantiateDocument(document, applicationRequire);
+                    }
+
+                });
+
+
+/*
 
                 if (typeof document !== "undefined") {
                     rootComponent.element = document;
-                    return Template.instantiateDocument(document, applicationRequire);
                 }
+
+                return authorizationPromise.then(function(authorization) {
+                    if (typeof document !== "undefined") {
+                        return Template.instantiateDocument(document, applicationRequire);
+                    }
+                }, function(error) {
+                    console.error(error);
+                });
+                */
 
             }).then(function (part) {
                 self.callDelegateMethod("willFinishLoading", self);
@@ -462,6 +537,8 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
         }
     },
 
+    //This should be replaced by a more robust user / session system with opt-in/delegate/configured
+    //from the outside.
     _loadApplicationContext: {
         value: function () {
             if (this._isFirstLoad === null) {
@@ -471,7 +548,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
 
                 if (typeof localStorage !== "undefined") {
                     localStorage.getItem(alreadyLoadedLocalStorageKey);
-                
+
                     if (hasAlreadyBeenLoaded === null) {
                         try {
                             localStorage.setItem(alreadyLoadedLocalStorageKey, true);
@@ -513,15 +590,17 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     /**
      * @private
      */
-    _createPopupSlot: {value: function (zIndex) {
+    _createPopupSlot: {value: function (zIndex, className) {
         var slotEl = document.createElement('div');
         document.body.appendChild(slotEl);
         slotEl.style.zIndex = zIndex;
         slotEl.style.position = 'absolute';
+        slotEl.classList.add(className);
 
         var popupSlot = new Slot();
+        popupSlot.delegate = this;
         popupSlot.element = slotEl;
-        popupSlot.attachToParentComponent();
+        //popupSlot.attachToParentComponent();
         return popupSlot;
     }},
 
@@ -533,19 +612,22 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             .then(function (exports) {
                 Slot = Slot || exports.Slot;
                 type = type || "custom";
-                var isSystemPopup = self._isSystemPopup(type), zIndex, popupSlot;
+                var isSystemPopup = self._isSystemPopup(type), zIndex, popupSlot, className;
                 self.popupSlots = self.popupSlots || {};
 
                 if(isSystemPopup) {
                     switch (type) {
                         case "alert":
                             zIndex = 19004;
+                            className = "montage-alert";
                             break;
                         case "confirm":
                             zIndex = 19003;
+                            className = "montage-confirm";
                             break;
                         case "notify":
                             zIndex = 19002;
+                            className = "montage-notify";
                             break;
                     }
                 } else {
@@ -556,15 +638,24 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                         self._zIndex = self._zIndex + 1;
                     }
                     zIndex = self._zIndex;
+                    className = self.name;
+                    className += "-";
+                    className += type;
                 }
 
                 popupSlot = self.popupSlots[type];
                 if (!popupSlot) {
-                    popupSlot = self.popupSlots[type] = self._createPopupSlot(zIndex);
+                    popupSlot = self.popupSlots[type] = self._createPopupSlot(zIndex, className);
                 }
+
+                if(!popupSlot.inDocument) {
+                    self.rootComponent.addChildComponent(popupSlot);
+                }
+
                 // use the new zIndex for custom popup
                 if(!isSystemPopup) {
-                    popupSlot.element.style.zIndex = zIndex;
+                  //Benoit: Modifying DOM outside of draw loop here, though it's early...
+                  popupSlot.element.style.zIndex = zIndex;
                 }
 
                 popupSlot.content = content;
@@ -584,6 +675,17 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
         }
 
     }},
+
+    slotDidSwitchContent: {
+        value: function (slot) {
+            if(slot.content === null) {
+                slot.detachFromParentComponent();
+                //Benoit: can't believe we have to do that in 2 steps....
+                slot.element.parentNode.removeChild(slot.element);
+
+            }
+        }
+    },
 
     /**
      * @private

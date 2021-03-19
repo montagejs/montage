@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - "4.8.0"
+script: npm run $COMMAND
+env:
+  - COMMAND=test
+  - COMMAND=test:karma
+notifications:
+  irc:
+    channels:
+      - "chat.freenode.net#montage"
+    on_success: false
+    template:
+      - "%{author} broke the %{repository} tests on %{branch}: %{build_url}"

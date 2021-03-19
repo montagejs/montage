@@ -7,7 +7,7 @@ global.XMLHttpRequest = require('xhr2');
 // Init
 var jasmine = jasmineRequire.core(jasmineRequire);
 var jasmineEnv = jasmine.getEnv();
-    
+
 // Export interface
 var jasmineInterface = jasmineRequire.interface(jasmine, jasmineEnv);
 global.jasmine = jasmine;
@@ -16,17 +16,17 @@ for (var property in jasmineInterface) {
     if (jasmineInterface.hasOwnProperty(property)) {
        global[property] = jasmineInterface[property];
     }
-} 
+}
 
 // Default reporter
 jasmineEnv.addReporter(jasmineInterface.jsApiReporter);
 
 // Html reporter
 var consoleReporter = new JasmineConsoleReporter({
-    colors: 1,         
-    cleanStack: 1,      
-    verbosity: 4,        
-    listStyle: 'indent', 
+    colors: 1,
+    cleanStack: 1,
+    verbosity: 4,
+    listStyle: 'indent',
     activity: false
 });
 jasmineEnv.addReporter(consoleReporter);

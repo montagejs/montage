@@ -235,7 +235,7 @@ describe("An Expression Data Mapping", function() {
     it("properly registers the object descriptor type to the mapping object in a service", function (done) {
         return registrationPromise.then(function () {
             expect(movieService.parentService).toBe(mainService);
-            expect(movieService.mappingWithType(movieObjectDescriptor)).toBe(movieMapping);
+            expect(movieService.mappingForType(movieObjectDescriptor)).toBe(movieMapping);
             done();
         });
     });

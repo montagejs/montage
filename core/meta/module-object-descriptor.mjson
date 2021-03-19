@@ -1,0 +1,76 @@
+{
+    "module_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "module",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "mandatory": true,
+            "valueType": "object",
+            "valueObjectPrototypeName": "ModuleReference",
+            "valueObjectModuleId": "core/module-reference",
+            "helpKey": ""
+        }
+    },
+    "exportName_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "exportName",
+            "objectDescriptor": { "@": "root" },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+    "object_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "object",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "mandatory": true,
+            "valueType": "object",
+            "helpKey": ""
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "ModuleObjectDescriptor",
+            "customPrototype": false,
+            "propertyDescriptors": [
+                {
+                    "@": "module_descriptor"
+                },
+                {
+                    "@": "exportName_descriptor"
+                },
+                {
+                    "@": "object_descriptor"
+                }
+            ],
+            "propertyDescriptorGroups": {
+                "associations": [
+                    {
+                        "@": "module_descriptor"
+                    },
+                    {
+                        "@": "exportName_descriptor"
+                    },
+                    {
+                        "@": "object_descriptor"
+                    }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/meta/module-object-descriptor.mjson"
+            },
+            "exportName": "ModuleObjectDescriptor",
+            "module": {
+                "%": "core/meta/module-object-descriptor"
+            }
+        }
+    }
+}

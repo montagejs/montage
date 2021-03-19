@@ -5,8 +5,8 @@ var PersistentDataService = require("data/service/persistent-data-service").Pers
     uuid = require("core/uuid"),
     DataOrdering = require("data/model/data-ordering").DataOrdering,
     DESCENDING = DataOrdering.DESCENDING,
-    evaluate = require("frb/evaluate"),
-    Map = require("collections/map"),
+    evaluate = require("core/frb/evaluate"),
+    Map = require("core/collections/map"),
     OfflineService;
 /**
  * TODO: Document

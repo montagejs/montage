@@ -2,7 +2,7 @@ var Montage = require("../../core").Montage,
     MontageReviver = require("./montage-reviver").MontageReviver,
     Promise = require("../../promise").Promise,
     deprecate = require("../../deprecate"),
-    Set = require("collections/set"),
+    Set = require("../../collections/set"),
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
     TWO_WAY = "<->";
@@ -47,26 +47,25 @@ var MontageInterpreter = Montage.specialize({
                 locationId,
                 locationDesc,
                 module,
-                promises = [];
+                promises = [],
+                i, keys, label;
 
-            for (var label in serialization) {
-                if (serialization.hasOwnProperty(label)) {
-                    object = serialization[label];
-                    locationId = object.prototype || object.object;
+            for (i =0, keys = Object.keys(serialization);(label = keys[i]); i++) {
+                object = serialization[label];
+                locationId = object.prototype || object.object;
 
-                    if (locationId) {
-                        if (typeof locationId !== "string") {
-                            throw new Error(
-                                "Property 'object' of the object with the label '" +
-                                label + "' must be a module id"
-                            );
-                        }
-                        locationDesc = MontageReviver.parseObjectLocationId(locationId);
-                        module = moduleLoader.getModule(
-                            locationDesc.moduleId, label);
-                        if (Promise.is(module)) {
-                            promises.push(module);
-                        }
+                if (locationId) {
+                    if (typeof locationId !== "string") {
+                        throw new Error(
+                            "Property 'object' of the object with the label '" +
+                            label + "' must be a module id"
+                        );
+                    }
+                    locationDesc = MontageReviver.parseObjectLocationId(locationId);
+                    module = moduleLoader.getModule(
+                        locationDesc.moduleId, label);
+                    if (Promise.is(module)) {
+                        promises.push(module);
                     }
                 }
             }
@@ -106,13 +105,21 @@ var MontageContext = Montage.specialize({
             this._objects = Object.create(null);
 
             if (objects) {
-                this._userObjects = Object.create(null);
+                this._userObjects = objects;
+                /*
+                    #PERF
+                    Benoit Performance Improvement:
+                    this._userObjects is used for lookup, it's never changed,
+                    therefore there's no reason to create a new object,
+                    and loop over it to copy the data over, just use it.
+                */
+                // this._userObjects = Object.create(null);
 
-                /* jshint forin: true */
-                for (var label in objects) {
-                /* jshint forin: false */
-                    this._userObjects[label] = objects[label];
-                }
+                // /* jshint forin: true */
+                // for (var label in objects) {
+                // /* jshint forin: false */
+                //     this._userObjects[label] = objects[label];
+                // }
             }
 
             this._element = element;
@@ -138,15 +145,12 @@ var MontageContext = Montage.specialize({
 
     getObject: {
         value: function(label) {
-            var serialization = this._serialization,
-                reviver = this._reviver,
-                objects = this._objects,
-                object, notFoundError;
+            var objects = this._objects;
 
             if (label in objects) {
                 return objects[label];
-            } else if (label in serialization) {
-                object = reviver.reviveRootObject(serialization[label], this, label);
+            } else if (label in this._serialization) {
+                var object = this._reviver.reviveRootObject(this._serialization[label], this, label);
                 // If no object has been set by the reviver we safe its
                 // return, it could be a value or a promise, we need to
                 // make sure the object won't be revived twice.
@@ -156,7 +160,7 @@ var MontageContext = Montage.specialize({
 
                 return object;
             } else {
-                notFoundError = new Error("Object with label '" + label + "' was not found.");
+                var notFoundError = new Error("Object with label '" + label + "' was not found.");
                 if (this._isSync) {
                     throw notFoundError;
                 } else {
@@ -278,8 +282,7 @@ var MontageContext = Montage.specialize({
                         value = values[key];
 
                         //An expression based property
-                        if ((typeof value === "object" && value &&
-                            Object.keys(value).length === 1 &&
+                        if (value && (typeof value === "object" &&
                             (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) ||
                             key.indexOf('.') > -1
                         ) {

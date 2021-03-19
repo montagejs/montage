@@ -1967,8 +1967,8 @@ var Montage = require("../core").Montage,
             }
 
             var expression = !!(this.days && this.days !== null || this.orient || this.operator);
-            var temp; 
-            
+            var temp;
+
             var gap, mod, orient;
             orient = ((this.orient === "past" || this.operator === "subtract") ? -1 : 1);
 
@@ -2561,7 +2561,7 @@ var DateConverter = exports.DateConverter = Converter.specialize(/** @lends Date
     convert: {
         value: function (v) {
             var t = typeof v;
-            if (isDate(v) || t === "string" || t === "number") {
+            if (isDate(v) || (t === "string" && v.length) || t === "number") {
                 return formatDate(v, this.pattern);
             }
             return v;

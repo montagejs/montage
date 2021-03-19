@@ -6,7 +6,7 @@
  * @requires collections/map
  */
 var Component = require("../component").Component,
-    Map = require("collections/map");
+    Map = require("core/collections/map");
 
 /**
  * @class AbstractControl

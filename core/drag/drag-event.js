@@ -123,6 +123,15 @@ if (typeof window !== "undefined") {
             value: false
         },
 
+        /**
+         * Shortcut to this.data.set('application/object',anObject)
+         *
+         * Used to move/copy by reference an application object from
+         * one place in the application to another.
+         *
+         * @property {Object}
+         */
+
         draggedObject: {
             set: function (object) {
                 this._data.set(OBJECT_MIME_TYPE, object);
@@ -307,7 +316,7 @@ if (typeof window !== "undefined") {
         });
 
     exports.DragEvent = MutableEvent.specialize({
-    
+
         type: {
             value: "drag"
         },

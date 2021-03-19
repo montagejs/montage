@@ -1,0 +1,43 @@
+language: node_js
+cache:
+  directories:
+    - node_modules
+node_js:
+  - "10"
+  - "8"
+  - "6"
+  - "4"
+script: npm run $COMMAND
+env:
+- COMMAND=test
+- COMMAND=test:karma
+- COMMAND=integration MR_VERSION=. MOP_VERSION=latest
+- COMMAND=integration MR_VERSION=. MOP_VERSION="#master"
+- COMMAND=integration MR_VERSION=. MOP_VERSION="18.0.0"
+jobs:
+    include:
+      - stage: lint
+        node_js: 9
+        env:
+        script: npm run lint
+      - stage: deploy
+        node_js: 4
+        script: skip
+        env:
+        deploy:
+            provider: npm
+            email: "${NPM_EMAIL}"
+            api_key: "${NPM_API_KEY}"
+            on:
+                tags: true
+stages:
+  - lint
+  - test
+  - deploy
+notifications:
+  irc:
+    channels:
+      - "chat.freenode.net#montage"
+    on_success: false
+    template:
+      - "%{author} broke the %{repository} tests on %{branch}: %{build_url}"

@@ -1,6 +1,6 @@
 var Montage = require("../../core").Montage,
     MontageReviver = require("./montage-reviver").MontageReviver,
-    parse = require("frb/parse");
+    parse = require("core/frb/parse");
 
 var SerializationExtractor = Montage.specialize( {
     _serialization: {value: null},
@@ -99,7 +99,7 @@ var SerializationExtractor = Montage.specialize( {
                 if (unitSerialization.hasOwnProperty(propertyName)) {
                     binding = unitSerialization[propertyName];
                     sourcePath = binding["<-"] || binding["<->"];
-                    this._collectLabelsInBindingPath(sourcePath, labels);   
+                    this._collectLabelsInBindingPath(sourcePath, labels);
                 }
             }
         }

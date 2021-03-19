@@ -1,0 +1,22 @@
+{
+    "date": {
+        "object": "global[Date]"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "Date",
+            "propertyDescriptors": [
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "core/date.mjson" },
+            "exportName": "Date",
+            "module": { "%": "global" },
+            "object":{ "@": "date" }
+        }
+    }
+}

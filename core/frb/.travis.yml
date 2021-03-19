@@ -1,0 +1,19 @@
+language: node_js
+node_js:
+  - "10.16.2"
+script: npm run $COMMAND
+env:
+  - CXX=g++-4.8 COMMAND=test
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+notifications:
+  irc:
+    channels:
+      - "chat.freenode.net#montage"
+    on_success: false
+    template:
+      - "%{author} broke the %{repository} tests on %{branch}: %{build_url}"

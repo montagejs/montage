@@ -5,7 +5,7 @@
 var Component = require("../component").Component,
     TreeNode = require("../../core/tree-controller").TreeNode,
     TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
-    WeakMap = require("collections/weak-map");
+    WeakMap = require("core/collections/weak-map");
 
 
 var PLACEHOLDER_POSITION = {
@@ -766,7 +766,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
     _getPlaceholderPositionOnTreeNode: {
         value: function (treeNode, pointerPositionX, pointerPositionY, canBeOver) {
             var treeNodeElement = this._findTreeNodeElementWithNode(treeNode),
-                placeholderRect = this._placeholderBoundingClientRect,    
+                placeholderRect = this._placeholderBoundingClientRect,
                 rowRect = treeNodeElement.getBoundingClientRect(),
                 thresholdHeight = this._placeholderThreshold,
                 maxBottom = rowRect.bottom + thresholdHeight,
@@ -781,7 +781,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
             } else if (pointerPositionY >= minTop && pointerPositionY <= maxTop) {
                 return PLACEHOLDER_POSITION.BEFORE_NODE;
             }
-            
+
             return PLACEHOLDER_POSITION.OVER_NODE;
         }
     },
@@ -822,7 +822,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                         treeNodeOverDataObject = treeNodeOver.data,
                         nodeOverAcceptChild = this._nodeAcceptChild(treeNodeOver),
                         overNodeIndex = -1;
-                    
+
                     this._placerholderPosition = this._getPlaceholderPositionOnTreeNode(
                         treeNodeOver,
                         positionX,
@@ -928,7 +928,7 @@ var TreeList = exports.TreeList = Component.specialize(/** @lends TreeList.proto
                 drawnIterations = this.repetition._drawnIterations,
                 rootCondition, marginTop, object, iteration, element,
                 rowHeight, i, length;
-            
+
             this.element.classList.add(TreeList.PLACEHOLDER_OVER);
 
             for (i = 0, length = drawnIterations.length; i < length; i++) {

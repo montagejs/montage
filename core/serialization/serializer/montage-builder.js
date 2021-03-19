@@ -128,7 +128,7 @@ var MontageBuilder = Montage.specialize(/** @lends MontageBuilder# */ {
                 if (Object.hasOwnProperty.call(references, label)) {
                     if (!root.hasProperty(label)) {
                         root.setProperty(label, this._placeholderProperty);
-                    }   
+                    }
                 }
             }
         }
@@ -197,6 +197,12 @@ var MontageBuilder = Montage.specialize(/** @lends MontageBuilder# */ {
     createString: {
         value: function(string) {
             return new MontageAst.Value(this._root, string);
+        }
+    },
+
+    createDate: {
+        value: function(date) {
+            return new MontageAst.DateObject(this._root, date);
         }
     },
 

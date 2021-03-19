@@ -34,7 +34,7 @@ var Montage = require("montage").Montage,
     Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     deserialize = require("montage/core/serialization/deserializer/montage-deserializer").deserialize,
     Alias = require("montage/core/serialization/alias").Alias,
-    Bindings = require("montage/frb"),
+    Bindings = require("montage/core/frb/bindings"),
     Promise = require("montage/core/promise").Promise,
     objects = require("spec/serialization/testobjects-v2").objects;
 
@@ -1296,7 +1296,7 @@ describe("serialization/montage-deserializer-spec", function () {
         serializationString = JSON.stringify(serialization);
 
         deserializer.init(serializationString, require);
-        deserializer.deserialize(serializationString).then(function (objects) {
+        deserializer.deserialize().then(function (objects) {
             expect(objects.a).toBe(null);
         }).catch(function(reason) {
             fail(reason);
@@ -1341,6 +1341,66 @@ describe("serialization/montage-deserializer-spec", function () {
     });
 
     describe("deserialization", function() {
+        it("should deserialize native types", function (done) {
+            var expectedResult = {
+                    string: "string",
+                    date: new Date('05 October 2011 14:48 UTC'),
+                    number: 42,
+                    regexp: /regexp/gi,
+                    array: [1, 2, 3],
+                    boolean: true,
+                    nil: null
+                },
+                expectedSerialization,
+                deserializer,
+                serializationString;
+
+            expectedResult.object = expectedResult;
+
+            serializationString = {
+                object: {
+                    value: {
+                        string: "string",
+                        date: "2011-10-05T14:48:00.000Z",
+                        number: 42,
+                        regexp: {"/": {source: "regexp", flags: "gi"}},
+                        array: {"@": "array"},
+                        boolean: true,
+                        nil: null,
+                        object: {"@": "object"}
+                    }
+                },
+                array: {
+                    value: [1, 2, 3]
+                },
+                string: {
+                    value: "string"
+                },
+                date: {
+                    value: "2011-10-05T14:48:00.000Z"
+                },
+                number: {
+                    value: 42
+                },
+                regexp: {
+                    value: {"/": {source: "regexp", flags: "gi"}}
+                },
+                boolean: {
+                    value: true
+                },
+                nil: {
+                    value: null
+                }
+            };
+
+            deserializer = new Deserializer().init(serializationString, require);
+            deserializer.deserialize().then(function(objects) {
+                expect(objects).toEqual(jasmine.objectContaining(expectedResult));
+            }).finally(function () {
+                done();
+            });
+        });
+
         it("should deserialize a serialization string", function(done) {
             var serialization = {
                     "string": {

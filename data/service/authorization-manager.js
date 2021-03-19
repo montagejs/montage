@@ -1,7 +1,7 @@
 var Montage = require("core/core").Montage,
     Promise = require("core/promise").Promise,
-    Map = require("collections/map"),
-    Set = require("collections/set"),
+    Map = require("core/collections/map"),
+    Set = require("core/collections/set"),
     application = require("core/application").application,
     AuthorizationPolicy = require("data/service/authorization-policy").AuthorizationPolicy,
     MANAGER_PANEL_MODULE = "ui/authorization-manager-panel.reel";
@@ -139,7 +139,7 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
                  suffix = "Provider",
                  methodName = prefix + suffix;
 
-            
+
             if (!this._isValidFunction(dataService, methodName)) {
                 methodName = prefix + legacySuffix;
                 if (!this._isValidFunction(dataService, methodName)) {
@@ -217,7 +217,7 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
             var self = this,
                 managerPanel,
                 result = null;
-            
+
             self._pendingServices.add(provider.identifier);
             return this._managerPanel().then(function (authManagerPanel) {
                 managerPanel = authManagerPanel;
@@ -325,17 +325,17 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
                     return Promise.all(authorizationPromises);
                 } else if (dataService.authorizationPolicy === AuthorizationPolicy.ON_DEMAND && !didFailAuthorization) {
                     return Promise.resolve(null);
-                } else {                
+                } else {
                     return self._notifyDataService(dataService).then(function () {
                         authorizationPromises = self._authorizationsForDataService(dataService, true);
                         var useModal = application && application.applicationModal && self.authorizationManagerPanel.runModal;
-                  
-                        
+
+
                         return useModal ? self.authorizationManagerPanel.runModal() : Promise.all(authorizationPromises);
                     }).then(function(authorizations) {
                         self.callDelegateMethod("authorizationManagerDidAuthorizeService", self, dataService);
                         //TODO [TJ] Concatenate authorizations from different auth services
-                        //TODO      into a single Authorization Object for the data-service. 
+                        //TODO      into a single Authorization Object for the data-service.
                         //TODO      Allow a DataService to require only one of it's auth
                         //TODO      services
                         return authorizations;
@@ -377,7 +377,7 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
                 dataServiceInfo = Montage.getInfoForObject(dataService),
                 require = dataServiceInfo.require,
                 promise = null;
-            
+
             if (this._authorizationsByProviderModuleID.has(moduleID)) {
                 promise = this._authorizationsByProviderModuleID.get(moduleID);
             } else if (requestIfAbsent) {
@@ -474,9 +474,9 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
             return result;
         }
     },
-    
 
-    // AuthorizationService is responsible for propagating the logOut to  
+
+    // AuthorizationService is responsible for propagating the logOut to
     // the Authorization objects
     _clearAuthorizationForProvider: {
         value: function (provider) {
@@ -504,7 +504,7 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
         value: function (target, source) {
             var iterator = source && source.values(),
                 item;
-            
+
             while (iterator && (item = iterator.next().value)) {
                 target.add(item);
             }

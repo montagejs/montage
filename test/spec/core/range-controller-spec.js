@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage;
 var RangeController = require("montage/core/range-controller").RangeController;
-var Set = require("montage/collections/set");
+var Set = require("montage/core/collections/set");
 
 describe("core/range-controller-spec", function () {
     var rangeController;

@@ -5,8 +5,8 @@ var RawDataService = require("data/service/raw-data-service").RawDataService,
     uuid = require("core/uuid"),
     DataOrdering = require("data/model/data-ordering").DataOrdering,
     DESCENDING = DataOrdering.DESCENDING,
-    evaluate = require("frb/evaluate"),
-    Map = require("collections/map"),
+    evaluate = require("core/frb/evaluate"),
+    Map = require("core/collections/map"),
     PersistentDataService, OfflineService;
 
 /* global Dexie */

@@ -1,0 +1,49 @@
+{
+    "converter_descriptor": {
+        "object": "core/converter/converter.mjson"
+    },
+    "keysConverter": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "keysConverter",
+            "valueType": "object",
+            "valueDescriptor": {"@": "converter_descriptor"},
+            "helpKey": ""
+        }
+    },
+    "valuesConverter": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "valuesConverter",
+            "valueType": "object",
+            "valueDescriptor": {"@": "converter_descriptor"},
+            "helpKey": ""
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "KeyValueArrayToMapConverter",
+            "customPrototype": false,
+            "parent": {"@": "converter_descriptor"},
+            "propertyDescriptors": [
+                {"@": "keysConverter"},
+                {"@": "valuesConverter"}
+            ],
+            "propertyDescriptorGroups": {
+                "arrayToMapConverter": [
+                    {"@": "keysConverter"},
+                    {"@": "valuesConverter"}
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/converter/key-value-array-to-map-converter.mjson"
+            },
+            "exportName": "KeyValueArrayToMapConverter",
+            "module": {
+                "%": "core/converter/key-value-array-to-map-converter"
+            }
+        }
+    }
+}

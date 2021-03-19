@@ -5,7 +5,7 @@
  */
 var Component = require("../component").Component,
     Url = require("../../core/mini-url"),
-    Map = require("collections/map");
+    Map = require("core/collections/map");
 
     if (typeof window !== "undefined") { // client-side
         Map = window.Map || Map;

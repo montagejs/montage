@@ -3,8 +3,8 @@
     "version": "0.0.0",
     "mappings": {
         "montage": "../",
-        "montage-testing": "../node_modules/montage-testing",
-        "collections": "../node_modules/collections",
+        "ical.js": "../node_modules/ical.js",
+        "montage-testing": "../testing",
         "package-a": {
             "name": "package-a",
             "location": "package-a"

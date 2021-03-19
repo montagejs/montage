@@ -1,0 +1,10 @@
+{
+    "name": "temperature-converter.reel",
+    "version": "0.0.0",
+    "dependencies": {
+        "frb": "*"
+    },
+    "devDependencies": {
+        "mr": "*"
+    }
+}

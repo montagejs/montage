@@ -1,4 +1,7 @@
-var Montage = require("../../core").Montage;
+var Montage = require("../../core").Montage,
+Set = require("../../collections/set");
+
+require("../../extras/date");
 
 var MontageWalker = exports.MontageWalker = Montage.specialize({
     _visitHandler: {value: null},
@@ -9,19 +12,25 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
         value: function Malker(visitHandler, legacyMode) {
             this._visitHandler = visitHandler;
             this.legacyMode = !!legacyMode;
-            this._enteredObjects = {};
+            this._enteredObjects = new Set();
+        }
+    },
+
+    cleanup: {
+        value: function() {
+            this._enteredObjects.clear();
         }
     },
 
     _isObjectEntered: {
         value: function(object) {
-            return Object.hash(object) in this._enteredObjects;
+            return this._enteredObjects.has(object);
         }
     },
 
     _markObjectAsEntered: {
         value: function(object) {
-            this._enteredObjects[Object.hash(object)] = true;
+            this._enteredObjects.add(object);
         }
     },
 
@@ -40,6 +49,8 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
                 return "regexp";
             } else if (value === null) {
                 return "null";
+            } else if(Date.isValidDate(value)) {
+                return "date";
             } else if (typeof value === "object" || typeof value === "function") {
                 return this._getObjectType(value);
             } else {
@@ -69,7 +80,10 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
         value: function(value, name) {
             var type = this._getTypeOf(value);
 
-            if (type === "object") {
+            //Happens often so let's do that first
+            if (type === "MontageObject") {
+                this._visitCustomType(type, value, name);
+            } else if (type === "object") {
                 this._visitObject(value, name);
             } else if (type === "array") {
                 this._visitArray(value, name);
@@ -77,6 +91,8 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
                 this._visitRegExp(value, name);
             } else if (type === "number") {
                 this._visitNumber(value, name);
+            } else if (type === "date") {
+                this._visitDate(value, name);
             } else if (type === "string") {
                 this._visitString(value, name);
             } else if (type === "boolean") {
@@ -176,6 +192,12 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
         }
     },
 
+    _visitDate: {
+        value: function(date, name) {
+            this._callVisitorMethod("visitDate", date, name);
+        }
+    },
+
     _visitNumber: {
         value: function(number, name) {
             this._callVisitorMethod("visitNumber", number, name);
@@ -206,13 +228,28 @@ var MontageWalker = exports.MontageWalker = Montage.specialize({
                 args;
 
             if (typeof visitor[methodName] === "function") {
-                args = Array.prototype.slice.call(arguments, 1);
-                // the first parameter of the handler function is always the malker
-                args.unshift(this);
 
-                return visitor[methodName].apply(
-                    visitor,
-                    args);
+                if(arguments.length === 3) {
+                    visitor[methodName].call(
+                        visitor, this, arguments[1], arguments[2]);
+                }
+                else if(arguments.length === 2) {
+                    visitor[methodName].call(
+                        visitor, this, arguments[1]);
+                }
+                else if(arguments.length === 1) {
+                        visitor[methodName].call(
+                            visitor, this);
+                }
+                else {
+                    args = Array.prototype.slice.call(arguments, 1);
+                    // the first parameter of the handler function is always the malker
+                    args.unshift(this);
+
+                    return visitor[methodName].apply(
+                        visitor,
+                        args);
+                }
             }
         }
     }

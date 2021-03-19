@@ -4,9 +4,11 @@ var DataProvider = require("data/service/data-provider").DataProvider,
     DataQuery = require("data/model/data-query").DataQuery,
     Promise = require("core/promise").Promise,
     deprecate = require("core/deprecate"),
-    parse = require("frb/parse"),
-    Scope = require("frb/scope"),
-    compile = require("frb/compile-evaluator");
+    parse = require("core/frb/parse"),
+    Scope = require("core/frb/scope"),
+    compile = require("core/frb/compile-evaluator"),
+    DataOperation = require("data/service/data-operation").DataOperation,
+    DataStream;
 
 /**
  * A [DataProvider]{@link DataProvider} whose data is received sequentially.
@@ -41,7 +43,7 @@ var DataProvider = require("data/service/data-provider").DataProvider,
  * @extends DataProvider
  *
  */
-exports.DataStream = DataProvider.specialize(/** @lends DataStream.prototype */ {
+DataStream = exports.DataStream = DataProvider.specialize(/** @lends DataStream.prototype */ {
 
     /***************************************************************************
      * Basic properties
@@ -52,8 +54,27 @@ exports.DataStream = DataProvider.specialize(/** @lends DataStream.prototype */ 
      *
      * @type {DataQuery}
      */
-    query: {
+    _query: {
         value: undefined
+    },
+    query: {
+        get: function () {
+            return this._query;
+        },
+        set: function (value) {
+            this._query = value;
+
+            //This will enable a better undertanding of what type of data is coming
+            //for objects using UserInterfaceDescriptors like the CascadingList
+            if(value && value.type) {
+                Object.defineProperty(this.data,"objectDescriptor", {
+                    value: value.type,
+                    enumerable: false,
+                    configurable: true
+                });
+                // this.data.objectDescriptor = value.type;
+            }
+        }
     },
 
     /**
@@ -95,6 +116,9 @@ exports.DataStream = DataProvider.specialize(/** @lends DataStream.prototype */ 
      * [DataProvider]{@link DataProvider} superclass. Calling this method has
      * no effect as data will come in the order in which it is added to the
      * stream and this order cannot be changed.
+     *
+     * TODO: this method should be used to fulfill undefined spots in an array
+     * or an iterative batch.
      *
      * @method
      * @argument {int} start  - See [superclass]{@link DataProvider#requestData}.
@@ -199,6 +223,36 @@ exports.DataStream = DataProvider.specialize(/** @lends DataStream.prototype */ 
         }
     },
 
+
+    thenForEach: {
+        value: function (onFulfilled, onRejected) {
+            this._dataBatchPromises = [];
+            this.query._doesBatchResults = true;
+            this._forEachFulilledBatch = onFulfilled;
+            //return this._promise.then(onFulfilled, onRejected);
+            return this._promise;
+
+            // var self = this;
+            // if (typeof this.__forEachPromise === "function") {
+            //     this.__forEachPromise= this.__forEachPromise();
+            // } else if (!this.__forEachPromise) {
+            //     this.__forEachPromise = new Promise(function(resolve, reject) {
+            //         self._forEachPromiseResolve = resolve;
+            //         self._forEachPromiseReject = reject;
+            //     });
+            // }
+
+            // this._thenForEachFulfilled = onFulfilled;
+            // this._thenForEachRejected = onRejected;
+
+
+            // return this.__promise;
+
+            // return this._forEachPromise.then(onFulfilled, onRejected);
+        }
+    },
+
+
     /**
      * Method of the [Promise]{@linkcode external:Promise} class used to
      * kick off additional processing when an error has been encountered.
@@ -238,8 +292,12 @@ exports.DataStream = DataProvider.specialize(/** @lends DataStream.prototype */ 
             var data = objects;
 
             if (this.dataExpression && objects) {
+                //#PERFORMANCE
+                //We shpuldn't be creating a Scope every time, but reusing one
+                //and set its value
                 data = this._compiledDataExpression(new Scope(objects));
             }
+
 
             if (data && Array.isArray(data)) {
                 this.data.push.apply(this.data, data);
@@ -262,6 +320,89 @@ exports.DataStream = DataProvider.specialize(/** @lends DataStream.prototype */ 
             this._resolve(this.data);
             delete this._resolve;
             delete this._reject;
+        }
+    },
+
+    //Experimental with Shopify first, _hasNextPage is Shopify specific
+    //It is set on the stream by the RawDataServie before calling batchDataDone on the stream
+    hasPendingData: {
+        get: function() {
+            return this.hasOwnProperty("_hasNextPage") && this._hasNextPage;
+        }
+    },
+
+    _batchCount: {
+        value: 0
+    },
+
+    _dataBatchPromises: {
+        value: 0
+    },
+
+    /**
+     * To be called when a batch of data expected by this stream has been added
+     * to its [data]{@link DataStream#data} array.
+     *
+     * TODO: an argument should be passed to dataBatchDone, and it should be a ReadUpdated operation
+     * That operation should have properties like the stream, the results, the batch size, the batch number
+     * (3rd one since the beginning if we don't know the full size, which could change at any time), etc...
+     * That read operation would then be passed to thenForEach(function(readUpdatedOperation){...}).then(...)
+     *
+     * @method
+     */
+    dataBatchDone: {
+        value: function (readUpdatedOperation) {
+            var batchCallResult;
+            this._batchCount++;
+
+            //This is probably should come from lower layers, the RawDataService in the Worker, but until then:
+            if(!readUpdatedOperation) {
+                var readUpdatedOperation = new DataOperation();
+                readUpdatedOperation.type = DataOperation.Type.ReadUpdatedOperation;
+                readUpdatedOperation.objectDescriptor = readUpdatedOperation.dataType = this.query.type;
+                readUpdatedOperation.cursor = this._cursor;
+                readUpdatedOperation.batchSize = this.query.batchSize;
+                readUpdatedOperation.batchCount = this._batchCount;
+                //FIXME, when we get a readUpdatedOperation from bellow, it should have the
+                //batch in it and we shouldn't have to slice the full array here
+                readUpdatedOperation.data = this.data.slice(this._lastBatchIndex);
+            }
+
+            //Kick starts the request for the next batch:
+            if(this.hasPendingData) {
+                var readUpdateOperation = new DataOperation();
+                readUpdateOperation.type = DataOperation.Type.ReadUpdateOperation;
+                readUpdateOperation.objectDescriptor = readUpdateOperation.dataType = this.query.type;
+                readUpdateOperation.cursor = this._cursor;
+                readUpdateOperation.batchSize = this.query.batchSize;
+
+
+                //When we have a first read operation that corresponds to the query, we need to set it as the referrer:
+                //readUpdateOperation.referrer = this.readOperation
+                readUpdateOperation.referrer = this;
+                DataStream.DataService.mainService.readData(readUpdateOperation, this);
+            }
+
+            //Deliver the current batch
+            batchCallResult = this._forEachFulilledBatch(readUpdatedOperation);
+            if(Promise.is(batchCallResult)) {
+                this._dataBatchPromises.push(batchCallResult);
+            }
+
+            if(!this.hasPendingData) {
+                if(this._dataBatchPromises.length) {
+                    var self = this;
+                    Promise.all(this._dataBatchPromises)
+                    .then(function(success) {
+                        self.dataDone();
+                    },function(error) {
+                        self.dataError(error);
+                    } );
+                }
+                else {
+                    this.dataDone();
+                }
+            }
         }
     },
 

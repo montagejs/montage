@@ -1,12 +1,13 @@
 var Montage = require("../core").Montage,
+    Target = require("core/target").Target,
     DerivedDescriptor = require("./derived-descriptor").DerivedDescriptor,
     EventDescriptor = require("./event-descriptor").EventDescriptor,
-    Map = require("collections/map"),
+    Map = require("../collections/map"),
     ModelModule = require("./model"),
     Promise = require("../promise").Promise,
     PropertyDescriptor = require("./property-descriptor").PropertyDescriptor,
     PropertyValidationRule = require("./validation-rule").PropertyValidationRule,
-    Set = require("collections/set"),
+    Set = require("../collections/set"),
     deprecate = require("../deprecate");
 
 
@@ -17,9 +18,9 @@ var Defaults = {
 
 /**
  * @class ObjectDescriptor
- * @extends Montage
+ * @extends Target
  */
-var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends ObjectDescriptor.prototype # */ {
+var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends ObjectDescriptor.prototype # */ {
 
     FileExtension: {
         value: ".mjson"
@@ -33,6 +34,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             this._propertyDescriptorGroups = {};
             this._eventPropertyDescriptorsTable = new Map();
             this.defineBinding("eventDescriptors", {"<-": "_eventDescriptors.concat(parent.eventDescriptors)"});
+            this.defineBinding("localizablePropertyNames", {"<-": "localizablePropertyDescriptors.name"});
         }
     },
 
@@ -112,7 +114,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                     deprecate.deprecationWarningOnce("parent reference via ObjectDescriptorReference", "direct reference with object syntax");
                     this._parentReference = parentReference;
                 } else {
-                    this._parent = parentReference;
+                    this.parent = parentReference;
                 }
             }
 
@@ -252,7 +254,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                 );
                 */
             } else {
-                var parentInstancePrototype = (this.parent ? this.parent.newInstancePrototype() : Montage );
+                var parentInstancePrototype = (this.parent ? this.parent.newInstancePrototype() : Target );
                 var newConstructor = parentInstancePrototype.specialize({
                     // Token class
                     init: {
@@ -304,10 +306,11 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     identifier: {
         get: function () {
             // TODO convert UpperCase to lower-case instead of lowercase
-            return [
-                "objectDescriptor",
-                (this.name || "unnamed").toLowerCase()
-            ].join("_");
+            return this.name;
+            // return [
+            //     "objectDescriptor",
+            //     (this.name || "unnamed").toLowerCase()
+            // ].join("_");
         }
     },
 
@@ -350,10 +353,114 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         get: function () {
             return this._parent;
         },
-        set: function (objectDescriptor) {
-            this._parent = objectDescriptor;
+        set: function (value) {
+            if(this._parent !== value) {
+
+                //Remove from current parent
+                if(this._parent) {
+                    this._parent.removeChildObjectDescriptor(this);
+                }
+
+                this._parent = value;
+
+                //Add to new parent
+                if(value) {
+                    value.addChildObjectDescriptor(this);
+                }
+            }
         }
     },
+
+    _childObjectDescriptors: {
+        value: undefined
+    },
+    childObjectDescriptors: {
+        get: function () {
+            return this._childObjectDescriptors || (this._childObjectDescriptors = []);
+        },
+        set: function (value) {
+            if(value !== this._childObjectDescriptors) {
+                this._childObjectDescriptors = value;
+            }
+        }
+    },
+    addChildObjectDescriptor: {
+        value: function(value) {
+            if(value) {
+                if(this.childObjectDescriptors.indexOf(value) === -1) {
+                    this.childObjectDescriptors.push(value);
+                    this._clearDescendants();
+                }
+            }
+        }
+    },
+    removeChildObjectDescriptor: {
+        value: function(value) {
+            var index = this.childObjectDescriptors.indexOf(value);
+
+            if(index !== -1) {
+                this.childObjectDescriptors.splice(index,1);
+                this._clearDescendants();
+            }
+
+        }
+    },
+    _descendantDescriptors: {
+        value: undefined
+    },
+    _clearDescendants: {
+        value: function() {
+            this._descendantDescriptors = undefined;
+            if(this._parent) {
+                this._parent._clearDescendants();
+            }
+        }
+    },
+    descendantDescriptors: {
+        get: function () {
+            if(this._descendantDescriptors === undefined) {
+
+                var descendants = null,
+                    push = Array.prototype.push,
+                    currentChildren = this._childObjectDescriptors,
+                    i, countI, iChild, iDescendants;
+
+                if(currentChildren) {
+                    for(i=0, countI = currentChildren.length; (iChild = currentChildren[i]);i++) {
+                        (descendants || (descendants = [])).push(iChild);
+                        iDescendants = iChild.descendantDescriptors;
+                        if(iDescendants) {
+                            push.apply(descendants, iDescendants);
+                        }
+                    }
+                }
+                this._descendantDescriptors = descendants;
+            }
+            return this._descendantDescriptors;
+        },
+        set: function (value) {
+            if(value !== this._descendantDescriptors) {
+                this._descendantDescriptors = value;
+            }
+        }
+    },
+
+    /**
+     * An ObjectDescriptor's next target is it's parent or in the end the mainService.
+     * @property {boolean} serializable
+     * @property {Component} value
+     */
+    _nextTarget: {
+        value: false
+    },
+
+    nextTarget: {
+        serializable: false,
+        get: function() {
+            return this._nextTarget || (this._nextTarget = (this.parent || this.eventManager.application.mainService.childServiceForType(this) || this.eventManager.application.mainService));
+        }
+    },
+
 
     /**
      * Defines whether the object descriptor should use custom prototype for new
@@ -386,6 +493,14 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                     this._propertyDescriptors.splice(index, 1);
                     this._propertyDescriptorsTable.delete(descriptor.name);
                     descriptor._owner = null;
+
+                    if(descriptor.isLocalizable) {
+                        descriptor.removeOwnPropertyChangeListener("isLocalizable", this);
+
+                        // index = this.localizablePropertyDescriptors.indexOf(descriptor);
+                        // this.localizablePropertyDescriptors.splice(index, 1);
+                        this.localizablePropertyDescriptors.delete(descriptor);
+                    }
                 }
             }
 
@@ -399,7 +514,30 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                         this._propertyDescriptorsTable.set(descriptor.name,  descriptor);
                     }
                     descriptor._owner = descriptor._owner || this;
+
+                    if(descriptor.isLocalizable) {
+                        //this.localizablePropertyDescriptors.push(descriptor);
+                        this.localizablePropertyDescriptors.add(descriptor);
+
+                    }
                 }
+            }
+        }
+    },
+
+    /**
+     * Property Range change listener on this._ownPropertyDescriptors and
+     * this.parent.propertyDescriptors
+     */
+
+    handleIsLocalizablePropertyChange: {
+        value: function(changeValue, key, object) {
+            if(object.isLocalizable) {
+                //this.localizablePropertyDescriptors.push(object);
+                this.localizablePropertyDescriptors.add(object);
+            } else {
+                //this.localizablePropertyDescriptors.splice(this.localizablePropertyDescriptors.indexOf(object), 1);
+                this.localizablePropertyDescriptors.delete(object);
             }
         }
     },
@@ -425,6 +563,15 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
                         descriptor._owner = this;
                         this._propertyDescriptors.push(descriptor);
                         this._propertyDescriptorsTable.set(descriptor.name,  descriptor);
+
+                        if(descriptor.isLocalizable) {
+
+                            //this.localizablePropertyDescriptors.push(descriptor);
+                            this.localizablePropertyDescriptors.add(descriptor);
+                            descriptor.addOwnPropertyChangeListener("isLocalizable", this);
+
+                        }
+
                     }
                     this.addRangeAtPathChangeListener("_ownPropertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
                     this.addRangeAtPathChangeListener("parent.propertyDescriptors", this, "_handlePropertyDescriptorsRangeChange");
@@ -432,6 +579,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             }
         }
     },
+
 
     /**
      * PropertyDescriptors for this object descriptor, not including those
@@ -449,6 +597,27 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
 
     _propertyDescriptorsAreCached: {
         value: false
+    },
+
+    _localizablePropertyDescriptors: {
+        value: undefined
+    },
+
+    /**
+     * A Set  of an ObjectDescriptor's Property Descriptors that are localizable
+     *
+     * @private
+     * @property {Set<PropertyDescriptor>}
+     */
+    localizablePropertyDescriptors: {
+        get: function() {
+            //return this._localizablePropertyDescriptors || (this._localizablePropertyDescriptors = []);
+            return this._localizablePropertyDescriptors || (this._localizablePropertyDescriptors = new Set());
+        }
+    },
+
+    localizablePropertyNames: {
+        value: undefined
     },
 
     /**
@@ -506,6 +675,19 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             }
             this._preparePropertyDescriptorsCache();
             return this.__propertyDescriptorsTable;
+        }
+    },
+
+    /*
+        s = new Set(m.keys())
+        Set(2) {"a", "b"}
+
+        a = Array.from(m.keys())
+        (2) ["a", "b"]
+    */
+    propertyDescriptorNamesIterator: {
+        get: function() {
+            return this._propertyDescriptorsTable.keys();
         }
     },
 
@@ -635,6 +817,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
     },
 
     /**
+     * FIXME: Should probably be named propertyDescriptorNamed or propertyDescriptorWithName
      * @function
      * @param {string} name
      * @returns {PropertyDescriptor}
@@ -973,20 +1156,56 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
         }
     },
 
+    _emptyValidityMap: {
+        value: new Map
+    },
     /**
-     * Evaluates the rules based on the object and the properties.
+     * Evaluates the validity of objectInstance and collects invalidity into invalidityStates if provides, or in a
+     * new Map created, which will be the resolved value. This is done using:
+     * - rules set on ObjectDescriptor
+     * - propertyDescriptor properties:
+     *      - mandatory: is a value there?
+     *      - readOnly: is the value changed?
+     *      - valueType, collectionValueType, valueDescriptor: Does the current value match?
+     *      - cardinality, is the current value match?
+     *
+     * - The result needs to be a promise as some validation might need a round-trip to
+     *  backend?
+     * - The result will need to be communicated through an "invalid" event that UI componenta
+     *  will use to communicate the validity issues and their corresponding messages.
+     * - there's a combination of isues matching 1 component's designated property to edit as well
+     * as rules failing that might concern multiple ones as well.
      * @param {Object} object instance to evaluate the rule for
      * @returns {Array.<string>} list of message key for rule that fired. Empty
      * array otherwise.
      */
-    evaluateRules: {
+    evaluateObjectValidity: {
         value: function (objectInstance) {
-            var name, rule,
-                messages = [];
 
+            return Promise.resolve(this._emptyValidityMap);
+
+            var name, rule,
+            messages = [];
+            /* bypassing it all for now */
             for (name in this._propertyValidationRules) {
                 if (this._propertyValidationRules.hasOwnProperty(name)) {
                     rule = this._propertyValidationRules[name];
+                    //Benoit: It's likely that some rules might be async
+                    //or we might decide to differ the ones that are async
+                    //to be run on the server instead, but right now the code
+                    //doesn't anticipate any async rule.
+
+                    /*
+                        TODO
+                        Also to help reconciliate validation with HTML5 standards
+                        and its ValidityState object (https://developer.mozilla.org/en-US/docs/Web/API/ValidityState), or to know what key/expression failed validation, we need to return a map key/reason, and not just an array, so that each message can end-up being processed/communicated to the user by the component editing it.
+
+                        It might even make sense that each component editing a certain property of an object, or any combination of some
+                        would have to "observe/listen" to individual property validations.
+
+                        This one is meant to run on all as some rules can involve multiple properties.
+                    */
+
                     if (rule.evaluateRule(objectInstance)) {
                         messages.push(rule.messageKey);
                     }
@@ -994,6 +1213,44 @@ var ObjectDescriptor = exports.ObjectDescriptor = Montage.specialize( /** @lends
             }
             return messages;
         }
+    },
+    /**
+     * Evaluates the rules based on the object and the properties.
+     * @param {Object} object instance to evaluate the rule for
+     * @returns {Array.<string>} list of message key for rule that fired. Empty
+     * array otherwise.
+     */
+    evaluateRules: {
+        value: deprecate.deprecateMethod(void 0, function (objectInstance) {
+            var name, rule,
+                messages = [];
+
+            for (name in this._propertyValidationRules) {
+                if (this._propertyValidationRules.hasOwnProperty(name)) {
+                    rule = this._propertyValidationRules[name];
+                    //Benoit: It's likely that some rules might be async
+                    //or we might decide to differ the ones that are async
+                    //to be run on the server instead, but right now the code
+                    //doesn't anticipate any async rule.
+
+                    /*
+                        TODO
+                        Also to help reconciliate validation with HTML5 standards
+                        and its ValidityState object (https://developer.mozilla.org/en-US/docs/Web/API/ValidityState), or to know what key/expression failed validation, we need to return a map key/reason, and not just an array, so that each message can end-up being processed/communicated to the user by the component editing it.
+
+                        It might even make sense that each component editing a certain property of an object, or any combination of some
+                        would have to "observe/listen" to individual property validations.
+
+                        This one is meant to run on all as some rules can involve multiple properties.
+                    */
+
+                    if (rule.evaluateRule(objectInstance)) {
+                        messages.push(rule.messageKey);
+                    }
+                }
+            }
+            return messages;
+        }, "addEventBlueprint", "addEventDescriptor")
     },
 
     objectDescriptorModuleId: require("../core")._objectDescriptorModuleIdDescriptor,

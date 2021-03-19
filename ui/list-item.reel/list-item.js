@@ -1,6 +1,6 @@
 var Component = require("../component").Component,
     PressComposer = require("../../composer/press-composer").PressComposer,
-    assign = require("frb/assign"),
+    assign = require("core/frb/assign"),
     Montage = require("../../core/core").Montage;
 
 /**
@@ -61,7 +61,7 @@ exports.ListItem = Component.specialize({
                         "(userInterfaceDescriptor.listItemIsExpandable || " +
                         "isExpandable) : isExpandable"
                 }
-            }); 
+            });
             //FIXME: not safe!
             this._templateDidLoad = true;
             this._loadDataUserInterfaceDescriptorIfNeeded();
@@ -75,7 +75,7 @@ exports.ListItem = Component.specialize({
     value: {
         set: function (value) {
             this._value = !!value;
-        }, 
+        },
         get: function () {
             return this._value;
         }
@@ -174,7 +174,7 @@ exports.ListItem = Component.specialize({
                 this.__pressComposer = new PressComposer();
                 this.__pressComposer.delegate = this;
                 this.addComposerForElement(
-                    this.__pressComposer, 
+                    this.__pressComposer,
                     this._valuePlaceholderComponent.element
                 );
             }
@@ -185,7 +185,7 @@ exports.ListItem = Component.specialize({
 
     shouldComposerSurrenderPointerToComponent: {
         value: function (pressComposer, pointer, component) {
-            if (pressComposer === this.__pressComposer && 
+            if (pressComposer === this.__pressComposer &&
                 this.element.contains(component.element)
             ) {
                 return false;
@@ -248,7 +248,7 @@ exports.ListItem = Component.specialize({
                     checked
                 );
             }
-            
+
             this.value = checked;
         }
     },
@@ -258,7 +258,7 @@ exports.ListItem = Component.specialize({
             if (this.data && this._templateDidLoad) {
                 var self = this,
                     infoDelegate;
-                
+
                 return this.loadUserInterfaceDescriptor(this.data).then(function (UIDescriptor) {
                     self.userInterfaceDescriptor = UIDescriptor || self.userInterfaceDescriptor; // trigger biddings.
 
@@ -354,7 +354,7 @@ exports.ListItem = Component.specialize({
                         self.list
                     ) || self._isExpandable; // default value
                 });
-            }  
+            }
         }
     }
 

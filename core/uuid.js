@@ -11,7 +11,7 @@
  * @class Uuid
  * @extends Montage
  */
-var Montage = require("core/core").Montage,
+var Montage = require("./core").Montage,
     CHARS = '0123456789ABCDEF'.split(''),
     PROTO = "__proto__",
     VALUE = "value",

@@ -5,7 +5,7 @@
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    observeProperty = require("montage/frb/observers").observeProperty;
+    observeProperty = require("montage/core/frb/observers").observeProperty;
 
 /**
  @class module:"matte/ui/list.reel".List

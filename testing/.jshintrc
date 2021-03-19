@@ -1,0 +1,40 @@
+{
+    "bitwise": true,
+    "camelcase": true,
+    "curly": true,
+    "eqeqeq": true,
+    "forin": true,
+    "noarg": true,
+    "noempty": true,
+    "nonew": true,
+    "undef": true,
+    "unused": "vars",
+    "trailing": true,
+    "indent": 4,
+    "boss": true,
+    "eqnull": true,
+    "browser": true,
+    "globals": {
+        "CustomEvent": true,
+        "WebSocket": false,
+
+        "require": false,
+        "exports": false,
+        "module": false,
+        "global": false,
+
+        "describe": false,
+        "it": false,
+        "expect": false,
+        "beforeEach": false,
+        "beforeAll": false,
+        "afterEach": false,
+        "afterAll": false,
+
+        "WeakMap": true,
+        "Map": true,
+        "Set": true,
+
+        "console": false
+    }
+}

@@ -7,8 +7,8 @@
 var Control = require("ui/control").Control,
     TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
     KeyComposer = require("../../composer/key-composer").KeyComposer,
-    Map = require("collections/map"),
-    WeakMap = require("collections/weak-map"),
+    Map = require("core/collections/map"),
+    WeakMap = require("core/collections/weak-map"),
     MONTAGE_SLIDER_THUMB_CLASS = "montage-Slider--thumb";
 
 /**
@@ -327,9 +327,9 @@ var Slider = exports.Slider = Control.specialize({
                 dimensionLength = this._spacer.offsetHeight -
                     parseFloat(computedStyle.getPropertyValue("padding-top")) -
                         parseFloat(computedStyle.getPropertyValue("padding-bottom"));
-            } else { 
-                dimensionLength = this._spacer.offsetWidth - 
-                    parseFloat(computedStyle.getPropertyValue("padding-left")) - 
+            } else {
+                dimensionLength = this._spacer.offsetWidth -
+                    parseFloat(computedStyle.getPropertyValue("padding-left")) -
                         parseFloat(computedStyle.getPropertyValue("padding-right"));
             }
 
@@ -672,7 +672,7 @@ Should introduce a validate method
             } else if (this._value < this._min) {
                 return this._min;
             }
-            
+
             return this._value;
         },
         set: function (value) {
@@ -727,7 +727,7 @@ Should introduce a validate method
         value: null
     },
 
-    /* Axis should be renamed orientation and a setter should be put in place for  
+    /* Axis should be renamed orientation and a setter should be put in place for
         backward compatibility
     */
 

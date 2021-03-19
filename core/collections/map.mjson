@@ -1,0 +1,22 @@
+{
+    "map": {
+        "object": "global[Map]"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "Map",
+            "propertyDescriptors": [
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "core/collections/map.mjson" },
+            "exportName": "Map",
+            "module": { "%": "global" },
+            "object":{ "@": "map" }
+        }
+    }
+}

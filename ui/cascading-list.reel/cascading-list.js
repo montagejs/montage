@@ -71,10 +71,14 @@ exports.CascadingList = Component.specialize({
 
     exitDocument: {
         value: function () {
-            this.popAll();
+            /*
+                This empties the whole component, loosing any selection etc...
+                and there's no obvious way to bring it back yet. Commenting out for now:
+            */
+            //this.popAll();
         }
     },
-    
+
     _delegate: {
         value: null
     },
@@ -148,7 +152,7 @@ exports.CascadingList = Component.specialize({
             if (index <= this._currentColumnIndex && this._currentColumnIndex !== -1) {
                 this._pop();
 
-                // the value of the property _currentColumnIndex 
+                // the value of the property _currentColumnIndex
                 // changed when _pop() has been called.
                 if (index <= this._currentColumnIndex) {
                     this.popAtIndex(index);
@@ -220,7 +224,7 @@ exports.CascadingList = Component.specialize({
         value: function () {
             var cascadingListItem,
                 context = this.history.pop();
-            
+
             this._currentColumnIndex--;
             context.isEditing = false;
             this.needsDraw = true;
@@ -237,7 +241,7 @@ exports.CascadingList = Component.specialize({
         value: function (object, columnIndex, isEditing) {
             if (!this._populatePromise && object) {
                 var self = this;
-                
+
                 this._populatePromise = this.loadUserInterfaceDescriptor(object).then(function (UIDescriptor) {
                     var context = self._createCascadingListContextWithObjectAndColumnIndex(
                         object,

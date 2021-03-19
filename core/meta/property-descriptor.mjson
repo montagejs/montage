@@ -211,10 +211,10 @@
             "helpKey": ""
         }
     },
-    "property_serializable": {
+    "property_isSerializable": {
         "prototype": "core/meta/property-descriptor",
         "values": {
-            "name": "serializable",
+            "name": "isSerializable",
             "objectDescriptor": {
                 "@": "root"
             },
@@ -225,7 +225,43 @@
             "valueType": "boolean",
             "enumValues": [],
             "helpKey": "",
-            "serializable": true
+            "isSerializable": true
+        }
+    },
+
+    "property_isLocalizable": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "isLocalizable",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "boolean",
+            "enumValues": [],
+            "helpKey": "",
+            "isSerializable": true
+        }
+    },
+
+    "property_valueDescriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "valueDescriptor",
+            "objectDescriptor": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "object",
+            "enumValues": [],
+            "helpKey": "",
+            "isSerializable": true
         }
     },
 
@@ -246,6 +282,9 @@
                 },
                 {
                     "@": "property_valueType"
+                },
+                {
+                    "@": "property_valueDescriptor"
                 },
                 {
                     "@": "property_collectionValueType"
@@ -269,6 +308,12 @@
                     "@": "property_enumValues"
                 },
                 {
+                    "@": "property_isSerializable"
+                },
+                {
+                    "@": "property_isLocalizable"
+                },
+                {
                     "@": "property_helpKey"
                 }
             ],
@@ -285,6 +330,9 @@
                     },
                     {
                         "@": "property_valueType"
+                    },
+                    {
+                        "@": "property_valueDescriptor"
                     },
                     {
                         "@": "property_collectionValueType"
@@ -308,6 +356,12 @@
                         "@": "property_enumValues"
                     },
                     {
+                        "@": "property_isSerializable"
+                    },
+                    {
+                        "@": "property_isLocalizable"
+                    },
+                   {
                         "@": "property_helpKey"
                     }
                 ]

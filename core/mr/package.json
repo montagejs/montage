@@ -1,0 +1,66 @@
+{
+  "name": "mr",
+  "version": "18.0.0",
+  "description": "A refresh-only CommonJS module system for browsers, used in Montage",
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "montage",
+    "require",
+    "commonjs",
+    "module",
+    "modules",
+    "loader"
+  ],
+  "engines": {
+    "node": ">=8.2.1",
+    "npm": ">=6.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/montagejs/mr.git"
+  },
+  "main": "require",
+  "scripts": {
+    "test": "node test/run-node.js",
+    "lint": "jshint .",
+    "integration": "mop-integration",
+    "integration-debug": "node --inspect-brk=9229 node_modules/mop-integration/integration.js",
+    "test:karma": "karma start --no-auto-watch --single-run",
+    "test:karma-dev": "karma start --auto-watch --no-single-run",
+    "test:jasmine": "concurrently \"http-server -p 8081\" \"open http://localhost:8081/core/mr/test/run.html\"",
+    "test:demo": "concurrently \"http-server -a localhost -p 8082\" \"open http://localhost:8082/core/mr/demo/\""
+  },
+  "bin": {
+    "mr": "bin/mr"
+  },
+  "production": true,
+  "dependencies": {
+    "bluebird": "~3.5.5"
+  },
+  "devDependencies": {
+    "concurrently": "^3.4.0",
+    "http-server": "^0.9.0",
+    "jasmine-console-reporter": "^1.2.7",
+    "jasmine-core": "^2.5.2",
+    "jshint": "^2.9.5",
+    "karma": "^1.5.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-coverage": "^1.1.1",
+    "karma-firefox-launcher": "^1.0.1",
+    "karma-jasmine": "^1.1.0",
+    "karma-phantomjs-launcher": "^1.0.2",
+    "mop-integration": "git://github.com/montagejs/mop-integration.git#master",
+    "open": "0.0.5"
+  },
+  "exclude": [
+    "README.md",
+    "CHANGES.md",
+    "LICENSE.md",
+    "bootstrap-node.js",
+    "node.js",
+    "adhoc.*",
+    "bin",
+    "demo",
+    "test"
+  ]
+}

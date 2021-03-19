@@ -7,9 +7,9 @@ var RangeController = require("../../core/range-controller").RangeController;
 var Promise = require("../../core/promise").Promise;
 var PressComposer = require("../../composer/press-composer").PressComposer;
 
-var Map = require("collections/map");
-var Set = require("collections/set");
-var PropertyChanges = require("collections/listen/property-changes");
+var Map = require("core/collections/map");
+var Set = require("core/collections/set");
+var PropertyChanges = require("core/collections/listen/property-changes");
 
 var logger = require("../../core/logger").logger("repetition").color.magenta();
 
@@ -208,6 +208,8 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             return this._selected;
         },
         set: function (value) {
+            var myObject = this.object,
+                myValue = value;
             value = !!value;
             if (this.object && this.repetition && this.repetition.contentController) {
                 if (value) {
@@ -216,12 +218,19 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
                     this.repetition.contentController.selection.delete(this.object);
                 }
             }
-            if (this._selected !== value) {
-                this.dispatchBeforeOwnPropertyChange("selected", this._selected);
-                this._selected = value;
-                this._updateRepetitionDirtyClassIteration();
-                this.dispatchOwnPropertyChange("selected", value);
-            }
+            //sketched idea to workaround issue Javier found that causes re-entant change
+            //in the middle of this and causes unexpected behavior
+            //Checking that nothing happened in a re-entrant way
+            //if(this.object === myObject) {
+
+                if (this._selected !== value) {
+                    this.dispatchBeforeOwnPropertyChange("selected", this._selected);
+                    this._selected = value;
+                    this._updateRepetitionDirtyClassIteration();
+                    this.dispatchOwnPropertyChange("selected", value);
+                }
+            //}
+
         }
     },
 
@@ -586,10 +595,13 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      * for corresponding keys.
      * @private
      */
+    _superMakePropertyObservable : {
+        value: PropertyChanges.prototype.makePropertyObservable
+    },
     makePropertyObservable: {
         value: function(key) {
             if(key !== "object" && key !== "_childComponents"  && key !== "index" && key !== "_noTransition" && key !== "selected") {
-                PropertyChanges.prototype.makePropertyObservable.call(this, key);
+                this._superMakePropertyObservable( key);
             }
         }
     }
@@ -638,7 +650,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     initWithContent: {
         value: function (content) {
-            this.object = content;
+            this.content = content;
             return this;
         }
     },
@@ -711,6 +723,16 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         }
     },
 
+    /*
+        Selection TODO:
+
+        selection can't be bound on the outside because it's bound from the inside
+        - using contentController.selection in the binding isn't really acceptable
+        - if a binding is set on either selection or contentController.selection,
+        we shouldn't have to manually set isSelectionEnabled to true.
+        We should be overriding addOb
+    */
+
     /**
      * When selection is enabled, each element in an iteration responds to
      * touch and click events such that the iteration is highlighted (with the
@@ -726,6 +748,25 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * @type {boolean}
      */
     isSelectionEnabled: {value: null},
+
+
+    /**
+     * As dispatching has been implemented in key  setters, limit use of default method
+     * for corresponding keys.
+     * @private
+     */
+    // _superMakePropertyObservable : {
+    //     value: PropertyChanges.prototype.makePropertyObservable
+    // },
+    makePropertyObservable: {
+        value: function(key) {
+            if(key === "selection") {
+                this.isSelectionEnabled = true;
+            }
+            this.super(key);
+        }
+    },
+
 
 
     allowsMultipleSelection: {
@@ -1126,7 +1167,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // Where we want to be after the next draw:
             // ---
 
-            // The _boundaries array contains comment nodes that serve as the
+            // The _boundaries array contains empty text nodes that serve as the
             // top and bottom boundary of each iteration.  There will always be
             // one more boundary than iteration.
             this._boundaries = [];
@@ -2018,6 +2059,15 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     _enableSelectionTracking: {
         value: function () {
             this._pressComposer.addEventListener("pressStart", this, false);
+            /*
+                Quick test to eventually listen for press event coming from within.
+                If iterations component use a press composer, their's will win as deeper
+                but the repetion should still know about what's going on.
+
+                However, if a button is pressed within an iteration, it might not means
+                the iteration it belongs to should become the selected one?
+            */
+            // this.addEventListener("pressStart", this, false);
         }
     },
 
@@ -2097,6 +2147,8 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                     iteration.selected = false;
                 }
             }
+
+            //this.dispatchEvent("press");
 
             this._ignoreSelection();
         }

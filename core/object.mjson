@@ -1,0 +1,22 @@
+{
+    "object": {
+        "object": "global[Object]"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "Object",
+            "propertyDescriptors": [
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "core/object.mjson" },
+            "exportName": "Object",
+            "module": { "%": "global" },
+            "object":{ "@": "object" }
+        }
+    }
+}

@@ -4,7 +4,7 @@
 
 var Component = require("ui/component").Component,
     deprecate = require("core/deprecate"),
-    Map = require("collections/map");
+    Map = require("core/collections/map");
 
 /**
     Base component for all native components, such as RadioButton and Checkbox.
@@ -254,7 +254,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
 /**
     Specifies whether the button should receive focus or not.
     @type {boolean}
-    @event longpress 
+    @event longpress
 */
     preventFocus: {
         get: function () {

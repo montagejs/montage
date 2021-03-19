@@ -14,6 +14,7 @@ var Montage = require("../../core").Montage,
     TWO_WAY = "<->";
 
 require("../../shim/string");
+require("core/extras/date");
 
 var PROXY_ELEMENT_MAP = new WeakMap();
 var DATA_ATTRIBUTES_MAP = new Map();
@@ -69,10 +70,12 @@ var ModuleLoader = Montage.specialize({
             }
 
             if (moduleDescriptor.mappingRedirect !== void 0) {
-                return this.getExports(
-                    moduleDescriptor.mappingRequire,
-                    moduleDescriptor.mappingRedirect
-                );
+                return moduleDescriptor.mappingRequire.getModuleDescriptor(moduleDescriptor.mappingRedirect);
+
+                // return this.getExports(
+                //     moduleDescriptor.mappingRequire,
+                //     moduleDescriptor.mappingRedirect
+                // );
             }
 
             return moduleDescriptor;
@@ -80,7 +83,7 @@ var ModuleLoader = Montage.specialize({
     },
 
     getModule: {
-        value: function (moduleId, label) {
+        value: function (moduleId, label, reviver) {
             var objectRequires = this._objectRequires,
                 _require, module;
 
@@ -97,8 +100,10 @@ var ModuleLoader = Montage.specialize({
                     module = this.getModuleDescriptor(_require, moduleId).text;
                 }
 
-                if (!module) {
+                if (!module && !reviver._isSync) {
                     module = _require.async(moduleId);
+                } else {
+                    throw err;
                 }
             }
 
@@ -146,13 +151,19 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     getTypeOf: {
         value: function (value) {
-            var typeOf = typeof value;
+            var typeOf;
 
             if (value === null) {
                 return "null";
             } else if (Array.isArray(value)) {
                 return "array";
-            } else if (typeOf === "object" && Object.keys(value).length === 1) {
+            }
+            //TODO: would be great to optimize and not create twice a date as we do now. Once to parse
+            //and another time later when we need the value
+            else if(Date.parseRFC3339(value)) {
+                return "date";
+            //} else if (typeOf === "object" && Object.keys(value.__proto__).length === 1) {
+            } else if ((typeOf = typeof value) === "object" && Object.keys(value).length === 1) {
                 if ("@" in value) {
                     return "reference";
                 } else if ("/" in value) {
@@ -464,7 +475,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 objectName = locationId;
             } else if (locationId) {
                 locationDesc = MontageReviver.parseObjectLocationId(locationId);
-                module = this.moduleLoader.getModule(locationDesc.moduleId, label);
+                module = this.moduleLoader.getModule(locationDesc.moduleId, label, this);
                 objectName = locationDesc.objectName;
             }
 
@@ -473,7 +484,12 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 module = context._require.async(locationDesc.moduleId);
             }
 
-            if (Promise.is(module)) {
+            if(!module && this._isSync) {
+                throw new Error(
+                    "Tried to revive montage object with label " + label +
+                    " synchronously but the module was not loaded: " + JSON.stringify(value)
+                );
+            } else if (Promise.is(module)) {
                 if (this._isSync) {
                     throw new Error(
                         "Tried to revive montage object with label " + label +
@@ -655,6 +671,12 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (context) {
             this._deserializeUnits(context);
             this._invokeDeserializedFromSerialization(context);
+
+            //We avoided calling deserializedFromSerialization()
+            //on pre-existing objects that are passed on deserializer.
+            //We special case that in template.js, calling
+            //templateDidLoad() on the owner. We could generalize
+            //this here.
         }
     },
 
@@ -848,33 +870,25 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     },
 
     reviveValue: {
-        value: function(value, context, label) {
+        value: function reviveValue(value, context, label) {
             var type = this.getTypeOf(value),
-                revived;
-
-            if (type === "string" || type === "number" || type === "boolean" || type === "null" || type === "undefined") {
-                revived = this.reviveNativeValue(value, context, label);
-            } else if (type === "regexp") {
-                revived = this.reviveRegExp(value, context, label);
-            } else if (type === "reference") {
-                revived = this.reviveObjectReference(value, context, label);
-            } else if (type === "array") {
-                revived = this.reviveArray(value, context, label);
-            } else if (type === "object") {
-                revived = this.reviveObjectLiteral(value, context, label);
-            } else if (type === "Element") {
-                revived = this.reviveElement(value, context, label);
-            } else if (type === "binding") {
-                revived = value;
-            } else {
-                revived = this._callReviveMethod("revive" + type, value, context, label);
-            }
+                revived = this[(reviveValue._methodByType[type] || ("revive" + type))](value, context, label);
 
             if (this._isSync && Promise.is(revived)) {
                 throw new Error("Unable to revive value with label " + label + " synchronously: " + value);
             } else {
                 return revived;
             }
+        }
+    },
+
+    _reviveMethodByType: {
+        value: {}
+    },
+
+    reviveBinding: {
+        value: function(value, context, label) {
+            return value;
         }
     },
 
@@ -889,7 +903,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     },
 
     reviveObjectLiteral: {
-        value: function(value, context, label, filterKeys) {
+        value: function reviveObjectLiteral(value, context, label, filterKeys) {
             var item,
                 promises,
                 propertyNames = context.propertyToReviveForObjectLiteralValue(value),
@@ -948,19 +962,29 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         }
     },
 
+    reviveDate: {
+        value: function(value, context, label) {
+
+            var date = Date.parseRFC3339(value);
+
+            if (label) {
+                context.setObjectLabel(date, label);
+            }
+
+            return date;
+        }
+    },
+
     reviveObjectReference: {
         value: function(value, context, label) {
-            var valuePath = value["@"],
-                object = context.getObject(valuePath);
-
-            return object;
+            return context.getObject(value["@"]);
         }
     },
 
     reviveArray: {
         value: function(value, context, label) {
             var item,
-                promises = [];
+                promises;
 
             if (label) {
                 context.setObjectLabel(value, label);
@@ -970,7 +994,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 item = this.reviveValue(value[i], context);
 
                 if (Promise.is(item)) {
-                    promises.push(
+                    (promises || (promises = [])).push(
                         item.then(this._createAssignValueFunction(value, i))
                     );
                 } else {
@@ -978,7 +1002,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 }
             }
 
-            if (promises.length === 0) {
+            if (!promises || promises.length === 0) {
                 return value;
             } else {
                 return Promise.all(promises).then(function() {
@@ -1126,6 +1150,25 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
 });
 
+var MontageReviverProto = MontageReviver.prototype,
+    _reviveMethodByType =  MontageReviverProto._reviveMethodByType;
+
+_reviveMethodByType["string"] = _reviveMethodByType["number"] = _reviveMethodByType["boolean"] = _reviveMethodByType["null"] = _reviveMethodByType["undefined"] = "reviveNativeValue";
+_reviveMethodByType["date"] = "reviveDate";
+_reviveMethodByType["regexp"] = "reviveRegExp";
+_reviveMethodByType["reference"] = "reviveObjectReference";
+_reviveMethodByType["array"] = "reviveArray";
+_reviveMethodByType["object"] = "reviveObjectLiteral";
+_reviveMethodByType["Element"] = "reviveElement";
+_reviveMethodByType["binding"] = "reviveBinding";
+_reviveMethodByType["Module"] = "reviveModule";
+
+
+MontageReviverProto.reviveValue._methodByType = _reviveMethodByType;
+
+MontageReviverProto = _reviveMethodByType = null;
+
+
 MontageReviver.findProxyForElement = function (element) {
     return PROXY_ELEMENT_MAP.get(element);
 };
@@ -1167,7 +1210,7 @@ MontageReviver.defineUnitReviver("values", function (unitDeserializer, object, v
     else if(values) {
         context._reviver.deserializeMontageObjectValues(
             object,
-            montageObjectDesc.values || montageObjectDesc.properties, //deprecated
+            values || montageObjectDesc.properties, //deprecated
             context
         );
     }

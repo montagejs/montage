@@ -1,6 +1,6 @@
 var Converter = require("./converter").Converter,
     Promise = require("core/promise").Promise,
-    Set = require("collections/set");
+    Set = require("core/collections/set");
 
 /**
  * Converter that chains a series of converters together
@@ -29,7 +29,7 @@ exports.PipelineConverter = Converter.specialize({
                     converter.owner = null;
                 }
             }
-    
+
             for (i = 0; (converter = plus[i]); ++i) {
                 if (!minusSet.has(converter)) {
                     converter.owner = converter.owner || this;
@@ -48,7 +48,7 @@ exports.PipelineConverter = Converter.specialize({
             value = deserializer.getProperty("converters");
             if (value !== void 0) {
                 this.converters = value;
-                
+
             }
         }
     },

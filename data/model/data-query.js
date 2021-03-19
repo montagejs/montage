@@ -24,9 +24,9 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
                 this.orderings = value;
             }
 
-            value = deserializer.getProperty("prefetchExpressions");
+            value = deserializer.getProperty("readExpressions");
             if (value !== void 0) {
-                this.prefetchExpressions = value;
+                this.readExpressions = value;
             }
 
             value = deserializer.getProperty("selectBindings");
@@ -55,6 +55,12 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
                 }
             }
 
+            value = deserializer.getProperty("fetchLimit");
+            if (value !== void 0) {
+                this.fetchLimit = value;
+            }
+
+
             return result || Promise.resolve(this);
         }
     },
@@ -63,9 +69,10 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
         value: function (serializer) {
             serializer.setProperty("criteria", this.criteria);
             serializer.setProperty("orderings", this.orderings);
-            serializer.setProperty("prefetchExpressions", this.prefetchExpressions);
+            serializer.setProperty("readExpressions", this.readExpressions);
             serializer.setProperty("selectBindings", this.selectBindings);
             serializer.setProperty("selectExpression", this.selectExpression);
+            serializer.setProperty("fetchLimit", this.fetchLimit);
 
             if (this.type.objectDescriptorInstanceModule) {
                 serializer.setProperty("typeModule", this.type.objectDescriptorInstanceModule);
@@ -76,10 +83,32 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
         }
     },
 
+    equals: {
+        value: function (otherQuery) {
+            /*
+                take care of the ones where we can use === first
+
+                not including selectBindings for now, nor selectExpression as we need to see if we'll keep it
+
+            */
+            if(
+                (this.type === otherQuery.type) &&
+                (this.fetchLimit === otherQuery.fetchLimit) &&
+                (this.readExpressions && this.readExpressions.equals(otherQuery.readExpressions)) &&
+                (this.orderings && this.orderings.equals(otherQuery.orderings)) &&
+                (this.criteria && this.criteria.equals(otherQuery.criteria))
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
+
     /**
      * The type of the data object to retrieve.
      *
-     * @type {DataObjectDescriptor}
+     * @type {ObjectDescriptor}
      */
     type: {
         serializable: "value",
@@ -95,6 +124,20 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
         value: undefined
     },
 
+
+    /**
+     * A property used to carry the identity of the current user issuing the query
+     * This is set by the framework based on wethere there's an authenticated user
+     * or not. RawDataServices use this to communicate to servers the identity of
+     * who is requiring data so it can be evaluated in term of access contol.
+     *
+     * @type {UserIdentity}
+     */
+    userIdentity: {
+        value: undefined
+    },
+
+
     /**
      * An object defining the criteria that must be satisfied by objects for
      * them to be included in the data set defined by this query.
@@ -107,9 +150,10 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
      */
     criteria: {
         get: function () {
-            if (!this._criteria) {
-                this._criteria = {};
-            }
+            //Might be breaking, but we shouldn't create an empty object lile that, of the wrong type...
+            // if (!this._criteria) {
+            //     this._criteria = {};
+            // }
             return this._criteria;
         },
         set: function (criteria) {
@@ -129,9 +173,12 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
      */
     orderings: {
         get: function () {
-            if (!this._orderings) {
-                this._orderings = [];
-            }
+            /*
+                Benoit, could break backward compatibility but it doesn't look like we relied on this. No point creating an empty attay just for checking if orderings have been set on a data query.
+            */
+            // if (!this._orderings) {
+            //     this._orderings = [];
+            // }
             return this._orderings;
         },
         set: function (orderings) {
@@ -153,7 +200,7 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
      *
      * For example, if one would want the number of objects fetched, one would do:
      *  aDataQuery.selectBindings = {
-     *      "count": {"<-": "data.length"
+     *      "count": {"<-": "data.length"}
      * };
      *
      *  aDataQuery.selectBindings = {
@@ -201,7 +248,7 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
     /**
      * An expression that is used in memory client side to further refine the set objects retrieves.
      * by the query's criteria expression. This useful in cases the origin service doesn't know how to handle such criteria.
-     * That shouldn't be exposed to the end developer, but instead, a RawDataService should be able to analyse a query's criteria
+     * That shouldn't be exposed to the end developer, but instead, a RawDataService should be able to analyze a query's criteria
      * and split the apsects that can be executed by the origin service automatically, to filter the rest itself.
      * @type {Array}
      */
@@ -219,9 +266,47 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
      * @type {Array}
      */
 
-    prefetchExpressions: {
+    //fetchExpressions
+    //readExpressions
+    readExpressions: {
+        value: null
+    },
+
+   /**
+     * A property defining the number of objets to retrieve at once from the result set.
+     * @type {Number}
+     */
+
+    batchSize: {
+        value: null
+    },
+
+    _doesBatchResults: {
+        value: null
+    },
+
+    doesBatchResult: {
+        get: function() {
+            return this._doesBatchResults || (typeof this.batchSize === "number");
+        }
+    },
+    /**
+     * A property defining the maximum number of objets to retrieve.
+     * @type {Number}
+     *
+     * fetchLimit ? matches fetchData API, limit is SQL
+     *
+     * readLimit ? matches the operation?
+     *
+     * maximum ...
+     */
+
+    fetchLimit: {
         value: null
     }
+
+
+
 
 }, /** @lends DataQuery */ {
 

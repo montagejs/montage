@@ -112,7 +112,7 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
 
 
     /**
-     * The name of the export this object descriptor is for.
+     * The name of the export. this object descriptor is for.
      * @type {string}
      */
     exportName: {
@@ -123,6 +123,18 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
         serializable: false,
         value: null
     }
+    /*
+    ,
+
+    prepareToHandleDataEvents: {
+        value: function (event) {
+            if(this.object) {
+                this.object.prepareToHandleEvent(event);
+            }
+        }
+    },
+    */
+
 
 }, /** @lends ModuleObjectDescriptor. */ {
 

@@ -1,5 +1,5 @@
 var Montage = require("core/core").Montage,
-    Map = require("collections/map");
+    Map = require("core/collections/map");
 
 /**
  * @class SnapshotService

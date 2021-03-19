@@ -1,0 +1,42 @@
+{
+  "name": "montage-testing",
+  "version": "0.5.1",
+  "description": "Package to enable jasmine test using the testacular runner in Montage projects",
+  "license": "BSD-3-Clause",
+  "author": "Montage Studio, inc. (http://montagestudio.com/)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/montagejs/montage-testing.git"
+  },
+  "dependencies": {
+    "jasmine-console-reporter": "^1.2.7",
+    "jasmine-core": "^2.5.2",
+    "js-beautify": "^1.6.11",
+    "montage": "^17.0.7"
+  },
+  "main": "run",
+  "mappings": {
+    "montage-testing": "./"
+  },
+  "production": true,
+  "devDependencies": {
+    "karma": "^1.5.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-coverage": "^1.1.1",
+    "karma-firefox-launcher": "^1.0.1",
+    "karma-jasmine": "^1.1.0",
+    "karma-phantomjs-launcher": "^1.0.2",
+    "concurrently": "^3.4.0",
+    "http-server": "^0.9.0",
+    "open": "0.0.5"
+  },
+  "scripts": {
+    "test": "node test/run-node.js",
+    "test:karma": "karma start --no-auto-watch --single-run",
+    "test:karma-dev": "karma start --auto-watch --no-single-run",
+    "test:karma-debug": "karma start --no-auto-watch --single-run --browsers=PhantomJS_debug",
+    "test:karma-firefox": "karma start --no-auto-watch --single-run --browsers=firefox",
+    "test:karma-chrome": "karma start --no-auto-watch --single-run --browsers=chrome",
+    "test:jasmine": "concurrently \"http-server -a localhost -p 8082\" \"open http://localhost:8082/test/run.html\""
+  }
+}
