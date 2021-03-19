@@ -14,12 +14,56 @@ var Component = require("ui/component").Component;
  */
 exports.Succession = Component.specialize(/** @lends Succession.prototype */{
 
+
+    /**
+     * To be assigned as component.buildInAnimation for 
+     * components added to the succession stack. 
+     * 
+     * Using the defaults, succession animations can be defined with the following: 
+     * 
+     * .montage-Succession--push .montage-Succession--buildInFrom {}
+     * .montage-Succession--push .montage-Succession--buildIn {}
+     * 
+     * .montage-Succession--pop .montage-Succession--buildInFrom {}
+     * .montage-Succession--pop .montage-Succession--buildIn {}
+     * 
+     * .montage-Succession--replace .montage-Succession--buildInFrom {}
+     * .montage-Succession--replace .montage-Succession--buildIn {}
+     * 
+     * .montage-Succession--clear .montage-Succession--buildInFrom {}
+     * .montage-Succession--clear .montage-Succession--buildIn {}
+     */
     contentBuildInAnimation: {
-        value: undefined
+        value: {
+            fromCssClass: "montage-Succession--buildInFrom",
+            cssClass: "montage-Succession--buildIn"
+        }
     },
 
+    /**
+     * To be assigned as component.buildOutAnimation for 
+     * components removed from the succession stack 
+     * 
+     * Using the defaults, succession animations can be defined with the following: 
+     * 
+     * .montage-Succession--push .montage-Succession--buildOut {}
+     * .montage-Succession--push .montage-Succession--buildOutTo {}
+     * 
+     * .montage-Succession--pop .montage-Succession--buildOut {}
+     * .montage-Succession--pop .montage-Succession--buildOutTo {}
+     * 
+     * .montage-Succession--replace .montage-Succession--buildOut {}
+     * .montage-Succession--replace .montage-Succession--buildOutTo {}
+     * 
+     * .montage-Succession--clear .montage-Succession--buildOut {}
+     * .montage-Succession--clear .montage-Succession--buildOutTo {}
+     */
+     
     contentBuildOutAnimation: {
-        value: undefined
+        value: {
+            cssClass: "montage-Succession--buildOut",
+            toCssClass: "montage-Succession--buildOutTo"
+        }
     },
 
     /**
