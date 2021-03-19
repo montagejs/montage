@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"}
+                }
+            },
+            "application": {
+            },
+            "hello": {
+                "prototype": "montage/ui/text.reel",
+                "values": {
+                    "element": {"#": "hello"},
+                    "value": {"=":"@application.loginPOSTURL"}
+                }
+            }
+
+        }
+    </script>
+
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>Application Sample</header>
+        <section class="">
+
+            <span data-montage-id="hello"></span>
+        </section>
+    </div>
+</body>
+</html>
