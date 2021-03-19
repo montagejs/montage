@@ -1,0 +1,61 @@
+.Main ul{
+    padding: 0px;
+    list-style: none;
+}
+
+.Main ul li{
+    padding: 0px;
+}
+
+.Main-menu{
+    width: 100px;
+    margin-left: 10px;
+}
+
+.Main-menu-menuTitle {
+    background-color: #e0e0e0;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    min-width: 100px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.Main-menu-menuTitle:hover {
+    background-color: #eeeeee;
+}
+
+.Main-menu-menuNodeTitle {
+    background-color: #e0e0e0;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: block;
+    text-align: center;
+    border-top: 1px solid #cccccc;
+    cursor: pointer;
+}
+
+.Main-menu-menuNodeTitle:hover {
+    background-color: #eeeeee;
+}
+
+.Main-menu-subMenuNode{
+    position: absolute;
+    left: 100%;
+    top: 0px;
+    min-width: 100px;
+}
+
+.Main-menu-subMenuNode-container{
+    background-color: #e0e0e0;
+    padding: 20px;
+}
+
+.Main-menu-subMenuNode-container select{
+    width: 200px;
+    margin-top: 10px;
+}
+
+.Main-menu-subMenuNode-container p{
+    width: 500px;
+}
