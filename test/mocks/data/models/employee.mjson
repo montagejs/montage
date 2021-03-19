@@ -25,6 +25,9 @@
                 },
                 "montage/ui/cascading-list.reel": {
                     "%": "test/mocks/data/models/employee-cascading-list-ui-descriptor.mjson"
+                },
+                "montage/ui/list.reel": {
+                    "%": "test/mocks/data/models/employee-list-ui-descriptor.mjson"
                 }
             }
         }

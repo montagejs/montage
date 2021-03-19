@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <link rel="stylesheet" type="text/css" href="cascading-list-item.css">
     <script type="text/montage-serialization">
@@ -8,23 +9,25 @@
             "values": {
                 "element": {"#": "owner"},
                 "content": {"@": "content"},
+                "backButton": {"@": "back"},
+                "shelf": {"<-": "@owner.cascadingList.shelf"},
                 "selection": {"<-": "@owner.content.component.selection"}
             }
         },
 
         "header": {
-            "value": {"#": "header"},
+            "value": {"#": "cascading-list-header"},
             "values": {
                 "hidden": {"<-": "@owner.shouldHideHeader"}
             }
         },
 
-        "headerLeft": {
+        "back": {
             "prototype": "../../button.reel",
             "values": {
                 "element": {"#": "header-left"},
                 "defaultLabel": "",
-                "label": {"<-": "@owner.headerLeftLabel"},
+                "label": {"<-": "!@owner.isFlat && @owner.context.columnIndex > 0 ? 'back' : @owner.headerBackLabel"},
                 "detail.get('context')": {"<-": "@owner.context"}
             }
         },
@@ -100,9 +103,10 @@
     }
     </script>
 </head>
+
 <body>
     <div data-montage-id="owner" class="CascadingListItem">
-        <div data-montage-id="header" class="CascadingListItem-header">
+        <div data-montage-id="cascading-list-header" class="CascadingListItem-header">
             <div data-montage-id="header-left" class="CascadingListItemAction CascadingListItemAction-header left"></div>
             <div data-montage-id="header-middle" class="CascadingListItemAction CascadingListItemAction-header middle"></div>
             <div data-montage-id="header-right" class="CascadingListItemAction CascadingListItemAction-header right"></div>
@@ -115,4 +119,5 @@
         </div>
     </div>
 </body>
+
 </html>

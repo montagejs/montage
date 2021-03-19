@@ -59,6 +59,24 @@
     margin-right: 35px;
 }
 
+.ListItem.show-handle .ListItem-handle {
+    padding-top: 5px;
+}
+
+.ListItem.show-handle .ListItem-handle:hover {
+    cursor: crosshair;
+    cursor: -webkit-grab;
+}
+
+.ListItem.show-handle .ListItem-handle span {
+    display: block;
+    width: 18px;
+    height: 1px;
+    margin-bottom: 4px;
+    position: relative;
+    background: #C7C7CC;
+}
+
 /** Icon **/
 
 .ListItem .ListItem-icon > * {

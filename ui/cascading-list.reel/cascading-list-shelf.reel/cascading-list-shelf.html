@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="cascading-list-shelf.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "owner"},
+                "content": {"<-": "@owner.cascadingList.shelfContent"},
+                "isEmpty": {"<-": "@owner.content.defined() && @owner.content.length > 0 ? false : true"},
+                "classList.has('is-open')": {"<-": "@owner.isOpened"},
+                "classList.has('is-empty')": {"<-": "@owner.isEmpty"},
+                "classList.has('accept-drop')": {"<-": "@owner.acceptDrop"},
+                "classList.has('will-drop')": {"<-": "@owner.willDrop"}
+            }
+        },
+
+        "title": {
+            "prototype": "../../text.reel",
+            "values": {
+                "element": {"#": "title"},
+                "value": {"<-": "!@owner.isEmpty ? @owner.content.length > 1 ? @owner.content.length + ' Items:' : '1 Item:' : '' "}
+            }
+        },
+
+        "close": {
+            "prototype": "../../button.reel",
+            "values": {
+                "element": {"#": "close"},
+                "defaultLabel": ""
+            }
+        },
+
+        "repetition": {
+            "prototype": "../../repetition.reel",
+            "values": {
+                "element": {"#": "repetition"},
+                "content": {"<-": "@owner.content"}
+            }
+        },
+
+        "item": {
+            "prototype": "./cascading-list-shelf-item.reel",
+            "values": {
+                "element": {"#": "item"},
+                "data": {"<-": "@repetition:iteration.object"},
+                "cascadingList": {"<-": "@owner.cascadingList"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="CascadingListShelf">
+        <div class="CascadingListShelf-background">
+            <svg width="30px" height="33px" viewBox="0 0 30 33" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+                    <g class="drop" transform="translate(-192.000000, -10.000000)" stroke-width="4">
+                        <g transform="translate(194.000000, 12.000000)">
+                            <polyline id="Stroke-212" points="0 20.9444444 0 28.1666667 26 28.1666667 26 20.9444444"></polyline>
+                            <polyline id="Stroke-214" points="12.9842556 0.361111111 12.9178111 20.5833333 22.7501444 11.167"></polyline>
+                            <path d="M12.9178111,20.5833333 L3.25014444,11.1850556" id="Stroke-216"></path>
+                        </g>
+                    </g>
+                </g>
+            </svg>
+        </div>
+        <div class="CascadingListShelf-options">
+            <span data-montage-id="title" class="CascadingListShelf-title"></span>
+            <span data-montage-id="close" class="CascadingListShelf-close"></span>
+        </div>
+       <div class="CascadingListShelf-items">
+            <div data-montage-id="repetition" class="CascadingListShelf-repetition">
+                <div data-montage-id="item"></div>
+            </div>
+       </div>
+    </div>
+</body>
+</html>

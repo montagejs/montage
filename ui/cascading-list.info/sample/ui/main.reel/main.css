@@ -38,8 +38,3 @@ section {
     flex: 1;
     display: flex;
 }
-
-.CascadingListItem {
-    width: 256px;
-    width: 16rem;
-}

@@ -1368,56 +1368,75 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             }
         },
         set: function (value) {
-            var components,
-                componentsToAdd = [],
-                i,
-                component;
+            var componentsToAdd = [],
+                elementsToAppend =
+                    this._elementsToAppend = [],
+                elementsToAppendBefore =
+                    this._elementsToAppendBefore = [],
+                componentsPendingBuildOut =
+                    this._componentsPendingBuildOut = [],
+                currentDomContent = this.domContent,
+                childComponents = this.childComponents,
+                isArray = false, index = -1,
+                i, length, childComponent,
+                component, element;
 
-            if (!this._elementsToAppend) {
-                this._elementsToAppend = [];
-            }
-            this._newDomContent = value;
-            this.needsDraw = true;
-
-            if (this._newDomContent === null) {
-                this._shouldClearDomContentOnNextDraw = true;
-            }
-
-            if (typeof this.contentWillChange === "function") {
-                this.contentWillChange(value);
-            }
-
-            // cleanup current content
-            components = this.childComponents;
             if (value) {
-                if (!this._componentsPendingBuildOut) {
-                    this._componentsPendingBuildOut = [];
+                if (value instanceof Element) {
+                    if (currentDomContent.length <= 1) {
+                        if (currentDomContent.indexOf(value) === -1) {
+                            elementsToAppend.push(value);
+                        }
+                    } else {
+                        elementsToAppend.push(value);
+                    }
+                } else if ((isArray =
+                    (Array.isArray(value) || value instanceof NodeList)
+                )) {
+                    if (currentDomContent.length === 1) {
+                        index = Array.prototype.indexOf.call(value, currentDomContent[0]);
+                    }
+
+                    for (i = 0; i < value.length; i++) {
+                        element = value[i];
+
+                        if (currentDomContent.indexOf(element) === -1) {
+                            if (i > index) {
+                                elementsToAppend.push(element);
+                            } else {
+                                elementsToAppendBefore.push(element);
+                            }
+
+                            if ( // Clean up possible transplanted components
+                                (component = element.component) &&
+                                component._addedToDrawList &&
+                                component.parentComponent
+                            ) {
+                                component.parentComponent._removeToDrawList(component);
+                            }
+                        }
+                    }
                 }
-                for (i = components.length - 1; i >= 0; i--) {
-                    if (this._componentsPendingBuildOut.indexOf(components[i]) === -1) {
-                        this._componentsPendingBuildOut.push(components[i]);
+
+                for (i = childComponents.length - 1; i >= 0; i--) {
+                    childComponent = childComponents[i];
+
+                    if (
+                        (isArray && Array.prototype.indexOf.call(value, childComponent.element) === -1) ||
+                        (!isArray && elementsToAppend.length && elementsToAppend.indexOf(childComponent.element) === -1)
+                    ) {
+                        componentsPendingBuildOut.push(childComponent);
                     }
                 }
             } else {
-                this._componentsPendingBuildOut = [];
-                for (i = components.length - 1; i >= 0; i--) {
-                    components[i]._shouldBuildOut = true;
-                }
-            }
-            if (value instanceof Element) {
-                this._elementsToAppend.push(value);
-                this._findAndDetachComponents(value, componentsToAdd);
-            } else if (value && value[0]) {
-                for (i = 0; i < value.length; i++) {
-                    this._elementsToAppend.push(value[i]);
-                    this._findAndDetachComponents(value[i], componentsToAdd);
+                for (i = childComponents.length - 1; i >= 0; i--) {
+                    componentsPendingBuildOut.push(childComponents[i]);
                 }
             }
 
-            // not sure if I can rely on _parentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
-            for (i = 0; (component = componentsToAdd[i]); i++) {
-                this.addChildComponent(component);
-            }
+            this._newDomContent = value;
+            this._shouldClearDomContentOnNextDraw = this._newDomContent === null;
+            this.needsDraw = true;
         }
     },
 
@@ -1616,6 +1635,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         }
                         self.canDrawGate.setField("componentTreeLoaded", true);
 
+                        return self;
                     }).catch(function (error) {
                         console.error(error);
                     });
@@ -1818,6 +1838,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 }
 
                 instances.owner = self;
+
+                // FIXME: should be set after the instantiateWithInstances call...
+                // https://github.com/montagejs/montage/issues/1977
                 self._isTemplateInstantiated = true;
 
                 return template.instantiateWithInstances(instances, _document).then(function (documentPart) {
@@ -2098,9 +2121,17 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     childComponent = oldDrawList[i];
                     childComponent._addedToDrawList = false;
                     if (childComponent.canDraw()) { // TODO if canDraw is false when does needsDraw get reset?
-                        childComponent._drawIfNeeded(level+1);
+                        childComponent._drawIfNeeded(level + 1);
                     } else if (drawLogger.isDebug) {
                         drawLogger.debug(loggerToString(childComponent) + " can't draw.");
+                    }
+
+                    var componentsPendingBuildOut = childComponent._componentsPendingBuildOut;
+
+                    if (componentsPendingBuildOut) {
+                        while (componentsPendingBuildOut.length) {
+                            componentsPendingBuildOut.pop()._shouldBuildOut = true;
+                        }
                     }
                 }
                 this._disposeArray(oldDrawList);
@@ -2465,12 +2496,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     _performDomContentChanges: {
         value: function () {
             var contents = this._newDomContent,
-                element,
-                elementToAppend,
-                i;
+                componentsToAdd, component, referenceNode,
+                element, elementToAppend, i;
 
             if (contents || this._shouldClearDomContentOnNextDraw) {
                 element = this._element;
+
+                if (typeof this.contentWillChange === "function") {
+                    this.contentWillChange(contents);
+                }
 
                 // Setting the innerHTML to clear the children will not work on
                 // IE because it modifies the underlying child nodes. Here's the
@@ -2481,19 +2515,52 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     }
                 }
 
-                if (this._elementsToAppend) {
+                if (this._elementsToAppendBefore && this._elementsToAppendBefore.length) {
+                    componentsToAdd = [];
+                    referenceNode = element.firstElementChild;
+
+                    while (this._elementsToAppendBefore.length) {
+                        elementToAppend = this._elementsToAppendBefore.shift();
+
+                        if (!element.contains(elementToAppend)) {
+                            this._findAndDetachComponents(elementToAppend, componentsToAdd);
+
+                            if (referenceNode) {
+                                element.insertBefore(elementToAppend, referenceNode);
+                            } else {
+                                element.appendChild(elementToAppend);
+                            }
+                        }
+                    }
+
+                    for (i = 0; (component = componentsToAdd[i]); i++) {
+                        this.addChildComponent(component);
+                    }
+                }
+
+                if (this._elementsToAppend && this._elementsToAppend.length) {
+                    componentsToAdd = [];
+
                     while (this._elementsToAppend.length) {
                         elementToAppend = this._elementsToAppend.shift();
+
                         if (!element.contains(elementToAppend)) {
+                            this._findAndDetachComponents(elementToAppend, componentsToAdd);
                             element.appendChild(elementToAppend);
                         }
+                    }
+
+                    for (i = 0; (component = componentsToAdd[i]); i++) {
+                        this.addChildComponent(component);
                     }
                 }
 
                 this._newDomContent = null;
+
                 if (typeof this.contentDidChange === "function") {
                     this.contentDidChange();
                 }
+                
                 this._shouldClearDomContentOnNextDraw = false;
             }
         }
@@ -2583,6 +2650,50 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 } else if (this.drawListLogger.isDebug) {
                         this.drawListLogger.debug(this, "parentComponent is null");
                 }
+            }
+        }
+    },
+
+    _removeToParentsDrawList: {
+        enumerable: false,
+        value: function () {
+            if (this._addedToDrawList) {
+                var parentComponent = this._parentComponent;
+
+                if (parentComponent) {
+                    parentComponent._removeToDrawList(this);
+                }
+            }
+        }
+    },
+
+    __removeToDrawList: {
+        enumerable: false,
+        value: function (childComponent) {
+            var index;
+
+            if (
+                this._drawList &&
+                (index = this._drawList.indexOf(childComponent)) > -1
+            ) {
+                this._drawList.splice(index, 1);
+                childComponent._addedToDrawList = false;
+            }
+        }
+    },
+
+    /**
+     * Adds the passed in child component to the drawList
+     * If the current instance isn't added to the drawList of its parentComponent, then it adds itself.
+     * @private
+     */
+    _removeToDrawList: {
+        enumerable: false,
+        value: function (childComponent) {
+            this.__removeToDrawList(childComponent);
+            
+            if (this._drawList && !this._drawList.length) {
+                this._removeToParentsDrawList();
             }
         }
     },
@@ -3586,11 +3697,21 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 false
             );
 
-            if (typeof object === "object" &&
-                (constructor = object.constructor) &&
-                constructor.objectDescriptorModuleId
-            ) {
-                objectDescriptorModuleId = constructor.objectDescriptorModuleId;
+            if (object && typeof object === "object") {
+                if (
+                    (constructor = object.constructor) &&
+                    constructor.objectDescriptorModuleId
+                ) {
+                    objectDescriptorModuleId = constructor.objectDescriptorModuleId;
+                }
+
+                if (!objectDescriptorModuleId && Array.isArray(object) &&
+                    object.length && object[0] && typeof object[0] === "object" &&
+                    !Array.isArray(object[0]) && (constructor = object[0].constructor) &&
+                    constructor.objectDescriptorModuleId
+                ) { // Try with the first object of the array.
+                    objectDescriptorModuleId = constructor.objectDescriptorModuleId;
+                }
             }
 
             objectDescriptorModuleIdCandidate = this.callDelegateMethod(

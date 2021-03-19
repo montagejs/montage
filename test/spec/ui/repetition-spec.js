@@ -627,11 +627,18 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
 
         describe("Repetition of a component with a binding", function () {
             it("should draw the repetition with the correct duplicated bindings", function (done) {
-                var inputs = querySelectorAll(".list7 .textfield5");
-                expect(inputs.length).toBe(2);
-                expect(inputs[0].value).toBe("Hello");
-                expect(inputs[0].value).toBe("Hello");
-                done();
+                var list7 = querySelector(".list7").component;
+
+                testPage.waitForComponentDraw(list7).then(function () {
+                    var inputs = querySelectorAll(".list7 .textfield5");
+                    expect(inputs.length).toBe(2);
+                    expect(inputs[0].value).toBe("Hello");
+                    expect(inputs[0].value).toBe("Hello");
+                }).catch(function (error) {
+                    done.fail(error);
+                }).then(function () {
+                    done();    
+                })
             });
         });
 

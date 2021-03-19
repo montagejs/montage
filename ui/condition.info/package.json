@@ -1,7 +1,0 @@
-{
-	"name": "condition.info",
-	"private": true,
-	"dependencies": {
-		"montage": "../.."
-	}
-}

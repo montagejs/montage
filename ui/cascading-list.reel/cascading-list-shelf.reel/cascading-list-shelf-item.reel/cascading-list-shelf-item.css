@@ -1,0 +1,36 @@
+.CascadingListShelfItem {
+    font-weight: 400;
+    color: #858585;
+    height: 18px;
+    display: flex;
+    align-items: center;
+}
+
+.CascadingListShelfItem-label {
+    font-size: 16px;
+    padding: 0 8px;
+    padding-right: 8px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -ms-flex: 1;
+    flex: 1;
+}
+
+.CascadingListShelfItem-delete {
+    padding-left: 8px;
+    width: 14px;
+    height: 14px;
+    background-position: center;
+    background-image: url("trash.svg");
+    background-repeat: no-repeat;
+}
+
+.CascadingListShelfItem-delete:hover {
+    cursor: pointer;
+}
+
+.CascadingListShelfItem.montage-ghostImage .CascadingListShelfItem-delete {
+    visibility: hidden;
+}

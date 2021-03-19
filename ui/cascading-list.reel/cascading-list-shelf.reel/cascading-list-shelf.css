@@ -1,0 +1,116 @@
+.CascadingListShelf {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background-color: #E8E8E8;
+    height: 0px;
+    overflow: hidden;
+    font-family: 'lato';
+    box-sizing: border-box;
+}
+
+.CascadingListShelf.is-open,
+.CascadingListShelf.open-transition {
+    border-bottom: 1px solid #c8c7cc;
+    height: 64px;
+}
+
+.CascadingListShelf.open-transition {
+    transition: .3s height ease-in-out;
+}
+
+.CascadingListShelf.close-transition {
+    height: 0px;
+    transition: .3s height ease-in-out;
+}
+
+.CascadingListShelf .CascadingListShelf-background {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.CascadingListShelf .CascadingListShelf-background > svg {
+    display: none;
+}
+
+.CascadingListShelf.is-empty .CascadingListShelf-background > svg,
+.CascadingListShelf.accept-drop.will-drop .CascadingListShelf-background > svg {
+    display: block;
+}
+
+.CascadingListShelf .CascadingListShelf-background .drop {
+    stroke: #858585;
+}
+
+.CascadingList.is-dragging-item .CascadingListShelf.accept-drop .CascadingListShelf-background {
+    border: 2px dashed #0076FF;
+}
+
+.CascadingList.is-dragging-item .CascadingListShelf.accept-drop.will-drop .CascadingListShelf-background {
+    display: flex;
+    border: 2px solid #0076FF;
+}
+
+.CascadingListShelf.accept-drop.will-drop .CascadingListShelf-background .drop {
+    stroke: #0076FF;
+}
+
+.CascadingListShelf.accept-drop.will-drop .CascadingListShelf-options,
+.CascadingListShelf.accept-drop.will-drop .CascadingListShelf-items {
+    display: none;
+}
+
+.CascadingListShelf-options {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 16px;
+    padding: 4px;
+    display: flex;
+    z-index: 11;
+} 
+
+.CascadingListShelf-title {
+    padding-right: 8px;
+    color: #0076FF;
+    font-weight: 600;
+}
+
+.CascadingListShelf-close {
+    display: inline-block;
+    height: 16px;
+    width: 16px;
+    background-image: url("times.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    outline: none;
+    margin-left: auto;
+}
+
+.CascadingListShelf-close:hover {
+    cursor: pointer;
+}
+
+.CascadingListShelf-items {
+    position: absolute;
+    top: 24px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 11;
+}
+
+.CascadingListShelf-repetition {
+    max-height: 100%;
+    overflow: auto;
+}

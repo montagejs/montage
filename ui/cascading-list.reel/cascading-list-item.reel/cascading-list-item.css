@@ -10,9 +10,7 @@
     font-family: 'lato';
     box-sizing: border-box;
     overflow: hidden;
-    border-bottom: 1px solid #c8c7cc;
-    border-top: 1px solid #c8c7cc;
-    border-right: 1px solid #c8c7cc;
+    width: 256px;
 }
 
 .CascadingListItem-header,
@@ -38,6 +36,20 @@
 
 .CascadingListItem-header {
     border-bottom: 1px solid #c8c7cc;
+}
+
+.CascadingList.is-shelf-opened .CascadingListItem-content,
+.CascadingListItem-content.open-transition {
+    margin-top: 64px;
+}
+
+.CascadingListItem-content.open-transition {
+    transition: .3s margin-top ease-in-out;
+}
+
+.CascadingListItem-content.close-transition {
+    margin-top: 0px !important;
+    transition: .3s margin-top ease-in-out;
 }
 
 .CascadingListItem-footer {
@@ -105,7 +117,6 @@
         -ms-flex-direction: column;
             flex-direction: column;
     min-width: 256px;
-    min-width: 16rem;
 }
 
 .CascadingListItem-content .List {

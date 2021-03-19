@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <link rel="stylesheet" type="text/css" href="cascading-list.css">
     <script type="text/montage-serialization">
@@ -8,36 +9,54 @@
         "owner": {
             "values": {
                 "element": {"#": "owner"},
-                "repetition": {"@": "repetition"}
+                "succession": {"@": "succession"},
+                "shelf": {"@": "shelf"},
+                "classList.has('isFlat')": {"<-": "@owner.isFlat"},
+                "classList.has('is-shelf-opened')": {"<-": "@owner.isShelfOpened"}
             }
         },
 
-        "repetition": {
-            "prototype": "../repetition.reel",
+        "shelf": {
+            "prototype": "./cascading-list-shelf.reel",
             "values": {
-                "element": {"#": "repetition"},
-                "content": {"<-": "@owner.history"}
-            }
-        },
-
-        "item": {
-            "prototype": "./cascading-list-item.reel",
-            "values": {
-                "element": {"#": "item"},
-                "cascadingList": {"@": "owner"},
+                "element": {"#": "shelf"},
                 "delegate": {"<-": "@owner.delegate"},
-                "context": {"<-": "@repetition:iteration.object"}
+                "cascadingList": {"<-": "@owner"},
+                "willDrop": {"<-": "@owner._isShelfWillAcceptDrop"},
+                "acceptDrop": {"<-": "@owner._shouldShelfAcceptDrop"}
             }
+        },
+
+        "succession": {
+            "prototype": "../succession.reel",
+            "values": {
+                "element": {"#": "succession"},
+                "isFlat": {"<-": "@owner.isFlat"},
+                "contentBuildInAnimation":{"<-": "!@owner.isFlat && @owner._isComponentTreeLoaded ? @owner._contentBuildInAnimation : null" },
+                "contentBuildOutAnimation":{"<-": "!@owner.isFlat && @owner._isComponentTreeLoaded ? @owner._contentBuildOutAnimation : null" },
+                "classList.has('back-transition')": {"<-": "@owner._isBackTransition"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                },
+                {
+                    "type": "buildOutEnd",
+                    "listener": {"@": "owner"}
+                }
+            ]
         }
 
     }
     </script>
 </head>
+
 <body>
     <div data-montage-id="owner" class="CascadingList">
-        <div data-montage-id="repetition" class="CascadingList-repetition">
-            <div data-montage-id="item"></div>
-        </div>
+        <div data-montage-id="shelf"></div>
+        <div data-montage-id="succession" class="CascadingList-succession"></div>
     </div>
 </body>
+
 </html>

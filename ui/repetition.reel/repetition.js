@@ -1879,6 +1879,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 this._initialContentDrawn = true;
             }
 
+            if (!this.isSelectionEnabled && this.selection.length) {
+                this.selection.clear();
+            }
+
             // Synchronize iterations and _drawnIterations
 
             // Retract iterations that should no longer be visible
@@ -2004,9 +2008,60 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             if (selectionTracking) {
                 this._enableSelectionTracking();
             } else {
-                this.selection.clear();
                 this._disableSelectionTracking();
             }
+            
+            if (!this.isDeserializing) {
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    _ignoreSelectionAfterLongPress: {
+        value: false
+    },
+
+    ignoreSelectionAfterLongPress: {
+        set: function (ignoreSelectionAfterLongPress) {
+            ignoreSelectionAfterLongPress = !!ignoreSelectionAfterLongPress;
+
+            if (this._ignoreSelectionAfterLongPress !== ignoreSelectionAfterLongPress) {
+                this._ignoreSelectionAfterLongPress = ignoreSelectionAfterLongPress;
+                
+                if (!this.listenToLongPress && ignoreSelectionAfterLongPress) {
+                    this.listenToLongPress = true;
+                }
+            }
+        },
+        get: function () {
+            return this._ignoreSelectionAfterLongPress;
+        }
+    },
+
+    _listenToLongPress: {
+        value: false
+    },
+
+    listenToLongPress: {
+        set: function (listenToLongPress) {
+            listenToLongPress = !!listenToLongPress;
+
+            if (this._listenToLongPress !== listenToLongPress) {
+                this._listenToLongPress = listenToLongPress;
+
+                if (listenToLongPress) {
+                    this._pressComposer.addEventListener(
+                        "longPress", this, false
+                    );
+                } else if (!this.ignoreSelectionAfterLongPress) {
+                    this._pressComposer.removeEventListener(
+                        "longPress", this, false
+                    );
+                }
+            }            
+        },
+        get: function () {
+            return this._listenToLongPress;
         }
     },
 
@@ -2018,6 +2073,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     _enableSelectionTracking: {
         value: function () {
             this._pressComposer.addEventListener("pressStart", this, false);
+
+            if (this.listenToLongPress) {
+                this._pressComposer.addEventListener("longPress", this, false);
+            }
         }
     },
 
@@ -2029,6 +2088,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     _disableSelectionTracking: {
         value: function () {
             this._pressComposer.removeEventListener("pressStart", this, false);
+
+            if (this.listenToLongPress) {
+                this._pressComposer.removeEventListener("longPress", this, false);
+            }
         }
     },
 
@@ -2049,6 +2112,14 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         }
     },
 
+    handleLongPress: {
+        value: function () {
+            if (this.ignoreSelectionAfterLongPress) {
+                this._ignoreSelection();
+                this.selection.clear();
+            }                   
+        }
+    },
 
     /**
      * @private

@@ -1,6 +1,12 @@
-var Component = require("../component").Component,
-    Montage = require("../../core/core").Montage,
-    Promise = require('../../core/promise').Promise;
+var CascadingListShelfItem = require("./cascading-list-shelf.reel/cascading-list-shelf-item.reel").CascadingListShelfItem,
+    TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
+    CascadingListItem = require("./cascading-list-item.reel").CascadingListItem,
+    PressComposer = require("../../composer/press-composer").PressComposer,    
+    ListItem = require("../list-item.reel").ListItem,
+    Promise = require('../../core/promise').Promise,
+    Component = require("../component").Component,
+    Montage = require("../../core/core").Montage;
+
 
 var CascadingListContext = exports.CascadingListContext = Montage.specialize({
 
@@ -30,11 +36,60 @@ var CascadingListContext = exports.CascadingListContext = Montage.specialize({
 
 });
 
-exports.CascadingList = Component.specialize({
+var CascadingList = exports.CascadingList = Component.specialize({
 
-    constructor: {
-        value: function () {
-            this.history = [];
+    __pressComposer: {
+        value: null
+    },
+
+    _pressComposer: {
+        get: function () {
+            if (!this.__pressComposer) {
+                this.__pressComposer = new PressComposer();
+                this.__pressComposer.delegate = this;
+
+                this.addComposerForElement(
+                    this.__pressComposer,
+                    this.element.ownerDocument
+                );
+            }
+
+            return this.__pressComposer;
+        }
+    },
+
+    __translateComposer: {
+        value: null
+    },
+
+    _translateComposer: {
+        get: function () {
+            if (!this.__translateComposer) {
+                this.__translateComposer = new TranslateComposer();
+                this.__translateComposer.hasMomentum = false;
+                this.__translateComposer.shouldCancelOnSroll = false;
+                this.__translateComposer.translateX = 0;
+                this.__translateComposer.translateY = 0;
+                this.addComposer(this.__translateComposer);
+            }
+
+            return this.__translateComposer;
+        }
+    },
+
+    __registeredRoutesComponents: {
+        value: null
+    },
+
+    _registeredRoutesComponents: {
+        get: function () {
+            if (!this.__registeredRoutesComponents) {
+                this.__registeredRoutesComponents = new Map();
+                this._registeredRoutesComponents.set("back", []);
+                this._registeredRoutesComponents.set("next", []);
+            }
+
+            return this.__registeredRoutesComponents;
         }
     },
 
@@ -42,8 +97,43 @@ exports.CascadingList = Component.specialize({
         value: 0
     },
 
+    currentColumnIndex: {
+        get: function () {
+            return this._currentColumnIndex;
+        }
+    },
+
     history: {
-        value: null
+        get: function () {
+            return this.succession ?
+                this.succession.history : [];
+        }
+    },
+
+    isFlat: {
+        value: false
+    },
+
+    isResponsive: {
+        value: true
+    },
+
+    shrinkForWidth: {
+        value: 768 // px
+    },
+
+    _contentBuildOutAnimation: {
+        value: {
+            cssClass: "buildOut",
+            toCssClass: "buildOutTo"
+        }
+    },
+
+    _contentBuildInAnimation: {
+        value: {
+            fromCssClass: "buildInFrom",
+            cssClass: "buildIn"
+        }
     },
 
     _root: {
@@ -58,7 +148,7 @@ exports.CascadingList = Component.specialize({
             if (this._root !== root) {
                 this._root = root;
 
-                if (root) {
+                if (root && !this.isDeserializing) {
                     this.expand(root);
                 }
             }
@@ -69,12 +159,60 @@ exports.CascadingList = Component.specialize({
         value: false
     },
 
+    isShelfOpened: {
+        value: false
+    },
+
+    _shelfContent: {
+        value: null
+    },
+
+    shelfContent: {
+        get: function () {
+            return this._shelfContent || (this._shelfContent = []);
+        }
+    },
+
+    enterDocument: {
+        value: function () {
+            if (!CascadingList.cssTransform) {
+                if ("webkitTransform" in this._element.style) {
+                    CascadingList.cssTransform = "webkitTransform";
+                } else if ("MozTransform" in this._element.style) {
+                    CascadingList.cssTransform = "MozTransform";
+                } else if ("oTransform" in this._element.style) {
+                    CascadingList.cssTransform = "oTransform";
+                } else {
+                    CascadingList.cssTransform = "transform";
+                }
+            }
+
+            window.addEventListener("resize", this);
+            this.addEventListener("cascadingListItemLoaded", this);
+            this.addEventListener("cascadingListShelfOpen", this);
+            this.addEventListener("cascadingListShelfClose", this);
+            this.addEventListener("listIterationLongPress", this);
+
+            if (this._root) {
+                this.expand(this._root);
+            }
+        }
+    },
+
     exitDocument: {
         value: function () {
+            window.removeEventListener("resize", this);
+            this.removeEventListener("cascadingListItemLoaded", this);
+            this.removeEventListener("cascadingListShelfOpen", this);
+            this.removeEventListener("cascadingListShelfClose", this);
+            this.removeEventListener("listIterationLongPress", this);
+
+            this.classList.remove('animated');
+
             this.popAll();
         }
     },
-    
+
     _delegate: {
         value: null
     },
@@ -179,6 +317,8 @@ exports.CascadingList = Component.specialize({
 
             this._currentColumnIndex = columnIndex;
 
+            this._closeShelfIfNeeded();
+
             return this._populateColumnWithObjectAndIndex(
                 object, columnIndex, isEditing
             );
@@ -188,15 +328,21 @@ exports.CascadingList = Component.specialize({
     cascadingListItemAtIndex: {
         value: function (index) {
             if (this.history[index]) {
-                return this.history[index].cascadingListItem;
+                return this.history[index];
             }
+        }
+    },
+
+    getCurrentCascadingListItem: {
+        value: function () {
+            return this.cascadingListItemAtIndex(this._currentColumnIndex);
         }
     },
 
     findIndexForObject: {
         value: function (object) {
             for (var i = this.history.length - 1; i > -1; i--) {
-                if (this.history[i] === object) {
+                if (this.history[i].context === object) {
                     return i;
                 }
             }
@@ -205,31 +351,284 @@ exports.CascadingList = Component.specialize({
         }
     },
 
+    openShelf: {
+        value: function (noTransition) {
+            if (!this.shelf.isOpened && !this.isFlat) {
+                this.shelf.open(noTransition);
+            }
+        }
+    },
+
+    closeShelf: {
+        value: function (noTransition) {
+            if (this.shelf.isOpened && !this.isFlat) {
+                this.shelf.close(noTransition);
+            }
+        }
+    },
+
+    removeObjectFromShelf: {
+        value: function (object) {
+            var index;
+
+            if ((index = this.shelfContent.indexOf(object)) !== -1) {
+                this.shelfContent.splice(index, 1);
+            }
+        }
+    },
+
+    addObjectToShelf: {
+        value: function (object) {
+            if (!this.shelfHasDataObject(object)) {
+                this.shelfContent.push(object);
+            }
+        }
+    },
+
+    clearShelfContent: {
+        value: function () {
+            this.shelfContent.clear();
+        }
+    },
+
+    shelfHasDataObject: {
+        value: function (object) {
+            return this.shelfContent.indexOf(object) > -1;
+        }
+    },
+
+    registerComponentForBackRoute: {
+        value: function (component) {
+            if (component) {
+                var backRoutes = this._registeredRoutesComponents.get("back");
+
+                if (backRoutes.indexOf(component) === -1) {
+                    backRoutes.push(component);
+                }
+            }
+        }
+    },
+
+    unregisterComponentForBackRoute: {
+        value: function (component) {
+            if (component) {
+                var backRoutes = this._registeredRoutesComponents.get("back"),
+                    index;
+
+                if ((index = backRoutes.indexOf(component)) > -1) {
+                    backRoutes.splice(index, 1);
+                }
+            }    
+        }
+    },
+
+    /**
+     * Event Handlers
+     */
+
+    handlePress: {
+        value: function (event) {
+            if (!this.element.contains(event.targetElement)) {
+                this.closeShelf();
+            }
+        }
+    },
+
+    handleListIterationLongPress: {
+        value: function (event) {
+            if (!this.isFlat) {
+                this.openShelf();
+            }
+        }
+    },
+
+    handleTranslateStart: {
+        value: function (event) {
+            var startPosition = this._translateComposer.pointerStartEventPosition,
+                dataObject = this._findDataObjectFromElement(startPosition.target);
+            
+            this._resetTranslateContext();
+
+            if (dataObject) {
+                var delegateResponse = this.callDelegateMethod(
+                    'cascadingListCanDragObject', this, dataObject, true
+                    ),
+                    canDrag = delegateResponse === void 0 ?
+                        true : delegateResponse;
+
+                if (canDrag) {
+                    var shouldCascadingListShelfAcceptDrop = !this.shelfHasDataObject(dataObject);
+                    delegateResponse = this.callDelegateMethod(
+                        'cascadingListShelfShouldAcceptDataObject',
+                        this,
+                        dataObject,
+                        shouldCascadingListShelfAcceptDrop
+                    );
+                    
+                    this._startPositionX = startPosition.pageX;
+                    this._startPositionY = startPosition.pageY;
+
+                    // Add delegate method
+                    this._draggingComponent = this._findDraggingComponentFromElement(startPosition.target);
+                    this._draggingDataObject = dataObject;
+                    this._isDragging = true;
+                    this._shouldShelfAcceptDrop = delegateResponse === void 0 ?
+                        shouldCascadingListShelfAcceptDrop : delegateResponse;
+                    
+                    this._addDragEventListeners();
+                }
+            }
+        }
+    },
+
+    handleTranslate: {
+        value: function (event) {
+            this._translateX = event.translateX;
+            this._translateY = event.translateY;
+
+            var positionX = this._startPositionX + this._translateX,
+                positionY = this._startPositionY + this._translateY;
+
+            this._isShelfWillAcceptDrop = this._isDraggingComponentOverShelf();
+
+            //FIXME: need to used a radius before canceling the back navigation
+            clearTimeout(this._timeout);
+
+            if (!this._isShelfWillAcceptDrop && !this._isBackTransition) {
+                this._shouldNaviguateBack = this._isDraggingComponentOverBackRoute(positionX, positionY);
+
+                if (this._shouldNaviguateBack) {
+                    var self = this;
+
+                    this._timeout = setTimeout(function () {
+                        self._navigateBack();
+                    }, 50);
+                }
+            }
+
+
+            this.needsDraw = true;
+        }
+    },
+
+    handleTranslateEnd: {
+        value: function () {
+            if (this._isShelfWillAcceptDrop) {
+                this.addObjectToShelf(this._draggingDataObject);
+            }
+
+            this._resetTranslateContext();
+        }
+    },
+
+
+    handleTranslateCancel: {
+        value: function () {
+            this._resetTranslateContext();
+        }
+    },
+
+    handleCascadingListShelfOpen: {
+        value: function (event) {
+            this.isShelfOpened = true;
+            this._pressComposer.addEventListener("press", this);
+            this._translateComposer.addEventListener("translateStart", this);
+        }
+    },
+
+    handleCascadingListShelfClose: {
+        value: function (event) {
+            this.isShelfOpened = false;
+            this._pressComposer.removeEventListener("press", this);
+            this._translateComposer.removeEventListener("translateStart", this);
+        }
+    },
+
+    handleBackAction: {
+        value: function () {
+            this._navigateBack();
+        }
+    },
+
+    handleBuildOutEnd: {
+        value: function (event) {
+            this._isBackTransition = false;
+        }
+    },
+
+    handleCascadingListItemLoaded: {
+        value: function () {
+            this.classList.add('animated');
+            this.removeEventListener('cascadingListItemLoaded', this);
+        }
+    },
+
+    handleResize: {
+        value: function () {
+            this.needsDraw = true;
+        }
+    },
+
+     /**
+     * Private Method
+     */
+
+    _navigateBack: {
+        value: function () {
+            this._pop();
+            this._closeShelfIfNeeded();
+            this._isBackTransition = true;
+        }
+    },
+
+    _closeShelfIfNeeded: {
+        value: function () {
+            if (this.shelf.isOpened && !this.shelfContent.length) {
+                this.closeShelf(true);
+            }
+        }
+    },
+    
     _push: {
         value: function (context) {
-            this.history.splice(context.columnIndex, 1, context);
-            this.needsDraw = true;
+            var cascadingListItem = new CascadingListItem();
+            cascadingListItem.element = document.createElement("div");
+            cascadingListItem.cascadingList = this;
+            cascadingListItem.delegate = this.delegate;
+            cascadingListItem.context = context;
+            cascadingListItem.isFlat = this.isFlat;
+            cascadingListItem.needsDraw = true;
+            this.history.splice(context.columnIndex, 1, cascadingListItem);
 
             if (this.shouldDispatchCascadingListEvents) {
-                this.dispatchEventNamed('cascadingListPush', true, true, context);
+                this.dispatchEventNamed(
+                    'cascadingListPush',
+                    true,
+                    true,
+                    cascadingListItem
+                );
             }
         }
     },
 
     _pop: {
         value: function () {
-            var cascadingListItem,
-                context = this.history.pop();
-            
+            var cascadingListItem = this.history.pop();
+
             this._currentColumnIndex--;
-            context.isEditing = false;
+            cascadingListItem.context.isEditing = false;
             this.needsDraw = true;
 
             if (this.shouldDispatchCascadingListEvents) {
-                this.dispatchEventNamed('cascadingListPop', true, true, context);
+                this.dispatchEventNamed(
+                    'cascadingListPop',
+                    true,
+                    true,
+                    cascadingListItem
+                );
             }
 
-            return context;
+            return cascadingListItem;
         }
     },
 
@@ -237,7 +636,7 @@ exports.CascadingList = Component.specialize({
         value: function (object, columnIndex, isEditing) {
             if (!this._populatePromise && object) {
                 var self = this;
-                
+
                 this._populatePromise = this.loadUserInterfaceDescriptor(object).then(function (UIDescriptor) {
                     var context = self._createCascadingListContextWithObjectAndColumnIndex(
                         object,
@@ -267,6 +666,180 @@ exports.CascadingList = Component.specialize({
             context.cascadingList = this;
 
             return context;
+        }
+    },
+
+    _findDraggingComponentFromElement: {
+        value: function (element) {
+            var component;
+
+            while (element && !(component = element.component)) {
+                element = element.parentElement;
+            }
+
+            while (component && !(
+                component instanceof ListItem ||
+                component instanceof CascadingListShelfItem
+            )) {
+                component = component.parentComponent;
+            }
+
+            return component;
+        }
+    },
+
+    _addDragEventListeners: {
+        value: function () {
+            this._translateComposer.addEventListener('translate', this, false);
+            this._translateComposer.addEventListener('translateEnd', this, false);
+            this._translateComposer.addEventListener('translateCancel', this, false);
+        }
+    },
+
+    _removeDragEventListeners: {
+        value: function () {
+            this._translateComposer.removeEventListener('translate', this, false);
+            this._translateComposer.removeEventListener('translateEnd', this, false);
+            this._translateComposer.removeEventListener('translateCancel', this, false);
+        }
+    },
+
+
+    _resetTranslateContext: {
+        value: function () {
+            this._removeDragEventListeners();
+            this._startPositionX = 0;
+            this._startPositionY = 0;
+            this._translateX = 0;
+            this._translateY = 0;
+            this._isDragging = false;
+            this.__translateComposer.translateX = 0;
+            this.__translateComposer.translateY = 0;
+            this._draggingElementBoundingRect = null;
+            this._isShelfWillAcceptDrop = false;
+            this._shouldShelfAcceptDrop = false;
+            this.needsDraw = true;
+        }
+    },
+
+    _findDataObjectFromElement: {
+        value: function (element) {
+            var component, dataObject;
+
+            while (element && !(component = element.component)) {
+                element = element.parentElement;
+            }
+
+            while (component && !(dataObject = component.data)) {
+                component = component.parentComponent;
+            }
+
+            return dataObject;
+        }
+    },
+
+    _isDraggingComponentOverShelf: {
+        value: function () {
+            if (this._shelfBoundingRect && this.shelf.isOpened) {
+                var x = this._startPositionX + this._translateX,
+                    y = this._startPositionY + this._translateY;
+
+                if (x >= this._shelfBoundingRect.left && x <= this._shelfBoundingRect.right &&
+                    y >= this._shelfBoundingRect.top && y <= this._shelfBoundingRect.bottom
+                ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    },
+
+    _isDraggingComponentOverBackRoute: {
+        value: function (positionX, positionY) {
+            var backRoutes = this._registeredRoutesComponents.get("back"),
+                component,    
+                rect;
+
+            for (var i = 0, length = backRoutes.length; i < length; i++) {
+                component = backRoutes[i];
+                //FIXME: need to be optimized
+                rect = component.element.getBoundingClientRect();
+
+                if (positionX > rect.x && positionX < (rect.x + rect.width) && 
+                    positionY > rect.y && positionY < (rect.y + rect.height)
+                ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    },
+
+    /**
+     * Draw Methods
+     */
+
+    willDraw: {
+        value: function () {
+            if (this.isResponsive) {
+                this.isFlat = window.innerWidth >= this.shrinkForWidth;
+
+                for (var i = 0; i < this.history.length; i++) {
+                    var item = this.history[i];
+                    item.isFlat = this.isFlat;
+                }
+            }
+
+            if (this._isDragging) {
+                if (!this._shelfBoundingRect) {
+                    this._shelfBoundingRect = this.shelf.element.getBoundingClientRect();
+                }
+
+                if (this._draggingComponent && !this._draggingElementBoundingRect) {
+                    this._draggingElementBoundingRect = this._draggingComponent.element.getBoundingClientRect();
+                }
+            }
+        }
+    },
+
+    draw: {
+        value: function () {
+            if (this._isDragging) {
+                this.element.classList.add('is-dragging-item');
+
+                if (!this._ghostElement) {
+                    this._ghostElement = this._draggingComponent.element.cloneNode(true);
+                    this._ghostElement.classList.add("montage-ghostImage");
+                    this._ghostElement.style.visibility = "hidden";
+                    this._ghostElement.style.position = "absolute";
+                    this._ghostElement.style.zIndex = 999999;
+                    this._ghostElement.style.top = this._draggingElementBoundingRect.top + "px";
+                    this._ghostElement.style.left = this._draggingElementBoundingRect.left + "px";
+                    this._ghostElement.style.width = this._draggingElementBoundingRect.width + "px";
+                    document.body.appendChild(this._ghostElement);
+                    this._needsToWaitforGhostElementBoundaries = true;
+                    this.needsDraw = true;
+                }
+
+                if (!this._needsToWaitforGhostElementBoundaries) {
+                    // Delegate Method for ghost element positioning?
+                    this._ghostElement.style.visibility = "visible";
+                } else {
+                    this._needsToWaitforGhostElementBoundaries = false;
+                }
+
+                this._ghostElement.style[CascadingList.cssTransform] = "translate3d(" +
+                    this._translateX + "px," + this._translateY + "px,0)";
+            } else {
+                this.element.classList.remove('is-dragging-item');
+
+                if (this._ghostElement) {
+                    document.body.removeChild(this._ghostElement);
+                    this._ghostElement = null;
+                }
+            }
         }
     }
 

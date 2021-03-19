@@ -1,0 +1,9 @@
+{
+    "root": {
+        "prototype": "core/meta/user-interface-descriptor",
+        "values": {
+            "listIgnoreSelectionAfterLongPress": true,
+            "listDispatchLongPress": true
+        }
+    }
+}

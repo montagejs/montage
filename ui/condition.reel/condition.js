@@ -29,25 +29,17 @@ exports.Condition = Component.specialize( /** @lends Condition.prototype # */ {
         value: true
     },
 
-    _contents: {
+    __content: {
         value: null
     },
 
-    _needsClearDomContent: {
-        value: false
-    },
-
-    __contentDocumentFragment: {
-        value: null
-    },
-
-    _contentDocumentFragment: {
+    _content: {
         get: function () {
-            if (!this.__contentDocumentFragment && this.element) {
-                this.__contentDocumentFragment = document.createDocumentFragment();
+            if (!this.__content && this.element) {
+                this.__content = Array.from(this.element.childNodes);
             }
 
-            return this.__contentDocumentFragment;
+            return this.__content;
         }
     },
 
@@ -61,22 +53,24 @@ exports.Condition = Component.specialize( /** @lends Condition.prototype # */ {
      */
     condition: {
         set: function (value) {
-
+            value = !!value;
+            
             if (value === this._condition) {
                 return;
             }
 
             this._condition = value;
-            this.needsDraw = true;
+            
             // If it is being deserialized element might not been set yet
             if (!this.isDeserializing && this.removalStrategy === "remove") {
                 if (value) {
-                    this.domContent = this._contentDocumentFragment.childNodes;
-
+                    this.domContent = this._content;
                 } else {
-                    this._needsDraw = this._needsClearDomContent = true;
+                    this._clearDomContent();
                 }
             }
+            
+            this.needsDraw = true;
         },
         get: function () {
             return this._condition;
@@ -85,19 +79,13 @@ exports.Condition = Component.specialize( /** @lends Condition.prototype # */ {
 
     _clearDomContent: {
         value: function () {
-            if (this.removalStrategy === "remove" && !this._condition) {
-                var childNodes = this.element.childNodes;
-
-                while (childNodes.length) {
-                    this._contentDocumentFragment.appendChild(childNodes[0]);
-                }
-
+            if (
+                this.removalStrategy === "remove" &&
+                !this._condition &&
+                this._content
+            ) {
                 this.domContent = null;
-                this._shouldClearDomContentOnNextDraw = false;
-                this.needsDraw = false;
             }
-
-            this._needsClearDomContent = false;
         }
     },
 
@@ -161,10 +149,6 @@ exports.Condition = Component.specialize( /** @lends Condition.prototype # */ {
             } else {
                 this.element.classList.add("montage-invisible");
             }
-
-           if (this._needsClearDomContent) {
-               this._clearDomContent();
-           }
         }
     }
 

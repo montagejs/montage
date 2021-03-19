@@ -155,17 +155,71 @@ var CascadingListItem = exports.CascadingListItem = Component.specialize({
         value: null
     },
 
-    selection: {
+    _selection: {
         value: null
+    },
+
+    _ignoreSelectionChange: {
+        value: false
+    },
+
+    selection: {
+        get: function () {
+            return this._selection;
+        },
+        set: function (selection) {
+            if (selection !== this._selection) {
+                this._selection = selection;
+
+                if (
+                    this.isCollection && selection &&
+                    this.context.columnIndex < this.cascadingList.currentColumnIndex &&
+                    !selection.length
+                ) {
+                    var nextCascadingListItem = this.cascadingList.cascadingListItemAtIndex(this.context.columnIndex + 1);
+                    this._ignoreSelectionChange = true;
+                    this.selection.push(nextCascadingListItem.context.object);
+                }
+            }
+        }
+    },
+
+    enterDocument: {
+        value: function () {
+            this.context.cascadingList.registerComponentForBackRoute(this.backButton);
+        }
+    },
+
+    exitDocument: {
+        value: function () {
+            if (this.context) {
+                this.context.cascadingList.unregisterComponentForBackRoute(this.backButton);
+            }
+        }
     },
 
     _handleSelectionChange: {
         value: function (plus, minus, index) {
-            if (plus && plus.length === 1) {
+            if (
+                plus && plus.length === 1 &&
+                !this._ignoreSelectionChange
+            ) {
                 this.cascadingList.expand(
                     plus[0],
                     this.context.columnIndex + 1
                 );
+            }
+            
+            this._ignoreSelectionChange = false;
+        }
+    },
+
+    didDraw: {
+        value: function () {
+            if (this.context && this.content.component) {
+                // FIXME: Should be dispatched from the content placeholder.
+                // and then we dispatch a cascadingListItemLoaded event
+                this.dispatchEventNamed('cascadingListItemLoaded', true, true);
             }
         }
     }

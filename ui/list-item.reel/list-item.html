@@ -14,6 +14,7 @@
                 "classList.has('active')": {"<-": "@owner.active"},
                 "classList.has('selected')": {"<-": "@owner.selected"},
                 "classList.has('is-expandable')": {"<-": "@owner._isExpandable"},
+                "classList.has('show-handle')": {"<-": "@owner.showHandle"},
                 "classList.has('description-bottom')": {"<-": "@owner._descriptionPosition == 'bottom'"}
             }
         },
@@ -57,6 +58,11 @@
 </head>
 <body>
     <div data-montage-id="owner" class="ListItem">
+        <div data-montage-id="handle" class="ListItem-handle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
         <div data-montage-id="icon" class="ListItem-icon"></div>
         <div class="ListItem-text">
             <div data-montage-id="label" class="ListItem-label"></div>
