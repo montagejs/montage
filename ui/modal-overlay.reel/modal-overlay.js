@@ -16,12 +16,8 @@ var ModalOverlay = exports.ModalOverlay = Overlay.specialize(/** @lends ModalOve
 
     enterDocument: {
         value: function (firstTime) {
-            var body;
-
-            this.super(firstTime);
-
             if (firstTime) {
-                body = this.element.ownerDocument.body;
+                var body = this.element.ownerDocument.body;
                 body.appendChild(this.modalMaskElement);
             }
         }

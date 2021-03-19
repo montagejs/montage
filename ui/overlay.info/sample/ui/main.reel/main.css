@@ -1,0 +1,61 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+     -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.Main {
+    padding: 20px;
+}
+
+header {
+    margin: 60px 0;
+    font-size: 2rem;
+    text-align: center;
+    color: #33495d;
+    height: 40px;
+}
+
+h4 {
+    font-size: 1rem;
+    color: #33495d;
+    margin: 40px 0;
+}
+
+.montage-Overlay {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+}
+
+.Button3 {
+    margin-left: 200px;
+}
+
+.Scrollable {
+    margin-top: 20px;
+    border: 1px solid #c8c7cc;
+    height: 200px;
+    width: 400px;
+    overflow: auto;
+}
+
+.Scrollable-inner {
+    height: 10000px;
+    width: 400px;
+}
+
+.montage-toggle {
+    font-size: .6em;
+}

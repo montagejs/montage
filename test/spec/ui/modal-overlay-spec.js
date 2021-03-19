@@ -1,8 +1,6 @@
 /*global require,exports,describe,it,expect */
 var Montage = require("montage").Montage,
     ModalOverlay = require("montage/ui/modal-overlay.reel").ModalOverlay,
-    Promise = require("montage/core/promise").Promise,
-    MockDOM = require("mocks/dom"),
     defaultEventManager = require("montage/core/event/event-manager").defaultEventManager;
 
 describe("ui/modal-overlay-spec", function () {
@@ -13,14 +11,14 @@ describe("ui/modal-overlay-spec", function () {
         defaultEventManager._activeTarget = null;
         aModalOverlay = new ModalOverlay();
         aModalOverlay.hasTemplate = false;
-        aModalOverlay.element = MockDOM.element();
-        aModalOverlay.modalMaskElement = MockDOM.element();
+        aModalOverlay.element = document.createElement('div');
+        aModalOverlay.modalMaskElement = document.createElement('div');
         aModalOverlay.enterDocument(true);
 
         anotherModalOverlay = new ModalOverlay();
         anotherModalOverlay.hasTemplate = false;
-        anotherModalOverlay.element = MockDOM.element();
-        anotherModalOverlay.modalMaskElement = MockDOM.element();
+        anotherModalOverlay.element = document.createElement('div');
+        anotherModalOverlay.modalMaskElement = document.createElement('div');
         anotherModalOverlay.enterDocument(true);
 
         ModalOverlay.prototype._queue = [];

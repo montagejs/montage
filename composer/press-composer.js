@@ -220,9 +220,14 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         }
     },
 
+    observedMouseButton: {
+        value: 0
+    },
+
     _state: {
         value: 0
     },
+
     state: {
         get: function () {
             return this._state;
@@ -521,11 +526,19 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     captureMousedown: {
         value: function (event) {
-            if (event.button === 0 && this._shouldPerformPress()) {
+            if ((
+                    event.button === this.observedMouseButton ||
+                    this.observedMouseButton === null
+                ) && this._shouldPerformPress()
+            ) {
                 this._observedPointer = "mouse";
-                this.component.eventManager.claimPointer(this._observedPointer, this);
+                this.component.eventManager.claimPointer(
+                    this._observedPointer, this
+                );
 
-                if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                if (this.component.eventManager.isPointerClaimedByComponent(
+                    this._observedPointer, this
+                )) {
                     this._addPointerDownListener();
 
                 } else{
@@ -989,4 +1002,3 @@ PressComposer.prototype.handleMSPointerDown = PressComposer.prototype._handlePoi
 PressComposer.prototype.handlePointerdown = PressComposer.prototype._handlePointerDown;
 PressComposer.prototype.handleMousedown = PressComposer.prototype._handlePointerDown;
 PressComposer.prototype.handleTouchstart = PressComposer.prototype._handlePointerDown;
-

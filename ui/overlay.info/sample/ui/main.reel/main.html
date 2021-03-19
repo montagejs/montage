@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "values": {
+                    "element": {"#": "main"},
+                    "overlay4": {"@": "overlay4"},
+                    "overlay5": {"@": "overlay5"},
+                    "toggle1": {"@": "toggle1"},
+                    "toggle2": {"@": "toggle2"},
+                    "overlayContainer1": {"#": "container1"}
+                }
+            },
+
+            "button1": {
+                "prototype": "montage/ui/button.reel",
+                "values": {
+                    "element": {"#": "button1"},
+                    "label": "show overlay 1"
+                }
+            },
+
+            "overlay1": {
+                "prototype": "montage/ui/overlay.reel",
+                "values": {
+                    "element": {"#": "overlay1"},
+                    "control": {"@": "button1"},
+                    "height": 100,
+                    "width": 100
+                }
+            },
+
+            "button2": {
+                "prototype": "montage/ui/button.reel",
+                "values": {
+                    "element": {"#": "button2"},
+                    "label": "show overlay 2"
+                }
+            },
+
+            "overlay2": {
+                "prototype": "montage/ui/overlay.reel",
+                "values": {
+                    "element": {"#": "overlay2"},
+                    "control": {"@": "button2"},
+                    "height": 150,
+                    "width": 200
+                }
+            },
+
+            "select1": {
+                "prototype": "montage/ui/select.reel",
+                "values": {
+                    "element": {"#": "select1"},
+                    "content": [
+                        "top",
+                        "right",
+                        "bottom",
+                        "left"
+                    ]
+                }
+            },
+
+            "button3": {
+                "prototype": "montage/ui/button.reel",
+                "values": {
+                    "element": {"#": "button3"},
+                    "label": "show overlay 3"
+                }
+            },
+
+            "overlay3": {
+                "prototype": "montage/ui/overlay.reel",
+                "values": {
+                    "element": {"#": "overlay3"},
+                    "control": {"@": "button3"},
+                    "anchor": {"@": "button3"},
+                    "anchorPosition": {"<-": "@select1.value"},
+                    "height": 100,
+                    "width": 100
+                }
+            },
+
+            "toggle1": {
+                "prototype": "montage/ui/toggle.reel",
+                "values": {
+                    "element": {"#": "toggle1"}
+                }
+            },
+
+            "overlay4": {
+                "prototype": "montage/ui/overlay.reel",
+                "values": {
+                    "element": {"#": "overlay4"},
+                    "height": 100,
+                    "width": 100
+                }
+            },
+
+            "toggle2": {
+                "prototype": "montage/ui/toggle.reel",
+                "values": {
+                    "element": {"#": "toggle2"}
+                }
+            },
+
+            "overlay5": {
+                "prototype": "montage/ui/overlay.reel",
+                "values": {
+                    "element": {"#": "overlay5"},
+                    "overlayContainer": {"#": "container1"},
+                    "height": 100,
+                    "width": 100
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <header>Overlay Samples</header>
+        <h4>Simple</h4>
+        <button data-montage-id="button1"></button>
+        <div data-montage-id="overlay1">
+            overlay1
+        </div>
+        <button data-montage-id="button2"></button>
+        <div data-montage-id="overlay2">
+            overlay2
+        </div>
+
+        <h4>With an anchor</h4>
+        <select data-montage-id="select1"></select>
+        <button data-montage-id="button3" class="Button3"></button>
+        <div data-montage-id="overlay3">
+            overlay3
+        </div>
+
+        <h4>Contextual overlay</h4>
+        <span>Enable global contextual overlay: </span>
+        <span data-montage-id="toggle1"></span>
+        <div data-montage-id="overlay4">
+            overlay4
+        </div>
+
+        <h4>Within a container</h4>
+        <span>Enable contextual overlay: </span>
+        <span data-montage-id="toggle2"></span>
+        <div class="Scrollable"  data-montage-id="container1">
+            <div class="Scrollable-inner">
+                <div data-montage-id="overlay5">
+                    overlay5
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
