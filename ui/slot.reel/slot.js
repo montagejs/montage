@@ -68,6 +68,13 @@ exports.Slot = Component.specialize( /** @lends Slot.prototype # */ {
                     if (this.delegate && typeof this.delegate.slotElementForComponent === "function") {
                         element = this.delegate.slotElementForComponent(this, value, element);
                     }
+
+                    if (this.isDeserializing) {
+                        // Allows to a component without an initial element,
+                        // to be correctly attached to its parentComponent during the deserializing phase.
+                        this.element.appendChild(element);
+                    }
+
                     value.element = element;
                 } else {
                     element = value.element;
