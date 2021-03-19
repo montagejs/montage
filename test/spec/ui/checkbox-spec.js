@@ -1,41 +1,27 @@
 var Montage = require("montage").Montage,
-    AbstractCheckbox = require("montage/ui/base/abstract-checkbox").AbstractCheckbox,
-    MockDOM = require("mocks/dom");
+    Checkbox = require("montage/ui/checkbox.reel").Checkbox;
 
-AbstractCheckbox.hasTemplate = false;
+function createCheckBoxElement() {
+    var element = document.createElement('input');
+    element.setAttribute('type', 'checkbox');
+    return element;
+}
 
-describe("test/base/abstract-checkbox-spec", function () {
-
-    describe("creation", function () {
-        it("cannot be instantiated directly", function () {
-            expect(function () {
-                new AbstractCheckbox();
-            }).toThrow();
-        });
-
-        it("can be instantiated as a subtype", function () {
-            var CheckboxSubtype = AbstractCheckbox.specialize( {});
-            var aCheckboxSubtype = null;
-            expect(function () {
-                aCheckboxSubtype = new CheckboxSubtype();
-            }).not.toThrow();
-            expect(aCheckboxSubtype).toBeDefined();
-        });
-    });
+describe("test/ui/checkbox-spec", function () {
 
     describe("properties", function () {
-        var Checkbox = AbstractCheckbox.specialize( {}),
-            aCheckbox;
+        var aCheckbox;
 
         beforeEach(function () {
             aCheckbox = new Checkbox();
-            aCheckbox.element = MockDOM.element();
+            aCheckbox.element = createCheckBoxElement();
         });
 
         describe("checked", function () {
             beforeEach(function () {
                 aCheckbox = new Checkbox();
-                aCheckbox.element = MockDOM.element();
+                // Need to fake check
+                aCheckbox.element = document.createElement('div');
                 aCheckbox.prepareForActivationEvents();
             });
 
@@ -71,14 +57,14 @@ describe("test/base/abstract-checkbox-spec", function () {
 
             it("should add the corresponding class name to classList when checked", function () {
                 aCheckbox.checked = true;
-                expect(aCheckbox.classList.contains("montage-Checkbox--checked")).toBe(true);
+                expect(aCheckbox.classList.contains("montage--checked")).toBe(true);
             });
         });
 
         describe("enabled", function () {
             beforeEach(function () {
                 aCheckbox = new Checkbox();
-                aCheckbox.element = MockDOM.element();
+                aCheckbox.element = createCheckBoxElement();
                 aCheckbox.checked = false;
                 aCheckbox.prepareForActivationEvents();
             });
@@ -107,7 +93,6 @@ describe("test/base/abstract-checkbox-spec", function () {
 
             it("should add the corresponding class name to classList when enabled is false", function () {
                 aCheckbox.enabled = false;
-
                 expect(aCheckbox.classList.contains("montage--disabled")).toBe(true);
             });
         });
@@ -115,12 +100,14 @@ describe("test/base/abstract-checkbox-spec", function () {
         describe("active", function () {
             beforeEach(function () {
                 aCheckbox = new Checkbox();
-                aCheckbox.element = MockDOM.element();
+                aCheckbox.element = createCheckBoxElement();
                 aCheckbox.checked = false;
                 aCheckbox.prepareForActivationEvents();
             });
 
             it("should be true when the PressComposer fires a pressStart", function () {
+                aCheckbox.element = document.createElement('div'); // need to fake check
+
                 aCheckbox._pressComposer.dispatchEventNamed("pressStart");
                 expect(aCheckbox.active).toBe(true);
             });
@@ -155,12 +142,11 @@ describe("test/base/abstract-checkbox-spec", function () {
     });
 
     describe("draw", function () {
-        var Checkbox = AbstractCheckbox.specialize( {}),
-            aCheckbox;
+        var aCheckbox;
 
         beforeEach(function () {
             aCheckbox = new Checkbox();
-            aCheckbox.element = MockDOM.element();
+            aCheckbox.element = createCheckBoxElement();
         });
 
         it("should be requested after enabled state is changed", function () {
@@ -174,12 +160,11 @@ describe("test/base/abstract-checkbox-spec", function () {
     });
 
     describe("events", function () {
-        var Checkbox = AbstractCheckbox.specialize( {}),
-            aCheckbox, anElement, listener;
+        var aCheckbox, anElement, listener;
 
         beforeEach(function () {
             aCheckbox = new Checkbox();
-            anElement = MockDOM.element();
+            aCheckbox.element = createCheckBoxElement();
             listener = {
                 handleEvent: function () {}
             };
@@ -204,14 +189,15 @@ describe("test/base/abstract-checkbox-spec", function () {
                 aCheckbox.prepareForActivationEvents();
             });
             it("should fire an 'action' event when the PressComposer fires a pressStart + press", function () {
+                aCheckbox.element = document.createElement('div');
+
                 var callback = jasmine.createSpy().and.callFake(function (event) {
                     expect(event.type).toEqual("action");
                 });
                 aCheckbox.addEventListener("action", callback, false);
-
                 aCheckbox._pressComposer.dispatchEventNamed("pressStart");
                 aCheckbox._pressComposer.dispatchEventNamed("press");
-
+                
                 expect(callback).toHaveBeenCalled();
             });
 
@@ -228,6 +214,8 @@ describe("test/base/abstract-checkbox-spec", function () {
             });
 
             it("should fire an 'action' event with the contents of the detail property", function () {
+                aCheckbox.element = document.createElement('div');
+
                 var callback = jasmine.createSpy().and.callFake(function (event) {
                     expect(event.detail.get("foo")).toEqual("bar");
                 });
@@ -243,12 +231,11 @@ describe("test/base/abstract-checkbox-spec", function () {
     });
 
     describe("aria", function () {
-        var Checkbox = AbstractCheckbox.specialize( {}),
-            aCheckbox;
+        var aCheckbox;
 
         beforeEach(function () {
             aCheckbox = new Checkbox();
-            aCheckbox.element = MockDOM.element();
+            aCheckbox.element = createCheckBoxElement();
         });
 
         it("should have the checkbox role", function () {
@@ -272,7 +259,7 @@ describe("test/base/abstract-checkbox-spec", function () {
     });
     describe("objectDescriptor", function () {
         it("can be created", function (done) {
-            var objectDescriptorPromise = AbstractCheckbox.objectDescriptor;
+            var objectDescriptorPromise = Checkbox.objectDescriptor;
             objectDescriptorPromise.then(function (objectDescriptor) {
                 expect(objectDescriptor).not.toBeNull();
             }, function (err) {

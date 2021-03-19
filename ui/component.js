@@ -567,7 +567,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             return this._element;
         },
         set: function (value) {
-            if (value === null || value === undefined) {
+            if (!(value && value.ownerDocument && value.ownerDocument.defaultView && 
+                value instanceof value.ownerDocument.defaultView.Element)
+            ) {
                 console.warn("Tried to set element of ", this, " to ", value);
                 return;
             }

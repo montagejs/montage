@@ -1,13 +1,12 @@
 var Montage = require("montage").Montage;
 var Button = require("montage/ui/button.reel").Button;
-var MockDOM = require("mocks/dom");
 
 describe("test/ui/button-spec", function () {
     describe("properties", function () {
         var aButton;
         beforeEach(function () {
             aButton = new Button();
-            aButton.element = MockDOM.element();
+            aButton.element = document.createElement('div');
             aButton.prepareForActivationEvents();
         });
         it("should keep the press composer's longPressThreshold in sync with holdThreshold", function () {
@@ -36,8 +35,7 @@ describe("test/ui/button-spec", function () {
                 expect(aButton.label).toEqual("Button");
             });
             it("should update the value if isInputElement is true", function () {
-                aButton.element.tagName = "INPUT";
-                // aButton.isInputElement = true;
+                aButton.element = document.createElement('input');
                 aButton.label = "hello";
                 aButton.draw();
                 expect(aButton.element.value).toEqual( "hello");
@@ -47,7 +45,7 @@ describe("test/ui/button-spec", function () {
             var aButton;
             beforeEach(function () {
                 aButton = new Button();
-                aButton.element = MockDOM.element();
+                aButton.element = document.createElement('div');
             });
 
             it("should be requested after enabled state is changed", function () {
@@ -71,7 +69,7 @@ describe("test/ui/button-spec", function () {
             var aButton;
             beforeEach(function () {
                 aButton = new Button();
-                aButton.element = MockDOM.element();
+                aButton.element = document.createElement('div');
                 aButton.element.tagName = "INPUT";
                 aButton.originalElement = aButton.element;
             });
@@ -94,7 +92,7 @@ describe("test/ui/button-spec", function () {
             var aButton, anElement;
             beforeEach(function () {
                 aButton = new Button();
-                anElement = MockDOM.element();
+                anElement = document.createElement('div');
             });
             it("should set tabindex if needed", function () {
                 anElement.tagName = "DIV";
@@ -124,10 +122,9 @@ describe("test/ui/button-spec", function () {
         describe("converter", function () {
             beforeEach(function () {
                 aButton = new Button();
-                aButton.element = MockDOM.element();
-                aButton.element.tagName = "INPUT";
+                aButton.element = document.createElement('input');
                 aButton.originalElement = aButton.element;
-                aButton.element.firstChild = MockDOM.element();
+                aButton.element.firstChild = document.createElement('div');
                 aButton.converter = {
                     convert: function (v) {
                         return v.replace(/fail/gi, "pass");
@@ -147,7 +144,7 @@ describe("test/ui/button-spec", function () {
             var aButton, anElement, listener;
             beforeEach(function () {
                 aButton = new Button();
-                anElement = MockDOM.element();
+                anElement = document.createElement('div');
                 listener = {
                     handleEvent: function () {}
                 }

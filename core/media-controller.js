@@ -116,29 +116,14 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
         }
     },
 
-    _duration: {
-        value: null
-    },
-
     /**
      * @type {Function}
      * @default null
      */
     duration: {
-        set: function (time) {
-            if (isNaN(time)) {
-                if (logger.isDebug) {
-                    logger.debug("MediaController:setDuration: duration is not valid");
-                }
-                return;
-            }
-            if (logger.isDebug) {
-                logger.debug("MediaController:setDuration: duration=" + time);
-            }
-            this._duration = time;
-        },
         get: function () {
-            return this._duration;
+            return !isNaN(this._mediaElement.duration) ?
+            this._mediaElement.duration : null;
         }
     },
 
@@ -248,7 +233,8 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
             return this._playbackRate;
         },
         set: function (playbackRate) {
-            if (this._playbackRate !== playbackRate) {
+            // playbackRate can't be negative
+            if (this._playbackRate !== playbackRate && playbackRate > 0) {
                 this._playbackRate = playbackRate;
                 this._mediaElement.playbackRate = this._playbackRate;
             }
@@ -296,21 +282,6 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
 
             } catch (err) {
                 logger.error("MediaController:Exception in set currentTime" + this._mediaElement.currentTime);
-            }
-        }
-    },
-
-    /**
-     * @function
-     */
-    rewind: {
-        value: function () {
-            if (this.status === this.PLAYING) {
-                if (logger.isDebug) {
-                    logger.debug("MediaController:rewind()");
-                }
-
-                this.playbackRate = -4.0;
             }
         }
     },
@@ -438,7 +409,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
                 }
                 return;
             }
-            this.duration = this._mediaElement.duration;
+
             if (this.autoplay) {
                 if (logger.isDebug) {
                     logger.debug("MediaController:handleLoadedmetadata: autoplay");

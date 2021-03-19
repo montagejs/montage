@@ -36,7 +36,6 @@ var Montage = require("montage").Montage,
     DocumentPart = require("montage/core/document-part").DocumentPart,
     Alias = require("montage/core/serialization/alias").Alias;
 var Bindings = require("montage/core/core").Bindings;
-var MockDOM = require("mocks/dom");
 
 TestPageLoader.queueTest("draw/draw", function (testPage) {
     var test;
@@ -1252,9 +1251,9 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                 componentB.hasTemplate = false;
                 componentC.hasTemplate = false;
 
-                componentA.element = MockDOM.element();
-                componentB.element = MockDOM.element();
-                componentC.element = MockDOM.element();
+                componentA.element = document.createElement('div');
+                componentB.element = document.createElement('div');
+                componentC.element = document.createElement('div');
 
                 componentB.addChildComponent(componentC);
 
@@ -1293,9 +1292,9 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                 componentB = new Component();
                 componentC = new Component();
 
-                componentA.element = MockDOM.element();
-                componentB.element = MockDOM.element();
-                componentC.element = MockDOM.element();
+                componentA.element = document.createElement('div');
+                componentB.element = document.createElement('div');
+                componentC.element = document.createElement('div');
 
                 componentA.addChildComponent(componentB);
                 componentB.addChildComponent(componentC);

@@ -9,6 +9,16 @@
             }
         }
     },
+    "active_property": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "active",
+            "valueType": "boolean",
+            "objectDescriptor": {
+                "@": "root"
+            }
+        }
+    },
     "objectDescriptor_parent": {
         "object": "ui/control.meta"
     },
