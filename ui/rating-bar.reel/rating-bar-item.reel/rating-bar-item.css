@@ -1,0 +1,7 @@
+.BarRatingItem-svg {
+    stroke: currentColor;
+    stroke-width: 1;
+    height: 100%;
+    -webkit-flex: 1;
+    pointer-events: none;
+}

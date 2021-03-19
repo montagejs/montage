@@ -1,0 +1,32 @@
+.RatingBar {
+    display: flex;
+    display: -webkit-flex;
+    width: 100%;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+}
+
+.RatingBar:hover {
+    cursor: pointer;
+}
+
+.RatingBar-items {
+    display: flex;
+    display: -webkit-flex;
+    flex: 1;
+    -webkit-flex: 1;
+    flex-direction: row;
+    -webkit-flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.RatingBar-item {
+    display: flex;
+    display: -webkit-flex;
+    flex: 1;
+    -webkit-flex: 1;
+}
