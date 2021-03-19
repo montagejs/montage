@@ -28,6 +28,7 @@ describe("test/ui/button-spec", function () {
                 expect(aButton.label).toEqual("");
             });
             it("should have a default value", function () {
+                expect(aButton.label).toEqual("Button");
                 aButton.label = "";
                 expect(aButton.label).toEqual("");
                 aButton.label = void 0;
@@ -41,6 +42,12 @@ describe("test/ui/button-spec", function () {
                 aButton.label = "hello";
                 aButton.draw();
                 expect(aButton.element.value).toEqual( "hello");
+            });
+
+            it("should has not default value when the Button is subclassed", function () {
+                var MyButton = Button.specialize();
+                aButton = new MyButton();
+                expect(aButton.label).toEqual("");
             });
         });
         describe("draw", function () {

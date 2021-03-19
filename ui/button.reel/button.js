@@ -104,7 +104,8 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     */
     label: {
         get: function () {
-            return this._label;
+            return this._label !== void 0 && this._label !== null ?
+                this._label : this.defaultLabel;
         },
         set: function (value) {
             if (typeof value !== "undefined" && this.converter) {
@@ -217,6 +218,17 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 this.__enterKeyComposer = KeyComposer.createKey(this, "enter", "enter");
             }
             return this.__enterKeyComposer;
+        }
+    },
+
+    constructor: {
+        value: function () {
+            this.super();
+
+            if (this.constructor !== Button) {
+                // no default value when the Button Component is subclassed
+                this.defaultLabel = "";
+            }
         }
     },
 
