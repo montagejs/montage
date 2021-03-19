@@ -157,19 +157,20 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
             return this._switchValue;
         },
         set: function (value) {
-
-            if (this._switchValue === value || this._isSwitchingContent) {
-                return;
+            if (typeof value === "number") {
+                value = value.toString();
             }
+            
+            if (this._switchValue !== value) {
+                this._switchValue = value;
 
-            this._switchValue = value;
-
-            // switchElements is only ready after the first draw
-            // At first draw the substitution automatically draws what is in
-            // the switchValue so we defer any content loading until the first
-            // draw.
-            if (!this._firstDraw && !this.isDeserializing) {
-                this._loadContent(value);
+                // switchElements is only ready after the first draw
+                // At first draw the substitution automatically draws what is in
+                // the switchValue so we defer any content loading until the first
+                // draw.
+                if (!this._firstDraw && !this.isDeserializing) {
+                    this._loadContent(value);
+                }
             }
         }
     },
@@ -200,6 +201,16 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
     _loadContent: {
         value: function (value) {
             var typeOfValue = typeof value;
+
+            // Fixme: [workaround] we need a better logic here.
+            // the method extractDomArgument(name) (used in enterDocument) 
+            // keeps a pointer to the original element and not the "new" one (_templateElement).
+            if (this._switchComponents[value] && 
+                this._switchComponents[value].element !== this._switchElements[value]) {
+
+                this._switchElements[value] = this._switchComponents[value].element;
+            }
+
             this.content = this._switchElements[value] || null;
 
             if ((typeOfValue === "string" || typeOfValue === "number") && !this._switchComponentTreeLoaded[value]) {
@@ -209,14 +220,13 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
     },
 
     contentDidChange: {
-        value: function (newContent, oldContent) {
-            Slot.prototype.contentDidChange.call(this, newContent, oldContent);
+        value: function () {
+            Slot.prototype.contentDidChange.call(this);
 
-            if (this._drawnSwitchValue) {
-                if (this._switchComponents[this._drawnSwitchValue]) {
-                    this._switchElements[this._drawnSwitchValue] = this._switchComponents[this._drawnSwitchValue].element;
-                }
+            if (this._drawnSwitchValue && this._switchComponents[this._drawnSwitchValue]) {
+                this._switchElements[this._drawnSwitchValue] = this._switchComponents[this._drawnSwitchValue].element;
             }
+
             this._drawnSwitchValue = this._switchValue;
         }
     },

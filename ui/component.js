@@ -1363,19 +1363,28 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         get: function () {
             if (this._element) {
                 return Array.prototype.slice.call(this._element.childNodes, 0);
-            } else {
-                return null;
             }
+            
+            return null;
         },
         set: function (value) {
-            var components,
+            var components = this.childComponents,
                 componentsToAdd = [],
-                i,
-                component;
+                component,
+                i;
 
             if (!this._elementsToAppend) {
                 this._elementsToAppend = [];
+            } else if (this._elementsToAppend.length) {
+                this._elementsToAppend.clear();
             }
+
+            if (!this._componentsPendingBuildOut) {
+                this._componentsPendingBuildOut = [];
+            } else if (this._componentsPendingBuildOut.length) {
+                this._componentsPendingBuildOut.clear();
+            }
+
             this._newDomContent = value;
             this.needsDraw = true;
 
@@ -1383,37 +1392,32 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 this._shouldClearDomContentOnNextDraw = true;
             }
 
+            //@benoit this method should be probably before we really change the content.
             if (typeof this.contentWillChange === "function") {
                 this.contentWillChange(value);
             }
 
-            // cleanup current content
-            components = this.childComponents;
             if (value) {
-                if (!this._componentsPendingBuildOut) {
-                    this._componentsPendingBuildOut = [];
-                }
                 for (i = components.length - 1; i >= 0; i--) {
-                    if (this._componentsPendingBuildOut.indexOf(components[i]) === -1) {
-                        this._componentsPendingBuildOut.push(components[i]);
-                    }
+                    this._componentsPendingBuildOut.push(components[i]);
                 }
             } else {
-                this._componentsPendingBuildOut = [];
                 for (i = components.length - 1; i >= 0; i--) {
                     components[i]._shouldBuildOut = true;
                 }
             }
+
             if (value instanceof Element) {
                 this._elementsToAppend.push(value);
                 this._findAndDetachComponents(value, componentsToAdd);
+
             } else if (value && value[0]) {
                 for (i = 0; i < value.length; i++) {
                     this._elementsToAppend.push(value[i]);
                     this._findAndDetachComponents(value[i], componentsToAdd);
                 }
             }
-
+            
             // not sure if I can rely on _parentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
             for (i = 0; (component = componentsToAdd[i]); i++) {
                 this.addChildComponent(component);
@@ -2104,6 +2108,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     }
                 }
                 this._disposeArray(oldDrawList);
+            } else if (this._componentsPendingBuildOut) {
+                this._releaseChildComponentsPendingBuildOut();
             }
         }
     },
@@ -3241,8 +3247,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     _buildOut: {
         value: function () {
-            var self = this;
-
             if (this._currentBuildAnimation) {
                 this._currentBuildAnimation.cancel();
                 this._currentBuildAnimation = this.buildOutSwitchAnimation;
@@ -3250,8 +3254,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 this._updateActiveBuildAnimations();
                 this._currentBuildAnimation = this.buildOutInitialAnimation;
             }
-            if (this._element && this._element.parentNode && this._element.parentNode.component) {
+
+            if ((this.parentComponent) || (this._element && this._element.parentNode && this._element.parentNode.component)) {
                 if (this._currentBuildAnimation) {
+                    var self = this;
+
                     this._currentBuildAnimation.play();
                     this._currentBuildAnimation.finished.then(function () {
                         var parent = self.parentComponent;
@@ -3260,16 +3267,21 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         self.detachFromParentComponent();
                         self.buildInAnimationOverride = null;
                         self.buildOutAnimationOverride = null;
+
                         if (self._element.parentNode.component) {
                             self._element.parentNode.removeChild(self._element);
                         }
+
                         self._isElementAttachedToParent = false;
                         parent.dispatchEventNamed("buildOutEnd", true, true);
-                    }, function () {});
+
+                    }, Function.noop);
+
                 } else {
                     this.detachFromParentComponent();
                     this.buildInAnimationOverride = null;
                     this.buildOutAnimationOverride = null;
+
                     if (this._isElementAttachedToParent) {
                         if (this._element.parentNode && this._element.parentNode.component) {
                             this._element.parentNode.removeChild(this._element);
@@ -3294,7 +3306,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             this.dispatchEvent(event);
             this._inDocument = true;
             if (this.parentComponent) {
-                this.parentComponent._childWillEnterDocument();
+                this.parentComponent._releaseChildComponentsPendingBuildOut();
             }
             if (this.__shouldBuildIn) {
                 this._buildIn();
@@ -3306,7 +3318,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
-    _childWillEnterDocument: {
+    _releaseChildComponentsPendingBuildOut: {
         value: function () {
             if (this._componentsPendingBuildOut) {
                 while (this._componentsPendingBuildOut.length) {
