@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="list-item-menu.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "owner"},
+                "hotCornersElement": {"#": "hotCornersElement"},
+                "dragElement": {"#": "drag"},
+                "leftOptionsElement": {"#": "leftOptions"},
+                "rightOptionsElement": {"#": "rightOptions"}
+            }
+        },
+
+        "listItem": {
+            "prototype": "../list-item.reel",
+            "values": {
+                "element": {"#": "list-item"},
+                "data": {"<-": "@owner.data"},
+                "rowIndex": {"<-": "@owner.rowIndex"},
+                "list": {"<-": "@owner.list"},
+                "selected": {"<-": "@owner.selected"},
+                "isExpandable": {"<-": "@owner.isExpandable"}
+            }
+        },
+
+        "listItemButton": {
+            "prototype": "../button.reel",
+            "values": {
+                "element": {"#": "button"},
+                "label": {"<-": "@owner._deleteLabel"}
+            }
+        }
+    }
+    </script>
+</head>
+
+<body>
+    <div data-montage-id="owner" class="ListItemMenu">
+        <div data-montage-id="hotCornersElement" class="hot-corners"></div>
+        <div data-montage-id="drag" class="ListItemMenu-wrapper">
+            <div data-montage-id="leftOptions" class="ListItemMenu-zone left">
+                <div data-param="options-left" class="ListItemMenu-options"></div>
+            </div>
+            <div class="ListItemMenu-zone center">
+                <div data-param="content" class="ListItemMenu-content">
+                    <div data-montage-id="list-item"></div>
+                </div>
+            </div>
+            <div data-montage-id="rightOptions" class="ListItemMenu-zone right">
+                <div data-param="options-right" class="ListItemMenu-options">
+                    <button data-montage-id="button" class="delete"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

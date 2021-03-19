@@ -1,0 +1,227 @@
+.ListItemMenu {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 42px;
+    border: 1px solid #c8c7cc;
+    box-sizing: border-box;
+    overflow: hidden;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
+
+.ListItemMenu .hot-corners {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.ListItemMenu .hot-corners::before,
+.ListItemMenu .hot-corners::after {
+    content: "";
+    animation-name: none;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+    border-style: solid;
+    border-color: #e9e9e9 transparent;
+    position: absolute;
+    bottom: -1px;
+    border-width: 0;
+    border-radius: 0;
+    z-index: 2;
+    box-sizing: border-box;
+}
+
+.ListItemMenu .hot-corners::after {
+    right: -1px;
+}
+
+.ListItemMenu .hot-corners::before {
+    left: -1px;
+}
+
+.ListItemMenu.has-options-left.fold-left .hot-corners::before,
+.ListItemMenu.has-options-right.fold-right .hot-corners::after {
+    box-shadow: -1px -1px 3px #c8c7cc;
+    animation-duration: 0.3s;
+}
+
+.ListItemMenu.has-options-left.fold-left .ListItemMenu-zone.left,
+.ListItemMenu.has-options-right.fold-right .ListItemMenu-zone.right {
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+    animation-duration: 0.3s;
+}
+
+.ListItemMenu.has-options-left.fold-left .hot-corners::before {
+    animation-name: fold-item-left;
+}
+
+.ListItemMenu.has-options-left.fold-left .ListItemMenu-zone.left {
+    animation-name: fold-options-left;
+}
+
+.ListItemMenu.has-options-right.fold-right .hot-corners::after {
+    animation-name: fold-item-right;
+}
+
+.ListItemMenu.has-options-right.fold-right .ListItemMenu-zone.right {
+    animation-name: fold-options-right;
+}
+
+.ListItemMenu.has-options-left.unfold-left .hot-corners::before,
+.ListItemMenu.has-options-right.unfold-right .hot-corners::after {
+    animation-duration: 0.15s;
+}
+
+.ListItemMenu.has-options-right.unfold-right .hot-corners::after {
+    animation-name: unfold-item-right;
+}
+
+.ListItemMenu.has-options-left.unfold-left .hot-corners::before {
+    animation-name: unfold-item-left;
+}
+ 
+@keyframes fold-options-right {
+    0%   {transform: translate3d(0px, 42px, 0);}
+    100% {transform: translate3d(-14px, 29px, 0);}
+}
+
+@keyframes fold-options-left {
+    0%   {transform: translate3d(0px, 42px, 0);}
+    100% {transform: translate3d(14px, 29px, 0);}
+}
+
+@keyframes fold-item-right {
+    0%   {border-width: 0px}
+    100% {border-width: 15px 15px 0 0;}
+}
+
+@keyframes unfold-item-right {
+    0% {border-width: 15px 15px 0 0;}
+    100%   {border-width: 0px}
+}
+
+@keyframes fold-item-left {
+    0%   {border-width: 0px}
+    100% {border-width: 15px 0 0 15px;}
+}
+
+@keyframes unfold-item-left {
+    0% {border-width: 15px 0 0 15px;}
+    100%   {border-width: 0px}
+}
+
+.ListItemMenu + .ListItemMenu {
+    border-top: none;
+}
+
+.ListItemMenu.selected .ListItem {
+    background-color: #d9d9d9;
+}
+
+.ListItemMenu.active .ListItem {
+    background-color: #e9e9e9;
+}
+
+.ListItemMenu .ListItemMenu-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+    -webkit-transform: translate3d(-100%, 0, 0);
+            transform: translate3d(-100%, 0, 0);
+}
+
+.ListItemMenu .ListItemMenu-zone {
+    -webkit-box-flex: 0;
+        -ms-flex: 0 0 auto;
+            flex: 0 0 auto;
+    width: 100%;
+    height: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    visibility: visible;
+    position: relative;
+    z-index: 1;
+}
+
+.ListItemMenu .ListItemMenu-zone.hide {
+    visibility: hidden;
+}
+
+.ListItemMenu .ListItemMenu-options,
+.ListItemMenu .ListItemMenu-content {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+}
+
+.ListItemMenu .ListItemMenu-content .ListItem {
+    border: none;
+}
+
+.ListItemMenu .ListItemMenu-zone.left .ListItemMenu-options {
+    -webkit-box-pack: end;
+        -ms-flex-pack: end;
+            justify-content: flex-end;
+}
+
+.ListItemMenu .ListItemMenu-zone.right .ListItemMenu-options {
+    position: relative;
+    -webkit-box-pack: start;
+        -ms-flex-pack: start;
+            justify-content: flex-start;
+}
+
+.ListItemMenu .ListItemMenu-options button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    border: none;
+    color: white;
+    outline: none;
+    text-decoration: none;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.ListItemMenu .ListItemMenu-zone.right .ListItemMenu-options button {
+    text-align: left;
+}
+
+.ListItemMenu .ListItemMenu-zone.left .ListItemMenu-options button {
+    text-align: right;
+}
+
+.ListItemMenu .ListItemMenu-options button > span { 
+    transform: translate3d(0, 0, 0);
+    position: relative;
+    display: inline-block;
+}
+
+.ListItemMenu button.delete {
+    background-color: #e74c3c;
+}

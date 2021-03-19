@@ -2017,6 +2017,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     // isSelectionEnabled becoming true.
     _enableSelectionTracking: {
         value: function () {
+            this._pressComposer.load();
             this._pressComposer.addEventListener("pressStart", this, false);
         }
     },
@@ -2028,6 +2029,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     // isSelectionEnabled becoming false.
     _disableSelectionTracking: {
         value: function () {
+            this._pressComposer.unload();
             this._pressComposer.removeEventListener("pressStart", this, false);
         }
     },
