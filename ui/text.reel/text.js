@@ -80,7 +80,6 @@ var MontageText = exports.Text = Component.specialize( /**  @lends module:montag
                 range.deleteContents();
                 this._valueNode = document.createTextNode("");
                 range.insertNode(this._valueNode);
-                this.element.classList.add("montage-Text");
             }
         }
     },

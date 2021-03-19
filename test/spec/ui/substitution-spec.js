@@ -143,7 +143,7 @@ TestPageLoader.queueTest("substitution-test/substitution-test", function (testPa
                 substitution.switchValue = "two";
 
                 testPage.waitForComponentDraw(substitution).then(function () {
-                    expect(substitution._switchElements.one.className).toBe("Foo");
+                    expect(substitution._switchElements.one.className).toBe("Foo montage-tests-Foo");
                 }).finally(function () {
                     done();
                 });
@@ -156,7 +156,7 @@ TestPageLoader.queueTest("substitution-test/substitution-test", function (testPa
                 substitution.switchValue = "one";
 
                 testPage.waitForComponentDraw(substitution).then(function () {
-                    expect(substitution.element.children[0].className).toBe("Foo");
+                    expect(substitution.element.children[0].className).toBe("Foo montage-tests-Foo");
                 }).finally(function () {
                     done();
                 });

@@ -35,15 +35,7 @@ exports.Slot = Component.specialize( /** @lends Slot.prototype # */ {
     _content: {
         value: null
     },
-
-    enterDocument:{
-        value:function (firstTime) {
-            if (firstTime) {
-                this.element.classList.add("montage-Slot");
-            }
-        }
-    },
-
+    
     /**
      * The component that resides in this slot and in its place in the
      * template.

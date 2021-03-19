@@ -2073,6 +2073,20 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             this._treeLevel = level;
             if (firstDraw) {
                 this.originalElement = this.element;
+                
+                if (this !== this.rootComponent) {
+                    var moduleInfo = Montage.getInfoForObject(this),
+                        packageName = moduleInfo.require.packageDescription.name,
+                        objectName = moduleInfo.objectName;
+
+                    if (
+                        objectName && packageName &&
+                        ((packageName === "montage" && objectName !== "Component") || 
+                        (packageName !== "montage"))
+                    ) {
+                        this.classList.add(packageName + "-" + objectName);
+                    }
+                }
             }
             if (this.needsDraw) {
                 this.rootComponent.addToDrawCycle(this);

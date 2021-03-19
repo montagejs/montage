@@ -383,7 +383,6 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                     // }
                 }
 
-                //this.classList.add("montage-Button");
                 this.element.setAttribute("role", "button");
                 this.element.addEventListener("keyup", this, false);
             }

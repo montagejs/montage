@@ -178,8 +178,6 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
         value: function (firstTime) {
             var argumentNames;
 
-            Slot.prototype.enterDocument.apply(this, arguments);
-
             if (firstTime) {
                 argumentNames = this.getDomArgumentNames();
                 for (var i = 0, name; (name = argumentNames[i]); i++) {
