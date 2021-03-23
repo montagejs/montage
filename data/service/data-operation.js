@@ -1,6 +1,5 @@
 var Montage = require("core/core").Montage,
     MutableEvent = require("core/event/mutable-event").MutableEvent,
-    ModuleObjectDescriptor = require("core/meta/module-object-descriptor").ModuleObjectDescriptor,
     Criteria = require("core/criteria").Criteria,
     Enum = require("core/enum").Enum,
     uuid = require("core/uuid"),
@@ -237,7 +236,7 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
                 if(Array.isArray(this.target)) {
                     serializer.setProperty("targetModuleId", this.target.map((objectDescriptor) => {return typeof objectDescriptor === "string" ? objectDescriptor : objectDescriptor.module.id}));
                 } else {
-                    if(this.target instanceof ModuleObjectDescriptor) {
+                    if(this.target.module) {
                         serializer.setProperty("targetModuleId", this.target.module.id);
                     } else {
                         //This is not working as I thought it would yet
