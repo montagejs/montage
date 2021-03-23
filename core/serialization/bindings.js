@@ -72,7 +72,7 @@ var serializeObjectBindings = exports.serializeObjectBindings = function (serial
 //deprecated
 Serializer.defineSerializationUnit("bindings", serializeObjectBindings);
 
-var deserializeObjectBindings = exports.deserializeObjectBindings = function (deserializer, object, bindings) {
+var deserializeObjectBindings = exports.deserializeObjectBindings = function deserializeObjectBindings(deserializer, object, bindings) {
     var commonDescriptor = {
         components: deserializer
     },
