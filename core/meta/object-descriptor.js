@@ -69,6 +69,10 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
             this._setPropertyWithDefaults(serializer, "customPrototype", this.customPrototype);
             //
             if (this._ownPropertyDescriptors.length > 0) {
+                if (!this._propertyDescriptorsAreCached)  {
+                    this._preparePropertyDescriptorsCache();
+                }
+
                 serializer.setProperty("propertyDescriptors", this._ownPropertyDescriptors);
             }
             if (Object.getOwnPropertyNames(this._propertyDescriptorGroups).length > 0) {
