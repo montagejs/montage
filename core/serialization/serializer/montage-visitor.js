@@ -250,32 +250,42 @@ var MontageVisitor = Montage.specialize({
         value: function (malker, object, builderObject) {
             var selfSerializer,
                 substituteObject,
-                valuesBuilderObject = this.builder.createObjectLiteral();
+                valuesBuilderObject = this.builder.createObjectLiteral(),
+                type = this.setObjectType(object, builderObject);
 
-            this.setObjectType(object, builderObject);
-            builderObject.setProperty("values", valuesBuilderObject);
+            /*
+                If an object serialized as part of another came it self from a .mjson,
+                we clearly don't want to have it reserializes itself, the .mjson needs to stay the reference.
 
-            this.builder.push(builderObject);
+                It's not obvious what should happen if some values were changed (as = or bindings) on it post deserialziation: should they stay "local" and appear in that serialization? Should the be expected to be saved in that .mjson? I don' think we have enough context here to decide one way or the other.
+            */
 
-            if (typeof object.serializeSelf === "function") {
-                selfSerializer = new SelfSerializer().
-                    initWithMalkerAndVisitorAndObject(
-                        malker, this, object, builderObject);
-                substituteObject = object.serializeSelf(selfSerializer);
-            } else {
-                this.setObjectValues(malker, object);
-                this.setObjectBindings(malker, object);
-                this.setObjectCustomUnits(malker, object);
-            }
+            if(!(type === "object" && builderObject.getProperty("object").value.endsWith(".mjson"))) {
 
-            this.builder.pop();
+                builderObject.setProperty("values", valuesBuilderObject);
 
-            // Remove the values unit in case none was serialized,
-            // we need to add it before any other units to make sure that
-            // it's the first unit to show up in the serialization, since we
-            // don't have a way to order the property names in a serialization.
-            if (valuesBuilderObject.getPropertyNames().length === 0) {
-                builderObject.clearProperty("values");
+                this.builder.push(builderObject);
+
+                if (typeof object.serializeSelf === "function") {
+                    selfSerializer = new SelfSerializer().
+                        initWithMalkerAndVisitorAndObject(
+                            malker, this, object, builderObject);
+                    substituteObject = object.serializeSelf(selfSerializer);
+                } else {
+                    this.setObjectValues(malker, object);
+                    this.setObjectBindings(malker, object);
+                    this.setObjectCustomUnits(malker, object);
+                }
+
+                this.builder.pop();
+
+                // Remove the values unit in case none was serialized,
+                // we need to add it before any other units to make sure that
+                // it's the first unit to show up in the serialization, since we
+                // don't have a way to order the property names in a serialization.
+                if (valuesBuilderObject.getPropertyNames().length === 0) {
+                    builderObject.clearProperty("values");
+                }
             }
 
             return substituteObject;
@@ -313,15 +323,18 @@ var MontageVisitor = Montage.specialize({
 
     setObjectType: {
         value: function (object, builderObject) {
-            var isInstance = Montage.getInfoForObject(object).isInstance,
-                locationId = this.getObjectLocationId(object),
-                locationIdBuilderObject = this.builder.createString(locationId);
+            var objectInfo = Montage.getInfoForObject(object),
+                wasLoadedFromMJSON = objectInfo.module.endsWith(".mjson"),
+                isInstance = objectInfo.isInstance,
+                locationId = (isInstance && wasLoadedFromMJSON)
+                    ? (objectInfo.require.config.name+"/"+objectInfo.module)
+                    : this.getObjectLocationId(object),
+                locationIdBuilderObject = this.builder.createString(locationId),
+                type = (isInstance && !wasLoadedFromMJSON) ? "prototype" : "object";
 
-            if (isInstance) {
-                builderObject.setProperty("prototype", locationIdBuilderObject);
-            } else {
-                builderObject.setProperty("object", locationIdBuilderObject);
-            }
+                builderObject.setProperty(type, locationIdBuilderObject);
+
+                return type;
         }
     },
 
