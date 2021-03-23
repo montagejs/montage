@@ -2,8 +2,11 @@
  * @module montage/data/service/u-r-l-search-param-data-identity-service
  */
 
-var DataIdentityService = require("data/service/data-identity-service").DataIdentityService,
-DataIdentity = require("data/model/data-identity").DataIdentity,
+var DataService = require("data/service/data-service").DataService,
+    DataIdentityService = require("data/service/data-identity-service").DataIdentityService,
+    DataOperation = require("data/service/data-operation").DataOperation,
+    DataIdentity = require("data/model/data-identity").DataIdentity,
+    DataIdentityObjectDescriptor = require("data/model/data-identity.mjson").montageObject,
 IdentityService;
 
 
@@ -23,6 +26,9 @@ exports.URLSearchParamDataIdentityService = URLSearchParamDataIdentityService = 
                 needs to decide where is best, but not do it twice.
             */
             //IdentityService.identityServices.push(this);
+
+            DataIdentityObjectDescriptor.addEventListener(DataOperation.Type.ReadOperation,this,false);
+
         }
     },
 
@@ -68,6 +74,14 @@ exports.URLSearchParamDataIdentityService = URLSearchParamDataIdentityService = 
 
     _dataIdentity: {
         value: undefined
+    },
+
+    handleReadOperation: {
+        value: function (operation) {
+            var stream = DataService.mainService.registeredDataStreamForDataOperation(operation);
+            this.fetchRawData(stream);
+            DataService.mainService.unregisterDataStreamForDataOperation(operation);
+        }
     },
 
     fetchRawData: {
