@@ -1,6 +1,6 @@
 
 var parse = require("./parse");
-var compile = require("./compile-assigner");
+var compiledAssigner = require("./compile-assigner");
 var Scope = require("./scope");
 
 // TODO deprecate.  this is too easy to implement better at other layers,
@@ -13,11 +13,13 @@ function assign(target, path, value, parameters, document, components) {
     } else {
         syntax = path;
     }
-    var assign = compile(syntax);
     var scope = new Scope(target);
     scope.parameters = parameters;
     scope.document = document;
     scope.components = components;
-    return assign(value, scope);
+    /*
+        compiledAssigner(syntax) returns a function
+    */
+    return compiledAssigner(syntax)(value, scope);
 }
 
