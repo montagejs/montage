@@ -1043,7 +1043,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * to another system, like a database for example, or an API, entirely,
      * or selectively, using the aDataStream passed as an argument, wbich can
      * help conditionally decide what to do based on the query's objectDescriptor
-     * or the quwery's orderings themselves.
+     * or the query's orderings themselves.
      *
      * @public
      * @argument {DataStream} dataStream
@@ -1866,6 +1866,12 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
+    /***************************************************************************
+     *
+     * Data Operaation related methods
+     *
+     ***************************************************************************/
+
 
     responseOperationForReadOperation: {
         value: function(readOperation, err, data, isNotLast) {
@@ -1898,6 +1904,18 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                 //We provide the inserted record as the operation's payload
                 operation.data = data;
+
+                /*
+                    Now we check if there's a known stream. If there's one, it's a local (as in memory space) and we map to the matching dataStream)
+                */
+                var stream = DataService.mainService.registeredDataStreamForDataOperation(operation);
+                if(stream) {
+                    this.addRawData(stream, data, operation);
+
+                    if(operation.type === DataOperation.Type.ReadCompletedOperation) {
+                        this.rawDataDone(stream);
+                    }
+                }
             }
             return operation;
         }
