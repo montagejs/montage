@@ -237,12 +237,6 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 exports.DataService.authorizationManager.registerServiceWithUpfrontAuthorizationPolicy(this);
             }
 
-            if(this.isRootService && this.currentEnvironment.isNode) {
-                this.application.addEventListener(DataOperation.Type.AuthorizeConnectionOperation, function (event) {
-                    self.rootService.isOffline = false;
-                });
-            }
-
         }
     },
 
@@ -718,6 +712,10 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         value: function (childService, objectDescriptor, constructor) {
             var prototype = Object.create(constructor.prototype),
             mapping = childService.mappingForType(objectDescriptor),
+            /*
+                FIXME
+                we're "lucky" here as when this is called, the current DataService hasn't registered yet the maappings, so we end up creating triggers for all property descriptors.
+            */
             requisitePropertyNames = mapping && mapping.requisitePropertyNames || new Set(),
             dataTriggers = this.DataTrigger.addTriggers(this, objectDescriptor, prototype, requisitePropertyNames),
             mainService = this.rootService;
@@ -734,6 +732,17 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                         return objectDescriptor;
                 }
             });
+
+            /*
+                OPTIMIZE ME: We need to be smarter and only do that for the highest levels as it will be inherited
+            */
+           Object.defineProperty(prototype, "propertyChanges_prototype_addOwnPropertyChangeListener", { value: this.propertyChanges_prototype_addOwnPropertyChangeListener });
+           Object.defineProperty(prototype, "addOwnPropertyChangeListener", { value: this._dataObject_addOwnPropertyChangeListener });
+
+           Object.defineProperty(prototype, "propertyChanges_prototype_removeOwnPropertyChangeListener", { value: this.propertyChanges_prototype_removeOwnPropertyChangeListener });
+           Object.defineProperty(prototype, "removeOwnPropertyChangeListener", { value: this._dataObject_removeOwnPropertyChangeListener });
+
+
 
         this._dataObjectPrototypes.set(constructor, prototype);
         this._dataObjectPrototypes.set(objectDescriptor, prototype);
@@ -1068,7 +1077,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
     /***************************************************************************
      *
-     * Authorization 
+     * Authorization
      *
      ***************************************************************************/
 
@@ -1355,6 +1364,68 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 this.__typeRegistry = new WeakMap();
             }
             return this.__typeRegistry;
+        }
+    },
+
+
+    shouldListenForRemoteObjectPropertyChange: {
+        value: function(dataObjecy, key, beforeChange) {
+            return false;
+        }
+    },
+
+    propertyChanges_prototype_addOwnPropertyChangeListener: {
+        value: PropertyChanges.prototype.addOwnPropertyChangeListener
+    },
+    propertyChanges_prototype_removeOwnPropertyChangeListener: {
+        value: PropertyChanges.prototype.removeOwnPropertyChangeListener
+    },
+
+    /*
+        This is executed on DataObject instances, so this is an instance of a DataObject.
+    */
+    __dataObject_addOwnPropertyChangeListener: {
+        value: undefined
+    },
+
+    _dataObject_addOwnPropertyChangeListener: {
+        get: function() {
+
+            if(!this.__dataObject_addOwnPropertyChangeListener) {
+                var dataService = this;
+
+                this.__dataObject_addOwnPropertyChangeListener = function (key, listener, beforeChange, trackRemoteChanges) {
+                    if(trackRemoteChanges || dataService.shouldListenForRemoteObjectPropertyChange(this,key,beforeChange)) {
+                    // if(dataService.shouldAddEventListenerForObjectRemotePropertyChange(this,key,beforeChange)) {
+                        dataService.trackRemoteObjectPropertyChanges(this,key);
+                    }
+                    return this.propertyChanges_prototype_addOwnPropertyChangeListener(key, listener, beforeChange);
+                }
+            }
+            return this.__dataObject_addOwnPropertyChangeListener;
+        }
+    },
+
+    __dataObject_removeOwnPropertyChangeListener: {
+        value: undefined
+    },
+    _dataObject_removeOwnPropertyChangeListener: {
+        get: function() {
+
+            if(!this.__dataObject_removeOwnPropertyChangeListener) {
+                var dataService = this;
+
+                this.__dataObject_removeOwnPropertyChangeListener = function (key, listener, beforeChange, trackRemoteChanges) {
+
+                    if(trackRemoteChanges || dataService.shouldListenForRemoteObjectPropertyChange(this,key,beforeChange)) {
+                        // if(dataService.shouldAddEventListenerForObjectRemotePropertyChange(this,key,beforeChange)) {
+                            dataService.removeEventListener("");
+                    }
+
+                    return this.propertyChanges_prototype_removeOwnPropertyChangeListener(key, listener, beforeChange);
+                }
+            }
+            return this.__dataObject_removeOwnPropertyChangeListener;
         }
     },
 
@@ -4310,7 +4381,6 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             return this.nullPromise;
         }
     },
-
 
 
     /***************************************************************************
