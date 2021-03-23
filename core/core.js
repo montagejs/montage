@@ -617,7 +617,8 @@ function __findSuperMethodImplementation( method, classFn, isFunctionSuper, meth
                     if ((property = Object.getOwnPropertyDescriptor(context, propertyName))) {
                         func = property.value;
                         if (func !== undefined && func !== null) {
-                            if (func === method || (isValueArg && methodPropertyNameArg && propertyName === methodPropertyNameArg) || func.deprecatedFunction === method) {
+                            if (func === method || func.deprecatedFunction === method) {
+                            //if (func === method || (isValueArg && methodPropertyNameArg && propertyName === methodPropertyNameArg) || func.deprecatedFunction === method) {
                                 methodPropertyName = propertyName;
                                 isValue = true;
                                 break;
@@ -626,7 +627,8 @@ function __findSuperMethodImplementation( method, classFn, isFunctionSuper, meth
                         else {
                             func = property.get;
                             if (func !== undefined && func !== null) {
-                                if (func === method || (isGetterArg && methodPropertyNameArg && propertyName === methodPropertyNameArg) || func.deprecatedFunction === method) {
+                                if (func === method || func.deprecatedFunction === method) {
+                                //if (func === method || (isGetterArg && methodPropertyNameArg && propertyName === methodPropertyNameArg) || func.deprecatedFunction === method) {
                                     methodPropertyName = propertyName;
                                     isGetter = true;
                                     break;
@@ -634,7 +636,8 @@ function __findSuperMethodImplementation( method, classFn, isFunctionSuper, meth
                             }
                             func = property.set;
                             if (func !== undefined && func !== null) {
-                                if (func === method || (isSetterArg && methodPropertyNameArg && propertyName === methodPropertyNameArg) || func.deprecatedFunction === method) {
+                                if (func === method || func.deprecatedFunction === method) {
+                                //if (func === method || (isSetterArg && methodPropertyNameArg && propertyName === methodPropertyNameArg) || func.deprecatedFunction === method) {
                                     methodPropertyName = propertyName;
                                     isSetter = true;
                                     break;
