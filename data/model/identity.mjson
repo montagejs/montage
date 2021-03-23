@@ -1,0 +1,21 @@
+{
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "Identity",
+            "propertyDescriptors": [
+            ],
+            "objectDescriptorModule": {
+                "%": "data/model/identity.mjson"
+            },
+            "exportName": "Identity",
+            "module": {
+                "%": "data/model/identity"
+            },
+            "object":{"@": "Identity"}
+        }
+    },
+    "Identity": {
+        "object": "data/model/identity"
+    }
+}
