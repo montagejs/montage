@@ -1,6 +1,6 @@
 
 var parse = require("./parse");
-var compile = require("./compile-evaluator");
+var compiledEvaluator = require("./compile-evaluator");
 var Scope = require("./scope");
 
 // TODO deprecate: this can be done much better with a Scope API
@@ -12,11 +12,13 @@ function evaluate(path, value, parameters, document, components) {
     } else {
         syntax = path;
     }
-    var evaluate = compile(syntax);
     var scope = new Scope(value);
     scope.parameters = parameters;
     scope.document = document;
     scope.components = components;
-    return evaluate(scope);
+    /*
+        compiledEvaluator(syntax) returns a function
+    */
+    return compiledEvaluator(syntax)(scope);
 }
 
