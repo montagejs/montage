@@ -29,6 +29,7 @@ var AuthorizationPolicy = exports.AuthorizationPolicy = Montage.specialize({
     }
 });
 AuthorizationPolicy.ON_DEMAND = AuthorizationPolicy.OnDemand = AuthorizationPolicy.withID("OnDemand");
+AuthorizationPolicy.ON_CONNECT = AuthorizationPolicy.OnConnect = AuthorizationPolicy.withID("OnConnect");
 AuthorizationPolicy.ON_FIRST_FETCH = AuthorizationPolicy.OnFirstFetch = AuthorizationPolicy.withID("OnFirstFetch");
 AuthorizationPolicy.NONE = AuthorizationPolicy.None = AuthorizationPolicy.withID("None");
 AuthorizationPolicy.UP_FRONT = AuthorizationPolicy.UpFront = AuthorizationPolicy.withID("UpFront");
