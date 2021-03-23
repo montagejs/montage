@@ -87,7 +87,10 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
             }
 
             if (this.type.objectDescriptorInstanceModule) {
-                serializer.setProperty("typeModule", this.type.objectDescriptorInstanceModule);
+                serializer.setProperty("type", this.type);
+                //serializer.setProperty("type", this.type, "reference");
+
+                //serializer.setProperty("typeModule", this.type.objectDescriptorInstanceModule);
             } else {
                 serializer.setProperty("type", this.type);
             }
