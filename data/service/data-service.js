@@ -93,6 +93,52 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             }
 
             this._initializeOffline();
+
+            this._thenableByOperationId = new Map();
+            this._pendingOperationById = new Map();
+
+            // this._serializer = new MontageSerializer().initWithRequire(require);
+            // this._deserializer = new Deserializer();
+
+            this.addOwnPropertyChangeListener("mainService", this);
+        }
+    },
+
+    handleMainServiceChange: {
+        value: function (mainService) {
+            //That only happens once
+            if(mainService) {
+
+
+                // mainService.addEventListener(DataOperation.Type.ReadOperation,this,false);
+                // mainService.addEventListener(DataOperation.Type.UpdateOperation,this,false);
+                // mainService.addEventListener(DataOperation.Type.CreateOperation,this,false);
+                // mainService.addEventListener(DataOperation.Type.DeleteOperation,this,false);
+                // mainService.addEventListener(DataOperation.Type.CreateTransactionOperation,this,false);
+                // mainService.addEventListener(DataOperation.Type.BatchOperation,this,false);
+                // mainService.addEventListener(DataOperation.Type.PerformTransactionOperation,this,false);
+                // mainService.addEventListener(DataOperation.Type.RollbackTransactionOperation,this,false);
+
+
+                mainService.addEventListener(DataOperation.Type.NoOp,this,false);
+                mainService.addEventListener(DataOperation.Type.ReadFailedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.ReadCompletedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.UpdateFailedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.UpdateCompletedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.CreateFailedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.CreateCompletedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.DeleteFailedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.DeleteCompletedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.CreateTransactionFailedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.CreateTransactionCompletedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.BatchCompletedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.BatchFailedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.TransactionUpdatedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.PerformTransactionFailedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.PerformTransactionCompletedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.RollbackTransactionFailedOperation,this,false);
+                mainService.addEventListener(DataOperation.Type.RollbackTransactionCompletedOperation,this,false);
+            }
         }
     },
 
@@ -156,6 +202,18 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             if (value) {
                 this.userAuthenticationPolicy = value;
             }
+
+            value = deserializer.getProperty("accessPolicies");
+            if (value) {
+                /*
+                    accessPolicies are cumulative, but unfortunately we're missing an operator to add (nor remove) to a property that is an array with frb. We only have a replace
+
+                    TODO if we need AccessPolicy to have access to it's data service, we need to introduce a new addAccessPolicy() where we'll be able to add a policy.service = this.
+                */
+
+               this.accessPolicies.push.apply(this.accessPolicies, value);
+            }
+
 
             return this;
         }
@@ -435,6 +493,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             if(isNotParentService) {
                 this.childServices.add(child);
                 this._childServicesByIdentifier.set(child.identifier, child);
+                this.supportsDataOperation = this.supportsDataOperation && child.supportsDataOperation;
             }
             // Add the new child service to the services array of each of its
             // types or to the "all types" service array identified by the
@@ -1008,8 +1067,10 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
     },
 
     /***************************************************************************
-     * Authorization
-     */
+     *
+     * Authorization 
+     *
+     ***************************************************************************/
 
     _initializeAuthorization: {
         value: function () {
@@ -1198,7 +1259,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
                 exportName = module && types[i].exportName;
                 if (module && moduleId === module.id && objectName === exportName) {
                     if(objectDescriptor !== types[i]) {
-                        console.error("objectDescriptorWithModuleId cached an objectDescriptor and objectDescriptorForObject finds another")
+                        console.error("objectDescriptorWithModuleId cached an objectDescriptor and objectDescriptorForObject finds another");
                     }
                     objectDescriptor = types[i];
                 }
@@ -2908,6 +2969,352 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         value: undefined
     },
 
+    /**
+         * supportsDataOperation
+         *
+         * #WARNING Backward compatibility breaking
+         *
+         * @property {boolean} assess that a DataService supports supportsDataOperations.
+         * Legacy ones that don't need to overrides it to false to work as expected
+         */
+
+    supportsDataOperation: {
+        value: true
+    },
+
+    operationReferrer: {
+        value: function(operation) {
+            return this._pendingOperationById.get(operation.referrerId);
+        }
+    },
+
+    registerPendingOperation: {
+        value: function(operation, referrer) {
+            this._pendingOperationById.set(operation.id, operation);
+
+        }
+    },
+
+    unregisterOperationReferrer: {
+        value: function(operation) {
+            this._pendingOperationById.delete(operation.referrerId);
+        }
+    },
+
+    _operationListenerNamesByType: {
+        value: new Map()
+    },
+    _operationListenerNameForType: {
+        value: function(type) {
+            return this._operationListenerNamesByType.get(type) || this._operationListenerNamesByType.set(type,"handle"+type.toCapitalized()).get(type);
+        }
+    },
+
+
+    //This probably isn't right and should be fetchRawData, but switching creates a strange error.
+    _fetchDataWithOperation: {
+        value: function (query, stream) {
+
+            var self = this;
+            stream = stream || new DataStream();
+            stream.query = query;
+
+            // make sure type is an object descriptor or a data object descriptor.
+            // query.type = this.rootService.objectDescriptorForType(query.type);
+
+
+            var objectDescriptor = query.type,
+                criteria = query.criteria,
+                criteriaWithLocale,
+                parameters,
+                rawParameters,
+                readOperation = new DataOperation(),
+                rawReadExpressions = [],
+                rawOrderings,
+                promises;
+                // localizableProperties = objectDescriptor.localizablePropertyDescriptors;
+
+            /*
+                We need to turn this into a Read Operation. Difficulty is to turn the query's criteria into
+                one that doesn't rely on objects. What we need to do before handing an operation over to another context
+                bieng a worker on the client side or a worker on the server side, is to remove references to live objects.
+                One way to do this is to replace every object in a criteria's parameters by it's data identifier.
+                Another is to serialize the criteria.
+            */
+            readOperation.type = DataOperation.Type.ReadOperation;
+            readOperation.target = objectDescriptor;
+            readOperation.data = {};
+
+            //Need to add a check to see if criteria may have more spefific instructions for "locale".
+            /*
+                1/19/2021 - we were only adding locale when the object descriptor being fetched has some localizableProperties, but a criteria may involve a subgraph and we wou'd have to go through the syntactic tree of the criteria, and readExpressions, to figure out if anywhere in that subgraph, there might be localizable properties we need to include the locales for.
+
+                Since we're localized by default, we're going to include it no matter what, it's going to be more rare that it is not needed than it is.
+            */
+            /*
+                WIP Adds locale as needed. Most common case is that it's left to the framework to qualify what Locale to use.
+
+                A core principle is that each data object (DO) has a locale property behaving in the following way:
+                locales has 1 locale value, a locale object.
+                This is the most common use case. The property’s getter returns the user’s locale.
+                Fetching an object with a criteria asking for a specific locale will return an object in that locale.
+                Changing the locale property of an object to another locale instance (singleton in Locale’s case), updates all the values of its localizable properties to the new locale set.
+                locales has either no value, or “*” equivalent, an “All Locale Locale”
+                This feches the json structure and returns all the values in all the locales
+                locales has an array of locale instances.
+                If locale’s cardinality is > 1 then each localized property would return a json/dictionary of locale->value instead of 1 value.
+            */
+
+            readOperation.locales = self.userLocales;
+
+
+            if(criteria) {
+                readOperation.criteria = criteria;
+            }
+
+            if(query.fetchLimit) {
+                readOperation.data.readLimit = query.fetchLimit;
+            }
+
+            if(query.orderings && query.orderings > 0) {
+                rawOrderings = [];
+                // self._mapObjectDescriptorOrderingsToRawOrderings(objectDescriptor, query.sortderings,rawOrderings);
+                // readOperation.data.orderings = rawOrderings;
+                readOperation.data.orderings = query.orderings;
+            }
+
+            /*
+                for a read operation, we already have criteria, shouldn't data contains the array of
+                expressions that are expected to be returned?
+            */
+            /*
+                The following block is from PhrontClientService, we shouldn't map to rawReadExpressions just yet.
+            */
+            // self._mapObjectDescriptorReadExpressionToRawReadExpression(objectDescriptor, query.readExpressions,rawReadExpressions);
+            // if(rawReadExpressions.length) {
+            //     readOperation.data.readExpressions = rawReadExpressions;
+            // }
+            if(query.readExpressions && query.readExpressions.length) {
+                readOperation.data.readExpressions = query.readExpressions;
+            }
+
+            /*
+
+                this is half-assed, we're mapping full objects to RawData, but not the properties in the expression.
+                phront-service does it, but we need to stop doing it half way there and the other half over there.
+                SaveChanges is cleaner, but the job is also easier there.
+
+            */
+            parameters = criteria ? criteria.parameters : undefined;
+            rawParameters = parameters;
+
+            if(parameters && typeof criteria.parameters === "object") {
+                var keys = Object.keys(parameters),
+                    i, countI, iKey, iValue, iRecord;
+
+                rawParameters = Array.isArray(parameters) ? [] : {};
+
+                for(i=0, countI = keys.length;(i < countI); i++) {
+                    iKey  = keys[i];
+                    iValue = parameters[iKey];
+                    if(!iValue) {
+                        throw "fetchData: criteria with no value for parameter key "+iKey;
+                    } else {
+                        if(iValue.dataIdentifier) {
+                            /*
+                                this isn't working because it's causing triggers to fetch properties we don't have
+                                and somehow fails, but it's wastefull. Going back to just put primary key there.
+                            */
+                            // iRecord = {};
+                            // rawParameters[iKey] = iRecord;
+                            // (promises || (promises = [])).push(
+                            //     self._mapObjectToRawData(iValue, iRecord)
+                            // );
+                            rawParameters[iKey] = iValue.dataIdentifier.primaryKey;
+                        } else {
+                            rawParameters[iKey] = iValue;
+                        }
+                    }
+
+                }
+                // if(promises) promises = Promise.all(promises);
+            }
+            // if(!promises) promises = Promise.resolve(true);
+            // promises.then(function() {
+                if(criteria) readOperation.criteria.parameters = rawParameters;
+                //console.log("fetchData operation:",JSON.stringify(readOperation));
+                self._dispatchReadOperation(readOperation, stream);
+                if(criteria) readOperation.criteria.parameters = parameters;
+
+            // });
+
+            return stream;
+        }
+    },
+    _dispatchReadOperation: {
+        value: function(operation, stream) {
+            this._thenableByOperationId.set(operation.id, stream);
+            this._dispatchOperation(operation);
+        }
+    },
+    _dispatchOperation: {
+        value: function(operation) {
+            this._pendingOperationById.set(operation.id, operation);
+
+            defaultEventManager.handleEvent(operation);
+
+            // var serializedOperation = this._serializer.serializeObject(operation);
+
+            // // if(operation.type === "batch") {
+            // //     var deserializer = new Deserializer();
+            // //     deserializer.init(serializedOperation, require, undefined, module, true);
+            // //     var deserializedOperation = deserializer.deserializeObject();
+
+            // //     console.log(deserializedOperation);
+
+            // // }
+            // console.log("----> send operation "+serializedOperation);
+            // this._socket.send(serializedOperation);
+        }
+    },
+
+    registeredDataStreamForDataOperation: {
+        value: function(dataOperation) {
+            return this._thenableByOperationId
+                ? dataOperation.referrerId
+                    ? this._thenableByOperationId.get(dataOperation.referrerId)
+                    : this._thenableByOperationId.get(dataOperation.id)
+                : undefined;
+        }
+    },
+    unregisterDataStreamForDataOperation: {
+        value: function(dataOperation) {
+            this._thenableByOperationId
+                ? dataOperation.referrerId
+                    ? this._thenableByOperationId.delete(dataOperation.referrerId)
+                    : this._thenableByOperationId.delete(dataOperation.id)
+                : undefined;
+        }
+    },
+
+    // handleReadUpdateOperation: {
+    //     value: function (operation) {
+    //         var referrer = operation.referrerId,
+    //             objectDescriptor = operation.target,
+    //             records = operation.data,
+    //             stream = this._thenableByOperationId.get(referrer),
+    //             streamObjectDescriptor;
+    //         // if(operation.type === DataOperation.Type.ReadCompletedOperation) {
+    //         //     console.log("handleReadCompleted  referrerId: ",operation.referrerId, "records.length: ",records.length);
+    //         // } else {
+    //         //     console.log("handleReadUpdateOperation  referrerId: ",operation.referrerId, "records.length: ",records.length);
+    //         // }
+    //         //if(operation.type === DataOperation.Type.ReadUpdateOperation) console.log("handleReadUpdateOperation  referrerId: ",referrer);
+
+    //         if(stream) {
+    //             streamObjectDescriptor = stream.query.type;
+    //             /*
+
+    //                 We now could get readUpdate that are reads for readExpressions that are properties (with a valueDescriptor) of the ObjectDescriptor of the referrer. So we need to add a check that the obectDescriptor maatch, otherwise, it needs to be assigned to the right instance, or created in memory and mapping/converters will find it.
+    //             */
+
+    //             if(streamObjectDescriptor === objectDescriptor) {
+    //                 if(records && records.length > 0) {
+    //                     //We pass the map key->index as context so we can leverage it to do record[index] to find key's values as returned by RDS Data API
+    //                     this.addRawData(stream, records, operation);
+    //                 } else if(operation.type !== DataOperation.Type.ReadCompletedOperation){
+    //                     console.log("operation of type:"+operation.type+", has no data");
+    //                 }
+    //             } else {
+    //                 console.log("Received "+operation.type+" operation that is for a readExpression of referrer ",referrer);
+    //             }
+    //         } else {
+    //             console.log("receiving operation of type:"+operation.type+", but can't find a matching stream");
+    //         }
+    //     }
+    // },
+
+    // handleReadCompletedOperation: {
+    //     value: function (operation) {
+    //         this.handleReadUpdateOperation(operation);
+    //         //The read is complete
+    //         var stream = this._thenableByOperationId.get(operation.referrerId);
+    //         if(stream) {
+    //             this.rawDataDone(stream);
+    //             this._thenableByOperationId.delete(operation.referrerId);
+    //         } else {
+    //             console.log("receiving operation of type:"+operation.type+", but can't find a matching stream");
+    //         }
+    //         //console.log("handleReadCompleted -clear _thenableByOperationId- referrerId: ",operation.referrerId);
+
+    //     }
+    // },
+
+    // handleReadFailedOperation: {
+    //     value: function (operation) {
+    //         var stream = this._thenableByOperationId.get(operation.referrerId);
+    //         this.rawDataError(stream,operation.data);
+    //         this._thenableByOperationId.delete(operation.referrerId);
+    //     }
+    // },
+
+    handleOperationCompleted: {
+        value: function (operation) {
+            var referrerOperation = this._pendingOperationById.get(operation.referrerId);
+
+            /*
+                Right now, we listen for the types we care about, on the mainService, so we're receiving it all,
+                even those from other data services / types we don' care about, like the PlummingIntakeDataService.
+
+                One solution is to, when we register the types in the data service, to test if it handles operations, and if it does, the add all listeners. But that's a lot of work which will slows down starting time. A better solution would be to do like what we do with Components, where we find all possibly interested based on DOM structure, and tell them to prepare for a first delivery of that type of event. We could do the same as we know which RawDataService handle what ObjectDescriptor, which would give the RawDataService the ability to addListener() right when it's about to be needed.
+
+                Another solution could involve different "pools" of objects/stack, but we'd lose the universal bus.
+
+            */
+            if(!referrerOperation) {
+                return;
+            }
+
+            /*
+                After creation we need to do this:                   self.rootService.registerUniqueObjectWithDataIdentifier(object, dataIdentifier);
+
+                The referrerOperation could get hold of object, but it doesn't right now.
+                We could also create a uuid client side and not have to do that and deal wih it all in here which might be cleaner.
+
+                Now resolving the promise finishes the job in saveObjectData that has the object in scope.
+            */
+            referrerOperation._promiseResolve(operation);
+        }
+    },
+
+    handleOperationFailed: {
+        value: function (operation) {
+            var referrerOperation = this._pendingOperationById.get(operation.referrerId);
+
+            /*
+                After creation we need to do this:                   self.rootService.registerUniqueObjectWithDataIdentifier(object, dataIdentifier);
+
+                The referrerOperation could get hold of object, but it doesn't right now.
+                We could also create a uuid client side and not have to do that and deal wih it all in here which might be cleaner.
+
+                Now resolving the promise finishes the job in saveObjectData that has the object in scope.
+            */
+            referrerOperation._promiseResolve(operation);
+        }
+    },
+
+    handleCreateCompletedOperation: {
+        value: function (operation) {
+            this.handleOperationCompleted(operation);
+        }
+    },
+
+
+    handleUpdateCompletedOperation: {
+        value: function (operation) {
+            this.handleOperationCompleted(operation);
+        }
+    },
 
     /***************************************************************************
      * Fetching Data
@@ -2987,33 +3394,43 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             stream.dataExpression = query.selectExpression;
 
             this._dataServiceByDataStream.set(stream, this._childServiceRegistrationPromise.then(function() {
-                var service;
-                //This is a workaround, we should clean that up so we don't
-                //have to go up to answer that question. The difference between
-                //.TYPE and Objectdescriptor still creeps-in when it comes to
-                //the service to answer that to itself
-                if (self.parentService && self.parentService.childServiceForType(query.type) === self && typeof self.fetchRawData === "function") {
-                    service = self;
-                    service._fetchRawData(stream);
+
+                /*
+                    This a switch for 0% operations vs 100% operations. It should be possible to mix but it's more risky for side effects in older versions.
+
+                    supportsDataOperation will be determined by all RawDataServices supportsDataOperation
+                */
+
+                if(self.supportsDataOperation) {
+                    self._fetchDataWithOperation(query, stream);
                 } else {
+                    var service;
+                    //This is a workaround, we should clean that up so we don't
+                    //have to go up to answer that question. The difference between
+                    //.TYPE and Objectdescriptor still creeps-in when it comes to
+                    //the service to answer that to itself
+                    if (self.parentService && self.parentService.childServiceForType(query.type) === self && typeof self.fetchRawData === "function") {
+                        service = self;
+                        service._fetchRawData(stream);
+                    } else {
 
-                    // Use a child service to fetch the data.
-                    try {
+                        // Use a child service to fetch the data.
+                        try {
 
-                        service = self.childServiceForType(query.type);
-                        if (service) {
-                            //Here we end up creating an extra stream for nothing because it should be third argument.
-                            stream = service.fetchData(query, stream) || stream;
-                            self._dataServiceByDataStream.set(stream, service);
-                        } else {
-                            throw new Error("Can't fetch data of unknown type - " + (query.type.typeName || query.type.name) + "/" + query.type.uuid);
+                            service = self.childServiceForType(query.type);
+                            if (service) {
+                                //Here we end up creating an extra stream for nothing because it should be third argument.
+                                stream = service.fetchData(query, stream) || stream;
+                                self._dataServiceByDataStream.set(stream, service);
+                            } else {
+                                throw new Error("Can't fetch data of unknown type - " + (query.type.typeName || query.type.name) + "/" + query.type.uuid);
+                            }
+                        } catch (e) {
+                            stream.dataError(e);
                         }
-                    } catch (e) {
-                        stream.dataError(e);
                     }
+                    return service;
                 }
-
-                return service;
             }));
             // Return the passed in or created stream.
             return stream;
@@ -3901,37 +4318,140 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
      * Access Control related methods
      *
      ***************************************************************************/
+    _accessPolicies: {
+        value: undefined
+    },
+    accessPolicies: {
+        get: function() {
+            if(!this._accessPolicies) {
+                this._accessPolicies = [];
+                this._accessPolicies.addRangeChangeListener(this, "accessPolicies");
+            }
+            return this._accessPolicies;
+        }
+    },
+    handleAccessPoliciesRangeChange: {
+        value: function (plus, minus, index) {
+            var i, countI, iAccessPolicy, iObjectDescriptor,
+                j, countJ, jOperationTypes;
+            for(i=0, countI = plus.length; (i<countI); i++) {
+                iAccessPolicy = plus[i];
+                iObjectDescriptor = iAccessPolicy.objectDescriptor;
+                jOperationTypes = Object.keys(iAccessPolicy.dataOperationTypePolicyRules);
 
+                for(j=0, countJ = jOperationTypes.length; (j < countJ); j++) {
+                    this.registerAccessPolicyForDataOperationTypeOnObjectDescriptor(iAccessPolicy, jOperationTypes[j], iObjectDescriptor);
+                }
+            }
+
+            for(i=0, countI = minus.length; (i<countI); i++) {
+                iAccessPolicy = minus[i];
+                iObjectDescriptor = iAccessPolicy.objectDescriptor;
+                jOperationTypes = Object.keys(iAccessPolicy.dataOperationTypePolicyRules);
+
+                for(j=0, countJ = jOperationTypes.length; (j < countJ); j++) {
+                    this.unregisterAccessPolicyForDataOperationTypeOnObjectDescriptor(iAccessPolicy, jOperationTypes[j], iObjectDescriptor);
+                }
+
+            }
+
+
+        }
+    },
+    __accessPoliciesByObjectDescriptorByOperationType: {
+        value: undefined
+    },
+    _accessPoliciesByObjectDescriptorByOperationType: {
+        get: function() {
+            return this.__accessPoliciesByObjectDescriptorByOperationType || (this.__accessPoliciesByObjectDescriptorByOperationType = new Map());
+        }
+    },
+
+    /*
+        We're also keeping a similar indexing inside a DataAccessPolicy which still needs to do a lookup on data operation type to get to the rules to evalutate.
+    */
+    registerAccessPolicyForDataOperationTypeOnObjectDescriptor: {
+        value:function(accessPolicy, dataOperationType, objectDescriptor) {
+            var objectDescriptorMap = this._accessPoliciesByObjectDescriptorByOperationType.get(objectDescriptor);
+
+            if(!objectDescriptorMap) {
+                this._accessPoliciesByObjectDescriptorByOperationType.set(objectDescriptor,(objectDescriptorMap = new Map()));
+                objectDescriptorMap.set(dataOperationType,[accessPolicy]);
+            } else {
+                objectDescriptorMap.get(dataOperationType).push(accessPolicy);
+            }
+
+        }
+    },
+    unregisterAccessPolicyForDataOperationTypeOnObjectDescriptor: {
+        value:function(accessPolicy, dataOperationType, objectDescriptor) {
+            var objectDescriptorMap = this._accessPoliciesByObjectDescriptorByOperationType.get(objectDescriptor),
+                accessPolicies, index;
+
+            if(objectDescriptorMap) {
+                accessPolicies = objectDescriptorMap.get(dataOperationType);
+                if((index = accessPolicies.indexOf(accessPolicy)) !== -1) {
+                    accessPolicies.splice(index,1);
+                }
+            }
+        }
+    },
+
+    accessPoliciesForDataOperation: {
+        value: function(dataOperation) {
+            var objectDescriptorMap = this._accessPoliciesByObjectDescriptorByOperationType.get(dataOperation.target);
+
+            return objectDescriptorMap
+            ? objectDescriptorMap.get(dataOperation.type)
+            : null;
+        }
+    },
     /**
-     * Assess authorization for an AuthorizeConnectionOperation for a DataIdentity.
+     * Assess wether a DataService (and it's children data services can perform an operation.
      *
-     * Services overriding the (plural)
+     * Implemented by default by delegating to DataAccessPolicy
      * @method
      * @argument {DataOperation} authorizeConnectionOperation
      * @returns {Promise} - A promise fulfilled with a boolean value.
      *
      */
-    handleDataIdentityAuthorizeConnectionOperation: {
-        value: function(authorizeConnectionOperation) {
-            /*
-                A root service on the client could authorize access to an indexedDB?
-                Let's be restrictive for now and see how we expand that to the client.
 
-                Behind the AWS API Gateway using WebSockets, this can only be received following the execution of a connect's authorizer function.
-            */
-            if(this.currentEnvironment.isNode) {
-                var authorizationPolicy = this.authorizationPolicy,
-                    identity = authorizeConnectionOperation.identity,
-                    allowedDataIdentities;
+    //isDataOperationAuthorized:
+    canPerformDataOperation: {
+        value: function(dataOperation) {
+            return dataOperation.canBePerformed;
+        }
+    },
 
-                if(authorizationPolicy === AuthorizationPolicy.UpFront) {
-                    /*
-                        First we need to check that if we have allowedDataIdentities.
+    evaluateAccessPoliciesForDataOperation: {
+        value: function(dataOperation) {
+            var accessPolicies = this.accessPoliciesForDataOperation(dataOperation),
+                i, countI, iAccessPolicy, iAccessPolicyEvaluation, iAccessPolicyEvaluationPromises,
+                self = this;
 
-                        If there aren't any restriction, then everything is open from a data stand point.
-                    */
+            for( i=0, countI=accessPolicies ? accessPolicies.length : 0; (i<countI); i++ ) {
+                iAccessPolicy = accessPolicies[i];
+                iAccessPolicyEvaluation = iAccessPolicy.evaluate(dataOperation);
 
+                if(this._isAsync(iAccessPolicyEvaluation)) {
+                    (iAccessPolicyEvaluationPromises || (iAccessPolicyEvaluationPromises = [])).push(iAccessPolicyEvaluation);
                 }
+
+                /* If sync so far... */
+                if(!iAccessPolicyEvaluationPromises && !this.canPerformDataOperation(dataOperation)) {
+                    return false;
+                }
+            }
+
+
+            if(iAccessPolicyEvaluationPromises && iAccessPolicyEvaluationPromises.length > 0) {
+                return Promise.all(iAccessPolicyEvaluationPromises)
+                .then(function() {
+                    return self.canPerformDataOperation(dataOperation);
+                });
+            } else {
+                //whatever the rules do, they set a state on the dataOperation, so nothing to resolve.
+                return true;
             }
 
 
