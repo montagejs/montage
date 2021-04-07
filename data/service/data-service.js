@@ -14,12 +14,10 @@ var Montage = require("core/core").Montage,
     DataTrigger = require("data/service/data-trigger").DataTrigger,
     Map = require("core/collections/map"),
     Promise = require("core/promise").Promise,
-    ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor,
     Set = require("core/collections/set"),
     CountedSet = require("core/counted-set").CountedSet,
     WeakMap = require("core/collections/weak-map"),
     ObjectPool = require("core/object-pool").ObjectPool,
-    defaultEventManager = require("core/event/event-manager").defaultEventManager,
     DataEvent = require("data/model/data-event").DataEvent,
     PropertyDescriptor = require("core/meta/property-descriptor").PropertyDescriptor,
     DeleteRule = require("core/meta/property-descriptor").DeleteRule,
@@ -66,7 +64,7 @@ UserAuthenticationPolicy.OnFirstFetchAuthenticationPolicy = UserAuthenticationPo
  * @class
  * @extends external:Montage
  */
-exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
+DataService = exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
     /***************************************************************************
      * Initializing
@@ -77,12 +75,12 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
             this.defineBinding("mainService", {"<-": "mainService", source: defaultEventManager.application});
 
-            exports.DataService.mainService = exports.DataService.mainService || this;
-            if(this === DataService.mainService) {
-                // IdentityManager.mainService = DataService.mainService;
-                //this.addOwnPropertyChangeListener("userLocales", this);
-                this.addRangeAtPathChangeListener("userLocales", this, "handleUserLocalesRangeChange");
-            }
+            // exports.DataService.mainService = exports.DataService.mainService || this;
+            // if(this === DataService.mainService) {
+            //     // IdentityManager.mainService = DataService.mainService;
+            //     //this.addOwnPropertyChangeListener("userLocales", this);
+            //     this.addRangeAtPathChangeListener("userLocales", this, "handleUserLocalesRangeChange");
+            // }
 
             //Deprecated now
             //this._initializeAuthorization();
@@ -103,10 +101,11 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             // this._serializer = new MontageSerializer().initWithRequire(require);
             // this._deserializer = new Deserializer();
 
-            this.addOwnPropertyChangeListener("mainService", this);
+            //this.addOwnPropertyChangeListener("mainService", this);
         }
     },
 
+    //Works with this.addOwnPropertyChangeListener("mainService", this)
     handleMainServiceChange: {
         value: function (mainService) {
             //That only happens once
