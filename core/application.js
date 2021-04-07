@@ -15,7 +15,6 @@ var Target = require("./target").Target,
     MontageWindow = require("../window-loader/montage-window").MontageWindow,
     Criteria = require("core/criteria").Criteria,
     DataQuery = require("data/model/data-query").DataQuery,
-    IdentityService = undefined,
     IdentityManager = require("data/service/identity-manager").IdentityManager,
     Slot;
 
@@ -466,12 +465,8 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 */
 
                 //URGENT: We need to further test that we don't already have a valid Authorization to use before authenticating.
-                return require.async("data/service/identity-service");
-            })
-            .then(function(exports) {
-                IdentityService = exports.IdentityService;
 
-                var identityServices = IdentityService.identityServices,
+                var identityServices = IdentityManager.identityServices,
                     identityObjectDescriptors,
                     authenticationPromise,
                     //    userObjectDescriptor = this.
