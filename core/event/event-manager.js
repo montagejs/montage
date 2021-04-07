@@ -3056,7 +3056,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
     _invokeTargetListenersForEventPhase: {
         value: function(iTarget, mutableEvent, phase, _eventType, promise) {
-            if(promise) {
+            if(promise && promise.then) {
                 return promise.then(() => {
                     return this.__invokeTargetListenersForEventPhase(iTarget, mutableEvent, phase, _eventType);
                 });
@@ -3088,23 +3088,31 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                         if(promise) {
                             previousPromise = promise;
                         }
-                        promise = this._invokeTargetListenerEntryForEvent(iTarget, nextEntry, mutableEvent, undefined/*currentTargetIdentifierSpecificCaptureMethodName*/, undefined/*identifierSpecificCaptureMethodName*/, undefined/*captureMethodName*/);
-                        if(previousPromise && promise) {
-                            if(!promises) {
-                                promises = [previousPromise, promise];
-                            } else {
-                                promises.push(promise);
-                            }
-                        }
+                        promise = this._invokeTargetListenerEntryForEvent(iTarget, nextEntry, mutableEvent, undefined/*currentTargetIdentifierSpecificCaptureMethodName*/, undefined/*identifierSpecificCaptureMethodName*/, undefined/*captureMethodName*/, previousPromise);
+
+                        // if(previousPromise && promise) {
+                        //     if(!promises) {
+                        //         promises = [previousPromise, promise];
+                        //     } else {
+                        //         promises.push(promise);
+                        //     }
+                        // }
                     }
 
                     if(promises || promise) {
-                        promise =  (promises && promises.length)
-                        ? Promise.all(promises)
-                        : promise;
+                        /*
+                            We now chain each listener promise, so we can enforce an stopImmedidatePopagation
+
+                            mutableEvent.immediatePropagationStopped
+
+                            So no need to do a promise.all anymore
+                        */
+                        // promise =  (promises && promises.length)
+                        // ? Promise.all(promises)
+                        // : promise;
 
                         var self = this;
-                        return promise.then(function() {
+                        return promise.finally(function() {
                             self._processCurrentDispatchedTargetListenersToRemove(iTarget, eventType, phase, listenerEntries);
                             _currentDispatchedTargetListeners.delete(listenerEntries);
                         });
@@ -3116,7 +3124,10 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     }
                 }
                 else {
-                    promise = this._invokeTargetListenerEntryForEvent(iTarget, listenerEntries, mutableEvent, undefined/*currentTargetIdentifierSpecificCaptureMethodName*/, undefined/*identifierSpecificCaptureMethodName*/, undefined/*captureMethodName*/);
+                    /*
+                        There's only one listener, so no previous promise to pass
+                    */
+                    promise = this._invokeTargetListenerEntryForEvent(iTarget, listenerEntries, mutableEvent, undefined/*currentTargetIdentifierSpecificCaptureMethodName*/, undefined/*identifierSpecificCaptureMethodName*/, undefined/*captureMethodName*/, /*promise*/undefined);
                     return promise;
                 }
             }
@@ -3426,12 +3437,28 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
         }
     },
 
+    _invokeTargetListenerEntryForEvent: {
+        value: function _invokeTargetListenerEntryForEvent(iTarget, listenerEntry, mutableEvent, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName, promise) {
+            if(promise && promise.then) {
+                return promise.then(() => {
+                    if(!mutableEvent.immediatePropagationStopped) {
+                        return this.__invokeTargetListenerEntryForEvent(iTarget, listenerEntry, mutableEvent, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName);
+                    } else {
+                        throw new Error("immediatePropagationStopped");
+                    }
+                });
+            } else {
+                return this.__invokeTargetListenerEntryForEvent(iTarget, listenerEntry, mutableEvent, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName);
+            }
+        }
+    },
+
 
         /**
      * @private
      */
-    _invokeTargetListenerEntryForEvent: {
-        value: function _invokeTargetListenerEntryForEvent(iTarget, listenerEntry, mutableEvent, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName) {
+    __invokeTargetListenerEntryForEvent: {
+        value: function __invokeTargetListenerEntryForEvent(iTarget, listenerEntry, mutableEvent, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName) {
             var listener = listenerEntry.listener,
                 callback, result;
 
