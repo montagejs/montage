@@ -1,6 +1,7 @@
 var Montage = require("core/core").Montage,
     MutableEvent = require("core/event/mutable-event").MutableEvent,
     Criteria = require("core/criteria").Criteria,
+    Error = require("core/extras/error").Error,
     Enum = require("core/enum").Enum,
     uuid = require("core/uuid"),
     defaultEventManager = require("../../core/event/event-manager").defaultEventManager,
@@ -20,6 +21,7 @@ var Montage = require("core/core").Montage,
         "authorizeFailedOperation",
         "authorizeCompletedOperation",
         "connectOperation",
+        "openConnectionCompletedOperation",
         "disconnectOperation",
         "createOperation",
         /*
@@ -265,14 +267,14 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
                 }
                 serializer.setProperty("locales", locales);
             }
-            if(this.data) {
-                serializer.setProperty("data", this.data);
+            if(this._data) {
+                serializer.setProperty("data", this._data);
             }
             if(this.snapshot) {
                 serializer.setProperty("snapshot", this.snapshot);
             }
-            if(this.context) {
-                serializer.setProperty("context", this.context);
+            if(this._context) {
+                serializer.setProperty("context", this._context);
             }
         }
     },
@@ -735,13 +737,53 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
      *
      * @type {Object}
      */
-    data: {
+    _data: {
         value: undefined
+    },
+    data: {
+        get: function () {
+            return this._data || (this._data = {});
+        },
+        set: function (value) {
+            if(value !== this._data) {
+                this._data = value;
+            }
+        }
     },
 
     snapshotData: {
         value: undefined
+    },
+
+    /**
+     * Access control: if true, the data operation is authorized and should be performed.
+     * If false, it shouldn't.
+     *
+     * By default it's undefined, leaving it to the stack's configuration to decide if an operation
+     * should be authorized or not by default. Reading product data from an online store would default to true,
+     * But personel's data shouldn't.
+     *
+     * shouldn't tat be called isAuthorized instead?
+     *
+     * @type {boolean}
+     */
+
+    _isAuthorized: {
+        value: undefined
+    },
+    isAuthorized: {
+        get: function () {
+            return this._isAuthorized;
+        },
+        set: function (value) {
+            //Hard code an "and" so we don't risk a true obliterating previous false.
+            this._isAuthorized = (this._isAuthorized === undefined)
+                ? !!value
+                : !!value && this._isAuthorized;
+        }
     }
+
+
 
 }, /** @lends DataOperation */ {
 
@@ -765,6 +807,7 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             AuthorizeFailedOperation: DataOperationType.authorizeFailedOperation,
             AuthorizeCompletedOperation: DataOperationType.authorizeCompletedOperation,
             ConnectOperation: DataOperationType.connectOperation,
+            OpenConnectionCompletedOperation: DataOperationType.openConnectionCompletedOperation,
             DisconnectOperation: DataOperationType.disconnectOperation,
             CreateOperation: DataOperationType.createOperation,
             CreateFailedOperation: DataOperationType.createFailedOperation,
