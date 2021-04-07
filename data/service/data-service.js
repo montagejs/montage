@@ -1,5 +1,8 @@
 var Montage = require("core/core").Montage,
     Target = require("core/target").Target,
+    defaultEventManager = require("core/event/event-manager").defaultEventManager,
+    ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor,
+    DataService,
     AuthorizationManager = require("data/service/authorization-manager").defaultAuthorizationManager,
     AuthorizationPolicy = require("data/service/authorization-policy").AuthorizationPolicy,
     UserAuthenticationPolicy = require("data/service/user-authentication-policy").UserAuthenticationPolicy,
@@ -291,6 +294,61 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
     mappings: {
         get: function () {
             return this._childServiceMappings;
+        }
+    },
+
+    /**
+     * A property that identifies the root DataService, from the outside.
+     * set by application, on both client and server side.
+     *
+     * It should be the same as rootService, which can only be known really when all DataServices
+     * and rawDataServices have been loaded, and is used from the perspectibe of child dataServices
+     * within their trees.
+     *
+     * @type {boolean}
+     */
+
+    _isMainService: {
+        value: false
+    },
+    isMainService: {
+        get: function() {
+            return this._isMainService;
+        },
+        set: function(value) {
+
+            if(value !== this._isMainService) {
+                this._isMainService = value;
+                if(value) {
+                    this.addRangeAtPathChangeListener("userLocales", this, "handleUserLocalesRangeChange");
+
+                    this.addEventListener(DataOperation.Type.NoOp,this,false);
+                    this.addEventListener(DataOperation.Type.ReadFailedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.ReadCompletedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.UpdateFailedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.UpdateCompletedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.CreateFailedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.CreateCompletedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.DeleteFailedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.DeleteCompletedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.CreateTransactionFailedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.CreateTransactionCompletedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.BatchCompletedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.BatchFailedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.TransactionUpdatedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.PerformTransactionFailedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.PerformTransactionCompletedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.RollbackTransactionFailedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.RollbackTransactionCompletedOperation,this,false);
+
+
+
+                } else {
+                    this.removeRangeAtPathChangeListener("userLocales", this, "handleUserLocalesRangeChange");
+                }
+
+            }
+
         }
     },
 
@@ -3114,7 +3172,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             */
             readOperation.type = DataOperation.Type.ReadOperation;
             readOperation.target = objectDescriptor;
-            readOperation.data = {};
+            //readOperation.data = {};
 
             //Need to add a check to see if criteria may have more spefific instructions for "locale".
             /*
@@ -3170,6 +3228,13 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             }
 
             /*
+                We need to do this in node's DataWorker, it's likely that we'll want that client side as well, where it's some sort of token set post authorization.
+            */
+            if(this.application.identity && this.shouldAuthenticateReadOperation) {
+                readOperation.identity = this.application.identity;
+            }
+
+            /*
 
                 this is half-assed, we're mapping full objects to RawData, but not the properties in the expression.
                 phront-service does it, but we need to stop doing it half way there and the other half over there.
@@ -3212,10 +3277,15 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
             }
             // if(!promises) promises = Promise.resolve(true);
             // promises.then(function() {
-                if(criteria) readOperation.criteria.parameters = rawParameters;
-                //console.log("fetchData operation:",JSON.stringify(readOperation));
-                self._dispatchReadOperation(readOperation, stream);
-                if(criteria) readOperation.criteria.parameters = parameters;
+            if(criteria) {
+                readOperation.criteria.parameters = rawParameters;
+            }
+            //console.log("fetchData operation:",JSON.stringify(readOperation));
+            self._dispatchReadOperation(readOperation, stream);
+
+            if(criteria) {
+                readOperation.criteria.parameters = parameters;
+            }
 
             // });
 
@@ -4811,6 +4881,9 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
         },
         set: function (service) {
             this._mainService = service;
+            if(service) {
+                service.isMainService = true;
+            }
         }
     },
 
@@ -4842,6 +4915,7 @@ exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 });
 
 
+DataService.defineBinding("mainService", {"<-": "application.mainService", source: defaultEventManager});
 
 //WARNING Shouldn't be a problem, but avoiding a potential require-cycle for now:
 DataStream.DataService = exports.DataService;
