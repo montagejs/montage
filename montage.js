@@ -342,12 +342,13 @@
         initMontage: function (montageRequire, applicationRequire, params) {
             var dependencies = [
                 "core/core",
+                "core/promise",
                 "core/event/event-manager",
                 "core/serialization/deserializer/montage-reviver",
                 "core/logger"
             ];
 
-            var Promise = montageRequire("./core/promise").Promise;
+            var Promise = global.Promise;
             var deepLoadPromises = [];
             var self = this;
 
@@ -1004,7 +1005,6 @@
                 })
                 .then(function (montageRequire) {
                     montageRequire.inject("core/mini-url", URL);
-                    montageRequire.inject("core/promise", {Promise: Promise});
 
                     // install the linter, which loads on the first error
                     config.lint = function (module) {
