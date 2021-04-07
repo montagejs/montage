@@ -1,0 +1,26 @@
+{
+    "ReferenceError": {
+        "object": "global[ReferenceError]"
+    },
+    "Error": {
+        "object": "global[Error]"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "ReferenceError",
+            "propertyDescriptors": [
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "core/error/reference-error.mjson" },
+            "exportName": "ReferenceError",
+            "module": { "%": "global" },
+            "object":{ "@": "ReferenceError" },
+            "parent":{"@": "Error"}
+        }
+    }
+}

@@ -1,0 +1,26 @@
+{
+    "EvalError": {
+        "object": "global[EvalError]"
+    },
+    "Error": {
+        "object": "global[Error]"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "EvalError",
+            "propertyDescriptors": [
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "core/error/eval-error.mjson" },
+            "exportName": "EvalError",
+            "module": { "%": "global" },
+            "object":{ "@": "EvalError" },
+            "parent":{"@": "Error"}
+        }
+    }
+}

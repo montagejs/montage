@@ -1,0 +1,26 @@
+{
+    "URIError": {
+        "object": "global[URIError]"
+    },
+    "Error": {
+        "object": "global[Error]"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "URIError",
+            "propertyDescriptors": [
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "core/error/u-r-i-error.mjson" },
+            "exportName": "URIError",
+            "module": { "%": "global" },
+            "object":{ "@": "URIError" },
+            "parent":{"@": "Error"}
+        }
+    }
+}

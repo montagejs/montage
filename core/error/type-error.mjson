@@ -1,0 +1,26 @@
+{
+    "TypeError": {
+        "object": "global[TypeError]"
+    },
+    "Error": {
+        "object": "global[Error]"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "TypeError",
+            "propertyDescriptors": [
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "core/error/type-error.mjson" },
+            "exportName": "TypeError",
+            "module": { "%": "global" },
+            "object":{ "@": "TypeError" },
+            "parent":{"@": "Error"}
+        }
+    }
+}

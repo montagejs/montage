@@ -1,0 +1,26 @@
+{
+    "RangeError": {
+        "object": "global[RangeError]"
+    },
+    "Error": {
+        "object": "global[Error]"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "RangeError",
+            "propertyDescriptors": [
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "core/error/range-error.mjson" },
+            "exportName": "RangeError",
+            "module": { "%": "global" },
+            "object":{ "@": "RangeError" },
+            "parent":{"@": "Error"}
+        }
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "error": {
+        "object": "global[Error]"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "Error",
+            "propertyDescriptors": [
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "core/error/error.mjson" },
+            "exportName": "Error",
+            "module": { "%": "global" },
+            "object":{ "@": "error" }
+        }
+    }
+}

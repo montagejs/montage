@@ -1,0 +1,26 @@
+{
+    "AggregateError": {
+        "object": "global[AggregateError]"
+    },
+    "Error": {
+        "object": "global[Error]"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "AggregateError",
+            "propertyDescriptors": [
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "core/error/aggregate-error.mjson" },
+            "exportName": "AggregateError",
+            "module": { "%": "global" },
+            "object":{ "@": "AggregateError" },
+            "parent":{"@": "Error"}
+        }
+    }
+}

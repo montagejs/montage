@@ -1,0 +1,26 @@
+{
+    "InternalError": {
+        "object": "global[InternalError]"
+    },
+    "Error": {
+        "object": "global[Error]"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "InternalError",
+            "propertyDescriptors": [
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "core/error/internal-error.mjson" },
+            "exportName": "InternalError",
+            "module": { "%": "global" },
+            "object":{ "@": "InternalError" },
+            "parent":{"@": "Error"}
+        }
+    }
+}

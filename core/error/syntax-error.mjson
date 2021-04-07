@@ -1,0 +1,26 @@
+{
+    "SyntaxError": {
+        "object": "global[SyntaxError]"
+    },
+    "Error": {
+        "object": "global[Error]"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "SyntaxError",
+            "propertyDescriptors": [
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "core/error/syntax-error.mjson" },
+            "exportName": "SyntaxError",
+            "module": { "%": "global" },
+            "object":{ "@": "SyntaxError" },
+            "parent":{"@": "Error"}
+        }
+    }
+}
