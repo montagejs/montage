@@ -1529,10 +1529,9 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             }
             var defaultFactory = module.factory;
             module.factory = function(require, exports, module) {
-                var moduleExports;
                 //call it to validate:
                 try {
-                    moduleExports = config.executeCompiler(defaultFactory, require, exports, module);
+                    var moduleExports = config.executeCompiler(defaultFactory, require, exports, module);
                 } catch (e) {
                     if (e instanceof SyntaxError) {
                         config.lint(module);
@@ -1548,7 +1547,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                 var i, object, name,
                     keys = Object.keys(exports);
 
-                for (i = 0, name; name = keys[i]; i++) {
+                for (i = 0, name; (name = keys[i]); i++) {
                     // avoid attempting to initialize a non-object
                     if (((object = exports[name]) instanceof Object)) {
                         // avoid attempting to reinitialize an aliased property
