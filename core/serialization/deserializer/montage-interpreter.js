@@ -143,35 +143,46 @@ var MontageContext = Montage.specialize({
         }
     },
 
-    getObject: {
-        value: function(label) {
-            var objects = this._objects;
+    _getObject_build: {
+        value: function getObject(label) {
+            var object = this._reviver.reviveRootObject(this._serialization[label], this, label);
 
-            if (label in objects) {
-                return objects[label];
-            } else if (label in this._serialization) {
-                var object = this._reviver.reviveRootObject(this._serialization[label], this, label);
-                // If no object has been set by the reviver we safe its
-                // return, it could be a value or a promise, we need to
-                // make sure the object won't be revived twice.
-                if (!(label in objects)) {
-                    objects[label] = object;
-                }
+            // If no object has been set by the reviver we safe its
+            // return, it could be a value or a promise, we need to
+            // make sure the object won't be revived twice.
+            if (!(label in this._objects)) {
+                this._objects[label] = object;
+            }
 
-                return object;
+            return object;
+        }
+    },
+
+    _getObject_error: {
+        value: function getObject(label) {
+            var notFoundError = new Error("Object with label '" + label + "' was not found.");
+            if (this._isSync) {
+                throw notFoundError;
             } else {
-                var notFoundError = new Error("Object with label '" + label + "' was not found.");
-                if (this._isSync) {
-                    throw notFoundError;
-                } else {
-                    return Promise.reject(notFoundError);
-                }
+                return Promise.reject(notFoundError);
             }
         }
     },
 
+    getObject: {
+        value: function getObject(label) {
+            var objects = this._objects;
+
+            return (label in objects)
+            ? objects[label]
+            : (label in this._serialization)
+                ? this._getObject_build(label)
+                : this._getObject_error(label);
+        }
+    },
+
     getObjects: {
-        value: function() {
+        value: function getObjects() {
             var self = this,
                 serialization = this._serialization,
                 promises,
@@ -313,11 +324,20 @@ var MontageContext = Montage.specialize({
             return this.__propertyToReviveForObjectLiteralValue || (this.__propertyToReviveForObjectLiteralValue = new WeakMap());
         }
     },
+    _propertyToReviveEmptySet: {
+        value: new Set()
+    },
     propertyToReviveForObjectLiteralValue: {
         value: function (objectLiteralValue) {
             var  propertyToRevive;
             if(!(propertyToRevive = this._propertyToReviveForObjectLiteralValue.get(objectLiteralValue))) {
-                this._propertyToReviveForObjectLiteralValue.set(objectLiteralValue,(propertyToRevive = new Set(Object.keys(objectLiteralValue))));
+                propertyToRevive = Object.keys(objectLiteralValue);
+                if(propertyToRevive.length === 0) {
+                    propertyToRevive = this._propertyToReviveEmptySet;
+                } else {
+                    propertyToRevive = new Set(propertyToRevive);
+                }
+                this._propertyToReviveForObjectLiteralValue.set(objectLiteralValue,propertyToRevive);
             }
             return propertyToRevive;
         }
