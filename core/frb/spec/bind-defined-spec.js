@@ -1,5 +1,5 @@
 
-var Bindings = require("..");
+var Bindings = require("../bindings");
 
 describe("defined binding", function () {
 

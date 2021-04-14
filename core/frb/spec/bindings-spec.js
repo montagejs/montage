@@ -1,5 +1,6 @@
 
-var Bindings = require("..");
+//var Bindings = require("..");
+var Bindings = require("../bindings");
 var Map = require("../../collections/map");
 
 Error.stackTraceLimit = 100;

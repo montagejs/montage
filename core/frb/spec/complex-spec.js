@@ -1,5 +1,6 @@
 
-var Bindings = require("..");
+//var Bindings = require("..");
+var Bindings = require("../bindings");
 
 describe("complex binding chain", function () {
 

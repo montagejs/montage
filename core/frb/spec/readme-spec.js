@@ -4,7 +4,9 @@ var Map = require("../../collections/map");
 var Bindings = require("../bindings");
 var bind = require("../bind");
 var observe = require("../observe");
-var Frb = require("..");
+// var Frb = require("..");
+var Frb = require("../bindings");
+
 
 Error.stackTraceLimit = 100;
 
@@ -887,6 +889,22 @@ describe("Tutorial", function () {
             right: undefined
         }, {
             and: {"<-": "left && right"}
+        });
+
+        object.right = 10;
+        expect(object.and).toBe(undefined);
+
+        // Continued...
+        object.left = 20;
+        expect(object.and).toBe(10);
+    });
+
+    it("And-2", function () {
+        var object = Bindings.defineBindings({
+            left: undefined,
+            right: undefined
+        }, {
+            and: {"<-": "left.and(right)"}
         });
 
         object.right = 10;
