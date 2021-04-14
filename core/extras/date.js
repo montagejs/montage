@@ -255,8 +255,8 @@ Number.prototype.toPaddedString = function(len , fillchar) {
    * extend Date with a method parsing ISO8601 / RFC 3339 date strings.
    * Usage: var d = Date.parseRFC3339( "2010-07-20T15:00:00Z" );
    */
- function _parseRFC3339(dString) {
-    if (typeof dString != 'string' || !_parseRFC3339.endsByZ.test(dString)) return;
+ function _parseRFC3339(dString, _typeOf) {
+    if ((_typeOf || (typeof dString)) != 'string' || !_parseRFC3339.endsByZ.test(dString)) return;
     var result,
         d = dString.match(_parseRFC3339.parseRFC3339_RegExp);
 
