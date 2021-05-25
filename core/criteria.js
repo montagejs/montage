@@ -7,7 +7,8 @@ var parse = require("core/frb/parse"),
     operatorTypes = require("core/frb/language").operatorTypes,
     Scope = require("core/frb/scope"),
     syntaxProperties = require("core/frb/syntax-properties"),
-    compile = require("core/frb/compile-evaluator");
+    compile = require("core/frb/compile-evaluator"),
+    SyntaxInOrderIterator = require("core/frb/syntax-iterator").SyntaxInOrderIterator;
 
 var Criteria = exports.Criteria = Montage.specialize({
     _expression: {
@@ -111,9 +112,13 @@ var Criteria = exports.Criteria = Montage.specialize({
      * @returns {Criteria} - The Criteria initialized.
      */
     initWithSyntax: {
-        value: function (syntax, parameters) {
+        value: function (syntax, parameters, scopeComponents) {
             this._syntax = syntax;
             this.parameters = parameters;
+
+            if(scopeComponents) {
+                this._setScopeComponents(scopeComponents);
+            }
             return this;
         }
     },
@@ -125,9 +130,13 @@ var Criteria = exports.Criteria = Montage.specialize({
      * @returns {Criteria} - The Criteria initialized.
      */
     initWithCompiledSyntax: {
-        value: function (compiledSyntax, parameters) {
+        value: function (compiledSyntax, parameters, scopeComponents) {
             this._compiledSyntax = compiledSyntax;
             this.parameters = parameters;
+
+            if(scopeComponents) {
+                this._setScopeComponents(scopeComponents);
+            }
             return this;
         }
     },
@@ -177,6 +186,35 @@ var Criteria = exports.Criteria = Montage.specialize({
         }
     },
 
+    clone: {
+        value: function () {
+            var clone = (new this.constructor);
+
+            if(this._expression) {
+                clone._expression = this._expression;
+            }
+            if(this._syntax) {
+                clone._syntax = this._syntax;
+            }
+            if(this._compiledSyntax) {
+                clone._compiledSyntax = this._compiledSyntax;
+            }
+            if(this.parameters) {
+                clone.parameters = this.parameters;
+            }
+            if(this.__scope) {
+                clone.__scope = this.__scope;
+            }
+
+            if(this._predicateFunction) {
+                clone._predicateFunction = this._predicateFunction;
+            }
+
+            return clone;
+        }
+
+    },
+
     serializeSelf: {
         value: function (serializer) {
             serializer.setProperty("expression", this._expression || (this._expression = stringify(this.syntax)));
@@ -190,6 +228,31 @@ var Criteria = exports.Criteria = Montage.specialize({
             value = deserializer.getProperty("expression") || deserializer.getProperty("path");
             if (value !== void 0) {
                 this._expression = value;
+
+                /*
+                    If our expression has references to other objects in the serialization, we need to build them into our scope so we can evaluate
+                */
+                if(value.indexOf("@") !== -1) {
+                    var componentIterator = new SyntaxInOrderIterator(this.syntax, "component"),
+                        iLabel, iValue,
+                        scopeComponents = new Map(),
+                        currentSyntax;
+
+                    /*
+                        It's called components because that was the initial reason this was created, serialization was first used in .reels, for component templates.
+                    */
+                    this._setScopeComponents(scopeComponents);
+                    //Alias get to the method name that frb complile-evaluator expects:
+                    scopeComponents.getObjectByLabel = scopeComponents.get;
+
+                    while ((currentSyntax = componentIterator.next("component").value)) {
+                        iLabel = currentSyntax.label;
+                        iValue = deserializer.getObjectByLabel(iLabel);
+
+                        scopeComponents.set(iLabel,iValue);
+                    }
+
+                }
             }
             value = deserializer.getProperty("parameters");
             if (value !== void 0) {
@@ -235,6 +298,28 @@ var Criteria = exports.Criteria = Montage.specialize({
     _scope: {
         get: function() {
             return this.__scope || (this.__scope = new Scope());
+        }
+    },
+
+    /**
+     * WONKY: scope's components are a map to object's by labels created in a serialization
+     * where a criteria was created or setup. We don't have an easy way to add the getObjectByLabel
+     * aliased method to get on the map as it's not typically exposed.
+     * Scope object from frb doesn't have a setter for components and since it's never been a need so far
+     * in bindings, which is performance sensitive, we're solving it here for now.
+     *
+     * @private
+     * @type {function}
+     */
+
+    _setScopeComponents: {
+        value: function(components /* Map */) {
+            /*
+                It's called components because that was the initial reason this was created, serialization was first used in .reels, for component templates.
+            */
+            this._scope.components = components;
+            //Alias get to the method name that frb complile-evaluator expects:
+            components.getObjectByLabel = components.get;
         }
     },
     evaluate: {
@@ -384,8 +469,57 @@ var Criteria = exports.Criteria = Montage.specialize({
         }
     },
 
+    __syntaxByAliasingSyntaxWithScopeComponents: {
+        value: function (aliasedSyntax, parameterArg, parameterArgIndex, otherArg, otherArgIndex, aliasedParameters, parameterCounter, _thisParameters) {
+            var aliasedParameter;
+
+            if (otherArg.type !== "literal") {
+
+                //We replace $ syntax by the $key/$.key syntax:
+                aliasedSyntaxparameterArg = {};
+                aliasedSyntaxparameterArg.type = "property";
+                aliasedParameter = "parameter"+(++parameterCounter);
+                aliasedSyntaxparameterArg.args = [
+                    {
+                        "type":"parameters"
+                    },
+                    {
+                        "type":"literal",
+                        "value": aliasedParameter
+                    }
+                ];
+                aliasedSyntax.args[parameterArgIndex] = aliasedSyntaxparameterArg;
+                aliasedSyntax.args[otherArgIndex] = this._syntaxByAliasingSyntaxWithParameters(otherArg, aliasedParameters, parameterCounter, _thisParameters);
+
+                //and we register the criteria's parameter _thisParameters under the new key;
+                aliasedParameters[aliasedParameter] = _thisParameters;
+            } else {
+                //We need to make sure there's no conflict with aliasedParameters
+                parameter = otherArg.value;
+                parameterValue = _thisParameters[parameter];
+                if(aliasedParameters.hasOwnProperty(parameter) && aliasedParameters[parameter] !== parameterValue) {
+                    aliasedParameter = parameter+(++parameterCounter);
+                    aliasedParameters[aliasedParameter] = parameterValue;
+                } else {
+                    aliasedParameter = parameter;
+                }
+                aliasedSyntax.args[parameterArgIndex] = {
+                        "type":"parameters"
+                };
+
+                aliasedSyntax.args[otherArgIndex] = {
+                        "type":"literal",
+                        "value":aliasedParameter
+                };
+                aliasedParameters[aliasedParameter] = parameterValue;
+            }
+
+        }
+    },
+
+
     _syntaxByAliasingSyntaxWithParameters: {
-        value: function (syntax, aliasedParameters, parameterCounter, _thisParameters) {
+        value: function (syntax, aliasedParameters, parameterCounter, _thisParameters, aliasedScopeComponents, _thisScopeComponents, scopeComponentTranslation) {
             var aliasedSyntax = {},
                 syntaxKeys = Object.keys(syntax),
                 i, iKey,
@@ -404,7 +538,7 @@ var Criteria = exports.Criteria = Montage.specialize({
                     aliasedSyntax.args = [];
 
                     if(syntaxArg0.type === "parameters") {
-                        this.__syntaxByAliasingSyntaxWithParameters(aliasedSyntax, syntaxArg0, 0, syntaxArg1, 1, aliasedParameters, parameterCounter, _thisParameters);
+                        this.__syntaxByAliasingSyntaxWithParameters(aliasedSyntax, syntaxArg0, 0, syntaxArg1, 1, aliasedParameters, parameterCounter, _thisParameters, aliasedScopeComponents, _thisScopeComponents, scopeComponentTranslation);
 
                         // if (syntaxArg1.type !== "literal") {
 
@@ -449,21 +583,66 @@ var Criteria = exports.Criteria = Montage.specialize({
 
                     }
                     else if(syntaxArg1 && syntaxArg1.type === "parameters") {
-                        this.__syntaxByAliasingSyntaxWithParameters(aliasedSyntax, syntaxArg1, 1, syntaxArg0, 0, aliasedParameters, parameterCounter, _thisParameters);
+                        this.__syntaxByAliasingSyntaxWithParameters(aliasedSyntax, syntaxArg1, 1, syntaxArg0, 0, aliasedParameters, parameterCounter, _thisParameters, aliasedScopeComponents, _thisScopeComponents, scopeComponentTranslation);
 
                     } else {
                         if(syntaxArg0) {
-                            aliasedSyntax.args[0] = this._syntaxByAliasingSyntaxWithParameters(syntaxArg0, aliasedParameters, parameterCounter, _thisParameters);
+                            aliasedSyntax.args[0] = this._syntaxByAliasingSyntaxWithParameters(syntaxArg0, aliasedParameters, parameterCounter, _thisParameters, aliasedScopeComponents, _thisScopeComponents, scopeComponentTranslation);
                         }
 
                         if(syntaxArg1) {
-                            aliasedSyntax.args[1] = this._syntaxByAliasingSyntaxWithParameters(syntaxArg1, aliasedParameters, parameterCounter, _thisParameters);
+                            aliasedSyntax.args[1] = this._syntaxByAliasingSyntaxWithParameters(syntaxArg1, aliasedParameters, parameterCounter, _thisParameters, aliasedScopeComponents, _thisScopeComponents, scopeComponentTranslation);
                         }
                     }
                 } else {
-                    aliasedSyntax[iKey] = syntax[iKey];
-                }
 
+                    if(iKey === "type" && syntax.type === "component") {
+                        var label = syntax.label,
+                            newLabel = label,
+                            _thisScopeComponentsLabelValue,
+                            aliasedScopeComponentsLabelValue;
+
+                        if(!(aliasedScopeComponentsLabelValue = aliasedScopeComponents.get(label))) {
+
+                            aliasedScopeComponents.set(label, (_thisScopeComponentsLabelValue = _thisScopeComponents.get(label)));
+                            scopeComponentTranslation.set(_thisScopeComponentsLabelValue,label);
+
+                        } else if((_thisScopeComponentsLabelValue = _thisScopeComponents.get(label)) !== aliasedScopeComponentsLabelValue) {
+                            /*
+                                There's already a value for label in aliasedScopeComponents, but it's not the same as the one in _thisScopeComponents.
+
+                                So we need to alias it.
+                            */
+
+                            /* Do we have a new label for that value? */
+                            newLabel = scopeComponentTranslation.get(_thisScopeComponentsLabelValue);
+
+                            var newLabelAliasedScopeComponentsValue;
+                            if(!newLabel) {
+                                newLabel = (label+(scopeComponentTranslation.size+1));
+                                scopeComponentTranslation.set(_thisScopeComponentsLabelValue,newLabel);
+                            }
+
+                            newLabelAliasedScopeComponentsValue = aliasedScopeComponents.get(newLabel);
+                            if(!newLabelAliasedScopeComponentsValue) {
+                                aliasedScopeComponents.set(newLabel,_thisScopeComponentsLabelValue);
+                            }
+                            //debug, but that shouldn't happen:
+                            else if(newLabelAliasedScopeComponentsValue !== _thisScopeComponentsLabelValue) {
+                                throw "aliasedScopeComponents already has a different value for new label '"+newLabel+"`";
+                            }
+                        }
+
+                        aliasedSyntax["type"] = syntax.type;
+                        aliasedSyntax["label"] = newLabel;
+
+                        //We've processed the whole syntax, no need to iterate further on it.
+                        break;
+
+                    } else {
+                        aliasedSyntax[iKey] = syntax[iKey];
+                    }
+                }
             }
 
             /*
@@ -527,8 +706,8 @@ var Criteria = exports.Criteria = Montage.specialize({
     },
 
     syntaxByAliasingSyntaxWithParameters: {
-        value: function (aliasedParameters, parameterCounters) {
-            return this._syntaxByAliasingSyntaxWithParameters(this.syntax, aliasedParameters, parameterCounters||0, this.parameters);
+        value: function (aliasedParameters, aliasedScopeComponents, scopeComponentTranslation, parameterCounters) {
+            return this._syntaxByAliasingSyntaxWithParameters(this.syntax, aliasedParameters, parameterCounters||0, this.parameters, aliasedScopeComponents, this._scope.components, scopeComponentTranslation);
         }
     }
 
@@ -606,21 +785,23 @@ function _combinedCriteriaFromArguments(type, receiver, _arguments) {
     // });
     var args = [],
         isInstanceReceiver = (typeof receiver === "object"),
-        parameters = isInstanceReceiver ? receiver.parameters : null,
+        // parameters = isInstanceReceiver ? receiver.parameters : null,
         i = 0, argument, countI,
         j, countJ, argumentParameters, argumentParametersKeys, argumentParameter,
-        aliasedParameters = {};
+        aliasedParameters = {},
+        aliasedScopeComponents = new Map,
+        scopeComponentTranslation = new Map;
 
     for(countI = _arguments.length; (i<countI) ; i++ ) {
         argument = _arguments[i];
         if (typeof argument === "string") {
-            //If it's a string, there can't really be a parameter argument with it, s olikely safe to just parse it
+            //If it's a string, there can't really be a parameter argument with it's likely safe to just parse it
             args.push(parse(argument));
         } else if (argument.syntax) {
             //We alias anyway, as there could be an need in subsequent arguments.
             //if that's too expensive we can do a quick first pass to avoid creating new syntaxes.
             //at the same time, it might be safer that the new combined criteria has it's own independent syntactic tree.
-            args.push(argument.syntaxByAliasingSyntaxWithParameters(aliasedParameters));
+            args.push(argument.syntaxByAliasingSyntaxWithParameters(aliasedParameters, aliasedScopeComponents, scopeComponentTranslation));
 
             // if(argumentParameters = argument.parameters) {
             //     if(parameters) {
@@ -689,8 +870,8 @@ function _combinedCriteriaFromArguments(type, receiver, _arguments) {
             type: type,
 
             //args: [receiver.syntax].concat(args)
-            args: [receiver.syntaxByAliasingSyntaxWithParameters(aliasedParameters)].concat(args)
-        }, aliasedParameters);
+            args: [receiver.syntaxByAliasingSyntaxWithParameters(aliasedParameters, aliasedScopeComponents, scopeComponentTranslation)].concat(args)
+        }, aliasedParameters, aliasedScopeComponents);
     }
     //When called from the Criteria.and("a", "b") pattern
     else {
@@ -698,15 +879,16 @@ function _combinedCriteriaFromArguments(type, receiver, _arguments) {
         return new receiver().initWithSyntax({
             type: type,
             args: args
-        }, aliasedParameters);
+        }, aliasedParameters, aliasedScopeComponents);
     }
 }
 
 // generate methods on Criteria for each of the tokens of the language.
 // support invocation both as class and instance methods like
 // Criteria.and("a", "b") and aCriteria.and("b")
+var CriteriaPrototype = Criteria.prototype;
 operatorTypes.forEach(function (value,operator, operatorTypes) {
-    Montage.defineProperty(Criteria.prototype, operator, {
+    Montage.defineProperty(CriteriaPrototype, operator, {
         value: function () {
             return _combinedCriteriaFromArguments(operator, this, arguments);
         }
@@ -717,3 +899,18 @@ operatorTypes.forEach(function (value,operator, operatorTypes) {
         }
     });
 });
+
+// Object.defineProperties(Criteria.prototype,{
+
+// _then: {
+//     value: undefined
+// },
+// then: {
+//     get: function(value) {
+//         return this._then;
+//     },
+//     set: function(value) {
+//         this._then = value;
+//     }
+// }
+// });
