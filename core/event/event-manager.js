@@ -3058,7 +3058,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
         value: function(iTarget, mutableEvent, phase, _eventType, promise) {
             if(promise && promise.then) {
                 return promise.then(() => {
-                    return this.__invokeTargetListenersForEventPhase(iTarget, mutableEvent, phase, _eventType);
+                    if(!mutableEvent.immediatePropagationStopped) {
+                        return this.__invokeTargetListenersForEventPhase(iTarget, mutableEvent, phase, _eventType);
+                    }
                 });
             } else {
                 return this.__invokeTargetListenersForEventPhase(iTarget, mutableEvent, phase, _eventType);
@@ -3250,7 +3252,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             mutableEvent.eventPhase = CAPTURING_PHASE;
             // The event path we generate is from bottom to top, capture needs to traverse this backwards
             i = eventPath.length;
-            while (!mutableEvent.propagationStopped && (iTarget = eventPath[--i])) {
+            while (!mutableEvent.immediatePropagationStopped && !mutableEvent.propagationStopped && (iTarget = eventPath[--i])) {
             //for (i = eventPath.length - 1; !mutableEvent.propagationStopped && (iTarget = eventPath[i]); i--) {
                 mutableEvent.currentTarget = iTarget;
                 // listenerEntries = this._registeredEventListenersOnTarget_eventType_eventPhase(iTarget, eventType, CAPTURING_PHASE);
@@ -3278,7 +3280,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             }
 
             // At Target Distribution
-            if (!mutableEvent.propagationStopped) {
+            if (!mutableEvent.immediatePropagationStopped && !mutableEvent.propagationStopped) {
                 mutableEvent.eventPhase = Event_AT_TARGET;
                 mutableEvent.currentTarget = iTarget = mutableEventTarget;
                 //Capture
@@ -3328,7 +3330,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
             // Bubble Phase Distribution
             mutableEvent.eventPhase = BUBBLING_PHASE;
-            for (i = 0; eventBubbles && !mutableEvent.propagationStopped && (iTarget = eventPath[i]); i++) {
+            for (i = 0; eventBubbles && !mutableEvent.immediatePropagationStopped && !mutableEvent.propagationStopped && (iTarget = eventPath[i]); i++) {
                 mutableEvent.currentTarget = iTarget;
 
                 // listenerEntries = this._registeredEventListenersOnTarget_eventType_eventPhase(iTarget, eventType, BUBBLING_PHASE);
@@ -3495,6 +3497,10 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                                     ? listener
                                     : void 0;
 
+                    if(typeof callback === "string") {
+                        callback = listener[callback];
+                    }
+
                     if(!listenerEntry.once) {
                         listenerEntry.callback = callback;
                     }
@@ -3504,7 +3510,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     //callback.call(listener, mutableEvent);
                     result = typeof callback !== this._functionType
                     ? listener[callback](mutableEvent)
-                    : callback.call(iTarget, mutableEvent);
+                    : callback.call(listener, mutableEvent);
 
                 }
             //}
