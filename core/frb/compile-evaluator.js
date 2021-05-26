@@ -243,7 +243,7 @@ var argCompilers = {
     or: function (evaluateLeft, evaluateRight) {
         return function (scope) {
             var left = evaluateLeft(scope);
-            return (left && typeof left.or === "function") ? left.or(evaluateRight(scope)) : left && evaluateRight(scope);
+            return (left && typeof left.or === "function") ? left.or(evaluateRight(scope)) : left || evaluateRight(scope);
         };
     },
 
