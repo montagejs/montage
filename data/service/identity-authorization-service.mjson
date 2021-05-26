@@ -1,0 +1,16 @@
+{
+    "root": {
+        "prototype": "./identity-authorization-service",
+        "values": {
+            "name": "IdentityAuthorizationService",
+            "mappings": [
+            ],
+            "types": [
+                {"@": "Identity"}
+            ]
+        }
+    },
+    "Identity": {
+        "object": "../model/identity.mjson"
+    }
+}
