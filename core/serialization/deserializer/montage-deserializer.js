@@ -55,7 +55,17 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
         }
     },
 
-    /**
+    __defaultInstances: {
+        value: undefined
+    },
+    _defaultInstances: {
+        get: function() {
+            return this.__defaultInstances || (this.__defaultInstances = {
+                application: Montage.application
+            });
+        }
+    },
+        /**
      * @param {Object} instances Map-like object of external user objects to
      * link against the serialization.
      * @param {Element} element The root element to resolve element references
@@ -68,6 +78,12 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
         value: function (instances, element) {
             if((!this._serializationString || this._serializationString === "") && !this._serialization) {
                 return null;
+            }
+
+            if(!instances) {
+                instances = this._defaultInstances;
+            } else if(!instances.application) {
+                instances.application = this._defaultInstances.application;
             }
 
             var context = this._module && MontageDeserializer.moduleContexts.get(this._module),
