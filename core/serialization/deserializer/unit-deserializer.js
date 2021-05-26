@@ -61,6 +61,9 @@ var UnitDeserializer = Montage.specialize(/** @lends UnitDeserializer# */ {
                 // available yet. This can happen during the instantiation of
                 // the repetition's content.
                 return null;
+            } else if (this._context.hasUserObject(label)) {
+                // Last check is for pre-existing objects passed to the deserializer, such as "application"
+                return this._context.getUserObject(label);
             } else {
                 throw new Error("Object with label '" + label + "' was not found.");
             }
