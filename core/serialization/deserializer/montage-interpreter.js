@@ -183,8 +183,7 @@ var MontageContext = Montage.specialize({
 
     getObjects: {
         value: function getObjects() {
-            var self = this,
-                serialization = this._serialization,
+            var serialization = this._serialization,
                 promises,
                 result,
                 objectKeys;
@@ -205,6 +204,8 @@ var MontageContext = Montage.specialize({
                 return this._isSync ? result : Promise.is(result) ? result : Promise.resolve(result);
             } else {
                 // We shouldn't get here if this._isSync is true
+                var self = this;
+
                 return Promise.all(promises).then(function() {
                     return self._invokeDidReviveObjects();
                 });
