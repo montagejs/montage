@@ -5598,7 +5598,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
         value: function(createTransactionOperation) {
             //console.log("captureCreateTransactionOperation: "+createTransactionOperation.target.name+", criteria.expression: "+createTransactionOperation.criteria.expression+", criteria.parameters: "+JSON.stringify(createTransactionOperation.criteria.parameters), createTransactionOperation);
 
-            console.log("objectDescriptors: ", createTransactionOperation.objectDescriptors);
+            //console.log("objectDescriptors: ", createTransactionOperation.objectDescriptors);
 
             if(this.performsAccessControl) {
                 var self = this,
