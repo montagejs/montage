@@ -1164,7 +1164,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
         value: new Map
     },
     /**
-     * Evaluates the validity of objectInstance and collects invalidity into invalidityStates if provides, or in a
+     * Evaluates the validity of objectInstance and collects invalidity into invalidityStates if provided, or in a
      * new Map created, which will be the resolved value. This is done using:
      * - rules set on ObjectDescriptor
      * - propertyDescriptor properties:
