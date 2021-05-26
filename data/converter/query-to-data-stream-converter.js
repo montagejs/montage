@@ -3,6 +3,7 @@
  */
 
 var Converter = require("../../core/converter/converter").Converter,
+    DataQuery = require("../model/data-query").DataQuery,
     DataService = require("../service/data-service").DataService;
 /**
  * @class RawForeignValueToObjectConverter
@@ -25,6 +26,10 @@ exports.QueryToDataStreamConverter = Converter.specialize( /** @lends QueryToDat
 
     convert: {
         value: function (query) {
+
+            if(!query instanceof DataQuery) {
+                throw "QueryToDataStreamConverter -convert() called with argument that is not a query:"+ query ? JSON.stringify(query) : query;
+            }
             return DataService.mainService.fetchData(query);
         }
     }
