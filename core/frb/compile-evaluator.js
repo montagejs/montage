@@ -235,13 +235,15 @@ var argCompilers = {
 
     and: function (evaluateLeft, evaluateRight) {
         return function (scope) {
-            return evaluateLeft(scope) && evaluateRight(scope);
+            var left = evaluateLeft(scope);
+            return (left && typeof left.and === "function") ? left.and(evaluateRight(scope)) : left && evaluateRight(scope);
         };
     },
 
     or: function (evaluateLeft, evaluateRight) {
         return function (scope) {
-            return evaluateLeft(scope) || evaluateRight(scope);
+            var left = evaluateLeft(scope);
+            return (left && typeof left.or === "function") ? left.or(evaluateRight(scope)) : left && evaluateRight(scope);
         };
     },
 
