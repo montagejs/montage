@@ -61,7 +61,7 @@ exports.DataQuery = Montage.specialize(/** @lends DataQuery.prototype */ {
             }
 
 
-            return result || Promise.resolve(this);
+            return result ? Promise.resolve(this) : this;
         }
     },
 
