@@ -6,6 +6,7 @@ var Montage = require("core/core").Montage,
     uuid = require("core/uuid"),
     defaultEventManager = require("../../core/event/event-manager").defaultEventManager,
     Locale = require("core/locale").Locale,
+    DataOperation,
     DataOperationType,
 
     /* todo: we shpuld add a ...timedout for all operations. */
@@ -128,19 +129,26 @@ var Montage = require("core/core").Montage,
         /* Attempting to create a transaction within an existing one will fail */
         "createTransactionFailedOperation",
 
+        "createTransactionOperationDispatchComplete",
+        "createTransactionOperationDispatchFail",
+
         "transactionUpdatedOperation",
-        "transactionCanceledOperation",
+        "transactionRollbackedOperation",
 
-        "createSavePointOperation",
+        "appendTransactionOperation",
+        "appendTransactionCompletedOperation",
+        "appendTransactionFailedOperation",
 
-        "performTransactionOperation",
-        "performTransactionProgressOperation",
-        "performTransactionCompletedOperation",
-        "performTransactionFailedOperation",
+        "createSavePointOperation",                 //transactionSavePointCreate
 
-        "rollbackTransactionOperation",
-        "rollbackTransactionCompletedOperation",
-        "rollbackTransactionFailedOperation",
+        "commitTransactionOperation",              //transactionCommit
+        "commitTransactionProgressOperation",      //transactionCommitProgress
+        "commitTransactionCompletedOperation",     //transactionCommitComplete
+        "commitTransactionFailedOperation",        //transactionCommitFail
+
+        "rollbackTransactionOperation",             //transactionRollback
+        "rollbackTransactionCompletedOperation",    //transactionRollbackComplete
+        "rollbackTransactionFailedOperation",       //transactionRollbackFail
 
         /*
             operations used for the bottom of the stack to get information from a user.
@@ -189,7 +197,7 @@ exports.DataOperationType = DataOperationType = new Enum().initWithMembersAndVal
  * @class
  * @extends external:Montage
  */
-exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototype */ {
+ DataOperation = exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototype */ {
 
     /***************************************************************************
      * Constructor
@@ -200,6 +208,7 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             this.timeStamp = performance.now();
             this.id = uuid.generate();
             this.constructionIndex = exports.DataOperation.prototype.constructionSequence++;
+            this._completionPromiseFunctionsByParticipant = new Map();
             exports.DataOperation.prototype.constructionSequence = this.constructionIndex;
         }
     },
@@ -371,6 +380,63 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
             }
 
         }
+    },
+
+    _completionPromiseFunctionsByParticipant: {
+        value: undefined
+    },
+
+    createCompletionPromiseForParticipant: {
+        value: function(participant) {
+            var participationPromiseArguments = this._completionPromiseFunctionsByParticipant.get(participant),
+                self = this;
+
+            if(!participationPromiseArguments) {
+                var completionPromise = new Promise(function(resolve, reject) {
+                    self._completionPromiseFunctionsByParticipant.set(participant,arguments);
+                });
+                this.completionPromises.push(completionPromise);
+            }
+        }
+    },
+
+    resolveCompletionPromiseForParticipant: {
+        value: function(participant) {
+            var promiseFunctions = this._completionPromiseFunctionsByParticipant.get(participant);
+            if(promiseFunctions) {
+                promiseFunctions[0](participant);
+            }
+        }
+    },
+    rejectCompletionPromiseForParticipantWithError: {
+        value: function(participant, error) {
+            var promiseFunctions = this._completionPromiseFunctionsByParticipant.get(participant);
+            if(promiseFunctions) {
+                promiseFunctions[1](error);
+            }
+        }
+    },
+
+    clearCompletionPromises: {
+        value: function(participant) {
+            this._completionPromises.length = 0;
+            this._completionPromiseFunctionsByParticipant.clear();
+        }
+    },
+
+
+    _completionPromises: {
+        value: undefined
+    },
+
+    completionPromises: {
+        get: function() {
+            return this._completionPromises || (this._completionPromises = []);
+        }
+    },
+
+    completionPromise: {
+        value: undefined
     },
 
     /***************************************************************************
@@ -781,6 +847,46 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
                 ? !!value
                 : !!value && this._isAuthorized;
         }
+    },
+
+    /**
+     * Returns a Set containing ObjectDescriptors involved in the operation if present.
+     * Meant to be used on transation operations. We might need a subclass for TransactionOperations to keep it clean
+     *
+     * @type {Array}
+     */
+     _objectDescriptors: {
+        value: undefined
+    },
+    objectDescriptors: {
+        get: function() {
+            if(this._objectDescriptors === undefined) {
+                var objectDescriptorModuleIds;
+
+                if(this.data && (objectDescriptorModuleIds = this.data.objectDescriptors) && objectDescriptorModuleIds.length) {
+                    var _mainService = defaultEventManager.application.mainService,
+                        i, countI, iObjectDescriptorModuleId, iObjectDescriptor,
+                        objectDescriptors = [];
+
+                    for(i=0, countI = objectDescriptorModuleIds.length; (i<countI); i++) {
+                        iObjectDescriptorModuleId = objectDescriptorModuleIds[i];
+
+                        iObjectDescriptor = _mainService.objectDescriptorWithModuleId(iObjectDescriptorModuleId);
+                        if(!iObjectDescriptor) {
+                            console.warn("Could not find an ObjecDescriptor with moduleId "+iObjectDescriptorModuleId);
+                        } else {
+                            objectDescriptors.push(iObjectDescriptor);
+                        }
+                    }
+
+                    this._objectDescriptors = objectDescriptors;
+
+                } else {
+                    this._objectDescriptors = null;
+                }
+            }
+            return this._objectDescriptors;
+        }
     }
 
 
@@ -883,13 +989,17 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
 
             TransactionUpdatedOperation: DataOperationType.transactionUpdatedOperation,
 
+            AppendTransactionOperation: DataOperationType.appendTransactionOperation,
+            AppendTransactionCompletedOperation: DataOperationType.appendTransactionCompletedOperation,
+            AppendTransactionFailedOperation: DataOperationType.appendTransactionFailedOperation,
+
 
             CreateSavePointOperation: DataOperationType.createSavePointOperation,
 
-            PerformTransactionOperation: DataOperationType.performTransactionOperation,
-            PerformTransactionProgressOperation: DataOperationType.performTransactionProgressOperation,
-            PerformTransactionCompletedOperation: DataOperationType.performTransactionCompletedOperation,
-            PerformTransactionFailedOperation: DataOperationType.performTransactionFailedOperation,
+            CommitTransactionOperation: DataOperationType.commitTransactionOperation,
+            CommitTransactionProgressOperation: DataOperationType.commitTransactionProgressOperation,
+            CommitTransactionCompletedOperation: DataOperationType.commitTransactionCompletedOperation,
+            CommitTransactionFailedOperation: DataOperationType.commitTransactionFailedOperation,
 
             RollbackTransactionOperation: DataOperationType.rollbackTransactionOperation,
             RollbackTransactionCompletedOperation: DataOperationType.rollbackTransactionCompletedOperation,
@@ -910,3 +1020,30 @@ exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototy
 
 });
 
+/*
+    Loop to create getters that create criteria for a DataOperation's type, for all known types:
+
+    like            "expression": "type == 'authorizeConnectionOperation'"
+
+*/
+for(
+    var types = DataOperation.Type,
+        dataOperationTypes = Object.keys(types),
+        i=0, iType, iPropertyName, iPrivateiPropertyName, countI = dataOperationTypes.length;
+        (i<countI);
+        i++
+    ) {
+        defineCriteriaGetterForDataOperationType(types[dataOperationTypes[i]], DataOperation);
+    }
+
+function defineCriteriaGetterForDataOperationType(type, DataOperation) {
+
+    var iPropertyName = (type+"TypeCriteria"),
+        iPrivatePropertyName = ("_"+iPropertyName);
+
+    Montage.defineProperty(DataOperation, iPropertyName, {
+        value: function () {
+            return this[iPrivatePropertyName] || (this[iPrivatePropertyName] = new Criteria().initWithExpression(("type == '"+type+"'")));
+        }
+    });
+}

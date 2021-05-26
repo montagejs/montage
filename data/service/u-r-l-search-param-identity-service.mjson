@@ -1,0 +1,16 @@
+{
+    "root": {
+        "prototype": "./u-r-l-search-param-identity-service",
+        "values": {
+            "name": "URLSearchParamIdentityService",
+            "mappings": [
+            ],
+            "types": [
+                {"@": "Identity"}
+            ]
+        }
+    },
+    "Identity": {
+        "object": "../model/identity.mjson"
+    }
+}

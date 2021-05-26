@@ -950,7 +950,8 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
             //Try to pass on the locales context to prepare the rule:
             if(context instanceof DataOperation) {
-                var referrerOperation = this.service.operationReferrer(context);
+                var referrerOperation = this.service.referrerForDataOperation(context);
+
                 if(referrerOperation && referrerOperation.criteria && referrerOperation.criteria.parameters) {
                     locales = referrerOperation.criteria.parameters.DataServiceUserLocales;
                 }
@@ -1385,6 +1386,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                     if(value !== undefined) {
                         this._setRawDataPropertyValueIfNeeded(data, propertyName, value, lastReadSnapshot, rawDataSnapshot);
                         //data[propertyName] = value;
+                        result = value;
                     }
                 }
 
@@ -1412,6 +1414,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
             if (this._isAsync(result)) {
                 result = result.then(function (value) {
+                    //console.log("_mapObjectPropertyToRawDataProperty "+object.constructor.name+" - "+propertyName);
                     return self._mapObjectPropertyToRawDataProperty(object, propertyName, data, rawDataProperty, added, removed, rule, lastReadSnapshot, rawDataSnapshot);
                 });
             } else {

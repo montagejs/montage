@@ -19,7 +19,13 @@ var DataService = require("data/service/data-service").DataService,
     DataOperation = require("./data-operation").DataOperation,
     DataOperationType = require("./data-operation").DataOperationType,
     Promise = require("../../core/promise").Promise,
-    SyntaxInOrderIterator = require("core/frb/syntax-iterator").SyntaxInOrderIterator;
+    SyntaxInOrderIterator = require("core/frb/syntax-iterator").SyntaxInOrderIterator,
+    RawEmbeddedValueToObjectConverter = require("../converter/raw-embedded-value-to-object-converter").RawEmbeddedValueToObjectConverter,
+    ReadEvent = require("../model/read-event").ReadEvent,
+    TransactionEvent = require("../model/transaction-event").TransactionEvent,
+    uuid = require("../../core/uuid"),
+    DataEvent = require("../model/data-event").DataEvent,
+    DataQuery = require("../model/data-query").DataQuery;
 
     require("core/collections/shim-object");
 
@@ -54,8 +60,61 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             DataService.call(this);
             this._typeIdentifierMap = new Map();
             this._descriptorToRawDataTypeMappings = new Map();
+
+            if(this.supportsDataOperation) {
+                this.addEventListener(DataOperation.Type.ReadUpdateOperation,this,false);
+                this.addEventListener(DataOperation.Type.ReadFailedOperation,this,false);
+                this.addEventListener(DataOperation.Type.ReadCompletedOperation,this,false);
+
+                if(this.supportsTransaction) {
+                    this.addEventListener(DataOperationType.createTransactionOperation,this, false);
+                    this.addEventListener(DataOperationType.createTransactionCompletedOperation,this, false);
+                    this.addEventListener(DataOperationType.createTransactionFailedOperation,this, false);
+                    this.addEventListener(DataOperation.Type.BatchCompletedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.BatchFailedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.TransactionUpdatedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.CommitTransactionProgressOperation,this,false);
+                    this.addEventListener(DataOperation.Type.CommitTransactionFailedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.CommitTransactionCompletedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.RollbackTransactionFailedOperation,this,false);
+                    this.addEventListener(DataOperation.Type.RollbackTransactionCompletedOperation,this,false);
+                }
+
+                this._pendingDataOperationById = new Map();
+                this._rawContextByTransaction = new WeakMap();
+            }
         }
     },
+
+    addMainServiceEventListeners: {
+        value: function() {
+
+            this.addEventListener(ReadEvent.read, this, false);
+
+            if(this.canSaveData) {
+                this.mainService.addEventListener(TransactionEvent.transactionCreate, this, false);
+            }
+
+            if(this.supportsDataOperation) {
+                /*
+                    DataOperations on their way out:
+                */
+
+                    this.addEventListener(DataOperation.Type.ReadOperation,this,false);
+                    this.addEventListener(DataOperation.Type.UpdateOperation,this,false);
+                    this.addEventListener(DataOperation.Type.CreateOperation,this,false);
+                    this.addEventListener(DataOperation.Type.DeleteOperation,this,false);
+                    this.addEventListener(DataOperation.Type.CreateTransactionOperation,this,false);
+                    this.addEventListener(DataOperation.Type.AppendTransactionOperation,this,false);
+                    this.addEventListener(DataOperation.Type.CommitTransactionOperation,this,false);
+                    this.addEventListener(DataOperation.Type.RollbackTransactionOperation,this,false);
+
+
+
+            }
+        }
+    },
+
 
     /**
      * @deprecated
@@ -136,7 +195,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      *
      */
     _registeredConnectionsByIdentifier: {
-        value: undefined,
+        value: undefined
     },
     registerConnections: {
         value: function(connectionDescriptor) {
@@ -280,6 +339,70 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
+    fetchRawObjectProperty: {
+        value: function (object, propertyName) {
+            var self = this,
+                objectDescriptor = this.objectDescriptorForObject(object),
+                mapping = objectDescriptor && self.mappingForType(objectDescriptor),
+                propertyDescriptor = objectDescriptor.propertyDescriptorForName(propertyName),
+                valueDescriptor = propertyDescriptor && propertyDescriptor.valueDescriptor,
+                isObjectCreated = this.isObjectCreated(object);
+
+
+            if(!mapping) {
+                return this.nullPromise;
+            }
+
+            //console.log(objectDescriptor.name+": fetchObject:",object, "property:"+ " -"+propertyName);
+
+            if(!Promise.is(valueDescriptor)) {
+                valueDescriptor = Promise.resolve(valueDescriptor);
+            }
+
+            return valueDescriptor.then( function(valueDescriptor) {
+                var objectRule = mapping && mapping.objectMappingRules.get(propertyName),
+                    snapshot = self.snapshotForObject(object),
+                    objectRuleConverter = objectRule && objectRule.converter;
+
+
+                // if(!snapshot) {
+                //     throw "Can't fetchObjectProperty: type: "+valueDescriptor.name+" propertyName: "+propertyName+" - doesn't have a snapshot";
+                // }
+
+
+                /*
+                    if we can get the value from the type's storage itself:
+                    or
+                    we don't have the foreign key necessary or it
+
+                    -- !!! embedded values don't have their own snapshots --
+                */
+                if(
+                    (!valueDescriptor && !objectRuleConverter) ||
+                    ( valueDescriptor && !objectRuleConverter ) /*for Date for example*/ ||
+                    ( valueDescriptor && objectRuleConverter && objectRuleConverter instanceof RawEmbeddedValueToObjectConverter) || (snapshot && !objectRule.hasRawDataRequiredValues(snapshot))
+                ) {
+                    var propertyNameQuery = DataQuery.withTypeAndCriteria(objectDescriptor,self.rawCriteriaForObject(object, objectDescriptor));
+
+                    propertyNameQuery.readExpressions = [propertyName];
+
+                    //console.log(objectDescriptor.name+": fetchObjectProperty "+ " -"+propertyName);
+
+                    return DataService.mainService.fetchData(propertyNameQuery);
+
+                    /*
+                        Original from PhrontClient who was overriding fetchData
+                    */
+                    //return self.fetchData(propertyNameQuery);
+
+                } else {
+                    return self._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor,isObjectCreated);
+                }
+            });
+        }
+    },
+
+
     /**
      * Called through MainService when consumer has indicated that he has lost interest in the passed DataStream.
      * This will allow the RawDataService feeding the stream to take appropriate measures.
@@ -302,6 +425,25 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             return object && object.then && typeof object.then === "function";
         }
     },
+
+    /***************************************************************************
+     * Saving Data
+     */
+
+    /**
+     * Event handler method invoked by the framework if a RawDataService's types are
+     * part of a transaction and if a RawDataService supports transactions.
+     *
+     * @method
+     * @argument {DataOperation} createTransactionOperation .
+     */
+
+    // handleCreateTransactionOperation: {
+    //     value: function (createTransactionOperation) {
+
+    //     }
+    // },
+
 
 
     /**
@@ -528,7 +670,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             var mapping = this.mappingForObjectDescriptor(type),
             rawDataPrimaryKeys = mapping.rawDataPrimaryKeys,
             i, countI, iKey,
-            iterator, parentSyntax, currentSyntax, propertyName, propertyValue, firstArgSyntax, propertyName, secondArgSyntax,
+            iterator, parentSyntax, currentSyntax, propertyName, propertyValue, firstArgSyntax, secondArgSyntax,
             criteriaParameters,
             criteriaSyntax,
             syntaxPropertyByName;
@@ -740,8 +882,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
     /**
      * Called by [DataService createDataObject()]{@link DataService#createDataObject} to allow
-     * RawDataService to provide a primiary key on the client side as soon as an object is created.
+     * RawDataService to provide a primary key on the client side as soon as an object is created.
      * Especially useful for uuid based primary keys that can be generated eithe client or server side.
+     * Which is done by default. Subclasses can override for different kind of primary keys, or per-type primary keys.
      *
      * @method
      * @argument {DataStream} stream
@@ -762,7 +905,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
     primaryKeyForNewDataObject: {
         value: function (type) {
-            return undefined;
+            return uuid.generate();
         }
     },
 
@@ -1266,7 +1409,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     _defaultDataMapping : {
-        value: new DataMapping
+        value: new DataMapping()
     },
 
     /**
@@ -1434,15 +1577,15 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 if(this._objectsBeingMapped.has(object)) {
                         return undefined;
 
-                    if(this._objectsBeingMapped.has(object)) {
-                        console.log(object.dataIdentifier.objectDescriptor.name +" _mapRawDataToObject id:"+record.id+" FOUND EXISTING MAPPING PROMISE");
-                        return undefined;
-                        return Promise.resolve(object);
-                        return this._getMapRawDataToObjectPromise(snapshot,object);
-                    } else {
-                        //rawData is un-changed, no point doing anything...
-                        return undefined;
-                    }
+                    // if(this._objectsBeingMapped.has(object)) {
+                    //     console.log(object.dataIdentifier.objectDescriptor.name +" _mapRawDataToObject id:"+record.id+" FOUND EXISTING MAPPING PROMISE");
+                    //     return undefined;
+                    //     return Promise.resolve(object);
+                    //     return this._getMapRawDataToObjectPromise(snapshot,object);
+                    // } else {
+                    //     //rawData is un-changed, no point doing anything...
+                    //     return undefined;
+                    // }
                 }
 
 
@@ -1866,11 +2009,429 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
+    rawCriteriaForObject: {
+        value: function(object, _objectDescriptor) {
+
+            var objectDescriptor = _objectDescriptor || this.objectDescriptorForObject(object),
+            mapping = this.mappingForType(objectDescriptor);
+
+            return mapping.rawDataPrimaryKeyCriteriaForObject(object);
+
+        }
+    },
+
+
     /***************************************************************************
      *
      * Data Operaation related methods
      *
      ***************************************************************************/
+     _operationListenerNamesByType: {
+        value: new Map()
+    },
+    _operationListenerNameForType: {
+        value: function(type) {
+            return this._operationListenerNamesByType.get(type) || this._operationListenerNamesByType.set(type,"handle"+type.toCapitalized()).get(type);
+        }
+    },
+
+    /**
+     * Returns a promise that represents the completion of a pending data operation if it exists
+     *
+     * @method
+     * @argument {DataOperation} dataOperation
+     */
+    completionPromiseForPendingDataOperation: {
+        value: function(dataOperation) {
+            var dataOperationRegistration = this._pendingDataOperationById.get(dataOperation.id);
+            if(dataOperationRegistration && !dataOperationRegistration.completionPromise) {
+                dataOperationRegistration.completionPromise = new Promise(function(resolve, reject) {
+                    dataOperationRegistration.completionPromiseResolve = resolve;
+                    dataOperationRegistration.completionPromiseReject = reject;
+                });
+            }
+            return dataOperationRegistration ? dataOperationRegistration.completionPromise : undefined;
+        }
+    },
+
+    /**
+     * Returns the registered context for a pending data operation if it exists
+     *
+     * @method
+     * @argument {DataOperation} dataOperation
+     */
+    contextForPendingDataOperation: {
+        value: function(dataOperation) {
+            var dataOperationRegistration = this._pendingDataOperationById.get(dataOperation.id);
+            return dataOperationRegistration
+                ? dataOperationRegistration.context
+                //Backup in transition
+                //: DataService.mainService.registeredDataStreamForDataOperation(dataOperation);
+                : undefined;
+        }
+    },
+
+    /**
+     * Create if needed a promise that represents the completion of a pending data operation, a data operation
+     * that is expected to be followed by data operations representing progress, success or failure.
+     *
+     * @method
+     * @argument {DataOperation} dataOperation
+     */
+
+    registerPendingDataOperationWithContext: {
+        value: function(dataOperation, context, createPromise) {
+            var dataOperationRegistration = this._pendingDataOperationById.get(dataOperation.id);
+
+            if(!dataOperationRegistration) {
+                dataOperationRegistration = {
+                    dataOperation: dataOperation
+                };
+
+                if(context) {
+                    dataOperationRegistration.context = context;
+                }
+
+                this._pendingDataOperationById.set(dataOperation.id, dataOperationRegistration);
+
+                if(createPromise) {
+                    dataOperationRegistration.completionPromise = new Promise(function(resolve, reject) {
+                        dataOperationRegistration.completionPromiseResolve = resolve;
+                        dataOperationRegistration.completionPromiseReject = reject;
+                    });
+
+                    return dataOperationRegistration.completionPromise;
+                }
+            }
+        }
+    },
+
+    unregisterPendingDataOperation: {
+        value: function(dataOperation) {
+            this._pendingDataOperationById.delete(dataOperation.id);
+            //Backup until bug fixed
+            //DataService.mainService.unregisterDataStreamForDataOperation(dataOperation);
+        }
+    },
+
+    unregisterDataOperationPendingReferrer: {
+        value: function(dataOperation) {
+            this._pendingDataOperationById.delete(dataOperation.referrerId);
+            //Backup until bug fixed
+            //DataService.mainService.unregisterDataStreamForDataOperation(dataOperation);
+        }
+    },
+    /**
+     * Returns a promise that represents the completion of data operation's referrer operation if it exists
+     *
+     * @method
+     * @argument {DataOperation} dataOperation
+     */
+    referrerForDataOperation: {
+        value: function(dataOperation) {
+            var dataOperationRegistration = this._pendingDataOperationById.get(dataOperation.referrerId);
+            return dataOperationRegistration
+                ? dataOperationRegistration.dataOperation
+                : undefined;
+        }
+    },
+
+    /**
+     * Returns a promise that represents the completion of data operation's referrer operation if it exists
+     *
+     * @method
+     * @argument {DataOperation} dataOperation
+     */
+    referrerCompletionPromiseForDataOperation: {
+        value: function(dataOperation) {
+            var referrerDataOperationRegistration =  this._pendingDataOperationById.get(dataOperation.referrerId);
+            return referrerDataOperationRegistration ? referrerDataOperationRegistration.completionPromise : undefined;
+        }
+    },
+
+        /**
+     * Returns a promise that represents the completion of data operation's referrer operation if it exists
+     *
+     * @method
+     * @argument {DataOperation} dataOperation
+     */
+    referrerContextForDataOperation: {
+        value: function(dataOperation) {
+            var referrerDataOperationRegistration =  this._pendingDataOperationById.get(dataOperation.referrerId);
+            return referrerDataOperationRegistration
+                ? referrerDataOperationRegistration.context
+                : undefined;
+                //For migration
+                //: DataService.mainService.registeredDataStreamForDataOperation(dataOperation);
+        }
+    },
+
+    /**
+     * Resolves the promise that represents the completion of data operation's referrer operation, if it exists
+     *
+     * @method
+     * @argument {DataOperation} dataOperation
+     */
+    resolveCompletionPromiseWithDataOperation: {
+        value: function(dataOperation) {
+            var referrerDataOperationRegistration =  this._pendingDataOperationById.get(dataOperation.referrerId);
+            if(!referrerDataOperationRegistration) {
+                return;
+            }
+            referrerDataOperationRegistration.completionPromiseResolve(dataOperation);
+            this._pendingDataOperationById.delete(dataOperation.referrerId);
+        }
+    },
+
+    /**
+     * Rejects the promise that represents the completion of data operation's referrer operation, if it exists
+     *
+     * @method
+     * @argument {DataOperation} dataOperation
+     */
+     rejectCompletionPromiseWithDataOperation: {
+        value: function(dataOperation) {
+            var referrerDataOperationRegistration =  this._pendingDataOperationById.get(dataOperation.referrerId);
+            if(!referrerDataOperationRegistration) {
+                return;
+            }
+            //dataOperation.data is an Error
+            referrerDataOperationRegistration.completionPromiseReject(dataOperation.data);
+            this._pendingDataOperationById.delete(dataOperation.referrerId);
+        }
+    },
+
+
+
+    handleRead: {
+        value: function (readEvent) {
+
+            var query = readEvent.query,
+                self = this;
+                stream = readEvent.dataStream;
+                stream.query = query;
+
+            // make sure type is an object descriptor or a data object descriptor.
+            // query.type = this.rootService.objectDescriptorForType(query.type);
+
+
+            var objectDescriptor = query.type,
+                criteria = query.criteria,
+                criteriaWithLocale,
+                parameters,
+                rawParameters,
+                readOperation = new DataOperation(),
+                rawReadExpressions = [],
+                rawOrderings,
+                promises;
+                // localizableProperties = objectDescriptor.localizablePropertyDescriptors;
+
+            /*
+                We need to turn this into a Read Operation. Difficulty is to turn the query's criteria into
+                one that doesn't rely on objects. What we need to do before handing an operation over to another context
+                bieng a worker on the client side or a worker on the server side, is to remove references to live objects.
+                One way to do this is to replace every object in a criteria's parameters by it's data identifier.
+                Another is to serialize the criteria.
+            */
+            readOperation.type = DataOperation.Type.ReadOperation;
+            readOperation.target = objectDescriptor;
+            //readOperation.data = {};
+
+            //Need to add a check to see if criteria may have more spefific instructions for "locale".
+            /*
+                1/19/2021 - we were only adding locale when the object descriptor being fetched has some localizableProperties, but a criteria may involve a subgraph and we wou'd have to go through the syntactic tree of the criteria, and readExpressions, to figure out if anywhere in that subgraph, there might be localizable properties we need to include the locales for.
+
+                Since we're localized by default, we're going to include it no matter what, it's going to be more rare that it is not needed than it is.
+            */
+            /*
+                WIP Adds locale as needed. Most common case is that it's left to the framework to qualify what Locale to use.
+
+                A core principle is that each data object (DO) has a locale property behaving in the following way:
+                locales has 1 locale value, a locale object.
+                This is the most common use case. The property’s getter returns the user’s locale.
+                Fetching an object with a criteria asking for a specific locale will return an object in that locale.
+                Changing the locale property of an object to another locale instance (singleton in Locale’s case), updates all the values of its localizable properties to the new locale set.
+                locales has either no value, or “*” equivalent, an “All Locale Locale”
+                This feches the json structure and returns all the values in all the locales
+                locales has an array of locale instances.
+                If locale’s cardinality is > 1 then each localized property would return a json/dictionary of locale->value instead of 1 value.
+            */
+
+            readOperation.locales = self.userLocales;
+
+
+            if(criteria) {
+                //readOperation.criteria = criteria.clone();
+                readOperation.criteria = criteria;
+            }
+
+            if(query.fetchLimit) {
+                readOperation.data.readLimit = query.fetchLimit;
+            }
+
+            if(query.orderings && query.orderings > 0) {
+                rawOrderings = [];
+                // self._mapObjectDescriptorOrderingsToRawOrderings(objectDescriptor, query.sortderings,rawOrderings);
+                // readOperation.data.orderings = rawOrderings;
+                readOperation.data.orderings = query.orderings;
+            }
+
+            /*
+                for a read operation, we already have criteria, shouldn't data contains the array of
+                expressions that are expected to be returned?
+            */
+            /*
+                The following block is from PhrontClientService, we shouldn't map to rawReadExpressions just yet.
+            */
+            // self._mapObjectDescriptorReadExpressionToRawReadExpression(objectDescriptor, query.readExpressions,rawReadExpressions);
+            // if(rawReadExpressions.length) {
+            //     readOperation.data.readExpressions = rawReadExpressions;
+            // }
+            if(query.readExpressions && query.readExpressions.length) {
+                readOperation.data.readExpressions = query.readExpressions;
+            }
+
+            /*
+                We need to do this in node's DataWorker, it's likely that we'll want that client side as well, where it's some sort of token set post authorization.
+            */
+            if(this.application.identity && this.shouldAuthenticateReadOperation) {
+                readOperation.identity = this.application.identity;
+            }
+
+            /*
+
+                this is half-assed, we're mapping full objects to RawData, but not the properties in the expression.
+                phront-service does it, but we need to stop doing it half way there and the other half over there.
+                SaveChanges is cleaner, but the job is also easier there.
+
+            */
+            parameters = criteria ? criteria.parameters : undefined;
+            rawParameters = parameters;
+
+            if(parameters && typeof criteria.parameters === "object") {
+                var keys = Object.keys(parameters),
+                    i, countI, iKey, iValue, iRecord;
+
+                rawParameters = Array.isArray(parameters) ? [] : {};
+
+                for(i=0, countI = keys.length;(i < countI); i++) {
+                    iKey  = keys[i];
+                    iValue = parameters[iKey];
+                    if(!iValue) {
+                        throw "fetchData: criteria with no value for parameter key "+iKey;
+                    } else {
+                        if(iValue.dataIdentifier) {
+                            /*
+                                this isn't working because it's causing triggers to fetch properties we don't have
+                                and somehow fails, but it's wastefull. Going back to just put primary key there.
+                            */
+                            // iRecord = {};
+                            // rawParameters[iKey] = iRecord;
+                            // (promises || (promises = [])).push(
+                            //     self._mapObjectToRawData(iValue, iRecord)
+                            // );
+                            rawParameters[iKey] = iValue.dataIdentifier.primaryKey;
+                        } else {
+                            rawParameters[iKey] = iValue;
+                        }
+                    }
+
+                }
+                // if(promises) promises = Promise.all(promises);
+            }
+            // if(!promises) promises = Promise.resolve(true);
+            // promises.then(function() {
+            if(criteria) {
+                readOperation.criteria.parameters = rawParameters;
+            }
+            //console.log("fetchData operation:",JSON.stringify(readOperation));
+
+            this.registerPendingDataOperationWithContext(readOperation, stream);
+            objectDescriptor.dispatchEvent(readOperation);
+
+
+            if(criteria) {
+                readOperation.criteria.parameters = parameters;
+            }
+
+            // });
+
+            //return stream;
+        }
+    },
+
+    handleReadUpdateOperation: {
+        value: function (operation) {
+            var referrer = operation.referrerId,
+                objectDescriptor = operation.target,
+                records = operation.data,
+                //stream = DataService.mainService.registeredDataStreamForDataOperation(operation),
+                stream = this.referrerContextForDataOperation(operation),
+
+                streamObjectDescriptor;
+            // if(operation.type === DataOperation.Type.ReadCompletedOperation) {
+            //     console.log("handleReadCompleted  referrerId: ",operation.referrerId, "records.length: ",records.length);
+            // } else {
+            //     console.log("handleReadUpdateOperation  referrerId: ",operation.referrerId, "records.length: ",records.length);
+            // }
+            // if(operation.type === DataOperation.Type.ReadUpdateOperation) {
+            //     console.log("handleReadUpdateOperation  referrerId: ",referrer);
+            // }
+
+            if(stream) {
+                streamObjectDescriptor = stream.query.type;
+                /*
+
+                    We now could get readUpdate that are reads for readExpressions that are properties (with a valueDescriptor) of the ObjectDescriptor of the referrer. So we need to add a check that the obectDescriptor match, otherwise, it needs to be assigned to the right instance, or created in memory and mapping/converters will find it.
+                */
+
+                if(streamObjectDescriptor === objectDescriptor) {
+                    if(records && records.length > 0) {
+                        //We pass the map key->index as context so we can leverage it to do record[index] to find key's values as returned by RDS Data API
+                        this.addRawData(stream, records, operation);
+
+                    } else if(operation.type !== DataOperation.Type.ReadCompletedOperation){
+                        console.log("operation of type:"+operation.type+", has no data");
+                    }
+                } else {
+                    console.log("Received "+operation.type+" operation that is for a readExpression of referrer ",referrer);
+                }
+            }
+            // else {
+            //     console.log("receiving operation of type:"+operation.type+", but can't find a matching stream");
+            // }
+        }
+    },
+
+    handleReadCompletedOperation: {
+        value: function (operation) {
+            //The read is complete
+            this.handleReadUpdateOperation(operation);
+            //var stream = DataService.mainService.registeredDataStreamForDataOperation(operation);
+            var stream = this.referrerContextForDataOperation(operation);
+            if(stream) {
+                this.rawDataDone(stream);
+                //this._thenableByOperationId.delete(operation.referrerId);
+                this.unregisterDataOperationPendingReferrer(operation);
+            }
+            // else {
+            //     console.log("receiving operation of type:"+operation.type+", but can't find a matching stream");
+            // }
+            //console.log("handleReadCompleted -clear _thenableByOperationId- referrerId: ",operation.referrerId);
+
+        }
+    },
+
+    handleReadFailedOperation: {
+        value: function (operation) {
+            var stream = this.referrerContextForDataOperation(operation);
+            this.rawDataError(stream,operation.data);
+
+            this.unregisterDataOperationPendingReferrer(operation);
+            //this._thenableByOperationId.delete(operation.referrerId);
+        }
+    },
+
 
 
     responseOperationForReadOperation: {
@@ -1908,7 +2469,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 /*
                     Now we check if there's a known stream. If there's one, it's a local (as in memory space) and we map to the matching dataStream)
                 */
-                var stream = DataService.mainService.registeredDataStreamForDataOperation(operation);
+
+                var stream = this.contextForPendingDataOperation(operation);
+                //var stream = DataService.mainService.registeredDataStreamForDataOperation(operation);
                 if(stream) {
                     this.addRawData(stream, data, operation);
 
@@ -1920,6 +2483,1374 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             return operation;
         }
     },
+
+
+    /***************************************************************************
+     *
+     * saveChanges / transactions
+     *
+     ***************************************************************************/
+
+    /**
+     * Answers wether a RawDataService is capable of saving data
+     *
+     * @property {Boolean} defaults to true as it's the most common case
+     */
+    canSaveData: {
+        value: true
+    },
+
+    /**
+     * Answers wether a RawDataService is capable of implementing transaction
+     *
+     * Let's see if we end up needing it
+     *
+     * @property {Boolean}
+     */
+    supportsTransaction: {
+        value: false
+    },
+
+    useOneShotTransaction: {
+        value: false
+    },
+
+    handleOperationCompleted: {
+        value: function (operation) {
+            var referrerOperation = this._pendingDataOperationById.get(operation.referrerId);
+
+            /*
+                Right now, we listen for the types we care about, on the mainService, so we're receiving it all,
+                even those from other data services / types we don' care about, like the PlummingIntakeDataService.
+
+                One solution is to, when we register the types in the data service, to test if it handles operations, and if it does, the add all listeners. But that's a lot of work which will slows down starting time. A better solution would be to do like what we do with Components, where we find all possibly interested based on DOM structure, and tell them to prepare for a first delivery of that type of event. We could do the same as we know which RawDataService handle what ObjectDescriptor, which would give the RawDataService the ability to addListener() right when it's about to be needed.
+
+                Another solution could involve different "pools" of objects/stack, but we'd lose the universal bus.
+
+            */
+            if(!referrerOperation) {
+                return;
+            }
+
+            /*
+                After creation we need to do this:                   self.rootService.registerUniqueObjectWithDataIdentifier(object, dataIdentifier);
+
+                The referrerOperation could get hold of object, but it doesn't right now.
+                We could also create a uuid client side and not have to do that and deal wih it all in here which might be cleaner.
+
+                Now resolving the promise finishes the job in saveObjectData that has the object in scope.
+            */
+            referrerOperation._promiseResolve(operation);
+            this._pendingDataOperationById.delete(operation.referrerId);
+        }
+    },
+
+    handleOperationFailed: {
+        value: function (operation) {
+            var referrerOperation = this._pendingDataOperationById.get(operation.referrerId);
+
+            /*
+                After creation we need to do this:                   self.rootService.registerUniqueObjectWithDataIdentifier(object, dataIdentifier);
+
+                The referrerOperation could get hold of object, but it doesn't right now.
+                We could also create a uuid client side and not have to do that and deal wih it all in here which might be cleaner.
+
+                Now resolving the promise finishes the job in saveObjectData that has the object in scope.
+            */
+
+            if(!referrerOperation) {
+                return;
+            }
+
+            referrerOperation._promiseReject(operation);
+            this._pendingDataOperationById.delete(operation.referrerId);
+        }
+    },
+
+
+    /**
+     * transactionPrepare event handler, a RawDataService needs to look at the transaction and determine
+     * if it involves types it's supposed to take care of.
+     *
+     * @method
+     * @argument {TransactionEvent} transactionPrepareEvent
+     */
+
+    _dispatchTransactionCreateStart: {
+        value: function(transaction, data) {
+            var transactionEvent = TransactionEvent.checkout();
+
+            transactionEvent.type = TransactionEvent.transactionCreateStart;
+            transactionEvent.transaction = transaction;
+            transactionEvent.data = data;
+            /*
+                There shouldn't be an async involved here as this is meant to be handled by the local main dataService.
+            */
+            this.dispatchEvent(transactionEvent);
+            /*
+                Return the event to the pool
+            */
+            TransactionEvent.checkin(transactionEvent);
+
+            return true;
+        }
+    },
+    _dispatchTransactionCreateComplete: {
+        value: function(transaction, data) {
+            var transactionEvent = TransactionEvent.checkout();
+
+            transactionEvent.type = TransactionEvent.transactionCreateComplete;
+            transactionEvent.transaction = transaction;
+            transactionEvent.data = data;
+            /*
+                There shouldn't be an async involved here as this is meant to be handled by the local main dataService.
+            */
+            this.dispatchEvent(transactionEvent);
+            /*
+                Return the event to the pool
+            */
+            TransactionEvent.checkin(transactionEvent);
+
+            //Now that we know we start, we need to listen to transactionPrepare
+            this.mainService.addEventListener(TransactionEvent.transactionPrepare, this, false);
+
+            //But just because we are ready, it doesn't mean that all RawDataServices involved might,
+            //so we listent for transactionRollback in case that's what happens.
+            this.mainService.addEventListener(TransactionEvent.transactionRollback, this, false);
+
+            return true;
+        }
+    },
+    _dispatchTransactionCreateFail: {
+        value: function(transaction, data) {
+            var transactionEvent = TransactionEvent.checkout();
+
+            transactionEvent.type = TransactionEvent.transactionCreateFail;
+            transactionEvent.transaction = transaction;
+            transactionEvent.data = data;
+            /*
+                There shouldn't be an async involved here as this is meant to be handled by the local main dataService.
+            */
+            this.dispatchEvent(transactionEvent);
+            /*
+                Return the event to the pool
+            */
+            TransactionEvent.checkin(transactionEvent);
+
+            //We're done, nothing to undo/rollback as too eatly in the process.
+
+            return true;
+        }
+    },
+
+    handleTransactionCreate: {
+        value: function(transactionCreateEvent) {
+            if(this.supportsTransaction) {
+
+                var self = this,
+                    transaction = transactionCreateEvent.transaction,
+                    transactionRawContext = this.rawContextForTransaction(transaction),
+                    transactionObjectDescriptors = transaction.objectDescriptors,
+                    iterator = transactionObjectDescriptors.values(),
+                    iteration, iObjectDescriptor,
+                    createOperationType = DataOperation.Type.CreateOperation,
+                    updateOperationType = DataOperation.Type.UpdateOperation,
+                    deleteOperationType = DataOperation.Type.DeleteOperation,
+                    createdDataObjects = transaction.createdDataObjects,
+                    changedDataObjects = transaction.changedDataObjects,
+                    dataObjectChanges = transaction.dataObjectChanges,
+                    deletedDataObjects = transaction.deletedDataObjects,
+                    operationCount = 0,
+                    operationObjectDescriptors = [],
+                    // transactionCreateStartDispatched = false,
+                    dataOperationCreationPromises,
+                    createTransactionOperation = new DataOperation();
+                    dataOperationsByObject = new Map();/* Key is object, value is operation */
+
+
+                createTransactionOperation.type = DataOperation.Type.CreateTransactionOperation;
+                createTransactionOperation.target = DataService.mainService;
+                createTransactionOperation.data = {};
+
+                transactionRawContext.operations = {};
+                transactionRawContext.dataOperationsByObject = dataOperationsByObject;
+
+                while(!(iteration = iterator.next()).done) {
+                    iObjectDescriptor = iteration.value;
+                    if(this.handlesType(iObjectDescriptor)) {
+
+
+                        /*
+                            As progress, we could build it on the number of objectDescriptors iterted on?
+                            Not super accurate but we don't know the totals in term of operations.
+                        */
+
+                        /*
+                            Even if addEventListener has already been called, it won't add it twice, but we should pay attention to perf.
+                            Internal structure is using an array and indexOf(), we might want to re-assess if internally using a Set instead might be better.
+                        */
+                        if(!dataOperationCreationPromises) {
+                            dataOperationCreationPromises = [];
+                        }
+
+                        (dataOperationCreationPromises || (dataOperationCreationPromises = [])).push(
+                            this._saveTransactionDataOperationsForObjectDescriptor(transaction, iObjectDescriptor, createOperationType, createdDataObjects, updateOperationType, changedDataObjects, dataObjectChanges, deleteOperationType, deletedDataObjects, dataOperationsByObject, createTransactionOperation, operationObjectDescriptors, transactionRawContext)
+                            .then(function(_operationCount) {
+                                /*
+                                    As soon as we know there will be some action we broadcast we'll be in:
+                                */
+                                if(operationCount === 0 && _operationCount > 0) {
+                                    // if(!transactionCreateStartDispatched) {
+                                        transactionCreateStartDispatched = self._dispatchTransactionCreateStart(transaction,{
+                                            progress: 0
+                                        });
+                                    // }
+                                }
+                                operationCount += _operationCount;
+                            })
+                        );
+
+                    }
+                }
+
+                transaction.createCompletionPromiseForParticipant(this);
+
+                Promise.all(dataOperationCreationPromises)
+                .then(function() {
+                    transactionRawContext.operationCount = operationCount;
+                    if(operationCount > 0) {
+                        // createTransactionOperation.data = {
+                        //     objectDescriptors: transactionObjectDescriptors.map((objectDescriptor) => {return objectDescriptor.module.id})
+                        // }
+
+                        self.registerPendingDataOperationWithContext(createTransactionOperation, transaction);
+                        createTransactionDataOperationCompletionPromise = self.completionPromiseForPendingDataOperation(createTransactionOperation);
+
+                        createTransactionOperation.data.objectDescriptors =  operationObjectDescriptors.map((objectDescriptor) => {return objectDescriptor.module.id});
+
+                        self.dispatchEvent(createTransactionOperation);
+
+                        createTransactionDataOperationCompletionPromise
+                        .then(function(dataOperationCompletion) {
+                            self._dispatchTransactionCreateComplete(transaction, {
+                                objectDescriptors: operationObjectDescriptors
+                            });
+                            transaction.resolveCompletionPromiseForParticipant(self);
+                        }, function(error) {
+                            self._dispatchTransactionCreateFail(transaction, error);
+                            transaction.rejectCompletionPromiseForParticipantWithError(self, error);
+                        });
+
+                    } else {
+                        /*
+                            Right now we're missing a way to tell that we didn't have anything to do
+                        */
+                    }
+                });
+            }
+        }
+    },
+
+
+    _saveTransactionDataOperationsForObjectDescriptor: {
+        value: function(transaction, iObjectDescriptor, createOperationType, createdDataObjects, updateOperationType, changedDataObjects, dataObjectChanges, deleteOperationType, deletedDataObjects, dataOperationsByObject, createTransactionOperation, operationObjectDescriptors, transactionRawContext) {
+            var currentHandledCreatedDataObjects,
+                currentHandledChangedDataObjects,
+                currentHandledDeletedDataObjects,
+                operationCount = 0,
+                operationsByType = {},
+                dataOperationCreationPromises = [];
+
+            if(createdDataObjects.has(iObjectDescriptor)) {
+                currentHandledCreatedDataObjects = createdDataObjects.get(iObjectDescriptor);
+            }
+
+            if(changedDataObjects.has(iObjectDescriptor)) {
+                currentHandledChangedDataObjects = changedDataObjects.get(iObjectDescriptor);
+            }
+
+            if(deletedDataObjects.has(iObjectDescriptor)) {
+                currentHandledDeletedDataObjects = deletedDataObjects.get(iObjectDescriptor);
+            }
+
+            currentOperationCount =
+                (currentHandledCreatedDataObjects ? currentHandledCreatedDataObjects.size : 0) +
+                (currentHandledChangedDataObjects ? currentHandledChangedDataObjects.size : 0) +
+                (currentHandledDeletedDataObjects ? currentHandledDeletedDataObjects.size : 0);
+
+
+            if(currentHandledCreatedDataObjects) {
+                dataOperationCreationPromises.push(this._saveDataOperationsForObjects(currentHandledCreatedDataObjects, createOperationType, dataObjectChanges, dataOperationsByObject, createTransactionOperation, currentOperationCount, transaction)
+                .then(function(_createOperations) {
+                    if(_createOperations && _createOperations.length) {
+                        operationCount += _createOperations.length;
+                        operationsByType.createOperations = _createOperations;
+                    }
+                    //push.apply(createOperations, _createOperations);
+                }));
+            }
+
+            if(currentHandledChangedDataObjects) {
+                dataOperationCreationPromises.push(this._saveDataOperationsForObjects(currentHandledChangedDataObjects, updateOperationType, dataObjectChanges, dataOperationsByObject, createTransactionOperation, currentOperationCount, transaction)
+                .then(function(_updateOperations) {
+                    if(_updateOperations && _updateOperations.length) {
+                        operationCount += _updateOperations.length;
+                        operationsByType.updateOperations = _updateOperations;
+                    }
+                    //push.apply(updateOperations, _updateOperations);
+                }));
+            }
+
+            if(currentHandledDeletedDataObjects) {
+                dataOperationCreationPromises.push(this._saveDataOperationsForObjects(currentHandledDeletedDataObjects, deleteOperationType, dataObjectChanges, dataOperationsByObject, createTransactionOperation, currentOperationCount, transaction)
+                .then(function(_deleteOperations) {
+                    if(_deleteOperations && _deleteOperations.length) {
+                        operationCount += _deleteOperations.length;
+                        operationsByType.deleteOperations = _deleteOperations;
+                    }
+                    //push.apply(deleteOperations, _deleteOperations);
+                }));
+            }
+
+            return Promise.all(dataOperationCreationPromises)
+            .then(function() {
+                /*
+                    We're saving the operations in the rawContext as we'll send them in handlePrepareTransaction
+                */
+                if(operationCount>0) {
+                    transactionRawContext.operations[iObjectDescriptor.module.id] = operationsByType;
+                    operationObjectDescriptors.push(iObjectDescriptor);
+                }
+                return operationCount;
+            });
+        }
+
+    },
+
+    /**
+     * transactionPrepare event handler, a RawDataService needs to look at the transaction and determine
+     * if it involves types it's supposed to take care of.
+     *
+     * @method
+     * @argument {TransactionEvent} transactionPrepareEvent
+     */
+     _dispatchTransactionPrepareStart: {
+        value: function(transaction, data) {
+            var transactionEvent = TransactionEvent.checkout();
+
+            transactionEvent.type = TransactionEvent.transactionPrepareStart;
+            transactionEvent.transaction = transaction;
+            transactionEvent.data = data;
+            /*
+                There shouldn't be an async involved here as this is meant to be handled by the local main dataService.
+            */
+            this.dispatchEvent(transactionEvent);
+            /*
+                Return the event to the pool
+            */
+            TransactionEvent.checkin(transactionEvent);
+
+            return true;
+        }
+    },
+    _dispatchTransactionPrepareComplete: {
+        value: function(transaction, data) {
+            var transactionEvent = TransactionEvent.checkout();
+
+            transactionEvent.type = TransactionEvent.transactionPrepareComplete;
+            transactionEvent.transaction = transaction;
+            transactionEvent.data = data;
+            /*
+                There shouldn't be an async involved here as this is meant to be handled by the local main dataService.
+            */
+            this.dispatchEvent(transactionEvent);
+            /*
+                Return the event to the pool
+            */
+            TransactionEvent.checkin(transactionEvent);
+
+            //Now that we know we start, we'll have
+            this.mainService.addEventListener(TransactionEvent.transactionCommit, this, false);
+            this.mainService.addEventListener(TransactionEvent.transactionRollback, this, false);
+
+            return true;
+        }
+    },
+    _dispatchTransactionPrepareFail: {
+        value: function(transaction, data) {
+            var transactionEvent = TransactionEvent.checkout();
+
+            transactionEvent.type = TransactionEvent.transactionPrepareFail;
+            transactionEvent.transaction = transaction;
+            transactionEvent.data = data;
+            /*
+                There shouldn't be an async involved here as this is meant to be handled by the local main dataService.
+            */
+            this.dispatchEvent(transactionEvent);
+            /*
+                Return the event to the pool
+            */
+            TransactionEvent.checkin(transactionEvent);
+
+            return true;
+        }
+    },
+
+    handleTransactionPrepare: {
+        value: function(transactionPrepareEvent) {
+
+            //console.log("handleTransactionPrepare: ",transactionPrepareEvent);
+            var self = this,
+                transaction = transactionPrepareEvent.transaction,
+                objectDescriptors = transaction.objectDescriptors,
+                createdDataObjects = transaction.createdDataObjects,
+                changedDataObjects = transaction.changedDataObjects,
+                dataObjectChanges = transaction.dataObjectChanges,
+                deletedDataObjects = transaction.deletedDataObjects,
+                iterator = objectDescriptors.values(),
+                iteration, iObjectDescriptor,
+                transactionRawContext = this.rawContextForTransaction(transaction),
+                createTransactionOperation = transactionRawContext.createTransactionOperation,
+                appendTransactionOperation,
+                handledObjectDescriptors,
+                // currentHandledCreatedDataObjects,
+                // currentHandledChangedDataObjects,
+                // currentHandledDeletedDataObjects,
+                dataOperationCreationPromises,
+                createDataOperationCreationPromises,
+                updateDataOperationCreationPromises,
+                deleteDataOperationCreationPromises,
+                createOperationType = DataOperation.Type.CreateOperation,
+                updateOperationType = DataOperation.Type.UpdateOperation,
+                deleteOperationType = DataOperation.Type.DeleteOperation,
+                startPromise,
+                appendCompletedOperationCompletionPromise,
+                transactionOperations,
+                currentOperationCount = 0,
+                operationCount = transactionRawContext.operationCount,
+                createOperations = [],
+                updateOperations = [],
+                deleteOperations = [],
+                push = Array.prototype.push,
+                supportsTransaction = this.supportsTransaction;
+
+            if(supportsTransaction && transactionRawContext && transactionRawContext.operationCount > 0) {
+                /*
+                    Now we know we're in:
+                */
+                this._dispatchTransactionPrepareStart(transaction, createTransactionOperation.data);
+
+
+                appendTransactionOperation = this.createAppendTransactionOperationForTransaction(transaction);
+                appendTransactionOperation.data.operations = transactionRawContext.operations;
+
+
+                self.registerPendingDataOperationWithContext(appendTransactionOperation, transaction);
+                appendCompletedOperationCompletionPromise = self.completionPromiseForPendingDataOperation(appendTransactionOperation);
+
+                transaction.createCompletionPromiseForParticipant(this);
+
+                self.dispatchEvent(appendTransactionOperation);
+
+                appendCompletedOperationCompletionPromise
+                .then(function(dataOperationCompletion) {
+                    self._dispatchTransactionPrepareComplete(transaction, {
+                        dataOperationsByObject: transactionRawContext.dataOperationsByObject
+                    });
+                    transaction.dataOperationsByObject = transactionRawContext.dataOperationsByObject;
+                    transaction.resolveCompletionPromiseForParticipant(self);
+                })
+                .catch(function (error) {
+                    self._dispatchTransactionPrepareFail(transaction, error);
+                    transaction.rejectCompletionPromiseForParticipantWithError(self, error);
+                });
+            }
+        }
+    },
+
+
+    _rawContextByTransaction: {
+        value: undefined
+    },
+
+    /**
+     * retuns rawContextByTransaction allows us to store raw data level info for a transaction
+     *
+     * @method
+     * @argument {Transaction} transaction
+     * @returns {Object} - An object containing raw Data level info relevant to a transaction
+     */
+    rawContextForTransaction: {
+        value: function(transaction) {
+            var rawContext = this._rawContextByTransaction.get(transaction);
+
+            if(!rawContext) {
+                rawContext = {};
+                this._rawContextByTransaction.set(transaction,rawContext);
+            }
+            return rawContext;
+        }
+    },
+
+    preparedDataOperationsForTransaction: {
+        value: function(transaction) {
+            var rawContext = this._rawContextByTransaction.get(transaction);
+
+            return rawContext ? rawContext.preparedDataOperations : undefined;
+        }
+    },
+
+    /**
+     * Removes the rawContext object for a Transaction, typically called when the transaction is over
+     *
+     * @method
+     * @argument {Transaction} transaction
+     * @returns undefined
+     */
+    clearRawContextForTransaction: {
+        value: function(transaction) {
+            this._rawContextByTransaction.delete(transaction);
+        }
+    },
+
+
+    createTransactionOperationForTransaction: {
+        value: function(transaction) {
+            var createTransaction = new DataOperation();
+
+            createTransaction.type = DataOperation.Type.CreateTransactionOperation;
+            createTransaction.target = this;
+            createTransaction.data = [];
+
+            return createTransaction;
+        }
+    },
+
+    createAppendTransactionOperationForTransaction: {
+        value: function(transaction) {
+            var transactionRawContext = this.rawContextForTransaction(transaction),
+                rawTransactions = transactionRawContext.rawTransactions,
+                createTransactionOperation = transactionRawContext.createTransactionOperation,
+
+                appendTransactionOperation = new DataOperation();
+
+            appendTransactionOperation.type = DataOperation.Type.AppendTransactionOperation;
+            appendTransactionOperation.target = this;
+            appendTransactionOperation.referrerId = createTransactionOperation.id;
+            appendTransactionOperation.data = {
+                rawTransactions: rawTransactions
+            };
+
+            /*
+                DataOperations coming in:
+            */
+            this.mainService.addEventListener(DataOperation.Type.AppendTransactionCompletedOperation,this,false);
+            this.mainService.addEventListener(DataOperation.Type.AppendTransactionFailedOperation,this,false);
+
+            return appendTransactionOperation;
+        }
+    },
+
+    // handleCreateTransactionOperation: {
+    //     value: function (createTransactionOperation) {
+    //         console.warn("rawDataTypeIdForMapping() needs to be overriden with a concrete implementation by subclasses of RawDataService");
+    //     }
+    // },
+
+    handleCreateTransactionCompletedOperation: {
+        value: function (createTransactionCompletedOperation) {
+            var transaction = this.referrerContextForDataOperation(createTransactionCompletedOperation),
+                createTransactionOperation = this.referrerForDataOperation(createTransactionCompletedOperation),
+                data = createTransactionCompletedOperation.data,
+                transactionRawContext = this.rawContextForTransaction(transaction);
+
+            /*
+                data is an object with the following shape:
+                {
+                    "aRawDataServiceIdentifier": "-some-raw-data=service-transaction-id",
+                    .....
+                }
+
+                Right now it's been tested where there's only one RawDataService "answering", which is the instance itself, but in the case of a browser rawDataService that fronts a DataWorker, there will be more. In that case today, a coordinator in the data worker will combine these pairs in one object.
+            */
+
+                transactionRawContext.rawTransactions = createTransactionCompletedOperation.data;
+                transactionRawContext.createTransactionOperation = createTransactionOperation;
+
+            this.resolveCompletionPromiseWithDataOperation(createTransactionCompletedOperation);
+        }
+    },
+    handleCreateTransactionFailedOperation: {
+        value: function (operation) {
+            this.rejectCompletionPromiseWithDataOperation(operation);
+        }
+    },
+
+    handleAppendTransactionCompletedOperation: {
+        value: function (appendTransactionCompletedOperation) {
+            /*
+                This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
+            */
+            this.mainService.removeEventListener(DataOperation.Type.AppendTransactionCompletedOperation,this,false);
+            this.mainService.removeEventListener(DataOperation.Type.AppendTransactionFailedOperation,this,false);
+            this.resolveCompletionPromiseWithDataOperation(appendTransactionCompletedOperation);
+        }
+    },
+    handleAppendTransactionFailedOperation: {
+        value: function (appendTransactionFailedOperation) {
+            /*
+                This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
+            */
+            this.mainService.removeEventListener(DataOperation.Type.AppendTransactionCompletedOperation,this,false);
+            this.mainService.removeEventListener(DataOperation.Type.AppendTransactionFailedOperation,this,false);
+            this.rejectCompletionPromiseWithDataOperation(appendTransactionFailedOperation);
+        }
+    },
+
+
+    __processObjectChangesForProperty: {
+        value: function(object, aProperty, aPropertyDescriptor, aPropertyChanges, operationData, lastReadSnapshot, rawDataSnapshot, rawDataPrimaryKeys, mapping) {
+
+            /*
+                We already do that in expression-data-mapping mapObjectPropertyToRawData(), but expression-data-mapping doesn't know about added/removed changes where our _processObjectChangesForProperty does.
+            */
+            // if(rawDataPrimaryKeys && rawDataPrimaryKeys.indexOf(aRawProperty) !== -1) {
+            //     return;
+            // }
+
+            var self = this,
+                aPropertyDeleteRule = aPropertyDescriptor ? aPropertyDescriptor.deleteRule : null;
+
+            /*
+                A collection with "addedValues" / "removedValues" keys
+                Which for now we only handle for Arrays.
+
+                The recent addition of a DataObject property that can be a Map, we may have to re-visit that. It would be better to handle incremental changes to a map than sending all keys and all values are we doing for now
+            */
+            if(aPropertyChanges && (aPropertyChanges.hasOwnProperty("addedValues") ||  aPropertyChanges.hasOwnProperty("removedValues"))) {
+                if(!(aPropertyDescriptor.cardinality>1)) {
+                    throw new Error("added/removed values for property without a to-many cardinality");
+                }
+            //     /*
+            //         Until we get more sophisticated and we can leverage
+            //         the full serialization, we turn objects into their primaryKey
+
+            //         We have a partial view, the backend will need pay attention that we're not re-adding object if it's already there, and should be unique.
+            //     */
+            //    var valuesIterator, iValue, addedValues, removedValues;
+            //    if(aPropertyChanges.addedValues) {
+
+            //         /*
+            //             Notes:
+            //             If dataObject[aProperty] === null, we could treat addedValues as a set, and there might be something going on in tracking/propagating changes that leads to a set being considered as added. Triggers do their best to keep the array created in place, and change it's content rather than replace it, even when a set is done. That in itself is likely the reason we see this.
+
+            //             There might not be downsides to deal with it as an add though.
+            //         */
+            //         valuesIterator = aPropertyChanges.addedValues.values();
+            //         while ((iValue = valuesIterator.next().value)) {
+            //             (addedValues || (addedValues = [])).push(this.dataIdentifierForObject(iValue).primaryKey);
+            //         }
+
+            //         /*
+            //             After converting to primaryKeys in an array, we make it replace the original set for the same key on aPropertyChanges
+            //         */
+            //        if(addedValues) {
+            //             aPropertyChanges.addedValues = addedValues;
+            //        } else {
+            //            delete aPropertyChanges.addedValues;
+            //        }
+            //    }
+
+            //     if(aPropertyChanges.removedValues) {
+            //         valuesIterator = aPropertyChanges.removedValues.values();
+            //         while ((iValue = valuesIterator.next().value)) {
+            //             //TODO: Check if the removed value should be itself be deleted
+            //             //if(aPropertyDeleteRule === DeleteRule.CASCADE){}
+            //             (removedValues || (removedValues = [])).push(this.dataIdentifierForObject(iValue).primaryKey);
+            //         }
+            //         if(removedValues) {
+            //             aPropertyChanges.removedValues = removedValues;
+            //         } else {
+            //             delete aPropertyChanges.removedValues;
+            //         }
+            //     }
+
+            //     //Here we mutated the structure from changesForDataObject. I should be cleared
+            //     //when saved, but what if save fails and changes happen in-between?
+            //     operationData[aRawProperty] = aPropertyChanges;
+
+                return this._mapObjectPropertyToRawData(object, aProperty, operationData, undefined/*context*/, aPropertyChanges.addedValues, aPropertyChanges.removedValues, lastReadSnapshot, rawDataSnapshot);
+
+            }
+            else {
+                return this._mapObjectPropertyToRawData(object, aProperty, operationData, undefined/*context*/,undefined, undefined, lastReadSnapshot, rawDataSnapshot);
+
+                /*
+                    we need to check post mapping that the rawValue is different from the snapshot
+                */
+                // if (this._isAsync(result)) {
+                //     return result.then(function (value) {
+                //         self._setOperationDataSnapshotForProperty(operationData, snapshot, dataSnapshot, aRawProperty );
+                //     });
+                // }
+                // else {
+                //     self._setOperationDataSnapshotForProperty(operationData, snapshot, dataSnapshot, aRawProperty );
+                // }
+            }
+        }
+    },
+
+    /**
+     * Map the properties of an object that have changed to be included as data in a DataOperation
+     *
+     * @method
+     * @argument {Object} object - The object whose data should be saved.
+     * @argument {DataOperation.Type} operationType - The object whose data should be saved.
+     * @returns {external:Promise} - A promise fulfilled to operationData when mapping is done.
+     *
+     */
+    _mapObjectChangesToOperationData: {
+        value: function (object, dataObjectChanges, operationData, snapshot, dataSnapshot, isDeletedObject, objectDescriptor) {
+            var aProperty,
+                aRawProperty,
+                // snapshotValue,
+                anObjectDescriptor = objectDescriptor || this.objectDescriptorForObject(object),
+                aPropertyChanges,
+                aPropertyDescriptor,
+                result,
+                mappingPromise,
+                mappingPromises,
+                /*
+                    There's a risk here for a deletedObject that it's values have been changed and therefore wouldn't match what was fetched. We need to test that.
+
+                    #TODO TEST maybe we don't need the isDeletedObject flag as deletedObjects shouldn't have ataObjectChanges.
+
+                    But we need to implemement cascade delete.
+                */
+                propertyIterator = isDeletedObject
+                    ? Object.keys(object).values()
+                    : dataObjectChanges.keys(),
+                mapping = this.mappingForType(anObjectDescriptor),
+                rawDataPrimaryKeys = mapping.rawDataPrimaryKeys;
+
+            while(aProperty = propertyIterator.next().value) {
+                // aRawProperty = mapping.mapObjectPropertyNameToRawPropertyName(aProperty);
+                //aRawProperty = mapping.mapObjectPropertyToRawProperty(object, aProperty);
+
+
+                // snapshotValue = snapshot[aRawProperty];
+                aPropertyChanges = dataObjectChanges ? dataObjectChanges.get(aProperty) : undefined;
+                aPropertyDescriptor = anObjectDescriptor.propertyDescriptorForName(aProperty);
+
+                //For delete, we're looping over Object.keys(object), which may contain properties that aren't
+                //serializable. Ourr goal for delete is to use these values for optimistic locking, so no change, no need
+                //If we pass this down to _processObjectChangesForProperty, it will attempt to map and fail if no aPropertyDescriptor
+                //exists. So we catch it here since we know the context about the operation.
+                if(isDeletedObject && (!aPropertyDescriptor || !aPropertyChanges)) {
+                    continue;
+                }
+
+                result = this.__processObjectChangesForProperty(object, aProperty, aPropertyDescriptor, aPropertyChanges, operationData, snapshot, dataSnapshot, rawDataPrimaryKeys, mapping);
+
+                if(result && this._isAsync(result)) {
+                    (mappingPromises || (mappingPromises = [])).push(result);
+                }
+            }
+
+            if(mappingPromises && mappingPromises.length) {
+                mappingPromise = Promise.all(mappingPromises);
+            }
+
+
+            return (mappingPromise
+                ? mappingPromise.then(function() {
+                    return operationData;
+                })
+                : Promise.resolve(operationData))
+
+
+        }
+    },
+
+    /**
+     * Creates one save operation for an object, eirher a create, an update or a delete
+     * .
+     *
+     * @method
+     * @argument {Object} object - The object whose data should be saved.
+     * @argument {DataOperation.Type} operationType - The object whose data should be saved.
+     * @returns {external:Promise} - A promise fulfilled when the operationo is ready.
+     *
+     */
+
+    _saveDataOperationForObject: {
+        value: function (object, operationType, dataObjectChangesMap, dataOperationsByObject) {
+            try {
+
+                //TODO
+                //First thing we should be doing here is run validation
+                //on the object, which should be done one level up
+                //by the mainService. Do there and test
+
+                /*
+                    Here we want to use:
+                    this.rootService.changesForDataObject();
+
+                    to only map back, and send, only:
+                    1. what was changed by the user, and
+                    2. that is different from the snapshot?
+
+                */
+
+                var self = this,
+                    operation = new DataOperation(),
+                    dataIdentifier = this.dataIdentifierForObject(object),
+                    objectDescriptor = this.objectDescriptorForObject(object),
+                    //We make a shallow copy so we can remove properties we don't care about
+                    snapshot,
+                    dataSnapshot = {},
+                    dataObjectChanges = dataObjectChangesMap.get(object),
+                    propertyIterator,
+                    isNewObject = operationType
+                        ? operationType === DataOperation.Type.CreateOperation
+                        : self.rootService.isObjectCreated(object),
+                    localOperationType = operationType
+                                        ? operationType
+                                        : isNewObject
+                                            ? DataOperation.Type.CreateOperation
+                                            : DataOperation.Type.UpdateOperation,
+                    isDeletedObject = localOperationType === DataOperation.Type.DeleteOperation,
+                    operationData = {},
+                    localizableProperties = objectDescriptor.localizablePropertyDescriptors,
+                    criteria,
+                    i, iValue, countI;
+
+                operation.target = objectDescriptor;
+
+                operation.type = localOperationType;
+
+                if(dataIdentifier) {
+                    if(!isNewObject) {
+                        criteria = this.rawCriteriaForObject(object, objectDescriptor);
+                    }
+                    else {
+                        operationData.id = dataIdentifier.primaryKey;
+                    }
+                }
+
+                if(snapshot = this.snapshotForDataIdentifier(object.dataIdentifier)) {
+                        //We make a shallow copy so we can remove properties we don't care about
+                        snapshot = Object.assign({},snapshot);
+                }
+
+
+                if(localizableProperties && localizableProperties.size) {
+                    operation.locales = this.localesForObject(object)
+                }
+
+                operation.criteria = criteria;
+
+                //Nothing to do, change the operation type and bail out
+                if(!isNewObject && !dataObjectChanges && !isDeletedObject) {
+                    operation.type = DataOperation.Type.NoOp;
+                    return Promise.resolve(operation);
+                }
+
+                operation.data = operationData;
+
+
+                /*
+                    The last fetched values of the properties that changed, so the backend can use it to make optimistic-locking update
+                    with a where that conditions that the current value is still
+                    the one that was last fecthed by the client making the update.
+
+                    For deletedObjects, if there were changes, we don't care about them, it's not that relevant, we're going to use all known properties fetched client side to eventually catch a conflict if someone made a change in-between.
+                */
+                if(!isNewObject) {
+                    operation.snapshot = dataSnapshot;
+                }
+
+                return this._mapObjectChangesToOperationData(object,dataObjectChanges,operationData, snapshot, dataSnapshot,isDeletedObject, objectDescriptor)
+                    .then(function(resolvedOperationData) {
+
+                        if(!isDeletedObject && Object.keys(operationData).length === 0) {
+                            /*
+                                if there are no changes known, it's a no-op: if it's an existing object nothing to do and if it's a new empty object... should it go through?? Or it's either a CreateCancelled or an UpdateCancelled.
+
+                                It also can be considered a no-op of a property on an object changes, but it is stored as a foreign key or in an array of foreign keys on the inverse relationship side, in which case, there's nothing to do, as thanks to inverse value propagation, it will become an update operation on the other side.
+                            */
+
+                            operation.type = DataOperation.Type.NoOp;
+                            /*
+                                If a property change would turn as a no-op from a raw data stand point, we still need to tell the object layer client of the saveChanges did save it
+                            */
+                            operation.changes = dataObjectChanges;
+                        }
+                        else {
+                            /*
+                                Now that we got them, clear it so we don't conflict with further changes if we have some async mapping stuff in-between.
+
+                                If somehow things fail, we have the pending operation at hand to re-try
+                            */
+                            if(!isDeletedObject) {
+                                //We cache the changes on the operation. As this isn't part of an operation's serializeSelf,
+                                //we keep track of it for dispatching events when save is complete and don't have to worry
+                                //about side effects for the server side.
+                                operation.changes = dataObjectChanges;
+                            }
+                            //self.clearRegisteredChangesForDataObject(object);
+                        }
+                        if(dataOperationsByObject) {
+                            dataOperationsByObject.set(object,operation);
+                        }
+                        return operation;
+                    });
+            }
+            catch(error) {
+                return Promise.reject(error);
+            }
+        }
+    },
+
+    _saveDataOperationsForObjects: {
+        value: function(objects, operationType, dataObjectChangesMap, dataOperationsByObject, createTransaction, operationCount, transaction) {
+            var self = this;
+            return new Promise(function(resolve, reject) {
+                try {
+
+                    var iterator = objects.values(),
+                    isUpdateOperationType = operationType === DataOperation.Type.UpdateOperation,
+                    iOperationPromises,
+                    iOperationPromise,
+                    operations,
+                    percentCompletion,
+                    lastProgressSent = (createTransaction && createTransaction.lastProgressSent) || 0,
+                    transactionPrepareProgressEvent,
+                    iObject;
+
+                    while((iObject = iterator.next().value)) {
+                        iOperationPromise = self._saveDataOperationForObject(iObject, operationType, dataObjectChangesMap, dataOperationsByObject);
+                        (iOperationPromises || (iOperationPromises = [])).push(iOperationPromise);
+                        iOperationPromise.then(function(resolvedOperation) {
+                            var operationCreationProgress = (createTransaction && createTransaction.operationCreationProgress) || 0;
+
+                            if(createTransaction) {
+                                createTransaction.operationCreationProgress = ++operationCreationProgress;
+                            }
+
+                            /*
+                                NoOps will be handled by iterating on dataObjectChangesMap later on
+                            */
+                            if(resolvedOperation.type !== DataOperation.Type.NoOp) {
+                                (operations || (operations = [])).push(resolvedOperation);
+                            }
+
+                            percentCompletion = Math.round((operationCreationProgress / operationCount)*100)/100;
+
+                            if(percentCompletion > lastProgressSent) {
+                                //console.log("_saveDataOperationsForObjects: "+percentCompletion);
+
+                                transactionPrepareProgressEvent = TransactionEvent.checkout();
+                                transactionPrepareProgressEvent.type = TransactionEvent.transactionPrepareProgress;
+                                transactionPrepareProgressEvent.transaction = transaction;
+                                transactionPrepareProgressEvent.data = percentCompletion;
+                                self.dispatchEvent(transactionPrepareProgressEvent);
+                                /*  Return the event to the pool */
+                                TransactionEvent.checkin(transactionPrepareProgressEvent);
+
+
+                                //self.dispatchDataEventTypeForObject(DataEvent.saveChangesProgress, self, percentCompletion);
+
+                                lastProgressSent = percentCompletion;
+                                if(createTransaction) {
+                                    createTransaction.lastProgressSent = lastProgressSent;
+                                }
+                            }
+
+                        }, function(rejectedValue) {
+                            reject(rejectedValue);
+                        });
+                    }
+
+                    if(iOperationPromises) {
+
+                        Promise.all(iOperationPromises)
+                        .then(function(resolvedOperations) {
+                            /*
+                                resolvedOperations could contains some null if changed objects don't have anything to solve in their own row because it's stored on the other side of a relationship, which is why we keep track of the other array ourselves to avoid looping over again and modify the array after, or send noop operation through the wire for nothing. Cost time an money!
+                            */
+                        resolve(operations);
+                        }, function(rejectedValue) {
+                            reject(rejectedValue);
+                        });
+
+                    } else {
+                        resolve(null);
+                    }
+                }
+                catch (error) {
+                    reject(error);
+                }
+            });
+        }
+    },
+
+
+    /**
+     * transactionPrepare event handler, a RawDataService needs to look at the transaction and determine
+     * if it involves types it's supposed to take care of.
+     *
+     * @method
+     * @argument {TransactionEvent} transactionPrepareEvent
+     */
+     _dispatchTransactionCommitStart: {
+        value: function(transaction, data) {
+            var transactionEvent = TransactionEvent.checkout();
+
+            transactionEvent.type = TransactionEvent.transactionCommitStart;
+            transactionEvent.transaction = transaction;
+            transactionEvent.data = data;
+            /*
+                There shouldn't be an async involved here as this is meant to be handled by the local main dataService.
+            */
+            this.dispatchEvent(transactionEvent);
+            /*
+                Return the event to the pool
+            */
+            TransactionEvent.checkin(transactionEvent);
+
+            return true;
+        }
+    },
+    _dispatchTransactionCommitComplete: {
+        value: function(transaction, data) {
+            var transactionEvent = TransactionEvent.checkout();
+
+            transactionEvent.type = TransactionEvent.transactionCommitComplete;
+            transactionEvent.transaction = transaction;
+            transactionEvent.data = data;
+            /*
+                There shouldn't be an async involved here as this is meant to be handled by the local main dataService.
+            */
+            this.dispatchEvent(transactionEvent);
+            /*
+                Return the event to the pool
+            */
+            TransactionEvent.checkin(transactionEvent);
+
+            //Now that we know we're done, we cleanup
+            this.mainService.removeEventListener(TransactionEvent.transactionPrepare, this, false);
+            this.mainService.removeEventListener(TransactionEvent.transactionCommit, this, false);
+            this.mainService.removeEventListener(TransactionEvent.transactionRollback, this, false);
+
+            return true;
+        }
+    },
+    _dispatchTransactionCommitFail: {
+        value: function(transaction, data) {
+            var transactionEvent = TransactionEvent.checkout();
+
+            transactionEvent.type = TransactionEvent.transactionPrepareFail;
+            transactionEvent.transaction = transaction;
+            transactionEvent.data = data;
+            /*
+                There shouldn't be an async involved here as this is meant to be handled by the local main dataService.
+            */
+            this.dispatchEvent(transactionEvent);
+            /*
+                Return the event to the pool
+            */
+            TransactionEvent.checkin(transactionEvent);
+
+            //Now that we know we're done, we cleanup
+            this.mainService.removeEventListener(TransactionEvent.transactionPrepare, this, false);
+            this.mainService.removeEventListener(TransactionEvent.transactionCommit, this, false);
+            this.mainService.removeEventListener(TransactionEvent.transactionRollback, this, false);
+
+            return true;
+        }
+    },
+
+    handleTransactionCommit: {
+        value: function(transactionCommitEvent) {
+            var self = this,
+            transaction = transactionCommitEvent.transaction,
+            transactionRawContext = this.rawContextForTransaction(transaction),
+            createTransactionOperation = transactionRawContext.createTransactionOperation;
+
+            if(this.supportsTransaction && createTransactionOperation) {
+
+                this._dispatchTransactionCommitStart(transaction,{
+                    dataOperationsByObject: transactionRawContext.dataOperationsByObject
+                });
+
+                /*
+                    Now dispatch the commitTransactionDataOperation so it gets executed:
+                */
+                var commitTransactionOperation = this.commitTransactionOperationForTransaction(transaction),
+                    commitTransactionDataOperationCompletionPromise;
+
+                this.registerPendingDataOperationWithContext(commitTransactionOperation, transaction);
+                commitTransactionDataOperationCompletionPromise = this.completionPromiseForPendingDataOperation(commitTransactionOperation);
+
+                transaction.createCompletionPromiseForParticipant(this);
+
+                this.dispatchEvent(commitTransactionOperation);
+
+                commitTransactionDataOperationCompletionPromise
+                .then(function(dataOperationCompletion) {
+
+                    var dataOperationsByObject = transactionRawContext.dataOperationsByObject,
+                        CreateOperation = DataOperation.Type.CreateOperation,
+                        UpdateOperation = DataOperation.Type.UpdateOperation,
+                        DeleteOperation = DataOperation.Type.DeleteOperation,
+                        NoOpOperation = DataOperation.Type.NoOp,
+                        objectEnumerator = dataOperationsByObject.keys(),
+                        objectIteration,
+                        iObject,
+                        iOperation,
+                        iObjectDescriptor,
+                        iDataIdentifier;
+
+                    while(!(objectIteration = objectEnumerator.next()).done) {
+                        iObject = objectIteration.value;
+                        iOperation = dataOperationsByObject.get(iObject);
+                        iObjectDescriptor = iOperation.target;
+
+                        if(iOperation.type === CreateOperation) {
+                            iDataIdentifier = self.dataIdentifierForTypeRawData(iObjectDescriptor,iOperation.data);
+                            self.recordSnapshot(iDataIdentifier, iOperation.data);
+                            self.rootService.registerUniqueObjectWithDataIdentifier(iObject, iDataIdentifier);
+                        } else if(iOperation.type === UpdateOperation || iOperation.type === NoOpOperation) {
+                            iDataIdentifier = self.dataIdentifierForObject(iObject);
+                            self.recordSnapshot(iDataIdentifier, iOperation.data, true);
+                        } else if(iOperation.type === DeleteOperation) {
+                            iDataIdentifier = self.dataIdentifierForObject(iObject);
+
+                            //Removes the snapshot we have for iDataIdentifier
+                            self.removeSnapshot(iDataIdentifier);
+                        }
+
+                    }
+
+                    self._dispatchTransactionCommitComplete(transaction, dataOperationCompletion.data)
+                    transaction.resolveCompletionPromiseForParticipant(self);
+                }, function(commitTransactionFailedOperationError) {
+                    self._dispatchTransactionCommitFail(transaction, error)
+                    transaction.rejectCompletionPromiseForParticipantWithError(self, error);
+                });
+            }
+        }
+    },
+
+    commitTransactionOperationForTransaction: {
+        value: function(transaction) {
+
+            var transactionRawContext = this.rawContextForTransaction(transaction),
+                rawTransactions = transactionRawContext.rawTransactions,
+                createTransactionOperation = transactionRawContext.createTransactionOperation,
+                commitTransaction = new DataOperation();
+
+            commitTransaction.type = DataOperation.Type.CommitTransactionOperation;
+            commitTransaction.target = this;
+            commitTransaction.referrerId = createTransactionOperation.id;
+            commitTransaction.data = {
+                rawTransactions: rawTransactions
+            };
+
+            /*
+                DataOperations coming in:
+            */
+            this.mainService.addEventListener(DataOperation.Type.CommitTransactionCompletedOperation,this,false);
+            this.mainService.addEventListener(DataOperation.Type.CommitTransactionFailedOperation,this,false);
+
+            return commitTransaction;
+
+        }
+    },
+
+    handleCommitTransactionProgressOperation: {
+        value: function (operation) {
+            /*
+                Inform Main DataService of progress:
+            */
+            var transactionCommitProgressEvent = TransactionEvent.checkout(),
+                transaction = this.referrerContextForDataOperation(operation);
+
+            transactionCommitProgressEvent.type = TransactionEvent.transactionCommitProgress;
+            transactionCommitProgressEvent.transaction = transaction;
+            /*
+                TODO test and finalize data for both progress Event and DataOperations
+            */
+            transactionCommitProgressEvent.data = operation.data;
+            /*
+                There shouldn't be an async involved here as this is meant to be handled by the local main dataService.
+            */
+            this.dispatchEvent(transactionCommitProgressEvent);
+            TransactionEvent.checkin(transactionCommitProgressEvent);
+        }
+    },
+
+    handleCommitTransactionCompletedOperation: {
+        value: function (commitTransactionCompletedOperation) {
+            /*
+                This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
+            */
+            this.mainService.removeEventListener(DataOperation.Type.CommitTransactionCompletedOperation,this,false);
+            this.mainService.removeEventListener(DataOperation.Type.CommitTransactionFailedOperation,this,false);
+
+            this.resolveCompletionPromiseWithDataOperation(commitTransactionCompletedOperation);
+        }
+    },
+
+    handleCommitTransactionFailedOperation: {
+        value: function (commitTransactionFailedOperation) {
+            /*
+                This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
+            */
+            this.mainService.removeEventListener(DataOperation.Type.CommitTransactionCompletedOperation,this,false);
+            this.mainService.removeEventListener(DataOperation.Type.CommitTransactionFailedOperation,this,false);
+
+            this.rejectCompletionPromiseWithDataOperation(commitTransactionFailedOperation);
+        }
+    },
+
+    handleTransactionRollback: {
+        value: function(transactionCommitEvent) {
+            var self = this,
+            transaction = transactionCommitEvent.transaction,
+            transactionRawContext = this.rawContextForTransaction(transaction),
+            createTransactionOperation = transactionRawContext.createTransactionOperation;
+
+            if(this.supportsTransaction && createTransactionOperation) {
+
+                /*
+                    Inform Main DataService we're starting:
+                */
+                var transactionRollbackStartEvent = TransactionEvent.checkout();
+
+                transactionRollbackStartEvent.type = TransactionEvent.transactionRollbackStart;
+                transactionRollbackStartEvent.transaction = transaction;
+                transactionRollbackStartEvent.data = null;//??
+                /*
+                    There shouldn't be an async involved here as this is meant to be handled by the local main dataService.
+                */
+                this.dispatchEvent(transactionRollbackStartEvent);
+                /*
+                    Return the event to the pool
+                */
+                TransactionEvent.checkin(transactionRollbackStartEvent);
+
+
+                /*
+                    Now dispatch the commitTransactionDataOperation so it gets executed:
+                */
+                var rollbackTransactionOperation = this.rollbackTransactionOperationForTransaction(transaction),
+                    rollbackTransactionDataOperationCompletionPromise;
+
+                this.registerPendingDataOperationWithContext(rollbackTransactionOperation, transaction);
+                rollbackTransactionDataOperationCompletionPromise = this.completionPromiseForPendingDataOperation(rollbackTransactionOperation);
+                this.dispatchEvent(rollbackTransactionOperation);
+
+
+                /*
+                    Preparing shared data
+                */
+                var transactionRollbackCompletionEvent = TransactionEvent.checkout();
+                transactionRollbackCompletionEvent.transaction = transaction;
+
+
+                rollbackTransactionDataOperationCompletionPromise
+                .then(function(rollbackTransactionCompletedOperation) {
+                    transactionRollbackCompletionEvent.type = TransactionEvent.transactionCommitComplete;
+                    /*
+                        TODO test and finalize data for both Complete Event and DataOperations
+                    */
+                        transactionRollbackCompletionEvent.data = rollbackTransactionCompletedOperation.data;
+
+                }, function(rollbackTransactionFailedOperationError) {
+                    transactionRollbackCompletionEvent.type = TransactionEvent.transactionCommitComplete;
+                    transactionRollbackCompletionEvent.data = rollbackTransactionFailedOperationError;
+
+                })
+                .finally(function() {
+                    /*
+                        Inform Main DataService: There shouldn't be an async involved here as this is meant to be handled by the local main dataService.
+                    */
+                    self.dispatchEvent(transactionRollbackCompletionEvent);
+                    TransactionEvent.checkin(transactionRollbackCompletionEvent);
+                })
+            }
+        }
+    },
+
+    rollbackTransactionOperationForTransaction: {
+        value: function(transaction) {
+
+            var transactionRawContext = this.rawContextForTransaction(transaction),
+                rawTransactions = transactionRawContext.rawTransactions,
+                createTransactionOperation = transactionRawContext.createTransactionOperation,
+                rollbackTransaction = new DataOperation();
+
+            rollbackTransaction.type = DataOperation.Type.RollbackTransactionOperation;
+            rollbackTransaction.target = this;
+            rollbackTransaction.referrerId = createTransactionOperation.id;
+            rollbackTransaction.data = {
+                rawTransactions: rawTransactions
+            };
+
+            /*
+                DataOperations coming in:
+            */
+            this.mainService.addEventListener(DataOperation.Type.RollbackTransactionCompletedOperation,this,false);
+            this.mainService.addEventListener(DataOperation.Type.RollbackTransactionFailedOperation,this,false);
+
+            return rollbackTransaction;
+
+        }
+    },
+
+    handleRollbackTransactionCompletedOperation: {
+        value: function (rollbackTransactionCompletedOperation) {
+            /*
+                This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
+            */
+            this.mainService.removeEventListener(DataOperation.Type.RollbackTransactionCompletedOperation,this,false);
+            this.mainService.removeEventListener(DataOperation.Type.RollbackTransactionFailedOperation,this,false);
+
+            this.resolveCompletionPromiseWithDataOperation(rollbackTransactionCompletedOperation);
+        }
+    },
+
+    handleRollbackTransactionFailedOperation: {
+        value: function (rollbackTransactionFailedOperation) {
+            /*
+                This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
+            */
+            this.mainService.removeEventListener(DataOperation.Type.RollbackTransactionCompletedOperation,this,false);
+            this.mainService.removeEventListener(DataOperation.Type.RollbackTransactionFailedOperation,this,false);
+
+            this.rejectCompletionPromiseWithDataOperation(rollbackTransactionFailedOperation);
+        }
+    },
+
+    /**
+     * transactionCreate event handler where a RawDataService creates the matching DataOperation for objects created.
+     *
+     * @method
+     * @argument {TransactionEvent} transactionPrepareEvent
+     */
+
+    //  handleTransactionCreate: {
+    //     value: function(transactionPrepareEvent) {
+    //         var dataOperationCreationPromises = [];
+
+
+
+
+    //     }
+    // },
+
 
     /***************************************************************************
      *
