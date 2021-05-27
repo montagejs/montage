@@ -3675,6 +3675,15 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
 
     */
 
+    clearChanges: {
+        value: function() {
+            this.createdDataObjects.clear();
+            this.changedDataObjects.clear();
+            this.deletedDataObjects.clear();
+            this.dataObjectChanges.clear();
+            this.objectDescriptorsWithChangedObjects.clear();
+        }
+    },
 
     saveChanges: {
         value: function () {
@@ -3700,11 +3709,12 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
             this.addPendingTransaction(transaction);
 
             //We've made copies, so we clear right away to make room for a new cycle:
-            this.createdDataObjects.clear();
-            this.changedDataObjects.clear();
-            this.deletedDataObjects.clear();
-            this.dataObjectChanges.clear();
-            this.objectDescriptorsWithChangedObjects.clear();
+            this.clearChanges();
+            // this.createdDataObjects.clear();
+            // this.changedDataObjects.clear();
+            // this.deletedDataObjects.clear();
+            // this.dataObjectChanges.clear();
+            // this.objectDescriptorsWithChangedObjects.clear();
 
             return new Promise(function(resolve, reject) {
                 try {
