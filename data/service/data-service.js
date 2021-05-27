@@ -5524,7 +5524,8 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
                 readFailedOperation.clientId = readOperation.clientId;
                 readFailedOperation.data = new Error("Unauthorized");
 
-                console.log("Unauthorized Read Operation for type: "+readOperation.target.name, readOperation);
+                //console.log("Unauthorized Read Operation for type: "+readOperation.target.name, readOperation);
+                console.log("Unauthorized "+ readOperation.type + " for type: "+readOperation.target.name, readOperation);
 
                 readFailedOperation.target.dispatchEvent(readFailedOperation);
             }
@@ -5572,7 +5573,8 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
                 createTransactionFailedOperation.clientId = createTransactionOperation.clientId;
                 createTransactionFailedOperation.data = new Error("Unauthorized");
 
-                console.log("Unauthorized Read Operation for type: "+createTransactionOperation.target.name, createTransactionOperation);
+                // console.log("Unauthorized Read Operation for type: "+createTransactionOperation.target.name, createTransactionOperation);
+                console.log("Unauthorized "+ createTransactionOperation.type + " for type: "+createTransactionOperation.target.name, createTransactionOperation);
 
                 createTransactionFailedOperation.target.dispatchEvent(createTransactionFailedOperation);
             }
@@ -6216,7 +6218,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
             return this._mainService;
         },
         set: function (service) {
-            console.log("mainService set: ",service);
+            //console.debug("mainService set: ",service);
             this._mainService = service;
             if(service) {
                 service.isMainService = true;
