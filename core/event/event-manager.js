@@ -3510,7 +3510,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     //callback.call(listener, mutableEvent);
                     result = typeof callback !== this._functionType
                     ? listener[callback](mutableEvent)
-                    : callback.call(listener, mutableEvent);
+                    : (callback === listener)
+                        ? callback.call(iTarget, mutableEvent)
+                        : callback.call(listener, mutableEvent);
 
                 }
             //}
