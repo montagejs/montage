@@ -3675,7 +3675,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
 
     */
 
-    clearChanges: {
+    discardChanges: {
         value: function() {
             this.createdDataObjects.clear();
             this.changedDataObjects.clear();
@@ -3709,7 +3709,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
             this.addPendingTransaction(transaction);
 
             //We've made copies, so we clear right away to make room for a new cycle:
-            this.clearChanges();
+            this.discardChanges();
             // this.createdDataObjects.clear();
             // this.changedDataObjects.clear();
             // this.deletedDataObjects.clear();
