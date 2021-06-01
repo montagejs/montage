@@ -2425,10 +2425,13 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     handleReadFailedOperation: {
         value: function (operation) {
             var stream = this.referrerContextForDataOperation(operation);
-            this.rawDataError(stream,operation.data);
+            if(stream) {
 
-            this.unregisterDataOperationPendingReferrer(operation);
-            //this._thenableByOperationId.delete(operation.referrerId);
+                this.rawDataError(stream,operation.data);
+                this.unregisterDataOperationPendingReferrer(operation);
+                //this._thenableByOperationId.delete(operation.referrerId);
+            }
+
         }
     },
 
