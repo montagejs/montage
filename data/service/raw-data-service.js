@@ -2987,7 +2987,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: function(transaction) {
             var rawContext = this._rawContextByTransaction.get(transaction);
 
-            if(!rawContext) {
+            if(transaction && !rawContext) {
                 rawContext = {};
                 this._rawContextByTransaction.set(transaction,rawContext);
             }
@@ -3063,24 +3063,30 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     handleCreateTransactionCompletedOperation: {
         value: function (createTransactionCompletedOperation) {
             var transaction = this.referrerContextForDataOperation(createTransactionCompletedOperation),
+                createTransactionOperation,
+                data,
+                transactionRawContext;
+
+            if(transaction) {
                 createTransactionOperation = this.referrerForDataOperation(createTransactionCompletedOperation),
                 data = createTransactionCompletedOperation.data,
                 transactionRawContext = this.rawContextForTransaction(transaction);
 
-            /*
-                data is an object with the following shape:
-                {
-                    "aRawDataServiceIdentifier": "-some-raw-data=service-transaction-id",
-                    .....
-                }
+                /*
+                    data is an object with the following shape:
+                    {
+                        "aRawDataServiceIdentifier": "-some-raw-data=service-transaction-id",
+                        .....
+                    }
 
-                Right now it's been tested where there's only one RawDataService "answering", which is the instance itself, but in the case of a browser rawDataService that fronts a DataWorker, there will be more. In that case today, a coordinator in the data worker will combine these pairs in one object.
-            */
+                    Right now it's been tested where there's only one RawDataService "answering", which is the instance itself, but in the case of a browser rawDataService that fronts a DataWorker, there will be more. In that case today, a coordinator in the data worker will combine these pairs in one object.
+                */
 
                 transactionRawContext.rawTransactions = createTransactionCompletedOperation.data;
                 transactionRawContext.createTransactionOperation = createTransactionOperation;
 
-            this.resolveCompletionPromiseWithDataOperation(createTransactionCompletedOperation);
+                this.resolveCompletionPromiseWithDataOperation(createTransactionCompletedOperation);
+            }
         }
     },
     handleCreateTransactionFailedOperation: {
