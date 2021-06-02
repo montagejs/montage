@@ -382,7 +382,7 @@ var MontageContext = Montage.specialize({
 
                     for(var i=0, iUniteName, countI = unitNames.length;(i<countI);i++) {
                         iUniteName = unitNames[i];
-                        if(objectDesc[iUniteName]) {
+                        if(unitsDescObjectDesc[iUniteName] && objectDesc[iUniteName]) {
                             Object.assign(unitsDescObjectDesc[iUniteName],objectDesc[iUniteName]);
                         }
                         if(!unitsDescUnitNames.has(iUniteName)) {
