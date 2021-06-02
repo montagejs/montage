@@ -188,6 +188,8 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
 
                     //We need to
                     dataService.cancelDataStream(currentDataStream);
+
+                    return data;
                 },
                 function(error) {
                     console.log("fetchData failed:",error);
