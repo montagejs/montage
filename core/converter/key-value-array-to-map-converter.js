@@ -133,7 +133,7 @@ exports.KeyValueArrayToMapConverter = Converter.specialize( /** @lends ArrayToMa
                 }
 
                 if(this.valuesConverter) {
-                    convertedValues = this._convertValuesWithConverter(values,this.keysConverter);
+                    convertedValues = this._convertValuesWithConverter(values,this.valuesConverter);
                 } else {
                     convertedValues = values;
                 }
@@ -196,7 +196,7 @@ exports.KeyValueArrayToMapConverter = Converter.specialize( /** @lends ArrayToMa
             if(aConverter) {
                 if(aConverter.canConvertValueArray) {
                     convertedValues = aConverter.convert(values);
-                } else {
+                } else if(values) {
                     var i, countI, iValue, iConvertedValue, hasPromise = false, hasNonPromise = false, hasMix = false, mixSolved = false, iConvertedValuePromise;
 
                     convertedValues = [];
@@ -229,6 +229,8 @@ exports.KeyValueArrayToMapConverter = Converter.specialize( /** @lends ArrayToMa
 
                         convertedValues.push(iConvertedValue);
                     }
+                } else {
+                    convertedValues = values;
                 }
             } else {
                 convertedValues = values;
