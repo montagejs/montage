@@ -191,6 +191,23 @@ var Montage = require("core/core").Montage,
 
 exports.DataOperationType = DataOperationType = new Enum().initWithMembersAndValues(dataOperationTypes,dataOperationTypes);
 
+var dataOperationErrorNames = ["ObjectStoreMissing"];
+exports.DataOperationErrorNames = DataOperationErrorNames = new Enum().initWithMembersAndValues(dataOperationErrorNames,dataOperationErrorNames);
+
+// exports.DataOperationError.ObjectStoreMissingError = Error.specialize({
+//     constructor: {
+//         value: function ObjectStoreMissingError(message) {
+//             this.super(message);
+
+//             if (Error.captureStackTrace) {
+//                 Error.captureStackTrace(this, ObjectStoreMissingError);
+//             }
+
+//             return this;
+//         }
+//     }
+// });
+
 /**
  * Represents
  *
