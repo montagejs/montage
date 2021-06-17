@@ -3090,7 +3090,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                         if(promise) {
                             previousPromise = promise;
                         }
-                        promise = this._invokeTargetListenerEntryForEvent(iTarget, nextEntry, mutableEvent, undefined/*currentTargetIdentifierSpecificCaptureMethodName*/, undefined/*identifierSpecificCaptureMethodName*/, undefined/*captureMethodName*/, previousPromise);
+                        promise = this._invokeTargetListenerEntryForEvent(iTarget, nextEntry, mutableEvent, mutableEvent.eventPhase, undefined/*currentTargetIdentifierSpecificCaptureMethodName*/, undefined/*identifierSpecificCaptureMethodName*/, undefined/*captureMethodName*/, previousPromise);
 
                         // if(previousPromise && promise) {
                         //     if(!promises) {
@@ -3129,7 +3129,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     /*
                         There's only one listener, so no previous promise to pass
                     */
-                    promise = this._invokeTargetListenerEntryForEvent(iTarget, listenerEntries, mutableEvent, undefined/*currentTargetIdentifierSpecificCaptureMethodName*/, undefined/*identifierSpecificCaptureMethodName*/, undefined/*captureMethodName*/, /*promise*/undefined);
+                    promise = this._invokeTargetListenerEntryForEvent(iTarget, listenerEntries, mutableEvent, mutableEvent.eventPhase, undefined/*currentTargetIdentifierSpecificCaptureMethodName*/, undefined/*identifierSpecificCaptureMethodName*/, undefined/*captureMethodName*/, /*promise*/undefined);
                     return promise;
                 }
             }
@@ -3258,7 +3258,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 // listenerEntries = this._registeredEventListenersOnTarget_eventType_eventPhase(iTarget, eventType, CAPTURING_PHASE);
                 // promise = this._invokeTargetListenerEntriesForEvent(iTarget, listenerEntries, mutableEvent, eventType)
 
-            promise = this._invokeTargetListenersForEventPhase(iTarget, mutableEvent, CAPTURING_PHASE, eventType, promise);
+                promise = this._invokeTargetListenersForEventPhase(iTarget, mutableEvent, CAPTURING_PHASE, eventType, promise);
 
                 // if (listenerEntries) {
 
@@ -3440,29 +3440,67 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
     },
 
     _invokeTargetListenerEntryForEvent: {
-        value: function _invokeTargetListenerEntryForEvent(iTarget, listenerEntry, mutableEvent, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName, promise) {
+        value: function _invokeTargetListenerEntryForEvent(iTarget, listenerEntry, mutableEvent, phase, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName, promise) {
             if(promise && promise.then) {
                 return promise.then(() => {
                     if(!mutableEvent.immediatePropagationStopped) {
-                        return this.__invokeTargetListenerEntryForEvent(iTarget, listenerEntry, mutableEvent, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName);
+                        return this.__invokeTargetListenerEntryForEvent(iTarget, listenerEntry, mutableEvent, phase, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName);
                     } else {
                         throw new Error("immediatePropagationStopped");
                     }
                 });
             } else {
-                return this.__invokeTargetListenerEntryForEvent(iTarget, listenerEntry, mutableEvent, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName);
+                return this.__invokeTargetListenerEntryForEvent(iTarget, listenerEntry, mutableEvent, phase, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName);
             }
         }
     },
 
 
+    /**
+     * @method
+     * @param {String} type The type of an event.
+     * @param {Object} listener The listener for the event described.
+     * @param {Object} target The target of the event.
+     * @param {Boolean} capture true if asking for a callback in the capture phase, false for bubble.
+
+     * @description Returns the function to invoke on listener when an event happens. This takes into account our logic on routing event callbacks
+     * based on event type, phase and target's identifier.
+     *
+     */
+
+    callbackForEventTypeListenerOnTargetInPhase: {
+        value: function(type, listener, target, capture, currentTarget) {
+            var callback, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName;
+
+            callback = ((currentTargetIdentifierSpecificPhaseMethodName = this._currentTargetIdentifierSpecificPhaseMethodName(capture, type, currentTarget.identifier)) && typeof listener[currentTargetIdentifierSpecificPhaseMethodName] === this._functionType)
+            ? currentTargetIdentifierSpecificPhaseMethodName
+            : ((targetIdentifierSpecificPhaseMethodName =  this._currentTargetIdentifierSpecificPhaseMethodName(capture,type,target.identifier)) && typeof listener[targetIdentifierSpecificPhaseMethodName] === this._functionType)
+                ? targetIdentifierSpecificPhaseMethodName
+                : (typeof listener[(phaseMethodName = this._currentTargetIdentifierSpecificPhaseMethodName(capture,type, null))] === this._functionType)
+                    ? phaseMethodName
+                    : (typeof listener.handleEvent === this._functionType)
+                        ? "handleEvent"
+                        : typeof listener === this._functionType
+                            ? listener
+                            : void 0;
+
+            if(typeof callback === "string") {
+                callback = listener[callback];
+            }
+
+            return callback;
+        }
+    },
+
         /**
      * @private
      */
     __invokeTargetListenerEntryForEvent: {
-        value: function __invokeTargetListenerEntryForEvent(iTarget, listenerEntry, mutableEvent, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName) {
+        value: function __invokeTargetListenerEntryForEvent(iTarget, listenerEntry, mutableEvent, phase, currentTargetIdentifierSpecificPhaseMethodName, targetIdentifierSpecificPhaseMethodName, phaseMethodName) {
             var listener = listenerEntry.listener,
-                callback, result;
+                callback,
+                callbacks = listenerEntry.callbacks,
+                result;
 
 
             //TEST, shutting currentTargetIdentifierSpecificPhaseMethodName down:
@@ -3472,7 +3510,12 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             //     result = listener.call(iTarget, mutableEvent);
             // } else {
 
-                if(!(callback = listenerEntry.callback)) {
+
+            /*
+                Caching the callback needs the same fallback strategy as finding it, worth it?
+            */
+
+            //if(!(callback = (callbacks && callbacks.get(iTarget)))) {
 
                     // callback = (currentTargetIdentifierSpecificPhaseMethodName && typeof (callback = listener[currentTargetIdentifierSpecificPhaseMethodName]) === this._functionType)
                     //     ? callback
@@ -3485,28 +3528,38 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     //                 : void 0;
 
 
-                    callback = ((currentTargetIdentifierSpecificPhaseMethodName = this._currentTargetIdentifierSpecificPhaseMethodName(listenerEntry.capture, mutableEvent.type, iTarget.identifier)) && typeof listener[currentTargetIdentifierSpecificPhaseMethodName] === this._functionType)
-                    ? currentTargetIdentifierSpecificPhaseMethodName
-                    : ((targetIdentifierSpecificPhaseMethodName =  this._currentTargetIdentifierSpecificPhaseMethodName(listenerEntry.capture,mutableEvent.type,mutableEvent.target.identifier)) && typeof listener[targetIdentifierSpecificPhaseMethodName] === this._functionType)
-                        ? targetIdentifierSpecificPhaseMethodName
-                        : (typeof listener[(phaseMethodName = this._currentTargetIdentifierSpecificPhaseMethodName(listenerEntry.capture,mutableEvent.type, null))] === this._functionType)
-                            ? phaseMethodName
-                            : (typeof listener.handleEvent === this._functionType)
-                                ? "handleEvent"
-                                : typeof listener === this._functionType
-                                    ? listener
-                                    : void 0;
+                    // callback = ((currentTargetIdentifierSpecificPhaseMethodName = this._currentTargetIdentifierSpecificPhaseMethodName(listenerEntry.capture, mutableEvent.type, iTarget.identifier)) && typeof listener[currentTargetIdentifierSpecificPhaseMethodName] === this._functionType)
+                    // ? currentTargetIdentifierSpecificPhaseMethodName
+                    // : ((targetIdentifierSpecificPhaseMethodName =  this._currentTargetIdentifierSpecificPhaseMethodName(listenerEntry.capture,mutableEvent.type,mutableEvent.target.identifier)) && typeof listener[targetIdentifierSpecificPhaseMethodName] === this._functionType)
+                    //     ? targetIdentifierSpecificPhaseMethodName
+                    //     : (typeof listener[(phaseMethodName = this._currentTargetIdentifierSpecificPhaseMethodName(listenerEntry.capture,mutableEvent.type, null))] === this._functionType)
+                    //         ? phaseMethodName
+                    //         : (typeof listener.handleEvent === this._functionType)
+                    //             ? "handleEvent"
+                    //             : typeof listener === this._functionType
+                    //                 ? listener
+                    //                 : void 0;
 
-                    if(typeof callback === "string") {
-                        callback = listener[callback];
-                    }
+                    // if(typeof callback === "string") {
+                    //     callback = listener[callback];
+                    // }
 
-                    if(!listenerEntry.once) {
-                        listenerEntry.callback = callback;
-                    }
-                }
+                    callback = this.callbackForEventTypeListenerOnTargetInPhase(mutableEvent.type, listener, mutableEvent.target, listenerEntry.capture, iTarget);
+
+                    // if(!listenerEntry.once) {
+                    //     if(!callbacks) {
+                    //         listenerEntry.callbacks = callbacks = new Map();
+                    //     }
+                    //     callbacks.set(iTarget, callback);
+                    // }
+                //}
 
                 if(callback) {
+
+                    mutableEvent.eventPhase = phase;
+                    mutableEvent.currentTarget = iTarget;
+
+
                     //callback.call(listener, mutableEvent);
                     result = typeof callback !== this._functionType
                     ? listener[callback](mutableEvent)
