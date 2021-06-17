@@ -368,11 +368,25 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             }
 
             if ("value" in value) {
+
                 // it's overriden by a user object
                 if (context.hasUserObject(label)) {
                     object = context.getUserObject(label);
                     context.setObjectLabel(object, label);
-                    return object;
+
+                    context.setBindingsToDeserialize(object, value);//Looks in values for all "bindings to collect and apply later"
+                    var montageObjectDesc = this.reviveObjectLiteral(value, context,undefined, undefined, object);
+
+                    if (Promise.is(montageObjectDesc)) {
+                        var self = this;
+                        return montageObjectDesc.then(function(montageObjectDesc) {
+                            return self.deserializeMontageObject(montageObjectDesc, object, context, label);
+                        });
+                    } else {
+                        return this.deserializeMontageObject(montageObjectDesc, object, context, label);
+                    }
+
+                    // return object;
                 }
 
                 var valueType = this.getTypeOf(value.value),
@@ -700,8 +714,13 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     delete object.isDeserializing;
                 }
 
-                if (!context.hasUserObject(label)) {
-                    // TODO: merge deserializedFromSerialization with
+                /*
+                    A label could be both local and exist in user objects provided to the deserialization.
+                    We only want to invoke deserializedFromSerialization if it's the local one.
+                */
+                //if (!context.hasUserObject(label)) {
+                if (!context.hasUserObjectForLabel(object, label)) {
+                        // TODO: merge deserializedFromSerialization with
                     //       deserializedFromTemplate?
                     if (object && typeof object.deserializedFromSerialization === "function") {
                         object.deserializedFromSerialization(label);
