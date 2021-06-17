@@ -91,6 +91,7 @@ exports.IdentityAuthorizationService = IdentityAuthorizationService = RawDataSer
                     var authorizeConnectionCompletedOperation = new DataOperation();
 
                     authorizeConnectionCompletedOperation.referrerId = authorizeConnectionOperation.id;
+                    authorizeConnectionCompletedOperation.referrer = authorizeConnectionOperation;
                     authorizeConnectionCompletedOperation.target = authorizeConnectionOperation.target;
                     authorizeConnectionCompletedOperation.type = DataOperation.Type.AuthorizeConnectionFailedOperation;
 
