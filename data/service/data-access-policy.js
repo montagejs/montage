@@ -131,6 +131,18 @@ DataAccessPolicy = exports.DataAccessPolicy = Montage.specialize(/** @lends Data
         }
     },
 
+    _evaluateAccessRuleForDataOperation: {
+        value: function(iAccessRule, dataOperation, promise) {
+            if(promise) {
+                return promise.then(() => {
+                    return iAccessRule.evaluate(dataOperation);
+                });
+            } else {
+                return iAccessRule.evaluate(dataOperation);
+            }
+        }
+    },
+
     /*
 
         We might want to have 2 set of rules, one that specifically set isAuthorized / isAuthorized. If more than one rule assess that, each could do:
@@ -157,6 +169,9 @@ DataAccessPolicy = exports.DataAccessPolicy = Montage.specialize(/** @lends Data
             var self = this,
                 accessRules = this.accessRulesForDataOperation(dataOperation),
                 i, countI, iAccessRule, iAccessRuleEvaluation, iAccessRuleEvaluationPromises,
+                previousPromise,
+                promise,
+
                 accessRulesEvaluationPromise;
 
             /*
@@ -167,12 +182,11 @@ DataAccessPolicy = exports.DataAccessPolicy = Montage.specialize(/** @lends Data
                 accessRulesEvaluationPromise = Promise.resolve();
             } else {
 
-                accessRulesEvaluationPromise = new Promise(function(resolve, reject) {
+                // accessRulesEvaluationPromise = new Promise(function(resolve, reject) {
 
                     for( i=0, countI=accessRules.length; (i<countI); i++ ) {
                         iAccessRule = accessRules[i];
-                        iAccessRuleEvaluation = iAccessRule.evaluate(dataOperation);
-
+                        accessRulesEvaluationPromise = this._evaluateAccessRuleForDataOperation(iAccessRule, dataOperation, accessRulesEvaluationPromise);
                         /*
                             Later when we refine, we might want to cut short at the first no/can't do
                         */
@@ -181,23 +195,24 @@ DataAccessPolicy = exports.DataAccessPolicy = Montage.specialize(/** @lends Data
                         //     return;
                         // }
 
-                        if(Promise.is(iAccessRuleEvaluation)) {
-    (iAccessRuleEvaluationPromises || (iAccessRuleEvaluationPromises = [])).push(iAccessRuleEvaluation);
-                        }
                     }
 
-                    if(iAccessRuleEvaluationPromises && iAccessRuleEvaluationPromises.length > 0) {
-                        Promise.all(iAccessRuleEvaluationPromises)
-                        .then(function() {
-                            //whatever the rules do, they set a state on the dataOperation, so nothing to resolve.
-                            resolve();
-                        })
-                    } else {
-                        //whatever the rules do, they set a state on the dataOperation, so nothing to resolve.
-                        resolve();
-                    }
+                    // if(iAccessRuleEvaluationPromises && iAccessRuleEvaluationPromises.length > 0) {
+                    //     Promise.all(iAccessRuleEvaluationPromises)
+                    //     .then(function() {
+                    //         //whatever the rules do, they set a state on the dataOperation, so nothing to resolve.
+                    //         resolve();
+                    //     })
+                    // } else {
+                    //     //whatever the rules do, they set a state on the dataOperation, so nothing to resolve.
+                    //     resolve();
+                    // }
 
-                })
+                // })
+            }
+
+            if(!accessRulesEvaluationPromise) {
+                accessRulesEvaluationPromise = Promise.resolve();
             }
 
             return accessRulesEvaluationPromise
