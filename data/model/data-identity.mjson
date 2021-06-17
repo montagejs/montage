@@ -13,8 +13,12 @@
             "module": {
                 "%": "data/model/data-identity"
             },
-            "object":{"@": "DataIdentity"}
+            "object":{"@": "DataIdentity"},
+            "parent":{"@": "IdentityDescriptor"}
         }
+    },
+    "IdentityDescriptor": {
+        "object": "data/model/identity.mjson"
     },
     "DataIdentity": {
         "object": "data/model/data-identity"
