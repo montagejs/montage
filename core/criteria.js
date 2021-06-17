@@ -194,16 +194,16 @@ var Criteria = exports.Criteria = Montage.specialize({
                 clone._expression = this._expression;
             }
             if(this._syntax) {
-                clone._syntax = this._syntax;
+                clone._syntax = Object.clone(this._syntax);
             }
             if(this._compiledSyntax) {
                 clone._compiledSyntax = this._compiledSyntax;
             }
-            if(this.parameters) {
-                clone.parameters = this.parameters;
+            if(this._parameters) {
+                clone._parameters = Object.clone(this._parameters,1);
             }
             if(this.__scope) {
-                clone.__scope = this.__scope;
+                clone.__scope = Object.clone(this.__scope);
             }
 
             if(this._predicateFunction) {
