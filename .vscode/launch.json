@@ -37,6 +37,7 @@
             "type": "node",
             "request": "launch",
             "name": "Run frb Jasmine Tests",
+            "runtimeVersion": "14.16.0",
             "program": "${workspaceFolder}/node_modules/jasmine-node/bin/jasmine-node",
             "args": [ "core/frb/spec", "--verbose"],
 			"cwd": "${workspaceFolder}",
