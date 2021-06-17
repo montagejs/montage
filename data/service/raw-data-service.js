@@ -109,6 +109,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     this.addEventListener(DataOperation.Type.CommitTransactionOperation,this,false);
                     this.addEventListener(DataOperation.Type.RollbackTransactionOperation,this,false);
 
+                    this.mainService.addEventListener(DataOperation.Type.AppendTransactionCompletedOperation,this,false);
+                    this.mainService.addEventListener(DataOperation.Type.AppendTransactionFailedOperation,this,false);
 
 
             }
@@ -2269,6 +2271,10 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 readOperation.data.readLimit = query.fetchLimit;
             }
 
+            if(query.batchSize) {
+                readOperation.data.batchSize = query.batchSize;
+            }
+
             if(query.orderings && query.orderings > 0) {
                 rawOrderings = [];
                 // self._mapObjectDescriptorOrderingsToRawOrderings(objectDescriptor, query.sortderings,rawOrderings);
@@ -2310,9 +2316,10 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
             if(parameters && typeof criteria.parameters === "object") {
                 var keys = Object.keys(parameters),
-                    i, countI, iKey, iValue, iRecord;
+                    i, countI, iKey, iValue, iRecord,
+                    criteriaClone;
 
-                rawParameters = Array.isArray(parameters) ? [] : {};
+                //rawParameters = Array.isArray(parameters) ? [] : {};
 
                 for(i=0, countI = keys.length;(i < countI); i++) {
                     iKey  = keys[i];
@@ -2321,6 +2328,12 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                         throw "fetchData: criteria with no value for parameter key "+iKey;
                     } else {
                         if(iValue.dataIdentifier) {
+
+
+                            if(!criteriaClone) {
+                                criteriaClone = criteria.clone();
+                                rawParameters = criteriaClone.parameters;
+                            }
                             /*
                                 this isn't working because it's causing triggers to fetch properties we don't have
                                 and somehow fails, but it's wastefull. Going back to just put primary key there.
@@ -2331,28 +2344,33 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                             //     self._mapObjectToRawData(iValue, iRecord)
                             // );
                             rawParameters[iKey] = iValue.dataIdentifier.primaryKey;
-                        } else {
-                            rawParameters[iKey] = iValue;
                         }
+                        // else {
+                        //     rawParameters[iKey] = iValue;
+                        // }
                     }
 
+                }
+
+                if(criteriaClone) {
+                    readOperation.criteria = criteriaClone;
                 }
                 // if(promises) promises = Promise.all(promises);
             }
             // if(!promises) promises = Promise.resolve(true);
             // promises.then(function() {
-            if(criteria) {
-                readOperation.criteria.parameters = rawParameters;
-            }
+            // if(criteria) {
+            //     readOperation.criteria.parameters = rawParameters;
+            // }
             //console.log("fetchData operation:",JSON.stringify(readOperation));
 
             this.registerPendingDataOperationWithContext(readOperation, stream);
             objectDescriptor.dispatchEvent(readOperation);
 
 
-            if(criteria) {
-                readOperation.criteria.parameters = parameters;
-            }
+            // if(criteria) {
+            //     readOperation.criteria.parameters = parameters;
+            // }
 
             // });
 
@@ -2466,7 +2484,15 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     operation.type = DataOperation.Type.ReadCompletedOperation;
                 }
 
-                //We provide the inserted record as the operation's payload
+
+                /*
+                    Make sure we have an array
+                */
+                if(!Array.isArray(data)) {
+                    data = [data];
+                }
+
+                //We provide the inserted records as the operation's payload
                 operation.data = data;
 
                 /*
@@ -2670,6 +2696,11 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     createTransactionOperation = new DataOperation();
                     dataOperationsByObject = new Map();/* Key is object, value is operation */
 
+
+                //console.log("handleTransactionCreate: transaction-"+transaction.identifier, transaction);
+
+                //To help debug tracability, let's assign to the createTransactionOperation's id transaction.identifier
+                createTransactionOperation.id = transaction.identifier;
 
                 createTransactionOperation.type = DataOperation.Type.CreateTransactionOperation;
                 createTransactionOperation.target = DataService.mainService;
@@ -2937,6 +2968,10 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 push = Array.prototype.push,
                 supportsTransaction = this.supportsTransaction;
 
+
+            //console.log("handleTransactionPrepare: transaction-"+transaction.identifier, transaction);
+
+
             if(supportsTransaction && transactionRawContext && transactionRawContext.operationCount > 0) {
                 /*
                     Now we know we're in:
@@ -3047,8 +3082,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             /*
                 DataOperations coming in:
             */
-            this.mainService.addEventListener(DataOperation.Type.AppendTransactionCompletedOperation,this,false);
-            this.mainService.addEventListener(DataOperation.Type.AppendTransactionFailedOperation,this,false);
+            // this.mainService.addEventListener(DataOperation.Type.AppendTransactionCompletedOperation,this,false);
+            // this.mainService.addEventListener(DataOperation.Type.AppendTransactionFailedOperation,this,false);
 
             return appendTransactionOperation;
         }
@@ -3066,6 +3101,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 createTransactionOperation,
                 data,
                 transactionRawContext;
+
+
+            //console.log("handleCreateTransactionCompletedOperation: transaction-"+transaction.identifier, transaction);
 
             if(transaction) {
                 createTransactionOperation = this.referrerForDataOperation(createTransactionCompletedOperation),
@@ -3091,28 +3129,45 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
     handleCreateTransactionFailedOperation: {
         value: function (operation) {
+            var transaction = this.referrerContextForDataOperation(operation);
+            console.error("handleCreateTransactionFailedOperation: transaction-"+transaction.identifier, transaction);
+
             this.rejectCompletionPromiseWithDataOperation(operation);
         }
     },
 
     handleAppendTransactionCompletedOperation: {
         value: function (appendTransactionCompletedOperation) {
-            /*
-                This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
-            */
-            this.mainService.removeEventListener(DataOperation.Type.AppendTransactionCompletedOperation,this,false);
-            this.mainService.removeEventListener(DataOperation.Type.AppendTransactionFailedOperation,this,false);
-            this.resolveCompletionPromiseWithDataOperation(appendTransactionCompletedOperation);
+            var transaction = this.referrerContextForDataOperation(appendTransactionCompletedOperation);
+            if(transaction) {
+
+                //console.log("handleAppendTransactionCompletedOperation: transaction-"+transaction.identifier, transaction);
+
+                /*
+                    This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
+                */
+                // this.mainService.removeEventListener(DataOperation.Type.AppendTransactionCompletedOperation,this,false);
+                // this.mainService.removeEventListener(DataOperation.Type.AppendTransactionFailedOperation,this,false);
+                this.resolveCompletionPromiseWithDataOperation(appendTransactionCompletedOperation);
+                }
+
         }
     },
     handleAppendTransactionFailedOperation: {
         value: function (appendTransactionFailedOperation) {
-            /*
-                This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
-            */
-            this.mainService.removeEventListener(DataOperation.Type.AppendTransactionCompletedOperation,this,false);
-            this.mainService.removeEventListener(DataOperation.Type.AppendTransactionFailedOperation,this,false);
-            this.rejectCompletionPromiseWithDataOperation(appendTransactionFailedOperation);
+
+            var transaction = this.referrerContextForDataOperation(appendTransactionFailedOperation);
+            if(transaction) {
+                console.error("handleAppendTransactionFailedOperation: transaction-"+transaction.identifier, transaction);
+
+                /*
+                    This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
+                */
+                // this.mainService.removeEventListener(DataOperation.Type.AppendTransactionCompletedOperation,this,false);
+                // this.mainService.removeEventListener(DataOperation.Type.AppendTransactionFailedOperation,this,false);
+                this.rejectCompletionPromiseWithDataOperation(appendTransactionFailedOperation);
+            }
+
         }
     },
 
@@ -3587,6 +3642,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             transactionRawContext = this.rawContextForTransaction(transaction),
             createTransactionOperation = transactionRawContext.createTransactionOperation;
 
+            //console.log("handleTransactionCommit: transaction-"+transaction.identifier, transaction);
+
             if(this.supportsTransaction && createTransactionOperation) {
 
                 this._dispatchTransactionCommitStart(transaction,{
@@ -3686,6 +3743,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             var transactionCommitProgressEvent = TransactionEvent.checkout(),
                 transaction = this.referrerContextForDataOperation(operation);
 
+            // console.log("handleCommitTransactionProgressOperation: transaction-"+transaction.identifier, transaction);
+
             transactionCommitProgressEvent.type = TransactionEvent.transactionCommitProgress;
             transactionCommitProgressEvent.transaction = transaction;
             /*
@@ -3702,11 +3761,15 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
     handleCommitTransactionCompletedOperation: {
         value: function (commitTransactionCompletedOperation) {
+            //var transaction = this.referrerContextForDataOperation(commitTransactionCompletedOperation);
+            //console.log("handleCommitTransactionCompletedOperation: transaction-"+transaction.identifier, transaction);
+
+
             /*
                 This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
             */
-            this.mainService.removeEventListener(DataOperation.Type.CommitTransactionCompletedOperation,this,false);
-            this.mainService.removeEventListener(DataOperation.Type.CommitTransactionFailedOperation,this,false);
+            // this.mainService.removeEventListener(DataOperation.Type.CommitTransactionCompletedOperation,this,false);
+            // this.mainService.removeEventListener(DataOperation.Type.CommitTransactionFailedOperation,this,false);
 
             this.resolveCompletionPromiseWithDataOperation(commitTransactionCompletedOperation);
         }
@@ -3714,11 +3777,15 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
     handleCommitTransactionFailedOperation: {
         value: function (commitTransactionFailedOperation) {
+
+            var transaction = this.referrerContextForDataOperation(commitTransactionFailedOperation);
+            console.error("handleCommitTransactionFailedOperation: transaction-"+transaction.identifier, transaction);
+
             /*
                 This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
             */
-            this.mainService.removeEventListener(DataOperation.Type.CommitTransactionCompletedOperation,this,false);
-            this.mainService.removeEventListener(DataOperation.Type.CommitTransactionFailedOperation,this,false);
+            // this.mainService.removeEventListener(DataOperation.Type.CommitTransactionCompletedOperation,this,false);
+            // this.mainService.removeEventListener(DataOperation.Type.CommitTransactionFailedOperation,this,false);
 
             this.rejectCompletionPromiseWithDataOperation(commitTransactionFailedOperation);
         }
@@ -3824,8 +3891,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             /*
                 This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
             */
-            this.mainService.removeEventListener(DataOperation.Type.RollbackTransactionCompletedOperation,this,false);
-            this.mainService.removeEventListener(DataOperation.Type.RollbackTransactionFailedOperation,this,false);
+            // this.mainService.removeEventListener(DataOperation.Type.RollbackTransactionCompletedOperation,this,false);
+            // this.mainService.removeEventListener(DataOperation.Type.RollbackTransactionFailedOperation,this,false);
 
             this.resolveCompletionPromiseWithDataOperation(rollbackTransactionCompletedOperation);
         }
@@ -3836,8 +3903,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             /*
                 This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
             */
-            this.mainService.removeEventListener(DataOperation.Type.RollbackTransactionCompletedOperation,this,false);
-            this.mainService.removeEventListener(DataOperation.Type.RollbackTransactionFailedOperation,this,false);
+            // this.mainService.removeEventListener(DataOperation.Type.RollbackTransactionCompletedOperation,this,false);
+            // this.mainService.removeEventListener(DataOperation.Type.RollbackTransactionFailedOperation,this,false);
 
             this.rejectCompletionPromiseWithDataOperation(rollbackTransactionFailedOperation);
         }
