@@ -7,6 +7,7 @@ var Montage = require("../../core").Montage,
     MontageBuilder = require("./montage-builder").MontageBuilder,
     MontageLabeler = require("./montage-labeler").MontageLabeler,
     MontageVisitor = require("./montage-visitor").MontageVisitor,
+    Bindings = require("../bindings");
     logger = require("../../logger").logger("montage-serializer");
 
 var MontageSerializer = Montage.specialize({
@@ -166,3 +167,7 @@ exports.serialize = function (object, _require, legacyMode) {
     return new MontageSerializer(legacyMode).initWithRequire(_require)
         .serializeObject(object);
 };
+
+//deprecated
+MontageSerializer.defineSerializationUnit("bindings", Bindings.serializeObjectBindings);
+

@@ -69,8 +69,6 @@ var serializeObjectBindings = exports.serializeObjectBindings = function (serial
     return hasBindings ? outputs : void 0;
 };
 
-//deprecated
-Serializer.defineSerializationUnit("bindings", serializeObjectBindings);
 
 var deserializeObjectBindings = exports.deserializeObjectBindings = function deserializeObjectBindings(deserializer, object, bindings) {
     var commonDescriptor = {

@@ -213,12 +213,28 @@ var MontageContext = Montage.specialize({
         }
     },
 
+    hasUserObjectForLabel: {
+        value: function(object, label) {
+            var userObjects = this._userObjects;
+
+            if (userObjects) {
+                return this.hasUserObject(label) && userObjects[label] === object;
+                //return label in userObjects && userObjects[label] === object;
+            } else {
+                return false;
+            }
+        }
+    },
+
     hasUserObject: {
         value: function(label) {
             var userObjects = this._userObjects;
 
             if (userObjects) {
-                return label in userObjects;
+                return userObjects.hasOwnProperty
+                    ? userObjects.hasOwnProperty(label)
+                    : label in userObjects;
+                // return label in userObjects;
             } else {
                 return false;
             }

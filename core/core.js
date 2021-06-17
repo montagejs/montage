@@ -1829,4 +1829,4 @@ exports._blueprintDescriptor = exports._objectDescriptorDescriptor;
 
 // has to come last since serializer and deserializer depend on logger, which
 // in turn depends on montage running to completion
-require("./serialization/bindings");
+// require("./serialization/bindings");
