@@ -27,6 +27,7 @@ var Montage = require("core/core").Montage,
     DataOperation = require("data/service/data-operation").DataOperation,
     Locale = require("core/locale").Locale,
     ReadEvent = require("../model/read-event").ReadEvent,
+    DataOperationErrorNames = require("data/service/data-operation").DataOperationErrorNames,
     Transaction = require("../model/transaction").Transaction,
     TransactionEvent = require("../model/transaction-event").TransactionEvent;
 
@@ -841,6 +842,13 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
                 enumerable: true,
                 get: function() {
                     return mainService.dataIdentifierForObject(this);
+                }
+            });
+            Object.defineProperty(prototype,"snapshot", {
+                enumerable: true,
+                get: function() {
+
+                    return mainService._getChildServiceForObject(this).snapshotForObject(this);
                 }
             });
             Object.defineProperty(prototype,"nextTarget", {
@@ -3704,7 +3712,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
                 dataObjectChanges = transaction.dataObjectChanges = new Map(this.dataObjectChanges),//Map
                 objectDescriptorsWithChangedObjects = transaction.objectDescriptors = new Set(this.objectDescriptorsWithChangedObjects);
 
-
+            //console.log("saveChanges: transaction-"+this.identifier, transaction);
 
             this.addPendingTransaction(transaction);
 
@@ -3758,6 +3766,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
                     if(createdDataObjects.size === 0 && changedDataObjects.size === 0 && deletedDataObjects.size === 0) {
                         operation = new DataOperation();
                         operation.type = DataOperation.Type.NoOp;
+                        //console.log("saveChanges: transaction-"+this.identifier+" <- NoOp", transaction);
                         resolve(operation);
                     }
 
@@ -3830,6 +3839,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
                         */
                         //addEventListener(TransactionEvent.transactionCreateStart, self, false);
 
+                        //console.log("saveChanges: dispatchEvent transactionCreateEvent transaction-"+this.identifier, transaction);
 
                         transactionCreateEvent = TransactionEvent.checkout();
 
@@ -3859,6 +3869,9 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
 
                         transactionPrepareEvent.type = TransactionEvent.transactionPrepare;
                         transactionPrepareEvent.transaction = transaction;
+
+                        //console.log("saveChanges: dispatchEvent transactionPrepareEvent transaction-"+this.identifier, transaction);
+
                         self.dispatchEvent(transactionPrepareEvent);
 
                         return (transactionPrepareEvent.propagationPromise || Promise.resolve());
@@ -3889,6 +3902,9 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
 
                         transactionCommitEvent.type = TransactionEvent.transactionCommit;
                         transactionCommitEvent.transaction = transaction;
+
+                        //console.log("saveChanges: dispatchEvent transactionCommitEvent transaction-"+this.identifier, transaction);
+
                         self.dispatchEvent(transactionCommitEvent);
 
                         return transactionCommitEvent.propagationPromise
@@ -3927,6 +3943,9 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
                         /*
                             We could also add an event to advertise teh result, but the transaction object already has everything.
                         */
+
+                            //console.log("saveChanges: done! transaction-"+this.identifier, transaction);
+
                        resolve(transaction);
 
                     })
@@ -3943,6 +3962,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
                             We still need to tell everyone it's off.
 
                         */
+                            //console.log("saveChanges: CANCEL transaction-"+this.identifier, error, transaction);
 
 
                         /*
@@ -5901,9 +5921,16 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
         value: function(dataOperation) {
             //console.log("evaluateAccessPoliciesForDataOperation "+dataOperation.type+" "+dataOperation.target.name,dataOperation);
 
+            // var shouldEvaluateAccessPoliciesForDataOperation = this.callDelegateMethod("dataServiceShouldEvaluateAccessPoliciesForDataOperation", this, dataOperation);
+
+
+            // if(shouldEvaluateAccessPoliciesForDataOperation === undefined) {
+            //     shouldEvaluateAccessPoliciesForDataOperation = dataOperation.clientId && !this.currentEnvironment.isNode;
+            // }
             //Let's try that if an operation is coming from inside the DataWorker, it's authorized.
+            // if(!shouldEvaluateAccessPoliciesForDataOperation) {
             if(!dataOperation.clientId && this.currentEnvironment.isNode) {
-                return (dataOperation.isAuthorized = true);
+                    return Promise.resolve((dataOperation.isAuthorized = true));
             } else {
                 var accessPolicies = this.accessPoliciesForDataOperation(dataOperation);
 
@@ -5989,6 +6016,114 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
             return Promise.resolve(true);
         }
     },
+
+
+    createStorageForObjectDescriptor: {
+        value: function (objectDescriptor) {
+            //console.log("create "+objectDescriptor.name);
+            var iOperation = new DataOperation(),
+                self = this;
+
+            iOperation.type = DataOperation.Type.CreateOperation;
+            iOperation.data = objectDescriptor.module.id;
+            iOperation.target = objectDescriptor;
+
+
+
+            var createPromise = new Promise(function(resolve, reject) {
+
+                function createCompletedHandler(operation) {
+                    if(operation.referrerId === iOperation.id) {
+                        cleanupdHandlers();
+                        resolve(operation);
+                    }
+                };
+
+                function createFailedHandler(operation) {
+                    if(operation.referrerId === iOperation.id) {
+                        cleanupdHandlers();
+                        reject(operation.data);
+                    }
+                };
+
+                function cleanupdHandlers() {
+                    self.removeEventListener(DataOperation.Type.CreateCompletedOperation,createCompletedHandler, false);
+                    self.removeEventListener(DataOperation.Type.createFailedHandler,createCompletedHandler, false);
+                };
+
+                self.addEventListener(DataOperation.Type.CreateCompletedOperation, createCompletedHandler, false);
+
+                self.addEventListener(DataOperation.Type.CreateFailedOperation, createFailedHandler, false);
+
+                objectDescriptor.dispatchEvent(iOperation);
+
+            });
+
+            return createPromise;
+
+        }
+    },
+
+    __objectDescriptorStoreExistsCache: {
+        value: undefined
+    },
+    _objectDescriptorStoreExistsCache: {
+        get: function() {
+            return this.__objectDescriptorStoreExistsCache || (this.__objectDescriptorStoreExistsCache = new Map());
+        }
+    },
+
+    createStorageForObjectDescriptorIfNeeded: {
+        value: function(type) {
+            var objectDescriptor = this.objectDescriptorForType(type),
+                cache = this._objectDescriptorStoreExistsCache && this._objectDescriptorStoreExistsCache.has(objectDescriptor),
+                self = this;
+
+
+            if(cache) {
+                return Promise.resolve(false);
+            } else {
+
+                var query = DataQuery.withTypeAndCriteria(objectDescriptor),
+                    queryPromise;
+
+                //console.log("PlummingIntakeDataService _createObjectDescriptorStoreForTypeIfNeeded() --> fetchData to see if "+objectDescriptor.name+ " table exists");
+
+                query.fetchLimit = 1;
+
+                queryPromise = this.fetchData(query)
+                .then( (result) => {
+                    //console.log("PlummingIntakeDataService _createObjectDescriptorStoreForTypeIfNeeded() --> "+objectDescriptor.name+ " table exists");
+                    this._objectDescriptorStoreExistsCache.set(objectDescriptor,false);
+                    return false;
+                },  (error) => {
+                    if((error.name === DataOperationErrorNames.ObjectStoreMissing)) {
+
+                        return self.createStorageForObjectDescriptor(objectDescriptor)
+                        .then(() => {
+                            // console.log("mainService.createStorageForObjectDescriptor("+objectDescriptor.name+") COMPLETED!");
+                            self._objectDescriptorStoreExistsCache.set(objectDescriptor,true);
+                            return true;
+                        })
+                        .catch((error) => {
+                            console.error("mainService.createStorageForObjectDescriptor("+objectDescriptor.name+") Error!",error);
+                            self._objectDescriptorStoreExistsCache.set(objectDescriptor,error);
+                            return Promise.reject(error);
+                        });
+                    }
+                    else {
+                        self._objectDescriptorStoreExistsCache.set(objectDescriptor,error);
+                        return Promise.reject(error);
+                    }
+                });
+
+                return queryPromise;
+            }
+
+        }
+    },
+
+
 
 
     /***************************************************************************
