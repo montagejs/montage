@@ -259,7 +259,6 @@ exports.DataOperationErrorNames = DataOperationErrorNames = new Enum().initWithM
             //serializer.setProperty("type", DataOperationType.intValueForMember(this.type));
             serializer.setProperty("type", this.type);
             serializer.setProperty("timeStamp", this.timeStamp);
-            console.log("serializeSelf: this.clientId is ",this.clientId);
             serializer.setProperty("clientId", this.clientId);
 
             if(this.target) {
@@ -324,10 +323,12 @@ exports.DataOperationErrorNames = DataOperationErrorNames = new Enum().initWithM
                 this.timeStamp = value;
             }
 
+
             value = deserializer.getProperty("clientId");
             if (value !== void 0) {
                 this.clientId = value;
             }
+            console.log('deserializeSelf: deserializer.getProperty("clientId") is '+value);
 
             /* keeping dataDescriptor here for temporary backward compatibility */
             value = deserializer.getProperty("target");
