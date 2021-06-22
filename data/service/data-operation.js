@@ -274,7 +274,10 @@ exports.DataOperationErrorNames = DataOperationErrorNames = new Enum().initWithM
                         serializer.setProperty("targetModuleId", null);
                     }
                 }
+            } else if(this.targetModuleId) {
+                serializer.setProperty("targetModuleId", this.targetModuleId);
             }
+
             if(this.referrerId) {
                 serializer.setProperty("referrerId", this.referrerId);
             }
@@ -343,7 +346,9 @@ exports.DataOperationErrorNames = DataOperationErrorNames = new Enum().initWithM
 
                     if(this.mainService) {
                         this.target = this.mainService.objectDescriptorWithModuleId(value);
-                    } else {
+                    }
+
+                    if(!this.target) {
                         //Last resort, if we can't construct the target, let's carry the data that was supposed to help us do so
                         this.targetModuleId = value;
                     }
