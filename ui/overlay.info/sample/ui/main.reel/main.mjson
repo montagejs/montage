@@ -1,0 +1,50 @@
+{
+    "owner": {
+        "values": {
+            "element": {"#": "main"},
+            "overlay": {"@": "overlay"},
+            "closeButton": {"@": "closeButton"}
+        }
+    },
+
+    "openOverlayButton": {
+        "prototype": "montage/ui/button.reel",
+        "values": {
+            "element": {"#": "fillOutFormButton"},
+            "label": "Open Overlay Label"
+        },
+        "listeners": [
+            {
+                "type": "press",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+
+    "closeButton": {
+        "prototype": "montage/ui/button.reel",
+        "values": {
+            "element": {"#": "closeButton"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+
+    "overlay": {
+        "prototype": "montage/ui/overlay.reel",
+        "values": {
+            "element": {"#": "overlay"},
+            "delegate": {"@": "owner"},
+            "position": {
+                "top": 0,
+                "left": 0
+            },
+            "dismissOnExternalInteraction":{"<-": "environment.isMobileDevice ? false : true"}
+        }
+    }
+
+}

@@ -1,0 +1,76 @@
+.overlay {
+    opacity: 0;
+    position: fixed;
+    z-index: 999;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding-top: 6px;
+    background: hsl(0deg 0% 0% / 20%);
+    -webkit-backdrop-filter: blur(10px) brightness(0.8);
+    backdrop-filter: blur(10px)  brightness(0.8);
+
+    /* -webkit-transform: translate3d( 0, -100%, 0 );
+    -moz-transform: translate3d( 0, -100%, 0 );
+    -ms-transform: translate3d( 0, -100%, 0 );
+    transform: translate3d( 0, -100%, 0 );
+    -webkit-transition: -webkit-transform .3s cubic-bezier(.53, .09, .94, .53);
+    -moz-transition: -moz-transform .3s cubic-bezier(.53, .09, .94, .53);
+    -ms-transition: -ms-transform .3s cubic-bezier(.53, .09, .94, .53);
+    transition: transform .3s cubic-bezier(.53, .09, .94, .53); */
+    pointer-events: none;
+
+    -webkit-transition: opacity .5s, -webkit-transform .5s;
+    -moz-transition: opacity .5s, -moz-transform .5s;
+    -ms-transition: opacity .5s, -ms-transform .5s;
+    transition: opacity .5s, transform .5s;
+
+}
+
+.overlay.montage-Overlay--visible {
+    /* -webkit-transform: translate3d( 0, 0px, 0 );
+    -moz-transform: translate3d( 0, 0px, 0 );
+    -ms-transform: translate3d( 0, 0px, 0 );
+    transform: translate3d( 0, 0px, 0 );
+    -webkit-transition: -webkit-transform .3s cubic-bezier(0, .20, .15, 1);
+    -moz-transition: -moz-transform .3s cubic-bezier(0, .20, .15, 1);
+    -ms-transition: -ms-transform .3s cubic-bezier(0, .20, .15, 1);
+    transition: transform .3s cubic-bezier(0, .20, .15, 1); */
+    display: block;
+    pointer-events: all;
+}
+
+.overlay .button-close,
+.overlay .button-close:focus {
+    position: absolute;
+    padding: 0px;
+    padding-bottom: 3px;
+    padding-left: 1px;
+    top: 6px;
+    right: 6px;
+    width: 32px;
+    height: 32px;
+    border-color: hsl(0,0%,0%);
+    border-radius: 50%;
+    color: hsl(0, 0%, 100%);
+    font-size: 16px;
+    font-weight: bold;
+    font-family: inherit;
+    box-shadow: inset 0 1px 3px hsla(0,0%,0%,.3), 0 1px 2px hsla(0,0%,100%,.1);
+    background: hsl(0,0%,12%) -webkit-linear-gradient(top, hsla(0,0%,100%,.1), hsla(0,0%,0%,.1) );
+    background: hsl(0,0%,12%) -moz-linear-gradient(top, hsla(0,0%,100%,.1), hsla(0,0%,0%,.1) );
+    background: hsl(0,0%,12%) -ms-linear-gradient(top, hsla(0,0%,100%,.1), hsla(0,0%,0%,.1) );
+    background: hsl(0,0%,12%) linear-gradient(top, hsla(0,0%,100%,.1), hsla(0,0%,0%,.1) );
+}
+
+.overlay .button-close.active {
+    background: hsl(0,0%,10%) -webkit-linear-gradient(top, hsla(0,0%,40%,.1), hsla(0,0%,0%,.1) );
+    background: hsl(0,0%,10%) -moz-linear-gradient(top, hsla(0,0%,40%,.1), hsla(0,0%,0%,.1) );
+    background: hsl(0,0%,10%) -ms-linear-gradient(top, hsla(0,0%,40%,.1), hsla(0,0%,0%,.1) );
+    background: hsl(0,0%,10%) linear-gradient(top, hsla(0,0%,40%,.1), hsla(0,0%,0%,.1) );
+}
+
+.overlay.montage-Overlay--visible {
+    opacity: 1;
+}
