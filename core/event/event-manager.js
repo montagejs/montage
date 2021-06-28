@@ -1807,10 +1807,16 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
         enumerable: false,
         value: function (target, eventType) {
 
-            var listenerTarget;
+            var listenerTarget = this.actualDOMTargetForEventTypeOnTarget(eventType, target),
+                registeredTargetForActivation = this._registeredTargetForActivation.get(eventType);
 
-            listenerTarget = this.actualDOMTargetForEventTypeOnTarget(eventType, target);
-            if (listenerTarget) {
+            /*
+                In registerTargetForActivation, we listen to event types that start an interaction cycle. If these were removed, it would create bugs as they wouldn't be dispatched by the event manager anymore. So we keep track of these in this._registeredTargetForActivation, and we check before removing the native event listener that this is not one of them.
+
+                Some of these are instaled on window, so we add a check to see it's the documennt of that window. Ideally we wouldn't have to do that, but that requires thorough testing.
+            */
+
+            if (listenerTarget && (!registeredTargetForActivation || (registeredTargetForActivation && ((registeredTargetForActivation !== listenerTarget) && (registeredTargetForActivation.document !== listenerTarget)))) ) {
                 this._observedTarget_byEventType_[eventType].delete(listenerTarget);
                 listenerTarget.nativeRemoveEventListener(eventType, this, true);
             }
@@ -1875,6 +1881,10 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
         }
     },
 
+    _registeredTargetForActivation: {
+        value: new Map()
+    },
+
     registerTargetForActivation: {
         value: function (target) {
             var _document = target instanceof Window ? target.document : target;
@@ -1885,21 +1895,35 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             // before finding event handlers that were registered for these events
             if (window.PointerEvent) {
                 target.nativeAddEventListener("pointerdown", this._activationHandler, true);
+                this._registeredTargetForActivation.set("pointerdown", target);
+
                 _document.nativeAddEventListener("pointerenter", this._activationHandler, true);
+                this._registeredTargetForActivation.set("pointerenter", _document);
+
 
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 target.nativeAddEventListener("MSPointerDown", this._activationHandler, true);
+                this._registeredTargetForActivation.set("MSPointerDown", target);
+
                 // IE10 has no support for pointerenter or pointerleave events.
                 _document.nativeAddEventListener("mouseenter", this._activationHandler, true);
+                this._registeredTargetForActivation.set("mouseenter", _document);
 
             } else {
                 target.nativeAddEventListener("touchstart", this._activationHandler, true);
+                this._registeredTargetForActivation.set("touchstart", target);
+
                 target.nativeAddEventListener("mousedown", this._activationHandler, true);
+                this._registeredTargetForActivation.set("mousedown", target);
+
                 // mouseenter events are not dispatched from window under Chrome and Safari.
                 _document.nativeAddEventListener("mouseenter", this._activationHandler, true);
+                this._registeredTargetForActivation.set("mouseenter", _document);
             }
 
             target.nativeAddEventListener("focus", this._activationHandler, true);
+            this._registeredTargetForActivation.set("focus", target);
+
         }
 
     },
