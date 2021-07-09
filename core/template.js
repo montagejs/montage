@@ -392,13 +392,33 @@ var Template = Montage.specialize( /** @lends Template# */ {
      */
     _createTemplateObjects: {
         value: function (instances) {
-            var templateObjects = Object.create(instances || null);
+            /*
+                With stringent check in hasUserObject() in montage-interpreter.js using hasOwnProperty() if possible vs " in ", values in instances aren't found as lookup only happens in the object we extended off instances. So we're going to assign to instances directly rather than extends, if there were a conflict where instances contained an "application" or "template" property, it would have been overridden anyway by extending the object. We're adding a warning anyway if that's the case.
+            */
+            // var templateObjects = Object.create(instances || null);
+
+            // if (typeof defaultApplication === "undefined") {
+            //     defaultApplication = require("./application").application;
+            // }
+
+            // templateObjects.application = defaultApplication;
+            // templateObjects.template = this;
+
+
+            var templateObjects = instances ? instances : {};
 
             if (typeof defaultApplication === "undefined") {
                 defaultApplication = require("./application").application;
             }
 
+            if(templateObjects.application) {
+                console.warn("Template instances has an entry for 'application':",templateObjects.application,"that is overridden by defaultApplication");
+            }
             templateObjects.application = defaultApplication;
+
+            if(templateObjects.template) {
+                console.warn("Template instances has an entry for 'template':",templateObjects.template,"that is overridden by the current template");
+            }
             templateObjects.template = this;
 
             return templateObjects;
