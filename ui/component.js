@@ -2612,38 +2612,40 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 if(ownerStyle) {
                     var boundingRect = this.element.getBoundingClientRect(),
                         identifier = this.identifier;
+
+                    if(this._updatesLayoutPropertyX) {
+                        ownerStyle.setProperty(`--${identifier}X`, boundingRect.x);
+                    }
+                    if(this._updatesLayoutPropertyY) {
+                        ownerStyle.setProperty(`--${identifier}Y`, boundingRect.y);
+                    }
+                    if(this._updatesLayoutPropertyWidth) {
+                        ownerStyle.setProperty(`--${identifier}Width`, boundingRect.width);
+                    }
+                    if(this._updatesLayoutPropertyHeight) {
+                        ownerStyle.setProperty(`--${identifier}Height`, boundingRect.height);
+                    }
+                    if(this._updatesLayoutPropertyTop) {
+                        ownerStyle.setProperty(`--${identifier}Top`, boundingRect.top);
+                        this.top = boundingRect.top;
+                    }
+                    if(this._updatesLayoutPropertyRight) {
+                        ownerStyle.setProperty(`--${identifier}Right`, boundingRect.right);
+                        this.right = boundingRect.right;
+                    }
+                    if(this._updatesLayoutPropertyBottom) {
+                        ownerStyle.setProperty(`--${identifier}Bottom`, boundingRect.bottom);
+                        this.bottom = boundingRect.bottom;
+                    }
+                    if(this._updatesLayoutPropertyLeft) {
+                        ownerStyle.setProperty(`--${identifier}Left`, boundingRect.left);
+                        this.left = boundingRect.left;
+                    }
+
                 }
 
 
 
-                if(this._updatesLayoutPropertyX) {
-                    ownerStyle.setProperty(`--${identifier}X`, boundingRect.x);
-                }
-                if(this._updatesLayoutPropertyY) {
-                    ownerStyle.setProperty(`--${identifier}Y`, boundingRect.y);
-                }
-                if(this._updatesLayoutPropertyWidth) {
-                    ownerStyle.setProperty(`--${identifier}Width`, boundingRect.width);
-                }
-                if(this._updatesLayoutPropertyHeight) {
-                    ownerStyle.setProperty(`--${identifier}Height`, boundingRect.height);
-                }
-                if(this._updatesLayoutPropertyTop) {
-                    ownerStyle.setProperty(`--${identifier}Top`, boundingRect.top);
-                    this.top = boundingRect.top;
-                }
-                if(this._updatesLayoutPropertyRight) {
-                    ownerStyle.setProperty(`--${identifier}Right`, boundingRect.right);
-                    this.right = boundingRect.right;
-                }
-                if(this._updatesLayoutPropertyBottom) {
-                    ownerStyle.setProperty(`--${identifier}Bottom`, boundingRect.bottom);
-                    this.bottom = boundingRect.bottom;
-                }
-                if(this._updatesLayoutPropertyLeft) {
-                    ownerStyle.setProperty(`--${identifier}Left`, boundingRect.left);
-                    this.left = boundingRect.left;
-                }
             }
             this.didDraw(frameTime);
         }
