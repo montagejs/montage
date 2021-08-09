@@ -478,7 +478,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
 
         // mappings, link this package to other packages.
-        var mappings = description.mappings || {};
+        var mappings = description.mappings || Object.create(null);
         // dependencies, devDependencies if not in production
         processMappingDependencies(description.dependencies,mappings);
         if (!config.production) {
@@ -538,7 +538,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         config.rootLocation = URL.resolve(config.rootLocation || Require.getLocation(), "./");
         config.location = URL.resolve(config.location || config.rootLocation, "./");
         config.paths = config.paths || [config.location];
-        config.mappings = config.mappings || {}; // EXTENSION
+        config.mappings = config.mappings || Object.create(null); // EXTENSION
         config.exposedConfigs = config.exposedConfigs || Require.exposedConfigs;
         config.moduleTypes = config.moduleTypes || ["html", "meta", "mjson"];
         config.makeLoader = config.makeLoader || Require.makeLoader;
@@ -1571,7 +1571,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
     // Using mappings hash to load modules that match a mapping.
     Require.MappingsLoader = function(config, load) {
-        config.mappings = config.mappings || {};
+        config.mappings = config.mappings || Object.create(null);
         config.name = config.name;
 
         // finds a mapping to follow, if any
