@@ -697,7 +697,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         function deepLoad(topId, viaId, loading) {
             // this is a memo of modules already being loaded so we don’t
             // data-lock on a cycle of dependencies.
-            var _loading = loading || Object.create(null);
+            var _loading = loading || (config.loading = Object.create(null));
             // has this all happened before?  will it happen again?
             // if (topId in _loading) {
             //     return null; // break the cycle of violence.
