@@ -362,24 +362,21 @@ bootstrap("require/browser", function (require) {
                 without the need to be dependent on non-standard Promise.try method
             */
             return new Promise(function(resolve, reject) {
-                resolve((function () {
+                    var definition;
 
                     // short-cut by predefinition
-                    if (definitions[hash] && definitions[hash][module.id]) {
-                        return definitions[hash][module.id];
+                    if (!(definition = definitions[hash]) || !(definition = definition[module.id])) {
+                        if (/\.js$/.test(location)) {
+                            location = location.replace(/\.js$/, ".load.js");
+                        } else {
+                            location += ".load.js";
+                        }
+
+                        definition = getDefinition(hash, module.id);
+                        loadIfNotPreloaded(location, definition, config.preloaded);
                     }
 
-                    if (/\.js$/.test(location)) {
-                        location = location.replace(/\.js$/, ".load.js");
-                    } else {
-                        location += ".load.js";
-                    }
-
-                    var definition = getDefinition(hash, module.id);
-                    loadIfNotPreloaded(location, definition, config.preloaded);
-
-                    return definition;
-                })());
+                    resolve(definition);
             })
             // return Promise.try(function () {
 
