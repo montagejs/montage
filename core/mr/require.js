@@ -703,7 +703,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             //     return null; // break the cycle of violence.
             // }
             return (_loading[topId])
-                ? null
+                ? null // break the cycle of violence.
                 : (_loading[topId] = true)
                 // this has happened before
                 && load(topId, viaId)
