@@ -938,7 +938,14 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             return require;
         }
 
-        if ((typeof process !== "undefined") && config.name === "montage") {
+        /*
+            In all environments:
+                - browser in development
+                - browser after running mop
+                - in node (we don't use mop there yet)
+            this allows us to load bluebird only once, which is done in bootsrtapping, but can be required after.
+        */
+        if(config.name === "montage") {
             inject("bluebird", Promise);
         }
 
