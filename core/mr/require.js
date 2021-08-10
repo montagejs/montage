@@ -710,14 +710,13 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                 .then(function deepLoadThen() {
                     // load the transitive dependencies using the magic of
                     // recursion.
-                    var promises , depId, iPromise,
-                        module = getModuleDescriptor(topId),
-                        dependencies =  module.dependencies,
+                    var i, promises , depId, iPromise,
+                        dependencies = getModuleDescriptor(topId).dependencies,
                         scopedTopId = topId,
                         scopedLoading = _loading;
 
                     if (dependencies && dependencies.length > 0) {
-                        for(var i=0;(depId = dependencies[i]);i++) {
+                        for(i=0;(depId = dependencies[i]);i++) {
                             // create dependees set, purely for debug purposes
                             // if (true) {
                             //     var iModule = getModuleDescriptor(depId);
