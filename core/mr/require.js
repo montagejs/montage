@@ -1667,7 +1667,8 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
     };
 
     Require.MemoizedLoader = function (config, load) {
-        return memoize(load, config.cache);
+        //return memoize(load, config.cache);
+        return load;
     };
 
     /**
