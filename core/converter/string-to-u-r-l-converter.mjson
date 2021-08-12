@@ -1,0 +1,27 @@
+{
+    "converter_descriptor": {
+        "object": "core/converter/converter.mjson"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "StringToURLConverter",
+            "customPrototype": false,
+            "parent": {
+                "@": "converter_descriptor"
+            },
+            "propertyDescriptors": [
+            ],
+            "propertyDescriptorGroups": {
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "core/converter/string-to-u-r-l-converter.mjson"
+            },
+            "exportName": "StringToURLConverter",
+            "module": {
+                "%": "core/converter/string-to-u-r-l-converter"
+            }
+        }
+    }
+}
