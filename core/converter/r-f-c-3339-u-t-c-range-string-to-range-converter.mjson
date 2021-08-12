@@ -14,11 +14,11 @@
             "propertyDescriptorGroups": {},
             "propertyValidationRules": {},
             "objectDescriptorModule": {
-                "%": "core/converter/RFC3339UTC-range-string-to-range-converter.mjson"
+                "%": "core/converter/r-f-c-3339-u-t-c-range-string-to-range-converter.mjson"
             },
             "exportName": "RFC3339UTCRangeStringToRangeConverter",
             "module": {
-                "%": "core/converter/RFC3339UTC-range-string-to-range-converter"
+                "%": "core/converter/r-f-c-3339-u-t-c-range-string-to-range-converter"
             }
         }
     }

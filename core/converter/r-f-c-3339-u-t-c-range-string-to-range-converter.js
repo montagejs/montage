@@ -1,5 +1,5 @@
 /**
- * @module montage/core/converter/RFC3339UTC-range-string-to-range-converter
+ * @module montage/core/converter/r-f-c-3339-u-t-c-range-string-to-range-converter
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter,
