@@ -561,17 +561,23 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         // produces an entry in the module state table, which gets built
         // up through loading and execution, ultimately serving as the
         // ``module`` free variable inside the corresponding module.
+        function _createLowercaseModuleDescriptor(id, lookupId) {
+            var aModule = modules[lookupId] = new Module();
+            aModule.id = id;
+            aModule.display = (config.name || config.location); // EXTENSION
+            aModule.display += "/"; // EXTENSION
+            aModule.display += id; // EXTENSION
+            aModule.require = require;
+            return aModule;
+       }
+
+        function _getLowercaseModuleDescriptor(id) {
+             var lookupId = Require.lowercaseModuleId(id);
+            return modules[lookupId] || _createLowercaseModuleDescriptor(id, lookupId);
+        }
+
         function getModuleDescriptor(id) {
-            var lookupId = isLowercasePattern.test(id) ? id : id.toLowerCase();
-            if (!(lookupId in modules)) {
-                var aModule = modules[lookupId] = new Module();
-                aModule.id = id;
-                aModule.display = (config.name || config.location); // EXTENSION
-                aModule.display += "/"; // EXTENSION
-                aModule.display += id; // EXTENSION
-                aModule.require = require;
-            }
-            return modules[lookupId];
+            return modules[id] || _getLowercaseModuleDescriptor(id);
         }
 
 
