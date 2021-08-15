@@ -388,7 +388,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
         // explicitly mask definitions and modules, which must
         // not apply to child packages
-        var modules = config.modules = config.modules || {};
+        var modules = config.modules = config.modules || Object.create(null);
 
         var registry = config.registry;
         if (config.name !== void 0 && !registry.has(config.name)) {
