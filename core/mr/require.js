@@ -527,6 +527,9 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
     //
 
     var isLowercasePattern = /^[a-z]+$/;
+    Require.lowercaseModuleId = function lowercaseModuleId(id) {
+        return isLowercasePattern.test(id) ? id : id.toLowerCase();
+    }
 
     //Require.detect_ES6_export_regex = /(?<=^([^"]|"[^"]*")*)export /;
     Require.makeRequire = function (config) {
