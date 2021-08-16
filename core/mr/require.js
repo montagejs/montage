@@ -141,23 +141,22 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             return this._json || (this._json = JSON.parse(this.text))
         }
     });
-
-    var normalizePattern = /^(.*)\.js$/,
-        normalizeIdCache = new Map();
     function normalizeId(id, config) {
         var result;
-        if (!(result = normalizeIdCache.get(id))) {
-            result = normalizePattern.exec(id);
+        if (!(result = normalizeId.cache.get(id))) {
+            result = normalizeId.pattern.exec(id);
             result = ( result
                 ? config && config.mappings[id]
                     ? id
                     : result[1]
                 : id);
-            normalizeIdCache.set(id, result);
+            normalizeId.cache.set(id, result);
 
         }
         return result;
     }
+    normalizeId.cache = new Map();
+    normalizeId.pattern = /^(.*)\.js$/;
 
     function memoize(callback, cache) {
         var _memoize = cache.get(callback);
@@ -376,11 +375,17 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             location += "/";
         }
 
+        /*
+            TODO: Refactor so that config creation is not duplicated here.
+        */
         var config = Object.create(parent);
         config.name = description.name;
         config.location = location || Require.getLocation();
         config.packageDescription = description;
         config.useScriptInjection = description.useScriptInjection;
+        config.normalizeId = normalizeId;
+        config.resolve = resolve;
+
 
         if (description.production !== void 0) {
             config.production = description.production;
@@ -434,7 +439,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                     } else {
                         //From https://github.com/defunctzombie/node-browser-resolve/blob/master/index.js
                         //UNTESTED
-                        bkValue = normalizeId(__dirname + '/empty.js');
+                        bkValue = config.normalizeId(__dirname + '/empty.js');
                     }
 
 
@@ -501,7 +506,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         // loaded definition from the given path.
         modules[""] = {
             id: "",
-            redirect: normalizeId(resolve(description.main, ""), config),
+            redirect: config.normalizeId(config.resolve(description.main, ""), config),
             location: config.location
         };
 
@@ -512,7 +517,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                 if (redirects.hasOwnProperty(name)) {
                     modules[name] = {
                         id: name,
-                        redirect: normalizeId(resolve(redirects[name], name), config),
+                        redirect: config.normalizeId(config.resolve(redirects[name], name), config),
                         location: URL.resolve(location, name)
                     };
                 }
@@ -553,6 +558,8 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         config.read = config.read || Require.read;
         config.strategy = config.strategy || 'nested';
         config.requireById = config.requireById || new Map();
+        config.normalizeId = normalizeId;
+        config.resolve = resolve;
 
         // Modules: { exports, id, location, directory, factory, dependencies,
         // dependees, text, type }
@@ -732,7 +739,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                             //     var dependees = iModule.dependees = iModule.dependees || {};
                             //     dependees[topId] = true;
                             // }
-                            if ((iPromise = deepLoad(normalizeId(resolve(depId, scopedTopId), config), scopedTopId, scopedLoading))) {
+                            if ((iPromise = deepLoad(config.normalizeId(config.resolve(depId, scopedTopId), config), scopedTopId, scopedLoading))) {
                                 /* jshint expr: true */
                                 promises ? (promises.push ? promises.push(iPromise) :
                                     (promises = [promises, iPromise])) : (promises = iPromise);
@@ -871,7 +878,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
             // Main synchronously executing "require()" function
             var require = function require(id) {
-                var topId = normalizeId(resolve(id, viaId), config);
+                var topId = config.normalizeId(config.resolve(id, viaId), config);
                 return getExports(topId, viaId);
             };
             require.viaId = viaId;
@@ -879,14 +886,14 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             // Asynchronous "require.async()" which ensures async executation
             // (even with synchronous loaders)
             require.async = function(id) {
-                var topId = normalizeId(resolve(id, viaId), config);
+                var topId = config.normalizeId(config.resolve(id, viaId), config);
                 return deepLoad(topId, viaId).then(function () {
                     return require(topId);
                 });
             };
 
             require.resolve = function (id) {
-                return normalizeId(resolve(id, viaId), config);
+                return config.normalizeId(config.resolve(id, viaId), config);
             };
 
             require.getModule = getModuleDescriptor; // XXX deprecated, use:
@@ -1572,7 +1579,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                             //object._montage_metadata.objectName = name;
                             //jshint +W106
                         } else if (!Object.isSealed(object)) {
-                            object[_MONTAGE_METADATA] = new MontageMetaData(require, module.id.replace(reverseReelExpression, reverseReelFunction), name,/*isInstance*/(typeof object !== "function"));
+                            object[_MONTAGE_METADATA] = new MontageMetaData(require, module.id.indexOf(".reel") !== -1 ? module.id.replace(reverseReelExpression, reverseReelFunction) : module.id, name,/*isInstance*/(typeof object !== "function"));
                         }
                     }
                 }
@@ -1627,6 +1634,13 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
             var aPackage, prefix;
             //It's more likely to require a package+path than the package name itself.
+            // if(
+            //     (aPackage = (mappings.hasOwnProperty((prefix = id.substring(0,id.indexOf("/"))))
+            //         ? mappings[prefix]
+            //         : (mappings.hasOwnProperty((prefix = id))
+            //             ? mappings[prefix]
+            //             : null)))
+            // ) {
             if((aPackage = mappings[(prefix = id.substring(0,id.indexOf("/")))]) || (aPackage = mappings[(prefix = id)])) {
                 return config.loadPackage(aPackage, config)
                     .then(function loadMapping(mappingRequire) {
