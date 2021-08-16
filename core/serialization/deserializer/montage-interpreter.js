@@ -144,17 +144,11 @@ var MontageContext = Montage.specialize({
     },
 
     _getObject_build: {
-        value: function getObject(label) {
-            var object = this._reviver.reviveRootObject(this._serialization[label], this, label);
-
+        value: function _getObject_build(label) {
             // If no object has been set by the reviver we safe its
             // return, it could be a value or a promise, we need to
             // make sure the object won't be revived twice.
-            if (!(label in this._objects)) {
-                this._objects[label] = object;
-            }
-
-            return object;
+            return this._objects[label] || (this._objects[label] = this._reviver.reviveRootObject(this._serialization[label], this, label));
         }
     },
 
