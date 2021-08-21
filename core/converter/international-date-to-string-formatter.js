@@ -62,7 +62,7 @@ var InternationalDateToStringFormatter = exports.InternationalDateToStringFormat
     },
     convert: {
         value: function (v) {
-            return v ? this._dayDateFormatter.format(v) : "";
+            return v && v instanceof Date ? this._dayDateFormatter.format(v) : "";
         }
     }
 });
