@@ -1,0 +1,154 @@
+{
+    "years_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "years",
+            "objectDescriptor": { "@": "root" },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+    "months_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "months",
+            "objectDescriptor": { "@": "root" },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+    "weeks_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "weeks",
+            "objectDescriptor": { "@": "root" },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+    "days_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "days",
+            "objectDescriptor": { "@": "root" },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+    "hours_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "hours",
+            "objectDescriptor": { "@": "root" },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+    "minutes_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "minutes",
+            "objectDescriptor": { "@": "root" },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+    "seconds_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "seconds",
+            "objectDescriptor": { "@": "root" },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+    "milliseconds_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "milliseconds",
+            "objectDescriptor": { "@": "root" },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+    "microseconds_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "microseconds",
+            "objectDescriptor": { "@": "root" },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+    "nanoseconds_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "nanoseconds",
+            "objectDescriptor": { "@": "root" },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+    "sign_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "sign",
+            "objectDescriptor": { "@": "root" },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+    "blank_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "isBlank",
+            "objectDescriptor": { "@": "root" },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+    "duration": {
+        "object": "./duration"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "Duration",
+            "propertyDescriptors": [
+                { "@": "years_descriptor" },
+                { "@": "months_descriptor" },
+                { "@": "weeks_descriptor" },
+                { "@": "days_descriptor" },
+                { "@": "hours_descriptor" },
+                { "@": "minutes_descriptor" },
+                { "@": "seconds_descriptor" },
+                { "@": "milliseconds_descriptor" },
+                { "@": "microseconds_descriptor" },
+                { "@": "nanoseconds_descriptor" },
+                { "@": "sign_descriptor" },
+                { "@": "blank_descriptor" }
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                    { "@": "years_descriptor" },
+                    { "@": "months_descriptor" },
+                    { "@": "weeks_descriptor" },
+                    { "@": "days_descriptor" },
+                    { "@": "hours_descriptor" },
+                    { "@": "minutes_descriptor" },
+                    { "@": "seconds_descriptor" },
+                    { "@": "milliseconds_descriptor" },
+                    { "@": "microseconds_descriptor" },
+                    { "@": "nanoseconds_descriptor" },
+                    { "@": "sign_descriptor" },
+                    { "@": "blank_descriptor" }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "./core/duration.mjson" },
+            "exportName": "Duration",
+            "module": { "%": "./duration" },
+            "object":{ "@": "duration" }
+        }
+    }
+}

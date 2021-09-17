@@ -1,0 +1,62 @@
+{
+    "begin_property_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "begin",
+            "valueType": "object",
+             "valueDescriptor": {"@": "DurationDescriptor"},
+            "helpKey": ""
+        }
+    },
+    "end_property_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "end",
+            "valueType": "object",
+            "valueDescriptor": {"@": "DurationDescriptor"},
+            "helpKey": ""
+        }
+    },
+    "bounds_property_descriptor": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "bounds",
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+    "range": {
+        "object": "./range"
+    },
+    "DurationDescriptor": {
+        "object": "./duration.mjson"
+    },
+    "RangeDescriptor": {
+        "object": "./range.mjson"
+    },
+
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "DurationRange",
+            "propertyDescriptors": [
+                { "@": "begin_property_descriptor" },
+                { "@": "end_property_descriptor" },
+                { "@": "bounds_property_descriptor" }
+            ],
+            "propertyDescriptorGroups": {
+                "all": [
+                { "@": "begin_property_descriptor" },
+                { "@": "end_property_descriptor" },
+                { "@": "bounds_property_descriptor" }
+                ]
+            },
+            "propertyValidationRules": {},
+            "objectDescriptorModule": { "%": "./duration-range.mjson" },
+            "exportName": "Range",
+            "module": { "%": "./range" },
+            "object":{ "@": "range" },
+            "parent":{"@": "RangeDescriptor"}
+        }
+    }
+}
