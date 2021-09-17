@@ -22,7 +22,7 @@ var Range = require("../range").Range;
 */
 Object.defineProperty(Date.prototype, "unixTime", {
     get: function () {
-        return this.getTime()/1000|0;
+        return this.getTime() / 1000 | 0;
     },
     enumerable: true,
     configurable: true
@@ -43,20 +43,20 @@ Object.defineProperty(Date.prototype, "clone", {
     configurable: true
 });
 
-Object.defineProperty(Date.prototype,"fullDayRange",{
+Object.defineProperty(Date.prototype, "fullDayRange", {
 
-    get: function(date) {
-        var dayStart  = this.clone();
-        dayStart.setHours(0,0,0,0);
+    get: function (date) {
+        var dayStart = this.clone();
+        dayStart.setHours(0, 0, 0, 0);
         var dayEnd = dayStart.clone();
-        dayEnd.setHours(23,59,59,999);
-        return new Range(dayStart,dayEnd);
+        dayEnd.setHours(23, 59, 59, 999);
+        return new Range(dayStart, dayEnd);
     },
     enumerable: false,
     configurable: true
 });
-Object.defineProperty(Date.prototype,"adjustComponentValues", {
-    value: function(year, monthIndex, days, hours, minutes, seconds, milliseconds) {
+Object.defineProperty(Date.prototype, "adjustComponentValues", {
+    value: function (year, monthIndex, days, hours, minutes, seconds, milliseconds) {
 
         // because of the duration optimizations it is much
         // more efficient to grab all the values up front
@@ -70,43 +70,43 @@ Object.defineProperty(Date.prototype,"adjustComponentValues", {
             month,
             myYear;
 
-        if(Number.isFinite(milliseconds) && milliseconds !== 0) {
+        if (Number.isFinite(milliseconds) && milliseconds !== 0) {
             millisecond = this.millisecond;
             millisecond += milliseconds;
             this.millisecond = milliseconds;
         }
 
-        if(Number.isFinite(seconds) && seconds !== 0) {
+        if (Number.isFinite(seconds) && seconds !== 0) {
             second = this.second;
             second += seconds;
             this.second = second;
         }
 
-        if(Number.isFinite(minutes) && minutes !== 0) {
+        if (Number.isFinite(minutes) && minutes !== 0) {
             minute = this.minute;
             minute += minutes;
             this.minute = minute;
         }
 
-        if(Number.isFinite(hours) && hours !== 0) {
+        if (Number.isFinite(hours) && hours !== 0) {
             hour = this.hour;
             hour += hours;
             this.hour = hour;
         }
 
-        if(Number.isFinite(days) && days !== 0) {
+        if (Number.isFinite(days) && days !== 0) {
             myDay = this.day;
             myDay += days;
             this.day = myDay;
         }
 
-        if(Number.isFinite(monthIndex) && monthIndex !== 0) {
+        if (Number.isFinite(monthIndex) && monthIndex !== 0) {
             month = this.month;
             month += monthIndex;
             this.month = month;
         }
 
-        if(Number.isFinite(year) && year !== 0) {
+        if (Number.isFinite(year) && year !== 0) {
             myYear = this.year;
             myYear += year;
             this.year = myYear;
@@ -116,11 +116,36 @@ Object.defineProperty(Date.prototype,"adjustComponentValues", {
     configurable: true
 });
 
-Object.defineProperty(Date.prototype,"dateByAdjustingComponentValues", {
+Object.defineProperty(Date.prototype, "adjustDuration", {
+    value: function adjustDuration(duration) {
+
+        return this.adjustComponentValues(duration.years, duration.months, (duration.weeks*7)+ duration.days, duration.hours, duration.minutes, duration.seconds, duration.milliseconds);
+    },
+    writable: true,
+    enumerable: false,
+    configurable: true
+});
+
+
+/*
+    TimeOffset
+*/
+
+Object.defineProperty(Date.prototype, "dateByAdjustingComponentValues", {
     value: function dateByAdjustingComponentValues(year, monthIndex, day, hours, minutes, seconds, milliseconds) {
         var calendarDate = this.clone();
         calendarDate.adjustComponentValues(year, monthIndex, day, hours, minutes, seconds, milliseconds);
         return calendarDate;
+    },
+    writable: true,
+    enumerable: false,
+    configurable: true
+});
+
+Object.defineProperty(Date.prototype, "dateByAdjustingDuration", {
+    value: function dateByAdjustingDuration(duration) {
+
+        return this.dateByAdjustingComponentValues(duration.years, duration.months, (duration.weeks*7)+ duration.days, duration.hours, duration.minutes, duration.seconds, duration.milliseconds);
     },
     writable: true,
     enumerable: false,
@@ -195,169 +220,177 @@ Object.defineProperty(Date, "isValidDateString", {
  * Number instance method used to left-pad numbers to the specified length
  * Used by the Date.prototype.toRFC3339XXX methods
  */
-Number.prototype.toPaddedString = function(len , fillchar) {
+Number.prototype.toPaddedString = function (len, fillchar) {
     var result = this.toString();
-    if(typeof(fillchar) == 'undefined'){ fillchar = '0' };
-    while(result.length < len){ result = fillchar + result; };
+    if (typeof (fillchar) == 'undefined') { fillchar = '0' };
+    while (result.length < len) { result = fillchar + result; };
     return result;
-  }
+}
 
-  /*
-   * Date.prototype.toRFC3339UTCString
-   * Date instance method to format the date as ISO8601 / RFC 3339 string (in UTC format).
-   * Usage: var d = new Date().toRFC3339UTCString();
-   *              => "2010-07-25T11:51:31.427Z"
-   * Parameters:
-   *  supressFormating : if supplied and 'true', will force to remove date/time separators
-   *  supressMillis : if supplied and 'true', will force not to include milliseconds
-   */
-  Date.prototype.toRFC3339UTCString = function(supressFormating , supressMillis){
-    var dSep = ( supressFormating ? '' : '-' );
-    var tSep = ( supressFormating ? '' : ':' );
+/*
+ * Date.prototype.toRFC3339UTCString
+ * Date instance method to format the date as ISO8601 / RFC 3339 string (in UTC format).
+ * Usage: var d = new Date().toRFC3339UTCString();
+ *              => "2010-07-25T11:51:31.427Z"
+ * Parameters:
+ *  supressFormating : if supplied and 'true', will force to remove date/time separators
+  *  supressMillis : if supplied and 'true', will force not to include milliseconds
+*/
+Date.prototype.toRFC3339UTCString = function (supressFormating, supressMillis) {
+    var dSep = (supressFormating ? '' : '-');
+    var tSep = (supressFormating ? '' : ':');
     var result = this.getUTCFullYear().toString();
     result += dSep + (this.getUTCMonth() + 1).toPaddedString(2);
     result += dSep + this.getUTCDate().toPaddedString(2);
     result += 'T' + this.getUTCHours().toPaddedString(2);
     result += tSep + this.getUTCMinutes().toPaddedString(2);
     result += tSep + this.getUTCSeconds().toPaddedString(2);
-    if((!supressMillis)&&(this.getUTCMilliseconds()>0)) result += '.' + this.getUTCMilliseconds().toPaddedString(3);
+    if ((!supressMillis) && (this.getUTCMilliseconds() > 0)) result += '.' + this.getUTCMilliseconds().toPaddedString(3);
     return result + 'Z';
-  }
+}
 
-  /*
-   * Date.prototype.toRFC3339LocaleString
-   * Date instance method to format the date as ISO8601 / RFC 3339 string (in local timezone format).
-   * Usage: var d = new Date().toRFC3339LocaleString();
-   *              => "2010-07-25T19:51:31.427+08:00"
-   * Parameters:
-   *  supressFormating : if supplied and 'true', will force to remove date/time separators
-   *  supressMillis : if supplied and 'true', will force not to include milliseconds
-   */
-  Date.prototype.toRFC3339LocaleString = function(supressFormating , supressMillis){
-    var dSep = ( supressFormating ? '' : '-' );
-    var tSep = ( supressFormating ? '' : ':' );
+/*
+ * Date.prototype.toRFC3339LocaleString
+ * Date instance method to format the date as ISO8601 / RFC 3339 string (in local timezone format).
+ * Usage: var d = new Date().toRFC3339LocaleString();
+ *              => "2010-07-25T19:51:31.427+08:00"
+ * Parameters:
+ *  supressFormating : if supplied and 'true', will force to remove date/time separators
+ *  supressMillis : if supplied and 'true', will force not to include milliseconds
+*/
+Date.prototype.toRFC3339LocaleString = function (supressFormating, supressMillis) {
+    var dSep = (supressFormating ? '' : '-');
+    var tSep = (supressFormating ? '' : ':');
     var result = this.getFullYear().toString();
     result += dSep + (this.getMonth() + 1).toPaddedString(2);
     result += dSep + this.getDate().toPaddedString(2);
     result += 'T' + this.getHours().toPaddedString(2);
     result += tSep + this.getMinutes().toPaddedString(2);
     result += tSep + this.getSeconds().toPaddedString(2);
-    if((!supressMillis)&&(this.getMilliseconds()>0)) result += '.' + this.getMilliseconds().toPaddedString(3);
+    if ((!supressMillis) && (this.getMilliseconds() > 0)) result += '.' + this.getMilliseconds().toPaddedString(3);
     var tzOffset = -this.getTimezoneOffset();
-    result += ( tzOffset<0 ? '-' : '+' )
-    result += (tzOffset/60).toPaddedString(2);
-    result += tSep + (tzOffset%60).toPaddedString(2);
+    result += (tzOffset < 0 ? '-' : '+')
+    result += (tzOffset / 60).toPaddedString(2);
+    result += tSep + (tzOffset % 60).toPaddedString(2);
     return result;
-  }
+}
 
-  /*
-   * Date.parseRFC3339
-   * extend Date with a method parsing ISO8601 / RFC 3339 date strings.
-   * Usage: var d = Date.parseRFC3339( "2010-07-20T15:00:00Z" );
-   */
- function _parseRFC3339(dString, _typeOf) {
+/*
+ * Date.parseRFC3339
+ * extend Date with a method parsing ISO8601 / RFC 3339 date strings.
+ * Usage: var d = Date.parseRFC3339( "2010-07-20T15:00:00Z" );
+ */
+function _parseRFC3339(dString, _typeOf) {
     if ((_typeOf || (typeof dString)) != 'string' || !_parseRFC3339.endsByZ.test(dString)) return;
     var result,
         d = dString.match(_parseRFC3339.parseRFC3339_RegExp);
 
     if (d) {
-      var year = parseInt(d[1],10);
-      var mon = parseInt(d[3],10) - 1;
-      var day = parseInt(d[5],10);
-      var hour = parseInt(d[7],10);
-      var mins = ( d[9] ? parseInt(d[9],10) : 0 );
-      var secs = ( d[11] ? parseInt(d[11],10) : 0 );
-      var millis = ( d[12] ? parseFloat(String(1.5).charAt(1) + d[12].slice(1)) * 1000 : 0 );
-      if (d[13]) {
-        result = new Date(0);
-        result.setUTCFullYear(year);
-        result.setUTCMonth(mon);
-        result.setUTCDate(day);
-        result.setUTCHours(hour);
-        result.setUTCMinutes(mins);
-        result.setUTCSeconds(secs);
-        result.setUTCMilliseconds(millis);
-        if (d[13] && d[14]) {
-          var offset = (d[15] * 60)
-          if (d[17]) offset += parseInt(d[17],10);
-          offset *= ((d[14] == '-') ? -1 : 1);
-          result.setTime(result.getTime() - offset * 60 * 1000);
+        var year = parseInt(d[1], 10);
+        var mon = parseInt(d[3], 10) - 1;
+        var day = parseInt(d[5], 10);
+        var hour = parseInt(d[7], 10);
+        var mins = (d[9] ? parseInt(d[9], 10) : 0);
+        var secs = (d[11] ? parseInt(d[11], 10) : 0);
+        var millis = (d[12] ? parseFloat(String(1.5).charAt(1) + d[12].slice(1)) * 1000 : 0);
+        if (d[13]) {
+            result = new Date(0);
+            result.setUTCFullYear(year);
+            result.setUTCMonth(mon);
+            result.setUTCDate(day);
+            result.setUTCHours(hour);
+            result.setUTCMinutes(mins);
+            result.setUTCSeconds(secs);
+            result.setUTCMilliseconds(millis);
+            if (d[13] && d[14]) {
+                var offset = (d[15] * 60)
+                if (d[17]) offset += parseInt(d[17], 10);
+                offset *= ((d[14] == '-') ? -1 : 1);
+                result.setTime(result.getTime() - offset * 60 * 1000);
+            }
+        } else {
+            result = new Date(year, mon, day, hour, mins, secs, millis);
         }
-      } else {
-        result = new Date(year,mon,day,hour,mins,secs,millis);
-      }
     }
     return result;
-  };
-  _parseRFC3339.parseRFC3339_RegExp = /(\d\d\d\d)(-)?(\d\d)(-)?(\d\d)(T)?(\d\d)(:)?(\d\d)?(:)?(\d\d)?([\.,]\d+)?($|Z|([+-])(\d\d)(:)?(\d\d)?)/i;
-  _parseRFC3339.endsByZ = /Z$/i;
-  Date.parseRFC3339 = _parseRFC3339;
+};
+_parseRFC3339.parseRFC3339_RegExp = /(\d\d\d\d)(-)?(\d\d)(-)?(\d\d)(T)?(\d\d)(:)?(\d\d)?(:)?(\d\d)?([\.,]\d+)?($|Z|([+-])(\d\d)(:)?(\d\d)?)/i;
+_parseRFC3339.endsByZ = /Z$/i;
+Date.parseRFC3339 = _parseRFC3339;
 
 
-  if(!Object.getOwnPropertyDescriptor(Date.prototype, 'year')) {
+function isRFC3339DateString(dString) {
+    if ((_typeOf || (typeof dString)) != 'string' || !isRFC3339DateString.endsByZ.test(dString)) return false;
+    return isRFC3339DateString.parseRFC3339_RegExp.test(dString);
+};
+isRFC3339DateString.parseRFC3339_RegExp = _parseRFC3339.parseRFC3339_RegExp;
+isRFC3339DateString.endsByZ = _parseRFC3339.endsByZ;
+Date.isRFC3339DateString = isRFC3339DateString;
 
-    Object.defineProperties(Date.prototype,{
+if (!Object.getOwnPropertyDescriptor(Date.prototype, 'year')) {
+
+    Object.defineProperties(Date.prototype, {
         "year": {
-            get: function() {
+            get: function () {
                 return this.getFullYear();
             },
-            set: function(value) {
+            set: function (value) {
                 return this.setFullYear(value);
             },
             configurable: true
         },
         "month": {
-            get: function() {
+            get: function () {
                 //Date API is 0 based
-                return this.getMonth()+1;
+                return this.getMonth() + 1;
             },
-            set: function(value) {
+            set: function (value) {
                 //Date API is 0 based
-                return this.setMonth(value-1);
+                return this.setMonth(value - 1);
             },
             configurable: true
         },
         "day": {
-            get: function() {
+            get: function () {
                 return this.getDate();
             },
-            set: function(value) {
+            set: function (value) {
                 return this.setDate(value);
             },
             configurable: true
         },
         "hour": {
-            get: function() {
+            get: function () {
                 return this.getHours();
             },
-            set: function(value) {
+            set: function (value) {
                 return this.setHours(value);
             },
             configurable: true
         },
         "minute": {
-            get: function() {
+            get: function () {
                 return this.getMinutes();
             },
-            set: function(value) {
+            set: function (value) {
                 return this.setMinutes(value);
             },
             configurable: true
         },
         "second": {
-            get: function() {
+            get: function () {
                 return this.getSeconds();
             },
-            set: function(value) {
+            set: function (value) {
                 return this.setSeconds(value);
             },
             configurable: true
         },
         "millisecond": {
-            get: function() {
+            get: function () {
                 return this.getMilliseconds();
             },
-            set: function(value) {
+            set: function (value) {
                 return this.setMilliseconds(value);
             },
             configurable: true
@@ -370,8 +403,8 @@ Object.defineProperty(Date.prototype, "isToday", {
     get: function () {
         var today = new Date();
         return this.day === today.day &&
-        this.month === today.month &&
-        this.year === today.year;
+            this.month === today.month &&
+            this.year === today.year;
     },
     configurable: true
 });
@@ -387,12 +420,12 @@ Object.defineProperty(Date.prototype, "isToday", {
  * it's also wrong as JavaScript standard Date.parse doesn't return a date but a number of milliseconds
  */
 
-  /*
-   * Date.parse
-   * extend Date with a parse method alias for parseRFC3339.
-   * If parse is already defined, chain methods to include parseRFC3339
-   * Usage: var d = Date.parse( "2010-07-20T15:00:00Z" );
-   */
+/*
+ * Date.parse
+ * extend Date with a parse method alias for parseRFC3339.
+ * If parse is already defined, chain methods to include parseRFC3339
+ * Usage: var d = Date.parse( "2010-07-20T15:00:00Z" );
+ */
 //   if (typeof Date.parse != 'function') {
 //     Date.parse = Date.parseRFC3339;
 //   } else {
