@@ -33,7 +33,7 @@ Object.defineProperty(String.prototype, "equals", {
  */
 Object.defineProperty(String.prototype, "contains", {
     value: function (substring) {
-        return this.indexOf(substring) !== -1;
+        return (this.indexOf(substring) !== -1) || (new RegExp(RegExp.escape(substring))).test(this);
     },
     enumerable: false,
     writable: true,
