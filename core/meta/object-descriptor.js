@@ -695,6 +695,12 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
         }
     },
 
+    propertyDescriptorNames: {
+        get: function() {
+            return this._propertyDescriptorNames || (this._propertyDescriptorNames = Array.from(this.propertyDescriptorNamesIterator));
+        }
+    },
+
     /**
      * Adds a new property descriptor to this object descriptor.
      *
@@ -820,6 +826,12 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
         }
     },
 
+
+    _cachedBogusPropertyDescriptors: {
+        get: function() {
+            return this.__cachedBogusPropertyDescriptors || (this.__cachedBogusPropertyDescriptors = new Set());
+        }
+    },
     /**
      * FIXME: Should probably be named propertyDescriptorNamed or propertyDescriptorWithName
      * @function
@@ -829,19 +841,35 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
     propertyDescriptorForName: {
         value: function (name) {
             var propertyDescriptor = this._propertyDescriptorsTable.get(name);
-            if (propertyDescriptor === undefined) {
-                this._propertyDescriptorsTable.set(name, exports.UnknownPropertyDescriptor);
-            } else if (propertyDescriptor === exports.UnknownPropertyDescriptor) {
-                propertyDescriptor = null;
-            }
+            // if (propertyDescriptor === undefined) {
+            //     this._propertyDescriptorsTable.set(name, exports.UnknownPropertyDescriptor);
+            // } else if (propertyDescriptor === exports.UnknownPropertyDescriptor) {
+            //     propertyDescriptor = null;
+            // }
 
             if (!propertyDescriptor && this.parent) {
-                propertyDescriptor = this.parent.propertyDescriptorForName(name);
+                if(!this._cachedBogusPropertyDescriptors.has(name)) {
+                    propertyDescriptor = this.parent.propertyDescriptorForName(name);
+                    if(!propertyDescriptor) {
+                        this._cachedBogusPropertyDescriptors.add(name);
+                    }
+
+                }
             }
 
             return propertyDescriptor || null;
         }
 
+    },
+    propertyDescriptorNamed: {
+        value: function(name) {
+            return this.propertyDescriptorForName(name);
+        }
+    },
+    propertyDescriptorWithName: {
+        value: function(name) {
+            return this.propertyDescriptorForName(name);
+        }
     },
 
     _propertyDescriptorGroups: {
