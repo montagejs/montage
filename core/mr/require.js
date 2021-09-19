@@ -1489,7 +1489,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         };
     };
 
-    var MontageMetaData = function(require, id, name, isInstance) {
+    var MontageMetadata = function(require, id, name, isInstance) {
         this.require = require;
         this.module = id;
         this.property = name;
@@ -1500,9 +1500,12 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         return this;
     };
 
-    MontageMetaData.prototype = {
+    MontageMetadata.prototype = {
         get moduleId() {
             return this.module;
+        },
+        get packageName() {
+            return this.require.config.name;
         },
         get objectName() {
             return this.property;
@@ -1579,7 +1582,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                             //object._montage_metadata.objectName = name;
                             //jshint +W106
                         } else if (!Object.isSealed(object)) {
-                            object[_MONTAGE_METADATA] = new MontageMetaData(require, module.id.indexOf(".reel") !== -1 ? module.id.replace(reverseReelExpression, reverseReelFunction) : module.id, name,/*isInstance*/(typeof object !== "function"));
+                            object[_MONTAGE_METADATA] = new MontageMetadata(require, module.id.indexOf(".reel") !== -1 ? module.id.replace(reverseReelExpression, reverseReelFunction) : module.id, name,/*isInstance*/(typeof object !== "function"));
                         }
                     }
                 }
