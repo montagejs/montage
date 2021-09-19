@@ -119,6 +119,14 @@ describe("Tutorial", function () {
         expect(object.ceil).toBe(0);
     });
 
+    it("Absolute Value", function () {
+        var object = {number: -0.5};
+        Bindings.defineBindings(object, {
+            "abs": {"<-": "number.abs()"}
+        });
+        expect(object.abs).toBe(0.5);
+    });
+
     it("Last", function () {
         var array = [1, 2, 3];
         var object = {array: array, last: null};

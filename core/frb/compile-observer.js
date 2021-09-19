@@ -29,6 +29,7 @@ var semantics = compile.semantics = {
         or: Observers.makeOrObserver,
         "default": Observers.makeDefaultObserver,
         defined: Observers.makeDefinedObserver,
+        isUndefined: Observers.makeIsUndefinedObserver,
         rangeContent: Function.identity,
         mapContent: Function.identity,
         keys: Observers.makeKeysObserver,

@@ -317,6 +317,7 @@ value
     / "true" { return {type: "literal", value: true}; }
     / "false" { return {type: "literal", value: false}; }
     / "null" { return {type: "literal", value: null}; }
+    / "undefined" { return {type: "literal", value: undefined}; }
     / "@" label:$(label) {
         return {type: "component", label: label};
     }
@@ -344,7 +345,7 @@ value
     / tail:tail {
         return tail({type: "value"});
     }
-    / {
+    / "" {
         return {type: "value"};
     }
 

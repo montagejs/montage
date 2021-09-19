@@ -38,6 +38,11 @@ module.exports = [
     },
 
     {
+        path: "undefined",
+        syntax: {type: "literal", value: undefined}
+    },
+
+    {
         path: "'\"'",
         syntax: {type: "literal", value: "\""}
     },
@@ -1074,20 +1079,20 @@ module.exports = [
         }
     },
 
-    {
-        path: "\n@foo : 'module' {\n}\n\n",
-        syntax: {type: "sheet", blocks: [
-            {type: "block",
-                label: "foo",
-                module: "module",
-                connection: "object",
-                statements: []
-            }
-        ]},
-        options: {
-            startRule: "sheet"
-        }
-    },
+    // {
+    //     path: "\n@foo : 'module' {\n}\n\n",
+    //     syntax: {type: "sheet", blocks: [
+    //         {type: "block",
+    //             label: "foo",
+    //             module: "module",
+    //             connection: "object",
+    //             statements: []
+    //         }
+    //     ]},
+    //     options: {
+    //         startRule: "sheet"
+    //     }
+    // },
 
     {
         path: "\n@foo {\n    a <-> b;\n}\n\n",

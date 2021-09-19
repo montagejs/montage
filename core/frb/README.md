@@ -2854,12 +2854,18 @@ semantics.  Binders receive a target as well as a source.
     false, and the right operand is false, the binding does nothing.  If
     the source expression is false and the right operand is true, the
     left operand is bound to false.
+    If the left value in the expression implements an and() method, it will
+    be called with the right value as argument. Tested with criteria
+    who have an or() and an and() method.
 -   The "or" operator validates the logical expression by binding the
     operands.  If the source expression is false, both the left and
     right argument expressions are bout to false.  If the source
     expression is true, and the right operand is true, the binding does
     nothing.  If the source expression is true and the right operand is
     false, the left operand is bound to false.
+    If the left value in the expression implements an or() method, it will
+    be called with the right value as argument. Tested with criteria
+    who have an or() and an and() method.
 -   The "rangeContent" binding guarantees that the ranged content (as in
     subarrays) of the target will be bound to the content of the source,
     if both are defined, but will not replace the target collection.

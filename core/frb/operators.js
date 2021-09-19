@@ -61,12 +61,21 @@ exports.rem = function (a, b) {
     return a % b;
 };
 
-exports.add = function (a, b) {
-    return a + b;
+var nativeAdditionSubstractionTypes = new Set(["number","string"]);
+exports.add = function add(a, b) {
+    return nativeAdditionSubstractionTypes.has(typeof a) && nativeAdditionSubstractionTypes.has(typeof b)
+    ? a + b
+    : (a && typeof a.add === "function")
+        ? a.add(b)
+        : undefined;
 };
 
-exports.sub = function (a, b) {
-    return a - b;
+exports.sub = function sub(a, b) {
+    return nativeAdditionSubstractionTypes.has(typeof a) && nativeAdditionSubstractionTypes.has(typeof b)
+    ? a - b
+    : (a && typeof a.sub === "function")
+        ? a.sub(b)
+        : undefined;
 };
 
 exports.ceil = function (n) {
@@ -79,6 +88,10 @@ exports.floor = function (n) {
 
 exports.round = function (n) {
     return Math.round(n);
+};
+
+exports.abs = function (v) {
+    return (v && typeof v.abs === "function") ? v.abs() : Math.abs(v);
 };
 
 exports.lt = function (a, b) {
@@ -113,31 +126,46 @@ exports.defined = function (value) {
     return value != null;
 };
 
+exports.isUndefined = function (value) {
+    return value === undefined;
+};
+
+exports.isNotUndefined = function (value) {
+    return value !== undefined;
+};
+
 // "startsWith", "endsWith", and "contains"  are overridden in
 // complile-observer so they can precompile the regular expression and reuse it
 // in each reaction.
 
 exports.startsWith = function (a, b) {
-    var expression = new RegExp("^" + RegExp.escape(b));
-    return expression.test(a);
+    return (typeof a === "string" && typeof b === "string")
+        ? (new RegExp("^" + RegExp.escape(b))).test(a)
+        : undefined;
 };
 
 exports.endsWith = function (a, b) {
-    var expression = new RegExp(RegExp.escape(b) + "$");
-    return expression.test(a);
+    return (typeof a === "string" && typeof b === "string")
+        ? (new RegExp(RegExp.escape(b) + "$")).test(a)
+        : undefined;
 };
 
 exports.contains = function (a, b) {
-    var expression = new RegExp(RegExp.escape(b));
-    return expression.test(a);
+    return a && typeof a.contains === "function"
+        ? a.contains(b)
+        : (typeof a === "string" && typeof b === "string")
+            ? (new RegExp(RegExp.escape(b))).test(a)
+            : undefined;
+    // var expression = new RegExp(RegExp.escape(b));
+    // return expression.test(a);
 };
 
 exports.join = function (a, b) {
-    return a.join(b || "");
+    return a && a.join(b || "");
 };
 
 exports.split = function (a, b) {
-    return a.split(b || "");
+    return a && a.split(b || "");
 };
 
 exports.range = function (stop) {
@@ -149,5 +177,5 @@ exports.range = function (stop) {
 };
 
 exports.last = function (collection) {
-    return collection.get(collection.length - 1);
+    return collection && collection.get(collection.length - 1);
 };

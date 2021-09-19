@@ -86,6 +86,10 @@ compile.semantics = {
             var bindTarget = this.compile(syntax.args[0]);
             return Binders.makeDefinedBinder(bindTarget);
         },
+        "isUndefined": function (syntax) {
+            var bindTarget = this.compile(syntax.args[0]);
+            return Binders.makeIsUndefinedBinder(bindTarget);
+        },
         "parent": function (syntax) {
             var bindTarget = this.compile(syntax.args[0]);
             return Binders.makeParentBinder(bindTarget);

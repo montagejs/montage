@@ -263,7 +263,7 @@ function makeOperatorObserverMaker(operator) {
         var observeOperandChanges = makeRangeContentObserver(observeOperands);
         return function observeOperator(emit, scope) {
             return observeOperandChanges(function (operands) {
-                if (!operands.every(Operators.defined)) return emit();
+                //if (!operands.every(Operators.defined)) return emit();
                 if(operands.length === 1) {
                     return emit(operator.call(void 0, operands[0]));
                 }
@@ -390,6 +390,14 @@ function makeDefinedObserver(observeValue) {
     return function observeDefault(emit, scope) {
         return observeValue(function replaceValue(value) {
             return emit(value != null);
+        }, scope);
+    };
+}
+exports.makeIsUndefinedObserver = makeIsUndefinedObserver;
+function makeIsUndefinedObserver(observeValue) {
+    return function observeDefault(emit, scope) {
+        return observeValue(function replaceValue(value) {
+            return emit(value === undefined);
         }, scope);
     };
 }
@@ -1205,14 +1213,23 @@ exports.makeContainsObserver = makeContainsObserver;
 function makeContainsObserver(observeHaystack, observeNeedle) {
     return function observeContains(emit, scope) {
         return observeNeedle(function (needle) {
-            if (typeof needle !== "string")
-                return emit();
-            var expression = new RegExp(RegExp.escape(needle));
-            return observeHaystack(function (haystack) {
-                if (typeof haystack !== "string")
-                    return emit();
-                return emit(expression.test(haystack));
-            }, scope);
+            if (typeof needle !== "string") {
+                var _needle = needle;
+                return observeHaystack(function (haystack) {
+                    if (!haystack || typeof haystack.contains !== "function") {
+                        return emit();
+                    } else {
+                        return emit(haystack.contains(needle));
+                    }
+                }, scope);
+            } else {
+                var expression = new RegExp(RegExp.escape(needle));
+                return observeHaystack(function (haystack) {
+                    if (typeof haystack !== "string")
+                        return emit();
+                    return emit(expression.test(haystack));
+                }, scope);
+            }
         }, scope);
     };
 }

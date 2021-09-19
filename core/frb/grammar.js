@@ -65,7 +65,7 @@ module.exports = (function() {
   peg$subclass(SyntaxError, Error);
 
   function parse(input) {
-    var options = arguments.length > 1 ? arguments[1] : {},
+    var options = arguments.length > 1 ? arguments[1] : null,
 
         peg$startRuleFunctions = { expression: peg$parseexpression, sheet: peg$parsesheet },
         peg$startRuleFunction  = peg$parseexpression,
@@ -500,12 +500,12 @@ module.exports = (function() {
 
         peg$result;
 
-    if ("startRule" in options) {
-      if (!(options.startRule in peg$startRuleFunctions)) {
+    if (options && "startRule" in options) {
+      if (options && !(options.startRule in peg$startRuleFunctions)) {
         throw new Error("Can't start parsing from rule \"" + options.startRule + "\".");
       }
 
-      peg$startRuleFunction = peg$startRuleFunctions[options.startRule];
+      peg$startRuleFunction = peg$startRuleFunctions[options ? options.startRule : undefined];
     }
 
     function text() {

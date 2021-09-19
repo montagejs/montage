@@ -236,6 +236,21 @@ describe("makeDefinedObserver", function () {
 
 });
 
+describe("makeIsUnefinedObserver", function () {
+
+    it("should work", function () {
+        var valueSignal = new Signal();
+        var observeIsUndefined = Observers.makeIsUndefinedObserver(valueSignal.observe);
+        var spy = jasmine.createSpy();
+        var cancel = observeIsUndefined(spy, new Scope());
+        expect(spy).toHaveBeenCalledWith(true);
+        valueSignal.emit(1);
+        cancel();
+    });
+
+});
+
+
 describe("makeDefinedObserver", function () {
     // TODO
 });

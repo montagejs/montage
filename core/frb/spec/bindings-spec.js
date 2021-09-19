@@ -273,8 +273,8 @@ describe("bindings", function () {
         }, {
             "+n": {"<->": "'' + s"}
         });
-        expect(object.n).toBe(undefined);
-        expect(object.s).toBe(undefined);
+        expect(Number.isNaN(object.n)).toBe(true);
+        expect(object.s).toBe("NaN");
 
         object.n = 10;
         expect(object.s).toBe("10");
@@ -283,7 +283,7 @@ describe("bindings", function () {
         expect(object.n).toBe(20);
 
         object.n = undefined;
-        expect(object.s).toBe(undefined);
+        expect(object.s).toBe("NaN");
     });
 
     it("should bind to a key in a map", function () {

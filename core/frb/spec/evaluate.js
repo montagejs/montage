@@ -455,6 +455,78 @@ module.exports = [
     },
 
     {
+        path: "x.isUndefined()",
+        input: undefined,
+        output: true
+    },
+
+    {
+        path: "x.isUndefined()",
+        input: {x: 10},
+        output: false
+    },
+
+    {
+        path: "x.isUndefined()",
+        input: {x: undefined},
+        output: true
+    },
+
+    {
+        path: "x.isUndefined() && x",
+        input: {x: undefined},
+        output: undefined
+    },
+
+    {
+        path: "x.isUndefined() && x",
+        input: {x: false},
+        output: false
+    },
+
+    {
+        path: "x.isUndefined() && x",
+        input: {x: true},
+        output: false
+    },
+
+    {
+        path: "x == undefined",
+        input: undefined,
+        output: true
+    },
+
+    {
+        path: "x == undefined",
+        input: {x: 10},
+        output: false
+    },
+
+    {
+        path: "x == undefined",
+        input: {x: undefined},
+        output: true
+    },
+
+    {
+        path: "x == undefined && x",
+        input: {x: undefined},
+        output: undefined
+    },
+
+    {
+        path: "x == undefined && x",
+        input: {x: false},
+        output: false
+    },
+
+    {
+        path: "x == undefined && x",
+        input: {x: true},
+        output: false
+    },
+
+    {
         path: "!x",
         input: null,
         output: true
@@ -775,6 +847,18 @@ module.exports = [
         path: "isAdmin ? 'admin' : 'user'",
         input: {isAdmin: false},
         output: 'user'
+    },
+
+    {
+        path: "a == null",
+        input: {a: null},
+        output: true
+    },
+
+    {
+        path: "a == undefined",
+        input: {a: undefined},
+        output: true
     }
 
 ];

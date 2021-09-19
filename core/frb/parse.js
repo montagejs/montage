@@ -1,6 +1,7 @@
 
 require("../collections/shim");
-var grammar = require("./grammar"),
+var grammar = require("./grammar-peggy"),
+    //grammar = require("./grammar"),
     Map = require("../collections/map");
 
 var memo = new Map(); // could be Dict

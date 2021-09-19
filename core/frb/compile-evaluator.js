@@ -264,6 +264,13 @@ var argCompilers = {
         };
     },
 
+    isUndefined: function (evaluate) {
+        return function (scope) {
+            var value = evaluate(scope);
+            return value === undefined;
+        };
+    },
+
     // TODO rename to evaluate
     path: function (evaluateObject, evaluatePath) {
         return function (scope) {
@@ -288,11 +295,11 @@ var operators = Object.clone(Operators, 1);
 Object.addEach(operators, {
 
     property: function (object, key) {
-        return object[key];
+        return object && object[key];
     },
 
     get: function (collection, key) {
-        return collection.get(key);
+        return collection && collection.get(key);
     },
 
     mapContent: Function.identity,
@@ -300,7 +307,7 @@ Object.addEach(operators, {
     rangeContent: Function.identity,
 
     view: function (collection, start, length) {
-        return collection.slice(start, start + length);
+        return collection && collection.slice(start, start + length);
     }
 
 });
@@ -362,8 +369,8 @@ var semantics = compile.semantics = {
                     args.push(_argEvaluators[i](scope));
                 }
 
-                if (!args.every(Operators.defined))
-                    return;
+                // if (!args.every(Operators.defined))
+                //     return;
 
                 if(args.length === 1) {
                     return operator.call(null, args[0]);
