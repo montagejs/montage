@@ -188,9 +188,20 @@ var Montage = require("core/core").Montage,
      *
      * @type {Map}
      */
-    changedDataObjects: {
+    updatedDataObjects: {
         value: undefined
     },
+
+    /**
+     * A Map where keys are ObjectDescriptors and values are maps where criteria
+     * matching dataObject instances with changes are the keys, and values are the changes
+     *
+     * @type {Map}
+     */
+    updatedData: {
+        value: undefined
+    },
+
 
     /**
      * A Map where keys are dataObjects and values are changes for a dataObject that will be saved within the transaction.
@@ -207,6 +218,16 @@ var Montage = require("core/core").Montage,
      * @type {Map}
      */
     deletedDataObjects: {
+        value: undefined
+    },
+
+    /**
+     * A Map where keys are ObjectDescriptors and values are Sets containing criteria
+     * describing dataObject instances to be deleted, or null if all instances are to be deleted
+     *
+     * @type {Map}
+     */
+     deletetedData: {
         value: undefined
     },
 

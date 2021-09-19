@@ -280,7 +280,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
             */
             // if(!this._service.rootService._objectsBeingMapped.has(object)
             // ) {
-                if(shouldFetch !== false && !this.propertyDescriptor.definition) {
+                if(this._getValueStatus(object) !== null && shouldFetch !== false && !this.propertyDescriptor.definition) {
 
 
                 /*
@@ -366,7 +366,9 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
         writable: true,
         value: function (object, value, _dispatchChange) {
             var status, prototype, descriptor, getter, setter = this._valueSetter, writable, currentValue, isToMany, isArray, isMap, initialValue,
-            dispatchChange = (arguments.length === 3) ? _dispatchChange : true;
+            dispatchChange = (arguments.length === 3) ? _dispatchChange : true,
+            //shouldFetch = !this._service.rootService._objectsBeingMapped.has(object);
+            shouldFetch = undefined;
 
             // Get the value's current status and update that status to indicate
             // the value has been obtained. This way if the setter called below
@@ -375,7 +377,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
             status = this._getValueStatus(object);
             this._setValueStatus(object, null);
 
-            initialValue = this._getValue(object);
+            initialValue = this._getValue(object, shouldFetch);
             //If Array / to-Many
             isToMany = this.propertyDescriptor.cardinality !== 1;
             isArray = Array.isArray(initialValue);
@@ -424,7 +426,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
 
             }
 
-            currentValue = this._getValue(object);
+            currentValue = this._getValue(object, shouldFetch);
             if(currentValue !== initialValue) {
 
                 if(isToMany) {
@@ -576,7 +578,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
 
             // Resolve any pending promise for this trigger's property value.
             if (status) {
-                status.resolve(null);
+                status.resolve(currentValue);
             }
         }
     },
@@ -680,7 +682,11 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
                 if(propertyValue && !object[self._privatePropertyName]) {
                     if(self.propertyDescriptor.cardinality > 1) {
                         object[self._propertyName] = propertyValue;
-                    } else {
+                    }
+                    /*
+                        When we fetch a property of an object that's not a relationship, typically a basic type, the value is returned and mapped to the existing object already. If that's the case, propertyValue[0] would be the object itself. If that's the case, then there's nothing to do.
+                    */
+                    else if(propertyValue[0] !== object) {
                         object[self._propertyName] = propertyValue[0];
                     }
                 }
@@ -856,7 +862,10 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ (DataTrig
                     var propertyDescriptor = {
                         get: function (shouldFetch) {
                             if (!this.getBinding(descriptor.name)) {
-                                this.defineBinding(descriptor.name, {"<-": descriptor.definition});
+                                /*
+                                    This allows us to eventually fetch directly the equivalent of the expression and set it directly.
+                                */
+                                this.defineBinding(descriptor.name, {"<-": "_"+descriptor.name+" || ("+descriptor.definition+")"});
                             }
                             return trigger._getValue(this,shouldFetch);
                             // return (trigger||(trigger = DataTrigger._createTrigger(service, objectDescriptor, prototype, name,descriptor)))._getValue(this);
@@ -872,6 +881,10 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ (DataTrig
                 } else {
                     Montage.defineProperty(prototype, descriptor.name, {
                         get: function (shouldFetch) {
+                            // if(trigger._privatePropertyName === "origin") {
+                            //     debugger;
+                            //     console.log("here");
+                            // }
                             return trigger._getValue(this,shouldFetch);
                             // return (trigger||(trigger = DataTrigger._createTrigger(service, objectDescriptor, prototype, name,descriptor)))._getValue(this);
                         },

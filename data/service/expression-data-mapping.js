@@ -329,6 +329,21 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         }
     },
 
+    isPrimaryKeyComponent: {
+        value: function(value) {
+            if(this.rawDataPrimaryKeys && this.rawDataPrimaryKeys.indexOf(value) !== -1) {
+                return true;
+            } else if(this.primaryKeyPropertyDescriptors) {
+                for(var primaryKeyPropertyDescriptors = this.primaryKeyPropertyDescriptors, i=0, countI = primaryKeyPropertyDescriptors.length; (i<countI); i++) {
+                    if(primaryKeyPropertyDescriptors[i].name === value) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+    },
+
     /**
      * Array of expressions that combine to make the primary key for objects
      * of the type defined by this.objectDescriptor. Will use this.parent.rawDataPrimaryKeys
@@ -1092,7 +1107,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             */
 
            if(lastReadSnapshot && rawDataSnapshot &&
-            !(typeof rawDataPropertValue === "object" && (rawDataPropertValue.hasOwnProperty("addedValues") || rawDataPropertValue.hasOwnProperty("removedValues")))) {
+            !(rawDataPropertValue && typeof rawDataPropertValue === "object" && (rawDataPropertValue.hasOwnProperty("addedValues") || rawDataPropertValue.hasOwnProperty("removedValues")))) {
 
                 if(lastReadSnapshot[rawDataPropertyName] !== rawDataPropertValue) {
                     rawData[rawDataPropertyName] = rawDataPropertValue;
@@ -1630,13 +1645,103 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         }
     },
 
-    mapObjectPropertyNameToRawPropertyName: {
-        value: function(property) {
+    _rawPropertyNamesForObjectPropertyName: {
+        get: function() {
+            return this.__rawPropertyNamesForObjectPropertyName || (this.__rawPropertyNamesForObjectPropertyName = new Map());
+        }
+    },
+
+    mapObjectPropertyDescriptorToRawPropertyNames: {
+        value: function(propertyDescriptor) {
+            return this._rawPropertyNamesForObjectPropertyName.get(propertyDescriptor.name) || (this._buildMapObjectPropertyDescriptorToRawPropertyNames(propertyDescriptor));
+        }
+    },
+
+    /*
+        If a foreign Key is mapped both as a such and as a way to get an object property, there's a collision and only one ends up in this.rawDataMappingRules
+    */
+    _useRawDataMappingRulesForObjectProperty: {
+        value: false
+    },
+
+    _buildMapObjectPropertyDescriptorToRawPropertyNames: {
+        value: function(propertyDescriptor) {
+            var rawPropertyNames,
+                property = propertyDescriptor.name;
+
+            if(this._useRawDataMappingRulesForObjectProperty) {
+                var iRawDataMappingRules = this.rawDataMappingRulesForObjectProperty(property),
+                    iRawDataMappingRulesIterator = iRawDataMappingRules && iRawDataMappingRules.values(),
+                    iRawDataMappingRule, iExpression;
+
+                rawPropertyNames = [];
+                while((iRawDataMappingRule = iRawDataMappingRulesIterator.next().value)) {
+                    iExpression = iRawDataMappingRule.targetPath;
+                    rawPropertyNames.push(iExpression);
+                }
+
+            } else {
+
+                var isMapPropertyDescriptor = (propertyDescriptor._keyDescriptorReference != null || propertyDescriptor.keyType != null),
+                    propertyDescriptorValueDescriptor = propertyDescriptor._valueDescriptorReference,
+                    objectRule = this.objectMappingRules.get(property),
+                    rule = objectRule && this.rawDataMappingRules.get(objectRule.sourcePath),
+                    converterforeignDescriptorMappings = objectRule && objectRule.converter && objectRule.converter.foreignDescriptorMappings,
+                    objectRuleSourcePathSyntax = objectRule && objectRule.sourcePathSyntax,
+                    j, countJ, jRawProperty,
+                    k, countK, kPropertyDescriptor,
+                    rawPropertyNames = new Set();
+
+                if (converterforeignDescriptorMappings) {
+                    for (j = 0, countJ = converterforeignDescriptorMappings.length; (j < countJ); j++) {
+                        jRawProperty = converterforeignDescriptorMappings[j].rawDataProperty;
+                        rawPropertyNames.add(jRawProperty);
+                    }
+                } else if (isMapPropertyDescriptor) {
+                    if (objectRuleSourcePathSyntax && objectRuleSourcePathSyntax.type !== "record") {
+                        throw "Can't create key and column array columns with expression '" + objectRule.sourcePath + "'";
+                    }
+                    //The keys
+                    keyArrayColumn = objectRuleSourcePathSyntax.args.keys.args[1].value;
+                    rawPropertyNames.add(keyArrayColumn);
+
+                    //The values
+                    valueArrayColumn = objectRuleSourcePathSyntax.args.values.args[1].value;
+                    rawPropertyNames.add(valueArrayColumn);
+                } else {
+                    //If the source syntax is a record and we have a converter, it can't become a column and has to be using a combination of other raw proeprties that have to be in propertyDescriptors
+                    if (objectRuleSourcePathSyntax && objectRuleSourcePathSyntax.type === "record") {
+                        var iPropertyDescriptorRawProperties = Object.keys(objectRuleSourcePathSyntax.args);
+                        for (j = 0, countJ = iPropertyDescriptorRawProperties.length; (j < countJ); j++) {
+                            rawPropertyNames.add(iPropertyDescriptorRawProperties[j]);
+                        }
+                    } else if (rule) {
+                        //In another place we used the object Rule and therefore it's objectRule.sourcePath
+                        //Should streamline at some point
+                        rawPropertyNames.add(rule.targetPath);
+                    } else {
+                        /*
+                            It's a bit weird, this can happens if a column is used as part of a compound source expresssion along other columns to produce an object property. This shouldn't be handled here...
+                        */
+                        rawPropertyNames.add(property);
+                    }
+                }
+
+                //Cache an Array and return it
+                rawPropertyNames = Array.from(rawPropertyNames);
+        }
+
+        this._rawPropertyNamesForObjectPropertyName.set(property, rawPropertyNames);
+        return rawPropertyNames;
+
+
+
+            //Old logic to remove
             var objectRule = this.objectMappingRules.get(property);
 
             if(objectRule) {
                 if(objectRule.sourcePathSyntax.type === "record") {
-                    throw "Support for objecy properties mapped to multiple columns isn't properly implemented";
+                    throw "Support for object properties mapped to multiple columns isn't properly implemented";
                 }
                 return objectRule.sourcePath;
             }
@@ -1648,6 +1753,47 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             }
 
         }
+    },
+
+    mapObjectPropertyNameToRawPropertyNames: {
+        value: function(propertyName) {
+            var propertyDescriptor = this.objectDescriptor.propertyDescriptorForName(propertyName);
+            if(!propertyDescriptor) {
+                // if(this.isPrimaryKeyComponent(propertyName)) {
+                //     return propertyName;
+                // } else {
+                //     console.warn("!!!!! mapObjectPropertyNameToRawPropertyNames('"+propertyName+"') has no propertyDescriptor and is not part of the primary key, what's going on here????")
+
+                /*
+                    This can happens:
+                    - if a column is used as part of a compound source expresssion along other columns to produce an object property. This shouldn't be handled here...
+                    - if the caller doesn't know if propertyName has been mapped, so in that case it would be already a raw propertu
+                    - if it's a component of the primary key
+                */
+                return [propertyName];
+                //}
+            } else {
+                return this.mapObjectPropertyDescriptorToRawPropertyNames(propertyDescriptor);
+            }
+        }
+    },
+
+    /*
+        Provide temporary backward compatibility for code calling mapObjectPropertyNameToRawPropertyName()
+        Keep the exception.
+    */
+    mapObjectPropertyNameToRawPropertyName: {
+        value: function(propertyName) {
+            var objectRule = this.objectMappingRules.get(propertyName);
+
+            if(objectRule && objectRule.sourcePathSyntax.type === "record") {
+                throw "Support for object properties mapped to multiple columns isn't properly implemented";
+            }
+            else {
+                return this.mapObjectPropertyNameToRawPropertyNames(propertyName)[0];
+            }
+        }
+
     },
 
     // mapObjectPropertyNameToRawPropertyName: {

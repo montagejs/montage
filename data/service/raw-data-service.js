@@ -27,7 +27,7 @@ var DataService = require("data/service/data-service").DataService,
     DataEvent = require("../model/data-event").DataEvent,
     DataQuery = require("../model/data-query").DataQuery;
 
-    require("core/collections/shim-object");
+require("core/collections/shim-object");
 
 /**
  * Provides data objects of certain types and manages changes to them based on
@@ -61,23 +61,23 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             this._typeIdentifierMap = new Map();
             this._descriptorToRawDataTypeMappings = new Map();
 
-            if(this.supportsDataOperation) {
-                this.addEventListener(DataOperation.Type.ReadUpdateOperation,this,false);
-                this.addEventListener(DataOperation.Type.ReadFailedOperation,this,false);
-                this.addEventListener(DataOperation.Type.ReadCompletedOperation,this,false);
+            if (this.supportsDataOperation) {
+                this.addEventListener(DataOperation.Type.ReadUpdateOperation, this, false);
+                this.addEventListener(DataOperation.Type.ReadFailedOperation, this, false);
+                this.addEventListener(DataOperation.Type.ReadCompletedOperation, this, false);
 
-                if(this.supportsTransaction) {
-                    this.addEventListener(DataOperationType.createTransactionOperation,this, false);
-                    this.addEventListener(DataOperationType.createTransactionCompletedOperation,this, false);
-                    this.addEventListener(DataOperationType.createTransactionFailedOperation,this, false);
-                    this.addEventListener(DataOperation.Type.BatchCompletedOperation,this,false);
-                    this.addEventListener(DataOperation.Type.BatchFailedOperation,this,false);
-                    this.addEventListener(DataOperation.Type.TransactionUpdatedOperation,this,false);
-                    this.addEventListener(DataOperation.Type.CommitTransactionProgressOperation,this,false);
-                    this.addEventListener(DataOperation.Type.CommitTransactionFailedOperation,this,false);
-                    this.addEventListener(DataOperation.Type.CommitTransactionCompletedOperation,this,false);
-                    this.addEventListener(DataOperation.Type.RollbackTransactionFailedOperation,this,false);
-                    this.addEventListener(DataOperation.Type.RollbackTransactionCompletedOperation,this,false);
+                if (this.supportsTransaction) {
+                    this.addEventListener(DataOperationType.createTransactionOperation, this, false);
+                    this.addEventListener(DataOperationType.createTransactionCompletedOperation, this, false);
+                    this.addEventListener(DataOperationType.createTransactionFailedOperation, this, false);
+                    this.addEventListener(DataOperation.Type.BatchCompletedOperation, this, false);
+                    this.addEventListener(DataOperation.Type.BatchFailedOperation, this, false);
+                    this.addEventListener(DataOperation.Type.TransactionUpdatedOperation, this, false);
+                    this.addEventListener(DataOperation.Type.CommitTransactionProgressOperation, this, false);
+                    this.addEventListener(DataOperation.Type.CommitTransactionFailedOperation, this, false);
+                    this.addEventListener(DataOperation.Type.CommitTransactionCompletedOperation, this, false);
+                    this.addEventListener(DataOperation.Type.RollbackTransactionFailedOperation, this, false);
+                    this.addEventListener(DataOperation.Type.RollbackTransactionCompletedOperation, this, false);
                 }
 
                 this._pendingDataOperationById = new Map();
@@ -87,30 +87,30 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     addMainServiceEventListeners: {
-        value: function() {
+        value: function () {
 
             this.addEventListener(ReadEvent.read, this, false);
 
-            if(this.canSaveData) {
+            if (this.canSaveData) {
                 this.mainService.addEventListener(TransactionEvent.transactionCreate, this, false);
             }
 
-            if(this.supportsDataOperation) {
+            if (this.supportsDataOperation) {
                 /*
                     DataOperations on their way out:
                 */
 
-                    this.addEventListener(DataOperation.Type.ReadOperation,this,false);
-                    this.addEventListener(DataOperation.Type.UpdateOperation,this,false);
-                    this.addEventListener(DataOperation.Type.CreateOperation,this,false);
-                    this.addEventListener(DataOperation.Type.DeleteOperation,this,false);
-                    this.addEventListener(DataOperation.Type.CreateTransactionOperation,this,false);
-                    this.addEventListener(DataOperation.Type.AppendTransactionOperation,this,false);
-                    this.addEventListener(DataOperation.Type.CommitTransactionOperation,this,false);
-                    this.addEventListener(DataOperation.Type.RollbackTransactionOperation,this,false);
+                this.addEventListener(DataOperation.Type.ReadOperation, this, false);
+                this.addEventListener(DataOperation.Type.UpdateOperation, this, false);
+                this.addEventListener(DataOperation.Type.CreateOperation, this, false);
+                this.addEventListener(DataOperation.Type.DeleteOperation, this, false);
+                this.addEventListener(DataOperation.Type.CreateTransactionOperation, this, false);
+                this.addEventListener(DataOperation.Type.AppendTransactionOperation, this, false);
+                this.addEventListener(DataOperation.Type.CommitTransactionOperation, this, false);
+                this.addEventListener(DataOperation.Type.RollbackTransactionOperation, this, false);
 
-                    this.mainService.addEventListener(DataOperation.Type.AppendTransactionCompletedOperation,this,false);
-                    this.mainService.addEventListener(DataOperation.Type.AppendTransactionFailedOperation,this,false);
+                this.mainService.addEventListener(DataOperation.Type.AppendTransactionCompletedOperation, this, false);
+                this.mainService.addEventListener(DataOperation.Type.AppendTransactionFailedOperation, this, false);
 
 
             }
@@ -139,7 +139,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
 
     deserializeSelf: {
-        value:function (deserializer) {
+        value: function (deserializer) {
             this.super(deserializer);
             var value = deserializer.getProperty("rawDataTypeMappings");
             this._registerRawDataTypeMappings(value || []);
@@ -178,11 +178,11 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: undefined
     },
     connectionDescriptor: {
-        get: function() {
+        get: function () {
             return this._connectionDescriptor;
         },
-        set: function(value) {
-            if(value !== this._connectionDescriptor) {
+        set: function (value) {
+            if (value !== this._connectionDescriptor) {
                 this._connectionDescriptor = value;
                 this._registeredConnectionsByIdentifier = null;
                 this.registerConnections(value);
@@ -200,11 +200,11 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: undefined
     },
     registerConnections: {
-        value: function(connectionDescriptor) {
+        value: function (connectionDescriptor) {
 
             this._registeredConnectionsByIdentifier = connectionDescriptor;
 
-            for(var i=0, connections = Object.keys(connectionDescriptor), countI = connections.length, iConnectionIdentifier, iConnection;(i<countI); i++) {
+            for (var i = 0, connections = Object.keys(connectionDescriptor), countI = connections.length, iConnectionIdentifier, iConnection; (i < countI); i++) {
                 iConnectionIdentifier = connections[i];
                 iConnection = connectionDescriptor[iConnectionIdentifier];
 
@@ -221,17 +221,17 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     connectionForIdentifier: {
-        value: function(connectionIdentifier) {
+        value: function (connectionIdentifier) {
             return this._registeredConnectionsByIdentifier[connectionIdentifier];
             //return this._registeredConnectionsByIdentifier.get(connectionIdentifier);
         }
     },
 
     connectionWithKeyValue: {
-        value: function(connectionKey, conectionValue) {
-            for(var i=0, connections = Object.keys(connectionDescriptor), countI = connections.length, iConnection;(i<countI); i++) {
+        value: function (connectionKey, conectionValue) {
+            for (var i = 0, connections = Object.keys(connectionDescriptor), countI = connections.length, iConnection; (i < countI); i++) {
                 iConnection = connectionDescriptor[connections[i]];
-                if(iConnection[connectionKey] === conectionValue) {
+                if (iConnection[connectionKey] === conectionValue) {
                     return iConnection;
                 }
             }
@@ -248,11 +248,11 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     connectionIdentifier: {
-        get: function() {
+        get: function () {
             return this._connectionIdentifier;
         },
-        set: function(value) {
-            if(value !== this._connectionIdentifier) {
+        set: function (value) {
+            if (value !== this._connectionIdentifier) {
                 this._connectionIdentifier = value;
 
                 /*
@@ -351,17 +351,26 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 isObjectCreated = this.isObjectCreated(object);
 
 
-            if(!mapping) {
+            // //debug
+            // if(isObjectCreated) {
+            //     console.debug("!!!!!! ObjectCreated - "+objectDescriptor.name+".fetchRawObjectProperty("+propertyName+")");
+            // }
+
+            // if(propertyName === "originId") {
+            //     debugger;
+            // }
+
+            if (!mapping) {
                 return this.nullPromise;
             }
 
             //console.log(objectDescriptor.name+": fetchObject:",object, "property:"+ " -"+propertyName);
 
-            if(!Promise.is(valueDescriptor)) {
+            if (!Promise.is(valueDescriptor)) {
                 valueDescriptor = Promise.resolve(valueDescriptor);
             }
 
-            return valueDescriptor.then( function(valueDescriptor) {
+            return valueDescriptor.then(function (valueDescriptor) {
                 var objectRule = mapping && mapping.objectMappingRules.get(propertyName),
                     snapshot = self.snapshotForObject(object),
                     objectRuleConverter = objectRule && objectRule.converter;
@@ -371,7 +380,12 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 //     throw "Can't fetchObjectProperty: type: "+valueDescriptor.name+" propertyName: "+propertyName+" - doesn't have a snapshot";
                 // }
 
-
+                /*
+                    If we have what we need in the snapshot, we go for it.
+                */
+                if(snapshot && snapshot.hasOwnProperty(propertyName) && object[propertyName] === undefined) {
+                    return mapping.mapRawDataToObjectProperty(snapshot, object, propertyName, undefined);
+                }
                 /*
                     if we can get the value from the type's storage itself:
                     or
@@ -379,18 +393,24 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                     -- !!! embedded values don't have their own snapshots --
                 */
-                if(
+                else if (
                     (!valueDescriptor && !objectRuleConverter) ||
-                    ( valueDescriptor && !objectRuleConverter ) /*for Date for example*/ ||
-                    ( valueDescriptor && objectRuleConverter && objectRuleConverter instanceof RawEmbeddedValueToObjectConverter) || (snapshot && !objectRule.hasRawDataRequiredValues(snapshot))
+                    (valueDescriptor && !objectRuleConverter) /*for Date for example*/ ||
+                    (valueDescriptor && objectRuleConverter && objectRuleConverter instanceof RawEmbeddedValueToObjectConverter) || (snapshot && !objectRule.hasRawDataRequiredValues(snapshot))
                 ) {
-                    var propertyNameQuery = DataQuery.withTypeAndCriteria(objectDescriptor,self.rawCriteriaForObject(object, objectDescriptor));
 
-                    propertyNameQuery.readExpressions = [propertyName];
+                    if(isObjectCreated) {
+                        return Promise.resolve(null);
+                    } else {
 
-                    //console.log(objectDescriptor.name+": fetchObjectProperty "+ " -"+propertyName);
+                        var propertyNameQuery = DataQuery.withTypeAndCriteria(objectDescriptor, self.rawCriteriaForObject(object, objectDescriptor));
 
-                    return DataService.mainService.fetchData(propertyNameQuery);
+                        propertyNameQuery.readExpressions = [propertyName];
+
+                        //console.log(objectDescriptor.name+": fetchObjectProperty "+ " -"+propertyName);
+
+                        return DataService.mainService.fetchData(propertyNameQuery);
+                    }
 
                     /*
                         Original from PhrontClient who was overriding fetchData
@@ -398,7 +418,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     //return self.fetchData(propertyNameQuery);
 
                 } else {
-                    return self._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor,isObjectCreated);
+                    return self._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor, isObjectCreated);
                 }
             });
         }
@@ -553,8 +573,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     isOffline: {
         get: function () {
             return this === this.rootService ?
-                    this.superForGet("isOffline")() :
-                        this.rootService.isOffline;
+                this.superForGet("isOffline")() :
+                this.rootService.isOffline;
         }
     },
 
@@ -668,17 +688,17 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
 
     _addRawDataPrimaryKeyValuesIfNeeded: {
-        value: function(rawData, type, query) {
+        value: function (rawData, type, query) {
             var mapping = this.mappingForObjectDescriptor(type),
-            rawDataPrimaryKeys = mapping.rawDataPrimaryKeys,
-            i, countI, iKey,
-            iterator, parentSyntax, currentSyntax, propertyName, propertyValue, firstArgSyntax, secondArgSyntax,
-            criteriaParameters,
-            criteriaSyntax,
-            syntaxPropertyByName;
+                rawDataPrimaryKeys = mapping.rawDataPrimaryKeys,
+                i, countI, iKey,
+                iterator, parentSyntax, currentSyntax, propertyName, propertyValue, firstArgSyntax, secondArgSyntax,
+                criteriaParameters,
+                criteriaSyntax,
+                syntaxPropertyByName;
 
-            for(i=0, countI = rawDataPrimaryKeys ? rawDataPrimaryKeys.length : 0; (i<countI); i++ ) {
-                if(!rawData.hasOwnProperty(rawDataPrimaryKeys[i])) {
+            for (i = 0, countI = rawDataPrimaryKeys ? rawDataPrimaryKeys.length : 0; (i < countI); i++) {
+                if (!rawData.hasOwnProperty(rawDataPrimaryKeys[i])) {
                     //Needs to find among the equals syntax the one that matches the current key.
                     iterator = new SyntaxInOrderIterator(query.criteria.syntax, "equals");
                     criteriaParameters = query.criteria.parameters;
@@ -686,15 +706,19 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                         firstArgSyntax = currentSyntax.args[0];
                         secondArgSyntax = currentSyntax.args[1];
 
-                        if(firstArgSyntax.type === "property" && firstArgSyntax.args[0].type === "value") {
+                        if (firstArgSyntax.type === "property" && firstArgSyntax.args[0].type === "value") {
                             propertyName = firstArgSyntax.args[1].value;
-                            propertyValue = criteriaParameters[secondArgSyntax.args[1].value];
+                            if (secondArgSyntax.type === "parameters") {
+                                propertyValue = criteriaParameters;
+                            } else {
+                                propertyValue = criteriaParameters[secondArgSyntax.args[1].value];
+                            }
                         } else {
                             propertyName = secondArgSyntax.args[1].value;
                             propertyValue = criteriaParameters[firstArgSyntax.args[1].value];
                         }
 
-                        if(rawDataPrimaryKeys.indexOf(propertyName) !== -1) {
+                        if (rawDataPrimaryKeys.indexOf(propertyName) !== -1) {
                             rawData[propertyName] = propertyValue;
                         }
                     }
@@ -727,7 +751,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
     addOneRawData: {
         value: function (stream, rawData, context) {
-            var type = this._descriptorForParentAndRawData(stream.query.type, rawData),
+            var type,
+                streamQueryType = this._descriptorForParentAndRawData(stream.query.type, rawData),
                 readExpressions = stream.query.readExpressions,
                 dataIdentifier,
                 object,
@@ -735,28 +760,35 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 isUpdateToExistingObject = false,
                 result;
 
-                this._addRawDataPrimaryKeyValuesIfNeeded(rawData, type, stream.query);
+            //Shall we add a check for having readExpressions as well?
+            if(context instanceof DataOperation && context.target !== streamQueryType) {
+                type = context.target;
+            } else {
+                type = streamQueryType;
+            }
 
-                dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData),
+            this._addRawDataPrimaryKeyValuesIfNeeded(rawData, type, stream.query);
 
-                // if(!object) {
-                object = this.objectForTypeRawData(type, rawData, context);
-                // }
-                // else {
-                //     isUpdateToExistingObject = true;
-                // }
+            dataIdentifier = this.dataIdentifierForTypeRawData(type, rawData),
 
-                //If we're already have a snapshot, we've already fetched and
-                //instanciated an object for that identifier previously.
-                if(this.hasSnapshotForDataIdentifier(dataIdentifier)) {
-                    isUpdateToExistingObject = true;
-                }
+            // if(!object) {
+            object = this.objectForTypeRawData(type, rawData, context);
+            // }
+            // else {
+            //     isUpdateToExistingObject = true;
+            // }
 
-                //Record the snapshot before we map.
-                this.recordSnapshot(object.dataIdentifier, rawData);
+            //If we're already have a snapshot, we've already fetched and
+            //instanciated an object for that identifier previously.
+            if (this.hasSnapshotForDataIdentifier(dataIdentifier)) {
+                isUpdateToExistingObject = true;
+            }
+
+            //Record the snapshot before we map.
+            this.recordSnapshot(object.dataIdentifier, rawData);
 
 
-                result = this._mapRawDataToObject(rawData, object, context, readExpressions);
+            result = this._mapRawDataToObject(rawData, object, context, readExpressions);
 
             if (this._isAsync(result)) {
                 result = result.then(function () {
@@ -825,8 +857,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
 
     resolveObjectForTypeRawData: {
-        value:function(type, rawData, context) {
-            var dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData),
+        value: function (type, rawData, context) {
+            var dataIdentifier = this.dataIdentifierForTypeRawData(type, rawData),
                 //Retrieves an existing object is responsible data service is uniquing, or creates one
                 object, result;
 
@@ -854,14 +886,14 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
 
     objectForTypeRawData: {
-        value:function(type, rawData, context) {
+        value: function (type, rawData, context) {
             // var dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData);
 
             // return this.rootService.objectForDataIdentifier(dataIdentifier) ||
             //         this.getDataObject(type, rawData, context, dataIdentifier);
 
 
-            var dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData),
+            var dataIdentifier = this.dataIdentifierForTypeRawData(type, rawData),
                 object = this.rootService.objectForDataIdentifier(dataIdentifier);
 
             //Consolidation, recording snapshot even if we already had an object
@@ -869,7 +901,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             //Benoit: commenting out, done twice when fetching now
             //this.recordSnapshot(dataIdentifier, rawData);
 
-            if(!object) {
+            if (!object) {
                 //iDataIdentifier argument should be all we need later on
                 return this.getDataObject(type, rawData, context, dataIdentifier);
             }
@@ -915,8 +947,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: function (type) {
             var primaryKey = this.primaryKeyForNewDataObject(type);
 
-            if(primaryKey) {
-                return this.dataIdentifierForTypePrimaryKey(type,primaryKey);
+            if (primaryKey) {
+                return this.dataIdentifierForTypePrimaryKey(type, primaryKey);
             }
             return undefined;
         }
@@ -931,13 +963,13 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 rawDataPrimaryKeysValues,
                 dataIdentifier, dataIdentifierMap, primaryKey;
 
-            if(rawDataPrimaryKeys && rawDataPrimaryKeys.length) {
+            if (rawDataPrimaryKeys && rawDataPrimaryKeys.length) {
 
-                for(var i=0, expression; (expression = rawDataPrimaryKeys[i]); i++) {
+                for (var i = 0, expression; (expression = rawDataPrimaryKeys[i]); i++) {
                     rawDataPrimaryKeysValues = rawDataPrimaryKeysValues || [];
                     rawDataPrimaryKeysValues[i] = expression(scope);
                 }
-                if(rawDataPrimaryKeysValues) {
+                if (rawDataPrimaryKeysValues) {
                     primaryKey = rawDataPrimaryKeysValues.join("/");
                     // dataIdentifier = dataIdentifierMap.get(primaryKey);
                 }
@@ -962,10 +994,14 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: function (type, rawData) {
             var primaryKey = this.primaryKeyForTypeRawData(type, rawData);
 
-            if(primaryKey) {
-                return this.dataIdentifierForTypePrimaryKey(type,primaryKey);
+            if (primaryKey) {
+                return this.dataIdentifierForTypePrimaryKey(type, primaryKey);
+            } else {
+                var mapping = this.mappingForType(type);
+                if(mapping && mapping.rawDataPrimaryKeyExpressions) {
+                throw "-dataIdentifierForTypeRawData(): Primary key missing for type '"+type.name+", rawData "+JSON.stringify(rawData);
+                }
             }
-            return undefined;
         }
     },
 
@@ -988,11 +1024,11 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: function (dataIdentifier, type, primaryKey) {
             var dataIdentifierMap = this._typeIdentifierMap.get(type);
 
-            if(!dataIdentifierMap) {
-                this._typeIdentifierMap.set(type,(dataIdentifierMap = new Map()));
+            if (!dataIdentifierMap) {
+                this._typeIdentifierMap.set(type, (dataIdentifierMap = new Map()));
             }
 
-            dataIdentifierMap.set(primaryKey,dataIdentifier);
+            dataIdentifierMap.set(primaryKey, dataIdentifier);
         }
     },
 
@@ -1001,26 +1037,26 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             var dataIdentifierMap = this._typeIdentifierMap.get(type),
                 dataIdentifier;
 
-                dataIdentifier = dataIdentifierMap
-                                    ? dataIdentifierMap.get(primaryKey)
-                                    : null;
+            dataIdentifier = dataIdentifierMap
+                ? dataIdentifierMap.get(primaryKey)
+                : null;
 
-                if(!dataIdentifier) {
-                    var typeName = type.typeName /*DataDescriptor*/ || type.name;
-                        //This should be done by ObjectDescriptor/blueprint using primaryProperties
-                        //and extract the corresponsing values from rawData
-                        //For now we know here that MileZero objects have an "id" attribute.
-                        dataIdentifier = new DataIdentifier();
-                        dataIdentifier.objectDescriptor = type;
-                        dataIdentifier.dataService = this;
-                        dataIdentifier.typeName = type.name;
-                        //dataIdentifier._identifier = dataIdentifier.primaryKey = primaryKey;
-                        dataIdentifier.primaryKey = primaryKey;
+            if (!dataIdentifier) {
+                var typeName = type.typeName /*DataDescriptor*/ || type.name;
+                //This should be done by ObjectDescriptor/blueprint using primaryProperties
+                //and extract the corresponsing values from rawData
+                //For now we know here that MileZero objects have an "id" attribute.
+                dataIdentifier = new DataIdentifier();
+                dataIdentifier.objectDescriptor = type;
+                dataIdentifier.dataService = this;
+                dataIdentifier.typeName = type.name;
+                //dataIdentifier._identifier = dataIdentifier.primaryKey = primaryKey;
+                dataIdentifier.primaryKey = primaryKey;
 
-                        // dataIdentifierMap.set(primaryKey,dataIdentifier);
-                        this.registerDataIdentifierForTypePrimaryKey(dataIdentifier,type, primaryKey);
-                }
-                return dataIdentifier;
+                // dataIdentifierMap.set(primaryKey,dataIdentifier);
+                this.registerDataIdentifierForTypePrimaryKey(dataIdentifier, type, primaryKey);
+            }
+            return dataIdentifier;
         }
 
     },
@@ -1030,7 +1066,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     _snapshot: {
-        get: function() {
+        get: function () {
             return this.__snapshot || (this.__snapshot = new Map());
         }
     },
@@ -1045,12 +1081,12 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     recordSnapshot: {
         value: function (dataIdentifier, rawData, isFromUpdate) {
-            if(!dataIdentifier) {
+            if (!dataIdentifier) {
                 return;
             }
 
             var snapshot = this._snapshot.get(dataIdentifier);
-            if(!snapshot) {
+            if (!snapshot) {
                 this._snapshot.set(dataIdentifier, rawData);
             }
             else {
@@ -1058,31 +1094,31 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     i, countI, iUpdatedRawDataValue, iCurrentRawDataValue, iDiffValues, iRemovedValues,
                     j, countJ, jDiffValue, jDiffValueIndex;
 
-                for(i=0, countI = rawDataKeys.length; (i<countI); i++) {
+                for (i = 0, countI = rawDataKeys.length; (i < countI); i++) {
                     iUpdatedRawDataValue = rawData[rawDataKeys[i]];
-                    if(isFromUpdate) {
+                    if (isFromUpdate) {
                         iCurrentRawDataValue = snapshot[rawDataKeys[i]];
 
-                        if(iUpdatedRawDataValue.hasOwnProperty("addedValues")) {
+                        if (iUpdatedRawDataValue.hasOwnProperty("addedValues")) {
                             iDiffValues = iUpdatedRawDataValue.addedValues;
 
-                            if(iCurrentRawDataValue) {
-                                if(Array.isArray(iCurrentRawDataValue)) {
-                                    for(j=0, countJ = iDiffValues.length; (j<countJ); j++) {
+                            if (iCurrentRawDataValue) {
+                                if (Array.isArray(iCurrentRawDataValue)) {
+                                    for (j = 0, countJ = iDiffValues.length; (j < countJ); j++) {
                                         jDiffValue = iDiffValues[j];
                                         /*
                                             We shouldn't have to worry about the value alredy being in iCurrentRawDataValue, but we're going to safe and check
                                         */
-                                        if(iCurrentRawDataValue.indexOf(jDiffValue) === -1) {
+                                        if (iCurrentRawDataValue.indexOf(jDiffValue) === -1) {
                                             iCurrentRawDataValue.push(jDiffValue);
                                         }
                                     }
                                 } else {
-                                    console.warn("recordSnapshot from Update: snapshot for '"+awDataKeys[i]+"' is not an Array but addedValues:",iDiffValues);
+                                    console.warn("recordSnapshot from Update: snapshot for '" + awDataKeys[i] + "' is not an Array but addedValues:", iDiffValues);
                                     snapshot[rawDataKeys[i]] = iDiffValues;
                                 }
                             } else {
-                                console.warn("recordSnapshot from Update: No entry in snapshot for '"+rawDataKeys[i]+"' but addedValues:",iDiffValues);
+                                console.warn("recordSnapshot from Update: No entry in snapshot for '" + rawDataKeys[i] + "' but addedValues:", iDiffValues);
                                 /*
                                     We could reconstruct from the object value, but we should relly not be here.
                                 */
@@ -1090,27 +1126,27 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                             }
                         }
 
-                        if(iUpdatedRawDataValue.hasOwnProperty("removedValues")) {
+                        if (iUpdatedRawDataValue.hasOwnProperty("removedValues")) {
                             iDiffValues = iUpdatedRawDataValue.removedValues;
 
-                            if(iCurrentRawDataValue) {
-                                if(Array.isArray(iCurrentRawDataValue)) {
-                                    for(j=0, countJ = iDiffValues.length; (j<countJ); j++) {
+                            if (iCurrentRawDataValue) {
+                                if (Array.isArray(iCurrentRawDataValue)) {
+                                    for (j = 0, countJ = iDiffValues.length; (j < countJ); j++) {
                                         jDiffValue = iDiffValues[j];
                                         /*
                                             We shouldn't have to worry about the value alredy being in iCurrentRawDataValue, but we're going to safe and check
                                         */
-                                        if((jDiffValueIndex = iCurrentRawDataValue.indexOf(jDiffValue)) !== -1) {
-                                            iCurrentRawDataValue.splice(jDiffValueIndex,1);
+                                        if ((jDiffValueIndex = iCurrentRawDataValue.indexOf(jDiffValue)) !== -1) {
+                                            iCurrentRawDataValue.splice(jDiffValueIndex, 1);
                                         }
                                     }
                                 } else {
-                                    console.warn("recordSnapshot from Update: snapshot for '"+awDataKeys[i]+"' is not an Array but removedValues:",iDiffValues);
+                                    console.warn("recordSnapshot from Update: snapshot for '" + awDataKeys[i] + "' is not an Array but removedValues:", iDiffValues);
                                     console.error("removedValues but no entry in snapshot for ")
                                     //snapshot[rawDataKeys[i]] = iDiffValues;
                                 }
                             } else {
-                                console.warn("recordSnapshot from Update: No entry in snapshot for '"+awDataKeys[i]+"' but removedValues:",iDiffValues);
+                                console.warn("recordSnapshot from Update: No entry in snapshot for '" + awDataKeys[i] + "' but removedValues:", iDiffValues);
                             }
                         }
 
@@ -1128,7 +1164,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @private
      * @argument {DataIdentifier} dataIdentifier
      */
-   removeSnapshot: {
+    removeSnapshot: {
         value: function (dataIdentifier) {
             this._snapshot.delete(dataIdentifier);
         }
@@ -1143,7 +1179,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     snapshotForDataIdentifier: {
         value: function (dataIdentifier) {
             return this._snapshot.get(dataIdentifier);
-       }
+        }
     },
 
     /**
@@ -1164,7 +1200,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @private
      * @argument {DataIdentifier} dataIdentifier
      */
-   snapshotForObject: {
+    snapshotForObject: {
         value: function (object) {
             return this.snapshotForDataIdentifier(this.dataIdentifierForObject(object));
         }
@@ -1210,7 +1246,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     data = dataStream.data;
 
                 //Build combined expression
-                for (var i=0,iDataOrdering,iExpression;(iDataOrdering = orderings[i]);i++) {
+                for (var i = 0, iDataOrdering, iExpression; (iDataOrdering = orderings[i]); i++) {
                     iExpression = iDataOrdering.expression;
 
                     if (expression.length) {
@@ -1228,7 +1264,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 results = evaluate(expression, data);
 
                 //Now change the data array
-                Array.prototype.splice.apply(data, [0,data.length].concat(results));
+                Array.prototype.splice.apply(data, [0, data.length].concat(results));
             }
 
         }
@@ -1256,10 +1292,10 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 dataToPersist = this._streamRawData.get(stream),
                 mappingPromises = this._streamMapDataPromises.get(stream),
                 dataReadyPromise = mappingPromises
-                                        ? mappingPromises.length === 1
-                                           ? mappingPromises[0]
-                                           : Promise.all(mappingPromises)
-                                        : this.nullPromise;
+                    ? mappingPromises.length === 1
+                        ? mappingPromises[0]
+                        : Promise.all(mappingPromises)
+                    : this.nullPromise;
 
             if (mappingPromises) {
                 this._streamMapDataPromises.delete(stream);
@@ -1276,13 +1312,13 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 return dataToPersist ? self.writeOfflineData(dataToPersist, stream.query, context) : null;
             }).then(function () {
                 // console.log("stream.dataDone() for "+stream.query.type.name);
-                if(stream.query.orderings && self.shouldSortDataStream(stream)) {
+                if (stream.query.orderings && self.shouldSortDataStream(stream)) {
                     self.sortDataStream(stream);
                 }
                 stream.dataDone();
                 return null;
             }).catch(function (e) {
-                console.error(e,stream);
+                console.error(e, stream);
             });
 
         }
@@ -1310,29 +1346,29 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 stream.dataError(error);
                 return null;
             }).catch(function (e) {
-                console.error(e,stream);
+                console.error(e, stream);
             });
 
         }
     },
 
 
-        /**
-     * To be called once for each [fetchData()]{@link RawDataService#fetchData}
-     * or [fetchRawData()]{@link RawDataService#fetchRawData} call received to
-     * indicate that all the raw data meant for the specified stream has been
-     * added to that stream.
-     *
-     * Subclasses should not override this method.
-     *
-     * @method
-     * @argument {DataStream} stream - The stream to which the data objects
-     *                                 corresponding to the raw data have been
-     *                                 added.
-     * @argument {?} context         - An arbitrary value that will be passed to
-     *                                 [writeOfflineData()]{@link RawDataService#writeOfflineData}
-     *                                 if it is provided.
-     */
+    /**
+ * To be called once for each [fetchData()]{@link RawDataService#fetchData}
+ * or [fetchRawData()]{@link RawDataService#fetchRawData} call received to
+ * indicate that all the raw data meant for the specified stream has been
+ * added to that stream.
+ *
+ * Subclasses should not override this method.
+ *
+ * @method
+ * @argument {DataStream} stream - The stream to which the data objects
+ *                                 corresponding to the raw data have been
+ *                                 added.
+ * @argument {?} context         - An arbitrary value that will be passed to
+ *                                 [writeOfflineData()]{@link RawDataService#writeOfflineData}
+ *                                 if it is provided.
+ */
     rawDataBatchDone: {
         value: function (stream, context) {
             var self = this,
@@ -1341,12 +1377,12 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 dataReadyPromise = mappingPromises ? Promise.all(mappingPromises) : this.nullPromise;
 
             dataReadyPromise
-            .then(function () {
-                stream.dataBatchDone();
-                return null;
-            }).catch(function (e) {
-                console.error(e,stream);
-            });
+                .then(function () {
+                    stream.dataBatchDone();
+                    return null;
+                }).catch(function (e) {
+                    console.error(e, stream);
+                });
 
         }
     },
@@ -1410,7 +1446,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }, "mapSelectorToRawDataSelector", "mapSelectorToRawDataQuery"),
     },
 
-    _defaultDataMapping : {
+    _defaultDataMapping: {
         value: new DataMapping()
     },
 
@@ -1426,7 +1462,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
 
             if (!mapping) {
-                if(objectDescriptor) {
+                if (objectDescriptor) {
                     mapping = this._objectDescriptorMappings.get(objectDescriptor);
                     if (!mapping) {
                         mapping = DataMapping.withObjectDescriptor(objectDescriptor);
@@ -1576,8 +1612,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 //if(Object.equals(snapshot,record) ) {
 
                 //Replacing with:
-                if(this._objectsBeingMapped.has(object)) {
-                        return undefined;
+                if (this._objectsBeingMapped.has(object)) {
+                    return undefined;
 
                     // if(this._objectsBeingMapped.has(object)) {
                     //     console.log(object.dataIdentifier.objectDescriptor.name +" _mapRawDataToObject id:"+record.id+" FOUND EXISTING MAPPING PROMISE");
@@ -1611,13 +1647,13 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                             return result;
                         }
                         else {
-                            result = result.then(function(resolved) {
+                            result = result.then(function (resolved) {
 
                                 // self._deleteMapRawDataToObjectPromise(record, object);
                                 self._objectsBeingMapped.delete(object);
 
                                 return resolved;
-                            }, function(failed) {
+                            }, function (failed) {
 
                                 // self._deleteMapRawDataToObjectPromise(record, object);
                                 self._objectsBeingMapped.delete(object);
@@ -1626,7 +1662,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                             return result;
                         }
 
-                    }, function(error) {
+                    }, function (error) {
                         // self._deleteMapRawDataToObjectPromise(record, object);
                         self._objectsBeingMapped.delete(object);
                         throw error;
@@ -1639,13 +1675,13 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                         return result;
                     }
                     else {
-                        result = result.then(function(resolved) {
+                        result = result.then(function (resolved) {
 
                             // self._deleteMapRawDataToObjectPromise(record, object);
                             self._objectsBeingMapped.delete(object);
 
                             return resolved;
-                        }, function(failed) {
+                        }, function (failed) {
                             // self._deleteMapRawDataToObjectPromise(record, object);
                             self._objectsBeingMapped.delete(object);
 
@@ -1668,12 +1704,12 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     return result;
                 }
                 else {
-                    result = result.then(function(resolved) {
+                    result = result.then(function (resolved) {
                         // self._deleteMapRawDataToObjectPromise(record, object);
                         self._objectsBeingMapped.delete(object);
 
                         return resolved;
-                    }, function(failed) {
+                    }, function (failed) {
                         // self._deleteMapRawDataToObjectPromise(record, object);
                         self._objectsBeingMapped.delete(object);
                     });
@@ -1775,13 +1811,13 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
-        /**
-     * @todo Document.
-     * @todo Make this method overridable by type name with methods like
-     * `mapHazardToRawData()` and `mapProductToRawData()`.
-     *
-     * @method
-     */
+    /**
+ * @todo Document.
+ * @todo Make this method overridable by type name with methods like
+ * `mapHazardToRawData()` and `mapProductToRawData()`.
+ *
+ * @method
+ */
     _mapObjectPropertyToRawData: {
         value: function (object, propertyName, record, context, added, removed, lastReadSnapshot, rawDataSnapshot) {
             var mapping = this.mappingForObject(object),
@@ -1836,11 +1872,11 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     * @argument {string} propertyName   - The name of the raw property to which
     *                                     to assign the values.
     */
-   mappingDidMapObjectPropertyToRawDataProperty: {
-       value: function (mapping, object, propertyName, data, rawPropertyName) {
+    mappingDidMapObjectPropertyToRawDataProperty: {
+        value: function (mapping, object, propertyName, data, rawPropertyName) {
 
-       }
-   },
+        }
+    },
 
     /**
      * Method called by mappings when asked for a schemaDescriptor and don't have one.
@@ -1996,26 +2032,26 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
     canMapObjectDescriptorRawDataToObjectPropertyWithoutFetch: {
 
-        value: function(objectDescriptor, propertyName) {
+        value: function (objectDescriptor, propertyName) {
             var mapping = this.mappingForType(objectDescriptor),
                 objectRule = mapping.objectMappingRules.get(propertyName),
                 objectRuleConverter = objectRule && objectRule.converter,
                 valueDescriptor = objectRule && objectRule.propertyDescriptor._valueDescriptorReference;
 
             return (
-            objectRule && (
-                !valueDescriptor ||
-                (valueDescriptor && objectRuleConverter && !(objectRuleConverter instanceof RawForeignValueToObjectConverter))
+                objectRule && (
+                    !valueDescriptor ||
+                    (valueDescriptor && objectRuleConverter && !(objectRuleConverter instanceof RawForeignValueToObjectConverter))
                 )
             );
         }
     },
 
     rawCriteriaForObject: {
-        value: function(object, _objectDescriptor) {
+        value: function (object, _objectDescriptor) {
 
             var objectDescriptor = _objectDescriptor || this.objectDescriptorForObject(object),
-            mapping = this.mappingForType(objectDescriptor);
+                mapping = this.mappingForType(objectDescriptor);
 
             return mapping.rawDataPrimaryKeyCriteriaForObject(object);
 
@@ -2028,12 +2064,12 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * Data Operaation related methods
      *
      ***************************************************************************/
-     _operationListenerNamesByType: {
+    _operationListenerNamesByType: {
         value: new Map()
     },
     _operationListenerNameForType: {
-        value: function(type) {
-            return this._operationListenerNamesByType.get(type) || this._operationListenerNamesByType.set(type,"handle"+type.toCapitalized()).get(type);
+        value: function (type) {
+            return this._operationListenerNamesByType.get(type) || this._operationListenerNamesByType.set(type, "handle" + type.toCapitalized()).get(type);
         }
     },
 
@@ -2044,10 +2080,10 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @argument {DataOperation} dataOperation
      */
     completionPromiseForPendingDataOperation: {
-        value: function(dataOperation) {
+        value: function (dataOperation) {
             var dataOperationRegistration = this._pendingDataOperationById.get(dataOperation.id);
-            if(dataOperationRegistration && !dataOperationRegistration.completionPromise) {
-                dataOperationRegistration.completionPromise = new Promise(function(resolve, reject) {
+            if (dataOperationRegistration && !dataOperationRegistration.completionPromise) {
+                dataOperationRegistration.completionPromise = new Promise(function (resolve, reject) {
                     dataOperationRegistration.completionPromiseResolve = resolve;
                     dataOperationRegistration.completionPromiseReject = reject;
                 });
@@ -2063,7 +2099,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @argument {DataOperation} dataOperation
      */
     contextForPendingDataOperation: {
-        value: function(dataOperation) {
+        value: function (dataOperation) {
             var dataOperationRegistration = this._pendingDataOperationById.get(dataOperation.id);
             return dataOperationRegistration
                 ? dataOperationRegistration.context
@@ -2082,22 +2118,22 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
 
     registerPendingDataOperationWithContext: {
-        value: function(dataOperation, context, createPromise) {
+        value: function (dataOperation, context, createPromise) {
             var dataOperationRegistration = this._pendingDataOperationById.get(dataOperation.id);
 
-            if(!dataOperationRegistration) {
+            if (!dataOperationRegistration) {
                 dataOperationRegistration = {
                     dataOperation: dataOperation
                 };
 
-                if(context) {
+                if (context) {
                     dataOperationRegistration.context = context;
                 }
 
                 this._pendingDataOperationById.set(dataOperation.id, dataOperationRegistration);
 
-                if(createPromise) {
-                    dataOperationRegistration.completionPromise = new Promise(function(resolve, reject) {
+                if (createPromise) {
+                    dataOperationRegistration.completionPromise = new Promise(function (resolve, reject) {
                         dataOperationRegistration.completionPromiseResolve = resolve;
                         dataOperationRegistration.completionPromiseReject = reject;
                     });
@@ -2109,7 +2145,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     unregisterPendingDataOperation: {
-        value: function(dataOperation) {
+        value: function (dataOperation) {
             this._pendingDataOperationById.delete(dataOperation.id);
             //Backup until bug fixed
             //DataService.mainService.unregisterDataStreamForDataOperation(dataOperation);
@@ -2117,7 +2153,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     unregisterDataOperationPendingReferrer: {
-        value: function(dataOperation) {
+        value: function (dataOperation) {
             this._pendingDataOperationById.delete(dataOperation.referrerId);
             //Backup until bug fixed
             //DataService.mainService.unregisterDataStreamForDataOperation(dataOperation);
@@ -2130,7 +2166,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @argument {DataOperation} dataOperation
      */
     referrerForDataOperation: {
-        value: function(dataOperation) {
+        value: function (dataOperation) {
             var dataOperationRegistration = this._pendingDataOperationById.get(dataOperation.referrerId);
             return dataOperationRegistration
                 ? dataOperationRegistration.dataOperation
@@ -2145,26 +2181,26 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @argument {DataOperation} dataOperation
      */
     referrerCompletionPromiseForDataOperation: {
-        value: function(dataOperation) {
-            var referrerDataOperationRegistration =  this._pendingDataOperationById.get(dataOperation.referrerId);
+        value: function (dataOperation) {
+            var referrerDataOperationRegistration = this._pendingDataOperationById.get(dataOperation.referrerId);
             return referrerDataOperationRegistration ? referrerDataOperationRegistration.completionPromise : undefined;
         }
     },
 
-        /**
-     * Returns a promise that represents the completion of data operation's referrer operation if it exists
-     *
-     * @method
-     * @argument {DataOperation} dataOperation
-     */
+    /**
+ * Returns a promise that represents the completion of data operation's referrer operation if it exists
+ *
+ * @method
+ * @argument {DataOperation} dataOperation
+ */
     referrerContextForDataOperation: {
-        value: function(dataOperation) {
-            var referrerDataOperationRegistration =  this._pendingDataOperationById.get(dataOperation.referrerId);
+        value: function (dataOperation) {
+            var referrerDataOperationRegistration = this._pendingDataOperationById.get(dataOperation.referrerId);
             return referrerDataOperationRegistration
                 ? referrerDataOperationRegistration.context
                 : undefined;
-                //For migration
-                //: DataService.mainService.registeredDataStreamForDataOperation(dataOperation);
+            //For migration
+            //: DataService.mainService.registeredDataStreamForDataOperation(dataOperation);
         }
     },
 
@@ -2175,9 +2211,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @argument {DataOperation} dataOperation
      */
     resolveCompletionPromiseWithDataOperation: {
-        value: function(dataOperation) {
-            var referrerDataOperationRegistration =  this._pendingDataOperationById.get(dataOperation.referrerId);
-            if(!referrerDataOperationRegistration) {
+        value: function (dataOperation) {
+            var referrerDataOperationRegistration = this._pendingDataOperationById.get(dataOperation.referrerId);
+            if (!referrerDataOperationRegistration) {
                 return;
             }
             referrerDataOperationRegistration.completionPromiseResolve(dataOperation);
@@ -2191,10 +2227,10 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @method
      * @argument {DataOperation} dataOperation
      */
-     rejectCompletionPromiseWithDataOperation: {
-        value: function(dataOperation) {
-            var referrerDataOperationRegistration =  this._pendingDataOperationById.get(dataOperation.referrerId);
-            if(!referrerDataOperationRegistration) {
+    rejectCompletionPromiseWithDataOperation: {
+        value: function (dataOperation) {
+            var referrerDataOperationRegistration = this._pendingDataOperationById.get(dataOperation.referrerId);
+            if (!referrerDataOperationRegistration) {
                 return;
             }
             //dataOperation.data is an Error
@@ -2210,8 +2246,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
             var query = readEvent.query,
                 self = this;
-                stream = readEvent.dataStream;
-                stream.query = query;
+            stream = readEvent.dataStream;
+            stream.query = query;
 
             // make sure type is an object descriptor or a data object descriptor.
             // query.type = this.rootService.objectDescriptorForType(query.type);
@@ -2226,7 +2262,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 rawReadExpressions = [],
                 rawOrderings,
                 promises;
-                // localizableProperties = objectDescriptor.localizablePropertyDescriptors;
+            // localizableProperties = objectDescriptor.localizablePropertyDescriptors;
 
             /*
                 We need to turn this into a Read Operation. Difficulty is to turn the query's criteria into
@@ -2262,20 +2298,20 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             readOperation.locales = self.userLocales;
 
 
-            if(criteria) {
+            if (criteria) {
                 //readOperation.criteria = criteria.clone();
                 readOperation.criteria = criteria;
             }
 
-            if(query.fetchLimit) {
+            if (query.fetchLimit) {
                 readOperation.data.readLimit = query.fetchLimit;
             }
 
-            if(query.batchSize) {
+            if (query.batchSize) {
                 readOperation.data.batchSize = query.batchSize;
             }
 
-            if(query.orderings && query.orderings > 0) {
+            if (query.orderings && query.orderings > 0) {
                 rawOrderings = [];
                 // self._mapObjectDescriptorOrderingsToRawOrderings(objectDescriptor, query.sortderings,rawOrderings);
                 // readOperation.data.orderings = rawOrderings;
@@ -2293,14 +2329,14 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             // if(rawReadExpressions.length) {
             //     readOperation.data.readExpressions = rawReadExpressions;
             // }
-            if(query.readExpressions && query.readExpressions.length) {
+            if (query.readExpressions && query.readExpressions.length) {
                 readOperation.data.readExpressions = query.readExpressions;
             }
 
             /*
                 We need to do this in node's DataWorker, it's likely that we'll want that client side as well, where it's some sort of token set post authorization.
             */
-            if(this.application.identity && this.shouldAuthenticateReadOperation) {
+            if (this.application.identity && this.shouldAuthenticateReadOperation) {
                 readOperation.identity = this.application.identity;
             }
 
@@ -2314,23 +2350,23 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             parameters = criteria ? criteria.parameters : undefined;
             rawParameters = parameters;
 
-            if(parameters && typeof criteria.parameters === "object") {
+            if (parameters && typeof criteria.parameters === "object") {
                 var keys = Object.keys(parameters),
                     i, countI, iKey, iValue, iRecord,
                     criteriaClone;
 
                 //rawParameters = Array.isArray(parameters) ? [] : {};
 
-                for(i=0, countI = keys.length;(i < countI); i++) {
-                    iKey  = keys[i];
+                for (i = 0, countI = keys.length; (i < countI); i++) {
+                    iKey = keys[i];
                     iValue = parameters[iKey];
-                    if(!iValue) {
-                        throw "fetchData: criteria with no value for parameter key "+iKey;
+                    if (!iValue) {
+                        throw "fetchData: criteria with no value for parameter key " + iKey;
                     } else {
-                        if(iValue.dataIdentifier) {
+                        if (iValue.dataIdentifier) {
 
 
-                            if(!criteriaClone) {
+                            if (!criteriaClone) {
                                 criteriaClone = criteria.clone();
                                 rawParameters = criteriaClone.parameters;
                             }
@@ -2352,7 +2388,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                 }
 
-                if(criteriaClone) {
+                if (criteriaClone) {
                     readOperation.criteria = criteriaClone;
                 }
                 // if(promises) promises = Promise.all(promises);
@@ -2396,28 +2432,44 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             //     console.log("handleReadUpdateOperation  referrerId: ",referrer);
             // }
 
-            if(stream) {
+            //console.log("handleReadUpdateOperation type: "+operation.type+" for target '"+objectDescriptor.name+" for referrerId "+referrer);
+
+
+            if (stream) {
                 streamObjectDescriptor = stream.query.type;
                 /*
 
                     We now could get readUpdate that are reads for readExpressions that are properties (with a valueDescriptor) of the ObjectDescriptor of the referrer. So we need to add a check that the obectDescriptor match, otherwise, it needs to be assigned to the right instance, or created in memory and mapping/converters will find it.
                 */
 
-                if(streamObjectDescriptor === objectDescriptor) {
-                    if(records && records.length > 0) {
+                if (streamObjectDescriptor === objectDescriptor) {
+                    if (records && records.length > 0) {
                         //We pass the map key->index as context so we can leverage it to do record[index] to find key's values as returned by RDS Data API
                         this.addRawData(stream, records, operation);
 
-                    } else if(operation.type !== DataOperation.Type.ReadCompletedOperation){
-                        console.log("operation of type:"+operation.type+", has no data");
+                    } else if (operation.type !== DataOperation.Type.ReadCompletedOperation) {
+                        console.log("operation of type:" + operation.type + ", has no data");
                     }
                 } else {
-                    console.log("Received "+operation.type+" operation that is for a readExpression of referrer ",referrer);
+                    //console.error("handleReadUpdateOperation type: " + operation.type + " that is for a readExpression of referrerId "+ referrer);
+                    if (records && records.length > 0) {
+                        //We pass the map key->index as context so we can leverage it to do record[index] to find key's values as returned by RDS Data API
+                        this.addRawData(stream, records, operation);
+
+                    } else if (operation.type !== DataOperation.Type.ReadCompletedOperation) {
+                        console.log("operation of type:" + operation.type + ", has no data");
+                    }
+
                 }
             }
-            // else {
-            //     console.log("receiving operation of type:"+operation.type+", but can't find a matching stream");
-            // }
+            else {
+                /*
+                    FIXME - we should only register to receive ReadUpdateOperation when we ourselves dispatched a  DataOperation.Type.ReadOperation.
+
+                    The tricky part is that we need to track that we have ones in-flight. So maybe addEventListener/removeEventListener should keep track of a count.
+                */
+                // console.error(this," -handleReadUpdateOperation type: "+operation.type+" for target '"+objectDescriptor.name+", but can't find a matching stream for referrerId "+referrer);
+            }
         }
     },
 
@@ -2427,7 +2479,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             this.handleReadUpdateOperation(operation);
             //var stream = DataService.mainService.registeredDataStreamForDataOperation(operation);
             var stream = this.referrerContextForDataOperation(operation);
-            if(stream) {
+            if (stream) {
                 this.rawDataDone(stream);
                 //this._thenableByOperationId.delete(operation.referrerId);
                 this.unregisterDataOperationPendingReferrer(operation);
@@ -2443,9 +2495,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     handleReadFailedOperation: {
         value: function (operation) {
             var stream = this.referrerContextForDataOperation(operation);
-            if(stream) {
+            if (stream) {
 
-                this.rawDataError(stream,operation.data);
+                this.rawDataError(stream, operation.data);
                 this.unregisterDataOperationPendingReferrer(operation);
                 //this._thenableByOperationId.delete(operation.referrerId);
             }
@@ -2456,7 +2508,13 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
 
     responseOperationForReadOperation: {
-        value: function(readOperation, err, data, isNotLast) {
+        value: function (readOperation, err, data, isNotLast) {
+            var isDataArray = Array.isArray(data);
+
+            if (isDataArray && data.length === 0 && isNotLast) {
+                return null;
+            }
+
             var operation = new DataOperation();
 
             operation.referrerId = readOperation.id;
@@ -2478,7 +2536,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 // successful response
 
                 //If we need to take care of readExpressions, we can't send a ReadCompleted until we have returnes everything that we asked for.
-                if(isNotLast) {
+                if (isNotLast) {
                     operation.type = DataOperation.Type.ReadUpdateOperation;
                 } else {
                     operation.type = DataOperation.Type.ReadCompletedOperation;
@@ -2488,7 +2546,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 /*
                     Make sure we have an array
                 */
-                if(!Array.isArray(data)) {
+                if (!isDataArray) {
                     data = [data];
                 }
 
@@ -2501,11 +2559,13 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                 var stream = this.contextForPendingDataOperation(operation);
                 //var stream = DataService.mainService.registeredDataStreamForDataOperation(operation);
-                if(stream) {
+                if (stream) {
                     this.addRawData(stream, data, operation);
 
-                    if(operation.type === DataOperation.Type.ReadCompletedOperation) {
+                    if (operation.type === DataOperation.Type.ReadCompletedOperation) {
                         this.rawDataDone(stream);
+                    } else if (stream.query.doesBatchResult) {
+                        self.rawDataBatchDone(stream);
                     }
                 }
             }
@@ -2557,7 +2617,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 Another solution could involve different "pools" of objects/stack, but we'd lose the universal bus.
 
             */
-            if(!referrerOperation) {
+            if (!referrerOperation) {
                 return;
             }
 
@@ -2587,7 +2647,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 Now resolving the promise finishes the job in saveObjectData that has the object in scope.
             */
 
-            if(!referrerOperation) {
+            if (!referrerOperation) {
                 return;
             }
 
@@ -2606,7 +2666,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
 
     _dispatchTransactionCreateStart: {
-        value: function(transaction, data) {
+        value: function (transaction, data) {
             var transactionEvent = TransactionEvent.checkout();
 
             transactionEvent.type = TransactionEvent.transactionCreateStart;
@@ -2625,7 +2685,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
     _dispatchTransactionCreateComplete: {
-        value: function(transaction, data) {
+        value: function (transaction, data) {
             var transactionEvent = TransactionEvent.checkout();
 
             transactionEvent.type = TransactionEvent.transactionCreateComplete;
@@ -2651,7 +2711,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
     _dispatchTransactionCreateFail: {
-        value: function(transaction, data) {
+        value: function (transaction, data) {
             var transactionEvent = TransactionEvent.checkout();
 
             transactionEvent.type = TransactionEvent.transactionCreateFail;
@@ -2673,8 +2733,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     handleTransactionCreate: {
-        value: function(transactionCreateEvent) {
-            if(this.supportsTransaction) {
+        value: function (transactionCreateEvent) {
+            if (this.supportsTransaction) {
 
                 var self = this,
                     transaction = transactionCreateEvent.transaction,
@@ -2686,15 +2746,17 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     updateOperationType = DataOperation.Type.UpdateOperation,
                     deleteOperationType = DataOperation.Type.DeleteOperation,
                     createdDataObjects = transaction.createdDataObjects,
-                    changedDataObjects = transaction.changedDataObjects,
+                    changedDataObjects = transaction.updatedDataObjects,
+                    updatedData = transaction.updatedData,
                     dataObjectChanges = transaction.dataObjectChanges,
                     deletedDataObjects = transaction.deletedDataObjects,
+                    deletedData = transaction.deletedData,
                     operationCount = 0,
                     operationObjectDescriptors = [],
                     // transactionCreateStartDispatched = false,
                     dataOperationCreationPromises,
                     createTransactionOperation = new DataOperation();
-                    dataOperationsByObject = new Map();/* Key is object, value is operation */
+                dataOperationsByObject = new Map();/* Key is object, value is operation */
 
 
                 //console.log("handleTransactionCreate: transaction-"+transaction.identifier, transaction);
@@ -2709,9 +2771,9 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 transactionRawContext.operations = {};
                 transactionRawContext.dataOperationsByObject = dataOperationsByObject;
 
-                while(!(iteration = iterator.next()).done) {
+                while (!(iteration = iterator.next()).done) {
                     iObjectDescriptor = iteration.value;
-                    if(this.handlesType(iObjectDescriptor)) {
+                    if (this.handlesType(iObjectDescriptor)) {
 
 
                         /*
@@ -2723,25 +2785,25 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                             Even if addEventListener has already been called, it won't add it twice, but we should pay attention to perf.
                             Internal structure is using an array and indexOf(), we might want to re-assess if internally using a Set instead might be better.
                         */
-                        if(!dataOperationCreationPromises) {
+                        if (!dataOperationCreationPromises) {
                             dataOperationCreationPromises = [];
                         }
 
                         (dataOperationCreationPromises || (dataOperationCreationPromises = [])).push(
                             this._saveTransactionDataOperationsForObjectDescriptor(transaction, iObjectDescriptor, createOperationType, createdDataObjects, updateOperationType, changedDataObjects, dataObjectChanges, deleteOperationType, deletedDataObjects, dataOperationsByObject, createTransactionOperation, operationObjectDescriptors, transactionRawContext)
-                            .then(function(_operationCount) {
-                                /*
-                                    As soon as we know there will be some action we broadcast we'll be in:
-                                */
-                                if(operationCount === 0 && _operationCount > 0) {
-                                    // if(!transactionCreateStartDispatched) {
-                                        transactionCreateStartDispatched = self._dispatchTransactionCreateStart(transaction,{
+                                .then(function (_operationCount) {
+                                    /*
+                                        As soon as we know there will be some action we broadcast we'll be in:
+                                    */
+                                    if (operationCount === 0 && _operationCount > 0) {
+                                        // if(!transactionCreateStartDispatched) {
+                                        transactionCreateStartDispatched = self._dispatchTransactionCreateStart(transaction, {
                                             progress: 0
                                         });
-                                    // }
-                                }
-                                operationCount += _operationCount;
-                            })
+                                        // }
+                                    }
+                                    operationCount += _operationCount;
+                                })
                         );
 
                     }
@@ -2750,44 +2812,44 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 transaction.createCompletionPromiseForParticipant(this);
 
                 Promise.all(dataOperationCreationPromises)
-                .then(function() {
-                    transactionRawContext.operationCount = operationCount;
-                    if(operationCount > 0) {
-                        // createTransactionOperation.data = {
-                        //     objectDescriptors: transactionObjectDescriptors.map((objectDescriptor) => {return objectDescriptor.module.id})
-                        // }
+                    .then(function () {
+                        transactionRawContext.operationCount = operationCount;
+                        if (operationCount > 0) {
+                            // createTransactionOperation.data = {
+                            //     objectDescriptors: transactionObjectDescriptors.map((objectDescriptor) => {return objectDescriptor.module.id})
+                            // }
 
-                        self.registerPendingDataOperationWithContext(createTransactionOperation, transaction);
-                        createTransactionDataOperationCompletionPromise = self.completionPromiseForPendingDataOperation(createTransactionOperation);
+                            self.registerPendingDataOperationWithContext(createTransactionOperation, transaction);
+                            createTransactionDataOperationCompletionPromise = self.completionPromiseForPendingDataOperation(createTransactionOperation);
 
-                        createTransactionOperation.data.objectDescriptors =  operationObjectDescriptors.map((objectDescriptor) => {return objectDescriptor.module.id});
+                            createTransactionOperation.data.objectDescriptors = operationObjectDescriptors.map((objectDescriptor) => { return objectDescriptor.module.id });
 
-                        self.dispatchEvent(createTransactionOperation);
+                            self.dispatchEvent(createTransactionOperation);
 
-                        createTransactionDataOperationCompletionPromise
-                        .then(function(dataOperationCompletion) {
-                            self._dispatchTransactionCreateComplete(transaction, {
-                                objectDescriptors: operationObjectDescriptors
-                            });
-                            transaction.resolveCompletionPromiseForParticipant(self);
-                        }, function(error) {
-                            self._dispatchTransactionCreateFail(transaction, error);
-                            transaction.rejectCompletionPromiseForParticipantWithError(self, error);
-                        });
+                            createTransactionDataOperationCompletionPromise
+                                .then(function (dataOperationCompletion) {
+                                    self._dispatchTransactionCreateComplete(transaction, {
+                                        objectDescriptors: operationObjectDescriptors
+                                    });
+                                    transaction.resolveCompletionPromiseForParticipant(self);
+                                }, function (error) {
+                                    self._dispatchTransactionCreateFail(transaction, error);
+                                    transaction.rejectCompletionPromiseForParticipantWithError(self, error);
+                                });
 
-                    } else {
-                        /*
-                            Right now we're missing a way to tell that we didn't have anything to do
-                        */
-                    }
-                });
+                        } else {
+                            /*
+                                Right now we're missing a way to tell that we didn't have anything to do
+                            */
+                        }
+                    });
             }
         }
     },
 
 
     _saveTransactionDataOperationsForObjectDescriptor: {
-        value: function(transaction, iObjectDescriptor, createOperationType, createdDataObjects, updateOperationType, changedDataObjects, dataObjectChanges, deleteOperationType, deletedDataObjects, dataOperationsByObject, createTransactionOperation, operationObjectDescriptors, transactionRawContext) {
+        value: function (transaction, iObjectDescriptor, createOperationType, createdDataObjects, updateOperationType, changedDataObjects, dataObjectChanges, deleteOperationType, deletedDataObjects, dataOperationsByObject, createTransactionOperation, operationObjectDescriptors, transactionRawContext) {
             var currentHandledCreatedDataObjects,
                 currentHandledChangedDataObjects,
                 currentHandledDeletedDataObjects,
@@ -2795,15 +2857,15 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 operationsByType = {},
                 dataOperationCreationPromises = [];
 
-            if(createdDataObjects.has(iObjectDescriptor)) {
+            if (createdDataObjects.has(iObjectDescriptor)) {
                 currentHandledCreatedDataObjects = createdDataObjects.get(iObjectDescriptor);
             }
 
-            if(changedDataObjects.has(iObjectDescriptor)) {
+            if (changedDataObjects.has(iObjectDescriptor)) {
                 currentHandledChangedDataObjects = changedDataObjects.get(iObjectDescriptor);
             }
 
-            if(deletedDataObjects.has(iObjectDescriptor)) {
+            if (deletedDataObjects.has(iObjectDescriptor)) {
                 currentHandledDeletedDataObjects = deletedDataObjects.get(iObjectDescriptor);
             }
 
@@ -2813,50 +2875,50 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 (currentHandledDeletedDataObjects ? currentHandledDeletedDataObjects.size : 0);
 
 
-            if(currentHandledCreatedDataObjects) {
+            if (currentHandledCreatedDataObjects) {
                 dataOperationCreationPromises.push(this._saveDataOperationsForObjects(currentHandledCreatedDataObjects, createOperationType, dataObjectChanges, dataOperationsByObject, createTransactionOperation, currentOperationCount, transaction)
-                .then(function(_createOperations) {
-                    if(_createOperations && _createOperations.length) {
-                        operationCount += _createOperations.length;
-                        operationsByType.createOperations = _createOperations;
-                    }
-                    //push.apply(createOperations, _createOperations);
-                }));
+                    .then(function (_createOperations) {
+                        if (_createOperations && _createOperations.length) {
+                            operationCount += _createOperations.length;
+                            operationsByType.createOperations = _createOperations;
+                        }
+                        //push.apply(createOperations, _createOperations);
+                    }));
             }
 
-            if(currentHandledChangedDataObjects) {
+            if (currentHandledChangedDataObjects) {
                 dataOperationCreationPromises.push(this._saveDataOperationsForObjects(currentHandledChangedDataObjects, updateOperationType, dataObjectChanges, dataOperationsByObject, createTransactionOperation, currentOperationCount, transaction)
-                .then(function(_updateOperations) {
-                    if(_updateOperations && _updateOperations.length) {
-                        operationCount += _updateOperations.length;
-                        operationsByType.updateOperations = _updateOperations;
-                    }
-                    //push.apply(updateOperations, _updateOperations);
-                }));
+                    .then(function (_updateOperations) {
+                        if (_updateOperations && _updateOperations.length) {
+                            operationCount += _updateOperations.length;
+                            operationsByType.updateOperations = _updateOperations;
+                        }
+                        //push.apply(updateOperations, _updateOperations);
+                    }));
             }
 
-            if(currentHandledDeletedDataObjects) {
+            if (currentHandledDeletedDataObjects) {
                 dataOperationCreationPromises.push(this._saveDataOperationsForObjects(currentHandledDeletedDataObjects, deleteOperationType, dataObjectChanges, dataOperationsByObject, createTransactionOperation, currentOperationCount, transaction)
-                .then(function(_deleteOperations) {
-                    if(_deleteOperations && _deleteOperations.length) {
-                        operationCount += _deleteOperations.length;
-                        operationsByType.deleteOperations = _deleteOperations;
-                    }
-                    //push.apply(deleteOperations, _deleteOperations);
-                }));
+                    .then(function (_deleteOperations) {
+                        if (_deleteOperations && _deleteOperations.length) {
+                            operationCount += _deleteOperations.length;
+                            operationsByType.deleteOperations = _deleteOperations;
+                        }
+                        //push.apply(deleteOperations, _deleteOperations);
+                    }));
             }
 
             return Promise.all(dataOperationCreationPromises)
-            .then(function() {
-                /*
-                    We're saving the operations in the rawContext as we'll send them in handlePrepareTransaction
-                */
-                if(operationCount>0) {
-                    transactionRawContext.operations[iObjectDescriptor.module.id] = operationsByType;
-                    operationObjectDescriptors.push(iObjectDescriptor);
-                }
-                return operationCount;
-            });
+                .then(function () {
+                    /*
+                        We're saving the operations in the rawContext as we'll send them in handlePrepareTransaction
+                    */
+                    if (operationCount > 0) {
+                        transactionRawContext.operations[iObjectDescriptor.module.id] = operationsByType;
+                        operationObjectDescriptors.push(iObjectDescriptor);
+                    }
+                    return operationCount;
+                });
         }
 
     },
@@ -2868,8 +2930,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @method
      * @argument {TransactionEvent} transactionPrepareEvent
      */
-     _dispatchTransactionPrepareStart: {
-        value: function(transaction, data) {
+    _dispatchTransactionPrepareStart: {
+        value: function (transaction, data) {
             var transactionEvent = TransactionEvent.checkout();
 
             transactionEvent.type = TransactionEvent.transactionPrepareStart;
@@ -2888,7 +2950,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
     _dispatchTransactionPrepareComplete: {
-        value: function(transaction, data) {
+        value: function (transaction, data) {
             var transactionEvent = TransactionEvent.checkout();
 
             transactionEvent.type = TransactionEvent.transactionPrepareComplete;
@@ -2911,7 +2973,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
     _dispatchTransactionPrepareFail: {
-        value: function(transaction, data) {
+        value: function (transaction, data) {
             var transactionEvent = TransactionEvent.checkout();
 
             transactionEvent.type = TransactionEvent.transactionPrepareFail;
@@ -2931,14 +2993,14 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     handleTransactionPrepare: {
-        value: function(transactionPrepareEvent) {
+        value: function (transactionPrepareEvent) {
 
             //console.log("handleTransactionPrepare: ",transactionPrepareEvent);
             var self = this,
                 transaction = transactionPrepareEvent.transaction,
                 objectDescriptors = transaction.objectDescriptors,
                 createdDataObjects = transaction.createdDataObjects,
-                changedDataObjects = transaction.changedDataObjects,
+                changedDataObjects = transaction.updatedDataObjects,
                 dataObjectChanges = transaction.dataObjectChanges,
                 deletedDataObjects = transaction.deletedDataObjects,
                 iterator = objectDescriptors.values(),
@@ -2972,7 +3034,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             //console.log("handleTransactionPrepare: transaction-"+transaction.identifier, transaction);
 
 
-            if(supportsTransaction && transactionRawContext && transactionRawContext.operationCount > 0) {
+            if (supportsTransaction && transactionRawContext && transactionRawContext.operationCount > 0) {
                 /*
                     Now we know we're in:
                 */
@@ -2991,17 +3053,17 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 self.dispatchEvent(appendTransactionOperation);
 
                 appendCompletedOperationCompletionPromise
-                .then(function(dataOperationCompletion) {
-                    self._dispatchTransactionPrepareComplete(transaction, {
-                        dataOperationsByObject: transactionRawContext.dataOperationsByObject
+                    .then(function (dataOperationCompletion) {
+                        self._dispatchTransactionPrepareComplete(transaction, {
+                            dataOperationsByObject: transactionRawContext.dataOperationsByObject
+                        });
+                        transaction.dataOperationsByObject = transactionRawContext.dataOperationsByObject;
+                        transaction.resolveCompletionPromiseForParticipant(self);
+                    })
+                    .catch(function (error) {
+                        self._dispatchTransactionPrepareFail(transaction, error);
+                        transaction.rejectCompletionPromiseForParticipantWithError(self, error);
                     });
-                    transaction.dataOperationsByObject = transactionRawContext.dataOperationsByObject;
-                    transaction.resolveCompletionPromiseForParticipant(self);
-                })
-                .catch(function (error) {
-                    self._dispatchTransactionPrepareFail(transaction, error);
-                    transaction.rejectCompletionPromiseForParticipantWithError(self, error);
-                });
             }
         }
     },
@@ -3019,19 +3081,19 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @returns {Object} - An object containing raw Data level info relevant to a transaction
      */
     rawContextForTransaction: {
-        value: function(transaction) {
+        value: function (transaction) {
             var rawContext = this._rawContextByTransaction.get(transaction);
 
-            if(transaction && !rawContext) {
+            if (transaction && !rawContext) {
                 rawContext = {};
-                this._rawContextByTransaction.set(transaction,rawContext);
+                this._rawContextByTransaction.set(transaction, rawContext);
             }
             return rawContext;
         }
     },
 
     preparedDataOperationsForTransaction: {
-        value: function(transaction) {
+        value: function (transaction) {
             var rawContext = this._rawContextByTransaction.get(transaction);
 
             return rawContext ? rawContext.preparedDataOperations : undefined;
@@ -3046,14 +3108,14 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @returns undefined
      */
     clearRawContextForTransaction: {
-        value: function(transaction) {
+        value: function (transaction) {
             this._rawContextByTransaction.delete(transaction);
         }
     },
 
 
     createTransactionOperationForTransaction: {
-        value: function(transaction) {
+        value: function (transaction) {
             var createTransaction = new DataOperation();
 
             createTransaction.type = DataOperation.Type.CreateTransactionOperation;
@@ -3065,7 +3127,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     createAppendTransactionOperationForTransaction: {
-        value: function(transaction) {
+        value: function (transaction) {
             var transactionRawContext = this.rawContextForTransaction(transaction),
                 rawTransactions = transactionRawContext.rawTransactions,
                 createTransactionOperation = transactionRawContext.createTransactionOperation,
@@ -3105,10 +3167,10 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
             //console.log("handleCreateTransactionCompletedOperation: transaction-"+transaction.identifier, transaction);
 
-            if(transaction) {
+            if (transaction) {
                 createTransactionOperation = this.referrerForDataOperation(createTransactionCompletedOperation),
-                data = createTransactionCompletedOperation.data,
-                transactionRawContext = this.rawContextForTransaction(transaction);
+                    data = createTransactionCompletedOperation.data,
+                    transactionRawContext = this.rawContextForTransaction(transaction);
 
                 /*
                     data is an object with the following shape:
@@ -3130,7 +3192,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     handleCreateTransactionFailedOperation: {
         value: function (operation) {
             var transaction = this.referrerContextForDataOperation(operation);
-            console.error("handleCreateTransactionFailedOperation: transaction-"+transaction.identifier, transaction);
+            console.error("handleCreateTransactionFailedOperation: transaction-" + transaction.identifier, transaction);
 
             this.rejectCompletionPromiseWithDataOperation(operation);
         }
@@ -3139,7 +3201,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     handleAppendTransactionCompletedOperation: {
         value: function (appendTransactionCompletedOperation) {
             var transaction = this.referrerContextForDataOperation(appendTransactionCompletedOperation);
-            if(transaction) {
+            if (transaction) {
 
                 //console.log("handleAppendTransactionCompletedOperation: transaction-"+transaction.identifier, transaction);
 
@@ -3149,7 +3211,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 // this.mainService.removeEventListener(DataOperation.Type.AppendTransactionCompletedOperation,this,false);
                 // this.mainService.removeEventListener(DataOperation.Type.AppendTransactionFailedOperation,this,false);
                 this.resolveCompletionPromiseWithDataOperation(appendTransactionCompletedOperation);
-                }
+            }
 
         }
     },
@@ -3157,8 +3219,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: function (appendTransactionFailedOperation) {
 
             var transaction = this.referrerContextForDataOperation(appendTransactionFailedOperation);
-            if(transaction) {
-                console.error("handleAppendTransactionFailedOperation: transaction-"+transaction.identifier, transaction);
+            if (transaction) {
+                console.error("handleAppendTransactionFailedOperation: transaction-" + transaction.identifier, transaction);
 
                 /*
                     This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
@@ -3173,7 +3235,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
 
     __processObjectChangesForProperty: {
-        value: function(object, aProperty, aPropertyDescriptor, aPropertyChanges, operationData, lastReadSnapshot, rawDataSnapshot, rawDataPrimaryKeys, mapping) {
+        value: function (object, aProperty, aPropertyDescriptor, aPropertyChanges, operationData, lastReadSnapshot, rawDataSnapshot, rawDataPrimaryKeys, mapping) {
 
             /*
                 We already do that in expression-data-mapping mapObjectPropertyToRawData(), but expression-data-mapping doesn't know about added/removed changes where our _processObjectChangesForProperty does.
@@ -3191,63 +3253,63 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                 The recent addition of a DataObject property that can be a Map, we may have to re-visit that. It would be better to handle incremental changes to a map than sending all keys and all values are we doing for now
             */
-            if(aPropertyChanges && (aPropertyChanges.hasOwnProperty("addedValues") ||  aPropertyChanges.hasOwnProperty("removedValues"))) {
-                if(!(aPropertyDescriptor.cardinality>1)) {
+            if (aPropertyChanges && (aPropertyChanges.hasOwnProperty("addedValues") || aPropertyChanges.hasOwnProperty("removedValues"))) {
+                if (!(aPropertyDescriptor.cardinality > 1)) {
                     throw new Error("added/removed values for property without a to-many cardinality");
                 }
-            //     /*
-            //         Until we get more sophisticated and we can leverage
-            //         the full serialization, we turn objects into their primaryKey
+                //     /*
+                //         Until we get more sophisticated and we can leverage
+                //         the full serialization, we turn objects into their primaryKey
 
-            //         We have a partial view, the backend will need pay attention that we're not re-adding object if it's already there, and should be unique.
-            //     */
-            //    var valuesIterator, iValue, addedValues, removedValues;
-            //    if(aPropertyChanges.addedValues) {
+                //         We have a partial view, the backend will need pay attention that we're not re-adding object if it's already there, and should be unique.
+                //     */
+                //    var valuesIterator, iValue, addedValues, removedValues;
+                //    if(aPropertyChanges.addedValues) {
 
-            //         /*
-            //             Notes:
-            //             If dataObject[aProperty] === null, we could treat addedValues as a set, and there might be something going on in tracking/propagating changes that leads to a set being considered as added. Triggers do their best to keep the array created in place, and change it's content rather than replace it, even when a set is done. That in itself is likely the reason we see this.
+                //         /*
+                //             Notes:
+                //             If dataObject[aProperty] === null, we could treat addedValues as a set, and there might be something going on in tracking/propagating changes that leads to a set being considered as added. Triggers do their best to keep the array created in place, and change it's content rather than replace it, even when a set is done. That in itself is likely the reason we see this.
 
-            //             There might not be downsides to deal with it as an add though.
-            //         */
-            //         valuesIterator = aPropertyChanges.addedValues.values();
-            //         while ((iValue = valuesIterator.next().value)) {
-            //             (addedValues || (addedValues = [])).push(this.dataIdentifierForObject(iValue).primaryKey);
-            //         }
+                //             There might not be downsides to deal with it as an add though.
+                //         */
+                //         valuesIterator = aPropertyChanges.addedValues.values();
+                //         while ((iValue = valuesIterator.next().value)) {
+                //             (addedValues || (addedValues = [])).push(this.dataIdentifierForObject(iValue).primaryKey);
+                //         }
 
-            //         /*
-            //             After converting to primaryKeys in an array, we make it replace the original set for the same key on aPropertyChanges
-            //         */
-            //        if(addedValues) {
-            //             aPropertyChanges.addedValues = addedValues;
-            //        } else {
-            //            delete aPropertyChanges.addedValues;
-            //        }
-            //    }
+                //         /*
+                //             After converting to primaryKeys in an array, we make it replace the original set for the same key on aPropertyChanges
+                //         */
+                //        if(addedValues) {
+                //             aPropertyChanges.addedValues = addedValues;
+                //        } else {
+                //            delete aPropertyChanges.addedValues;
+                //        }
+                //    }
 
-            //     if(aPropertyChanges.removedValues) {
-            //         valuesIterator = aPropertyChanges.removedValues.values();
-            //         while ((iValue = valuesIterator.next().value)) {
-            //             //TODO: Check if the removed value should be itself be deleted
-            //             //if(aPropertyDeleteRule === DeleteRule.CASCADE){}
-            //             (removedValues || (removedValues = [])).push(this.dataIdentifierForObject(iValue).primaryKey);
-            //         }
-            //         if(removedValues) {
-            //             aPropertyChanges.removedValues = removedValues;
-            //         } else {
-            //             delete aPropertyChanges.removedValues;
-            //         }
-            //     }
+                //     if(aPropertyChanges.removedValues) {
+                //         valuesIterator = aPropertyChanges.removedValues.values();
+                //         while ((iValue = valuesIterator.next().value)) {
+                //             //TODO: Check if the removed value should be itself be deleted
+                //             //if(aPropertyDeleteRule === DeleteRule.CASCADE){}
+                //             (removedValues || (removedValues = [])).push(this.dataIdentifierForObject(iValue).primaryKey);
+                //         }
+                //         if(removedValues) {
+                //             aPropertyChanges.removedValues = removedValues;
+                //         } else {
+                //             delete aPropertyChanges.removedValues;
+                //         }
+                //     }
 
-            //     //Here we mutated the structure from changesForDataObject. I should be cleared
-            //     //when saved, but what if save fails and changes happen in-between?
-            //     operationData[aRawProperty] = aPropertyChanges;
+                //     //Here we mutated the structure from changesForDataObject. I should be cleared
+                //     //when saved, but what if save fails and changes happen in-between?
+                //     operationData[aRawProperty] = aPropertyChanges;
 
                 return this._mapObjectPropertyToRawData(object, aProperty, operationData, undefined/*context*/, aPropertyChanges.addedValues, aPropertyChanges.removedValues, lastReadSnapshot, rawDataSnapshot);
 
             }
             else {
-                return this._mapObjectPropertyToRawData(object, aProperty, operationData, undefined/*context*/,undefined, undefined, lastReadSnapshot, rawDataSnapshot);
+                return this._mapObjectPropertyToRawData(object, aProperty, operationData, undefined/*context*/, undefined, undefined, lastReadSnapshot, rawDataSnapshot);
 
                 /*
                     we need to check post mapping that the rawValue is different from the snapshot
@@ -3297,7 +3359,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 mapping = this.mappingForType(anObjectDescriptor),
                 rawDataPrimaryKeys = mapping.rawDataPrimaryKeys;
 
-            while(aProperty = propertyIterator.next().value) {
+            while (aProperty = propertyIterator.next().value) {
                 // aRawProperty = mapping.mapObjectPropertyNameToRawPropertyName(aProperty);
                 //aRawProperty = mapping.mapObjectPropertyToRawProperty(object, aProperty);
 
@@ -3310,24 +3372,24 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 //serializable. Ourr goal for delete is to use these values for optimistic locking, so no change, no need
                 //If we pass this down to _processObjectChangesForProperty, it will attempt to map and fail if no aPropertyDescriptor
                 //exists. So we catch it here since we know the context about the operation.
-                if(isDeletedObject && (!aPropertyDescriptor || !aPropertyChanges)) {
+                if (isDeletedObject && (!aPropertyDescriptor || !aPropertyChanges)) {
                     continue;
                 }
 
                 result = this.__processObjectChangesForProperty(object, aProperty, aPropertyDescriptor, aPropertyChanges, operationData, snapshot, dataSnapshot, rawDataPrimaryKeys, mapping);
 
-                if(result && this._isAsync(result)) {
+                if (result && this._isAsync(result)) {
                     (mappingPromises || (mappingPromises = [])).push(result);
                 }
             }
 
-            if(mappingPromises && mappingPromises.length) {
+            if (mappingPromises && mappingPromises.length) {
                 mappingPromise = Promise.all(mappingPromises);
             }
 
 
             return (mappingPromise
-                ? mappingPromise.then(function() {
+                ? mappingPromise.then(function () {
                     return operationData;
                 })
                 : Promise.resolve(operationData))
@@ -3379,10 +3441,10 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                         ? operationType === DataOperation.Type.CreateOperation
                         : self.rootService.isObjectCreated(object),
                     localOperationType = operationType
-                                        ? operationType
-                                        : isNewObject
-                                            ? DataOperation.Type.CreateOperation
-                                            : DataOperation.Type.UpdateOperation,
+                        ? operationType
+                        : isNewObject
+                            ? DataOperation.Type.CreateOperation
+                            : DataOperation.Type.UpdateOperation,
                     isDeletedObject = localOperationType === DataOperation.Type.DeleteOperation,
                     operationData = {},
                     localizableProperties = objectDescriptor.localizablePropertyDescriptors,
@@ -3393,8 +3455,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                 operation.type = localOperationType;
 
-                if(dataIdentifier) {
-                    if(!isNewObject) {
+                if (dataIdentifier) {
+                    if (!isNewObject) {
                         criteria = this.rawCriteriaForObject(object, objectDescriptor);
                     }
                     else {
@@ -3402,20 +3464,20 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                     }
                 }
 
-                if(snapshot = this.snapshotForDataIdentifier(object.dataIdentifier)) {
-                        //We make a shallow copy so we can remove properties we don't care about
-                        snapshot = Object.assign({},snapshot);
+                if (snapshot = this.snapshotForDataIdentifier(object.dataIdentifier)) {
+                    //We make a shallow copy so we can remove properties we don't care about
+                    snapshot = Object.assign({}, snapshot);
                 }
 
 
-                if(localizableProperties && localizableProperties.size) {
+                if (localizableProperties && localizableProperties.size) {
                     operation.locales = this.localesForObject(object)
                 }
 
                 operation.criteria = criteria;
 
                 //Nothing to do, change the operation type and bail out
-                if(!isNewObject && !dataObjectChanges && !isDeletedObject) {
+                if (!isNewObject && !dataObjectChanges && !isDeletedObject) {
                     operation.type = DataOperation.Type.NoOp;
                     return Promise.resolve(operation);
                 }
@@ -3430,14 +3492,14 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                     For deletedObjects, if there were changes, we don't care about them, it's not that relevant, we're going to use all known properties fetched client side to eventually catch a conflict if someone made a change in-between.
                 */
-                if(!isNewObject) {
+                if (!isNewObject) {
                     operation.snapshot = dataSnapshot;
                 }
 
-                return this._mapObjectChangesToOperationData(object,dataObjectChanges,operationData, snapshot, dataSnapshot,isDeletedObject, objectDescriptor)
-                    .then(function(resolvedOperationData) {
+                return this._mapObjectChangesToOperationData(object, dataObjectChanges, operationData, snapshot, dataSnapshot, isDeletedObject, objectDescriptor)
+                    .then(function (resolvedOperationData) {
 
-                        if(!isDeletedObject && Object.keys(operationData).length === 0) {
+                        if (!isDeletedObject && Object.keys(operationData).length === 0) {
                             /*
                                 if there are no changes known, it's a no-op: if it's an existing object nothing to do and if it's a new empty object... should it go through?? Or it's either a CreateCancelled or an UpdateCancelled.
 
@@ -3456,7 +3518,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
                                 If somehow things fail, we have the pending operation at hand to re-try
                             */
-                            if(!isDeletedObject) {
+                            if (!isDeletedObject) {
                                 //We cache the changes on the operation. As this isn't part of an operation's serializeSelf,
                                 //we keep track of it for dispatching events when save is complete and don't have to worry
                                 //about side effects for the server side.
@@ -3464,54 +3526,54 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                             }
                             //self.clearRegisteredChangesForDataObject(object);
                         }
-                        if(dataOperationsByObject) {
-                            dataOperationsByObject.set(object,operation);
+                        if (dataOperationsByObject) {
+                            dataOperationsByObject.set(object, operation);
                         }
                         return operation;
                     });
             }
-            catch(error) {
+            catch (error) {
                 return Promise.reject(error);
             }
         }
     },
 
     _saveDataOperationsForObjects: {
-        value: function(objects, operationType, dataObjectChangesMap, dataOperationsByObject, createTransaction, operationCount, transaction) {
+        value: function (objects, operationType, dataObjectChangesMap, dataOperationsByObject, createTransaction, operationCount, transaction) {
             var self = this;
-            return new Promise(function(resolve, reject) {
+            return new Promise(function (resolve, reject) {
                 try {
 
                     var iterator = objects.values(),
-                    isUpdateOperationType = operationType === DataOperation.Type.UpdateOperation,
-                    iOperationPromises,
-                    iOperationPromise,
-                    operations,
-                    percentCompletion,
-                    lastProgressSent = (createTransaction && createTransaction.lastProgressSent) || 0,
-                    transactionPrepareProgressEvent,
-                    iObject;
+                        isUpdateOperationType = operationType === DataOperation.Type.UpdateOperation,
+                        iOperationPromises,
+                        iOperationPromise,
+                        operations,
+                        percentCompletion,
+                        lastProgressSent = (createTransaction && createTransaction.lastProgressSent) || 0,
+                        transactionPrepareProgressEvent,
+                        iObject;
 
-                    while((iObject = iterator.next().value)) {
+                    while ((iObject = iterator.next().value)) {
                         iOperationPromise = self._saveDataOperationForObject(iObject, operationType, dataObjectChangesMap, dataOperationsByObject);
                         (iOperationPromises || (iOperationPromises = [])).push(iOperationPromise);
-                        iOperationPromise.then(function(resolvedOperation) {
+                        iOperationPromise.then(function (resolvedOperation) {
                             var operationCreationProgress = (createTransaction && createTransaction.operationCreationProgress) || 0;
 
-                            if(createTransaction) {
+                            if (createTransaction) {
                                 createTransaction.operationCreationProgress = ++operationCreationProgress;
                             }
 
                             /*
                                 NoOps will be handled by iterating on dataObjectChangesMap later on
                             */
-                            if(resolvedOperation.type !== DataOperation.Type.NoOp) {
+                            if (resolvedOperation.type !== DataOperation.Type.NoOp) {
                                 (operations || (operations = [])).push(resolvedOperation);
                             }
 
-                            percentCompletion = Math.round((operationCreationProgress / operationCount)*100)/100;
+                            percentCompletion = Math.round((operationCreationProgress / operationCount) * 100) / 100;
 
-                            if(percentCompletion > lastProgressSent) {
+                            if (percentCompletion > lastProgressSent) {
                                 //console.log("_saveDataOperationsForObjects: "+percentCompletion);
 
                                 transactionPrepareProgressEvent = TransactionEvent.checkout();
@@ -3526,27 +3588,27 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                                 //self.dispatchDataEventTypeForObject(DataEvent.saveChangesProgress, self, percentCompletion);
 
                                 lastProgressSent = percentCompletion;
-                                if(createTransaction) {
+                                if (createTransaction) {
                                     createTransaction.lastProgressSent = lastProgressSent;
                                 }
                             }
 
-                        }, function(rejectedValue) {
+                        }, function (rejectedValue) {
                             reject(rejectedValue);
                         });
                     }
 
-                    if(iOperationPromises) {
+                    if (iOperationPromises) {
 
                         Promise.all(iOperationPromises)
-                        .then(function(resolvedOperations) {
-                            /*
-                                resolvedOperations could contains some null if changed objects don't have anything to solve in their own row because it's stored on the other side of a relationship, which is why we keep track of the other array ourselves to avoid looping over again and modify the array after, or send noop operation through the wire for nothing. Cost time an money!
-                            */
-                        resolve(operations);
-                        }, function(rejectedValue) {
-                            reject(rejectedValue);
-                        });
+                            .then(function (resolvedOperations) {
+                                /*
+                                    resolvedOperations could contains some null if changed objects don't have anything to solve in their own row because it's stored on the other side of a relationship, which is why we keep track of the other array ourselves to avoid looping over again and modify the array after, or send noop operation through the wire for nothing. Cost time an money!
+                                */
+                                resolve(operations);
+                            }, function (rejectedValue) {
+                                reject(rejectedValue);
+                            });
 
                     } else {
                         resolve(null);
@@ -3567,8 +3629,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @method
      * @argument {TransactionEvent} transactionPrepareEvent
      */
-     _dispatchTransactionCommitStart: {
-        value: function(transaction, data) {
+    _dispatchTransactionCommitStart: {
+        value: function (transaction, data) {
             var transactionEvent = TransactionEvent.checkout();
 
             transactionEvent.type = TransactionEvent.transactionCommitStart;
@@ -3587,7 +3649,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
     _dispatchTransactionCommitComplete: {
-        value: function(transaction, data) {
+        value: function (transaction, data) {
             var transactionEvent = TransactionEvent.checkout();
 
             transactionEvent.type = TransactionEvent.transactionCommitComplete;
@@ -3611,7 +3673,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
     _dispatchTransactionCommitFail: {
-        value: function(transaction, data) {
+        value: function (transaction, data) {
             var transactionEvent = TransactionEvent.checkout();
 
             transactionEvent.type = TransactionEvent.transactionPrepareFail;
@@ -3636,17 +3698,17 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     handleTransactionCommit: {
-        value: function(transactionCommitEvent) {
+        value: function (transactionCommitEvent) {
             var self = this,
-            transaction = transactionCommitEvent.transaction,
-            transactionRawContext = this.rawContextForTransaction(transaction),
-            createTransactionOperation = transactionRawContext.createTransactionOperation;
+                transaction = transactionCommitEvent.transaction,
+                transactionRawContext = this.rawContextForTransaction(transaction),
+                createTransactionOperation = transactionRawContext.createTransactionOperation;
 
             //console.log("handleTransactionCommit: transaction-"+transaction.identifier, transaction);
 
-            if(this.supportsTransaction && createTransactionOperation) {
+            if (this.supportsTransaction && createTransactionOperation) {
 
-                this._dispatchTransactionCommitStart(transaction,{
+                this._dispatchTransactionCommitStart(transaction, {
                     dataOperationsByObject: transactionRawContext.dataOperationsByObject
                 });
 
@@ -3664,53 +3726,53 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 this.dispatchEvent(commitTransactionOperation);
 
                 commitTransactionDataOperationCompletionPromise
-                .then(function(dataOperationCompletion) {
+                    .then(function (dataOperationCompletion) {
 
-                    var dataOperationsByObject = transactionRawContext.dataOperationsByObject,
-                        CreateOperation = DataOperation.Type.CreateOperation,
-                        UpdateOperation = DataOperation.Type.UpdateOperation,
-                        DeleteOperation = DataOperation.Type.DeleteOperation,
-                        NoOpOperation = DataOperation.Type.NoOp,
-                        objectEnumerator = dataOperationsByObject.keys(),
-                        objectIteration,
-                        iObject,
-                        iOperation,
-                        iObjectDescriptor,
-                        iDataIdentifier;
+                        var dataOperationsByObject = transactionRawContext.dataOperationsByObject,
+                            CreateOperation = DataOperation.Type.CreateOperation,
+                            UpdateOperation = DataOperation.Type.UpdateOperation,
+                            DeleteOperation = DataOperation.Type.DeleteOperation,
+                            NoOpOperation = DataOperation.Type.NoOp,
+                            objectEnumerator = dataOperationsByObject.keys(),
+                            objectIteration,
+                            iObject,
+                            iOperation,
+                            iObjectDescriptor,
+                            iDataIdentifier;
 
-                    while(!(objectIteration = objectEnumerator.next()).done) {
-                        iObject = objectIteration.value;
-                        iOperation = dataOperationsByObject.get(iObject);
-                        iObjectDescriptor = iOperation.target;
+                        while (!(objectIteration = objectEnumerator.next()).done) {
+                            iObject = objectIteration.value;
+                            iOperation = dataOperationsByObject.get(iObject);
+                            iObjectDescriptor = iOperation.target;
 
-                        if(iOperation.type === CreateOperation) {
-                            iDataIdentifier = self.dataIdentifierForTypeRawData(iObjectDescriptor,iOperation.data);
-                            self.recordSnapshot(iDataIdentifier, iOperation.data);
-                            self.rootService.registerUniqueObjectWithDataIdentifier(iObject, iDataIdentifier);
-                        } else if(iOperation.type === UpdateOperation || iOperation.type === NoOpOperation) {
-                            iDataIdentifier = self.dataIdentifierForObject(iObject);
-                            self.recordSnapshot(iDataIdentifier, iOperation.data, true);
-                        } else if(iOperation.type === DeleteOperation) {
-                            iDataIdentifier = self.dataIdentifierForObject(iObject);
+                            if (iOperation.type === CreateOperation) {
+                                iDataIdentifier = self.dataIdentifierForTypeRawData(iObjectDescriptor, iOperation.data);
+                                self.recordSnapshot(iDataIdentifier, iOperation.data);
+                                self.rootService.registerUniqueObjectWithDataIdentifier(iObject, iDataIdentifier);
+                            } else if (iOperation.type === UpdateOperation || iOperation.type === NoOpOperation) {
+                                iDataIdentifier = self.dataIdentifierForObject(iObject);
+                                self.recordSnapshot(iDataIdentifier, iOperation.data, true);
+                            } else if (iOperation.type === DeleteOperation) {
+                                iDataIdentifier = self.dataIdentifierForObject(iObject);
 
-                            //Removes the snapshot we have for iDataIdentifier
-                            self.removeSnapshot(iDataIdentifier);
+                                //Removes the snapshot we have for iDataIdentifier
+                                self.removeSnapshot(iDataIdentifier);
+                            }
+
                         }
 
-                    }
-
-                    self._dispatchTransactionCommitComplete(transaction, dataOperationCompletion.data)
-                    transaction.resolveCompletionPromiseForParticipant(self);
-                }, function(commitTransactionFailedOperationError) {
-                    self._dispatchTransactionCommitFail(transaction, error)
-                    transaction.rejectCompletionPromiseForParticipantWithError(self, error);
-                });
+                        self._dispatchTransactionCommitComplete(transaction, dataOperationCompletion.data)
+                        transaction.resolveCompletionPromiseForParticipant(self);
+                    }, function (commitTransactionFailedOperationError) {
+                        self._dispatchTransactionCommitFail(transaction, error)
+                        transaction.rejectCompletionPromiseForParticipantWithError(self, error);
+                    });
             }
         }
     },
 
     commitTransactionOperationForTransaction: {
-        value: function(transaction) {
+        value: function (transaction) {
 
             var transactionRawContext = this.rawContextForTransaction(transaction),
                 rawTransactions = transactionRawContext.rawTransactions,
@@ -3727,8 +3789,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             /*
                 DataOperations coming in:
             */
-            this.mainService.addEventListener(DataOperation.Type.CommitTransactionCompletedOperation,this,false);
-            this.mainService.addEventListener(DataOperation.Type.CommitTransactionFailedOperation,this,false);
+            this.mainService.addEventListener(DataOperation.Type.CommitTransactionCompletedOperation, this, false);
+            this.mainService.addEventListener(DataOperation.Type.CommitTransactionFailedOperation, this, false);
 
             return commitTransaction;
 
@@ -3779,7 +3841,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: function (commitTransactionFailedOperation) {
 
             var transaction = this.referrerContextForDataOperation(commitTransactionFailedOperation);
-            console.error("handleCommitTransactionFailedOperation: transaction-"+transaction.identifier, transaction);
+            console.error("handleCommitTransactionFailedOperation: transaction-" + transaction.identifier, transaction);
 
             /*
                 This is fine as long as we have only one transaction running at a time, we'll need to be more subtle when we handle concurrent transaction
@@ -3792,13 +3854,13 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     handleTransactionRollback: {
-        value: function(transactionCommitEvent) {
+        value: function (transactionCommitEvent) {
             var self = this,
-            transaction = transactionCommitEvent.transaction,
-            transactionRawContext = this.rawContextForTransaction(transaction),
-            createTransactionOperation = transactionRawContext.createTransactionOperation;
+                transaction = transactionCommitEvent.transaction,
+                transactionRawContext = this.rawContextForTransaction(transaction),
+                createTransactionOperation = transactionRawContext.createTransactionOperation;
 
-            if(this.supportsTransaction && createTransactionOperation) {
+            if (this.supportsTransaction && createTransactionOperation) {
 
                 /*
                     Inform Main DataService we're starting:
@@ -3837,31 +3899,31 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
 
                 rollbackTransactionDataOperationCompletionPromise
-                .then(function(rollbackTransactionCompletedOperation) {
-                    transactionRollbackCompletionEvent.type = TransactionEvent.transactionCommitComplete;
-                    /*
-                        TODO test and finalize data for both Complete Event and DataOperations
-                    */
+                    .then(function (rollbackTransactionCompletedOperation) {
+                        transactionRollbackCompletionEvent.type = TransactionEvent.transactionCommitComplete;
+                        /*
+                            TODO test and finalize data for both Complete Event and DataOperations
+                        */
                         transactionRollbackCompletionEvent.data = rollbackTransactionCompletedOperation.data;
 
-                }, function(rollbackTransactionFailedOperationError) {
-                    transactionRollbackCompletionEvent.type = TransactionEvent.transactionCommitComplete;
-                    transactionRollbackCompletionEvent.data = rollbackTransactionFailedOperationError;
+                    }, function (rollbackTransactionFailedOperationError) {
+                        transactionRollbackCompletionEvent.type = TransactionEvent.transactionCommitComplete;
+                        transactionRollbackCompletionEvent.data = rollbackTransactionFailedOperationError;
 
-                })
-                .finally(function() {
-                    /*
-                        Inform Main DataService: There shouldn't be an async involved here as this is meant to be handled by the local main dataService.
-                    */
-                    self.dispatchEvent(transactionRollbackCompletionEvent);
-                    TransactionEvent.checkin(transactionRollbackCompletionEvent);
-                })
+                    })
+                    .finally(function () {
+                        /*
+                            Inform Main DataService: There shouldn't be an async involved here as this is meant to be handled by the local main dataService.
+                        */
+                        self.dispatchEvent(transactionRollbackCompletionEvent);
+                        TransactionEvent.checkin(transactionRollbackCompletionEvent);
+                    })
             }
         }
     },
 
     rollbackTransactionOperationForTransaction: {
-        value: function(transaction) {
+        value: function (transaction) {
 
             var transactionRawContext = this.rawContextForTransaction(transaction),
                 rawTransactions = transactionRawContext.rawTransactions,
@@ -3878,8 +3940,8 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             /*
                 DataOperations coming in:
             */
-            this.mainService.addEventListener(DataOperation.Type.RollbackTransactionCompletedOperation,this,false);
-            this.mainService.addEventListener(DataOperation.Type.RollbackTransactionFailedOperation,this,false);
+            this.mainService.addEventListener(DataOperation.Type.RollbackTransactionCompletedOperation, this, false);
+            this.mainService.addEventListener(DataOperation.Type.RollbackTransactionFailedOperation, this, false);
 
             return rollbackTransaction;
 
@@ -3945,25 +4007,25 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     _accessTokenBydentity: {
-        get: function() {
+        get: function () {
             return (this._accessTokenBydentity || (this._accessTokenBydentity = new WeakMap()));
         }
     },
 
     accessTokenForIdentity: {
-        get: function(identity) {
+        get: function (identity) {
             return this._accessTokenBydentity.get(identity);
         }
     },
 
-    registerAccessTokenForIdentity:{
-        get: function(accessToken, identity) {
+    registerAccessTokenForIdentity: {
+        get: function (accessToken, identity) {
             return this._accessTokenBydentity.set(identity, accessToken);
         }
     },
 
-    unregisterAccessTokenForIdentity:{
-        get: function(identity, accessToken) {
+    unregisterAccessTokenForIdentity: {
+        get: function (identity, accessToken) {
             /*
                 TODO: Verify that accessToken is equal to this._accessTokenBydentity.get(identity) first?
             */

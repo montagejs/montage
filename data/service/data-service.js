@@ -2582,12 +2582,12 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
      *
      * @type {Set.<Object>}
      */
-    _objectDescriptorsWithChangedObjects: {
+    _objectDescriptorsWithChanges: {
         value: undefined
     },
-    objectDescriptorsWithChangedObjects: {
+    objectDescriptorsWithChanges: {
         get: function () {
-            return this._objectDescriptorsWithChangedObjects || (this._objectDescriptorsWithChangedObjects = new CountedSet());
+            return this._objectDescriptorsWithChanges || (this._objectDescriptorsWithChanges = new CountedSet());
         }
     },
     createdDataObjects: {
@@ -2613,7 +2613,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
                 createdDataObjects.set(objectDescriptor, (value = new Set()));
             }
             value.add(dataObject);
-            this.objectDescriptorsWithChangedObjects.add(objectDescriptor);
+            this.objectDescriptorsWithChanges.add(objectDescriptor);
         }
     },
 
@@ -2623,7 +2623,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
                 value = this.createdDataObjects.get(objectDescriptor);
             if(value) {
                 value.delete(dataObject);
-                this.objectDescriptorsWithChangedObjects.delete(objectDescriptor);
+                this.objectDescriptorsWithChanges.delete(objectDescriptor);
             }
         }
     },
@@ -2690,7 +2690,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
                 changedDataObjects.set(objectDescriptor, (value = new Set()));
             }
             value.add(dataObject);
-            this.objectDescriptorsWithChangedObjects.add(objectDescriptor);
+            this.objectDescriptorsWithChanges.add(objectDescriptor);
         }
     },
 
@@ -2701,7 +2701,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
 
             if(value) {
                 value.delete(dataObject);
-                this.objectDescriptorsWithChangedObjects.delete(objectDescriptor);
+                this.objectDescriptorsWithChanges.delete(objectDescriptor);
             }
         }
     },
@@ -3293,7 +3293,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
                 deletedDataObjects.set(objectDescriptor, (value = new Set()));
             }
             value.add(dataObject);
-            this.objectDescriptorsWithChangedObjects.add(objectDescriptor);
+            this.objectDescriptorsWithChanges.add(objectDescriptor);
         }
     },
 
@@ -3303,7 +3303,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
                 value = this.deletedDataObjects.get(objectDescriptor);
             if(value) {
                 value.delete(dataObject);
-                this.objectDescriptorsWithChangedObjects.delete(objectDescriptor);
+                this.objectDescriptorsWithChanges.delete(objectDescriptor);
             }
         }
     },
@@ -3689,7 +3689,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
             this.changedDataObjects.clear();
             this.deletedDataObjects.clear();
             this.dataObjectChanges.clear();
-            this.objectDescriptorsWithChangedObjects.clear();
+            this.objectDescriptorsWithChanges.clear();
         }
     },
 
@@ -3707,10 +3707,10 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
                 //Ideally, this should be saved in IndexedDB so if something happen
                 //we can at least try to recover.
                 createdDataObjects = transaction.createdDataObjects = new Map(this.createdDataObjects),//Map
-                changedDataObjects = transaction.changedDataObjects = new Map(this.changedDataObjects),//Map
+                changedDataObjects = transaction.updatedDataObjects = new Map(this.changedDataObjects),//Map
                 deletedDataObjects = transaction.deletedDataObjects = new Map(this.deletedDataObjects),//Map
                 dataObjectChanges = transaction.dataObjectChanges = new Map(this.dataObjectChanges),//Map
-                objectDescriptorsWithChangedObjects = transaction.objectDescriptors = new Set(this.objectDescriptorsWithChangedObjects);
+                objectDescriptorsWithChanges = transaction.objectDescriptors = new Set(this.objectDescriptorsWithChanges);
 
             //console.log("saveChanges: transaction-"+this.identifier, transaction);
 
@@ -3722,7 +3722,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
             // this.changedDataObjects.clear();
             // this.deletedDataObjects.clear();
             // this.dataObjectChanges.clear();
-            // this.objectDescriptorsWithChangedObjects.clear();
+            // this.objectDescriptorsWithChanges.clear();
 
             return new Promise(function(resolve, reject) {
                 try {
@@ -4783,6 +4783,181 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
         }
     },
 
+
+    /**
+     * update data - potentially multiple instances - using the service using its child services,
+     * without requiring to fetch them as much as possible, depending on the capabilities of DataServices involved.
+
+     * the changes will be regsitered in the data service and applied when  mainDataService.saveChanges() is called.
+     *
+     * Later on support should be added for the ability to have multiple transactions being worked on in parallel. While it would be possible here
+     * de pass a transaction instance as an argument, we can't really do that when automatically tracking changes on
+     * instances. To do so, we can't beat the notion of an "EditingContex". I would make sense that EditingContext
+     * become the side of DataService exposed to the app side.
+     *
+     *
+     * @method
+     * @argument {ObjectDescriptor|Function|String}
+     *                      objectDescriptorOrType   - defines what type of data
+     *                              should be updated, and the criteria
+     *                              that data should satisfy can be defined
+     *                              using the `criteria` argument.  A type
+     *                              is defined as either a DataObjectDesc-
+     *                              riptor, an Object Descriptor, a Construct-
+     *                              or the string module id.  The method will
+     *                              convert the passed in type to a Data-
+     *                              ObjectDescriptor (deprecated) or an
+     *                              ObjectDescriptor.  This is true whether
+     *                              passing in a DataQuery or a type.
+     * @argument {?Criteria}
+     *                      optionalCriteria - If provided, defines the criteria which
+     *                              data to update should satisfy.
+     * @argument {Object}
+     *                      values   - The values to apply to data described by optionalCriteria. Follows the shape used internally by DataService to track changes.
+     *                              "toOneProperty": value,
+     *                              "toManyProperty": {
+     *                                    addedValues: [],
+     *                                    removedValues: []
+     *                               }
+     *
+     * @returns undefined
+     *
+     */
+    updateData: {
+        value: function (objectDescriptorOrTypeOrString, criteria, values) {
+            this.registerDataUpdate(
+                objectDescriptorOrTypeOrString instanceof ObjectDescriptor
+                ?  objectDescriptorOrTypeOrString
+                : this.objectDescriptorForType(objectDescriptorOrTypeOrString)
+            );
+        }
+    },
+    dataUpdates: {
+        get: function () {
+            if (this.isRootService) {
+                if (!this._dataUpdates) {
+                    this._dataUpdates = new Map();
+                }
+                return this._dataUpdates;
+            }
+            else {
+                return this.rootService.dataUpdates;
+            }
+        }
+    },
+
+    registerDataUpdate: {
+        value: function(objectDescriptor, criteria, changes) {
+            var dataUpdates = this.dataUpdates,
+                value = dataUpdates.get(objectDescriptor);
+            if(!value) {
+                dataUpdates.set(objectDescriptor, (value = new Map()));
+            }
+            value.set(criteria,changes);
+            this.objectDescriptorsWithChanges.add(objectDescriptor);
+        }
+    },
+
+    unregisterDataUpdate: {
+        value: function(objectDescriptor, criteria, changes) {
+            var value = this.dataUpdates.get(objectDescriptor);
+            if(value) {
+                value.delete(criteria);
+                this.objectDescriptorsWithChanges.delete(objectDescriptor);
+            }
+        }
+    },
+
+    /**
+     * delete data - potentially multiple instances - using the service using and it's child services,
+     * without requiring to fetch them as much as possible, depending on the capabilities of DataServices involved.
+     *
+     * the changes will be regsitered in the data service and applied when  mainDataService.saveChanges() is called.
+     *
+     * Later on support should be added for the ability to have multiple transactions. While it would be possible here
+     * de pass a transaction instance as an argument, we can't really do that when automatically tracking changes on
+     * instances. To do so, we can't beat the notion of an "EditingContex". I would make sense that EditingContext
+     * become the side of DataService exposed to the app side.
+     *
+     * The requested data may be fetched asynchronously, in which case the data
+     * stream will be returned immediately but the stream's data will be added
+     * to the stream at a later time.
+     *
+     * @method
+     * @argument {ObjectDescriptor|Function|String}
+     *                      objectDescriptorOrType   - defines what type of data
+     *                              should be updated, and the criteria
+     *                              that data should satisfy can be defined
+     *                              using the `criteria` argument.  A type
+     *                              is defined as either a DataObjectDesc-
+     *                              riptor, an Object Descriptor, a Construct-
+     *                              or the string module id.  The method will
+     *                              convert the passed in type to a Data-
+     *                              ObjectDescriptor (deprecated) or an
+     *                              ObjectDescriptor.  This is true whether
+     *                              passing in a DataQuery or a type.
+     * @argument {?Criteria}
+     *                      optionalCriteria - If provided, defines the criteria which
+     *                              data to delete should satisfy.
+     *
+     * @returns undefined
+     *
+     */
+    deleteData: {
+        value: function (objectDescriptorOrTypeOrString, criteria) {
+            this.registerDataDelete(
+                objectDescriptorOrTypeOrString instanceof ObjectDescriptor
+                ?  objectDescriptorOrTypeOrString
+                : this.objectDescriptorForType(objectDescriptorOrTypeOrString)
+            );
+        }
+    },
+    dataDeletes: {
+        get: function () {
+            if (this.isRootService) {
+                if (!this._dataDeletes) {
+                    this._dataDeletes = new Map();
+                }
+                return this._dataDeletes;
+            }
+            else {
+                return this.rootService.dataDeletes;
+            }
+        }
+    },
+
+    registerDataDelete: {
+        value: function(objectDescriptor, criteria) {
+            var dataDeletes = this.dataDeletes,
+                value = dataDeletes.get(objectDescriptor);
+            if(!value) {
+                dataDeletes.set(objectDescriptor, (value = new Set()));
+            } else {
+
+                if(value.has(null)) {
+                    if(criteria) {
+                        console.warn("All instances of "+objectDescriptor.name+ " have been set to be deleted, but the current call uses a criteria: ",criteria);
+                    }
+                } else if(!criteria) {
+                    console.warn("Some instances of "+objectDescriptor.name+ " have been set to be deleted if matching criteria: ",criteria, " but the current delete will delete all instances");
+                }
+            }
+
+            value.add(criteria||null);
+
+            this.objectDescriptorsWithChanges.add(objectDescriptor);
+        }
+    },
+
+    unregisterDataDelete: {
+        value: function(objectDescriptor, criteria) {
+            var value = this.dataDeletes.get(objectDescriptor);
+            if(value) {
+                value.delete(criteria);
+                this.objectDescriptorsWithChanges.delete(objectDescriptor);
+            }
+        }
+    },
 
     /**
      * EventChange handler, begining of tracking objects changes via Triggers right now,
