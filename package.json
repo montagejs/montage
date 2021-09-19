@@ -76,7 +76,8 @@
         "mop-integration": "git://github.com/montagejs/mop-integration.git#master",
         "open": "0.0.5",
         "jasmine-node": "montagestudio/jasmine-node#master",
-        "pegjs": "git://github.com/dmajda/pegjs.git"
+        "pegjs": "git://github.com/pegjs/pegjs.git",
+        "peggy": "^1.2.0"
     },
     "scripts": {
         "test-mr": "node core/mr/test/run-node.js",
@@ -101,6 +102,7 @@
         "test-collections": "node core/collections/test/run-node.js",
         "test-frb": "jasmine-node core/frb/spec",
         "build-frb-parser": "pegjs --allowed-start-rules expression,sheet core/frb/grammar.pegjs",
+        "peggy-build-frb-parser": "peggy --allowed-start-rules expression,sheet -o core/frb/grammar-peggy.js core/frb/grammar.pegjs",
         "size": "t=\"$(npm pack .)\"; wc -c \"${t}\"; tar tvf \"${t}\"; rm \"${t}\";"
     },
     "bin": {
