@@ -357,6 +357,22 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
         }
     },
 
+
+    foreignDescriptorMatchingRawProperty: {
+        value: function(rawProperty) {
+
+            if(this.foreignDescriptorMappings) {
+                for(var i=0, mappings = this.foreignDescriptorMappings, countI = mappings.length, iMapping;(i<countI);i++) {
+                    if(mappings[i].rawDataProperty === rawProperty) {
+                        return mappings[i];
+                    }
+                }
+            }
+            return null;
+        }
+    },
+
+
     /*
         To open the ability to get derived values from non-saved objects, some failsafes blocking a non-saved created object to get any kind of property resolved/fetched were removed. So we need to be smarter here and do the same.
 
@@ -470,12 +486,18 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                             if valueDescriptor were a Promise, we'd have a problem.
                             Keep an eye on that.
                         */
-                        var valueDescriptor = this.foreignDescriptorForValue(v),
-                            rawDataProperty = self.rawDataPropertyForForeignDescriptor(valueDescriptor),
+                        var valueDescriptor = this.foreignDescriptorForValue(v);
+
+                        if(valueDescriptor) {
+                            var rawDataProperty = self.rawDataPropertyForForeignDescriptor(valueDescriptor),
                             foreignKeyValue = v[rawDataProperty],
                             aCriteria = this.convertCriteriaForValue(foreignKeyValue);
 
-                        return this._fetchConvertedDataForObjectDescriptorCriteria(valueDescriptor, aCriteria);
+                            return this._fetchConvertedDataForObjectDescriptorCriteria(valueDescriptor, aCriteria);
+
+                        } else {
+                            return Promise.resolve(null);
+                        }
                     }
 
                 } else {
