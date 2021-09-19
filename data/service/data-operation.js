@@ -580,8 +580,34 @@ exports.DataOperationErrorNames = DataOperationErrorNames = new Enum().initWithM
      *
      * @type {DataOperation}
      */
-    referrer: {
+    _referrer: {
         value: undefined
+    },
+    referrer: {
+        get: function() {
+            return this._referrer;
+        },
+        set: function(value) {
+            if(value !== this._referrer) {
+                this.referreredOperations.delete(this._referrer);
+                this._referrer = value;
+                this.referreredOperations.push(this._referrer);
+            }
+        }
+    },
+
+    /**
+     * inverse of referrer, an array of operations that has this as their referrer.
+     *
+     * @type {Array<DataOperation>}
+     */
+    _referreredOperations: {
+        value: undefined
+    },
+    referreredOperations: {
+        get: function() {
+            return this._referreredOperations || (this._referreredOperations = []);
+        }
     },
 
     /**
