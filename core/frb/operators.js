@@ -61,21 +61,21 @@ exports.rem = function (a, b) {
     return a % b;
 };
 
-var nativeAdditionSubstractionTypes = new Set(["number","string"]);
 exports.add = function add(a, b) {
-    return nativeAdditionSubstractionTypes.has(typeof a) && nativeAdditionSubstractionTypes.has(typeof b)
-    ? a + b
-    : (a && typeof a.add === "function")
+
+    return (a && typeof a.add === "function")
         ? a.add(b)
-        : undefined;
+        : a === undefined
+            ? a
+            : a + b;
 };
 
 exports.sub = function sub(a, b) {
-    return nativeAdditionSubstractionTypes.has(typeof a) && nativeAdditionSubstractionTypes.has(typeof b)
-    ? a - b
-    : (a && typeof a.sub === "function")
-        ? a.sub(b)
-        : undefined;
+    return (a && typeof a.sub === "function")
+    ? a.sub(b)
+    : a === undefined
+        ? a
+        : a - b;
 };
 
 exports.ceil = function (n) {

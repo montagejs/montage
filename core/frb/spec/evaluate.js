@@ -859,6 +859,12 @@ module.exports = [
         path: "a == undefined",
         input: {a: undefined},
         output: true
+    },
+
+    {
+        path: "!!isLoading + ''",
+        input: {isLoading: undefined},
+        output: "false"
     }
 
 ];
