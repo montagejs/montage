@@ -380,23 +380,34 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
                 By default, the readExpressions are sent in the query, but some DataServices may not be able to satisfy them all in one-shot. If not, then the DataService should ideally be able to hide the multiple round-trips to one or more RawDataService(s) to get all readExpressions asked.
 
                 The readExpressions should ideally be dynamically gathered from what components exressed they needs to display, which is typically expressed by binding their property, like "value" for Text, to expressions off the DataEditor's owner data property. This isn't done yet.
+
+                For now, we don't have an easy way to know wether the query's readExpressions (this.readExpressions if any) have been fulfilled, so we don't tie that with the canDrawGate.
             */
-            if(this.readExpressions && this.readExpressions.length > 0) {
-                // console.log("************** "+this.constructor.name+"["+this.uuid+'].setField("dataLoaded", false)');
+
+            this._data = value;
+
+            var dataLoadedPromise = this.dataLoadedPromise();
+            if(dataLoadedPromise) {
                 this.canDrawGate.setField("dataLoaded", false);
+                // console.log("************** "+this.constructor.name+"["+this.uuid+'].setField("dataLoaded", false)');
+                dataLoadedPromise.then(() => {
+                    this.canDrawGate.setField("dataLoaded", true);
+                });
             } else {
                 this.canDrawGate.setField("dataLoaded", true);
             }
 
 
-                this._data = value;
 
                 this.dataDidChange(value);
 
             }
         }
     },
-
+    dataLoadedPromise: {
+        value: function () {
+        }
+    },
     handleDataChange: {
         value: function (data) {
         }
