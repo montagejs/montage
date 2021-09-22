@@ -181,6 +181,11 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
     name: {
         get: function () {
             return this._name;
+        },
+        set: function(value) {
+            if(this._name !== value) {
+                this._name = value;
+            }
         }
     },
 
