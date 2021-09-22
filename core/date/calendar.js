@@ -90,9 +90,9 @@ var Calendar = exports.Calendar = Montage.specialize({
 
 
     /**
-     * The calendar's time zone
+     * A promise to the calendar's time zone
      *
-     * @property {TimeZone}
+     * @property {Promise<TimeZone>}
      */
     timeZone: {
         value: undefined

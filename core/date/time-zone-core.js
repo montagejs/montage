@@ -29,31 +29,51 @@ var Montage = require("../core").Montage,
     //  3. https://www.amdoren.com/time-zone-api/
     //  4. http://worldtimeapi.org
     //  5. https://timezoneapi.io/developers/timezone
-    timeZonesData = require("./time-zone-data/zones-compiled.json"),
+    // timeZonesData = require("./time-zone-data/zones-compiled.json"),
     // systemTimeZonesData = require("./time-zone-data/"+Intl.DateTimeFormat(navigator.languages[0]).resolvedOptions().timeZone+".json"),
 
     TimeZone = exports.TimeZone = ICAL_Timezone,
     TimeZonePrototype = TimeZone.prototype;
 
-(function registerTimezones(timeZonesData) {
-    Object.keys(timeZonesData).forEach(function(key) {
-        var icsData = timeZonesData[key],
+
+TimeZone.registerTimeZoneICSData = function(identifier, icsData) {
             // dataToParse = "BEGIN:VCALENDAR\nPRODID:-//tzurl.org//NONSGML Olson 2012h//EN\nVERSION:2.0\n",
-            parsed,
+            var parsed,
             // parsed = ICAL.parse(`BEGIN:VCALENDAR\nPRODID:-//tzurl.org//NONSGML Olson 2012h//EN\nVERSION:2.0\n${icsData}\nEND:VCALENDAR`),
             comp,
-            vtimezone;
+            vtimezone,
+            tzid,
+            timeZone,
+            geo;
 
             // dataToParse += icsData;
             // dataToParse += "\nEND:VCALENDAR";
             parsed = ICAL.parse(icsData);
             comp = new ICAL.Component(parsed);
             vtimezone = comp.getFirstSubcomponent('vtimezone');
+            tzid = vtimezone.getFirstPropertyValue('tzid'),
+            geo = vtimezone.getFirstPropertyValue('geo');
 
+            if(tzid === "UTC") {
+                timeZone = TimeZone.utcTimezone;
+            } else {
+                timeZone = new ICAL.Timezone(vtimezone);
+                if(geo && Array.isArray(geo) && geo.length === 2) {
+                    timeZone.latitude = geo[0];
+                    timeZone.longitude = geo[1];
+                }
+            }
 
-      ICAL.TimezoneService.register(key, new ICAL.Timezone(vtimezone));
-    });
-})(timeZonesData);
+      ICAL.TimezoneService.register(identifier, timeZone);
+      return timeZone;
+};
+
+//Stop registering all TimeZones, too costly
+// (function registerTimezones(timeZonesData) {
+//     Object.keys(timeZonesData).forEach(function(key) {
+//         TimeZone.registerTimeZoneICSData(key, timeZonesData[key]);
+//     });
+// })(timeZonesData);
 
 
 /**
@@ -65,8 +85,24 @@ var Montage = require("../core").Montage,
  * @returns {Calendar} a new Calendar instance.
  */
 
+TimeZone._promisesByIdentifier = new Map();
 TimeZone.withIdentifier = function(timeZoneIdentifier) {
-    return ICAL_TimezoneService.get(timeZoneIdentifier);
+    var promise;
+    if(!(promise = this._promisesByIdentifier.get(timeZoneIdentifier))) {
+        if(!timeZoneIdentifier) {
+            this._promisesByIdentifier.set(timeZoneIdentifier,(promise = Promise.resolve(null)));
+        } else {
+            //var moduleId = "./time-zone-data/"+encodeURIComponent(timeZoneIdentifier)+".json";
+            var moduleId = "./time-zone-data/"+(timeZoneIdentifier)+".json";
+            promise = require.async(moduleId)
+            .then((data) => {
+                var timeZone = TimeZone.registerTimeZoneICSData(timeZoneIdentifier, data[timeZoneIdentifier]);
+                return timeZone;
+            });
+            this._promisesByIdentifier.set(timeZoneIdentifier,promise);
+        }
+    }
+    return promise;
 };
 
 Object.defineProperties(ICAL_Timezone_Prototype, {
@@ -98,6 +134,11 @@ Object.defineProperties(TimeZone, {
     },
     "_createSystemTimeZone": {
         get: function() {
+            /*
+                We may not need to use systemLocaleIdentifier in
+
+                Intl.DateTimeFormat().resolvedOptions().timeZone
+            */
             var systemLocaleIdentifier = currentEnvironment.systemLocaleIdentifier,
                 resolvedOptions = Intl.DateTimeFormat(systemLocaleIdentifier).resolvedOptions(),
                 timeZone = resolvedOptions.timeZone; /* "America/Los_Angeles" */

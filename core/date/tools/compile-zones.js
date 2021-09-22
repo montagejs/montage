@@ -84,8 +84,8 @@ parsed = ICAL.parse(`BEGIN:VCALENDAR\nPRODID:-//tzurl.org//NONSGML Olson 2012h//
 /* eslint-disable no-console */
 
 const fs = require('fs');
-const zonesJson = fs.readFileSync('../time-zone-data/zones.json');
-var zones = JSON.parse(zonesJson);
+// const zonesJson = fs.readFileSync('../time-zone-data/zones.json');
+// var zones = JSON.parse(zonesJson);
 var fetchedZones, fetchedZonesJSONString = "";
 const https = require('https');
 
@@ -124,38 +124,57 @@ function writeFileSyncRecursive(filename, content, charset) {
 
 
 
-function icsString(timeZoneId, icsData) {
-    return `BEGIN:VCALENDAR\r\nPRODID:-//tzurl.org//NONSGML Olson 2012h//EN\r\nVERSION:2.0\r\nBEGIN:VTIMEZONE\r\nTZID:${timeZoneId}\r\nX-LIC-LOCATION:${timeZoneId}\r\n${icsData}\r\nEND:VTIMEZONE\r\nEND:VCALENDAR`;
+function icsString(timeZoneId, icsData, latitude, longitude) {
+    var geo = "";
+    if(latitude && longitude) {
+        var latitudeDegrees = +latitude.substring(0,4),
+            latitudeMinutes = +latitude.substring(4,6),
+            latitudeSeconds = +latitude.substring(6,8),
+            decimalLatitude = latitudeDegrees + latitudeMinutes/60 + latitudeSeconds/3600,
+            longitudeDegrees = +longitude.substring(0,4),
+            longitudeMinutes = +longitude.substring(4,6),
+            longitudeSeconds = +longitude.substring(6,8),
+            decimalongitude = longitudeDegrees + longitudeMinutes/60 + longitudeSeconds/3600;
+
+
+        geo = `GEO:${decimalLatitude};${decimalongitude}\r\n`;
+    }
+    var _icsData = icsData ? `${icsData}\r\n` : "";
+    return `BEGIN:VCALENDAR\r\nPRODID:-//tzurl.org//NONSGML Olson 2012h//EN\r\nVERSION:2.0\r\nBEGIN:VTIMEZONE\r\nTZID:${timeZoneId}\r\nX-LIC-LOCATION:${timeZoneId}\r\n${_icsData}${geo}END:VTIMEZONE\r\nEND:VCALENDAR`;
 }
 
 function compileTimeZones(zones) {
     const out = {};
     Object.keys(zones.zones).forEach((timeZoneId) => {
-        var icsData = zones.zones[timeZoneId].ics.join("\r\n"),
+        var timeZoneIdData = zones.zones[timeZoneId],
+            icsData = timeZoneIdData.ics.join("\r\n"),
             singleOut = {};
-        out[timeZoneId] = icsString(timeZoneId,icsData);
+        out[timeZoneId] = icsString(timeZoneId,icsData, timeZoneIdData.latitude, timeZoneIdData.longitude);
         singleOut[timeZoneId] = out[timeZoneId];
 
-        writeFileSyncRecursive('../time-zone-data/'+timeZoneId+'.json', JSON.stringify(singleOut));
+        //writeFileSyncRecursive('../time-zone-data/'+encodeURIComponent(timeZoneId)+'.json', JSON.stringify(singleOut));
+        writeFileSyncRecursive('../time-zone-data/'+(timeZoneId)+'.json', JSON.stringify(singleOut));
 
     });
 
     Object.keys(zones.aliases).forEach((timeZoneId) => {
       var previousAliasTo = zones.aliases[timeZoneId].aliasTo,
+            previousAliasToData,
             nextAliasTo,
             singleOut,
             icsData;
       while(zones.aliases[previousAliasTo] && (nextAliasTo = zones.aliases[previousAliasTo].aliasTo)) {
         previousAliasTo = nextAliasTo;
       }
-      if (zones.zones[previousAliasTo]) {
-        icsData = zones.zones[previousAliasTo].ics.join("\r\n");
-        out[timeZoneId] = icsString(timeZoneId,icsData);
+      if ((previousAliasToData = zones.zones[previousAliasTo]) || previousAliasTo === "UTC") {
+        icsData = previousAliasToData ? previousAliasToData.ics.join("\r\n") : null;
+        out[timeZoneId] = icsString((icsData ? timeZoneId : previousAliasTo),icsData);
 
         singleOut = {};
         singleOut[timeZoneId] = out[timeZoneId];
 
-        writeFileSyncRecursive('../time-zone-data/'+timeZoneId+'.json', JSON.stringify(singleOut));
+        //writeFileSyncRecursive('../time-zone-data/'+encodeURIComponent(timeZoneId)+'.json', JSON.stringify(singleOut));
+        writeFileSyncRecursive('../time-zone-data/'+(timeZoneId)+'.json', JSON.stringify(singleOut));
       } else {
         console.warn(`${previousAliasTo} (${timeZoneId}) not found, skipping`);
       }

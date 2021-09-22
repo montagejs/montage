@@ -1,0 +1,25 @@
+{
+    "converter_descriptor": {
+        "object": "core/converter/converter.mjson"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "TimeZoneIdentifierToTimeZoneConverter",
+            "customPrototype": false,
+            "parent": {
+                "@": "converter_descriptor"
+            },
+            "propertyDescriptors": [],
+            "propertyDescriptorGroups": {},
+            "propertyValidationRules": {},
+            "objectDescriptorModule": {
+                "%": "data/converter/time-zone-identifier-to-time-zone-converter.mjson"
+            },
+            "exportName": "TimeZoneIdentifierToTimeZoneConverter",
+            "module": {
+                "%": "data/converter/time-zone-identifier-to-time-zone-converter"
+            }
+        }
+    }
+}
