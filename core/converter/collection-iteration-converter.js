@@ -139,7 +139,7 @@ exports.CollectionIterationConverter = Converter.specialize( /** @lends Collecti
     _convertElementIndexCollection: {
         value: function (value) {
 
-            if(!this._iterationConverter) return value;
+            if(!this._iterationConverter || !value ) return value;
 
             var values = value.values(),
                 converter = this._iterationConverter,
