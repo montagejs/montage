@@ -341,6 +341,10 @@ var semantics = compile.semantics = {
             if (!operators.hasOwnProperty(syntax.type)) {
                 operators[syntax.type] = function (object) {
                     var args = Array.prototype.slice.call(arguments, 1);
+                    if(!object) {
+                        return;
+                    }
+
                     if (!object[syntax.type])
                         throw new TypeError("Can't call " + JSON.stringify(syntax.type) + " of " + object);
 
