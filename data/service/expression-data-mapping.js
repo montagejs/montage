@@ -1904,7 +1904,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 /*
                     @marchant / @tejaede
                     Added check to see if we don't already have the value for key in data.
-                    This is better to do anywaym, and it avoids to get into mapObjectToRawDataProperty trying to fecth the object property that we're precisely trying to fetch, as this method is only called by dataService._fetchObjectPropertyWithPropertyDescriptor(), which seems to lock the stack as it's logically re-entrant. So this blocks it here before it happens there
+                    This is better to do anyway, and it avoids to get into mapObjectToRawDataProperty trying to fecth the object property that we're precisely trying to fetch, as this method is only called by dataService._fetchObjectPropertyWithPropertyDescriptor(), which seems to lock the stack as it's logically re-entrant. So this blocks it here before it happens there
                 */
                 if (rawRequirementsToMap.has(key) && !data.hasOwnProperty(key)) {
                     result = this.mapObjectToRawDataProperty(object, data, key, undefined, undefined, ignoreRequiredObjectProperties);
