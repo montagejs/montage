@@ -132,11 +132,20 @@ var InternationalDurationToStringFormatter = exports.InternationalDurationToStri
     _listFormatter: {
         get: function() {
             if(!this.__listFormatter) {
-                this.__listFormatter = new Intl.ListFormat(
-                    this._locale.identifier, {
-                        type: (this.options.listType || "conjunction"),
-                        style: (this.options.listStyle || "long")
-                    });
+                if(Intl.ListFormat) {
+                    this.__listFormatter = new Intl.ListFormat(
+                        this._locale.identifier, {
+                            type: (this.options.listType || "conjunction"),
+                            style: (this.options.listStyle || "long")
+                        });
+                } else {
+                    /* until we have a way to polyfill correctly Intl.ListFormat */
+                    this.__listFormatter = {
+                        format: function(array) {
+                            return array.join(", ");
+                        }
+                    };
+                }
             }
             return this.__listFormatter;
         }
