@@ -192,6 +192,19 @@ var Environment = exports.Environment = Montage.specialize({
         }
     },
 
+
+    _isApplePlatform: {
+        value: null
+    },
+
+    isApplePlatform: {
+        get: function () {
+            return typeof this._isApplePlatform !== "boolean" ?
+                (this._isApplePlatform = new RegExp(Environment.Platform.MACINTOSH+"|"+Environment.Platform.IOS).test(this.platformName)) : this._isApplePlatform;
+        }
+    },
+
+
     _isIOSDevice: {
         value: null
     },
