@@ -172,7 +172,7 @@ exports.CollectionIterationConverter = Converter.specialize( /** @lends Collecti
         enumerable: false,
         value: function(value) {
 
-            if(!this._iterationReverter) return value;
+            if(!this._iterationReverter || !value) return value;
 
             var values = value.values(),
                 reverter = this._iterationReverter,
