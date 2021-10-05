@@ -3384,7 +3384,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             }
 
             if (mappingPromises && mappingPromises.length) {
-                mappingPromise = Promise.all(mappingPromises);
+                mappingPromise = mappingPromises.length === 1 ? mappingPromises[0] : Promise.all(mappingPromises);
             }
 
 
