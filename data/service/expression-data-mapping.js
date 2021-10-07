@@ -1023,7 +1023,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
             if (this._isAsync(penultimateStep)) {
                 return penultimateStep.then(function () {
-                    self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor);
+                    self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor, true);
                     return null;
                 });
             } else {
