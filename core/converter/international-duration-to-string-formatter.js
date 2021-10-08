@@ -157,8 +157,44 @@ var InternationalDurationToStringFormatter = exports.InternationalDurationToStri
     _relativeTimeFormatter: {
         get: function() {
             if(!this.__relativeTimeFormatter) {
-                this.__relativeTimeFormatter = new Intl.RelativeTimeFormat(
-                    this._locale.identifier, this.options);
+                if(Intl.RelativeTimeFormat) {
+                    this.__relativeTimeFormatter = new Intl.RelativeTimeFormat(
+                        this._locale.identifier, this.options);
+                } else {
+                    this.__relativeTimeFormatter = {
+                        formatToParts: function(value, part) {
+                            if(Math.sign(value) < 0) {
+                                return [
+                                    {
+                                        type: "integer",
+                                        value: +Math.abs(value),
+                                        unit: part.substring(0,part.length-1)
+                                    },
+                                    {
+                                        type: "literal",
+                                        value: " " + part+" ago"
+                                    }
+                                ];
+                            } else {
+                                return [
+                                    {
+                                        type: "literal",
+                                        value: "in "
+                                    },
+                                    {
+                                        type: "integer",
+                                        value: +value,
+                                        unit: part.substring(0,part.length-1)
+                                    },
+                                    {
+                                        type: "literal",
+                                        value: " " + part
+                                    }
+                                ];
+                            }
+                        }
+                    };
+                }
             }
             return this.__relativeTimeFormatter;
         }
