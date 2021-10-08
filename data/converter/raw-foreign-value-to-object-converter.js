@@ -441,11 +441,7 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
      * fulfilled after the object is successfully fetched.
      *
      */
-    _unique: {
-        get: function() {
-            return this.__unique || (this.__unique = new Set());
-        }
-    },
+
     convert: {
         value: function (v) {
 
