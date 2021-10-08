@@ -324,6 +324,19 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                             });
 
                     self._registerFetchPromiseForObjectDescriptorCriteria(fetchPromise, typeToFetch, criteria);
+                } else {
+                    fetchPromise = fetchPromise.then(function(value) {
+                        /*
+                            #WARNING here we're piggy-backing on an existing promise. Upper layers (expression data mapping) typically directly assign this returned array to the object's property it belongs to, assuming it's unique because fetched.
+
+                            So to truly behave like a fetch that would return results in a new unique array, we're going to return a clone of it. Because if returned directly, the same array could end up being used by different objects, creating changes in the other objects listeners (in DataTrigger) which leads to bugs.
+
+                            While Array.from() is the fastest on WebKit, Array.slice() is the overal fastest choice.
+                            DO NOT REMOVE THIS .slice() !! SEE EXPLAINATION
+                        */
+
+                        return Array.isArray(value) ? value.slice() : value;
+                    });
                 }
 
                 return fetchPromise;
@@ -428,7 +441,11 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
      * fulfilled after the object is successfully fetched.
      *
      */
-
+    _unique: {
+        get: function() {
+            return this.__unique || (this.__unique = new Set());
+        }
+    },
     convert: {
         value: function (v) {
 
