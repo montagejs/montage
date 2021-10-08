@@ -986,13 +986,13 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             var self = this,
                 hasInverse = !!propertyDescriptor.inversePropertyName,
                 ruleEvaluationResult = rule.evaluate(scope),
-                penultimateStep,
-                data;
+                penultimateStep;
+                //data;
 
             function ruleEvaluated(result) {
 
                 // console.debug(object.dataIdentifier.objectDescriptor.name+" - "+propertyDescriptor.name+" _resolveRelationship on object id: "+object.dataIdentifier.primaryKey +" resolved to ",result);
-
+                var data;
                 if(propertyDescriptor.cardinality === 1 &&
                     result instanceof Array &&
                     result.length === 1
@@ -1003,7 +1003,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                     data = result;
                 }
 
-                return hasInverse ? self._assignInversePropertyValue(data, object, propertyDescriptor, rule) : null;
+                return hasInverse ? self._assignInversePropertyValue(data, object, propertyDescriptor, rule).then(function() {return data;}) : data;
             }
 
             function ruleEvaluationError(error) {
@@ -1022,7 +1022,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             }
 
             if (this._isAsync(penultimateStep)) {
-                return penultimateStep.then(function () {
+                return penultimateStep.then(function (data) {
                     self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor, true);
                     return null;
                 });
@@ -1030,8 +1030,8 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 /*
                     If a propertyDescriptor has a valueDescriptor, it is treated as a relationship. In the case of a Date for example, a converter isn't async so it returns a value that isn't a promise and there was no code to still assign the result to the object. This fixes it.
                 */
-                object[propertyDescriptor.name] = data;
-                return penultimateStep;
+                //object[propertyDescriptor.name] = data;
+                return (object[propertyDescriptor.name] = penultimateStep);
             }
 
         }
