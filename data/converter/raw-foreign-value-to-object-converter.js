@@ -207,13 +207,16 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                                 localPartialResult = null;
                             }
                         } else {
-                            //We found everything locally, we're done:
-                            return Promise.resolve(localResult);
-                        }
+                            /*
+                                We found everything locally, we're done
+                            */
+                                return localResult;
+                            }
 
                     } else {
                         //We found it, we're done:
-                        return Promise.resolve(localResult);
+                        //return Promise.resolve(localResult);
+                        return localResult;
                     }
                 }
 
