@@ -176,6 +176,7 @@ exports.CollectionIterationConverter = Converter.specialize( /** @lends Collecti
 
             var values = value.values(),
                 reverter = this._iterationReverter,
+                iteration,
                 isReverterFunction = typeof reverter === "function",
                 iValue,
                 index = 0,
@@ -185,7 +186,8 @@ exports.CollectionIterationConverter = Converter.specialize( /** @lends Collecti
                 return value;
             }
 
-            while(iValue = values.next().value) {
+            while(!(iteration = values.next()).done) {
+                iValue = iteration.value;
                 result.add(
                     isReverterFunction
                         ? reverter(iValue,index,value)
