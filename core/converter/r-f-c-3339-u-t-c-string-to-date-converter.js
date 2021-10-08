@@ -43,7 +43,7 @@ var RFC3339UTCStringToDateConverter = exports.RFC3339UTCStringToDateConverter = 
      * @returns {string}
      */
     revert: {value: function (v) {
-        return v.toISOString();
+        return v ? v.toISOString() : v;
     }}
 
 });
