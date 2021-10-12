@@ -107,16 +107,16 @@ if(_WebSocket) {
         handleEvent: {
             value: function (event) {
                 switch (event.type) {
+                    case "message":
+                        this.dispatchEvent(event);
+                        this._sendNextMessage();
+                    break;
                     case "open":
                         this._reconnectionInterval = 100;
                         if (this._webSocket) {
                             this._webSocket.addEventListener("message", event => this.handleEvent(event), false);
                             this._webSocket.addEventListener("close", event => this.handleEvent(event), false);
                         }
-                        this.dispatchEvent(event);
-                        this._sendNextMessage();
-                    break;
-                    case "message":
                         this.dispatchEvent(event);
                         this._sendNextMessage();
                     break;
