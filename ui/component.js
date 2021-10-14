@@ -1171,6 +1171,17 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             if (parentComponent) {
                 parentComponent.removeChildComponent(this);
             }
+
+            /*
+                If a component is set to _blocksOwnerComponentDraw with _blocksOwnerComponentDraw set to true, _updateOwnerCanDrawGate adds that component as a gating factor for it's ownerCompoennt.
+
+                But if such a component doesn't get it's "componentTreeLoaded" canDrawGate set to true, which seems to happens when a repetition extracts it's template for example, the the wnole thing stays locked.
+
+                So we add that check if a component is taken out from it's hierarchy and cleaan things up to prevent that issue.
+            */
+            if(this.ownerComponent && this._blocksOwnerComponentDraw && this.ownerComponent.canDrawGate.hasField(this)) {
+                this.ownerComponent.canDrawGate.removeField(this);
+            }
         }
     },
 
