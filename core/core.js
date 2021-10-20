@@ -918,6 +918,13 @@ Object.defineProperty(Montage.prototype, "_montage_metadata", {
     value: undefined
 });
 
+Object.defineProperty(Montage.prototype, "metadata", {
+    enumerable: true,
+    get: function() {
+        return Montage.getInfoForObject(this);
+    }
+});
+
 /**
  * Get the metadata Montage has on the given object.
  * @function Montage.getInfoForObject
