@@ -1,0 +1,93 @@
+html, body, .Main {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+}
+
+.Main, .checkboxes {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    flex: 1;
+    -webkit-font-smoothing: antialiased;
+}
+
+header {
+    margin-top: 20px;
+    font-size: 42px;
+    font-weight: bold;
+    color: #333;
+}
+
+.checkbox {
+    position: relative;
+    display: inline-block;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    vertical-align: middle;
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: .25em;
+    border: 1px solid;
+    fill: #fff;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    margin-top: 40px;
+}
+
+.checkbox.custom:after {
+    position: absolute;
+    content: "";
+    top: -16px;
+    left: -16px;
+    bottom: -16px;
+    right: -16px;
+}
+
+/* States --------------------- */
+
+.checkbox.custom.montage--disabled {
+    opacity: .5;
+    border-style: dashed;
+    pointer-events: none;
+}
+
+/* Icon --------------------- */
+
+.CheckboxCustom-icon {
+    fill: transparent;
+}
+
+.checkbox.custom.montage--checked .CheckboxCustom-icon {
+    fill: inherit;
+}
+
+.checkbox.custom.montage--active .CheckboxCustom-icon {
+    fill: transparent;
+}
+
+
+
+/* Wireframe ---------------------------------------------------------- */
+
+.checkbox.custom {
+    fill: hsla(0,0%,0%,.7);
+    border-color: hsl(0,0%,80%);
+    background-image: -webkit-linear-gradient(top, hsl(0,0%,96%), hsl(0,0%,92%) );
+    background-image: -moz-linear-gradient(top, hsl(0,0%,96%), hsl(0,0%,92%) );
+    background-image: -ms-linear-gradient(top, hsl(0,0%,96%), hsl(0,0%,92%) );
+    background-image: linear-gradient(top, hsl(0,0%,96%), hsl(0,0%,92%) );
+    box-shadow: inset 0 1px 1px hsla(0,0%,100%,.8), inset 0 -1px 1px hsla(0,0%,0%,.04), 0 1px 0 hsla(0,0%,100%,.6);
+}
+
+.checkbox.custom.montage--active,
+.checkbox.custom.montage--checked {
+    border-color: hsla(0,0%,70%,1);
+    background-image: -webkit-linear-gradient(top, hsl(0,0%,90%), hsl(0,0%,86%) );
+    background-image: -moz-linear-gradient(top, hsl(0,0%,90%), hsl(0,0%,86%) );
+    background-image: -ms-linear-gradient(top, hsl(0,0%,90%), hsl(0,0%,86%) );
+    background-image: linear-gradient(top, hsl(0,0%,90%), hsl(0,0%,86%) );
+    box-shadow: inset 0 1px 3px hsla(0,0%,0%,.2), 0 1px 0 hsla(0,0%,100%,.6);
+}
