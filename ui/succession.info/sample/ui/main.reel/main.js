@@ -4,7 +4,7 @@ var Component = require("montage/ui/component").Component,
     Montage = require("montage/core/core").Montage,
     Foo = require("ui/foo.reel").Foo,
     Bar = require("ui/bar.reel").Bar,
-    observe = require("montage/frb/observe");
+    observe = require("montage/core/frb/observe");
 
 exports.Main = Component.specialize({
     /**
