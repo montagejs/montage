@@ -5,8 +5,11 @@
     <script type="text/montage-serialization">
     {
         "owner": {
-            "prototype": "ui/substitution-test/substitution-test"
-        },
+            "prototype": "ui/main.reel",
+            "values": {
+                "element": {"#": "main"}
+            }
+       },
 
         "substitution1": {
             "prototype": "montage/ui/substitution.reel",
@@ -76,7 +79,7 @@
         },
 
         "foo1": {
-            "prototype": "ui/substitution-test/foo.reel",
+            "prototype": "ui/foo.reel",
             "values": {
                 "element": {"#": "foo1"}
             }
@@ -91,7 +94,7 @@
         },
 
         "foo2": {
-            "prototype": "ui/substitution-test/foo.reel",
+            "prototype": "ui/foo.reel",
             "values": {
                 "element": {"#": "foo2"}
             }
@@ -100,27 +103,29 @@
 </script>
 </head>
 <body>
+    <div data-montage-id="main">
+
     <div data-montage-id="substitution1">
         <div data-arg="one">
-            <h1 class="title1">Title 1</h1>
+            <h1 class="title1">substitution1-one</h1>
         </div>
         <div data-arg="two">
-            <h1 class="title2">Title 2</h1>
+            <h1 class="title2">substitution1-two</h1>
         </div>
     </div>
 
     <div data-montage-id="substitution2">
         <div data-arg="one">
-            <h1 class="title1">Title 1</h1>
+            <h1 class="title1">substitution2-one</h1>
         </div>
         <div data-arg="two">
-            <h1 class="title2">Title 2</h1>
+            <h1 class="title2">substitution2-two</h1>
         </div>
     </div>
 
     <div data-montage-id="substitution3">
-        <div data-arg="one" data-montage-id="one3" class="one"></div>
-        <div data-arg="two" data-montage-id="two3" class="two"></div>
+        <div data-arg="one" data-montage-id="one3" class="one">substitution3-one</div>
+        <div data-arg="two" data-montage-id="two3" class="two">substitution3-two</div>
     </div>
 
     <span data-montage-id="text1"></span>
@@ -128,18 +133,19 @@
     </div>
 
     <div data-montage-id="substitution5">
-        <div data-arg="one" class="one"></div>
-        <div data-arg="two" class="two"></div>
+        <div data-arg="one" class="one">substitution5-one</div>
+        <div data-arg="two" class="two">substitution5-two</div>
     </div>
 
     <div data-montage-id="substitution6">
-        <div data-arg="one" data-montage-id="foo1"></div>
-        <div data-arg="two" class="two"></div>
+        <div data-arg="one" data-montage-id="foo1">substitution6-one</div>
+        <div data-arg="two" class="two">substitution6-two</div>
     </div>
 
     <div data-montage-id="substitution7">
-        <div data-arg="one" data-montage-id="foo2"></div>
-        <div data-arg="two"></div>
+        <div data-arg="one" data-montage-id="foo2">substitution7-one</div>
+        <div data-arg="two">substitution7-two</div>
     </div>
+</div>
 </body>
 </html>
