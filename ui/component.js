@@ -1408,7 +1408,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         },
         set: function (value) {
             var components,
-                componentsToAdd = [],
+                componentsToAdd,
                 i,
                 component;
 
@@ -1445,17 +1445,20 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             }
             if (value instanceof Element) {
                 this._elementsToAppend.push(value);
-                this._findAndDetachComponents(value, componentsToAdd);
+                this._findAndDetachComponents(value, (componentsToAdd = []));
             } else if (value && value[0]) {
+                componentsToAdd = [];
                 for (i = 0; i < value.length; i++) {
                     this._elementsToAppend.push(value[i]);
                     this._findAndDetachComponents(value[i], componentsToAdd);
                 }
             }
 
-            // not sure if I can rely on _parentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
-            for (i = 0; (component = componentsToAdd[i]); i++) {
-                this.addChildComponent(component);
+            if(componentsToAdd) {
+                // not sure if I can rely on _parentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
+                for (i = 0; (component = componentsToAdd[i]); i++) {
+                    this.addChildComponent(component);
+                }
             }
         }
     },
