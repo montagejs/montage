@@ -1770,7 +1770,7 @@ function autoCancelPrevious(emit) {
             cancelPrevious = emit.apply(void 0, args);
         }
         return function cancelObserver() {
-            if (cancelPrevious) cancelPrevious();
+            if (cancelPrevious && typeof cancelPrevious === "function") cancelPrevious();
             cancelPrevious = void 0;
         };
     };
