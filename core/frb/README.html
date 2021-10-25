@@ -1,0 +1,2601 @@
+<img src="frb.png" align="right" alt="FRB Logo">
+
+<h1 id="functional-reactive-bindings">Functional Reactive Bindings</h1>
+<p><a href="https://www.npmjs.com/package/frb"><img src="https://img.shields.io/npm/v/frb.svg?style=flat" alt="npm version"></a></p>
+<p><a href="http://travis-ci.org/montagejs/frb"><img src="https://travis-ci.org/montagejs/frb.png?branch=master" alt="Build Status"></a></p>
+<p>In their simplest form, bindings provide the illusion that two objects
+have the same property.  Changing the property on one object causes the
+same change in the other.  This is useful for coordinating state between
+views and models, among other entangled objects.  For example, if you
+enter text into a text field, the same text might be added to the
+corresponding database record.</p>
+<pre><code class="language-javascript">bind(object, &quot;a.b&quot;, {&quot;&lt;-&gt;&quot;: &quot;c.d&quot;});
+</code></pre>
+<p>Functional Reactive Bindings go farther.  They can gracefully bind long
+property paths and the contents of collections.  They can also
+incrementally update the results of chains of queries including maps,
+flattened arrays, sums, and averages.  They can also add and remove
+elements from sets based on the changes to a flag.  FRB makes it easy to
+incrementally ensure consistent state.</p>
+<pre><code class="language-javascript">bind(company, &quot;payroll&quot;, {&quot;&lt;-&quot;: &quot;departments.map{employees.sum{salary}}.sum()&quot;});
+bind(document, &quot;body.classList.has(&#39;dark&#39;)&quot;, {&quot;&lt;-&quot;: &quot;darkMode&quot;, source: viewModel});
+</code></pre>
+<p>FRB is built from a combination of powerful functional and generic
+building blocks, making it reliable, easy to extend, and easy to
+maintain.</p>
+<h2 id="getting-started">Getting Started</h2>
+<p><code>frb</code> is a CommonJS package, with JavaScript modules suitable for use
+with <a href="http://nodejs.org/">Node.js</a> on the server side or <a href="https://github.com/montagejs/mr">Mr</a> on the client side.</p>
+<pre><code>❯ npm install frb
+</code></pre>
+<h2 id="tutorial">Tutorial</h2>
+<p>In this example, we bind <code>model.content</code> to <code>document.body.innerHTML</code>.</p>
+<pre><code class="language-javascript">var bind = require(&quot;core/frb/bind&quot;);
+var model = {content: &quot;Hello, World!&quot;};
+var cancelBinding = bind(document, &quot;body.innerHTML&quot;, {
+    &quot;&lt;-&quot;: &quot;content&quot;,
+    &quot;source&quot;: model
+});
+</code></pre>
+<p>When a source property is bound to a target property, the target gets
+reassigned to the source any time the source changes.</p>
+<pre><code class="language-javascript">model.content = &quot;Farewell.&quot;;
+expect(document.body.innerHTML).toBe(&quot;Farewell.&quot;);
+</code></pre>
+<p>Bindings can be recursively detached from the objects they observe with
+the returned cancel function.</p>
+<pre><code class="language-javascript">cancelBinding();
+model.content = &quot;Hello again!&quot;; // doesn&#39;t take
+expect(document.body.innerHTML).toBe(&quot;Farewell.&quot;);
+</code></pre>
+<h3 id="two-way-bindings">Two-way Bindings</h3>
+<p>Bindings can go one way or in both directions.  Declare one-way
+bindings with the <code>&lt;-</code> property, and two-way bindings with the
+<code>&lt;-&gt;</code> property.</p>
+<p>In this example, the &quot;foo&quot; and &quot;bar&quot; properties of an object will be
+inexorably intertwined.</p>
+<pre><code class="language-javascript">var object = {};
+var cancel = bind(object, &quot;foo&quot;, {&quot;&lt;-&gt;&quot;: &quot;bar&quot;});
+
+// &lt;-
+object.bar = 10;
+expect(object.foo).toBe(10);
+
+// -&gt;
+object.foo = 20;
+expect(object.bar).toBe(20);
+</code></pre>
+<h3 id="right-to-left">Right-to-left</h3>
+<p>Note that even with a two-way binding, the right-to-left binding
+precedes the left-to-right.  In this example, &quot;foo&quot; and &quot;bar&quot; are bound
+together, but both have initial values.</p>
+<pre><code class="language-javascript">var object = {foo: 10, bar: 20};
+var cancel = bind(object, &quot;foo&quot;, {&quot;&lt;-&gt;&quot;: &quot;bar&quot;});
+expect(object.foo).toBe(20);
+expect(object.bar).toBe(20);
+</code></pre>
+<p>The right-to-left assignment of <code>bar</code> to <code>foo</code> happens first, so the
+initial value of <code>foo</code> gets lost.</p>
+<h3 id="properties">Properties</h3>
+<p>Bindings can follow deeply nested chains, on both the left and the right
+side.</p>
+<p>In this example, we have two object graphs, <code>foo</code>, and <code>bar</code>, with the
+same structure and initial values.  This binds <code>bar.a.b</code> to <code>foo.a.b</code>
+and also the other way around.</p>
+<pre><code class="language-javascript">var foo = {a: {b: 10}};
+var bar = {a: {b: 10}};
+var cancel = bind(foo, &quot;a.b&quot;, {
+    &quot;&lt;-&gt;&quot;: &quot;a.b&quot;,
+    source: bar
+});
+// &lt;-
+bar.a.b = 20;
+expect(foo.a.b).toBe(20);
+// -&gt;
+foo.a.b = 30;
+expect(bar.a.b).toBe(30);
+</code></pre>
+<h3 id="structure-changes">Structure changes</h3>
+<p>Changes to the structure of either side of the binding are no matter.
+All of the orphaned event listeners will automatically be canceled, and
+the binders and observers will reattach to the new object graph.</p>
+<p>Continuing from the previous example, we store and replace the <code>a</code>
+object from one side of the binding.  The old <code>b</code> property is now
+orphaned, and the old <code>b</code> property adopted in its place.</p>
+<pre><code class="language-javascript">var a = foo.a;
+expect(a.b).toBe(30); // from before
+
+foo.a = {}; // orphan a and replace
+foo.a.b = 40;
+// -&gt;
+expect(bar.a.b).toBe(40); // updated
+
+bar.a.b = 50;
+// &lt;-
+expect(foo.a.b).toBe(50); // new one updated
+expect(a.b).toBe(30); // from before it was orphaned
+</code></pre>
+<h3 id="strings">Strings</h3>
+<p>String concatenation is straightforward.</p>
+<pre><code class="language-javascript">var object = {name: &quot;world&quot;};
+bind(object, &quot;greeting&quot;, {&quot;&lt;-&quot;: &quot;&#39;hello &#39; + name + &#39;!&#39;&quot;});
+expect(object.greeting).toBe(&quot;hello world!&quot;);
+</code></pre>
+<h3 id="sum">Sum</h3>
+<p>Some advanced queries are possible with one-way bindings from
+collections.  FRB updates sums incrementally.  When values are added or
+removed from the array, the sum of only those values is taken and added
+or removed from the last known sum.</p>
+<pre><code class="language-javascript">var object = {array: [1, 2, 3]};
+bind(object, &quot;sum&quot;, {&quot;&lt;-&quot;: &quot;array.sum()&quot;});
+expect(object.sum).toEqual(6);
+</code></pre>
+<h3 id="average">Average</h3>
+<p>The arithmetic mean of a collection can be updated incrementally.  Each
+time the array changes, the added and removed values adjust the last
+known sum and count of values in the array.</p>
+<pre><code class="language-javascript">var object = {array: [1, 2, 3]};
+bind(object, &quot;average&quot;, {&quot;&lt;-&quot;: &quot;array.average()&quot;});
+expect(object.average).toEqual(2);
+</code></pre>
+<h3 id="rounding">Rounding</h3>
+<p>The <code>round</code>, <code>floor</code>, and <code>ceil</code> methods operate on numbers and return
+the nearest integer, the nearest integer toward -infinity, and the
+nearest integer toward infinity respectively.</p>
+<pre><code class="language-javascript">var object = {number: -0.5};
+Bindings.defineBindings(object, {
+    &quot;round&quot;: {&quot;&lt;-&quot;: &quot;number.round()&quot;},
+    &quot;floor&quot;: {&quot;&lt;-&quot;: &quot;number.floor()&quot;},
+    &quot;ceil&quot;: {&quot;&lt;-&quot;: &quot;number.ceil()&quot;}
+});
+expect(object.round).toBe(0);
+expect(object.floor).toBe(-1);
+expect(object.ceil).toBe(0);
+</code></pre>
+<h3 id="last">Last</h3>
+<p>FRB provides an operator for watching the last value in an Array.</p>
+<pre><code class="language-javascript">var array = [1, 2, 3];
+var object = {array: array, last: null};
+Bindings.defineBinding(object, &quot;last&quot;, {&quot;&lt;-&quot;: &quot;array.last()&quot;});
+expect(object.last).toBe(3);
+
+array.push(4);
+expect(object.last).toBe(4);
+</code></pre>
+<p>When the dust settles, <code>array.last()</code> is equivalent to
+<code>array[array.length - 1]</code>, but the <code>last</code> observer guarantees that it
+will not jitter between the ultimate value and null or the penultimate
+value of the collection.  With <code>array[array.length]</code>, the underlying may
+not change its content and length atomically.</p>
+<pre><code class="language-javascript">var changed = jasmine.createSpy();
+PropertyChanges.addOwnPropertyChangeListener(object, &quot;last&quot;, changed);
+array.unshift(0);
+array.splice(3, 0, 3.5);
+expect(object.last).toBe(4);
+expect(changed).not.toHaveBeenCalled();
+
+array.pop();
+expect(object.last).toBe(3);
+
+array.clear();
+expect(object.last).toBe(null);
+</code></pre>
+<h3 id="only">Only</h3>
+<p>FRB provides an <code>only</code> operator, which can either observe or bind the
+only element of a collection.  The <code>only</code> observer watches a collection
+for when there is only one value in that collection and emits that
+value..  If there are multiple values, it emits null.</p>
+<pre><code class="language-javascript">var object = {array: [], only: null};
+Bindings.defineBindings(object, {
+    only: {&quot;&lt;-&gt;&quot;: &quot;array.only()&quot;}
+});
+
+object.array = [1];
+expect(object.only).toBe(1);
+
+object.array.pop();
+expect(object.only).toBe(undefined);
+
+object.array = [1, 2, 3];
+expect(object.only).toBe(undefined);
+</code></pre>
+<p>The <code>only</code> binder watches a value.  When the value is null, it does
+nothing.  Otherwise, it will update the bound collection such that it
+only contains that value.  If the collection was empty, it adds the
+value.  Otherwise, if the collection did not have the value, it replaces
+the collection&#39;s content with the one value.  Otherwise, it removes
+everything but the value it already contains.  Regardless of the means,
+the end result is the same.  If the value is non-null, it will be the
+only value in the collection.</p>
+<pre><code class="language-javascript">object.only = 2;
+expect(object.array.slice()).toEqual([2]);
+// Note that slice() is necessary only because the testing scaffold
+// does not consider an observable array equivalent to a plain array
+// with the same content
+
+object.only = null;
+object.array.push(3);
+expect(object.array.slice()).toEqual([2, 3]);
+</code></pre>
+<h3 id="one">One</h3>
+<p>Like the <code>only</code> operator, there is also a <code>one</code> operator.  The <code>one</code>
+operator will observe one value from a collection, whatever value is
+easiest to obtain.  For an array, it&#39;s the first value; for a sorted
+set, it&#39;s whatever value was most recently found or added; for a heap,
+it&#39;s whatever is on top.  However, if the collection is null, undefined,
+or empty, the result is <code>undefined</code>.</p>
+<pre><code class="language-javascript">var object = {array: [], one: null};
+Bindings.defineBindings(object, {
+    one: {&quot;&lt;-&quot;: &quot;array.one()&quot;}
+});
+
+expect(object.one).toBe(undefined);
+
+object.array.push(1);
+expect(object.one).toBe(1);
+
+// Still there...
+object.array.push(2);
+expect(object.one).toBe(1);
+</code></pre>
+<p>Unlike <code>only</code>, <code>one</code> is not bindable.</p>
+<h3 id="map">Map</h3>
+<p>You can also create mappings from one array to a new array and an
+expression to evaluate on each value.  The mapped array is bound once,
+and all changes to the source array are incrementally updated in the
+target array.</p>
+<pre><code class="language-javascript">var object = {objects: [
+    {number: 10},
+    {number: 20},
+    {number: 30}
+]};
+bind(object, &quot;numbers&quot;, {&quot;&lt;-&quot;: &quot;objects.map{number}&quot;});
+expect(object.numbers).toEqual([10, 20, 30]);
+object.objects.push({number: 40});
+expect(object.numbers).toEqual([10, 20, 30, 40]);
+</code></pre>
+<p>Any function, like <code>sum</code> or <code>average</code>, can be applied to the result of a
+mapping.  The straight-forward path would be
+<code>objects.map{number}.sum()</code>, but you can use a block with any function
+as a short hand, <code>objects.sum{number}</code>.</p>
+<h3 id="filter">Filter</h3>
+<p>A filter block generates an incrementally updated array filter.  The
+resulting array will contain only those elements from the source array
+that pass the test deescribed in the block.  As values of the source
+array are added, removed, or changed such that they go from passing to
+failing or failing to passing, the filtered array gets incrementally
+updated to include or exclude those values in their proper positions, as
+if the whole array were regenerated with <code>array.filter</code> by brute force.</p>
+<pre><code class="language-javascript">var object = {numbers: [1, 2, 3, 4, 5, 6]};
+bind(object, &quot;evens&quot;, {&quot;&lt;-&quot;: &quot;numbers.filter{!(%2)}&quot;});
+expect(object.evens).toEqual([2, 4, 6]);
+object.numbers.push(7, 8);
+object.numbers.shift();
+object.numbers.shift();
+expect(object.evens).toEqual([4, 6, 8]);
+</code></pre>
+<h3 id="scope">Scope</h3>
+<p>In a binding, there is always a value in scope.  It is the implicit
+value for looking up properties and for applying operators, like
+methods.  The value in scope can be called out explicitly as <code>this</code>.  On
+the left side, the value in scope is called the target, on the right it
+is called the source.</p>
+<p>Each scope has a <code>this</code> value and may have a parent scope.  Inside a
+map block, like the <code>number</code> in <code>numbers.map{number}</code>, the value in
+scope is one of the numbers, and the value in the parent scope is an
+object with a <code>numbers</code> property.  To access the value in a parent
+scope, use the parent scope operator, <code>^</code>.</p>
+<p>Suppose you have an object with <code>numbers</code> and <code>maxNumber</code> properties.
+In this example, we bind a property, <code>smallNumbers</code> to an array of all
+the <code>numbers</code> less than or equal to the <code>maxNumber</code>.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({
+    numbers: [1, 2, 3, 4, 5],
+    maxNumber: 3
+}, {
+    smallNumbers: {
+        &quot;&lt;-&quot;: &quot;numbers.filter{this &lt;= ^maxNumber}&quot;
+    }
+});
+</code></pre>
+<p>Keywords like <code>this</code> overlap with the notation normally used for
+properties of <code>this</code>.  If an object has a <code>this</code> property, you may use
+the notation <code>.this</code>, <code>this.this</code>, or <code>this[&#39;this&#39;]</code>.  <code>.this</code> is the
+normal form.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({
+    &quot;this&quot;: 10
+}, {
+    that: {&quot;&lt;-&quot;: &quot;.this&quot;}
+});
+expect(object.that).toBe(object[&quot;this&quot;]);
+</code></pre>
+<p>The only other FRB keywords that collide with propery names are <code>true</code>,
+<code>false</code>, and <code>null</code>, and the same technique for disambiguation applies.</p>
+<h3 id="some-and-every">Some and Every</h3>
+<p>A <code>some</code> block incrementally tracks whether some of the values in a
+collection meet a criterion.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({
+    options: [
+        {checked: true},
+        {checked: false},
+        {checked: false}
+    ]
+}, {
+    anyChecked: {
+        &quot;&lt;-&quot;: &quot;options.some{checked}&quot;
+    }
+});
+expect(object.anyChecked).toBe(true);
+</code></pre>
+<p>An <code>every</code> block incrementally tracks whether all of the values in a
+collection meet a criterion.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({
+    options: [
+        {checked: true},
+        {checked: false},
+        {checked: false}
+    ]
+}, {
+    allChecked: {
+        &quot;&lt;-&quot;: &quot;options.every{checked}&quot;
+    }
+});
+expect(object.allChecked).toBe(false);
+</code></pre>
+<p>You can use a two-way binding on <code>some</code> and <code>every</code> blocks.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({
+    options: [
+        {checked: true},
+        {checked: false},
+        {checked: false}
+    ]
+}, {
+    allChecked: {
+        &quot;&lt;-&gt;&quot;: &quot;options.every{checked}&quot;
+    },
+    noneChecked: {
+        &quot;&lt;-&gt;&quot;: &quot;!options.some{checked}&quot;
+    }
+});
+
+object.noneChecked = true;
+expect(object.options.every(function (option) {
+    return !option.checked
+}));
+
+object.allChecked = true;
+expect(object.noneChecked).toBe(false);
+</code></pre>
+<p>The caveat of an <code>equals</code> binding applies.  If the condition for every
+element of the collection is set to true, the condition will be bound
+incrementally to true on each element.  When the condition is set to
+false, the binding will simply be canceled.</p>
+<pre><code class="language-javascript">object.allChecked = false;
+expect(object.options.every(function (option) {
+    return option.checked; // still checked
+}));
+</code></pre>
+<h3 id="sorted">Sorted</h3>
+<p>A sorted block generates an incrementally updated sorted array.  The
+resulting array will contain all of the values from the source except in
+sorted order.</p>
+<pre><code class="language-javascript">var object = {numbers: [5, 2, 7, 3, 8, 1, 6, 4]};
+bind(object, &quot;sorted&quot;, {&quot;&lt;-&quot;: &quot;numbers.sorted{}&quot;});
+expect(object.sorted).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+</code></pre>
+<p>The block may specify a property or expression by which to compare
+values.</p>
+<pre><code class="language-javascript">var object = {arrays: [[1, 2, 3], [1, 2], [], [1, 2, 3, 4], [1]]};
+bind(object, &quot;sorted&quot;, {&quot;&lt;-&quot;: &quot;arrays.sorted{-length}&quot;});
+expect(object.sorted.map(function (array) {
+    return array.slice(); // to clone
+})).toEqual([
+    [1, 2, 3, 4],
+    [1, 2, 3],
+    [1, 2],
+    [1],
+    []
+]);
+</code></pre>
+<p>The sorted binding responds to changes to the sorted property by
+removing them at their former place and adding them back at their new
+position.</p>
+<pre><code class="language-javascript">object.arrays[0].push(4, 5);
+expect(object.sorted.map(function (array) {
+    return array.slice(); // to clone
+})).toEqual([
+    [1, 2, 3, 4, 5], // new
+    [1, 2, 3, 4],
+    // old
+    [1, 2],
+    [1],
+    []
+]);
+</code></pre>
+<h3 id="unique-and-sorted">Unique and Sorted</h3>
+<p>FRB can create a sorted index of unique values using <code>sortedSet</code> blocks.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({
+    folks: [
+        {id: 4, name: &quot;Bob&quot;},
+        {id: 2, name: &quot;Alice&quot;},
+        {id: 3, name: &quot;Bob&quot;},
+        {id: 1, name: &quot;Alice&quot;},
+        {id: 1, name: &quot;Alice&quot;} // redundant
+    ]
+}, {
+    inOrder: {&quot;&lt;-&quot;: &quot;folks.sortedSet{id}&quot;},
+    byId: {&quot;&lt;-&quot;: &quot;folks.map{[id, this]}.toMap()&quot;},
+    byName: {&quot;&lt;-&quot;: &quot;inOrder.toArray().group{name}.toMap()&quot;}
+});
+
+expect(object.inOrder.toArray()).toEqual([
+    object.byId.get(1),
+    object.byId.get(2),
+    object.byId.get(3),
+    object.byId.get(4)
+]);
+
+expect(object.byName.get(&quot;Alice&quot;)).toEqual([
+    object.byId.get(1),
+    object.byId.get(2)
+]);
+</code></pre>
+<p>The outcome is a <code>SortedSet</code> data structure, not an <code>Array</code>.  The sorted
+set is useful for fast lookups, inserts, and deletes on sorted, unique
+data.  If you would prefer a sorted array of unique values, you can
+combine other operators to the same effect.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({
+    folks: [
+        {id: 4, name: &quot;Bob&quot;},
+        {id: 2, name: &quot;Alice&quot;},
+        {id: 3, name: &quot;Bob&quot;},
+        {id: 1, name: &quot;Alice&quot;},
+        {id: 1, name: &quot;Alice&quot;} // redundant
+    ]
+}, {
+    index: {&quot;&lt;-&quot;: &quot;folks.group{id}.sorted{.0}.map{.1.last()}&quot;}
+});
+
+expect(object.index).toEqual([
+    {id: 1, name: &quot;Alice&quot;},
+    {id: 2, name: &quot;Alice&quot;},
+    {id: 3, name: &quot;Bob&quot;},
+    {id: 4, name: &quot;Bob&quot;}
+]);
+</code></pre>
+<h3 id="min-and-max">Min and Max</h3>
+<p>A binding can observe the minimum or maximum of a collection.  FRB uses
+a binary heap internally to incrementally track the minimum or maximum
+value of the collection.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({}, {
+    min: {&quot;&lt;-&quot;: &quot;values.min()&quot;},
+    max: {&quot;&lt;-&quot;: &quot;values.max()&quot;}
+});
+
+expect(object.min).toBe(undefined);
+expect(object.max).toBe(undefined);
+
+object.values = [2, 3, 2, 1, 2];
+expect(object.min).toBe(1);
+expect(object.max).toBe(3);
+
+object.values.push(4);
+expect(object.max).toBe(4);
+</code></pre>
+<p>Min and max blocks accept an expression on which to compare values from
+the collection.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({}, {
+    loser: {&quot;&lt;-&quot;: &quot;rounds.min{score}.player&quot;},
+    winner: {&quot;&lt;-&quot;: &quot;rounds.max{score}.player&quot;}
+});
+
+object.rounds = [
+    {score: 0, player: &quot;Luke&quot;},
+    {score: 100, player: &quot;Obi Wan&quot;},
+    {score: 250, player: &quot;Vader&quot;}
+];
+expect(object.loser).toEqual(&quot;Luke&quot;);
+expect(object.winner).toEqual(&quot;Vader&quot;);
+
+object.rounds[1].score = 300;
+expect(object.winner).toEqual(&quot;Obi Wan&quot;);
+</code></pre>
+<h3 id="group">Group</h3>
+<p>FRB can incrementally track equivalence classes within in a collection.
+The group block accepts an expression that determines the equivalence
+class for each object in a collection.  The result is a nested data
+structure: an array of [key, class] pairs, where each class is itself an
+array of all members of the collection that have the corresponding key.</p>
+<pre><code class="language-javascript">var store = Bindings.defineBindings({}, {
+    &quot;clothingByColor&quot;: {&quot;&lt;-&quot;: &quot;clothing.group{color}&quot;}
+});
+store.clothing = [
+    {type: &#39;shirt&#39;, color: &#39;blue&#39;},
+    {type: &#39;pants&#39;, color: &#39;red&#39;},
+    {type: &#39;blazer&#39;, color: &#39;blue&#39;},
+    {type: &#39;hat&#39;, color: &#39;red&#39;}
+];
+expect(store.clothingByColor).toEqual([
+    [&#39;blue&#39;, [
+        {type: &#39;shirt&#39;, color: &#39;blue&#39;},
+        {type: &#39;blazer&#39;, color: &#39;blue&#39;}
+    ]],
+    [&#39;red&#39;, [
+        {type: &#39;pants&#39;, color: &#39;red&#39;},
+        {type: &#39;hat&#39;, color: &#39;red&#39;}
+    ]]
+]);
+</code></pre>
+<p>Tracking the positions of every key and every value in its equivalence
+class can be expensive.  Internally, <code>group</code> blocks are implemented with
+a <code>groupMap</code> block followed by an <code>entries()</code> observer.  The <code>groupMap</code>
+produces a <code>Map</code> data structure and does not waste any time, but does
+not produce range change events.  The <code>entries()</code> observer projects the
+map of classes into the nested array data structure.</p>
+<p>You can use the <code>groupMap</code> block directly.</p>
+<pre><code class="language-javascript">Bindings.cancelBinding(store, &quot;clothingByColor&quot;);
+Bindings.defineBindings(store, {
+    &quot;clothingByColor&quot;: {&quot;&lt;-&quot;: &quot;clothing.groupMap{color}&quot;}
+});
+var blueClothes = store.clothingByColor.get(&#39;blue&#39;);
+expect(blueClothes).toEqual([
+    {type: &#39;shirt&#39;, color: &#39;blue&#39;},
+    {type: &#39;blazer&#39;, color: &#39;blue&#39;}
+]);
+
+store.clothing.push({type: &#39;gloves&#39;, color: &#39;blue&#39;});
+expect(blueClothes).toEqual([
+    {type: &#39;shirt&#39;, color: &#39;blue&#39;},
+    {type: &#39;blazer&#39;, color: &#39;blue&#39;},
+    {type: &#39;gloves&#39;, color: &#39;blue&#39;}
+]);
+</code></pre>
+<p>The <code>group</code> and <code>groupMap</code> blocks both respect the type of the source
+collection.  If instead of an array you were to use a <code>SortedSet</code>, the
+equivalence classes would each be sorted sets.  This is useful because
+replacing values in a sorted set can be performed with much less waste
+than with a large array.</p>
+<h3 id="view">View</h3>
+<p>Suppose that your source is a large data store, like a <code>SortedSet</code> from
+the <a href="https://github.com/montagejs/collections">Collections</a> package.  You might need to view a sliding window
+from that collection as an array.  The <code>view</code> binding reacts to changes
+to the collection and the position and length of the window.</p>
+<pre><code class="language-javascript">var SortedSet = require(&quot;montage/core/collections/sorted-set&quot;);
+var controller = {
+    index: SortedSet([1, 2, 3, 4, 5, 6, 7, 8]),
+    start: 2,
+    length: 4
+};
+var cancel = bind(controller, &quot;view&quot;, {
+    &quot;&lt;-&quot;: &quot;index.view(start, length)&quot;
+});
+
+expect(controller.view).toEqual([3, 4, 5, 6]);
+
+// change the window length
+controller.length = 3;
+expect(controller.view).toEqual([3, 4, 5]);
+
+// change the window position
+controller.start = 5;
+expect(controller.view).toEqual([6, 7, 8]);
+
+// add content behind the window
+controller.index.add(0);
+expect(controller.view).toEqual([5, 6, 7]);
+</code></pre>
+<h3 id="enumerate">Enumerate</h3>
+<p>An enumeration observer produces <code>[index, value]</code> pairs.  You can bind
+to the index or the value in subsequent stages.  The prefix dot
+distinguishes the zeroeth property from the literal zero.</p>
+<pre><code class="language-javascript">var object = {letters: [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;]};
+bind(object, &quot;lettersAtEvenIndexes&quot;, {
+    &quot;&lt;-&quot;: &quot;letters.enumerate().filter{!(.0 % 2)}.map{.1}&quot;
+});
+expect(object.lettersAtEvenIndexes).toEqual([&#39;a&#39;, &#39;c&#39;]);
+object.letters.shift();
+expect(object.lettersAtEvenIndexes).toEqual([&#39;b&#39;, &#39;d&#39;]);
+</code></pre>
+<h3 id="range">Range</h3>
+<p>A range observes a given length and produces and incrementally updates
+an array of consecutive integers starting with zero with that given
+length.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBinding({}, &quot;stack&quot;, {
+    &quot;&lt;-&quot;: &quot;&amp;range(length)&quot;
+});
+expect(object.stack).toEqual([]);
+
+object.length = 3;
+expect(object.stack).toEqual([0, 1, 2]);
+
+object.length = 1;
+expect(object.stack).toEqual([0]);
+</code></pre>
+<h3 id="flatten">Flatten</h3>
+<p>You can flatten nested arrays.  In this example, we have an array of
+arrays and bind it to a flat array.</p>
+<pre><code class="language-javascript">var arrays = [[1, 2, 3], [4, 5, 6]];
+var object = {};
+bind(object, &quot;flat&quot;, {
+    &quot;&lt;-&quot;: &quot;flatten()&quot;,
+    source: arrays
+});
+expect(object.flat).toEqual([1, 2, 3, 4, 5, 6]);
+</code></pre>
+<p>Note that changes to the inner and outer arrays are both projected into
+the flattened array.</p>
+<pre><code class="language-javascript">arrays.push([7, 8, 9]);
+arrays[0].unshift(0);
+expect(object.flat).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+</code></pre>
+<p>Also, as with all other bindings that produce arrays, the flattened
+array is never replaced, just incrementally updated.</p>
+<pre><code class="language-javascript">var flat = object.flat;
+arrays.splice(0, arrays.length);
+expect(object.flat).toBe(flat); // === same object
+</code></pre>
+<h3 id="concat">Concat</h3>
+<p>You can observe the concatenation of collection of dynamic arrays.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBinding({
+    head: 10,
+    tail: [20, 30]
+}, &quot;flat&quot;, {
+    &quot;&lt;-&quot;: &quot;[head].concat(tail)&quot;
+});
+expect(object.flat).toEqual([10, 20, 30]);
+</code></pre>
+<p>The underlying mechanism is equivalent to <code>[[head], tail].flatten()</code>.</p>
+<h3 id="reversed">Reversed</h3>
+<p>You can bind the reversal of an array.</p>
+<pre><code class="language-javascript">var object = {forward: [1, 2, 3]};
+bind(object, &quot;backward&quot;, {
+    &quot;&lt;-&gt;&quot;: &quot;forward.reversed()&quot;
+});
+expect(object.backward.slice()).toEqual([3, 2, 1]);
+object.forward.push(4);
+expect(object.forward.slice()).toEqual([1, 2, 3, 4]);
+expect(object.backward.slice()).toEqual([4, 3, 2, 1]);
+</code></pre>
+<p>Note that you can do two-way bindings, <code>&lt;-&gt;</code> with reversed arrays.
+Changes to either side are updated to the opposite side.</p>
+<pre><code class="language-javascript">object.backward.pop();
+expect(object.backward.slice()).toEqual([4, 3, 2]);
+expect(object.forward.slice()).toEqual([2, 3, 4]);
+</code></pre>
+<h3 id="has">Has</h3>
+<p>You can bind a property to always reflect whether a collection contains
+a particular value.</p>
+<pre><code class="language-javascript">var object = {
+    haystack: [1, 2, 3],
+    needle: 3
+};
+bind(object, &quot;hasNeedle&quot;, {&quot;&lt;-&quot;: &quot;haystack.has(needle)&quot;});
+expect(object.hasNeedle).toBe(true);
+object.haystack.pop(); // 3 comes off
+expect(object.hasNeedle).toBe(false);
+</code></pre>
+<p>The binding also reacts to changes to the value you seek.</p>
+<pre><code class="language-javascript">// Continued from above...
+object.needle = 2;
+expect(object.hasNeedle).toBe(true);
+</code></pre>
+<p><code>has</code> bindings are not incremental, but with the right data-structure,
+updates are cheap.  The <a href="https://github.com/montagejs/collections">Collections</a> package contains Lists, Sets,
+and OrderedSets that all can send ranged content change notifications and thus
+can be bound.</p>
+<pre><code class="language-javascript">// Continued from above...
+var Set = require(&quot;core/collections/set&quot;);
+object.haystack = new Set([1, 2, 3]);
+expect(object.hasNeedle).toBe(true);
+</code></pre>
+<p>Likewise, Maps implement <code>addMapChangeListener</code>, so you can use a <code>has</code> binding
+to observe whether an entry exists with the given key.</p>
+<pre><code class="language-javascript">// Continued from above...
+var Map = require(&quot;core/collections/map&quot;);
+object.haystack = new Map([[1, &quot;a&quot;], [2, &quot;b&quot;]]);
+object.needle = 2;
+expect(object.hasNeedle).toBe(true);
+object.needle = 3;
+expect(object.hasNeedle).toBe(false);
+</code></pre>
+<p><code>has</code> bindings can also be left-to-right and bi-directional.</p>
+<pre><code class="language-javascript">bind(object, &quot;hasNeedle&quot;, {&quot;&lt;-&gt;&quot;: &quot;haystack.has(needle)&quot;});
+object.hasNeedle = false;
+expect(object.haystack.has(2)).toBe(false);
+</code></pre>
+<p>The collection on the left-hand-side must implement <code>has</code> or <code>contains</code>,
+<code>add</code>, and <code>delete</code> or <code>remove</code>.  FRB shims <code>Array</code> to have <code>has</code>,
+<code>add</code>, and <code>delete</code>, just like all the collections in <a href="https://github.com/montagejs/collections">Collections</a>.
+It happens that the <code>classList</code> properties of DOM elements, when they
+are supported, implement <code>add</code>, <code>remove</code>, and <code>contains</code>.</p>
+<pre><code class="language-javascript">var model = {darkMode: false};
+bind(document.body, &quot;classList.has(&#39;dark&#39;)&quot;, {
+    &quot;&lt;-&quot;: &quot;darkMode&quot;,
+    source: model
+});
+</code></pre>
+<p>The DOM <code>classList</code> does not however implement
+<code>addRangeChangeListener</code> or <code>removeRangeChangeListener</code>, so it
+cannot be used on the right-hand-side of a binding, and such bindings
+cannot be bidirectional.  With some DOM <a href="https://developer.mozilla.org/en-US/docs/DOM/DOM_Mutation_Observers">Mutation Observers</a>, you
+might be able to help FRB overcome this limitation in the future.</p>
+<h3 id="get">Get</h3>
+<p>A binding can observe changes in key-to-value mappings in arrays and map
+<a href="https://github.com/montagejs/collections">Collections</a>.</p>
+<pre><code class="language-javascript">var object = {
+    array: [1, 2, 3],
+    second: null
+};
+var cancel = bind(object, &quot;second&quot;, {
+    &quot;&lt;-&gt;&quot;: &quot;array.get(1)&quot;
+});
+expect(object.array.slice()).toEqual([1, 2, 3]);
+expect(object.second).toBe(2);
+
+object.array.shift();
+expect(object.array.slice()).toEqual([2, 3]);
+expect(object.second).toBe(3);
+
+object.second = 4;
+expect(object.array.slice()).toEqual([2, 4]);
+
+cancel();
+object.array.shift();
+expect(object.second).toBe(4); // still
+</code></pre>
+<p>The source collection can be a Map, Dict, MultiMap, SortedMap,
+SortedArrayMap, or anything that implements <code>get</code> and
+<code>addMapChangeListener</code> as specified in <a href="https://github.com/montagejs/collections">Collections</a>.  The key can
+also be a variable.</p>
+<pre><code class="language-javascript">var Map = require(&quot;core/collections/map&quot;);
+var a = {id: 0}, b = {id: 1};
+var object = {
+    source: new Map([[a, 10], [b, 20]]),
+    key: null,
+    selected: null
+};
+
+var cancel = bind(object, &quot;selected&quot;, {
+    &quot;&lt;-&quot;: &quot;source.get(key)&quot;
+});
+expect(object.selected).toBe(undefined);
+
+object.key = a;
+expect(object.selected).toBe(10);
+
+object.key = b;
+expect(object.selected).toBe(20);
+
+object.source.set(b, 30);
+expect(object.selected).toBe(30);
+
+var SortedMap = require(&quot;core/collections/sorted-map&quot;);
+object.source = SortedMap();
+expect(object.selected).toBe(undefined);
+
+object.source.set(b, 40);
+expect(object.selected).toBe(40);
+
+cancel();
+object.key = a; // no effect
+expect(object.selected).toBe(40);
+</code></pre>
+<p>You can also bind the entire content of a map-like collection to the
+content of another.  Bear in mind that the content of the source
+replaces the content of the target initially.</p>
+<pre><code class="language-javascript">var Map = require(&quot;core/collections/map&quot;);
+var object = {
+    a: new Map({a: 10}),
+    b: new Map()
+};
+var cancel = bind(object, &quot;a.mapContent()&quot;, {&quot;&lt;-&gt;&quot;: &quot;b.mapContent()&quot;});
+expect(object.a.toObject()).toEqual({});
+expect(object.b.toObject()).toEqual({});
+
+object.a.set(&#39;a&#39;, 10);
+expect(object.a.toObject()).toEqual({a: 10});
+expect(object.b.toObject()).toEqual({a: 10});
+
+object.b.set(&#39;b&#39;, 20);
+expect(object.a.toObject()).toEqual({a: 10, b: 20});
+expect(object.b.toObject()).toEqual({a: 10, b: 20});
+</code></pre>
+<p>In this case, the source of the binding is a different object than the
+target, so the binding descriptor specifies the alternate source.</p>
+<h3 id="keys-values-entries">Keys, Values, Entries</h3>
+<p>If the source of a binding is a map, FRB can also translate changes to
+the map into changes on an array.  The <code>keys</code>, <code>values</code>, and <code>entries</code>
+observers produce incrementally updated projections of the
+key-value-mappings onto an array.</p>
+<pre><code class="language-javascript">var Map = require(&quot;core/collections/map&quot;);
+var object = Bindings.defineBindings({}, {
+    keys: {&quot;&lt;-&quot;: &quot;map.keysArray()&quot;},
+    values: {&quot;&lt;-&quot;: &quot;map.valuesArray()&quot;},
+    entries: {&quot;&lt;-&quot;: &quot;map.entriesArray()&quot;}
+});
+object.map = new Map({a: 10, b: 20, c: 30});
+expect(object.keys).toEqual([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]);
+expect(object.values).toEqual([10, 20, 30]);
+expect(object.entries).toEqual([[&#39;a&#39;, 10], [&#39;b&#39;, 20], [&#39;c&#39;, 30]]);
+
+object.map.set(&#39;d&#39;, 40);
+object.map.delete(&#39;a&#39;);
+expect(object.keys).toEqual([&#39;b&#39;, &#39;c&#39;, &#39;d&#39;]);
+expect(object.values).toEqual([20, 30, 40]);
+expect(object.entries).toEqual([[&#39;b&#39;, 20], [&#39;c&#39;, 30], [&#39;d&#39;, 40]]);
+</code></pre>
+<h3 id="coerce-to-map">Coerce to Map</h3>
+<p>Records (Objects with a fixed shape), arrays of entries, and Maps
+themselves can be coerced to an incrementally updated <code>Map</code> with the
+<code>toMap</code> operator.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({}, {
+    map: {&quot;&lt;-&quot;: &quot;entries.toMap()&quot;}
+});
+
+// map property will persist across changes to entries
+var map = object.map;
+expect(map).not.toBe(null);
+
+object.entries = {a: 10};
+expect(map.keysArray()).toEqual([&#39;a&#39;]);
+expect(map.has(&#39;a&#39;)).toBe(true);
+expect(map.get(&#39;a&#39;)).toBe(10);
+</code></pre>
+<p>The <code>toMap</code> observer maintains the insertion order of the keys.</p>
+<pre><code class="language-javascript">// Continued...
+object.entries = [[&#39;b&#39;, 20], [&#39;c&#39;, 30]];
+expect(map.keysArray()).toEqual([&#39;b&#39;, &#39;c&#39;]);
+
+object.entries.push(object.entries.shift());
+expect(map.keysArray()).toEqual([&#39;c&#39;, &#39;b&#39;]);
+</code></pre>
+<p>If the entries do not have unique keys, the last entry wins.  This is
+managed internally by observing, <code>entries.group{.0}.map{.1.last()}</code>.</p>
+<pre><code class="language-javascript">// Continued...
+object.entries = [[&#39;a&#39;, 10], [&#39;a&#39;, 20]];
+expect(map.get(&#39;a&#39;)).toEqual(20);
+object.entries.pop();
+expect(map.get(&#39;a&#39;)).toEqual(10);
+</code></pre>
+<p><code>toMap</code> binds the content of the output map to the content of the input
+map and will clear and repopulate the output map if the input map is
+replaced.</p>
+<pre><code>// Continued...
+object.entries = new Map({a: 10});
+expect(map.keysArray()).toEqual([&#39;a&#39;]);
+</code></pre>
+<h3 id="equals">Equals</h3>
+<p>You can bind to whether expressions are equal.</p>
+<pre><code class="language-javascript">var fruit = {apples: 1, oranges: 2};
+bind(fruit, &quot;equal&quot;, {&quot;&lt;-&quot;: &quot;apples == oranges&quot;});
+expect(fruit.equal).toBe(false);
+fruit.orange = 1;
+expect(fruit.equal).toBe(true);
+</code></pre>
+<p>Equality can be bound both directions.  In this example, we do a two-way
+binding between whether a radio button is checked and a corresponding
+value in our model.</p>
+<pre><code class="language-javascript">var component = {
+    orangeElement: {checked: false},
+    appleElement: {checked: true}
+};
+Bindings.defineBindings(component, {
+    &quot;orangeElement.checked&quot;: {&quot;&lt;-&gt;&quot;: &quot;fruit == &#39;orange&#39;&quot;},
+    &quot;appleElement.checked&quot;: {&quot;&lt;-&gt;&quot;: &quot;fruit == &#39;apple&#39;&quot;},
+});
+
+component.orangeElement.checked = true;
+expect(component.fruit).toEqual(&quot;orange&quot;);
+
+component.appleElement.checked = true;
+expect(component.fruit).toEqual(&quot;apple&quot;);
+</code></pre>
+<p>Because equality and assignment are interchanged in this language, you
+can use either <code>=</code> or <code>==</code>.</p>
+<p>FRB also supports a comparison operator, <code>&lt;=&gt;</code>, which uses
+<code>Object.compare</code> to determines how two operands should be sorted in
+relation to each other.</p>
+<h3 id="array-and-map-content">Array and Map Content</h3>
+<p>In JavaScript, arrays behave both like objects (in the sense that every
+index is a property, but also like a map collection of index-to-value
+pairs.  The <a href="https://github.com/montagejs/collections">Collections</a> package goes so far as to patch up the
+<code>Array</code> prototype so arrays can masquerade as maps, with the caveat that
+<code>delete(value)</code> behaves like a Set instead of a Map.</p>
+<p>This duplicity is reflected in FRB.  You can access the values in an
+array using the object property notation or the mapped key notation.</p>
+<pre><code class="language-javascript">var object = {
+    array: [1, 2, 3]
+};
+Bindings.defineBindings(object, {
+    first: {&quot;&lt;-&quot;: &quot;array.0&quot;},
+    second: {&quot;&lt;-&quot;: &quot;array.get(1)&quot;}
+});
+expect(object.first).toBe(1);
+expect(object.second).toBe(2);
+</code></pre>
+<p>To distinguish a numeric property of the source from a number literal,
+use a dot.  To distingish a mapped index from an array literal, use an
+empty expression.</p>
+<pre><code class="language-javascript">var array = [1, 2, 3];
+var object = {};
+Bindings.defineBindings(object, {
+    first: {
+        &quot;&lt;-&quot;: &quot;.0&quot;,
+        source: array
+    },
+    second: {
+        &quot;&lt;-&quot;: &quot;get(1)&quot;,
+        source: array
+    }
+});
+expect(object.first).toBe(1);
+expect(object.second).toBe(2);
+</code></pre>
+<p>Unlike property notation, map notation can observe a variable index.</p>
+<pre><code class="language-javascript">var object = {
+    array: [1, 2, 3],
+    index: 0
+};
+Bindings.defineBinding(object, &quot;last&quot;, {
+    &quot;&lt;-&quot;: &quot;array.get(array.length - 1)&quot;
+});
+expect(object.last).toBe(3);
+
+object.array.pop();
+expect(object.last).toBe(2);
+</code></pre>
+<p>You can also bind <em>all</em> of the content of an array by range or by
+mapping.  The notation for binding ranged content is <code>rangeContent()</code>.
+Every change to an Array or SortedSet dispatches range changes and any
+collection that implements <code>splice</code> and <code>swap</code> can be a target for such
+changes.</p>
+<pre><code class="language-javascript">var SortedSet = require(&quot;core/collections/sorted-set&quot;);
+var object = {
+    set: SortedSet(),
+    array: []
+};
+Bindings.defineBindings(object, {
+    &quot;array.rangeContent()&quot;: {&quot;&lt;-&quot;: &quot;set&quot;}
+});
+object.set.addEach([5, 2, 6, 1, 4, 3]);
+expect(object.array).toEqual([1, 2, 3, 4, 5, 6]);
+</code></pre>
+<p>The notation for binding the content of any mapping collection using map
+changes is <code>mapContent()</code>.  On the target of a binding, this will note
+when values are added or removed on each key of the source collection
+and apply the same change to the target.  The target and source can be
+arrays or map collections.</p>
+<pre><code class="language-javascript">var Map = require(&quot;core/collections/map&quot;);
+var object = {
+    map: new Map(),
+    array: []
+};
+Bindings.defineBinding(object, &quot;map.mapContent()&quot;, {
+    &quot;&lt;-&quot;: &quot;array&quot;
+});
+object.array.push(1, 2, 3);
+expect(object.map.toObject()).toEqual({
+    0: 1,
+    1: 2,
+    2: 3
+});
+</code></pre>
+<h3 id="value">Value</h3>
+<p>A note about the source value: an empty path implies the source value.
+Using empty paths and empty expressions is useful in some situations.</p>
+<p>If a value is ommitted on either side of an operator, it implies the
+source value.  The expression <code>sorted{}</code> indicates a sorted array, where
+each value is sorted by its own numeric value.  The expression
+<code>filter{!!}</code> would filter falsy values.  The operand is implied.
+Similarly, <code>filter{!(%2)}</code> produces only even values.</p>
+<p>This is why you can use <code>.0</code> to get the zeroth property of an array, to
+distingiush the form from <code>0</code> which would be a numeric literal, and why
+you can use <code>()[0]</code> to map the zeroeth key of a map or array, to
+distinguish the form from <code>[0]</code> which would be an array literal.</p>
+<h3 id="with-context-value">With Context Value</h3>
+<p>Expressions can be evaluated in the context of another value using a
+variant of property notation.  A parenthesized expression can follow a
+path.</p>
+<pre><code class="language-javascript">var object = {
+    context: {a: 10, b: 20}
+};
+Bindings.defineBinding(object, &quot;sum&quot;, {
+    &quot;&lt;-&quot;: &quot;context.(a + b)&quot;
+});
+expect(object.sum).toBe(30);
+
+Bindings.cancelBinding(object, &quot;sum&quot;);
+object.context.a = 20;
+expect(object.sum).toBe(30); // unchanged
+</code></pre>
+<p>To observe a constructed array or object literal, the expression does
+not need parentheses.</p>
+<pre><code class="language-javascript">var object = {
+    context: {a: 10, b: 20}
+};
+Bindings.defineBindings(object, {
+    &quot;duple&quot;: {&quot;&lt;-&quot;: &quot;context.[a, b]&quot;},
+    &quot;pair&quot;: {&quot;&lt;-&quot;: &quot;context.{key: a, value: b}&quot;}
+});
+expect(object.duple).toEqual([10, 20]);
+expect(object.pair).toEqual({key: 10, value: 20});
+
+Bindings.cancelBindings(object);
+</code></pre>
+<h3 id="operators">Operators</h3>
+<p>FRB can also recognize many operators.  These are in order of precedence
+unary <code>-</code> negation, <code>+</code> numeric coercion, and <code>!</code> logical negation and
+then binary <code>**</code> power, <code>//</code> root, <code>%%</code> logarithm, <code>*</code>, <code>/</code>, <code>%</code> modulo,
+<code>%%</code> remainder, <code>+</code>, <code>-</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>=</code> or
+<code>==</code>, <code>!=</code>, <code>&amp;&amp;</code> and <code>||</code>.</p>
+<pre><code class="language-javascript">var object = {height: 10};
+bind(object, &quot;heightPx&quot;, {&quot;&lt;-&quot;: &quot;height + &#39;px&#39;&quot;});
+expect(object.heightPx).toEqual(&quot;10px&quot;);
+</code></pre>
+<p>The unary <code>+</code> operator coerces a value to a number. It is handy for
+binding a string to a number.</p>
+<pre><code class="language-javascript">var object = {
+    number: null,
+    string: null,
+};
+Bindings.defineBinding(object, &quot;+number&quot;, {
+    &quot;&lt;-&quot;: &quot;string&quot;
+});
+object.string = &#39;10&#39;;
+expect(object.number).toBe(10);
+</code></pre>
+<h3 id="functions">Functions</h3>
+<p>FRB supports some common functions.  <code>startsWith</code>, <code>endsWith</code>, and
+<code>contains</code> all operate on strings.  <code>join</code> concatenates an array of
+strings with a given delimiter (or empty string).  <code>split</code> breaks a
+string between every delimiter (or just between every character).
+<code>join</code> and <code>split</code> are algebraic and can be bound as well as observed.</p>
+<h3 id="conditional">Conditional</h3>
+<p>FRB supports the ternary conditional operator, if <code>?</code> then <code>:</code> else.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({
+    condition: null,
+    consequent: 10,
+    alternate: 20
+}, {
+    choice: {&quot;&lt;-&gt;&quot;: &quot;condition ? consequent : alternate&quot;}
+});
+
+expect(object.choice).toBe(undefined); // no choice made
+
+object.condition = true;
+expect(object.choice).toBe(10);
+
+object.condition = false;
+expect(object.choice).toBe(20);
+</code></pre>
+<p>The ternary operator can bind in both directions.</p>
+<pre><code class="language-javascript">object.choice = 30;
+expect(object.alternate).toBe(30);
+
+object.condition = true;
+object.choice = 40;
+expect(object.consequent).toBe(40);
+</code></pre>
+<h3 id="and">And</h3>
+<p>The logical <strong>and</strong> operator, <code>&amp;&amp;</code>, observes either the left or right
+argument depending on whether the first argument is both defined and
+true.  If the first argument is null, undefined, or false, it will stand
+for the whole expression.  Otherwise, the second argument will stand for
+the whole expression.</p>
+<p>If we assume that the first and second argument are always defined and
+either true or false, the <strong>and</strong> operator serves strictly as a logical
+combinator.  However, with bindings, it is common for a value to at
+least initially be null or undefined.  Logical operators are the
+exception to the rule that an expression will necessarily terminate if
+any operand is null or undefined.</p>
+<p>In this example, the left and right sides are initially undefined.  We
+set the right operand to <code>10</code> and the bound value remains undefined.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({
+    left: undefined,
+    right: undefined
+}, {
+    and: {&quot;&lt;-&quot;: &quot;left &amp;&amp; right&quot;}
+});
+
+object.right = 10;
+expect(object.and).toBe(undefined);
+</code></pre>
+<p>We set the left operand to <code>20</code>.  The bound value becomes the value of
+the right operand, <code>10</code>.</p>
+<pre><code class="language-javascript">// Continued...
+object.left = 20;
+expect(object.and).toBe(10);
+</code></pre>
+<hr>
+<p>Interestingly, logical <strong>and</strong> is bindable.  The objective of the
+binding is to do whatever is necessary, if possible, to make the logical
+expression equal the bound value.</p>
+<p>Supposing that both the left and right operands are false, and the
+result is or becomes true, to satisfy the equality <code>left &amp;&amp; right == true</code>, both left and right must be set and bound to <code>true</code>.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({}, {
+    &quot;left &amp;&amp; right&quot;: {
+        &quot;&lt;-&quot;: &quot;leftAndRight&quot;
+    }
+});
+
+object.leftAndRight = true;
+expect(object.left).toBe(true);
+expect(object.right).toBe(true);
+</code></pre>
+<p>As with the equals binder, logic bindings will prefer to alter the left
+operand if altering either operand would suffice to validate the
+expression.  So, if the expression then becomes false, it is sufficient
+to set the left side to false to satisfy the equality.</p>
+<pre><code class="language-javascript">// Continued...
+object.leftAndRight = false;
+expect(object.left).toBe(false);
+expect(object.right).toBe(true);
+</code></pre>
+<p>This can facilitate some interesting, tri-state logic.  For example, if
+you have a checkbox that can be checked, unchecked, or disabled, and you
+want it to be unchecked if it is disabled, you can use logic bindings to
+ensure this.</p>
+<pre><code class="language-javascript">var controller = Bindings.defineBindings({
+    checkbox: {
+        checked: false,
+        disabled: false
+    },
+    model: {
+        expanded: false,
+        children: [1, 2, 3]
+    }
+}, {
+    &quot;checkbox.checked&quot;: {&quot;&lt;-&gt;&quot;: &quot;model.expanded &amp;&amp; expandable&quot;},
+    &quot;checkbox.disabled&quot;: {&quot;&lt;-&quot;: &quot;!expandable&quot;},
+    &quot;expandable&quot;: {&quot;&lt;-&quot;: &quot;model.children.length &gt; 0&quot;}
+});
+
+expect(controller.checkbox.checked).toBe(false);
+expect(controller.checkbox.disabled).toBe(false);
+
+// check the checkbox
+controller.checkbox.checked = true;
+expect(controller.model.expanded).toBe(true);
+
+// alter the model such that the checkbox is unchecked and disabled
+controller.model.children.clear();
+expect(controller.checkbox.checked).toBe(false);
+expect(controller.checkbox.disabled).toBe(true);
+</code></pre>
+<h3 id="or">Or</h3>
+<p>As with the <strong>and</strong> operator, the logical <strong>or</strong> is an exception to the
+rule that an expression is null, undefined, or empty if any of the
+operands are null or undefined.  If both operands are defined and
+boolean, <strong>or</strong> expressions behave strictly within the realm of logic.
+However, if the values are non-boolean or even non-values, they serve to
+select either the left or right side based on whether the left side is
+defined and true.</p>
+<p>If the first argument is undefined or false, the aggregate expression
+will evaluate to the second argument, even if that argument is null or
+undefined.</p>
+<p>Suppose we bind <code>or</code> to <code>left || right</code> on some object.  <code>or</code> will be
+<code>undefined</code> initially, but if we set the <code>right</code> to <code>10</code>, <code>or</code> will
+become <code>10</code>, bypassing the still undefined left side.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({
+    left: undefined,
+    right: undefined
+}, {
+    or: {&quot;&lt;-&quot;: &quot;left || right&quot;}
+});
+
+object.right = 10;
+expect(object.or).toBe(10);
+</code></pre>
+<p>However, the left hand side takes precedence over the right if it is
+defined and true.</p>
+<pre><code class="language-javascript">// Continued...
+object.left = 20;
+expect(object.or).toBe(20);
+</code></pre>
+<p>And it will remain bound, even if the right hand side becomes undefined.</p>
+<pre><code class="language-javascript">object.right = undefined;
+expect(object.or).toBe(20);
+</code></pre>
+<blockquote>
+<p>Aside: JavaScript’s <code>delete</code> operator performs a configuration change,
+and desugars to <code>Object.defineProperty</code>, and is not interceptable with
+an ES5 setter.  So, don&#39;t use it on any property that is involved in a
+binding.  Setting to null or undefined should suffice.</p>
+</blockquote>
+<hr>
+<p>Logical <strong>or</strong> is bindable.  As with logical <strong>and</strong>, the binding
+performs the minimum operation necessary to ensure that the expression
+is equal.  If the expression becomes true, and either of the operands
+are true, the nothing needs to change.  If the expression becomes false,
+however, both operands must be bound to false.  If the expression
+becomes true again, it is sufficient to bind the left operand to true to
+ensure that the expression as a whole is true.  Rather than belabor the
+point, I leave as an exercise to the reader to apply DeMorgan’s Theorem
+to the documentation for logical <strong>and</strong> bindings.</p>
+<h3 id="default">Default</h3>
+<p>The <strong>default</strong> operator, <code>??</code>, is similar to the <strong>or</strong>, <code>||</code> operator,
+except that it decides whether to use the left or right solely based on
+whether the left is defined.  If the left is null or undefined, the
+aggregate expression will evaluate to the right expression.  If the left
+is defined, even if it is false, the result will be the left expression.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({
+    left: undefined,
+    right: undefined
+}, {
+    or: {&quot;&lt;-&quot;: &quot;left ?? right&quot;}
+});
+
+object.right = 10;
+expect(object.or).toBe(10);
+
+object.left = false;
+expect(object.or).toBe(false);
+</code></pre>
+<p>The default operator is not bindable, but weirder things have happened.</p>
+<h3 id="defined">Defined</h3>
+<p>The <code>defined()</code> operator serves a similar role to the default operator.
+If the value in scope is null or undefined, it the result will be false,
+and otherwise it will be true.  This will allow a term that may be
+undefined to propagate.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({}, {
+    ready: {
+        &quot;&lt;-&quot;: &quot;value.defined()&quot;
+    }
+});
+expect(object.ready).toBe(false);
+
+object.value = 10;
+expect(object.ready).toBe(true);
+</code></pre>
+<p>The defined operator is also bindable.  If the source is or becomes
+false, the target will be bound to <code>null</code>.  If the source is null or
+false, the binding has no effect.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({
+    value: 10,
+    operational: true
+}, {
+    &quot;value.defined()&quot;: {&quot;&lt;-&quot;: &quot;operational&quot;}
+});
+expect(object.value).toBe(10);
+
+object.operational = false;
+expect(object.value).toBe(undefined);
+</code></pre>
+<p>If the source becomes null or undefined, it will cancel the previous
+binding but does not set or restore the bound value.  Vaguely becoming
+“defined” is not enough information to settle on a particular value.</p>
+<pre><code class="language-javascript">object.operational = true;
+expect(object.value).toBe(undefined);
+</code></pre>
+<p>However, another binding might settle the issue.</p>
+<pre><code class="language-javascript">Bindings.defineBindings(object, {
+    &quot;value == 10&quot;: {
+        &quot;&lt;-&quot;: &quot;operational&quot;
+    }
+});
+expect(object.value).toBe(10);
+</code></pre>
+<h3 id="algebra">Algebra</h3>
+<p>FRB can automatically invert algebraic operators as long as they operate
+strictly on the left-most expressions on both the source and target are
+bindable properties.</p>
+<p>In this example, the primary binding is <code>notToBe &lt;- !toBe</code>, and the
+inverse binding is automatically computed <code>toBe &lt;- !notToBe</code>.</p>
+<pre><code class="language-javascript">var caesar = {toBe: false};
+bind(caesar, &quot;notToBe&quot;, {&quot;&lt;-&gt;&quot;: &quot;!toBe&quot;});
+expect(caesar.toBe).toEqual(false);
+expect(caesar.notToBe).toEqual(true);
+
+caesar.notToBe = false;
+expect(caesar.toBe).toEqual(true);
+</code></pre>
+<p>FRB does algebra by rotating the expressions on one side of a binding to
+the other until only one independent property remains (the left most
+expression) on the target side of the equation.</p>
+<pre><code>convert: y &lt;- !x
+revert: x &lt;- !y
+</code></pre>
+<pre><code>convert: y &lt;- x + a
+revert: x &lt;- y - a
+</code></pre>
+<p>The left-most independent variable on the right hand side becomes the
+dependent variable on the inverted binding.  At present, this only works
+for numbers and when the left-most expression is a bindable property
+because it cannot assign a new value to the literal 10.  For example,
+FRB cannot yet implicitly revert <code>y &lt;-&gt; 10 + x</code>.</p>
+<h3 id="literals">Literals</h3>
+<p>You may have noticed literals in the previous examples.  String literals
+take the form of any characters between single quotes.  Any character
+can be escaped with a back slash.</p>
+<pre><code class="language-javascript">var object = {};
+bind(object, &quot;greeting&quot;, {&quot;&lt;-&quot;: &quot;&#39;Hello, World!&#39;&quot;});
+expect(object.greeting).toBe(&quot;Hello, World!&quot;);
+</code></pre>
+<p>Number literals are digits with an optional mantissa.</p>
+<pre><code class="language-javascript">bind(object, &#39;four&#39;, {&quot;&lt;-&quot;: &quot;2 + 2&quot;});
+</code></pre>
+<h3 id="tuples">Tuples</h3>
+<p>Bindings can produce fixed-length arrays.  These are most useful in
+conjunction with mappings.  Tuples are comma-delimited and
+parantheses-enclosed.</p>
+<pre><code class="language-javascript">var object = {array: [[1, 2, 3], [4, 5]]};
+bind(object, &quot;summary&quot;, {&quot;&lt;-&quot;: &quot;array.map{[length, sum()]}&quot;});
+expect(object.summary).toEqual([
+    [3, 6],
+    [2, 9]
+]);
+</code></pre>
+<h3 id="records">Records</h3>
+<p>Bindings can also produce fixed-shape objects.  The notation is
+comma-delimited, colon-separated entries, enclosed by curly-braces.</p>
+<pre><code class="language-javascript">var object = {array: [[1, 2, 3], [4, 5]]};
+bind(object, &quot;summary&quot;, {
+    &quot;&lt;-&quot;: &quot;array.map{{length: length, sum: sum()}}&quot;
+});
+expect(object.summary).toEqual([
+    {length: 3, sum: 6},
+    {length: 2, sum: 9}
+]);
+</code></pre>
+<p>The left hand side of an entry in a record is any combination of letters
+or numbers.  The right side is any expression.</p>
+<h3 id="parameters">Parameters</h3>
+<p>Bindings can also involve parameters.  The source of parameters is by
+default the same as the source.  The source, in turn, defaults to the
+same as the target object.  It can be specified on the binding
+descriptor.  Parameters are declared by any expression following a
+dollar sign.</p>
+<pre><code class="language-javascript">var object = {a: 10, b: 20, c: 30};
+bind(object, &quot;foo&quot;, {
+    &quot;&lt;-&quot;: &quot;[$a, $b, $c]&quot;},
+    parameters: object
+});
+</code></pre>
+<p>Bindings also react to changes to the parameters.</p>
+<pre><code class="language-javascript">object.a = 0;
+object.b = 1;
+object.c = 2;
+expect(object.foo).toEqual([0, 1, 2]);
+</code></pre>
+<p>The degenerate case of the property language is an empty string.  This
+is a valid property path that observes the value itself.  So, as an
+emergent pattern, a <code>$</code> expression by itself corresponds to the whole
+parameters object.</p>
+<pre><code class="language-javascript">var object = {};
+bind(object, &quot;ten&quot;, {&quot;&lt;-&quot;: &quot;$&quot;, parameters: 10});
+expect(object.ten).toEqual(10);
+</code></pre>
+<h3 id="elements-and-components">Elements and Components</h3>
+<p>FRB provides a <code>#</code> notation for reaching into the DOM for an element.
+This is handy for binding views and models on a controller object.</p>
+<p>The <code>defineBindings</code> method accepts an optional final argument,
+<code>parameters</code>, which is shared by all bindings (unless shadowed by a more
+specific parameters object on an individual descriptor).</p>
+<p>The <code>parameters</code> can include a <code>document</code>.  The <code>document</code> may be any
+object that implements <code>getElementById</code>.</p>
+<p>Additionally, the <code>frb/dom</code> is an experiment that monkey-patches the DOM
+to make some properties of DOM elements observable, like the <code>value</code> or
+<code>checked</code> attribute of an <code>input</code> or <code>textarea element</code>.</p>
+<pre><code class="language-javascript">var Bindings = require(&quot;core/frb/bindings&quot;);
+require(&quot;core/frb/dom&quot;);
+
+var controller = Bindings.defineBindings({}, {
+
+    &quot;fahrenheit&quot;: {&quot;&lt;-&gt;&quot;: &quot;celsius * 1.8 + 32&quot;},
+    &quot;celsius&quot;: {&quot;&lt;-&gt;&quot;: &quot;kelvin - 272.15&quot;},
+
+    &quot;#fahrenheit.value&quot;: {&quot;&lt;-&gt;&quot;: &quot;+fahrenheit&quot;},
+    &quot;#celsius.value&quot;: {&quot;&lt;-&gt;&quot;: &quot;+celsius&quot;},
+    &quot;#kelvin.value&quot;: {&quot;&lt;-&gt;&quot;: &quot;+kelvin&quot;}
+
+}, {
+    document: document
+});
+
+controller.celsius = 0;
+</code></pre>
+<p>One caveat of this approach is that it can cause a lot of DOM repaint
+and reflow events.  The <a href="https://github.com/montagejs/montage">Montage</a> framework uses a synchronized draw
+cycle and a component object model to minimize the cost of computing CSS
+properties on the DOM and performing repaints and reflows, deferring
+such operations to individual animation frames.</p>
+<p>For a future release of Montage, FRB provides an alternate notation for
+reaching into the component object model, using its deserializer.  The
+<code>@</code> prefix refers to another component by its label.  Instead of
+providing a <code>document</code>, Montage provides a <code>serialization</code>, which in
+turn implements <code>getObjectForLabel</code>.</p>
+<pre><code class="language-javascript">var Bindings = require(&quot;core/frb/bindings&quot;);
+
+var controller = Bindings.defineBindings({}, {
+
+    &quot;fahrenheit&quot;: {&quot;&lt;-&gt;&quot;: &quot;celsius * 1.8 + 32&quot;},
+    &quot;celsius&quot;: {&quot;&lt;-&gt;&quot;: &quot;kelvin - 272.15&quot;},
+
+    &quot;@fahrenheit.value&quot;: {&quot;&lt;-&gt;&quot;: &quot;+fahrenheit&quot;},
+    &quot;@celsius.value&quot;: {&quot;&lt;-&gt;&quot;: &quot;+celsius&quot;},
+    &quot;@kelvin.value&quot;: {&quot;&lt;-&gt;&quot;: &quot;+kelvin&quot;}
+
+}, {
+    serializer: serializer
+});
+
+controller.celsius = 0;
+</code></pre>
+<h3 id="observers">Observers</h3>
+<p>FRB’s bindings use observers and binders internally.  You can create an
+observer from a property path with the <code>observe</code> function exported by
+the <code>frb/observe</code> module.</p>
+<pre><code class="language-javascript">var results = [];
+var object = {foo: {bar: 10}};
+var cancel = observe(object, &quot;foo.bar&quot;, function (value) {
+    results.push(value);
+});
+
+object.foo.bar = 10;
+expect(results).toEqual([10]);
+
+object.foo.bar = 20;
+expect(results).toEqual([10, 20]);
+</code></pre>
+<p>For more complex cases, you can specify a descriptor instead of the
+callback.  For example, to observe a property’s value <em>before it
+changes</em>, you can use the <code>beforeChange</code> flag.</p>
+<pre><code class="language-javascript">var results = [];
+var object = {foo: {bar: 10}};
+var cancel = observe(object, &quot;foo.bar&quot;, {
+    change: function (value) {
+        results.push(value);
+    },
+    beforeChange: true
+});
+
+expect(results).toEqual([10]);
+
+object.foo.bar = 20;
+expect(results).toEqual([10, 10]);
+
+object.foo.bar = 30;
+expect(results).toEqual([10, 10, 20]);
+</code></pre>
+<p>If the product of an observer is an array, that array is always updated
+incrementally.  It will only get emitted once.  If you want it to get
+emitted every time its content changes, you can use the <code>contentChange</code>
+flag.</p>
+<pre><code class="language-javascript">var lastResult;
+var array = [[1, 2, 3], [4, 5, 6]];
+observe(array, &quot;map{sum()}&quot;, {
+    change: function (sums) {
+        lastResult = sums.slice();
+        // 1. [6, 15]
+        // 2. [6, 15, 0]
+        // 3. [10, 15, 0]
+    },
+    contentChange: true
+});
+
+expect(lastResult).toEqual([6, 15]);
+
+array.push([0]);
+expect(lastResult).toEqual([6, 15, 0]);
+
+array[0].push(4);
+expect(lastResult).toEqual([10, 15, 0]);
+</code></pre>
+<h3 id="nested-observers">Nested Observers</h3>
+<p>To get the same effect as the previous example, you would have to nest
+your own content change observer.</p>
+<pre><code class="language-javascript">var i = 0;
+var array = [[1, 2, 3], [4, 5, 6]];
+var cancel = observe(array, &quot;map{sum()}&quot;, function (array) {
+    function contentChange() {
+        if (i === 0) {
+            expect(array.slice()).toEqual([6, 15]);
+        } else if (i === 1) {
+            expect(array.slice()).toEqual([6, 15, 0]);
+        } else if (i === 2) {
+            expect(array.slice()).toEqual([10, 15, 0]);
+        }
+        i++;
+    }
+    contentChange();
+    array.addRangeChangeListener(contentChange);
+    return function cancelRangeChange() {
+        array.removeRangeChangeListener(contentChange);
+    };
+});
+array.push([0]);
+array[0].push(4);
+cancel();
+</code></pre>
+<p>This illustrates one crucial aspect of the architecture.  Observers
+return cancelation functions.  You can also return a cancelation
+function inside a callback observer.  That canceler will get called each
+time a new value is observed, or when the parent observer is canceled.
+This makes it possible to nest observers.</p>
+<pre><code class="language-javascript">var object = {foo: {bar: 10}};
+var cancel = observe(object, &quot;foo&quot;, function (foo) {
+    return observe(foo, &quot;bar&quot;, function (bar) {
+        expect(bar).toBe(10);
+    });
+});
+</code></pre>
+<h3 id="bindings">Bindings</h3>
+<p>FRB provides utilities for declaraing and managing multiple bindings on
+objects.  The <code>frb</code> (<code>frb/bindings</code>) module exports this interface.</p>
+<pre><code class="language-javascript">var Bindings = require(&quot;core/frb/bindings&quot;);
+</code></pre>
+<p>The <code>Bindings</code> module provides <code>defineBindings</code> and <code>cancelBindings</code>,
+<code>defineBinding</code> and <code>cancelBinding</code>, as well as binding inspector
+methods <code>getBindings</code> and <code>getBinding</code>.  All of these take a target
+object as the first argument.</p>
+<p>The <code>Bindings.defineBinding(target, descriptors)</code> method returns the
+target object for convenience.</p>
+<pre><code class="language-javascript">var target = Bindings.defineBindings({}, {
+    &quot;fahrenheit&quot;: {&quot;&lt;-&gt;&quot;: &quot;celsius * 1.8 + 32&quot;},
+    &quot;celsius&quot;: {&quot;&lt;-&gt;&quot;: &quot;kelvin - 272.15&quot;}
+});
+target.celsius = 0;
+expect(target.fahrenheit).toEqual(32);
+expect(target.kelvin).toEqual(272.15);
+</code></pre>
+<p><code>Bindings.getBindings</code> in that case would return an object with
+<code>fahrenheit</code> and <code>celsius</code> keys.  The values would be identical to the
+given binding descriptor objects, like <code>{&quot;&lt;-&gt;&quot;: &quot;kelvin - 272.15&quot;}</code>, but
+it also gets annotated with a <code>cancel</code> function and the default values
+for any ommitted properties like <code>source</code> (same as <code>target</code>),
+<code>parameters</code> (same as <code>source</code>), and others.</p>
+<p><code>Bindings.cancelBindings</code> cancels all bindings attached to an object and
+removes them from the bindings descriptors object.</p>
+<pre><code class="language-javascript">Bindings.cancelBindings(target);
+expect(Bindings.getBindings(object)).toEqual({});
+</code></pre>
+<h3 id="binding-descriptors">Binding Descriptors</h3>
+<p>Binding descriptors describe the source of a binding and additional
+parameters.  <code>Bindings.defineBindings</code> can set up bindings (<code>&lt;-</code> or
+<code>&lt;-&gt;</code>), computed (<code>compute</code>) properties, and falls back to
+defining ES5 properties with permissive defaults (<code>enumerable</code>,
+<code>writable</code>, and <code>configurable</code> all on by default).</p>
+<p>If a descriptor has a <code>&lt;-</code> or <code>&lt;-&gt;</code>, it is a binding descriptor.
+FRB creates a binding, adds the canceler to the descriptor, and adds the
+descriptor to an internal table that tracks all of the bindings defined
+on that object.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({
+    darkMode: false,
+    document: document
+}, {
+    &quot;document.body.classList.has(&#39;dark&#39;)&quot;: {
+        &quot;&lt;-&quot;: &quot;darkMode&quot;
+    }
+});
+</code></pre>
+<p>You can get all the binding descriptors with <code>Bindings.getBindings</code>, or a
+single binding descriptor with <code>Bindings.getBinding</code>.  <code>Bindings.cancel</code> cancels
+all the bindings to an object and <code>Bindings.cancelBinding</code> will cancel just
+one.</p>
+<pre><code class="language-javascript">// Continued from above...
+var bindings = Bindings.getBindings(object);
+var descriptor = Bindings.getBinding(object, &quot;document.body.classList.has(&#39;dark&#39;)&quot;);
+Bindings.cancelBinding(object, &quot;document.body.classList.has(&#39;dark&#39;)&quot;);
+Bindings.cancelBindings(object);
+expect(Object.keys(bindings)).toEqual([]);
+</code></pre>
+<h3 id="converters">Converters</h3>
+<p>A binding descriptor can have a <code>convert</code> function, a <code>revert</code> function,
+or alternately a <code>converter</code> object.  Converters are useful for
+transformations that cannot be expressed in the property language, or
+are not reversible in the property language.</p>
+<p>In this example, <code>a</code> and <code>b</code> are synchronized such that <code>a</code> is always
+half of <code>b</code>, regardless of which property gets updated.</p>
+<pre><code class="language-javascript">var object = Bindings.defineBindings({
+    a: 10
+}, {
+    b: {
+        &quot;&lt;-&gt;&quot;: &quot;a&quot;,
+        convert: function (a) {
+            return a * 2;
+        },
+        revert: function (b) {
+            return b / 2;
+        }
+    }
+});
+expect(object.b).toEqual(20);
+
+object.b = 10;
+expect(object.a).toEqual(5);
+</code></pre>
+<p>Converter objects are useful for reusable or modular converter types and
+converters that track additional state.</p>
+<pre><code class="language-javascript">function Multiplier(factor) {
+    this.factor = factor;
+}
+Multiplier.prototype.convert = function (value) {
+    return value * this.factor;
+};
+Multiplier.prototype.revert = function (value) {
+    return value / this.factor;
+};
+
+var doubler = new Multiplier(2);
+
+var object = Bindings.defineBindings({
+    a: 10
+}, {
+    b: {
+        &quot;&lt;-&gt;&quot;: &quot;a&quot;,
+        converter: doubler
+    }
+});
+expect(object.b).toEqual(20);
+
+object.b = 10;
+expect(object.a).toEqual(5);
+</code></pre>
+<p>Reusable converters have an implied direction, from some source type to
+a particular target type.  Sometimes the types on your binding are the
+other way around.  For that case, you can use the converter as a
+reverter.  This merely swaps the <code>convert</code> and <code>revert</code> methods.</p>
+<pre><code class="language-javascript">var uriConverter = {
+    convert: encodeURI,
+    revert: decodeURI
+};
+var model = Bindings.defineBindings({}, {
+    &quot;title&quot;: {
+        &quot;&lt;-&gt;&quot;: &quot;location&quot;,
+        reverter: uriConverter
+    }
+});
+
+model.title = &quot;Hello, World!&quot;;
+expect(model.location).toEqual(&quot;Hello,%20World!&quot;);
+
+model.location = &quot;Hello,%20Dave.&quot;;
+expect(model.title).toEqual(&quot;Hello, Dave.&quot;);
+</code></pre>
+<h3 id="computed-properties">Computed Properties</h3>
+<p>A computed property is one that gets updated with a function call when
+one of its arguments changes.  Like a converter, it is useful in cases
+where a transformation or computation cannot be expressed in the
+property language, but can additionally accept multiple arguments as
+input.  A computed property can be used as the source for another
+binding.</p>
+<p>In this example, we create an object as the root of multiple bindings.
+The object synchronizes the properties of a &quot;form&quot; object with the
+window’s search string, effectively navigating to a new page whenever
+the &quot;q&quot; or &quot;charset&quot; values of the form change.</p>
+<pre><code class="language-javascript">Bindings.defineBindings({
+    window: window,
+    form: {
+        q: &quot;&quot;,
+        charset: &quot;utf-8&quot;
+    }
+}, {
+    queryString: {
+        args: [&quot;form.q&quot;, &quot;form.charset&quot;],
+        compute: function (q, charset) {
+            return &quot;?&quot; + QS.stringify({
+                q: q,
+                charset: charset
+            });
+        }
+    },
+    &quot;window.location.search&quot;: {
+        &quot;&lt;-&quot;: &quot;queryString&quot;
+    }
+});
+</code></pre>
+<h3 id="debugging-with-traces">Debugging with Traces</h3>
+<p>A binding can be configured to log when it changes and why.  The <code>trace</code>
+property on a descriptor instructs the binder to log changes to the
+console.</p>
+<pre><code class="language-javascript">Bindings.defineBindings({
+    a: 10
+}, {
+    b: {
+        &quot;&lt;-&quot;: &quot;a + 1&quot;,
+    }
+});
+</code></pre>
+<h3 id="polymorphic-extensibility">Polymorphic Extensibility</h3>
+<p>Bindings support three levels of polymorphic extensibility depending on
+the needs of a method that FRB does not anticipate.</p>
+<p>If an operator is pure, meaning that all of its operands are value types
+that will necessarily need to be replaced outright if they every change,
+meaning that they are all effectively stateless, and if all of the
+operands must be defined in order for the output to be defined, it is
+sufficient to just use a plain JavaScript method.  For example,
+<code>string.toUpperCase()</code> will work fine.</p>
+<p>If an operator responds to state changes of its one and only operand, an
+object may implement an observer method.  If the operator is <code>foo</code> in
+FRB, the JavaScript method is <code>observeFoo(emit)</code>.  The observer must
+return a cancel function if it will emit new values after it returns, or
+if it uses observers itself.  It must stop emitting new values if FRB
+calls its canceler.  The emitter may return a canceler itself, and the
+observer must call that canceler before it emits a new value.</p>
+<p>This is an example of a clock.  The <code>clock.time()</code> is an observable
+operator of the clock in FRB, implemented by <code>observeTime</code>.  It will
+emit a new value once a second.</p>
+<pre><code class="language-javascript">function Clock() {
+}
+
+Clock.prototype.observeTime = function (emit) {
+    var cancel, timeoutHandle;
+    function tick() {
+        if (cancel) {
+            cancel();
+        }
+        cancel = emit(Date.now());
+        timeoutHandle = setTimeout(tick, 1000);
+    }
+    tick();
+    return function cancelTimeObserver() {
+        clearTimeout(timeoutHandle);
+        if (cancel) {
+            cancel();
+        }
+    };
+};
+
+var object = Bindings.defineBindings({
+    clock: new Clock()
+}, {
+    &quot;time&quot;: {&quot;&lt;-&quot;: &quot;clock.time()&quot;}
+});
+
+expect(object.time).not.toBe(undefined);
+
+Bindings.cancelBindings(object);
+</code></pre>
+<p>If an operator responds to state changes of its operands, you will need
+to implement an observer maker.  An observer maker is a function that
+returns an observer function, and accepts observer functions for all of
+the arguments you are expected to observe.  The observer must also
+handle a scope argument, usually just passing it on at run-time,
+<code>observe(emit, scope)</code>.  Otherwise it is much the same.</p>
+<p>FRB would delegate to <code>makeTimeObserver(observeResolution)</code> for a
+<code>clock.time(ms)</code> FRB expression.</p>
+<p>This is an updated rendition of the clock example except that it will
+observe changes to a resolution operand and adjust its tick frequency
+accordingly.</p>
+<pre><code class="language-javascript">function Clock() {
+}
+
+Clock.prototype.observeTime = function (emit, resolution) {
+    var cancel, timeoutHandle;
+    function tick() {
+        if (cancel) {
+            cancel();
+        }
+        cancel = emit(Date.now());
+        timeoutHandle = setTimeout(tick, resolution);
+    }
+    tick();
+    return function cancelTimeObserver() {
+        clearTimeout(timeoutHandle);
+        if (cancel) {
+            cancel();
+        }
+    };
+};
+
+Clock.prototype.makeTimeObserver = function (observeResolution) {
+    var self = this;
+    return function observeTime(emit, scope) {
+        return observeResolution(function replaceResolution(resolution) {
+            return self.observeTime(emit, resolution);
+        }, scope);
+    };
+};
+
+var object = Bindings.defineBindings({
+    clock: new Clock()
+}, {
+    &quot;time&quot;: {&quot;&lt;-&quot;: &quot;clock.time(1000)&quot;}
+});
+
+expect(object.time).not.toBe(undefined);
+
+Bindings.cancelBindings(object);
+</code></pre>
+<p>Polymorphic binders are not strictly impossible, but you would be mad to
+try them.</p>
+<h2 id="reference">Reference</h2>
+<p>Functional Reactive Bindings is an implementation of synchronous,
+incremental object-property and collection-content bindings for
+JavaScript.  It was ripped from the heart of the <a href="https://github.com/montagejs/montage">Montage</a> web
+application framework and beaten into this new, slightly magical form.
+It must prove itself worthy before it can return.</p>
+<ul>
+<li><strong>functional</strong>: The implementation uses functional building blocks
+to compose observers and binders.</li>
+<li><strong>generic</strong>: The implementation uses generic methods on collections,
+like <code>addRangeChangeListener</code>, so any object can implement the
+same interface and be used in a binding.</li>
+<li><strong>reactive</strong>: The values of properties and contents of collections
+react to changes in the objects and collections on which they
+depend.</li>
+<li><strong>synchronous</strong>: All bindings are made consistent in the statement
+that causes the change.  The alternative is asynchronous, where
+changes are queued up and consistency is restored in a later event.</li>
+<li><strong>incremental</strong>: If you update an array, it produces a content
+change which contains the values you added, removed, and the
+location of the change.  Most bindings can be updated using only
+these values.  For example, a sum is updated by decreasing by the
+sum of the values removed, and increasing by the sum of the values
+added.  FRB can incrementally update <code>map</code>, <code>reversed</code>, <code>flatten</code>,
+<code>sum</code>, and <code>average</code> observers.  It can also incrementally update
+<code>has</code> bindings.</li>
+<li><strong>unwrapped</strong>: Rather than wrap objects and arrays with observable
+containers, FRB modifies existing arrays and objects to make them
+dispatch property and content changes.  For objects, this involves
+installing getters and setters using the ES5 <code>Object.defineProperty</code>
+method.  For arrays, this involves replacing all of the mutation
+methods, like <code>push</code> and <code>pop</code>, with variants that dispatch change
+notifications.  The methods are either replaced by swapping the
+<code>__proto__</code> or adding the methods to the instance with
+<code>Object.defineProperties</code>.  These techniques should <a href="http://kangax.github.com/es5-compat-table/#define-property-webkit-note">work</a> starting in Internet Explorer 9, Firefox 4, Safari 5,
+Chrome 7, and Opera 12.</li>
+</ul>
+<h3 id="architecture">Architecture</h3>
+<ul>
+<li><a href="https://github.com/montagejs/collections">Collections</a> provides <strong>property, mapped content, and ranged
+content change events</strong> for objects, arrays, and other collections.
+For objects, this adds a property descriptor to the observed object.
+For arrays, this either swaps the prototype or mixes methods into
+the array so that all methods dispatch change events.
+Caveats: you have to use a <code>set</code> method on Arrays to dispatch
+property and content change events.  Does not work in older Internet
+Explorers since they support neither prototype assignment or ES5
+property setters.</li>
+<li><strong>observer</strong> functions for watching an entire object graph for
+incremental changes, and gracefully rearranging and canceling those
+observers as the graph changes.  Observers can be constructed
+directly or with a very small query language that compiles to a tree
+of functions so no parsing occurs while the graph is being watched.</li>
+<li>one- and two-way <strong>bindings</strong> using binder and obserer functions to
+incrementally update objects.</li>
+<li><strong>declarative</strong> interface for creating an object graph with
+bindings, properties, and computed properties with dependencies.</li>
+</ul>
+<h3 id="bindings-1">Bindings</h3>
+<p>The highest level interface for FRB resembles the ES5 Object constructor
+and can be used to declare objects and define and cancel bindings on
+them with extended property descriptors.</p>
+<pre><code class="language-javascript">var Bindings = require(&quot;core/frb/bindings&quot;);
+
+// create an object
+var object = Bindings.defineBindings({
+    foo: 0,
+    graph: [
+        {numbers: [1,2,3]},
+        {numbers: [4,5,6]}
+    ]
+}, {
+    bar: {&quot;&lt;-&gt;&quot;: &quot;foo&quot;, enumerable: false},
+    numbers: {&quot;&lt;-&quot;: &quot;graph.map{numbers}.flatten()&quot;},
+    sum: {&quot;&lt;-&quot;: &quot;numbers.sum()&quot;},
+    reversed: {&quot;&lt;-&quot;: &quot;numbers.reversed()&quot;}
+});
+
+expect(object.bar).toEqual(object.foo);
+object.bar = 10;
+expect(object.bar).toEqual(object.foo);
+expect.foo = 20;
+expect(object.bar).toEqual(object.foo);
+
+// note that the identity of the bound numbers array never
+// changes, because all of the changes to that array are
+// incrementally updated
+var numbers = object.numbers;
+
+// first computation
+expect(object.sum).toEqual(21);
+
+// adds an element to graph,
+// which pushes [7, 8, 9] to &quot;graph.map{numbers}&quot;,
+// which splices [7, 8, 9] to the end of
+//  &quot;graph.map{numbers}.flatten()&quot;,
+// which increments &quot;sum()&quot; by [7, 8, 9].sum()
+object.graph.push({numbers: [7, 8, 9]});
+expect(object.sum).toEqual(45);
+
+// splices [1] to the beginning of [1, 2, 3],
+// which splices [1] to the beginning of &quot;...flatten()&quot;
+// which increments &quot;sum()&quot; by [1].sum()
+object.graph[0].numbers.unshift(1);
+expect(object.sum).toEqual(46);
+
+// cancels the entire observer hierarchy, then attaches
+//  listeners to the new one.  updates the sum.
+object.graph = [{numbers: [1,2,3]}];
+expect(object.sum).toEqual(6);
+
+expect(object.reversed).toEqual([3, 2, 1]);
+
+expect(object.numbers).toBe(numbers) // still the same object
+
+Bindings.cancelBindings(object); // cancels all bindings on this object and
+// their transitive observers and event listeners as deep as
+// they go
+</code></pre>
+<ul>
+<li><code>Bindings.defineBindings(object, name, descriptor)</code></li>
+<li><code>Bindings.defineBinding(object, name, descriptor)</code></li>
+<li><code>Bindings.getBindings(object)</code></li>
+<li><code>Bindings.getBinding(object, name)</code></li>
+<li><code>Bindings.cancelBindings(object)</code></li>
+<li><code>Bindings.cancelBinding(object, name)</code></li>
+</ul>
+<p>A binding descriptor contains:</p>
+<ul>
+<li><code>target</code>: the</li>
+<li><code>targetPath</code>: the target</li>
+<li><code>targetSyntax</code>: the syntax tree for the target path</li>
+<li><code>source</code>: the source object, which defaults to <code>target</code></li>
+<li><code>sourcePath</code>: the source path, from either <code>&lt;-</code> or <code>&lt;-&gt;</code></li>
+<li><code>sourceSyntax</code>: the syntax tree for the source path</li>
+<li><code>twoWay</code>: whether the binding goes in both directions, if <code>&lt;-&gt;</code>
+was the source path.</li>
+<li><code>parameters</code>: the parameters, which default to <code>source</code>.</li>
+<li><code>convert</code>: a function that converts the source value to the target
+value, useful for coercing strings to dates, for example.</li>
+<li><code>revert</code>: a function that converts the target value to the source
+value, useful for two-way bindings.</li>
+<li><code>converter</code>: an object with <code>convert</code> and optionally also a <code>revert</code>
+method.  The implementation binds these methods to their converter
+and stores them in <code>covert</code> and <code>revert</code>.</li>
+<li><code>serializable</code>: a note from the Montage Deserializer, to the <a href="https://github.com/montagejs/mousse">Montage
+Serializer</a>, indicating that the binding came from a
+serialization, and to a serialization it must return.</li>
+<li><code>cancel</code>: a function to cancel the binding</li>
+</ul>
+<h3 id="bind">Bind</h3>
+<p>The <code>bind</code> module provides direct access to the <code>bind</code> function.</p>
+<pre><code class="language-javascript">var bind = require(&quot;core/frb/bind&quot;);
+
+var source = [{numbers: [1,2,3]}, {numbers: [4,5,6]}];
+var target = {};
+var cancel = bind(target, &quot;summary&quot;, {
+    &quot;&lt;-&quot;: &quot;map{[numbers.sum(), numbers.average()]}&quot;,
+    source: source
+});
+
+expect(target.summary).toEqual([
+    [6, 2],
+    [15, 5]
+]);
+
+cancel();
+</code></pre>
+<p><code>bind</code> is built on top of <code>parse</code>, <code>compileBinder</code>, and
+<code>compileObserver</code>.</p>
+<h3 id="compute">Compute</h3>
+<p>The <code>compute</code> module provides direct access to the <code>compute</code> function,
+used by <code>Bindings</code> to make computed properties.</p>
+<pre><code class="language-javascript">var compute = require(&quot;core/frb/compute&quot;);
+
+var source = {operands: [10, 20]};
+var target = {};
+var cancel = compute(target, &quot;sum&quot;, {
+    source: source,
+    args: [&quot;operands.0&quot;, &quot;operands.1&quot;],
+    compute: function (a, b) {
+        return a + b;
+    }
+});
+
+expect(target.sum).toEqual(30);
+
+// change one operand
+source.operands.set(1, 30); // needed to dispatch change notification
+expect(target.sum).toEqual(40);
+</code></pre>
+<h3 id="observe">Observe</h3>
+<p>The <code>observe</code> modules provides direct access to the <code>observe</code> function.
+<code>observe</code> is built on top of <code>parse</code> and <code>compileObserver</code>.
+<code>compileObserver</code> creates a tree of observers using the methods in the
+<code>observers</code> module.</p>
+<pre><code class="language-javascript">var observe = require(&quot;core/frb/observe&quot;);
+
+var source = [1, 2, 3];
+var sum;
+var cancel = observe(source, &quot;sum()&quot;, function (newSum) {
+    sum = newSum;
+});
+
+expect(sum).toBe(6);
+
+source.push(4);
+expect(sum).toBe(10);
+
+source.unshift(0); // no change
+expect(sum).toBe(10);
+
+cancel();
+source.splice(0, source.length); // would change
+expect(sum).toBe(10);
+</code></pre>
+<p><code>observe</code> produces a cancelation hierarchy.  Each time a value is
+removed from an array, the underlying observers are canceled.  Each time
+a property is replaced, the underlying observer is canceled.  When new
+values are added or replaced, the observer produces a new canceler.  The
+cancel function returned by <code>observe</code> commands the entire underlying
+tree.</p>
+<p>Observers also optional accept a descriptor argument in place of a
+callback.</p>
+<ul>
+<li><code>set</code>: the change handler, receives <code>value</code> for most observers, but
+also <code>key</code> and <code>object</code> for property changes.</li>
+<li><code>parameters</code>: the value for <code>$</code> expressions.</li>
+<li><code>beforeChange</code>: instructs an observer to emit the previous value
+before a change occurs.</li>
+<li><code>contentChange</code>: instructs an observer to emit an array every time
+its content changes.  By default, arrays are only emitted once.</li>
+</ul>
+<pre><code class="language-javascript">var object = {};
+var cancel = observe(object, &quot;array&quot;, {
+    change: function (value) {
+        // may return a cancel function for a nested observer
+    },
+    parameters: {},
+    beforeChange: false,
+    contentChange: true
+});
+
+object.array = []; // emits []
+object.array.push(10); // emits [10]
+</code></pre>
+<h3 id="evaluate">Evaluate</h3>
+<p>The <code>compile-evaluator</code> module returns a function that accepts a syntax
+tree and returns an evaluator function.  The evaluator accepts a scope
+(which may include a value, parent scope, parameters, a document, and
+components) and returns the corresponding value without all the cost or
+benefit of setting up incremental observers.</p>
+<pre><code class="language-javascript">var parse = require(&quot;core/frb/parse&quot;);
+var compile = require(&quot;core/frb/compile-evaluator&quot;);
+var Scope = require(&quot;core/frb/scope&quot;);
+
+var syntax = parse(&quot;a.b&quot;);
+var evaluate = compile(syntax);
+var c = evaluate(new Scope({a: {b: 10}}))
+expect(c).toBe(10);
+</code></pre>
+<p>The <code>evaluate</code> module returns a function that accepts a path or syntax
+tree, a source value, and parameters and returns the corresponding
+value.</p>
+<pre><code class="language-javascript">var evaluate = require(&quot;core/frb/evaluate&quot;);
+var c = evaluate(&quot;a.b&quot;, {a: {b: 10}})
+expect(c).toBe(10);
+</code></pre>
+<h3 id="stringify">Stringify</h3>
+<p>The <code>stringify</code> module returns a function that accepts a syntax tree and
+returns the corresponding path in normal form.</p>
+<pre><code class="language-javascript">var stringify = require(&quot;core/frb/stringify&quot;);
+
+var syntax = {type: &quot;and&quot;, args: [
+    {type: &quot;property&quot;, args: [
+        {type: &quot;value&quot;},
+        {type: &quot;literal&quot;, value: &quot;a&quot;}
+    ]},
+    {type: &quot;property&quot;, args: [
+        {type: &quot;value&quot;},
+        {type: &quot;literal&quot;, value: &quot;b&quot;}
+    ]}
+]};
+
+var path = stringify(syntax);
+expect(path).toBe(&quot;a &amp;&amp; b&quot;);
+</code></pre>
+<h3 id="grammar">Grammar</h3>
+<p>The grammar is expressed succinctly in <code>grammar.pegjs</code> and is subject to
+ammendment.</p>
+<h3 id="semantics">Semantics</h3>
+<p>An expression is observed with a source value and emits a target
+one or more times.  All expressions emit an initial value.  Array
+targets are always updated incrementally.  Numbers and boolean are
+emited anew each time their value changes.</p>
+<p>If any operand is <code>null</code> or <code>undefine</code>, a binding will not emit an
+update.  Thus, if a binding’s source becomes invalid, it does not
+corrupt its target but waits until a valid replacement becomes
+available.</p>
+<ul>
+<li>Literals are interpreted as their corresponding value.</li>
+<li>Value terms provide the source.</li>
+<li>Parameters terms provide the parameters.</li>
+<li>In a path-expression, the first term is evaluated with the source
+value.</li>
+<li>Each subsequent term of a path expression uses the target of the
+previous as its source.</li>
+<li>A property-expression or variable-property-expression observes the
+key of the source object using <code>Object.addPropertyChangeListener</code>.</li>
+<li>An element identifier (with the <code>#</code> prefix) uses the <code>document</code>
+property of the <code>parameters</code> object and emits
+<code>document.getElementById(id)</code>, or dies trying.  Changes to the
+document are not observed.</li>
+<li>A component label (with the <code>@</code> prefix) uses the <code>serialization</code>
+property of <code>parameters</code> object and emits
+<code>serialization.getObjectForLable(label)</code>, or dies trying.  Changes
+to the serialization are not observed.  This syntax exists to
+support <a href="https://github.com/montagejs/montage">Montage</a> serializations.</li>
+<li>A &quot;parent&quot; scope operator, <code>^</code> observes the given expression in the
+context of the current scope&#39;s parent.</li>
+<li>A &quot;with&quot; scope operator, e.g., <code>context.(expression)</code>, observes the
+given expression in a new scope that uses the <code>context</code> as its value
+and the current scope as its parent.</li>
+<li>A &quot;map&quot; block observes the source array and emits a target array.
+The target array is emitted once and all subsequent updates are
+reflected as content changes that can be independently observed with
+<code>addRangeChangeListener</code>.  Each element of the target array
+corresponds to the observed value of the block expression using the
+respective element in the source array as the source value.</li>
+<li>A &quot;map&quot; function call receives a function as its argument rather
+than a block.</li>
+<li>A &quot;filter&quot; block observes the source array and emits a target array
+containing only those values from the source array that actively
+pass the predicate described in the block expression useing the
+respective element in the source array as the source value.  As with
+&quot;map&quot;, filters update the target array incrementally.</li>
+<li>A &quot;some&quot; block observes whether any of the values in the source
+collection meet the given criterion.</li>
+<li>A &quot;every&quot; block observes whether all of the values in the source
+collection meet the given criterion.</li>
+<li>A &quot;sorted&quot; block observes the sorted version of an array, by a
+property of each value described in the block, or itself if empty.
+Sorted arrays are incrementally updating as values are added and
+deleted from the source.</li>
+<li>A &quot;sortedSet&quot; block observes a collection that emits range change
+events, by way of a property of each value described in the block,
+or itself if empty, emitting a <code>SortedSet</code> value exactly once.  If
+the input is or becomes invalid, the sorted set is cleared, not
+replaced.  The sorted set will always contain the last of each group
+of equivalant values from the input.</li>
+<li>A &quot;min&quot; block observes the which of the values in a given collection
+produces the smallest value through the given relation.</li>
+<li>A &quot;max&quot; block observes the which of the values in a given collection
+produces the largest value through the given relation.</li>
+<li>A &quot;group&quot; block observes which values belong to corresponding
+equivalence classes as determined by the result of a given
+expression on each value.  The observer is responsible for adding
+and removing classes as they are populated and depopulated.  Each
+class tracks the key (result of the block expression for every
+member of a class), and an the values of the corresponding class as
+an array.  Values are added to the end of each array as they are
+discovered.</li>
+<li>Any function call with a &quot;block&quot; implies calling the function on the
+result of a &quot;map&quot; block.</li>
+<li>A &quot;flatten&quot; function call observes a source array and produces a
+target array.  The source array must only contain inner arrays.  The
+target array is emitted once and all subsequent updates can be
+independently observed with <code>addRangeChangeListener</code>.  The target
+array will always contain the concatenation of all of the source
+arrays.  Changes to the inner and outer source arrays are reflected
+with incremental splices to the target array in their corresponding
+positions.</li>
+<li>A &quot;concat&quot; function call observes a source array and all of its
+argument arrays and effectively flattens all of these arrays.</li>
+<li>A &quot;reversed&quot; function call observes the source array and produces a
+target array that contains the elements of the source array in
+reverse order.  The target is incrementally updated.</li>
+<li>An &quot;enumerate&quot; expression observes [key, value] pairs from an array.
+The output array of arrays is incrementally updated with range
+changes from the source.</li>
+<li>A &quot;view&quot; function call observes a sliding window from the source,
+from a start index (first argument) of a certain length (second
+argument).  The source can be any collection that dispatches range
+changes and the output will be an array of the given length.</li>
+<li>A &quot;sum&quot; function call observes the numeric sum of the source array.
+Each alteration to the source array causes a new sum to be emitted,
+but the sum is computed incrementally by observing the smaller sums
+of the spliced values, added and removed.</li>
+<li>An &quot;average&quot; function call observes the average of the input values,
+much like &quot;sum&quot;.</li>
+<li>A &quot;last&quot; function call observes the last of the input values, if
+there is one.  It does this by watching range changes that overlap
+the last entry of the collection and emitting the new last value
+when necessary, or undefined if the collection becomes empty.</li>
+<li>An &quot;only&quot; function call observes the only value of the input values,
+if there is only one such value.  If there are none or more than
+one, the only function emits undefined.</li>
+<li>A &quot;one&quot; function call observes one of the values from a collection,
+if there is one.  Otherwise it is undefined.  The collection is at
+liberty to determine whatever value it can most quickly and sensibly
+provide.</li>
+<li>A &quot;round&quot; function call observes the nearest integer to the input
+value, rounding <code>0.5</code> toward infinity.</li>
+<li>A &quot;floor&quot; function call observes the nearest integer to the input
+value toward -infinity;</li>
+<li>A &quot;ceil&quot; function call observes the nearest integer to the input
+value toward infinity;</li>
+<li>A &quot;has&quot; function call observes the source collection for whether it
+contains an observed value.</li>
+<li>A &quot;tuple&quot; expression observes a source value and emits a single
+target array with elements corresponding to the respective
+expression in the tuple.  Each inner expression is evaluated with
+the same source value as the outer expression.</li>
+<li>A &quot;startsWith&quot; function call observes whether the left string
+starts with the right string.</li>
+<li>An &quot;endsWith&quot; function call observes whether the right string
+ends with the right string.</li>
+<li>A &quot;contains&quot; function call observes whether the left string contains
+the right string.</li>
+<li>A &quot;join&quot; function observes the left array joined by the right
+delimiter, or an empty string.   This is not an incremental
+operation.</li>
+<li>A &quot;split&quot; function observes the left string broken into an array
+between the right delimiter, or an empty string.  This is not an
+incremental operation.</li>
+<li>A &quot;range&quot; function call observes an array with the given length
+containing sequential numbers starting with zero.  The output array
+is updated incrementally and will dispatch one range change each
+time the size changes by any difference.</li>
+<li>A &quot;keys&quot; function call observes an incrementally updated array of
+the keys that a given map contains.  The keys are maintained in
+insertion order.</li>
+<li>A &quot;values&quot; function call observes an incrementally updated array of
+the values that a given map contains.  The values are maintained in
+insertion order.</li>
+<li>An &quot;entries&quot; function call observes an incrementally updated array
+of [key, value] pairs from a given mapping.  The entries are
+retained in insertion order.</li>
+</ul>
+<p>Unary operators:</p>
+<ul>
+<li>&quot;number&quot; coerces the value to a number.</li>
+<li>&quot;neg&quot; converts a number to its negative.</li>
+<li>&quot;not&quot; converts a boolean  to its logical opposite, treating null or
+undefined as false.</li>
+</ul>
+<p>Binary operators:</p>
+<ul>
+<li>&quot;add&quot; adds the left to the right</li>
+<li>&quot;sub&quot; subtracts the right from the left</li>
+<li>&quot;mul&quot; multiples the left to the right</li>
+<li>&quot;div&quot; divides the left by the right</li>
+<li>&quot;mod&quot; produces the left modula the right.  This is proper modula,
+meaning a negative number that does not divide evenly into a
+positive number will produce the difference between that number and
+the next evenly divisible number in direction of negative infinity.</li>
+<li>&quot;rem&quot; produces the remainder of dividing the left by the right.  If
+the left does not divide evenly into the right it will produce the
+difference between that number and the next evenly divisible number
+in the direction of zero.  That is to say, <code>rem</code> can produce
+negative numbers.</li>
+<li>&quot;pow&quot; raises the left to the power of the right.</li>
+<li>&quot;root&quot; produces the &quot;righth&quot; root of the left.</li>
+<li>&quot;log&quot; produces the logarithm of the left on the right base.</li>
+<li>&quot;lt&quot; less than, as determined with <code>Object.compare(left, right) &lt; 0</code>.</li>
+<li>&quot;le&quot; less than or equal, as determined with <code>Object.compare(left, right) &lt;= 0</code>.</li>
+<li>&quot;gt&quot; greater than, as determined with <code>Object.compare(left, right) &gt; 0</code>.</li>
+<li>&quot;ge&quot; greater than or equal, as determined with <code>Object.compare(left, right) &gt;= 0</code>.</li>
+<li>&quot;compare&quot; as determined by <code>Object.compare(left, right)</code>.</li>
+<li>&quot;equals&quot; whether the left is equal to the right as determined by
+<code>Object.equals(left, right)</code>.</li>
+<li>*Note: there is no &quot;not equals&quot; syntax node. The <code>!=</code> operator gets
+converted into a &quot;not&quot; node around an &quot;equals&quot; node.</li>
+<li>&quot;and&quot; logical union, or short circuit on false</li>
+<li>&quot;or&quot; logical intersection, or short circuit on true</li>
+</ul>
+<p>Ternary operator:</p>
+<ul>
+<li>&quot;if&quot; observes the condition (first argument, expression before the
+<code>?</code>).  If the expression is true, the result observes the consequent
+expression (second argument, between the question mark and the
+colon), and if it is false, the result observes the alternate (the
+third argument, after the colon).  If the condition is null or
+undefined, the result is null or undefined.</li>
+</ul>
+<p>On the left hand side of a binding, the last term has alternate
+semantics.  Binders receive a target as well as a source.</p>
+<ul>
+<li>A &quot;with&quot; binding takes a &quot;context&quot; and &quot;expression&quot; argument from
+the target, and a &quot;value&quot; expression from the source.  If and when
+the context is or becomes defined, the binder creates a child scope
+with the context as its value and binds the expression in that scope
+to the source in its own.</li>
+<li>A &quot;parent&quot; binding takes an &quot;expression&quot; argument from the target,
+and a &quot;value&quot; expression from the source.  If and when there is a
+parent scope, and if and when there is or becomes a value in that
+scope, the binder establishes a binding from the source expression
+to the target expression in the parent scope.</li>
+<li>A &quot;property&quot; observes an object and a property name from the target,
+and a value from the source.  When any of these change, the binder
+upates the value for the property name of the object.</li>
+<li>A &quot;get&quot; observes a collection and a key from the target, and a value
+from the source.  When any of these change, the binder updates the
+value for the key on the collection using <code>collection.set(key, value)</code>.  This is suitable for arrays and custom map
+<a href="https://github.com/montagejs/collections">Collections</a>.</li>
+<li>A &quot;equals&quot; expression observes a boolean value from the source.  If
+that boolean becomes true, the equality expression is made true by
+assigning the right expression to the left property of the equality,
+turning the &quot;equals&quot; into an &quot;assign&quot; conceptually.  No action is
+taken if the boolean becomes false.</li>
+<li>A &quot;reversed&quot; expression observes an indexed collection and maintains
+a mirror array of that collection.</li>
+<li>A &quot;has&quot; function call observes a boolean value from the source, and
+an collection and a sought value from the target.  When the value is
+true and the value is absent in the collection, the binder uses the
+<code>add</code> method of the collection (provided by a shim for arrays) to
+make it true that the collection contains the sought value.  When
+the value is false and the value does appear in the collection one
+or more times, the binder uses the <code>delete</code> or <code>remove</code> method of
+the collection to remove all occurrences of the sought value.</li>
+<li>An &quot;only&quot; function call binder observes a boolean value from the
+source.  If the source value and target collection are both defined,
+the binder ensures that the source is the only value in the target
+collection.  The target collection may have the ranged collection
+interface (<code>has</code> and <code>swap</code>) or it may have the set collection
+interface (<code>has</code>, <code>clear</code>, and <code>add</code>), and the binder prefers the
+former if both are supported because it results in a single range
+change dispatch on the target collection.</li>
+<li>An &quot;if&quot; binding observes the condition and binds the target either
+to the consequent or alternate.  If the condition is null or
+undefined, the target is not bound.</li>
+<li>For an &quot;everyBlock&quot; binding, the first argument of the target
+expression is the &quot;collection&quot;, the second argument is the &quot;block&quot;
+expression, and the source is the &quot;guard&quot;.  If and when the guard is
+or becomes true, the binder maintains a child scope for every value
+in the collection and binds the &quot;block&quot; in that scope to be true.
+If the guard is or becomes false, all of these bindings are
+canceled.  When the &quot;guard&quot; is false, the every block produces no
+bindings, and when the &quot;guard&quot; becomes false, no state is modified.</li>
+<li>For a &quot;someBlock&quot; binding, the first argument of the target
+expression is the &quot;collection&quot;, the second argument is the &quot;block&quot;
+expression, and the source is the &quot;guard&quot;.  If and when the guard is
+or becomes false, the binder maintains a child scope for every value
+in the collection and binds the &quot;block&quot; in that scope to be false.
+If the guard is or becomes true, all of these bindings are canceled.
+When the &quot;guard&quot; is true, the every block produces no bindings, and
+when the &quot;guard&quot; becomes true, no state is modified.</li>
+<li>The &quot;and&quot; operator validates the logical expression by binding the
+operands.  If the source expression is true, both the left and right
+argument expressions are bound to true.  If the source expression is
+false, and the right operand is false, the binding does nothing.  If
+the source expression is false and the right operand is true, the
+left operand is bound to false.
+If the left value in the expression implements an and() method, it will
+be called with the right value as argument. Tested with criteria
+who have an or() and an and() method.</li>
+<li>The &quot;or&quot; operator validates the logical expression by binding the
+operands.  If the source expression is false, both the left and
+right argument expressions are bout to false.  If the source
+expression is true, and the right operand is true, the binding does
+nothing.  If the source expression is true and the right operand is
+false, the left operand is bound to false.
+If the left value in the expression implements an or() method, it will
+be called with the right value as argument. Tested with criteria
+who have an or() and an and() method.</li>
+<li>The &quot;rangeContent&quot; binding guarantees that the ranged content (as in
+subarrays) of the target will be bound to the content of the source,
+if both are defined, but will not replace the target collection.
+This is useful for ensuring that a property collection with
+important event listeners is never replaced if the bound source is
+replaced.  The source collection must implement range change
+dispatch, like Array, Set, List, and SortedSet.</li>
+<li>The &quot;mapContent&quot; binding guarantees that the map content of the
+target will be bound to the content of the source, if both are
+defined, but will not replace the target map.  This is useful for
+ensuring that a map property with important event listeners is never
+replaced if the bound source is replaced.   The source collection
+must implement map change dispatch, like Map, Dict, and SortedMap.</li>
+</ul>
+<h3 id="language-interface">Language Interface</h3>
+<pre><code class="language-javascript">var parse = require(&quot;core/frb/parse&quot;);
+var compileObserver = require(&quot;core/frb/compile-observer&quot;);
+var compileBinder = require(&quot;core/frb/compile-binder&quot;);
+</code></pre>
+<ul>
+<li><code>parse(text)</code> returns a syntax tree.</li>
+<li><code>compileObserver(syntax)</code> returns an observer function of the form
+<code>observe(callback, source, parameters)</code> which in turn returns a
+<code>cancel()</code> function.  <code>compileObserver</code> visits the syntax tree and
+creates functions for each node, using the <code>observers</code> module.</li>
+<li><code>compileBinder(syntax)</code> returns a binder function of the form
+<code>bind(observeValue, source, target, parameters)</code> which in turn
+returns a <code>cancel()</code> function.  <code>compileBinder</code> visits the root node
+of the syntax tree and delegates to <code>compileObserver</code> for its terms.
+The root node must be a <code>property</code> at this time, but could
+conceivably be any function with a clear inverse operation like
+<code>map</code> and <code>reversed</code>.</li>
+</ul>
+<h3 id="syntax-tree">Syntax Tree</h3>
+<p>The syntax tree is JSON serializable and has a &quot;type&quot; property.  Nodes
+have the following types:</p>
+<ul>
+<li><code>value</code> corresponds to observing the source value</li>
+<li><code>parameters</code> corresponds to observing the parameters object</li>
+<li><code>literal</code> has a <code>value</code> property and observes that value</li>
+<li><code>element</code> has an <code>id</code> property and observes an element from the
+<code>parameters.document</code>, by way of <code>getElementById</code>.</li>
+<li><code>component</code> has a <code>label</code> property and observes a component from the
+<code>parameters.serialization</code>, by way of <code>getObjectForLabel</code>.  This
+feature support&#39;s <a href="https://github.com/montagejs/montage">Montage</a>’s serialization format.</li>
+</ul>
+<p>All other node types have an &quot;args&quot; property that is an array of syntax
+nodes (or an &quot;args&quot; object for <code>record</code>).</p>
+<ul>
+<li><code>property</code>: corresponds to observing a property named by the right
+argument of the left argument.</li>
+<li><code>get</code>: corresponds to observing the value for a key (second
+argument) in a collection (first argument).</li>
+<li><code>with</code>: corresponds to observing the right expression using the left
+expression as the source.</li>
+<li><code>parent</code>: corresponds to observing the given expression (only
+argument) in the parent scope.</li>
+<li><code>has</code>: corresponds to whether the key (second argument) exists
+within a collection (first argument)</li>
+<li><code>mapBlock</code>: the left is the input, the right is an expression to
+observe on each element of the input.</li>
+<li><code>filterBlock</code>: the left is the input, the right is an expression to
+determine whether the result is included in the output.</li>
+<li><code>someBlock</code>: the left is the input, the right is a criterion.</li>
+<li><code>everyBlock</code>: the left is the input, the right is a criterion.</li>
+<li><code>sortedBlock</code>: the left is the input, the right is a relation on
+each value of the input on which to compare to determine the order.</li>
+<li><code>sortedSetBlock</code>: differs only in semantics from <code>sortedBlock</code>.</li>
+<li><code>minBlock</code>: the left is the input, the right is a relation on each
+value of the input by which to compare the value to others.</li>
+<li><code>maxBlock</code>: the left is the input, the right is a relation on each
+value of the input by which to compare the value to others.</li>
+<li><code>groupBlock</code>: the left is the input, the right is an expression that
+provides the key for an equivalence class for each value in the
+input.  The output is an array of entries, <code>[key, class]</code>, with the
+shared key of every value in the equivalence class.</li>
+<li><code>groupMapBlock</code>: has the same input semantics as <code>groupBlock</code>, but
+the output is a <code>Map</code> instance instead of an array of entries.</li>
+<li><code>tuple</code>: has any number of arguments, each an expression to observe
+in terms of the source value.</li>
+<li><code>record</code>: as an args object. The keys are property names for the
+resulting object, and the values are the corresponding syntax nodes
+for the values.</li>
+<li><code>view</code>: the arguments are the input, the start position, and the
+length of the sliding window to view from the input.  The input may
+correspond to any ranged content collection, like an array or sorted
+set.</li>
+<li><code>rangeContent</code>: corresponds to the content of an ordered collection
+that can dispatch indexed range changes like an array or sorted set.
+This indicates to a binder that it should replace the content of the
+target instead of replacing the target property with the observed
+content of the source.  A range content node has no effect on the
+source.</li>
+<li><code>mapContent</code>: corresponds to the content of a map-like collection
+including arrays and all map <a href="https://github.com/montagejs/collections">Collections</a>.  These collections
+dispatch map changes, which create, read, update, or delete
+key-to-value pairs.  This indicates to a binder to replace the
+content of the target map-like collection with the observed content
+of the source, instead of replacing the target collection.  A map
+change node on the source side just passes the collection forward
+without alteration.</li>
+</ul>
+<p>For all operators, the &quot;args&quot; property are operands.  The node types for
+unary operators are:</p>
+<ul>
+<li><code>+</code>: <code>number</code>, arithmetic coercion</li>
+<li><code>-</code>: <code>neg</code>, arithmetic negation</li>
+<li><code>!</code>: <code>not</code>, logical negation</li>
+</ul>
+<p>For all binary operators, the node types are:</p>
+<ul>
+<li><code>**</code>: <code>pow</code>, exponential power</li>
+<li><code>//</code>: <code>root</code>, of 2 square root, of 3 cube root, etc</li>
+<li><code>%%</code>: <code>log</code>, logarithm with base</li>
+<li><code>*</code>: <code>mul</code>, multiplication</li>
+<li><code>/</code>: <code>div</code>, division</li>
+<li><code>%</code>: <code>mod</code>, modulo (toward negative infinity, always positive)</li>
+<li><code>rem</code>: <code>rem</code>, remainder (toward zero, negative if negative)</li>
+<li><code>+</code>: <code>add</code>, addition</li>
+<li><code>-</code>: <code>sub</code>, subtraction</li>
+<li><code>&lt;</code>: <code>lt</code>, less than</li>
+<li><code>&lt;=</code>: <code>le</code>, less than or equal</li>
+<li><code>&gt;</code>: <code>gt</code>, greater than</li>
+<li><code>&gt;=</code>: <code>ge</code>, greater than or equal</li>
+<li><code>&lt;=&gt;</code>: <code>compare</code></li>
+<li><code>==</code>: <code>equals</code>, equality comparison and assignment</li>
+<li><code>!=</code> produces unary negation and equality comparison or
+assignment so does not have a corresponding node type.  The
+simplification makes it easier to rotate the syntax tree
+algebraically.</li>
+<li><code>&amp;&amp;</code>, <code>and</code>, logical and</li>
+<li><code>||</code>, <code>or</code>, logical or</li>
+<li><code>??</code>, <code>default</code></li>
+</ul>
+<p>For the ternary operator:</p>
+<ul>
+<li><code>?</code> and <code>:</code>: <code>if</code>, ternary conditional</li>
+</ul>
+<p>For all function calls, the right hand side is a tuple of arguments.</p>
+<ul>
+<li><code>reversed()</code></li>
+<li><code>enumerate()</code></li>
+<li><code>flatten()</code></li>
+<li><code>sum()</code></li>
+<li><code>average()</code></li>
+<li><code>last()</code></li>
+<li><code>only()</code></li>
+<li><code>one()</code></li>
+<li><code>startsWith(other)</code></li>
+<li><code>endsWith(other)</code></li>
+<li><code>contains(other)</code></li>
+<li><code>join(delimiter)</code></li>
+<li><code>split(delimiter)</code></li>
+<li><code>concat(...arrays)</code></li>
+<li><code>range()</code></li>
+<li><code>keysArray()</code></li>
+<li><code>valuesArray()</code></li>
+<li><code>entriesArray()</code></li>
+<li><code>defined()</code></li>
+<li><code>round()</code></li>
+<li><code>floor()</code></li>
+<li><code>ceil()</code></li>
+</ul>
+<h3 id="observers-and-binders">Observers and Binders</h3>
+<p>The <code>observers</code> module contains functions for making all of the
+different types of observers, and utilities for creating new ones.
+All of these functions are or return an observer function of the form
+<code>observe(emit, value, parameters)</code> which in turn returns <code>cancel()</code>.</p>
+<ul>
+<li><code>observeValue</code></li>
+<li><code>observeParameters</code></li>
+<li><code>makeLiteralObserver(value)</code></li>
+<li><code>makeElementObserver(id)</code></li>
+<li><code>makeComponentObserver(label)</code></li>
+<li><code>makeRelationObserver(callback, thisp)</code> is unavailable through the
+property binding language, translates a value through a JavaScript
+function.</li>
+<li><code>makeComputerObserver(observeArgs, compute, thisp)</code> applies
+arguments to the computation function to get a new value.</li>
+<li><code>makeConverterObserver(observeValue, convert, thisp)</code> calls the
+converter function to transform a value to a converted value.</li>
+<li><code>makePropertyObserver(observeObject, observeKey)</code></li>
+<li><code>makeGetObserver(observeCollection, observeKey)</code></li>
+<li><code>makeMapFunctionObserver(observeArray, observeFunction)</code></li>
+<li><code>makeMapBlockObserver(observeArray, observeRelation)</code></li>
+<li><code>makeFilterBlockObserver(observeArray, observePredicate)</code></li>
+<li><code>makeSortedBlockObserver(observeArray, observeRelation)</code></li>
+<li><code>makeEnumerationObserver(observeArray)</code></li>
+<li><code>makeFlattenObserver(observeOuterArray)</code></li>
+<li><code>makeTupleObserver(...observers)</code></li>
+<li><code>makeObserversObserver(observers)</code></li>
+<li><code>makeReversedObserver(observeArrayh)</code></li>
+<li><code>makeWindowObserver</code> is not presently available through the language
+and is subject to change.  It is for watching a length from an array
+starting at an observable index.</li>
+<li><code>makeSumObserver(observeArray)</code></li>
+<li><code>makeAverageObserver(observeArray)</code></li>
+<li><code>makeParentObserver(observeExpression)</code></li>
+<li><em>etc</em></li>
+</ul>
+<p>These are utilities for making observer functions.</p>
+<ul>
+<li><code>makeNonReplacing(observe)</code> accepts an array observer (the emitted
+values must be arrays) and returns an array observer that will only
+emit the target once and then incrementally update that target.  All
+array observers use this decorator to handle the case where the
+source value gets replaced.</li>
+<li><code>makeArrayObserverMaker(setup)</code> generates an observer that uses an
+array as its source and then incrementally updates a target value,
+like <code>sum</code> and <code>average</code>.  The <code>setup(source, emit)</code> function must
+return an object of the form <code>{contentChange, cancel}</code> and arrange
+for <code>emit</code> to be called with new values when <code>contentChange(plus, minus, index)</code> receives incremental updates.</li>
+<li><code>makeUniq(callback)</code> wraps an emitter callback such that it only
+forwards new values.  So, if a value is repeated, subsequent calls
+are ignored.</li>
+<li><code>autoCancelPrevious(callback)</code> accepts an observer callback and
+returns an observer callback.  Observer callbacks may return
+cancelation functions, so this decorator arranges for the previous
+canceler to be called before producing a new one, and arranges for
+the last canceler to be called when the whole tree is done.</li>
+<li><code>once(callback)</code> accepts a canceler function and ensures that the
+cancelation routine is only called once.</li>
+</ul>
+<p>The <code>binders</code> module contains similar functions for binding an observed
+value to a bound value.  All binders are of the form <code>bind(observeValue, source, target, parameters)</code> and return a <code>cancel()</code> function.</p>
+<ul>
+<li><code>makePropertyBinder(observeObject, observeKey)</code></li>
+<li><code>makeGetBinder(observeCollection, observeKey)</code></li>
+<li><code>makeHasBinder(observeCollection, observeValue)</code></li>
+<li><code>makeEqualityBinder(observeLeft, observeRight)</code></li>
+<li><code>makeRangeContentBinder(observeTarget)</code></li>
+<li><code>makeMapContentBinder(observeTarget)</code></li>
+<li><code>makeReversedBinder(observeTarget)</code></li>
+</ul>
+<p>This documentation of the internal observer and binder functions is not
+exhaustive.</p>
