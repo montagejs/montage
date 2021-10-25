@@ -919,7 +919,7 @@ Object.defineProperty(Montage.prototype, "_montage_metadata", {
 });
 
 Object.defineProperty(Montage.prototype, "metadata", {
-    enumerable: true,
+    enumerable: false,
     get: function() {
         return Montage.getInfoForObject(this);
     }
