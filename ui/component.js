@@ -1393,7 +1393,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         value: null
     },
 
-    _elementsToAppend: {
+    _contentElementsToAppend: {
         value: null
     },
 
@@ -1412,8 +1412,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 i,
                 component;
 
-            if (!this._elementsToAppend) {
-                this._elementsToAppend = [];
+            if (!this._contentElementsToAppend) {
+                this._contentElementsToAppend = [];
             }
             this._newDomContent = value;
             this.needsDraw = true;
@@ -1444,12 +1444,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 }
             }
             if (value instanceof Element) {
-                this._elementsToAppend.push(value);
+                this._contentElementsToAppend.push(value);
                 this._findAndDetachComponents(value, (componentsToAdd = []));
             } else if (value && value[0]) {
                 componentsToAdd = [];
                 for (i = 0; i < value.length; i++) {
-                    this._elementsToAppend.push(value[i]);
+                    this._contentElementsToAppend.push(value[i]);
                     this._findAndDetachComponents(value[i], componentsToAdd);
                 }
             }
@@ -2523,24 +2523,27 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         value: function () {
             var contents = this._newDomContent,
                 element,
+                elementsToAppend = this._contentElementsToAppend,
                 elementToAppend,
                 i;
 
             if (contents || this._shouldClearDomContentOnNextDraw) {
                 element = this._element;
 
+                var elementChildNodes = element.childNodes;
+
                 // Setting the innerHTML to clear the children will not work on
                 // IE because it modifies the underlying child nodes. Here's the
                 // test case that shows this issue: http://jsfiddle.net/89X6F/
-                for (i = element.childNodes.length - 1; i >= 0; i--) {
-                    if (!element.childNodes[i].component) {
-                        element.removeChild(element.childNodes[i]);
+                for (i = elementChildNodes.length - 1; i >= 0; i--) {
+                    if (!elementChildNodes[i].component) {
+                        element.removeChild(elementChildNodes[i]);
                     }
                 }
 
-                if (this._elementsToAppend) {
-                    while (this._elementsToAppend.length) {
-                        elementToAppend = this._elementsToAppend.shift();
+                if (elementsToAppend) {
+                    while (elementsToAppend.length) {
+                        elementToAppend = elementsToAppend.shift();
                         if (!element.contains(elementToAppend)) {
                             element.appendChild(elementToAppend);
                         }
