@@ -447,6 +447,10 @@
         }
     };
 
+    // exports.TemplateCompilerFactory = function TemplateCompilerFactory(require, exports, module, global, moduleFilename, moduleDirectory) {
+
+    // };
+
     exports.MJSONCompilerFactory = function MJSONCompilerFactory(require, exports, module, global, moduleFilename, moduleDirectory) {
 
             //var root =  Require.delegate.compileMJSONFile(module.text, require.config.requireForId(module.id), module.id, /*isSync*/ true);
@@ -565,7 +569,9 @@
 
     var dotMeta = ".meta",
         dotMJSON = ".mjson",
-        dotMJSONLoadJs = ".mjson.load.js";
+        dotMJSONLoadJs = ".mjson.load.js",
+        TemplatePromise,
+        Template;
 
     exports.Compiler = function (config, compile) {
         if(!exports.config && config.name === "montage") {
@@ -573,40 +579,118 @@
         }
         return function(module) {
 
-            if (module.exports || module.factory || (typeof module.text !== "string") || (typeof module.exports === "object")) {
-                return module;
-            }
+            // if(module.id.endsWith(".html")) {
+            //     var html = module.text,
+            //         TemplatePromise;
 
-            var location = module.location,
-                isMJSON = (location && (location.endsWith(dotMJSON) || location.endsWith(dotMJSONLoadJs) || location.endsWith(dotMeta)));
+            //     if(!Template) {
+            //         TemplatePromise = TemplatePromise ||
+            //         (
+            //             /* global.require is application's require */
+            //             TemplatePromise = global.require.async("montage/core/template")
+            //         .then((exports) => {
+            //             Template = exports.Template;
+            //             return;
+            //         }));
+            //     } else {
+            //         TemplatePromise = TemplatePromise || (TemplatePromise = Promise.resolve(Template));
+            //     }
 
-            if (isMJSON) {
-                if (typeof module.exports !== "object" && typeof module.text === "string") {
-                    try {
-                        module.parsedText = module.json;
-                    } catch (e) {
-                        if (e instanceof SyntaxError) {
-                            console.error("SyntaxError parsing JSON at "+location);
-                            config.lint(module);
-                        } else {
-                            throw e;
+            //     return TemplatePromise
+            //     .then(() => {
+            //         var template = new Template();
+            //         return template.initWithModule(module)
+            //         .then(() => {
+
+            //             //FIXME: That method is lame, getObjectsString() should get the document internally
+            //             var loadDependencyPromise,
+            //                 objectsStringPromise = template.getObjectsString(template.document),
+            //                 loadResourcesPromise;
+
+            //             var resources = template.getResources();
+            //             if (!resources.resourcesLoaded() && resources.hasResources()) {
+            //                 //We can't be sure that we wan these in the root document?
+            //                 loadResourcesPromise = resources.loadResources(global.document);
+            //             }
+
+            //             if(objectsStringPromise && loadResourcesPromise) {
+            //                 loadDependencyPromise = Promise.all([objectsStringPromise, loadResourcesPromise]);
+            //             } else {
+            //                 loadDependencyPromise = objectsStringPromise;
+            //             }
+
+            //             return loadDependencyPromise.then((resolvedValues) => {
+            //                 var objectsString;
+            //                 if(Array.isArray(resolvedValues)) {
+            //                     objectsString = resolvedValues[0];
+            //                 } else {
+            //                     objectsString = resolvedValues;
+            //                 }
+
+            //                 var serializationJSON = JSON.parse(objectsString);
+            //                 module.dependencies = montageExports.parseMJSONDependencies(serializationJSON);
+            //                 // module.exports.template = template;
+            //                 module.exports.montageObject = template;
+
+            //                 //module.factory = exports.TemplateCompilerFactory;
+
+            //                 return module;
+            //             })
+            //             // .then(() => {
+            //             //     return template.instantiateWithInstances(/*context._objects*/null, context._element.ownerDocument)
+            //             //     .then((documentPart) => {
+            //             //         if(documentPart) {
+            //             //             module.exports = documentPart.objects;
+
+            //             //         } else {
+            //             //             return null;
+            //             //         }
+
+            //             // });
+            //         });
+
+
+
+            //     });
+
+
+            // } else {
+                if (module.exports || module.factory || (typeof module.text !== "string") || (typeof module.exports === "object")) {
+                    return module;
+                }
+
+                var location = module.location,
+                    isMJSON = (location && (location.endsWith(dotMJSON) || location.endsWith(dotMJSONLoadJs) || location.endsWith(dotMeta)));
+
+                if (isMJSON) {
+                    if (typeof module.exports !== "object" && typeof module.text === "string") {
+                        try {
+                            module.parsedText = module.json;
+                        } catch (e) {
+                            if (e instanceof SyntaxError) {
+                                console.error("SyntaxError parsing JSON at "+location);
+                                config.lint(module);
+                            } else {
+                                throw e;
+                            }
+                        }
+                        if (module.parsedText.montageObject) {
+                            throw new Error(
+                                'using reserved word as property name, \'montageObject\' at: ' +
+                                location
+                            );
                         }
                     }
-                    if (module.parsedText.montageObject) {
-                        throw new Error(
-                            'using reserved word as property name, \'montageObject\' at: ' +
-                            location
-                        );
-                    }
-                }
-                module.dependencies = montageExports.parseMJSONDependencies(module.parsedText);
-                module.factory = exports.MJSONCompilerFactory;
+                    module.dependencies = montageExports.parseMJSONDependencies(module.parsedText);
+                    module.factory = exports.MJSONCompilerFactory;
 
-                return module;
-            } else {
-                var result = compile(module);
-                return result;
-            }
+                    return module;
+                } else {
+                    var result = compile(module);
+                    return result;
+                }
+            // }
+
         };
     };
 
