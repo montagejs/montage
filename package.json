@@ -48,22 +48,22 @@
     },
     "production": true,
     "dependencies": {
-        "bluebird": "~3.5.5",
+        "bluebird": "~3.7.2",
         "htmlparser2": "~3.0.5",
-        "lodash.kebabcase": "^4.1.1",
+        "ical.js": "~1.4.0",
         "lodash.camelcase": "^4.3.0",
-        "lodash.trim": "^4.5.1",
+        "lodash.kebabcase": "^4.1.1",
         "lodash.snakecase": "^4.1.1",
+        "lodash.trim": "^4.5.1",
         "proxy-polyfill": "~0.1.7",
-        "strange": "^1.7.2",
-        "ical.js": "~1.4.0"
+        "strange": "^1.7.2"
     },
     "devDependencies": {
         "concurrently": "^3.4.0",
         "http-server": "^0.10.0",
-        "xhr2": "^0.1.4",
         "jasmine-console-reporter": "^1.2.7",
         "jasmine-core": "^2.5.2",
+        "jasmine-node": "montagestudio/jasmine-node#master",
         "jshint": "^2.9.5",
         "karma": "^4.2.0",
         "karma-chrome-launcher": "^3.0.0",
@@ -73,11 +73,12 @@
         "karma-jasmine": "^2.0.1",
         "karma-phantomjs-launcher": "^1.0.4",
         "karma-safari-launcher": "^1.0.0",
+        "marked": "^3.0.7",
         "mop-integration": "git://github.com/montagejs/mop-integration.git#master",
         "open": "0.0.5",
-        "jasmine-node": "montagestudio/jasmine-node#master",
+        "peggy": "^1.2.0",
         "pegjs": "git://github.com/pegjs/pegjs.git",
-        "peggy": "^1.2.0"
+        "xhr2": "^0.1.4"
     },
     "scripts": {
         "test-mr": "node core/mr/test/run-node.js",
