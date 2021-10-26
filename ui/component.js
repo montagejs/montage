@@ -1959,7 +1959,16 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     deserializedFromSerialization: {
         value: function (label) {
-            this.attachToParentComponent();
+            /*
+                We've been using this to stich the component tree based on the DOM structure, but at some point, to for example serialize an app in a known state, it will more reliable and efficient to store the parentComponent in the serialization produced from  live app.
+
+                There's also a bug if a component that isn't assigned an element in the template serialization is used in a slot, the slot sets itself as the parentComponent as expected, but it wa wiped out by calling this.attachToParentComponent() here.
+
+                So before calling this.attachToParentComponent(), we now check if there isn't this._parentComponent set already.
+            */
+            if(!this._parentComponent) {
+                this.attachToParentComponent();
+            }
         }
     },
 
