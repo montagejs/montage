@@ -232,7 +232,9 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                         expect(testPage.test.componentParent.parentHasDrawn).toBeFalsy();
                     });
 
-                    testPage.waitForDraw();
+                    testPage.waitForDraw().then(function () {
+                        done();
+                    });
                 });
             });
 
