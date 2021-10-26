@@ -341,15 +341,15 @@ var MontageContext = Montage.specialize({
     propertyToReviveForObjectLiteralValue: {
         value: function (objectLiteralValue) {
             var  propertyToRevive;
-            if(!(propertyToRevive = this._propertyToReviveForObjectLiteralValue.get(objectLiteralValue))) {
+            // if(!(propertyToRevive = this._propertyToReviveForObjectLiteralValue.get(objectLiteralValue))) {
                 propertyToRevive = Object.keys(objectLiteralValue);
                 if(propertyToRevive.length === 0) {
                     propertyToRevive = this._propertyToReviveEmptySet;
                 } else {
                     propertyToRevive = new Set(propertyToRevive);
                 }
-                this._propertyToReviveForObjectLiteralValue.set(objectLiteralValue,propertyToRevive);
-            }
+                // this._propertyToReviveForObjectLiteralValue.set(objectLiteralValue,propertyToRevive);
+            // }
             return propertyToRevive;
         }
     },
