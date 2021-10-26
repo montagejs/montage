@@ -120,10 +120,13 @@ var MontageSerializer = Montage.specialize({
     _formatSerializationReferencesRegExp: {
         value: /\{\s*("[#@]")\s*:\s*("[^"]+")\s*\}/gi
     },
+    _formatSerializationReferenceseplaceNewSubstr: {
+        value: "{$1: $2}"
+    },
     _formatSerializationReferences: {
         value: function(serialization) {
             return serialization.replace(
-                this._formatSerializationReferencesRegExp, "{$1: $2}");
+                this._formatSerializationReferencesRegExp, this._formatSerializationReferenceseplaceNewSubstr);
         }
     },
 
