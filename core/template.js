@@ -61,6 +61,12 @@ var Template = Montage.specialize( /** @lends Template# */ {
                         requires[label] = metadata[label].require;
                     }
                 }
+                /*
+                    This is to workaround possible dependency cycle, the module is loaded but may not have been assigned in first pass on file execution.
+                */
+                if(!Deserializer) {
+                    Deserializer = require("core/serialization/deserializer/montage-deserializer").MontageDeserializer;
+                }
                 deserializer = new Deserializer().init(this.objectsString,
                     this._require, requires);
                 this.__deserializer = deserializer;
@@ -252,8 +258,42 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 .then(function (objectsString) {
                     self.objectsString = objectsString;
 
+                    Template.cacheTemplateForRequireModuleId(self, _require, moduleId);
+
                     return self;
+
                 });
+            });
+        }
+    },
+
+    /**
+     * Initializes the Template with the HTML document at the module id.
+     *
+     * @function
+     * @param {string} module The module of the HTML page to load.
+     * @returns {Promise} A promise for the proper initialization of the
+     *                    template.
+     */
+    initWithModule: {
+        value: function (module) {
+            var self = this;
+
+            this._require = module.require;
+
+            var _document = this.createHtmlDocumentWithModule(module),
+                baseUrl = module.directory;
+
+            self.document = _document;
+            self.setBaseUrl(baseUrl);
+
+            return self.getObjectsString(_document)
+            .then(function (objectsString) {
+                self.objectsString = objectsString;
+
+                Template.cacheTemplateForRequireModuleId(self, self._require, module.id);
+
+                return self;
             });
         }
     },
@@ -827,6 +867,12 @@ var Template = Montage.specialize( /** @lends Template# */ {
         }
     },
 
+    createHtmlDocumentWithModule: {
+        value: function (module) {
+            return module ? this.createHtmlDocumentWithHtml(module.exports.content, module.exports.directory) : null;
+        }
+    },
+
     /**
      * Removes all artifacts related to objects string
      */
@@ -1348,6 +1394,13 @@ var Template = Montage.specialize( /** @lends Template# */ {
 
 }, {
 
+    cacheTemplateForRequireModuleId: {
+        value: function(template, _require, moduleId, _cacheKey) {
+            var cacheKey = _cacheKey || this._getTemplateCacheKey(moduleId, _require);
+            this._templateCache.moduleId[cacheKey] = template;
+        }
+    },
+
     _templateCache: {
         value: {
             moduleId: Object.create(null)
@@ -1372,7 +1425,9 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 template = new Template()
                 .initWithModuleId(moduleId, _require);
 
-                this._templateCache.moduleId[cacheKey] = template;
+                //this._templateCache.moduleId[cacheKey] = template;
+            } else {
+                return Promise.resolve(template);
             }
 
             return template;
