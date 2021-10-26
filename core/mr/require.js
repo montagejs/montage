@@ -158,18 +158,24 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
     normalizeId.cache = new Map();
     normalizeId.pattern = /^(.*)\.js$/;
 
-    function memoize(callback, cache) {
-        var _memoize = cache.get(callback);
-        if (!_memoize) {
+    var __memoize = function _memoize(callback, key, arg, cache) {
+        var result = callback(key, arg);
+        cache.set(key, result);
+        return result ;
+    };
 
-            _memoize = function _memoize(key, arg) {
-                var result;
+    function _cacheMemoize(callback, cache) {
 
-                return cache.get(key) || (cache.set(key, (result = callback(key, arg))) && result) ;
-            };
-            cache.set(callback,_memoize);
-        }
+        var _memoize = function _memoize(key, arg) {
+            return cache.get(key) || __memoize(callback, key, arg, cache) ;
+        };
+
+        cache.set(callback,_memoize);
         return _memoize;
+    }
+
+    function memoize(callback, cache) {
+        return cache.get(callback) || _cacheMemoize(callback, cache);
     }
 
     function endsWith(string, search, position) {
@@ -249,13 +255,12 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
     function resolve(id, baseId) {
         if (id === EMPTY_STRING && baseId === EMPTY_STRING) {
             return EMPTY_STRING;
+        } else {
+            var resolved = _resolved.get(id) || (_resolved.set(id, (resolved = new Map())) && resolved),
+                baseIdMap = resolved.get(baseId);
+
+            return (baseIdMap && baseIdMap.get(id)) || _cacheResolve(id, baseId, resolved, baseIdMap);
         }
-
-        var resolved = _resolved.get(id) || (_resolved.set(id, (resolved = new Map())) && resolved),
-            baseIdMap = resolved.get(baseId);
-
-        return (baseIdMap && baseIdMap.get(id)) || _cacheResolve(id, baseId, resolved, baseIdMap);
-
     }
 
     var NODE_MODULES_SLASH = "node_modules/";
@@ -726,20 +731,22 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                 .then(function deepLoadThen() {
                     // load the transitive dependencies using the magic of
                     // recursion.
-                    var i, promises , depId, iPromise,
+                    var i,
+                        countI,
+                        promises, iPromise,
                         dependencies = getModuleDescriptor(topId).dependencies,
                         scopedTopId = topId,
                         scopedLoading = _loading;
 
-                    if (dependencies && dependencies.length > 0) {
-                        for(i=0;(depId = dependencies[i]);i++) {
+                    if (dependencies && (countI = dependencies.length) > 0) {
+                        for(i=0; i < countI; i++) {
                             // create dependees set, purely for debug purposes
                             // if (true) {
                             //     var iModule = getModuleDescriptor(depId);
                             //     var dependees = iModule.dependees = iModule.dependees || {};
                             //     dependees[topId] = true;
                             // }
-                            if ((iPromise = deepLoad(config.normalizeId(config.resolve(depId, scopedTopId), config), scopedTopId, scopedLoading))) {
+                            if ((iPromise = deepLoad(config.normalizeId(config.resolve(dependencies[i], scopedTopId), config), scopedTopId, scopedLoading))) {
                                 /* jshint expr: true */
                                 promises ? (promises.push ? promises.push(iPromise) :
                                     (promises = [promises, iPromise])) : (promises = iPromise);
@@ -1305,7 +1312,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
     // Built-in compiler/preprocessor "middleware":
 
-    Require.DependenciesCompiler = function(config, compile) {
+    Require.DependenciesCompiler = function DependenciesCompiler(config, compile) {
         return function(module) {
             if (!module.dependencies && module.text !== void 0) {
                 module.dependencies = config.parseDependencies(module.text);
@@ -1327,7 +1334,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
     // valid JavaScript syntax anyway)
     var shebangPattern = /^#!/;
     var shebangCommented = "//#!";
-    Require.ShebangCompiler = function(config, compile) {
+    Require.ShebangCompiler = function ShebangCompiler(config, compile) {
         return function (module) {
             if (module.text) {
                 module.text = module.text.replace(shebangPattern, shebangCommented);
@@ -1337,7 +1344,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         };
     };
 
-    Require.LintCompiler = function(config, compile) {
+    Require.LintCompiler = function LintCompiler(config, compile) {
         return function(module) {
             try {
                 compile(module);
@@ -1416,13 +1423,13 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         };
     }
 
-    Require.makeCompiler = function (config) {
+    Require.makeCompiler = function makeCompiler(config) {
         return function (module) {
             return Promise.resolve(syncCompilerChain(config)(module));
         };
     };
 
-    Require.DelegateCompiler = function (config, compile) {
+    Require.DelegateCompiler = function DelegateCompiler(config, compile) {
         if ( Require.delegate && typeof Require.delegate.Compiler === "function") {
             return Require.delegate.Compiler(config, compile);
         } else {
@@ -1433,11 +1440,13 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         }
     };
 
-
-    Require.JsonCompiler = function (config, compile) {
-        var jsonPattern = /\.json$/;
+    var jsonPattern = /\.json$/;
+    Require.JsonCompiler = function JsonCompiler(config, compile) {
         return function (module) {
-            var json = (module.location || "").match(jsonPattern);
+            var json = module.location
+                ?  module.location.match(jsonPattern)
+                : false;
+
             if (json) {
                 if (typeof module.exports !== "object" && typeof module.text === "string") {
                     module.exports = JSON.parse(module.text);
@@ -1463,7 +1472,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         dotHTML = ".html",
         dotHTMLLoadJs = ".html.load.js";
 
-    Require.TemplateCompiler = function(config, compile) {
+    Require.TemplateCompiler = function TemplateCompiler(config, compile) {
         return function(module) {
             var location = module.location;
 
@@ -1482,6 +1491,10 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                     };
 
                     return module;
+                    /*
+                        To work on preloading html with serialization resources via compiler in montage.js
+                    */
+                    // return compile(module);
                 }
             }
 
@@ -1524,7 +1537,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             return $1;
         };
 
-    Require.executeCompiler = function (factory, require, exports, module) {
+    Require.executeCompiler = function executeCompiler(factory, require, exports, module) {
         var returnValue;
 
         module.directory = URL.resolve(module.location, "./");
@@ -1546,7 +1559,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
     };
 
 
-    Require.SerializationCompiler = function(config, compile) {
+    Require.SerializationCompiler = function SerializationCompiler(config, compile) {
         return function(module) {
             compile(module);
             if (!module.factory) {
@@ -1595,7 +1608,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
     // Built-in loader "middleware":
 
     // Using mappings hash to load modules that match a mapping.
-    Require.MappingsLoader = function(config, load) {
+    Require.MappingsLoader = function MappingsLoader(config, load) {
         config.mappings = config.mappings || Object.create(null);
         config.name = config.name;
 
@@ -1673,7 +1686,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         };
     };
 
-    Require.LocationLoader = function (config, load) {
+    Require.LocationLoader = function LocationLoader(config, load) {
         function locationLoader(id, module) {
             var location, result,
                 path = id,
@@ -1713,7 +1726,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
      */
     var _reelExpression = /([^\/]+)\.reel$/,
         _dotREEL = ".reel";
-    Require.ReelLoader = function(config, load) {
+    Require.ReelLoader = function ReelLoader(config, load) {
         var reelExpression = _reelExpression,
             dotREEL = _dotREEL;
 
