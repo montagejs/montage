@@ -19,6 +19,7 @@ var rangeChangeDescriptors = new WeakMap(); // {isActive, willChangeListeners, c
 function RangeChangeDescriptor(name) {
     this.name = name;
     this.isActive = false;
+    this.inQueue = false;
     this._willChangeListeners = null;
     this._changeListeners = null;
 };
@@ -181,11 +182,61 @@ RangeChanges.prototype.removeRangeChangeListener = function (listener, token, be
 
 };
 
+RangeChanges.prototype._rangeChangeDispatchQueue = function _rangeChangeDispatchQueue() {
+    return this.__rangeChangeDispatchQueue || (this.__rangeChangeDispatchQueue = []);
+}
+
 RangeChanges.prototype.dispatchRangeChange = function (plus, minus, index, beforeChange) {
     var descriptors = this.getAllRangeChangeDescriptors(),
         descriptor,
         mapIter  = descriptors.values(),
-        listeners,
+        rangeChangeDispatchQueue;
+
+
+    descriptors.dispatchBeforeChange = beforeChange;
+
+     while (descriptor = mapIter.next().value) {
+
+        if (descriptor.isActive) {
+            if(descriptor.inQueue !== true) {
+                // console.log("isActive: dispatchRangeChange: this <"+Object.hash(this)+"> ["+this.map((o) => {return Object.hash(o)})+"]._rangeChangeDispatchQueue.push(["+plus.map((o) => {return Object.hash(o)}) + "," + minus.map((o) => {return Object.hash(o)}) + "," + index + "," + beforeChange + ")");
+                this._rangeChangeDispatchQueue().push([descriptor, plus, minus, index, beforeChange]);
+            }
+            return;
+        }
+        // else {
+        //     console.log("this <"+Object.hash(this)+"> ["+this.map((o) => {return Object.hash(o)})+"].dispatchRangeChange("+plus.map((o) => {return Object.hash(o)}) + "," + minus.map((o) => {return Object.hash(o)}) + "," + index + "," + beforeChange + ") - NOT ACTIVE");
+        // }
+
+        this._dispatchDescriptorRangeChange(descriptor, plus, minus, index, beforeChange);
+    }
+
+    if((rangeChangeDispatchQueue = this.__rangeChangeDispatchQueue) && rangeChangeDispatchQueue.length > 0) {
+        var i,
+            iQueueItem,
+            iQueueItemDescriptor,
+            _dispatchDescriptorRangeChange = this._dispatchDescriptorRangeChange;
+
+        //in case the array grows while we loop on it
+        for(i=0 ; i<rangeChangeDispatchQueue.length; i++) {
+            iQueueItem = rangeChangeDispatchQueue[i];
+            iQueueItemDescriptor = iQueueItem[0];
+            iQueueItemDescriptor.inQueue = true;
+            // console.log("("+i+") emptyQueue: this <"+Object.hash(this)+">["+this.map((o) => {return Object.hash(o)})+"]._rangeChangeDispatchQueue.call(this,"+iQueueItem[0]+ ","+ iQueueItem[1]+ "," + iQueueItem[2]+","+ iQueueItem[3]+","+ iQueueItem[4]+")");
+
+            _dispatchDescriptorRangeChange.call(this, iQueueItem[0], iQueueItem[1], iQueueItem[2], iQueueItem[3], iQueueItem[4]);
+            iQueueItemDescriptor.inQueue = false;
+
+        }
+        rangeChangeDispatchQueue.splice(0);
+        // if(rangeChangeDispatchQueue.length > 0) {
+        //     console.log("this <"+Object.hash(this)+">.rangeChangeDispatchQueue.length = "+rangeChangeDispatchQueue.length);
+        // }
+    }
+};
+
+RangeChanges.prototype._dispatchDescriptorRangeChange = function (descriptor, plus, minus, index, beforeChange) {
+    var listeners,
         tokenName,
         i,
         countI,
@@ -193,66 +244,57 @@ RangeChanges.prototype.dispatchRangeChange = function (plus, minus, index, befor
         currentListeners,
         Ghost;
 
-    descriptors.dispatchBeforeChange = beforeChange;
+    // before or after
+    listeners = beforeChange ? descriptor._willChangeListeners : descriptor._changeListeners;
+    if(listeners && listeners._current) {
+        tokenName = listeners.specificHandlerMethodName;
+        if(Array.isArray(listeners._current)) {
+            if(listeners._current.length) {
+                // notably, defaults to "handleRangeChange" or "handleRangeWillChange"
+                // if token is "" (the default)
 
-     while (descriptor = mapIter.next().value) {
-
-        if (descriptor.isActive) {
-            return;
-        }
-
-        // before or after
-        listeners = beforeChange ? descriptor._willChangeListeners : descriptor._changeListeners;
-        if(listeners && listeners._current) {
-            tokenName = listeners.specificHandlerMethodName;
-            if(Array.isArray(listeners._current)) {
-                if(listeners._current.length) {
-                    // notably, defaults to "handleRangeChange" or "handleRangeWillChange"
-                    // if token is "" (the default)
-
-                    descriptor.isActive = true;
-                    // dispatch each listener
-                    try {
-                            //removeGostListenersIfNeeded returns listeners.current or a new filtered one when conditions are met
-                            currentListeners = listeners.removeCurrentGostListenersIfNeeded();
-                            Ghost = ListenerGhost;
-                        for(i=0, countI = currentListeners.length;i<countI;i++) {
-                            if ((listener = currentListeners[i]) !== Ghost) {
-                                if (listener[tokenName]) {
-                                    listener[tokenName](plus, minus, index, this, beforeChange);
-                                } else if (listener.call) {
-                                    listener.call(this, plus, minus, index, this, beforeChange);
-                                } else {
-                                    throw new Error("Handler " + listener + " has no method " + tokenName + " and is not callable");
-                                }
-                            }
-                        }
-                    } finally {
-                        descriptor.isActive = false;
-                    }
-                }
-            }
-            else {
                 descriptor.isActive = true;
                 // dispatch each listener
                 try {
-                    listener = listeners._current;
-                    if (listener[tokenName]) {
-                        listener[tokenName](plus, minus, index, this, beforeChange);
-                    } else if (listener.call) {
-                        listener.call(this, plus, minus, index, this, beforeChange);
-                    } else {
-                        throw new Error("Handler " + listener + " has no method " + tokenName + " and is not callable");
+                        //removeGostListenersIfNeeded returns listeners.current or a new filtered one when conditions are met
+                        currentListeners = listeners.removeCurrentGostListenersIfNeeded();
+                        Ghost = ListenerGhost;
+                    for(i=0, countI = currentListeners.length;i<countI;i++) {
+                        if ((listener = currentListeners[i]) !== Ghost) {
+                            if (listener[tokenName]) {
+                                listener[tokenName](plus, minus, index, this, beforeChange);
+                            } else if (listener.call) {
+                                listener.call(this, plus, minus, index, this, beforeChange);
+                            } else {
+                                throw new Error("Handler " + listener + " has no method " + tokenName + " and is not callable");
+                            }
+                        }
                     }
                 } finally {
                     descriptor.isActive = false;
                 }
-
             }
         }
+        else {
+            descriptor.isActive = true;
+            // dispatch each listener
+            try {
+                listener = listeners._current;
+                if (listener[tokenName]) {
+                    listener[tokenName](plus, minus, index, this, beforeChange);
+                } else if (listener.call) {
+                    listener.call(this, plus, minus, index, this, beforeChange);
+                } else {
+                    throw new Error("Handler " + listener + " has no method " + tokenName + " and is not callable");
+                }
+            } finally {
+                descriptor.isActive = false;
+            }
 
+        }
     }
-};
+
+}
 
 RangeChanges.prototype.addBeforeRangeChangeListener = function (listener, token) {
     return this.addRangeChangeListener(listener, token, true);
