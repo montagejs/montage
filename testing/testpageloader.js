@@ -228,8 +228,8 @@ var TestPageLoader = exports.TestPageLoader = Montage.specialize( {
                 }, false);
                 self.testWindow.addEventListener("load", callback, true);
             } else {
-                self.iframe.src = src;
                 self.iframe.addEventListener("load", callback, true);
+                self.iframe.src = src;
             }
 
             return frameLoad.promise;
@@ -467,8 +467,10 @@ var TestPageLoader = exports.TestPageLoader = Montage.specialize( {
 
             if (typeof callback === "function") {
                 if(this.willNeedToDraw) {
-                    this.waitForDraw();
-                    setTimeout(callback);
+                    this.waitForDraw()
+                    .then(() => {
+                        callback();
+                    });
                 } else {
                     callback();
                 }
@@ -490,8 +492,10 @@ var TestPageLoader = exports.TestPageLoader = Montage.specialize( {
 
             if (typeof callback === "function") {
                 if(this.willNeedToDraw) {
-                    this.waitForDraw();
-                    setTimeout(callback);
+                    this.waitForDraw()
+                    .then(() => {
+                        callback();
+                    });
                 } else {
                     callback();
                 }
@@ -519,8 +523,10 @@ var TestPageLoader = exports.TestPageLoader = Montage.specialize( {
             eventInfo.target.dispatchEvent(event);
             if (typeof callback === "function") {
                 if(this.willNeedToDraw) {
-                    this.waitForDraw();
-                    setTimeout(callback);
+                    this.waitForDraw()
+                    .then(() => {
+                        callback();
+                    });
                 } else {
                     callback();
                 }
@@ -573,8 +579,10 @@ var TestPageLoader = exports.TestPageLoader = Montage.specialize( {
 
             if (typeof callback === "function") {
                 if(this.willNeedToDraw) {
-                    this.waitForDraw();
-                    setTimeout(callback);
+                    this.waitForDraw()
+                    .then(() => {
+                        callback();
+                    });
                 } else {
                     callback();
                 }
@@ -636,8 +644,10 @@ var TestPageLoader = exports.TestPageLoader = Montage.specialize( {
             }
             if (typeof callback === "function") {
                 if(this.willNeedToDraw) {
-                    this.waitForDraw();
-                    setTimeout(callback);
+                    this.waitForDraw()
+                    .then(() => {
+                        callback();
+                    });
                 } else {
                     callback();
                 }
