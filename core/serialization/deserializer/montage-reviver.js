@@ -4,6 +4,8 @@ var Montage = require("../../core").Montage,
     SelfDeserializer = require("./self-deserializer").SelfDeserializer,
     UnitDeserializer = require("./unit-deserializer").UnitDeserializer,
     ModuleReference = require("../../module-reference").ModuleReference,
+    // Template = require("../../template").Template,
+    Template,
     Alias = require("../alias").Alias, Bindings = require("../bindings"),
     Promise = require("../../promise").Promise,
     deprecate = require("../../deprecate"),
@@ -96,12 +98,44 @@ var ModuleLoader = Montage.specialize({
             try {
                 module = _require(moduleId);
             } catch (err) {
-                if (!module && (moduleId.endsWith(".mjson") || moduleId.endsWith(".meta"))) {
+                if (!module && (moduleId.endsWith(".mjson") /*|| moduleId.endsWith(".html")*/ || moduleId.endsWith(".meta"))) {
                     module = this.getModuleDescriptor(_require, moduleId).text;
                 }
 
                 if (!module && !reviver._isSync) {
-                    module = _require.async(moduleId);
+                    // if(moduleId.endsWith(".html") && !Template) {
+                    //     module = require.async("../../template")
+                    //     .then((exports) => {
+                    //         Template = exports.Template;
+                    //         return;
+                    //     })
+                    //     .then(() => {
+                    //         return _require.async(moduleId);
+                    //     });
+
+                    //     // module = module.then((module) => {
+
+                    //     //     var template =  new Template();
+
+                    //     //     return template.initWithHtml(module.content, _require)
+                    //     //     .then(() => {
+                    //     //         return template.instantiateWithInstances(/*context._objects*/null, context._element.ownerDocument)
+                    //     //         .then((documentPart) => {
+                    //     //             console.log(documentPart);
+                    //     //             if(documentPart) {
+                    //     //                 var locationDesc = MontageReviver.parseObjectLocationId(moduleId);
+
+                    //     //                 return documentPart.objects[locationDesc.name];
+                    //     //             } else {
+                    //     //                 return null;
+                    //     //             }
+                    //     //         });
+                    //     //     });
+                    //     // });
+
+                    // } else {
+                        module = _require.async(moduleId);
+                    // }
                 } else {
                     err.message = err.message + " synchronously";
                     throw err;
@@ -117,6 +151,9 @@ var ModuleLoader = Montage.specialize({
  * @class MontageReviver
  */
 var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends MontageReviver# */ {
+    _global: {
+        value: global
+    },
 
     moduleLoader: {
         value: null
@@ -483,8 +520,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 module, locationDesc, objectName;
 
             if (locationId) {
-                if (typeof global[locationId] === "function") {
-                    module = global;
+                if (locationId.indexOf("/") === -1 && typeof this._global[locationId] === "function") {
+                    module = this._global;
                     objectName = locationId;
                 } else {
                     locationDesc = MontageReviver.parseObjectLocationId(locationId);
@@ -569,6 +606,23 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 moduleId = value.prototype;
                 if (moduleId && (moduleId.endsWith(".mjson") || moduleId.endsWith(".meta"))) {
                     object = Object.create(this._getMJSONObject(moduleId, context));
+                //}
+                // else if (moduleId && (moduleId.endsWith(".html"))) {
+                //     var template = module.montageObject;
+
+                //     return template.instantiateWithInstances(/*context._objects*/null, context._element.ownerDocument)
+                //     .then((documentPart) => {
+                //         // console.log(documentPart);
+                //         if(documentPart) {
+                //             var locationDesc = MontageReviver.parseObjectLocationId(moduleId);
+
+                //             return documentPart.objects[locationDesc.name];
+                //         } else {
+                //             return null;
+                //         }
+                //     });
+
+
                 }
                 else {
                     if (!(objectName in module)) {
@@ -596,6 +650,26 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     object.isDeserializing = true;
                     return object;
                 }
+                // else if (moduleId && (moduleId.endsWith(".html"))) {
+                //     var template =  new Template();
+
+                //     return template.initWithHtml(module.content, context._require)
+                //     .then(() => {
+                //         return template.instantiateWithInstances(/*context._objects*/null, context._element.ownerDocument)
+                //         .then((documentPart) => {
+                //             console.log(documentPart);
+                //             if(documentPart) {
+                //                 var locationDesc = MontageReviver.parseObjectLocationId(moduleId);
+
+                //                 return documentPart.objects[locationDesc.name];
+                //             } else {
+                //                 return null;
+                //             }
+                //         });
+                //     });
+
+
+                // }
                 else {
                     if (!(objectName in module)) {
                         throw new Error('Error deserializing "' + label +
@@ -983,7 +1057,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                         value[propertyName] = item;
                     }
 
-                    propertyNames.delete(propertyName);
+                    /*
+                        Doesn't look like this is needed as the set isn't reused once we're done looping
+                    */
+                    //propertyNames.delete(propertyName);
                 }
             }
 
@@ -1123,11 +1200,16 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 objectName = locationId.slice(bracketIndex + 1, -1);
             } else {
                 moduleId = locationId;
-                this._findObjectNameRegExp.test(locationId);
-                objectName = RegExp.$1.replace(
-                    this._toCamelCaseRegExp,
-                    this._replaceToCamelCase
-                );
+                // if(moduleId.endsWith("html")) {
+                //     objectName = "owner";
+                // } else {
+                    this._findObjectNameRegExp.test(locationId);
+                    objectName = RegExp.$1.replace(
+                        this._toCamelCaseRegExp,
+                        this._replaceToCamelCase
+                    );
+                // }
+
             }
 
             var locationDesc = {
