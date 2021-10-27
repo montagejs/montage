@@ -994,10 +994,16 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
                 // console.debug(object.dataIdentifier.objectDescriptor.name+" - "+propertyDescriptor.name+" _resolveRelationship on object id: "+object.dataIdentifier.primaryKey +" resolved to ",result);
                 var data;
                 if(propertyDescriptor.cardinality === 1 &&
-                    result instanceof Array &&
-                    result.length === 1
+                    result instanceof Array
                 ) {
-                    data = result[0];
+                    if(result.length === 1) {
+                        data = result[0];
+                    } else if(result.length === 0) {
+                        data = null;
+                    } else {
+                        console.error("_resolveRelationship(object:",object,"propertyDescriptor:",propertyDescriptor, "objectDescriptor:", self.objectDescriptor.name+" rule evaluated to an array with more then one value ("+result+") for a cardinality of 1. rule:",rule," with scope:",scope);
+                        data = null;
+                    }
                 }
                 else {
                     data = result;
@@ -1024,7 +1030,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
             if (this._isAsync(penultimateStep)) {
                 return penultimateStep.then(function (data) {
                     self._setObjectValueForPropertyDescriptor(object, data, propertyDescriptor, true);
-                    return null;
+                    return data;
                 });
             } else {
                 /*
