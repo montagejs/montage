@@ -883,7 +883,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                         aWindow.document.removeEventListener =
                             function removeEventListener(eventType, listener, optionsOrUseCapture) {
                                 //this.nativeRemoveEventListener(eventType, listener, optionsOrUseCapture);
-                                return aWindow.defaultEventManager.unregisterTargetEventListener(this, eventType, listener, optionsOrUseCapture);
+                                if(aWindow.defaultEventManager) {
+                                    return aWindow.defaultEventManager.unregisterTargetEventListener(this, eventType, listener, optionsOrUseCapture);
+                                }
                             })
             });
 
