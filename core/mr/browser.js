@@ -287,7 +287,7 @@ bootstrap("require/browser", function (require) {
         };
     };
 
-    Require.XhrLoader = function (config) {
+    Require.XhrLoader = function XhrLoader(config) {
         return function (url, module) {
             return config.read(url, module)
             .then(function (text) {
@@ -300,20 +300,21 @@ bootstrap("require/browser", function (require) {
         };
     };
 
-    var definitions = {};
-    var getDefinition = function (hash, id) {
-        var defHash = definitions[hash] = definitions[hash] || {};
-        if (!defHash[id]) {
+    var definitions = {},
+        cacheDefinitionFor = function cacheDefinitionFor(defHash, hash, id) {
             var promiseResolve;
             defHash[id] = new Promise(function(resolve, reject) {
                 promiseResolve = resolve;
             });
             defHash[id].resolve = promiseResolve;
-        }
-        return defHash[id];
-    };
+            return defHash[id];
+        },
+        getDefinition = function getDefinition(hash, id) {
+            var defHash = definitions[hash] || (definitions[hash] = {});
+            return defHash[id] || cacheDefinitionFor(defHash, hash, id);
+        };
 
-    var loadIfNotPreloaded = function (location, definition, preloaded) {
+    var loadIfNotPreloaded = function loadIfNotPreloaded(location, definition, preloaded) {
         var loadScript = Require.delegate && Require.delegate.loadScript || Require.loadScript;
         // The package.json might come in a preloading bundle. If so, we do not
         // want to issue a script injection. However, if by the time preloading
@@ -351,7 +352,8 @@ bootstrap("require/browser", function (require) {
         document.getElementsByTagName("head")[0].appendChild(script);
     };
 
-    Require.ScriptLoader = function (config) {
+    var jsExtensionRegExp = /\.js$/;
+    Require.ScriptLoader = function ScriptLoader(config) {
         var hash = config.packageDescription.hash;
         return function (location, module) {
             /*
@@ -366,8 +368,8 @@ bootstrap("require/browser", function (require) {
 
                     // short-cut by predefinition
                     if (!(definition = definitions[hash]) || !(definition = definition[module.id])) {
-                        if (/\.js$/.test(location)) {
-                            location = location.replace(/\.js$/, ".load.js");
+                        if (jsExtensionRegExp.test(location)) {
+                            location = location.replace(jsExtensionRegExp, ".load.js");
                         } else {
                             location += ".load.js";
                         }

@@ -1583,18 +1583,19 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                 }
 
                 var i, object, name,
-                    keys = Object.keys(exports);
+                    _Object = Object,
+                    keys = _Object.keys(exports);
 
                 for (i = 0, name; (name = keys[i]); i++) {
                     // avoid attempting to initialize a non-object
-                    if (((object = exports[name]) instanceof Object)) {
+                    if (((object = exports[name]) instanceof _Object)) {
                         // avoid attempting to reinitialize an aliased property
                         //jshint -W106
                         if (object.hasOwnProperty(_MONTAGE_METADATA) && !object[_MONTAGE_METADATA].isInstance) {
                             object[_MONTAGE_METADATA].aliases.push(name);
                             //object._montage_metadata.objectName = name;
                             //jshint +W106
-                        } else if (!Object.isSealed(object)) {
+                        } else if (!_Object.isSealed(object)) {
                             object[_MONTAGE_METADATA] = new MontageMetadata(require, module.id.indexOf(".reel") !== -1 ? module.id.replace(reverseReelExpression, reverseReelFunction) : module.id, name,/*isInstance*/(typeof object !== "function"));
                         }
                     }
