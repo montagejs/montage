@@ -679,7 +679,10 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
                     If there's a propertyValue, it's the actual result of the fetch and bipassed the existing path where the mapping would have added the value on object by the time we get back here. So since it wasn't done, we do it here.
                 */
                 // console.log(propertyValue);
-                if(propertyValue && !object[self._privatePropertyName]) {
+                if(propertyValue === null) {
+                    object[self._propertyName] = propertyValue;
+                }
+                else if(propertyValue && !object[self._privatePropertyName]) {
                     if(self.propertyDescriptor.cardinality > 1) {
                         object[self._propertyName] = propertyValue;
                     }
