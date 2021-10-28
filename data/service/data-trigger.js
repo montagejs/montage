@@ -619,7 +619,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
             /*
                 If the object is not created and not saved, we fetch the value
 
-                In some cases, a new object created in-memory, with enough data set on it might be able to read some propery that might be derived from the raw values of the property already set on it. So let's leave the bottom layers to figure that out.
+                In some cases, a new object created in-memory, with enough data set on it might be able to read some property that might be derived from the raw values of the property already set on it. So let's leave the bottom layers to figure that out.
             */
             // if(!this._service.isObjectCreated(object)) {
                 var status = this._getValueStatus(object);
