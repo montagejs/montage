@@ -280,7 +280,7 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
             */
             // if(!this._service.rootService._objectsBeingMapped.has(object)
             // ) {
-                if(this._getValueStatus(object) !== null && shouldFetch !== false && !this.propertyDescriptor.definition) {
+                if(shouldFetch !== false && this._getValueStatus(object) !== null && !this.propertyDescriptor.definition && !this._service.isObjectCreated(object)) {
 
 
                 /*
