@@ -4287,10 +4287,10 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      */
     init: {
         value: function () {
-            this._bodyComponent = new Component();
-            this._bodyComponent.hasTemplate = false;
-            this._bodyComponent.element = document.body;
-            this.addChildComponent(this._bodyComponent);
+            this.bodyComponent = new Component();
+            this.bodyComponent.hasTemplate = false;
+            this.bodyComponent.element = document.body;
+            this.addChildComponent(this.bodyComponent);
             return this;
         }
     },
