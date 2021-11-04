@@ -3420,7 +3420,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             if (this.__shouldBuildIn) {
                 this._buildIn();
             }
-            this._isElementAttachedToParent = true;
+            this._isElementAttachedToParent = this._element.parentNode instanceof Element;
             if (this.__shouldBuildOut) {
                 this._buildOut();
             }
@@ -4287,6 +4287,10 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      */
     init: {
         value: function () {
+            this._bodyComponent = new Component();
+            this._bodyComponent.hasTemplate = false;
+            this._bodyComponent.element = document.body;
+            this.addChildComponent(this._bodyComponent);
             return this;
         }
     },

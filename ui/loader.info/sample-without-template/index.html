@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Loader Sample</title>
+    <script src="../../../montage.js" async></script>
+    <style>
+        .LoaderSample-loader {
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: 2s LoaderSample-loader-fadeInSpinner;
+            animation-fill-mode: both;
+            animation-delay: 1s;
+        }
+        @keyframes LoaderSample-loader-rotateSpinner {
+            from {
+                transform: rotate(0);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes LoaderSample-loader-fadeInSpinner {
+            from {
+                color: transparent;
+            }
+            to {
+                color: white;
+            }
+        }
+        .LoaderSample-loader:before {
+            font-family: sans-serif;
+            font-size: 60px;
+            position: absolute;
+            content: "◌";
+            animation: 5s LoaderSample-loader-rotateSpinner linear infinite;
+        }
+        .LoaderSample-loader--buildOutCssClass {
+            opacity: 1;
+            transition: 2s opacity;
+            pointer-events: none; 
+        }
+        .LoaderSample-loader--buildOutToCssClass {
+            opacity: 0;
+        }
+    </style>
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "prototype": "montage/ui/loader.reel",
+            "values": {
+                "element": {"#": "loader"},
+                "minimumFirstLoadingDuration": 3000,
+                "buildOutAnimation": {
+                    "cssClass": "LoaderSample-loader--buildOutCssClass",
+                    "toCssClass": "LoaderSample-loader--buildOutToCssClass"
+                }
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="loader" class="LoaderSample-loader"></div>
+</body>
+</html>

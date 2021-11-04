@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="my-loader.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "values": {
+                "element": {"#": "owner"},
+                "minimumFirstLoadingDuration": 3000,
+                "buildInAnimation": {
+                    "fromCssClass": "MyLoader--buildInFromCssClass",
+                    "cssClass": "MyLoader--buildInCssClass"
+                },
+                "buildOutAnimation": {
+                    "cssClass": "MyLoader--buildOutCssClass",
+                    "toCssClass": "MyLoader--buildOutToCssClass"
+                }
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="MyLoader"></div>
+</body>
+</html>
