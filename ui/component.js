@@ -3180,6 +3180,20 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         value: true
     },
 
+    /*
+        TODO: Re-design _shouldBuildIn and _shouldBuildOut in a more precise way.
+        
+        Right now _shouldBuildIn works as expected as setter, but the value it 
+        returns as getter is confusing:
+
+        When _shouldBuildIn is true, it can mean 3 things: it is going to build in,
+        it is building in, or the last build animation played was a build in. The 
+        same goes with _shouldBuildOut, and in the end they represent multiple
+        phases, maybe up to 6 or 7 different ones.
+
+        To make the system precise, an option would be to store this phase and
+        convert _shouldBuildIn and _shouldBuildOut into functions.
+    */
     _shouldBuildIn: {
         get: function () {
             return this.__shouldBuildIn;
@@ -3420,7 +3434,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             if (this.__shouldBuildIn) {
                 this._buildIn();
             }
-            this._isElementAttachedToParent = true;
+            this._isElementAttachedToParent = this._element.parentNode instanceof Element;
             if (this.__shouldBuildOut) {
                 this._buildOut();
             }
@@ -4287,6 +4301,10 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      */
     init: {
         value: function () {
+            this.bodyComponent = new Component();
+            this.bodyComponent.hasTemplate = false;
+            this.bodyComponent.element = document.body;
+            this.addChildComponent(this.bodyComponent);
             return this;
         }
     },

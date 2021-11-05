@@ -31,16 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-var EventManagerTest = exports.EventManagerTest = Montage.specialize( {
-    deserializedFromTemplate: {
-        value: function () {
-            var dummyComponent = new Component();
-            dummyComponent.hasTemplate = false;
-            dummyComponent.element = document.body;
-            dummyComponent.needsDraw = true;
-        }
-    },
-
+var EventManagerTest = exports.EventManagerTest = Montage.specialize({
     activationTarget: {
         value: null
     }

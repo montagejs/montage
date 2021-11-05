@@ -1,7 +1,0 @@
-{
-	"name": "loader.info",
-	"private": true,
-	"dependencies": {
-		"montage": "../.."
-	}
-}

@@ -431,12 +431,15 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
 
     draw: {
         value: function () {
-            if (LOADED === this._currentStage) {
+            if (LOADED === this._currentStage && !this._isBuildingOut) {
                 this._dispatchLoadEvent();
                 // Remove the Loader from the component tree, we can only do
                 // this after the last draw the Loader needs to make.
-                this.detachFromParentComponent();
-                this.element.parentElement.removeChild(this.element);
+                this._buildOut()
+                // _isBuildingOut or an equivalent functionality should
+                // be part of Component but at this time it is not available.
+                // Read more in the TODO for _shouldBuildIn in Component
+                this._isBuildingOut = true
             }
         }
     },

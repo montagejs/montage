@@ -59,7 +59,7 @@ TestPageLoader.queueTest("loader/loader-test", function (testPage) {
             var loader = test.templateObjects.owner,
                 main = loader._mainComponent;
 
-            expect(main.parentComponent).toBe(main.rootComponent);
+            expect(main.parentComponent).toBe(main.rootComponent.bodyComponent);
         });
     });
 });

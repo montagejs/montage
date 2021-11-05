@@ -1,0 +1,43 @@
+.MyLoader {
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+@keyframes MyLoader-rotateSpinner {
+    from {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+.MyLoader:before {
+    font-family: sans-serif;
+    font-size: 60px;
+    position: absolute;
+    content: "◌";
+    animation: 5s MyLoader-rotateSpinner linear infinite;
+}
+.MyLoader--buildInFromCssClass {
+    color: transparent;
+}
+.MyLoader--buildInCssClass {
+    color: white;
+    transition: 2s all;
+}
+.MyLoader--buildOutCssClass {
+    opacity: 1;
+    transition: 2s opacity;
+    pointer-events: none; 
+}
+.MyLoader--buildOutToCssClass {
+    opacity: 0;
+}

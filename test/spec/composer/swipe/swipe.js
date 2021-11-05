@@ -8,7 +8,8 @@ exports.Swipe = Montage.specialize( {
         value: function () {
             var dummyComponent = this.dummyComponent = new Component();
             dummyComponent.hasTemplate = false;
-            dummyComponent.element = document.body;
+            dummyComponent.element = document.createElement("div");
+            document.body.appendChild(dummyComponent.element);
             dummyComponent.element.style.height = "400px";
             dummyComponent.element.style.width = "400px";
             dummyComponent.attachToParentComponent();
