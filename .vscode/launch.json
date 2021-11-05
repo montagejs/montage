@@ -14,7 +14,6 @@
             "type": "node",
             "request": "launch",
             "name": "Launch http server",
-            "runtimeVersion": "14.16.0",
             "runtimeArgs": [
                 "${workspaceFolder}/node_modules/http-server/bin/http-server",
                 "--silent",
@@ -31,7 +30,6 @@
             "type": "node",
             "request": "launch",
             "name": "npm test",
-            "runtimeVersion": "14.16.0",
             "runtimeArgs": [
                 "${workspaceFolder}/test/run-node.js",
             ]
@@ -54,7 +52,6 @@
             "type": "node",
             "request": "launch",
             "name": "Run frb Jasmine Tests",
-            "runtimeVersion": "14.16.0",
             "program": "${workspaceFolder}/node_modules/jasmine-node/bin/jasmine-node",
             "args": [ "core/frb/spec", "--verbose"],
 			"cwd": "${workspaceFolder}",
@@ -68,7 +65,6 @@
             "type": "node",
             "request": "launch",
             "name": "npm test mr",
-            "runtimeVersion": "14.16.0",
             "program": "${workspaceFolder}/core/mr/test/run-node.js"
         },
         {
