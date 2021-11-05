@@ -288,6 +288,27 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
         }
     },
 
+    _cancel: {
+        value: function (event) {
+            this.startTime = Date.now();
+            this.endX = this.posX = this.startX = this._translateX;
+            this.endY = this.posY = this.startY = this._translateY;
+            if (this.translateStrideX) {
+                this.startStrideXTime = null;
+                this.startStrideYTime = null;
+                this.animateMomentum = true;
+                this._animationInterval();
+            } else {
+                this.animateMomentum = false;
+            }
+            if (!this._isFirstMove) {
+                this.isMoving = false;
+                this._dispatchTranslateCancel();
+            }
+            this._releaseInterest();
+        }
+    },
+
     _translateEndTimeout: {
         value: null
     },
