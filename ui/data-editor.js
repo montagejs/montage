@@ -182,6 +182,12 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
                 console.log(this.constructor.name+" fetchData() >>>>> setField('dataLoaded', false)");
                 this.canDrawGate.setField("dataLoaded", false);
                 dataStream = dataService.fetchData(this._dataQuery);
+
+                /*
+                    Kinda funky to do it here, it might be better in the setter of dataLoadedPromise to do so?
+                */
+                this.dataLoadedPromise = dataStream;
+
                 dataStream.then(function(data) {
                     //console.log("Data fetched:",data);
                     self.dataStream = dataStream;
@@ -384,32 +390,53 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
                 For now, we don't have an easy way to know wether the query's readExpressions (this.readExpressions if any) have been fulfilled, so we don't tie that with the canDrawGate.
             */
 
+            //Clear the cached promise from last data value
+            this._dataLoadedPromise = null;
             this._data = value;
 
-            var dataLoadedPromise = this.dataLoadedPromise();
+            var dataLoadedPromise = this.dataLoadedPromise;
             if(dataLoadedPromise) {
                 this.canDrawGate.setField("dataLoaded", false);
+                this._updateOwnerCanDrawGate();
+                console.log("************** "+this.constructor.name+"["+Object.hash(this)+'].setField("dataLoaded", false)');
                 // console.log("************** "+this.constructor.name+"["+this.uuid+'].setField("dataLoaded", false)');
                 dataLoadedPromise.then(() => {
                     this.canDrawGate.setField("dataLoaded", true);
+                    console.log("************** "+this.constructor.name+"["+Object.hash(this)+'].setField("dataLoaded", true)');
+                    this._updateOwnerCanDrawGate();
                 });
+
             } else {
                 this.canDrawGate.setField("dataLoaded", true);
             }
 
-
-
-                this.dataDidChange(value);
+            this.dataDidChange(value);
 
             }
         }
     },
+    _dataLoadedPromise: {
+        value: undefined
+    },
     dataLoadedPromise: {
-        value: function () {
+        get: function() {
+            return this._dataLoadedPromise || (this._dataLoadedPromise = this.initializeDataLoadedPromise());
+        },
+        set: function(value) {
+            if(value !== this._dataLoadedPromise) {
+                this._dataLoadedPromise = value;
+            }
         }
     },
+
+    initializeDataLoadedPromise: {
+        value: function (data) {
+        }
+    },
+
     handleDataChange: {
         value: function (data) {
+
         }
     }
 
