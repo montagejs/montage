@@ -110,7 +110,9 @@ if((global.Map !== void 0) && (typeof global.Set.prototype.values === "function"
 
     Map.prototype.equals = function (that, equals) {
         equals = equals || Object.equals;
-        if (this === that) {
+        if (!that) {
+            return false;
+        } else if (this === that) {
             return true;
         } else if (that && typeof that.every === "function") {
             return that.size === this.size && that.every(function (value, key) {
