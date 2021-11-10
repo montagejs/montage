@@ -179,7 +179,7 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
                     currentDataStream = this.dataStream,
                     dataStream,
                     self = this;
-                console.log(this.constructor.name+" fetchData() >>>>> setField('dataLoaded', false)");
+                //console.debug(this.constructor.name+" fetchData() >>>>> setField('dataLoaded', false)");
                 this.canDrawGate.setField("dataLoaded", false);
                 dataStream = dataService.fetchData(this._dataQuery);
 
@@ -398,11 +398,11 @@ exports.DataEditor = Component.specialize(/** @lends DataEditor# */ {
             if(dataLoadedPromise) {
                 this.canDrawGate.setField("dataLoaded", false);
                 this._updateOwnerCanDrawGate();
-                console.log("************** "+this.constructor.name+"["+Object.hash(this)+'].setField("dataLoaded", false)');
-                // console.log("************** "+this.constructor.name+"["+this.uuid+'].setField("dataLoaded", false)');
+                // console.debug("************** "+this.constructor.name+"["+Object.hash(this)+'].setField("dataLoaded", false)');
+                // console.debug("************** "+this.constructor.name+"["+this.uuid+'].setField("dataLoaded", false)');
                 dataLoadedPromise.then(() => {
                     this.canDrawGate.setField("dataLoaded", true);
-                    console.log("************** "+this.constructor.name+"["+Object.hash(this)+'].setField("dataLoaded", true)');
+                    // console.debug("************** "+this.constructor.name+"["+Object.hash(this)+'].setField("dataLoaded", true)');
                     this._updateOwnerCanDrawGate();
                 });
 
