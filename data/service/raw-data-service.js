@@ -1092,14 +1092,16 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             else {
                 var rawDataKeys = Object.keys(rawData),
                     i, countI, iUpdatedRawDataValue, iCurrentRawDataValue, iDiffValues, iRemovedValues,
+                    iHasAddedValues, iHasRemovedValues,
                     j, countJ, jDiffValue, jDiffValueIndex;
 
                 for (i = 0, countI = rawDataKeys.length; (i < countI); i++) {
                     iUpdatedRawDataValue = rawData[rawDataKeys[i]];
-                    if (isFromUpdate) {
+                    if (isFromUpdate && iUpdatedRawDataValue && ((iHasAddedValues = iUpdatedRawDataValue.hasOwnProperty("addedValues")) || (iHasRemovedValues = iUpdatedRawDataValue.hasOwnProperty("removedValues")))) {
+
                         iCurrentRawDataValue = snapshot[rawDataKeys[i]];
 
-                        if (iUpdatedRawDataValue.hasOwnProperty("addedValues")) {
+                        if (iHasAddedValues) {
                             iDiffValues = iUpdatedRawDataValue.addedValues;
 
                             if (iCurrentRawDataValue) {
@@ -1126,7 +1128,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                             }
                         }
 
-                        if (iUpdatedRawDataValue.hasOwnProperty("removedValues")) {
+                        if (iHasRemovedValues) {
                             iDiffValues = iUpdatedRawDataValue.removedValues;
 
                             if (iCurrentRawDataValue) {
