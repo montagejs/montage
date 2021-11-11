@@ -161,7 +161,9 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                         existingObject = service.rootService.objectForDataIdentifier(dataIdentifier);
                 } else if(Array.isArray(criteria.parameters)) {
                     var rootService = service.rootService,
-                        array = criteria.parameters, i=0, iObject;
+                        array = criteria.parameters, i=0, iObject,
+                        firstLocalObjectIndex = -1,
+                        parametersToFetch;
 
                     while( i < array.length ) {
                         dataIdentifier = service.dataIdentifierForTypePrimaryKey(typeToFetch,array[i]);
@@ -170,12 +172,26 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                             //Add to result
                             (existingObject || (existingObject = [])).push(iObject);
                             //remove from criteria since found
-                            array.splice(i,1);
-                        } else {
-                            i++;
+                            // array.splice(i,1);
+                            /*
+                                The first time we find a local object, we need to fork the arrays as we'll fullfill some from local, and the rest from the network.
+                            */
+                            if(firstLocalObjectIndex == -1) {
+                                firstLocalObjectIndex = i;
+                            }
+                        } else if(firstLocalObjectIndex !== -1) {
+
+                            if(!parametersToFetch) {
+                                parametersToFetch = array.slice(0, firstLocalObjectIndex);
+                            }
+                            parametersToFetch.push(array[i]);
                         }
+                        i++;
                     }
 
+                    if(parametersToFetch) {
+                        criteria.parameters = parametersToFetch;
+                    }
                 }
             }
 
@@ -702,8 +718,10 @@ exports.RawForeignValueToObjectConverter = RawValueToObjectConverter.specialize(
                     return Promise.resolve(this.compiledRevertSyntax(scope));
                 }
 
+            } else {
+                return v;
+                // return Promise.resolve();
             }
-            return Promise.resolve();
         }
     }
 
