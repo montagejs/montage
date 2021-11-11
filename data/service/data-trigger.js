@@ -391,9 +391,9 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
             } else if (this._isPropertyWritable) {
 
                 if (isToMany) {
-                    if(isArray) {
+                    if(isArray && value) {
                         object[this._privatePropertyName].splice.apply(initialValue, [0, Infinity].concat(value));
-                    } else if(isMap) {
+                    } else if(isMap && value) {
                         //We want to maintain the same map,
                         var map = object[this._privatePropertyName],
                             //iterator are "lives" until used, so we make a copy
@@ -419,7 +419,8 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
                     }
                     else {
                         object[this._privatePropertyName] = value;
-                    }           }
+                    }
+                }
                 else {
                     object[this._privatePropertyName] = value;
                 }
@@ -584,11 +585,14 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
     },
 
     __collectionListener: {
-        value: undefined
+        value: undefined,
+        writable: true,
+        configurable: true,
+        enumerable: false
     },
     _collectionListener: {
         get: function() {
-            return this.__collectionListener || (this.__collectionListener = new WeakMap);
+            return this.__collectionListener || (this.__collectionListener = new WeakMap());
         }
     },
 
