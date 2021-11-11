@@ -19,7 +19,6 @@ var rangeChangeDescriptors = new WeakMap(); // {isActive, willChangeListeners, c
 function RangeChangeDescriptor(name) {
     this.name = name;
     this.isActive = false;
-    this.inQueue = false;
     this._willChangeListeners = null;
     this._changeListeners = null;
 };
@@ -198,10 +197,8 @@ RangeChanges.prototype.dispatchRangeChange = function (plus, minus, index, befor
      while (descriptor = mapIter.next().value) {
 
         if (descriptor.isActive) {
-            if(descriptor.inQueue !== true) {
-                // console.log("isActive: dispatchRangeChange: this <"+Object.hash(this)+"> ["+this.map((o) => {return Object.hash(o)})+"]._rangeChangeDispatchQueue.push(["+plus.map((o) => {return Object.hash(o)}) + "," + minus.map((o) => {return Object.hash(o)}) + "," + index + "," + beforeChange + ")");
-                this._rangeChangeDispatchQueue().push([descriptor, plus, minus, index, beforeChange]);
-            }
+            // console.log("isActive: dispatchRangeChange: this <"+Object.hash(this)+"> ["+this.map((o) => {return Object.hash(o)})+"]._rangeChangeDispatchQueue.push(["+plus.map((o) => {return Object.hash(o)}) + "," + minus.map((o) => {return Object.hash(o)}) + "," + index + "," + beforeChange + ")");
+            this._rangeChangeDispatchQueue().push([descriptor, plus, minus, index, beforeChange]);
             return;
         }
         // else {
@@ -221,11 +218,9 @@ RangeChanges.prototype.dispatchRangeChange = function (plus, minus, index, befor
         for(i=0 ; i<rangeChangeDispatchQueue.length; i++) {
             iQueueItem = rangeChangeDispatchQueue[i];
             iQueueItemDescriptor = iQueueItem[0];
-            iQueueItemDescriptor.inQueue = true;
             // console.log("("+i+") emptyQueue: this <"+Object.hash(this)+">["+this.map((o) => {return Object.hash(o)})+"]._rangeChangeDispatchQueue.call(this,"+iQueueItem[0]+ ","+ iQueueItem[1]+ "," + iQueueItem[2]+","+ iQueueItem[3]+","+ iQueueItem[4]+")");
 
             _dispatchDescriptorRangeChange.call(this, iQueueItem[0], iQueueItem[1], iQueueItem[2], iQueueItem[3], iQueueItem[4]);
-            iQueueItemDescriptor.inQueue = false;
 
         }
         rangeChangeDispatchQueue.splice(0);
