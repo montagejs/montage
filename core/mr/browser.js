@@ -66,7 +66,7 @@ bootstrap("require/browser", function (require) {
         globalEval = /*this.execScript ||*/eval,
 
         emptyFactory = function () {
-        };
+        },
 
         /*jshint evil:true */
         global = globalEval('this'),
