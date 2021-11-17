@@ -111,14 +111,8 @@ RangeChanges.prototype.addRangeChangeListener = function addRangeChangeListener(
         this.makeObservable();
     }
 
-    var descriptor = this.getRangeChangeDescriptor(token);
-
-    var listeners;
-    if (beforeChange) {
-        listeners = descriptor.willChangeListeners;
-    } else {
-        listeners = descriptor.changeListeners;
-    }
+    var descriptor = this.getRangeChangeDescriptor(token),
+        listeners = beforeChange ? descriptor.willChangeListeners : listeners = descriptor.changeListeners;
 
     // even if already registered
     if(!listeners._current) {
@@ -149,14 +143,8 @@ RangeChanges.prototype.addRangeChangeListener = function addRangeChangeListener(
 
 
 RangeChanges.prototype.removeRangeChangeListener = function (listener, token, beforeChange) {
-    var descriptor = this.getRangeChangeDescriptor(token);
-
-    var listeners;
-    if (beforeChange) {
-        listeners = descriptor._willChangeListeners;
-    } else {
-        listeners = descriptor._changeListeners;
-    }
+    var descriptor = this.getRangeChangeDescriptor(token),
+        listeners = beforeChange ? descriptor._willChangeListeners : descriptor._changeListeners;
 
     if(listeners._current) {
         if(listeners._current === listener) {
@@ -181,14 +169,28 @@ RangeChanges.prototype.removeRangeChangeListener = function (listener, token, be
 
 };
 
-RangeChanges.prototype._rangeChangeDispatchQueue = function _rangeChangeDispatchQueue() {
-    return this.__rangeChangeDispatchQueue || (this.__rangeChangeDispatchQueue = []);
+RangeChanges.prototype._createRangeChangeDispatchQueueForDescriptor = function _createRangeChangeDispatchQueueForDescriptor(descriptor) {
+    var rangeChangeDispatchQueue = [];
+    this._rangeChangeDispatchQueueByDescriptor().set(descriptor, rangeChangeDispatchQueue);
+    return rangeChangeDispatchQueue;
 }
+
+RangeChanges.prototype._rangeChangeDispatchQueueByDescriptor = function _rangeChangeDispatchQueueByDescriptor() {
+    return this.__rangeChangeDispatchQueueByDescriptor || (this.__rangeChangeDispatchQueueByDescriptor = new Map());
+}
+
+RangeChanges.prototype._rangeChangeDispatchQueueForDescriptor = function _rangeChangeDispatchQueueForDescriptor(descriptor) {
+    return this._rangeChangeDispatchQueueByDescriptor().get(descriptor) || (this._createRangeChangeDispatchQueueForDescriptor(descriptor));
+}
+
+
 
 RangeChanges.prototype.dispatchRangeChange = function (plus, minus, index, beforeChange) {
     var descriptors = this.getAllRangeChangeDescriptors(),
         descriptor,
         mapIter  = descriptors.values(),
+        rangeChangeDispatchQueueByDescriptor,
+        hasQueued = false;
         rangeChangeDispatchQueue;
 
 
@@ -198,7 +200,18 @@ RangeChanges.prototype.dispatchRangeChange = function (plus, minus, index, befor
 
         if (descriptor.isActive) {
             // console.log("isActive: dispatchRangeChange: this <"+Object.hash(this)+"> ["+this.map((o) => {return Object.hash(o)})+"]._rangeChangeDispatchQueue.push(["+plus.map((o) => {return Object.hash(o)}) + "," + minus.map((o) => {return Object.hash(o)}) + "," + index + "," + beforeChange + ")");
-            this._rangeChangeDispatchQueue().push([descriptor, plus, minus, index, beforeChange]);
+
+            //Check if we already have it:
+            if((rangeChangeDispatchQueueByDescriptor = this.__rangeChangeDispatchQueueByDescriptor)) {
+                rangeChangeDispatchQueue = rangeChangeDispatchQueueByDescriptor.get(descriptor);
+                if(rangeChangeDispatchQueue.has(arguments)) {
+                    hasQueued = true;
+                }
+            }
+
+            if(!hasQueued) {
+                this._rangeChangeDispatchQueueForDescriptor(descriptor).push(arguments);
+            }
             return;
         }
         // else {
@@ -208,25 +221,36 @@ RangeChanges.prototype.dispatchRangeChange = function (plus, minus, index, befor
         this._dispatchDescriptorRangeChange(descriptor, plus, minus, index, beforeChange);
     }
 
-    if((rangeChangeDispatchQueue = this.__rangeChangeDispatchQueue) && rangeChangeDispatchQueue.length > 0) {
+    if((rangeChangeDispatchQueueByDescriptor = this.__rangeChangeDispatchQueueByDescriptor) && rangeChangeDispatchQueueByDescriptor.length > 0) {
         var i,
             iQueueItem,
             iQueueItemDescriptor,
+            rangeChangeDispatchQueue,
+            keysIterator = rangeChangeDispatchQueueByDescriptor.keys(),
+            iteration,
+            iterationDescriptor,
             _dispatchDescriptorRangeChange = this._dispatchDescriptorRangeChange;
 
-        //in case the array grows while we loop on it
-        for(i=0 ; i<rangeChangeDispatchQueue.length; i++) {
-            iQueueItem = rangeChangeDispatchQueue[i];
-            iQueueItemDescriptor = iQueueItem[0];
-            // console.log("("+i+") emptyQueue: this <"+Object.hash(this)+">["+this.map((o) => {return Object.hash(o)})+"]._rangeChangeDispatchQueue.call(this,"+iQueueItem[0]+ ","+ iQueueItem[1]+ "," + iQueueItem[2]+","+ iQueueItem[3]+","+ iQueueItem[4]+")");
 
-            _dispatchDescriptorRangeChange.call(this, iQueueItem[0], iQueueItem[1], iQueueItem[2], iQueueItem[3], iQueueItem[4]);
+            while(!(iteration = keysIterator.next()).done) {
+                iterationDescriptor = iteration.value;
+                rangeChangeDispatchQueue = rangeChangeDispatchQueueByDescriptor.get(iterationDescriptor);
 
-        }
-        rangeChangeDispatchQueue.splice(0);
-        // if(rangeChangeDispatchQueue.length > 0) {
-        //     console.log("this <"+Object.hash(this)+">.rangeChangeDispatchQueue.length = "+rangeChangeDispatchQueue.length);
-        // }
+                //in case the array grows while we loop on it
+                for(i=0 ; i<rangeChangeDispatchQueue.length; i++) {
+                    iQueueItem = rangeChangeDispatchQueue[i];
+                    iQueueItemDescriptor = iQueueItem[0];
+                    // console.log("("+i+") emptyQueue: this <"+Object.hash(this)+">["+this.map((o) => {return Object.hash(o)})+"]._rangeChangeDispatchQueue.call(this,"+iQueueItem[0]+ ","+ iQueueItem[1]+ "," + iQueueItem[2]+","+ iQueueItem[3]+","+ iQueueItem[4]+")");
+
+                    _dispatchDescriptorRangeChange.call(this, iterationDescriptor, iQueueItem[0], iQueueItem[1], iQueueItem[2], iQueueItem[3]);
+
+                }
+                rangeChangeDispatchQueue.splice(0);
+
+                // if(rangeChangeDispatchQueue.length > 0) {
+                //     console.log("this <"+Object.hash(this)+">.rangeChangeDispatchQueue.length = "+rangeChangeDispatchQueue.length);
+                // }
+            }
     }
 };
 
