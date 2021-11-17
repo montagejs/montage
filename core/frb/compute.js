@@ -45,21 +45,6 @@ function compute(target, targetPath, descriptor) {
         }
         argObservers.push(iObserver);
     }
-    // var argObservers = args.map(function (arg) {
-    //     return parse(arg);
-    // }).map(function (argSyntax) {
-    //     if (argSyntax.type === "rangeContent") {
-    //         var observeArg = compileObserver(argSyntax.args[0]);
-    //         return Observers.makeRangeContentObserver(observeArg);
-    //     } else if (argSyntax.type === "mapContent") {
-    //         var observeArg = compileObserver(argSyntax.args[0]);
-    //         return Observers.makeMapContentObserver(observeArg);
-    //     } else {
-    //         return compileObserver(argSyntax);
-    //     }
-    // });
-
-
 
     var argsObserver = Observers.makeRangeContentObserver(
             Observers.makeObserversObserver(argObservers)
