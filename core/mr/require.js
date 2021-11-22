@@ -178,34 +178,6 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         return cache.get(callback) || _cacheMemoize(callback, cache);
     }
 
-    function endsWith(string, search, position) {
-        var stringLength = string.length;
-        var searchString = String(search);
-        var searchLength = searchString.length;
-        var pos = stringLength;
-
-        if (position !== undefined) {
-            // `ToInteger`
-            pos = position ? Number(position) : 0;
-            if (pos !== pos) { // better `isNaN`
-                pos = 0;
-            }
-        }
-
-        var end = Math.min(Math.max(pos, 0), stringLength);
-        var start = end - searchLength;
-        if (start < 0) {
-            return false;
-        }
-        var index = -1;
-        while (++index < searchLength) {
-            if (string.charCodeAt(start + index) !== searchString.charCodeAt(index)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     // We need to find the best time to flush _resolveStringtoArray and _resolved once their content isn't needed anymore
     var _resolved = new Map();
     var _resolveStringtoArray = new Map();
