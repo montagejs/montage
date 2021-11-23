@@ -291,14 +291,16 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
     _cancel: {
         value: function (event) {
             this.startTime = Date.now();
-            this.endX = this.posX = this.startX = this._translateX;
-            this.endY = this.posY = this.startY = this._translateY;
+            this.endX = this.posX = this.startX = this._pageX || 0;
+            this.endY = this.posY = this.startY = this._pageY || 0;
+            this.momentumX = this.momentumX || 0;
+            this.momentumY = this.momentumY || 0;
             if (this.translateStrideX) {
                 this.startStrideXTime = null;
                 this.startStrideYTime = null;
                 this.animateMomentum = true;
                 this._animationInterval();
-            } else {
+            } else {
                 this.animateMomentum = false;
             }
             if (!this._isFirstMove) {
