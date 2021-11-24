@@ -245,44 +245,37 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
      */
     _end: {
         value: function (event) {
-            /*this.startTime = Date.now();
-            if (!this._isFirstMove) {
-                this._dispatchTranslateEnd();
-            }
-            this._releaseInterest();*/
-            if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                this.startTime = Date.now();
-                this.endX = this.startX = this._pageX;
-                this.endY = this.startY = this._pageY;
+            this.startTime = Date.now();
+            this.endX = this.startX = this._pageX;
+            this.endY = this.startY = this._pageY;
 
-                var velocity = event.velocity;
+            var velocity = event.velocity;
 
-                if ((this._hasMomentum) && ((velocity.speed>40) || this.translateStrideX)) {
-                    if (this._axis !== "vertical") {
-                        this.momentumX = velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
-                    } else {
-                        this.momentumX = 0;
-                    }
-                    if (this._axis !== "horizontal") {
-                        this.momentumY = velocity.y * this._pointerSpeedMultiplier * (this._invertYAxis ? 1 : -1);
-                    } else {
-                        this.momentumY=0;
-                    }
-                    this.endX = this.startX + (this.momentumX * this.__momentumDuration / 2000);
-                    this.endY = this.startY + (this.momentumY * this.__momentumDuration / 2000);
-                    this.startStrideXTime = null;
-                    this.startStrideYTime = null;
-                    this.animateMomentum = true;
+            if ((this._hasMomentum) && ((velocity.speed>40) || this.translateStrideX)) {
+                if (this._axis !== "vertical") {
+                    this.momentumX = velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
                 } else {
-                    this.animateMomentum = false;
+                    this.momentumX = 0;
                 }
+                if (this._axis !== "horizontal") {
+                    this.momentumY = velocity.y * this._pointerSpeedMultiplier * (this._invertYAxis ? 1 : -1);
+                } else {
+                    this.momentumY=0;
+                }
+                this.endX = this.startX + (this.momentumX * this.__momentumDuration / 2000);
+                this.endY = this.startY + (this.momentumY * this.__momentumDuration / 2000);
+                this.startStrideXTime = null;
+                this.startStrideYTime = null;
+                this.animateMomentum = true;
+            } else {
+                this.animateMomentum = false;
+            }
 
-                if (this.animateMomentum) {
-                    this._animationInterval();
-                } else if (!this._isFirstMove) {
-                    // Only dispatch a translateEnd if a translate start has occured
-                    this._dispatchTranslateEnd();
-                }
+            if (this.animateMomentum) {
+                this._animationInterval();
+            } else if (!this._isFirstMove) {
+                // Only dispatch a translateEnd if a translate start has occured
+                this._dispatchTranslateEnd();
             }
             this._releaseInterest();
         }
@@ -293,8 +286,8 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
             this.startTime = Date.now();
             this.endX = this.posX = this.startX = this._pageX || 0;
             this.endY = this.posY = this.startY = this._pageY || 0;
-            this.momentumX = this.momentumX || 0;
-            this.momentumY = this.momentumY || 0;
+            this.momentumX = 0;
+            this.momentumY = 0;
             if (this.translateStrideX) {
                 this.startStrideXTime = null;
                 this.startStrideYTime = null;
