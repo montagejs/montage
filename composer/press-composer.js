@@ -424,7 +424,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
             if (event.pointerId === this._observedPointer)  {
                 target = event.target;
 
-            } else if (this._changedTouchisObserved(event.changedTouches) !== false) {
+            } else if (event.changedTouches && this._changedTouchisObserved(event.changedTouches) !== false) {
                 // We need to keep the last element reached by a touchmove because we can't just rely on the position
                 // given by the touchEnd because in some cases, hiding the android keyboard for example, could result
                 // to change the press composer's element position between a touchStart and a touchEnd event. Therefore,
@@ -509,7 +509,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     handleTouchcancel: {
         value: function (event) {
-            if (this._observedPointer === null || event.pointerId === this._observedPointer || this._changedTouchisObserved(event.changedTouches) !== false) {
+            if (this._observedPointer === null || event.pointerId === this._observedPointer || (event.changedTouches && this._changedTouchisObserved(event.changedTouches) !== false)) {
                 if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                     this._dispatchPressCancel(event);
                 }
