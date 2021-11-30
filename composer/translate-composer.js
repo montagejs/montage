@@ -45,11 +45,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         writable: false
     },
 
-    _TOUCH_POINTER: {
-        value: "touch",
-        writable: false
-    },
-
     CLAIM_POINTER_POLICIES: {
         value: {
             DEFAULT: "default", // claiming pointers on the capture phase. (first move event)
@@ -598,7 +593,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function (event) {
             if (event.pointerType === this._MOUSE_POINTER || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE)) {
                 this.captureMousedown(event);
-            } else if (event.pointerType === this._TOUCH_POINTER || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
+            } else {
                 this.captureTouchstart(event);
             }
         }
@@ -608,7 +603,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function (event) {
             if (event.pointerType === this._MOUSE_POINTER || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE)) {
                 this.captureMousemove(event);
-            } else if (event.pointerType === this._TOUCH_POINTER || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
+            } else {
                 this.captureTouchmove(event);
             }
         }
@@ -618,7 +613,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function (event) {
             if (event.pointerType === this._MOUSE_POINTER || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE)) {
                 this.handleMouseup(event);
-            } else if (event.pointerType === this._TOUCH_POINTER || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
+            } else {
                 this.handleTouchend(event);
             }
         }
@@ -626,9 +621,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     handlePointercancel: {
         value: function (event) {
-            if (event.pointerType === this._TOUCH_POINTER || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
-                this.handleTouchcancel(event);
-            }
+            this.handleTouchcancel(event);
         }
     },
 
