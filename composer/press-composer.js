@@ -364,31 +364,27 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     capturePointerdown: {
         value: function (event) {
-            if (event.pointerType === "touch" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
-                this.captureTouchstart(event);
-
-            } else if (event.pointerType === "mouse" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE)) {
+            if (event.pointerType === "mouse" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE)) {
                 this.captureMousedown(event);
+            } else {
+                this.captureTouchstart(event);
             }
         }
     },
 
     handlePointerup: {
         value: function (event) {
-            if (event.pointerType === "touch" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
-                this.handleTouchend(event);
-
-            } else if (event.pointerType === "mouse" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE)) {
+            if (event.pointerType === "mouse" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE)) {
                 this.handleMouseup(event);
+            } else {
+                this.handleTouchend(event);
             }
         }
     },
 
     handlePointercancel: {
         value: function (event) {
-            if (event.pointerType === "touch" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
-                this.handleTouchcancel(event);
-            }
+            this.handleTouchcancel(event);
         }
     },
 
