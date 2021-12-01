@@ -170,14 +170,12 @@ bootstrap("require/browser", function (require) {
             xhr.send(null);
         } else {
             xhr.reject(new Error("Can't XHR " + JSON.stringify(url)));
-            onerror.xhrPool.push(xhr);
             //This clears the response from memory
             xhr.abort();
             xhr.url = null;
             xhr.module = null;
         }
     }
-    onerror.xhrPool = xhrPool;
 
     function RequireRead(url, module) {
         var xhr = RequireRead.xhrPool.length && RequireRead.xhrPool.pop();
