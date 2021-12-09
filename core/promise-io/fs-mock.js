@@ -4,10 +4,14 @@ var Boot = require("./fs-boot");
 var Common = require("./fs-common");
 var BufferStream = require("./buffer-stream");
 var Reader = require("./reader");
-//Benoit: commmented out while bringing projects like mr, collections, frb ... in montage as it caused shim-array to be executed twice,
-//once by node native require and a second one by mr. Set are standard now and this just uses .has() and .add()
-//so will do for now, but something changed and it's time to bring mr in montage.js and avoid current duplication and entanglements...
-// var Set = require("core/collections/set");
+/*
+    Benoit: commmented out while bringing projects like mr, collections, frb ... in montage as it caused shim-array to be executed twice,
+    once by node native require and a second one by mr. Set are standard now and this just uses .has() and .add()
+    so will do for now, but something changed and it's time to bring mr in montage.js and avoid current duplication and entanglements...
+
+    Messing the require syntax so it's not found when we analyze dependencies
+     var Set = require ( "core/collections/set" );
+*/
 
 module.exports = MockFs;
 
