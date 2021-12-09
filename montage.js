@@ -405,7 +405,6 @@
                         mainDatareelLocation = MontageReviver.parseObjectLocationId(mainDatareel);
                         mainDatareelModulePromise = applicationRequire.async(mainDatareelLocation.moduleId);
                     } else {
-                        //mainDatareelModulePromise = applicationRequire.makeRequire("data/main.datareel/main.mjson").async("data/main.datareel/main.mjson");
                         mainDatareelLocation = "data/main.datareel/main.mjson";
 
                         //Check if we have a redirection in mappings. Mr does that, when we bring mr inside montage.js, we should be able to simplify this.
