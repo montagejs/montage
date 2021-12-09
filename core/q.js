@@ -1,4 +1,3 @@
-//var B = require("bluebird/js/main/promise")();
 var B = require("bluebird");
 var Bproto = B.prototype;
 
