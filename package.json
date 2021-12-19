@@ -51,10 +51,8 @@
         "bluebird": "~3.7.2",
         "htmlparser2": "~3.0.5",
         "ical.js": "~1.4.0",
-        "lodash.camelcase": "^4.3.0",
-        "lodash.kebabcase": "^4.1.1",
-        "lodash.snakecase": "^4.1.1",
-        "lodash.trim": "^4.5.1",
+        "just-camel-case": "^6.0.1",
+        "just-kebab-case": "^4.0.1",
         "proxy-polyfill": "~0.1.7",
         "strange": "^1.7.2"
     },

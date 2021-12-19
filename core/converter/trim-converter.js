@@ -3,7 +3,6 @@
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter,
-    trim = require('lodash.trim'),
     deprecate = require("../deprecate"),
     shouldMuteWarning = false,
     singleton;
@@ -46,7 +45,9 @@ var TrimConverter = exports.TrimConverter = Converter.specialize({
     _convert: {
         value: function (v) {
             if (v && typeof v === 'string') {
-                return trim(v);
+                return v.trim();
+            } else {
+                return v;
             }
         }
     },

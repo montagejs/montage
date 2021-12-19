@@ -3,7 +3,7 @@
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter,
-    kebabCase = require('lodash.kebabcase'),
+    kebabCase = require('just-kebab-case'),
     singleton;
 
 /**

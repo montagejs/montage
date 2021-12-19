@@ -3,7 +3,7 @@
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter,
-    camelCase = require('lodash.camelcase'),
+    camelCase = require('just-camel-case'),
     singleton;
 
 /**
@@ -31,7 +31,7 @@ var CamelCaseConverter = exports.CamelCaseConverter = Converter.specialize({
     convert: {
         value: camelCase
     }
-    
+
 });
 
 Object.defineProperty(exports, 'singleton', {
