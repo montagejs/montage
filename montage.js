@@ -44,7 +44,11 @@
                 }
 
                 return function (base, relative) {
-                    return new URL(relative, base).href;
+                    if(relative === "./") {
+                        return base.substring(0,base.lastIndexOf("/")+1);
+                    } else {
+                        return new URL(relative, base).href;
+                    }
                 };
 
             } catch (err) {
