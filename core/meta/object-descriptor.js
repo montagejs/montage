@@ -1,5 +1,5 @@
 var Montage = require("../core").Montage,
-    Target = require("core/target").Target,
+    Target = require("../target").Target,
     DerivedDescriptor = require("./derived-descriptor").DerivedDescriptor,
     EventDescriptor = require("./event-descriptor").EventDescriptor,
     Map = require("../collections/map"),
