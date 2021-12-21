@@ -75,11 +75,26 @@ Require.read = function read(location, module) {
 
 // Compiles module text into a function.
 // Can be overriden by the platform to make the engine aware of the source path. Uses sourceURL hack by default.
+var defaultFactoryStart = "(function(require,exports,module,global,__filename,__dirname){";
 Require.Compiler = function Compiler(config) {
-    config.scope = config.scope || {};
-    var names = ["require", "exports", "module", "global", "__filename", "__dirname"];
-    var scopeNames = Object.keys(config.scope);
-    names.push.apply(names, scopeNames);
+    var factoryStart, scopeNames;
+    if(config.scope) {
+        scopeNames = Object.keys(config.scope);
+
+        if(scopeNames) {
+            names = ["require", "exports", "module", "global", "__filename", "__dirname"];
+            names.push.apply(names, scopeNames);
+            factoryStart = `(function(${names.join(",")}){`;
+        }
+    }
+
+    if(!factoryStart) {
+        factoryStart = defaultFactoryStart;
+    }
+    // config.scope = config.scope || {};
+    // var names = ["require", "exports", "module", "global", "__filename", "__dirname"];
+    // var scopeNames = Object.keys(config.scope);
+    // names.push.apply(names, scopeNames);
     return function (module) {
 
         var location = module.location;
@@ -93,25 +108,25 @@ Require.Compiler = function Compiler(config) {
             module.text !== void 0 &&
             module.type === "javascript"
         ) {
-            var factory = globalEval(
-                "(function(" + names.join(",") + "){" +
-                module.text +
-                "\n//*/\n})\n//@ sourceURL=" + module.location
-            );
+            var factory = globalEval(`${factoryStart}${module.text}\n//*/\n})\n//@ sourceURL=${location}`);
             module.factory = function (require, exports, module, global, __filename, __dirname) {
                 /*
                     __filename and __dirname are passed starting with file://
                     This not what's node default value is, so before eventually fixing this where it's sent
                     we do it here for now
                 */
-               arguments[4] = __filename.substring(7);
-               arguments[5] = __dirname.substring(7);
-                if(scopeNames.length) {
+                if(scopeNames && scopeNames.length) {
+                    arguments[4] = __filename.substring(7);
+                    arguments[5] = __dirname.substring(7);
+
                     Array.prototype.push.apply(arguments, scopeNames.map(function (name) {
                         return config.scope[name];
                     }));
+                    return factory.apply(this, arguments);
+                } else {
+                    //return factory.apply(this, arguments);
+                    return factory(require, exports, module, global, __filename.substring(7), __dirname.substring(7));
                 }
-                return factory.apply(this, arguments);
             };
             // new Function will have its body reevaluated at every call, hence using eval instead
             // https://developer.mozilla.org/en/JavaScript/Reference/Functions_and_function_scope

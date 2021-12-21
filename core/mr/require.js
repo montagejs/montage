@@ -11,42 +11,47 @@
 */
 
 
-Object.defineProperty(String.prototype, 'stringByRemovingPrefix', {
-    value: function stringByRemovingPrefix (prefix) {
-        if(this.indexOf(prefix) === 0 ) {
-            return this.substring(prefix.length);
-        } else {
-            return this;
-        }
+Object.defineProperties(String.prototype, {
+    stringByRemovingPrefix: {
+        value: function stringByRemovingPrefix (prefix) {
+            if(this.startsWith(prefix)) {
+                return this.substring(prefix.length);
+            } else {
+                return this;
+            }
+        },
+        writable: true,
+        configurable: true
     },
-    writable: true,
-    configurable: true
+    stringByRemovingSuffix: {
+        value: function stringByRemovingSuffix (suffix) {
+            if(this.endsWith(suffix)) {
+                return this.substring(0, this.length - suffix.length);
+            } else {
+                return this;
+            }
+        },
+        writable: true,
+        configurable: true
+    },
+
+    stringByRemovingPathExtension: {
+        value: function stringByRemovingPathExtension () {
+            var lastIndex = this.lastIndexOf(".");
+            if(lastIndex !== -1 ) {
+                return this.substring(0,lastIndex);
+            } else {
+                return this;
+            }
+        },
+        writable: true,
+        configurable: true
+    }
 });
 
-Object.defineProperty(String.prototype, 'stringByRemovingSuffix', {
-    value: function stringByRemovingPrefix (suffix) {
-        if(this.lastIndexOf(suffix) === (this.length - suffix.length) ) {
-            return this.substring(0,this.length - suffix.length);
-        } else {
-            return this;
-        }
-    },
-    writable: true,
-    configurable: true
-});
-
-Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
-    value: function stringByRemovingPathExtension () {
-        var lastIndex = this.lastIndexOf(".");
-        if(lastIndex !== -1 ) {
-            return this.substring(0,lastIndex);
-        } else {
-            return this;
-        }
-    },
-    writable: true,
-    configurable: true
-});
+function locationByRemovingLastURLComponentKeepingSlash(location) {
+    return location ? location.substring(0,location.lastIndexOf("/")+1) : location;
+}
 
 
 /*global bootstrap, define, global */
@@ -90,7 +95,11 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
     "use strict";
 
     // reassigning causes eval to not use lexical scope.
-    var globalEval = eval,
+    var URLResolve = URL.resolve,
+        ObjectKeys = Object.keys,
+        ObjectCreate = Object.create,
+        PromiseAll = Promise.all,
+        globalEval = eval,
         /*jshint evil:true */
         global = globalEval('this');
         /*jshint evil:false */
@@ -100,7 +109,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
     var Map;
     if (!global.Map) {
         Map = function _Map() {
-            this._content = Object.create(null);
+            this._content = ObjectCreate(null);
         };
         Map.prototype.constructor = Map;
         Map.prototype.set = function(key,value) {
@@ -131,7 +140,9 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
     Module.prototype.mappingRedirect = void 0;
     Module.prototype.type = null;
     Module.prototype.text = void 0;
-    Module.prototype.dependees = null;
+
+    // for debug
+    // Module.prototype.dependees = null;
     Module.prototype.extraDependencies = void 0;
     Module.prototype.uuid = null;
     Module.prototype._json = undefined;
@@ -143,7 +154,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
     });
     function normalizeId(id, config) {
         var result;
-        if (!(result = normalizeId.cache.get(id))) {
+        if ((result = normalizeId.cache.get(id)) === undefined) {
             result = normalizeId.pattern.exec(id);
             result = ( result
                 ? config && config.mappings[id]
@@ -158,16 +169,14 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
     normalizeId.cache = new Map();
     normalizeId.pattern = /^(.*)\.js$/;
 
-    var __memoize = function _memoize(callback, key, arg, cache) {
-        var result = callback(key, arg);
-        cache.set(key, result);
-        return result ;
+    var __memoize = function __memoize(callback, key, arg, cache, result) {
+        return cache.set(key, result) && result;
     };
 
     function _cacheMemoize(callback, cache) {
 
         var _memoize = function _memoize(key, arg) {
-            return cache.get(key) || __memoize(callback, key, arg, cache) ;
+            return cache.get(key) || __memoize(callback, key, arg, cache, callback(key, arg)) ;
         };
 
         cache.set(callback,_memoize);
@@ -202,14 +211,13 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         DOT_DOT = "..";
 
     function _cacheResolve(_id, baseId, resolved, baseIdMap) {
-        var id, i, ii, source, parts, resolveItem, result, target = _target, _EMPTY_STRING = EMPTY_STRING, _DOT = DOT, _DOT_DOT = DOT_DOT;
+        var id, i, ii, source, parts, resolveItem = _resolveItem, result, target = _target, _EMPTY_STRING = EMPTY_STRING, _DOT = DOT, _DOT_DOT = DOT_DOT;
 
         target.length = 0;
 
         id = String(_id);
         source = _resolveStringtoArray.get(id) || (_resolveStringtoArray.set(id, (source = id.split(SLASH))) && source);
         parts = _resolveStringtoArray.get(baseId) || (_resolveStringtoArray.set(baseId,(parts = baseId.split(SLASH))) && parts);
-        resolveItem = _resolveItem;
 
         if (source.length && source[0] === DOT || source[0] === DOT_DOT) {
             for (i = 0, ii = parts.length-1; i < ii; i++) {
@@ -287,11 +295,11 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                 configPath = config.location.slice(config.location.lastIndexOf(config.mainPackageLocation)+config.mainPackageLocation.length - 1);
                 dependencyPath = findLongestDependencyPath(dependency.name, configPath, config.packageLock);
                 if (dependencyPath) {
-                    dependency.location = URL.resolve(config.mainPackageLocation, dependencyPath);
+                    dependency.location = URLResolve(config.mainPackageLocation, dependencyPath);
                 }
             } else if (!dependency.location && config.packagesDirectory) {
                 // default location
-                dependency.location = URL.resolve(
+                dependency.location = URLResolve(
                     config.packagesDirectory,
                     dependency.name + "/"
                 );
@@ -316,7 +324,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                     JSON.stringify(dependency)
                 );
             }
-            dependency.location = URL.resolve(
+            dependency.location = URLResolve(
                 config.location,
                 dependency.location
             );
@@ -332,7 +340,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
     function processMappingDependencies(dependencies, mappings) {
         if (dependencies) {
-            for(var i=0, keys = Object.keys(dependencies), name;(name = keys[i]);i++) {
+            for(var i=0, keys = ObjectKeys(dependencies), name;(name = keys[i]);i++) {
                 if (!mappings[name]) {
                     // dependencies are equivalent to name and version mappings,
                     // though the version predicate string is presently ignored
@@ -355,7 +363,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         /*
             TODO: Refactor so that config creation is not duplicated here.
         */
-        var config = Object.create(parent);
+        var config = ObjectCreate(parent);
         config.name = description.name;
         config.location = location || Require.getLocation();
         config.packageDescription = description;
@@ -370,7 +378,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
         // explicitly mask definitions and modules, which must
         // not apply to child packages
-        var modules = config.modules = config.modules || Object.create(null);
+        var modules = config.modules = config.modules || ObjectCreate(null);
 
         var registry = config.registry;
         if (config.name !== void 0 && !registry.has(config.name)) {
@@ -391,7 +399,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             } else if (typeof description.browser === "object") {
                 var bk, bkValue, iBk, countBk,
                     browser = description.browser,
-                    browserKeys = Object.keys(browser);
+                    browserKeys = ObjectKeys(browser);
 
                 overlay.browser = {redirects:{}};
                 redirects = overlay.browser.redirects;
@@ -402,7 +410,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                         // if target is a relative path, then resolve
                         // otherwise we assume target is a module
                         if (bkValue[0] === '.') {
-                            bkValue = URL.resolve(location, bkValue);
+                            bkValue = URLResolve(location, bkValue);
                             bkValue = bkValue.stringByRemovingPrefix(location);
                         }
 
@@ -422,10 +430,10 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
                     if (bk[0] === '/' || bk[0] === '.') {
                         // if begins with / ../ or ./ then we must resolve to a full path
-                        bk = URL.resolve(location, bk);
+                        bk = URLResolve(location, bk);
 
                         //Now remove location and file extension.
-                        bk = URL.resolve(location, bk);
+                        bk = URLResolve(location, bk);
                         bk = bk.stringByRemovingPrefix(location);
                         bk = bk.stringByRemovingPathExtension();
                     }
@@ -453,14 +461,14 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         }
         delete description.overlay;
 
-        config.packagesDirectory = URL.resolve(location, "node_modules/");
+        config.packagesDirectory = URLResolve(location, "node_modules/");
 
         // The default "main" module of a package is 'index' by default.
         description.main = description.main || 'index';
 
 
         // mappings, link this package to other packages.
-        var mappings = description.mappings || Object.create(null);
+        var mappings = description.mappings || ObjectCreate(null);
         // dependencies, devDependencies if not in production
         processMappingDependencies(description.dependencies,mappings);
         if (!config.production) {
@@ -468,7 +476,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         }
 
         // mappings
-        for(var m=0, mKeys = Object.keys(mappings);(name = mKeys[m]);m++) {
+        for(var m=0, mKeys = ObjectKeys(mappings);(name = mKeys[m]);m++) {
             mappings[name] = normalizeDependency(
                 mappings[name],
                 config,
@@ -495,7 +503,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                     modules[name] = {
                         id: name,
                         redirect: config.normalizeId(config.resolve(redirects[name], name), config),
-                        location: URL.resolve(location, name)
+                        location: URLResolve(location, name)
                     };
                 }
             }
@@ -520,10 +528,12 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         // Configuration defaults:
         config = config || {};
         config.cache = config.cache || new Map();
-        config.rootLocation = URL.resolve(config.rootLocation || Require.getLocation(), "./");
-        config.location = URL.resolve(config.location || config.rootLocation, "./");
+        //config.rootLocation = URLResolve(config.rootLocation || Require.getLocation(), "./");
+        config.rootLocation = locationByRemovingLastURLComponentKeepingSlash(config.rootLocation || Require.getLocation());
+       //config.location = URLResolve(config.location || config.rootLocation, "./");
+        config.location = locationByRemovingLastURLComponentKeepingSlash(config.location || config.rootLocation);
         config.paths = config.paths || [config.location];
-        config.mappings = config.mappings || Object.create(null); // EXTENSION
+        config.mappings = config.mappings || ObjectCreate(null); // EXTENSION
         config.exposedConfigs = config.exposedConfigs || Require.exposedConfigs;
         config.moduleTypes = config.moduleTypes || ["html", "mjson"];
         config.makeLoader = config.makeLoader || Require.makeLoader;
@@ -540,7 +550,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
         // Modules: { exports, id, location, directory, factory, dependencies,
         // dependees, text, type }
-        var modules = config.modules = config.modules || Object.create(null);
+        var modules = config.modules = config.modules || ObjectCreate(null);
 
         // produces an entry in the module state table, which gets built
         // up through loading and execution, ultimately serving as the
@@ -548,9 +558,14 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         function _createLowercaseModuleDescriptor(id, lookupId) {
             var aModule = modules[lookupId] = new Module();
             aModule.id = id;
-            aModule.display = (config.name || config.location); // EXTENSION
-            aModule.display += "/"; // EXTENSION
-            aModule.display += id; // EXTENSION
+
+            /*
+                .display isn't used anywhere. If it ends up missing, we can always bring it back as a getter
+                so only execute the code then.
+            */
+            // aModule.display = (config.name || config.location); // EXTENSION
+            // aModule.display += "/"; // EXTENSION
+            // aModule.display += id; // EXTENSION
             aModule.require = require;
             return aModule;
        }
@@ -579,7 +594,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                 mapping = config.mappings[prefix];
                 if (id.length > prefix.length) {
                     mappingRedirect = id.slice(prefix.length + 1);
-                    module.location = URL.resolve(mapping.location, mappingRedirect);
+                    module.location = URLResolve(mapping.location, mappingRedirect);
                     // Make sure the submodule is aware of this injection
                     if (typeof mapping.mappingRequire === "undefined") {
                         config.loadPackage(mapping, config)
@@ -594,11 +609,12 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                     module.location = mapping.location;
                 }
             } else {
-                module.location = URL.resolve(config.location, id);
+                module.location = URLResolve(config.location, id);
             }
 
             module.exports = exports;
-            module.directory = URL.resolve(module.location, "./");
+            //module.directory = URLResolve(module.location, "./");
+            module.directory = locationByRemovingLastURLComponentKeepingSlash(module.location);
             module.injected = true;
             module.redirect = void 0;
             module.mappingRedirect = void 0;
@@ -608,11 +624,11 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         }
 
         function extractPrefixFromInjectId(id) {
-            var mappings = config.mappings;
-            var prefixes = Object.keys(mappings);
-            var length = prefixes.length;
-
-            var i, prefix;
+            var mappings = config.mappings,
+                prefixes = ObjectKeys(mappings),
+                length = prefixes.length,
+                i,
+                prefix;
             for (i = 0; i < length; i++) {
                 prefix = prefixes[i];
                 if (
@@ -688,29 +704,38 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         // Load a module definition, and the definitions of its transitive
         // dependencies
         function deepLoad(topId, viaId, loading) {
+
             // this is a memo of modules already being loaded so we don’t
             // data-lock on a cycle of dependencies.
-            var _loading = loading || (config.loading = Object.create(null));
+            if(!loading) {
+                loading = (config.loading = ObjectCreate(null));
+            }
+            //loading = loading || (config.loading = ObjectCreate(null));
             // has this all happened before?  will it happen again?
             // if (topId in _loading) {
             //     return null; // break the cycle of violence.
             // }
-            return (_loading[topId])
+            return (loading[topId])
                 ? null // break the cycle of violence.
-                : (_loading[topId] = true)
+                : (loading[topId] = true)
                 // this has happened before
                 && load(topId, viaId)
                 .then(function deepLoadThen() {
+                    //console.log(config.name +": deepLoadThen("+topId+","+viaId+")");
+
                     // load the transitive dependencies using the magic of
                     // recursion.
                     var i,
                         countI,
+                        iFirstPromise = null,
                         promises, iPromise,
                         dependencies = getModuleDescriptor(topId).dependencies,
                         scopedTopId = topId,
-                        scopedLoading = _loading;
+                        scopedLoading = loading;
 
                     if (dependencies && (countI = dependencies.length) > 0) {
+                        var scopedConfig = config;
+
                         for(i=0; i < countI; i++) {
                             // create dependees set, purely for debug purposes
                             // if (true) {
@@ -718,18 +743,28 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                             //     var dependees = iModule.dependees = iModule.dependees || {};
                             //     dependees[topId] = true;
                             // }
-                            if ((iPromise = deepLoad(config.normalizeId(config.resolve(dependencies[i], scopedTopId), config), scopedTopId, scopedLoading))) {
+                            if ((iPromise = deepLoad(scopedConfig.normalizeId(scopedConfig.resolve(dependencies[i], scopedTopId), scopedConfig), scopedTopId, scopedLoading))) {
                                 /* jshint expr: true */
-                                promises ? (promises.push ? promises.push(iPromise) :
-                                    (promises = [promises, iPromise])) : (promises = iPromise);
+
+
+                                !iFirstPromise
+                                ? iFirstPromise = iPromise
+                                : !promises
+                                    ? promises = [iFirstPromise, iPromise]
+                                    : promises.push(iPromise);
+
                                 /* jshint expr: false */
                             }
                         }
+                        return promises
+                        ? PromiseAll(promises)
+                        : iFirstPromise;
+                        // return promises ? (promises.push === void 0 ? promises :
+                        //     Promise.all(promises)) : null;
                     }
+                    return null;
 
-                    return promises ? (promises.push === void 0 ? promises :
-                                Promise.all(promises)) : null;
-                }, function (error) {
+            }, function (error) {
                     getModuleDescriptor(topId).error = error;
                 });
         }
@@ -737,7 +772,8 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         // Initializes a module by executing the factory function with a new
         // module "exports" object.
         function getExports(topId, viaId) {
-            var module = getModuleDescriptor(topId);
+            var module = getModuleDescriptor(topId),
+                moduleExports = module.exports;
 
             // check for consistent case convention
             if (module.id !== topId) {
@@ -769,8 +805,8 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             }
 
             // do not reinitialize modules
-            if (module.exports !== void 0) {
-                return module.exports;
+            if (moduleExports !== void 0) {
+                return moduleExports;
             }
 
             // do not initialize modules that do not define a factory function
@@ -781,13 +817,14 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                 );
             }
 
-            module.directory = URL.resolve(module.location, "./"); // EXTENSION
-            module.exports = {};
+            module.directory = locationByRemovingLastURLComponentKeepingSlash(module.location);
+            //module.directory = module.location.substring(0,module.location.lastIndexOf("/")+1);
+            // module.directory = URLResolve(module.location, "./"); // EXTENSION
+            module.exports = moduleExports = {};
 
-            var returnValue;
             try {
                 // Execute the factory function:
-                returnValue = config.executeCompiler(module.factory, requireForId(topId), module.exports, module);
+                var returnValue = config.executeCompiler(module.factory, requireForId(topId), moduleExports, module);
             } catch (_error) {
                 // Delete the exports so that the factory is run again if this
                 // module is required again
@@ -857,10 +894,12 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
             // Main synchronously executing "require()" function
             var require = function require(id) {
-                var topId = config.normalizeId(config.resolve(id, viaId), config);
-                return getExports(topId, viaId);
+                //console.log(config.name +" - require("+id+")");
+                return getExports(/*topId*/require.normalizeId(require.resolve(id, viaId), config), viaId);
             };
             require.viaId = viaId;
+            require.normalizeId = config.normalizeId;
+            require.resolve = config.resolve;
 
             // Asynchronous "require.async()" which ensures async executation
             // (even with synchronous loaders)
@@ -951,7 +990,8 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
         var globalModule = modules["global"] = new Module();
         globalModule.id = "global";
-        globalModule.display = "global";
+        //Commening out .display as it isn't used anywhere
+        //globalModule.display = "global";
         globalModule.exports = global;
         globalModule.require = require;
 
@@ -1015,7 +1055,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             descriptions[dependency.location] = promise;
             return result;
         });
-        return (descriptions[location] = promise);
+        return promise;
     };
 
 
@@ -1078,7 +1118,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         if (descriptionLocations[location]) {
             descriptionLocation = descriptionLocations[location];
         } else {
-            descriptionLocation = URL.resolve(location, "package.json");
+            descriptionLocation = URLResolve(location, "package.json");
         }
 
         var promise;
@@ -1110,7 +1150,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
     Require.loadPackageLock = function (dependency, config) {
         config = config || {};
         var read = config.read || Require.read,
-            packageLockLocation = URL.resolve(dependency.location, "package-lock.json");
+            packageLockLocation = URLResolve(dependency.location, "package-lock.json");
         return read(packageLockLocation)
         .then(function (content) {
             try {
@@ -1126,18 +1166,21 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
     Require.loadPackage = function (dependency, config, packageDescription) {
         config = config || {
-            location: URL.resolve(Require.getLocation(), dependency)
+            location: URLResolve(Require.getLocation(), dependency)
         };
 
         dependency = normalizeDependency(dependency, config);
         if (!dependency.location) {
             throw new Error("Can't find dependency: " + JSON.stringify(dependency));
         }
-        var location = dependency.location;
-        config = Object.create(config || null);
-        var loadingPackages = config.loadingPackages = config.loadingPackages || {};
-        var loadedPackages = config.packages = {};
-        var registry = config.registry = config.registry || new Map();
+        config = ObjectCreate(config || null);
+
+        var location = dependency.location,
+            loadingPackages = config.loadingPackages = config.loadingPackages || {},
+            loadedPackages = config.packages = {},
+            registry = config.registry = config.registry || new Map();
+
+
         config.mainPackageLocation = config.mainPackageLocation || location;
 
         config.hasPackage = function (dependency) {
@@ -1257,7 +1300,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
     //     String(factory).replace(requirePattern, function(_, id) {
     //         o[id] = true;
     //     });
-    //     return Object.keys(o);
+    //     return ObjectKeys(o);
     // };
 
     // Require.parseDependencies = function parseDependencies(factory) {
@@ -1510,24 +1553,33 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         };
 
     Require.executeCompiler = function executeCompiler(factory, require, exports, module) {
-        var returnValue;
+        //module.directory = module.location.substring(0,module.location.lastIndexOf("/")+1);
 
-        module.directory = URL.resolve(module.location, "./");
-        module.filename = URL.resolve(module.location, module.location);
-        module.exports = exports || {};
+        /*
+            //module.filename = URLResolve(module.location, module.location);
+
+            In both browser and node, module.filename ends up being equal to module.location which is already a full URL
+        */
 
         // Execute the factory function:
         // TODO use config.scope
-        returnValue = factory.call(global,
+        return factory(
             require,            // require
-            exports,     // exports
+            (module.exports = exports || {}),     // exports
             module,             // module
             global,
-            module.filename,     // __filename
+            (module.filename = module.location),     // __filename
             module.directory     // __dirname
         );
+        // return factory.call(global,
+        //     require,            // require
+        //     exports,     // exports
+        //     module,             // module
+        //     global,
+        //     module.filename,     // __filename
+        //     module.directory     // __dirname
+        // );
 
-        return returnValue;
     };
 
 
@@ -1596,7 +1648,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
 
     // Using mappings hash to load modules that match a mapping.
     Require.MappingsLoader = function MappingsLoader(config, load) {
-        config.mappings = config.mappings || Object.create(null);
+        config.mappings = config.mappings || ObjectCreate(null);
         config.name = config.name;
 
         // finds a mapping to follow, if any
@@ -1619,7 +1671,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
             }
 
             /*
-            var prefixes = Object.keys(mappings),
+            var prefixes = ObjectKeys(mappings),
             length = prefixes.length,
             i, prefix;
             for (i = 0; i < length; i++) {
@@ -1689,7 +1741,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
                 path += ".js";
             }
 
-            location = module.location = URL.resolve(config.location, path);
+            location = module.location = URLResolve(config.location, path);
             if (config.delegate && config.delegate.packageWillLoadModuleAtLocation) {
                 result = config.delegate.packageWillLoadModuleAtLocation(module,location);
             }
