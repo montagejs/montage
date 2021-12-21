@@ -2024,10 +2024,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 var objectDescriptorModuleId;
                 if ((dotIndex < moduleId.length) && ( moduleId.slice(dotIndex, moduleId.length) === ".reel")) {
                     // We are in a reel
-                    objectDescriptorModuleId = moduleId + "/" + moduleId.slice(slashIndex, dotIndex) + ".meta";
+                    objectDescriptorModuleId = moduleId + "/" + moduleId.slice(slashIndex, dotIndex) + ".mjson";
                 } else {
                     // We look for the default
-                    objectDescriptorModuleId = moduleId.slice(0, dotIndex) + ".meta";
+                    objectDescriptorModuleId = moduleId.slice(0, dotIndex) + ".mjson";
                 }
 
                 Montage.defineProperty(self, "_objectDescriptorModuleId", {
@@ -3181,12 +3181,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     /*
         TODO: Re-design _shouldBuildIn and _shouldBuildOut in a more precise way.
-        
-        Right now _shouldBuildIn works as expected as setter, but the value it 
+
+        Right now _shouldBuildIn works as expected as setter, but the value it
         returns as getter is confusing:
 
         When _shouldBuildIn is true, it can mean 3 things: it is going to build in,
-        it is building in, or the last build animation played was a build in. The 
+        it is building in, or the last build animation played was a build in. The
         same goes with _shouldBuildOut, and in the end they represent multiple
         phases, maybe up to 6 or 7 different ones.
 
