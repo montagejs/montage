@@ -456,60 +456,85 @@
 
     exports.MJSONCompilerFactory = function MJSONCompilerFactory(require, exports, module, global, moduleFilename, moduleDirectory) {
 
-            //var root =  Require.delegate.compileMJSONFile(module.text, require.config.requireForId(module.id), module.id, /*isSync*/ true);
+        //var root =  Require.delegate.compileMJSONFile(module.text, require.config.requireForId(module.id), module.id, /*isSync*/ true);
 
-            if(module.exports.hasOwnProperty("montageObject")) {
+        if(module.exports.hasOwnProperty("montageObject")) {
+            throw new Error(
+                'using reserved word as property name, \'montageObject\' at: ' +
+                module.location
+            );
+        }
+
+        if(!module.deserializer) {
+            // var root =  Require.delegate.compileMJSONFile(module.text, require.config.requireForId(module.id), module, /*isSync*/ true);
+            if(!montageExports.MontageDeserializer) {
+                var MontageDeserializerModule = montageExports.config.modules["core/serialization/deserializer/montage-deserializer"];
+                montageExports.MontageDeserializer = MontageDeserializerModule.require("./core/serialization/deserializer/montage-deserializer").MontageDeserializer;
+            }
+
+            var deserializer = new montageExports.MontageDeserializer(),
+                //deserializerRequire = require.config ? require.config.requireForId(module.id) : module.parent.require /* in node */,
+                deserializerRequire = require.config ? require.config.requireForId(module.id) : require /* in node */,
+                root;
+
+            module.deserializer = deserializer;
+            deserializer.init(module.text, deserializerRequire, void 0, module, true);
+            // deserializer.init(module.json, deserializerRequire, void 0, module, true, true);
+
+            try {
+                root = deserializer.deserializeObject();
+            } catch(error) {
+                console.log(module.id+" deserializeObject() failed with error:",error);
+
+                throw error;
+            }
+
+            // console.log("********MJSONCompilerFactory END compileMJSONFile",module.id);
+
+            if (module.exports.montageObject && module.exports.montageObject !== root) {
                 throw new Error(
-                    'using reserved word as property name, \'montageObject\' at: ' +
+                    'Final deserialized object is different than one set on module ' +
                     module.location
                 );
             }
+            else if(!module.exports.montageObject) {
 
-            if(!module.deserializer) {
-                // var root =  Require.delegate.compileMJSONFile(module.text, require.config.requireForId(module.id), module, /*isSync*/ true);
-                if(!montageExports.MontageDeserializer) {
-                    var MontageDeserializerModule = montageExports.config.modules["core/serialization/deserializer/montage-deserializer"];
-                    montageExports.MontageDeserializer = MontageDeserializerModule.require("./core/serialization/deserializer/montage-deserializer").MontageDeserializer;
-                }
+                /*
+                    The following bellow is an option to avoid doing an Object.assign(),
+                    which is costly moving every root entry of a serialization to exports,
+                    by inverting the logic: replace exports by module.parsedText and then add the montageObject to it.
+                    A tweak within in require.js Require.SerializationCompiler where we assign metadata had to be made so we would loop
+                    over the replaces module exports vs the one that was passed so far.
+                */
+                // module.exports = module.parsedText;
+                // module.exports.montageObject = root;
 
-                var deserializer = new montageExports.MontageDeserializer(),
-                    deserializerRequire = require.config.requireForId(module.id),
-                    root;
-                module.deserializer = deserializer;
-                deserializer.init(module.text, deserializerRequire, void 0, module, true);
-                // deserializer.init(module.json, deserializerRequire, void 0, module, true, true);
 
-                try {
-                    root = deserializer.deserializeObject();
-                } catch(error) {
-                    console.log(module.id+" deserializeObject() failed with error:",error);
+                /*
+                    But the downside is that we're still creating montage metadata for all these entries that don't need one.
+                    So, we kept these entries thinking that otherwise there wouldn't be a way to require the json content of a.mjson file as such.
+                    But we haven't really needed that, and if we did, it would still be accessible through another call, or we could also add
+                    exports.[json / parsedJson] = module.parsedText;
 
-                    throw error;
-                }
-
-                // console.log("********MJSONCompilerFactory END compileMJSONFile",module.id);
-
-                if (module.exports.montageObject && module.exports.montageObject !== root) {
-                    throw new Error(
-                        'Final deserialized object is different than one set on module ' +
-                        module.location
-                    );
-                }
-                else if(!module.exports.montageObject) {
-                    module.exports.montageObject = root;
-                }
-
-                if(module.exports) {
-                    Object.assign(module.exports, module.parsedText);
-                }
-                else {
-                    module.exports = module.parsedText;
-                }
-
-                module.deserializer = null;
-                module.text = null;
+                */
+                module.exports.montageObject = root;
+                //Object.assign(module.exports, module.parsedText);
 
             }
+
+            // if(module.exports) {
+            //     Object.assign(module.exports, module.parsedText);
+            // }
+            // else {
+            //     module.exports = module.parsedText;
+            // }
+
+            module.deserializer = null;
+            module.text = null;
+            //Cleaning the parsedText now as we don't use it and it's using memory for no good reason.
+            module.parsedText = null;
+
+        }
 
         // console.log("********MJSONCompilerFactory END montageObject THERE",module.id);
 
