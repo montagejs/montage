@@ -48,7 +48,7 @@ module.exports = function(config) {
             included: false
         },
         {
-            pattern: 'ui/**/*.meta',
+            pattern: 'ui/**/*.mjson',
             included: false
         },
         {
@@ -77,10 +77,6 @@ module.exports = function(config) {
         },
         {
             pattern: 'test/**/*.html',
-            included: false
-        },
-        {
-            pattern: 'test/**/*.meta',
             included: false
         },
         {
