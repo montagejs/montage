@@ -163,7 +163,7 @@ if(typeof String.prototype.removeSuffix !== "function") {
 
 if(typeof String.prototype.stringByDeletingLastPathComponent !== "function") {
     Object.defineProperty(String.prototype, 'stringByDeletingLastPathComponent', {
-        value: function stringByRemovingPathExtension () {
+        value: function stringByDeletingLastPathComponent () {
             var lastIndex = this.lastIndexOf("/");
             if(lastIndex !== -1 ) {
                 return this.substring(0,lastIndex);
