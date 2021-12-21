@@ -1,5 +1,4 @@
-var MutableEvent = require("core/event/mutable-event").MutableEvent,
-    Montage = require("core/core").Montage;
+var MutableEvent = require("../../core/event/mutable-event").MutableEvent;
 
 /**
  *

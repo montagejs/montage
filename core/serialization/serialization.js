@@ -6,8 +6,8 @@
 var Montage = require("../core").Montage,
     MontageLabeler = require("./serializer/montage-labeler").MontageLabeler,
     MontageReviver = require("./deserializer/montage-reviver").MontageReviver,
-    parse = require("core/frb/parse"),
-    stringify = require("core/frb/stringify");
+    parse = require("../frb/parse"),
+    stringify = require("../frb/stringify");
 
 /**
  * @class Serialization

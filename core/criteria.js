@@ -1,14 +1,14 @@
 
 var Montage = require("./core").Montage;
 
-var parse = require("core/frb/parse"),
-    stringify = require("core/frb/stringify"),
-    evaluate = require("core/frb/evaluate"),
-    operatorTypes = require("core/frb/language").operatorTypes,
-    Scope = require("core/frb/scope"),
-    syntaxProperties = require("core/frb/syntax-properties"),
-    compile = require("core/frb/compile-evaluator"),
-    SyntaxInOrderIterator = require("core/frb/syntax-iterator").SyntaxInOrderIterator;
+var parse = require("./frb/parse"),
+    stringify = require("./frb/stringify"),
+    evaluate = require("./frb/evaluate"),
+    operatorTypes = require("./frb/language").operatorTypes,
+    Scope = require("./frb/scope"),
+    syntaxProperties = require("./frb/syntax-properties"),
+    compile = require("./frb/compile-evaluator"),
+    SyntaxInOrderIterator = require("./frb/syntax-iterator").SyntaxInOrderIterator;
 
 var Criteria = exports.Criteria = Montage.specialize({
     _expression: {

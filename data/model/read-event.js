@@ -1,7 +1,6 @@
-var MutableEvent = require("core/event/mutable-event").MutableEvent,
-    Enum = require("core/enum").Enum,
-    Montage = require("core/core").Montage,
-    ObjectPool = require("core/object-pool").ObjectPool,
+var MutableEvent = require("../../core/event/mutable-event").MutableEvent,
+    Enum = require("../../core/enum").Enum,
+    ObjectPool = require("../../core/object-pool").ObjectPool,
     ReadEvent,
     ReadEventType;
 

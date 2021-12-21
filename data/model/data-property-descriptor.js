@@ -1,4 +1,4 @@
-var PropertyDescriptor = require("data/model/property-descriptor").PropertyDescriptor;
+var PropertyDescriptor = require("./property-descriptor").PropertyDescriptor;
 
 /**
  * Extend {@link PropertyDescriptor} to describes a property of

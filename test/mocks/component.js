@@ -1,5 +1,5 @@
 var Set = require("montage/core/collections/set"),
-    Event = require("mocks/event"),
+    Event = require("./event"),
     Component = require("montage/ui/component").Component,
     defaultEventManager = require("montage/core/event/event-manager").defaultEventManager;
 

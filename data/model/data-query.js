@@ -1,4 +1,4 @@
-var Montage = require("montage").Montage;
+var Montage = require("../../core/core").Montage;
 
 /**
  * Defines the criteria that objects must satisfy to be included in a set of

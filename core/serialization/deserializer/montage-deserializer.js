@@ -2,9 +2,9 @@ var Montage = require("../../core").Montage,
     MontageContext = require("./montage-interpreter").MontageContext,
     MontageReviver = require("./montage-reviver").MontageReviver,
     BindingsModule = require("../bindings"),
-    Map = require("core/collections/map").Map,
+    Map = require("../../../core/collections/map").Map,
     Promise = require("../../promise").Promise,
-    deprecate = require("../../deprecate");
+    deprecate = require("../../deprecate"),
 
 var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
 

@@ -28,7 +28,6 @@ require("proxy-polyfill/proxy.min");
 
 
 var Map = require("./collections/map"),
-    WeakMap = require("./collections/weak-map"),
     Set = require("./collections/set"),
     deprecate = require("./deprecate");
 

@@ -8,7 +8,6 @@ var Control = require("ui/control").Control,
     TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
     KeyComposer = require("../../composer/key-composer").KeyComposer,
     Map = require("core/collections/map"),
-    WeakMap = require("core/collections/weak-map"),
     MONTAGE_SLIDER_THUMB_CLASS = "montage-Slider--thumb";
 
 /**

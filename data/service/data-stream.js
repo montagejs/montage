@@ -1,13 +1,13 @@
 // Note: Montage's promises are used even if ECMAScript 6 promises are available.
-var DataProvider = require("data/service/data-provider").DataProvider,
-    ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor,
-    DataQuery = require("data/model/data-query").DataQuery,
-    Promise = require("core/promise").Promise,
-    deprecate = require("core/deprecate"),
-    parse = require("core/frb/parse"),
-    Scope = require("core/frb/scope"),
-    compile = require("core/frb/compile-evaluator"),
-    DataOperation = require("data/service/data-operation").DataOperation,
+var DataProvider = require("./data-provider").DataProvider,
+    ObjectDescriptor = require("../../core/meta/object-descriptor").ObjectDescriptor,
+    DataQuery = require("../model/data-query").DataQuery,
+    Promise = require("../../core/promise").Promise,
+    deprecate = require("../../core/deprecate"),
+    parse = require("../../core/frb/parse"),
+    Scope = require("../../core/frb/scope"),
+    compile = require("../../core/frb/compile-evaluator"),
+    DataOperation = require("./data-operation").DataOperation,
     DataStream;
 
 /**

@@ -1,7 +1,7 @@
 var Set = require("montage/core/collections/set"),
     defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager,
-    Event = require("mocks/event"),
-    Component = require("mocks/component");
+    Event = require("./event"),
+    Component = require("./component");
 
 var EventTarget = {
     addEventListener: function (eventType, listener, useCapture) {

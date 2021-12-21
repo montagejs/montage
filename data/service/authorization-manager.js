@@ -1,9 +1,9 @@
-var Montage = require("core/core").Montage,
-    Promise = require("core/promise").Promise,
-    Map = require("core/collections/map"),
-    Set = require("core/collections/set"),
-    application = require("core/application").application,
-    AuthorizationPolicy = require("data/service/authorization-policy").AuthorizationPolicy,
+var Montage = require("../../core/core").Montage,
+    Promise = require("../../core/promise").Promise,
+    Map = require("../../core/collections/map"),
+    Set = require("../../core/collections/set"),
+    application = require("../../core/application").application,
+    AuthorizationPolicy = require("./authorization-policy").AuthorizationPolicy,
     MANAGER_PANEL_MODULE = "ui/authorization-manager-panel.reel";
 
 

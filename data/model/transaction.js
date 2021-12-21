@@ -1,5 +1,5 @@
-var Montage = require("core/core").Montage,
-    uuid = require("core/uuid"),
+var Montage = require("../../core/core").Montage,
+    uuid = require("../../core/uuid"),
     DataService = require("../service/data-service").DataService,
     Transaction;
 

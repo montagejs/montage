@@ -1,9 +1,8 @@
-var Montage = require("montage").Montage,
-    compile = require("core/frb/compile-evaluator"),
-    parse = require("core/frb/parse"),
-    Promise = require("core/promise").Promise,
-    syntaxProperties = require("core/frb/syntax-properties"),
-    deprecate = require("core/deprecate");
+var Montage = require("../../core/core").Montage,
+    compile = require("../../core/frb/compile-evaluator"),
+    parse = require("../../core/frb/parse"),
+    Promise = require("../../core/promise").Promise,
+    syntaxProperties = require("../../core/frb/syntax-properties");
 
 
 var ONE_WAY_BINDING = "<-";

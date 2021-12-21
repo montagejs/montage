@@ -36,7 +36,7 @@
     },
 
     "root": {
-        "prototype": "core/meta/module-object-descriptor",
+        "prototype": "./meta/module-object-descriptor",
         "values": {
             "name": "DurationRange",
             "propertyDescriptors": [

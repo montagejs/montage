@@ -1,5 +1,4 @@
 var Montage = require("./core").Montage,
-    WeakMap = require("core/collections/weak-map"),
     parse = require("core/frb/parse"),
     evaluate = require("core/frb/evaluate");
 

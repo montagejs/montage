@@ -1,7 +1,6 @@
 "use strict";
 
-var WeakMap = require("../weak-map"),
-    Map = require("../_map"),
+var Map = require("../_map"),
     ChangeDescriptor = require("./change-descriptor"),
     ObjectChangeDescriptor = ChangeDescriptor.ObjectChangeDescriptor,
     ChangeListenersRecord = ChangeDescriptor.ChangeListenersRecord,

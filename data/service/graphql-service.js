@@ -1,13 +1,13 @@
-var HttpService = require("data/service/http-service").HttpService,
-    DataQuery = require("data/model/data-query").DataQuery,
-    Enumeration = require("data/model/enumeration").Enumeration,
-    Map = require("core/collections/map"),
-    Montage = require("montage").Montage,
-    parse = require("core/frb/parse"),
-    compile = require("core/frb/compile-evaluator"),
-    evaluate = require("core/frb/evaluate"),
-    Scope = require("core/frb/scope"),
-    Promise = require("core/promise").Promise;
+var HttpService = require("./http-service").HttpService,
+    DataQuery = require("../model/data-query").DataQuery,
+    Enumeration = require("../model/enumeration").Enumeration,
+    Map = require("../../core/collections/map"),
+    // Montage = require("../../core/core").Montage,
+    parse = require("../../core/frb/parse"),
+    compile = require("../../core/frb/compile-evaluator"),
+    evaluate = require("../../core/frb/evaluate"),
+    Scope = require("../../core/frb/scope"),
+    Promise = require("../../core/promise").Promise;
 
 
 /**

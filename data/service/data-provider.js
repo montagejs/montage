@@ -1,5 +1,5 @@
-var Montage = require("core/core").Montage,
-    Promise = require("core/promise").Promise;
+var Montage = require("../../core/core").Montage,
+    Promise = require("../../core/promise").Promise;
 
 /**
  * This class documents the properties and methods of objects that support the

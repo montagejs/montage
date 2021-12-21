@@ -3,7 +3,7 @@
         "object": "global[Date]"
     },
     "root": {
-        "prototype": "core/meta/module-object-descriptor",
+        "prototype": "./meta/module-object-descriptor",
         "values": {
             "name": "Date",
             "propertyDescriptors": [
@@ -13,7 +13,7 @@
                 ]
             },
             "propertyValidationRules": {},
-            "objectDescriptorModule": { "%": "core/date.mjson" },
+            "objectDescriptorModule": { "%": "./date.mjson" },
             "exportName": "Date",
             "module": { "%": "global" },
             "object":{ "@": "date" }

@@ -24,7 +24,7 @@
         "object": "core/criteria"
     },
     "root": {
-        "prototype": "core/meta/module-object-descriptor",
+        "prototype": "./meta/module-object-descriptor",
         "values": {
             "name": "Criteria",
             "propertyDescriptors": [

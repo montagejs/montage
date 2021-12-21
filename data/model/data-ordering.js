@@ -1,5 +1,5 @@
-var Montage = require("core/core").Montage,
-    Enum = require("core/enum").Enum,
+var Montage = require("../../core/core").Montage,
+    Enum = require("../../core/enum").Enum,
     ASCENDING = {name: "Ascending"},
     DESCENDING = {name: "Descending"};
     // parse = require("core/frb/parse"),

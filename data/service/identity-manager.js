@@ -1,6 +1,6 @@
-var Montage = require("core/core").Montage,
-    DataOperation = require("data/service/data-operation").DataOperation,
-    defaultEventManager = require("core/event/event-manager").defaultEventManager,
+var Montage = require("../../core/core").Montage,
+    DataOperation = require("./data-operation").DataOperation,
+    defaultEventManager = require("../../core/event/event-manager").defaultEventManager,
     IdentityManager;
 
 

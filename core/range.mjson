@@ -1,6 +1,6 @@
 {
     "begin_property_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "begin",
             "objectDescriptor": { "@": "root" },
@@ -9,7 +9,7 @@
         }
     },
     "end_property_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "end",
             "objectDescriptor": { "@": "root" },
@@ -18,7 +18,7 @@
         }
     },
     "bounds_property_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "bounds",
             "objectDescriptor": { "@": "root" },
@@ -30,7 +30,7 @@
         "object": "./range"
     },
     "root": {
-        "prototype": "core/meta/module-object-descriptor",
+        "prototype": "./meta/module-object-descriptor",
         "values": {
             "name": "Range",
             "propertyDescriptors": [
@@ -46,7 +46,7 @@
                 ]
             },
             "propertyValidationRules": {},
-            "objectDescriptorModule": { "%": "./core/range.mjson" },
+            "objectDescriptorModule": { "%": "./range.mjson" },
             "exportName": "Range",
             "module": { "%": "./range" },
             "object":{ "@": "range" }

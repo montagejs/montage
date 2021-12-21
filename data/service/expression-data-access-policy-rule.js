@@ -3,11 +3,11 @@
  */
 
 var DataAccessPolicyRule = require("./data-access-policy-rule").DataAccessPolicyRule,
-    Promise = require("core/promise").Promise,
-    parse = require("core/frb/parse"),
-    compileEvaluator = require("core/frb/compile-evaluator"),
-    compileAssigner = require("core/frb/compile-assigner"),
-    Scope = require("core/frb/scope");
+    Promise = require("../../core/promise").Promise,
+    parse = require("../../core/frb/parse"),
+    compileEvaluator = require("../../core/frb/compile-evaluator"),
+    compileAssigner = require("../../core/frb/compile-assigner"),
+    Scope = require("../../core/frb/scope");
 
 /**
  * Sets an expression (left) on a data operation to the value resulting from the evaluation of a right expression,

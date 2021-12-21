@@ -4,8 +4,7 @@
  */
 var Component = require("../component").Component,
     TreeNode = require("../../core/tree-controller").TreeNode,
-    TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
-    WeakMap = require("core/collections/weak-map");
+    TranslateComposer = require("../../composer/translate-composer").TranslateComposer;
 
 
 var PLACEHOLDER_POSITION = {

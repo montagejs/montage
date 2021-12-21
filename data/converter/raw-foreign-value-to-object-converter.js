@@ -1,9 +1,9 @@
 var RawValueToObjectConverter = require("./raw-value-to-object-converter").RawValueToObjectConverter,
-    Criteria = require("core/criteria").Criteria,
-    DataQuery = require("data/model/data-query").DataQuery,
-    Map = require("core/collections/map").Map,
-    syntaxProperties = require("core/frb/syntax-properties"),
-    Promise = require("core/promise").Promise;
+    Criteria = require("../../core/criteria").Criteria,
+    DataQuery = require("../model/data-query").DataQuery,
+    Map = require("../../core/collections/map").Map,
+    syntaxProperties = require("../../core/frb/syntax-properties"),
+    Promise = require("../../core/promise").Promise;
 /**
  * @class RawForeignValueToObjectConverter
  * @classdesc Converts a property value of raw data to the referenced object.

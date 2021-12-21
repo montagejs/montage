@@ -13,9 +13,9 @@
 var Target = require("./target").Target,
     Template = require("./template"),
     MontageWindow = require("../window-loader/montage-window").MontageWindow,
-    Criteria = require("core/criteria").Criteria,
-    DataQuery = require("data/model/data-query").DataQuery,
-    IdentityManager = require("data/service/identity-manager").IdentityManager,
+    Criteria = require("./criteria").Criteria,
+    DataQuery = require("../data/model/data-query").DataQuery,
+    IdentityManager = require("../data/service/identity-manager").IdentityManager,
     Slot;
 
 require("./dom");

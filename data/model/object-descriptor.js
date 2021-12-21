@@ -1,5 +1,5 @@
-var Montage = require("core/core").Montage,
-    PropertyDescriptor = require("data/model/property-descriptor").PropertyDescriptor;
+var Montage = require("../../core/core").Montage,
+    PropertyDescriptor = require("./property-descriptor").PropertyDescriptor;
 
 /**
  * Describes a type of object.

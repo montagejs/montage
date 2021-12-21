@@ -1,4 +1,4 @@
-var Montage = require("core/core").Montage;
+var Montage = require("../../core/core").Montage;
 
 /**
  * Subclasses of this class represent enumerated types. Instances of those

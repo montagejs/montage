@@ -1,8 +1,7 @@
-var Montage = require("core/core").Montage,
-    DataObjectDescriptor = require("data/model/data-object-descriptor").DataObjectDescriptor,
-    ObjectDescriptor = require("data/model/object-descriptor").ObjectDescriptor,
-    WeakMap = require("core/collections/weak-map"),
-    Map = require("core/collections/map"),
+var Montage = require("../../core/core").Montage,
+    DataObjectDescriptor = require("../model/data-object-descriptor").DataObjectDescriptor,
+    ObjectDescriptor = require("../model/object-descriptor").ObjectDescriptor,
+    Map = require("../../core/collections/map"),
     //DataService requires DataTrigger before it sets itself on the exports object...
     //DataServiceModule = require("data/service/data-service"),
     ChangeEvent = require("../../core/event/change-event").ChangeEvent,

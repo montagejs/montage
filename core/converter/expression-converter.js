@@ -3,9 +3,9 @@
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter,
-    parse = require("core/frb/parse"),
-    Scope = require("core/frb/scope"),
-    compile = require("core/frb/compile-evaluator")
+    parse = require("../../core/frb/parse"),
+    Scope = require("../../core/frb/scope"),
+    compile = require("../../core/frb/compile-evaluator")
     deprecate = require("../deprecate");
 
 /**
