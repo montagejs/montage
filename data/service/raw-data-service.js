@@ -2842,6 +2842,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                             /*
                                 Right now we're missing a way to tell that we didn't have anything to do
                             */
+                            transaction.resolveCompletionPromiseForParticipant(self);
                         }
                     });
             }
