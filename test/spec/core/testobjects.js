@@ -55,3 +55,5 @@ var Funktion = exports.Funktion = function () {
         return 42;
     };
 }
+
+Funktion.getInfoForObject = Montage.getInfoForObject;
