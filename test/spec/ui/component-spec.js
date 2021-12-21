@@ -215,7 +215,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                         });
                     });
                 });
-                it("should draw children before parents even if the parents are added during willDraw", function () {
+                it("should draw children before parents even if the parents are added during willDraw", function (done) {
                     // Draw the components once so that they are fully loaded, then run the test
                     testPage.test.componentDrawsParent.needsDraw = true;
                     testPage.test.componentParent.parentHasDrawn = false;
