@@ -1,8 +1,8 @@
 var Montage = require("../core").Montage,
     Promise = require("../promise").Promise,
     deprecate = require("../deprecate"),
-    Enum = require("core/enum").Enum,
-    parse = require("core/frb/parse"),
+    Enum = require("../enum").Enum,
+    parse = require("../frb/parse"),
     logger = require("../logger").logger("objectDescriptor");
 
 /* TypeDescriptor */
