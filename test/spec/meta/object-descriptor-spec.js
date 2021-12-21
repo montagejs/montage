@@ -66,7 +66,7 @@ describe("meta/object-descriptor-spec", function () {
 
 
             describe("parent propertyDescriptors", function () {
-                var parent, parentProperty, 
+                var parent, parentProperty,
                     child, childProperty;
 
                 beforeEach(function () {
@@ -77,7 +77,7 @@ describe("meta/object-descriptor-spec", function () {
                 });
 
                 it("can get propertyDescriptor added to parent", function () {
-                    child.parent = parent;                    
+                    child.parent = parent;
                     child.addPropertyDescriptor(childProperty);
                     parent.addPropertyDescriptor(parentProperty);
                     expect(child.propertyDescriptorForName("bar")).toBe(childProperty);
@@ -94,8 +94,8 @@ describe("meta/object-descriptor-spec", function () {
                     parent.addPropertyDescriptor(parentProperty);
 
                     expect(child.propertyDescriptors.length).toBe(1);
-                    
-                    child.parent = parent;  
+
+                    child.parent = parent;
 
                     expect(child.propertyDescriptorForName("bar")).toBe(childProperty);
                     expect(child.propertyDescriptorForName("foo")).toBe(parentProperty);
@@ -106,7 +106,7 @@ describe("meta/object-descriptor-spec", function () {
                     expect(child.propertyDescriptors[1]).toBe(parentProperty);
                 });
             })
-            
+
         });
         describe("associations", function () {
 
@@ -316,7 +316,7 @@ describe("meta/object-descriptor-spec", function () {
                 var ComponentObjectDescriptorTest1 = require("spec/meta/component-object-descriptor-test/component-object-descriptor-test-1.reel").ComponentObjectDescriptorTest1;
                 ObjectDescriptor.createDefaultObjectDescriptorForObject(ComponentObjectDescriptorTest1).then(function (objectDescriptor) {
                     var id = objectDescriptor.parent.objectDescriptorInstanceModule.resolve(require);
-                    expect(id === "montage/ui/component.meta" || id === "montage/ui/component.mjson").toBeTruthy();
+                    expect(id === "montage/ui/component.mjson" || id === "montage/ui/component.mjson").toBeTruthy();
                 }, function (err) {
                     fail(err);
                 }).finally(function () {
@@ -339,7 +339,7 @@ describe("meta/object-descriptor-spec", function () {
             //});
 
 
-            it("uses the correct module ID for objects with no .meta", function () {
+            it("uses the correct module ID for objects with no .mjson", function () {
                 var Sub = ObjectDescriptor.specialize();
                 // fake object loaded from module
                 Object.defineProperty(Sub, "_montage_metadata", {
@@ -358,12 +358,12 @@ describe("meta/object-descriptor-spec", function () {
                     isInstance: { value: true }
                 });
 
-                expect(sub.objectDescriptorModuleId === "pass.meta" || sub.objectDescriptorModuleId === "pass.mjson").toBeTruthy();
+                expect(sub.objectDescriptorModuleId === "pass.mjson" || sub.objectDescriptorModuleId === "pass.mjson").toBeTruthy();
             });
 
             it("creates an objectDescriptor when the parent has no objectDescriptor", function (done) {
                 ObjectDescriptor.objectDescriptor.then(function (objectDescriptor){
-                    expect( objectDescriptor.objectDescriptorInstanceModule.id === "core/meta/blueprint.meta" ||
+                    expect( objectDescriptor.objectDescriptorInstanceModule.id === "core/meta/blueprint.mjson" ||
                             objectDescriptor.objectDescriptorInstanceModule.id === "core/meta/object-descriptor.mjson").toBeTruthy();
                 }, function (err) {
                     fail(err);

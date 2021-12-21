@@ -1,0 +1,21 @@
+{
+    "objectDescriptor_component_reference": {
+        "object": "ui/overlay.reel/overlay.mjson"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "Modal Overlay",
+            "parent": {
+                "@": "objectDescriptor_component_reference"
+            },
+            "objectDescriptorModule": {
+                "%": "ui/modal-overlay.reel/modal-overlay.mjson"
+            },
+            "exportName": "ModalOverlay",
+            "module": {
+                "%": "ui/modal-overlay.reel"
+            }
+        }
+    }
+}

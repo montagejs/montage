@@ -525,7 +525,7 @@ Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
         config.paths = config.paths || [config.location];
         config.mappings = config.mappings || Object.create(null); // EXTENSION
         config.exposedConfigs = config.exposedConfigs || Require.exposedConfigs;
-        config.moduleTypes = config.moduleTypes || ["html", "meta", "mjson"];
+        config.moduleTypes = config.moduleTypes || ["html", "mjson"];
         config.makeLoader = config.makeLoader || Require.makeLoader;
         config.load = config.load || config.makeLoader(config);
         config.makeCompiler = config.makeCompiler || Require.makeCompiler;

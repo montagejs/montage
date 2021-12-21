@@ -1753,7 +1753,7 @@ exports._blueprintModuleIdDescriptor = {
             dotIndex = ( dotIndex < slashIndex ? moduleId.length : dotIndex );
             Montage.defineProperty(self, "_objectDescriptorModuleId", {
                 enumerable: false,
-                value: moduleId.slice(0, dotIndex) + ".meta"
+                value: moduleId.slice(0, dotIndex) + ".mjson"
             });
         }
         return self._objectDescriptorModuleId;

@@ -378,7 +378,7 @@ var MontageContext = Montage.specialize({
         value: function (object, objectDesc, unitNames) {
 
             var moduleId = objectDesc.prototype || objectDesc.object,
-                isMJSONDependency = moduleId && (moduleId.endsWith(".mjson") || moduleId.endsWith(".meta")),
+                isMJSONDependency = moduleId && (moduleId.endsWith(".mjson")),
                 unitsDesc = this.unitsToDeserialize.get(object);
 
             if(isMJSONDependency) {

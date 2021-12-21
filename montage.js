@@ -570,8 +570,7 @@
         return dependencies;
     };
 
-    var dotMeta = ".meta",
-        dotMJSON = ".mjson",
+    var dotMJSON = ".mjson",
         dotMJSONLoadJs = ".mjson.load.js",
         TemplatePromise,
         Template;
@@ -663,7 +662,7 @@
                 }
 
                 var location = module.location,
-                    isMJSON = (location && (location.endsWith(dotMJSON) || location.endsWith(dotMJSONLoadJs) || location.endsWith(dotMeta)));
+                    isMJSON = (location && (location.endsWith(dotMJSON) || location.endsWith(dotMJSONLoadJs)));
 
                 if (isMJSON) {
                     if (typeof module.exports !== "object" && typeof module.text === "string") {

@@ -1,0 +1,51 @@
+{
+    "checked_property": {
+        "prototype": "core/meta/property-descriptor",
+        "values": {
+            "name": "checked",
+            "valueType": "boolean",
+            "objectDescriptor": {
+                "@": "root"
+            }
+        }
+    },
+    "objectDescriptor_parent": {
+        "object": "ui/control.mjson"
+    },
+    "root": {
+        "prototype": "core/meta/module-object-descriptor",
+        "values": {
+            "name": "AbstractCheckbox",
+            "parent": {
+                "@": "objectDescriptor_parent"
+            },
+            "propertyDescriptors": [
+                {
+                    "@": "checked_property"
+                },
+                {
+                    "@": "active_property"
+                }
+            ],
+            "propertyDescriptorGroups": {
+                "Main": [
+                    {
+                        "@": "checked_property"
+                    }
+                ],
+                "Options": [
+                    {
+                        "@": "active_property"
+                    }
+                ]
+            },
+            "objectDescriptorModule": {
+                "%": "ui/base/abstract-checkbox.mjson"
+            },
+            "exportName": "AbstractCheckbox",
+            "module": {
+                "%": "ui/base/abstract-checkbox"
+            }
+        }
+    }
+}

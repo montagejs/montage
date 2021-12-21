@@ -235,7 +235,7 @@ bootstrap("require/browser", function (require) {
 
     Require.Compiler = function (config) {
         return function(module) {
-            if (module.location && (module.location.endsWith(".meta") || module.location.endsWith(".mjson"))) {
+            if (module.location && module.location.endsWith(".mjson")) {
                 return module;
             }
 

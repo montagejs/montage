@@ -146,8 +146,8 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
      */
     getObjectDescriptorWithModuleId: {
         value: function (moduleId, _require) {
-            if (moduleId.search(/\.meta$/) === -1 && moduleId.search(/\.mjson$/) === -1) {
-                throw new Error(moduleId + " object descriptor module id does not end in '.meta' or '.mjson'");
+            if (moduleId.search(/\.mjson$/) === -1) {
+                throw new Error(moduleId + " object descriptor module id does not end with '.mjson'");
             }
             if (!_require) {
                 throw new Error("Require needed to get object descriptor " + moduleId);

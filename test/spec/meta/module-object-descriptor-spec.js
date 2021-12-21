@@ -95,8 +95,8 @@ describe("meta/module-object-descriptor-spec", function () {
         describe("getObjectDescriptorWithModuleId", function () {
             it("caches the objectDescriptors", function (done) {
                 require.loadPackage({location: "spec/meta/blueprint/package"}).then(function (require) {
-                    return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.meta", require).then(function (objectDescriptor1) {
-                        return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.meta", require)
+                    return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.mjson", require).then(function (objectDescriptor1) {
+                        return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.mjson", require)
                         .then(function (objectDescriptor2) {
                             expect(objectDescriptor1).toBe(objectDescriptor2);
                         });
@@ -110,7 +110,7 @@ describe("meta/module-object-descriptor-spec", function () {
 
             it("correctly loads objectDescriptors with the same internal module ID cross package", function (done) {
                 require.loadPackage({location: "spec/meta/blueprint/package"}).then(function (require) {
-                    return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.meta", require)
+                    return ModuleObjectDescriptor.getObjectDescriptorWithModuleId("thing.mjson", require)
                         .then(function (objectDescriptor) {
                         expect(objectDescriptor.parent).not.toBe(objectDescriptor);
                     }, function (err) {

@@ -82,7 +82,8 @@ Require.Compiler = function Compiler(config) {
     names.push.apply(names, scopeNames);
     return function (module) {
 
-        if (module.location && (module.location.endsWith(".meta") || module.location.endsWith(".mjson"))) {
+        var location = module.location;
+        if (location && location.endsWith(".mjson")) {
             return module;
         }
 

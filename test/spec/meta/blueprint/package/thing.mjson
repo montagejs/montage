@@ -1,0 +1,19 @@
+{
+    "objectDescriptor_parent": {
+        "object": "dependency/thing.mjson"
+    },
+    "root": {
+        "prototype": "montage/core/meta/module-object-descriptor",
+        "values": {
+            "name": "Thing",
+            "module": {
+                "%": "thing"
+            },
+            "exportName": "Thing",
+            "parent": {
+                "@": "objectDescriptor_parent"
+            },
+            "objectDescriptorModule": {}
+        }
+    }
+}
