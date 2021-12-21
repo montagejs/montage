@@ -120,8 +120,8 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
     serializeSelf: {
         value: function (serializer) {
             var memberIterator = this._membersIntValue.keys(),
-                members = []
-                aMember, aValue
+                members = [],
+                aMember, aValue,
                 values;
             while ((aMember = memberIterator.next().value)) {
                 members.push(aMember);
