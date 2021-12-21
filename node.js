@@ -56,7 +56,7 @@ exports.bootstrap = function () {
 
 MontageBoot.loadPackage = function (location, config) {
 
-    if (location.slice(location.length - 1, location.length) !== "/") {
+    if (!location.endsWith("/")) {
         location += "/";
     }
 
