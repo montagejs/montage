@@ -7,6 +7,10 @@
  * @module montage/core/uuid
 */
 
+
+
+
+
 /**
  * @class Uuid
  * @extends Montage
@@ -17,49 +21,122 @@ var Montage = require("./core").Montage,
     VALUE = "value",
     FORMAT = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.split('');
 
-function generate() {
-    var c = CHARS, id = FORMAT, r;
 
-    id[0] = c[(r = Math.random() * 0x100000000) & 0xf];
-    id[1] = c[(r >>>= 4) & 0xf];
-    id[2] = c[(r >>>= 4) & 0xf];
-    id[3] = c[(r >>>= 4) & 0xf];
-    id[4] = c[(r >>>= 4) & 0xf];
-    id[5] = c[(r >>>= 4) & 0xf];
-    id[6] = c[(r >>>= 4) & 0xf];
-    id[7] = c[(r >>>= 4) & 0xf];
+/*
+    Adapted from https://github.com/ungap/random-uuid/blob/main/index.js
+*/
 
-    id[9] = c[(r = Math.random() * 0x100000000) & 0xf];
-    id[10] = c[(r >>>= 4) & 0xf];
-    id[11] = c[(r >>>= 4) & 0xf];
-    id[12] = c[(r >>>= 4) & 0xf];
-    id[15] = c[(r >>>= 4) & 0xf];
-    id[16] = c[(r >>>= 4) & 0xf];
-    id[17] = c[(r >>>= 4) & 0xf];
+var crypto = global.crypto;
+if (typeof crypto === 'undefined') {
+    if(typeof process === 'object') {
+    /*
+        In node, we're getting here first with node's native require from requiring montage itself,
+        and we're gettimg there a second time from mr, but as of this writing, mr fails to resolve "crypro" as a node module as it doesn't know a package named that, and clearly it doesn't try as it should to defer to native require to do so as it should (or find it itself...)
 
-    id[19] = c[(r = Math.random() * 0x100000000) & 0x3 | 0x8];
-    id[20] = c[(r >>>= 4) & 0xf];
-    id[21] = c[(r >>>= 4) & 0xf];
-    id[22] = c[(r >>>= 4) & 0xf];
-    id[24] = c[(r >>>= 4) & 0xf];
-    id[25] = c[(r >>>= 4) & 0xf];
-    id[26] = c[(r >>>= 4) & 0xf];
-    id[27] = c[(r >>>= 4) & 0xf];
+        So caching it on global allows us to avoid that for now.
 
-    id[28] = c[(r = Math.random() * 0x100000000) & 0xf];
-    id[29] = c[(r >>>= 4) & 0xf];
-    id[30] = c[(r >>>= 4) & 0xf];
-    id[31] = c[(r >>>= 4) & 0xf];
-    id[32] = c[(r >>>= 4) & 0xf];
-    id[33] = c[(r >>>= 4) & 0xf];
-    id[34] = c[(r >>>= 4) & 0xf];
-    id[35] = c[(r >>>= 4) & 0xf];
+        Adding () around require fools mr into not trying to parse that as a dependency on the client
+    */
+        global._crypto = crypto = global._crypto || (require) ('crypto');
 
-    return id.join('');
+        if (!('randomUUID' in crypto)) {
+
+            var randomBytes = crypto.randomBytes;
+            /**
+             * A "phonyfill" for `getRandomValues`.
+             * It's is like a polyfill but **does not conform to the WebCrypto specification!**.
+             * Unlike a the [polyfill](./node-polyfill.js), this implementation is faster as it avoids copying data.
+             *
+             * Specifically, the provided typed array is not filled with random values, nor is it returned form the function.
+             * Instead a new typed array of the same type and size is returned, which contains the random data.
+             *
+             * @param {TypedArray} typedArray A typed array *used only* for specifying the type and size of the return value.
+             * @returns {TypedArray} A typed array of the same type and size as `typedArray` filled with random data.
+             */
+            function getRandomValues(typedArray) {
+                const { BYTES_PER_ELEMENT, length } = typedArray;
+                const totalBytes = BYTES_PER_ELEMENT * length;
+                const { buffer } = randomBytes(totalBytes);
+                return Reflect.construct(typedArray.constructor, [buffer]);
+            }
+
+            crypto.randomUUID = function randomUUID() {
+                return (
+                    [1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g,
+                        c => (c ^ getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+                    );
+            };
+
+
+        }
+
+    } else {
+
+        function generate() {
+            var c = CHARS, id = FORMAT, r;
+
+            id[0] = c[(r = Math.random() * 0x100000000) & 0xf];
+            id[1] = c[(r >>>= 4) & 0xf];
+            id[2] = c[(r >>>= 4) & 0xf];
+            id[3] = c[(r >>>= 4) & 0xf];
+            id[4] = c[(r >>>= 4) & 0xf];
+            id[5] = c[(r >>>= 4) & 0xf];
+            id[6] = c[(r >>>= 4) & 0xf];
+            id[7] = c[(r >>>= 4) & 0xf];
+
+            id[9] = c[(r = Math.random() * 0x100000000) & 0xf];
+            id[10] = c[(r >>>= 4) & 0xf];
+            id[11] = c[(r >>>= 4) & 0xf];
+            id[12] = c[(r >>>= 4) & 0xf];
+            id[15] = c[(r >>>= 4) & 0xf];
+            id[16] = c[(r >>>= 4) & 0xf];
+            id[17] = c[(r >>>= 4) & 0xf];
+
+            id[19] = c[(r = Math.random() * 0x100000000) & 0x3 | 0x8];
+            id[20] = c[(r >>>= 4) & 0xf];
+            id[21] = c[(r >>>= 4) & 0xf];
+            id[22] = c[(r >>>= 4) & 0xf];
+            id[24] = c[(r >>>= 4) & 0xf];
+            id[25] = c[(r >>>= 4) & 0xf];
+            id[26] = c[(r >>>= 4) & 0xf];
+            id[27] = c[(r >>>= 4) & 0xf];
+
+            id[28] = c[(r = Math.random() * 0x100000000) & 0xf];
+            id[29] = c[(r >>>= 4) & 0xf];
+            id[30] = c[(r >>>= 4) & 0xf];
+            id[31] = c[(r >>>= 4) & 0xf];
+            id[32] = c[(r >>>= 4) & 0xf];
+            id[33] = c[(r >>>= 4) & 0xf];
+            id[34] = c[(r >>>= 4) & 0xf];
+            id[35] = c[(r >>>= 4) & 0xf];
+
+            return id.join('');
+        }
+
+        /*
+            For older browsers
+        */
+        crypto = {
+            randomUUID: generate
+        }
+    }
 }
 
-exports.generate = generate;
+if (!('randomUUID' in crypto)) {
+    // https://stackoverflow.com/a/2117523/2800218
+    // LICENSE: https://creativecommons.org/licenses/by-sa/4.0/legalcode
+    crypto.randomUUID = function randomUUID() {
+        return (
+            [1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g,
+                c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
+    };
+}
 
+function generateCryptoRandomUUID() {
+    return crypto.randomUUID();
+};
+exports.generate = generateCryptoRandomUUID;
 var Uuid = exports.Uuid = Object.create(Object.prototype, /** @lends Uuid# */ {
     /**
      * Returns a univerally unique ID (UUID).
@@ -68,7 +145,7 @@ var Uuid = exports.Uuid = Object.create(Object.prototype, /** @lends Uuid# */ {
      */
     generate: {
         enumerable: false,
-        value: generate
+        value: generateCryptoRandomUUID
     }
 });
 
@@ -87,7 +164,7 @@ var Uuid = exports.Uuid = Object.create(Object.prototype, /** @lends Uuid# */ {
 // }
 var uuidGetGenerator = function () {
 
-    var uuid = generate(),
+    var uuid = crypto.randomUUID(),
         info = Montage.getInfoForObject(this);
     try {
         if (info !== null && info.isInstance === false) {
