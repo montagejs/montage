@@ -5,6 +5,8 @@ var Montage = require("../../core").Montage,
     Map = require("../../../core/collections/map").Map,
     Promise = require("../../promise").Promise,
     deprecate = require("../../deprecate"),
+    ObjectKeys = Object.keys,
+    JSON_parse = JSON.parse;
 
 var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
 
@@ -37,7 +39,16 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
             }
             this._require = _require;
             this._module = module;
-            var locationId = module && _require.location + module.id;
+
+            /*
+                forking for node's require
+            */
+            var locationId = module
+                ? _require.location
+                    ? _require.location + module.id
+                    : module.id
+                : module;
+
             this._locationId = locationId;
 
             this._reviver = new MontageReviver().init(
@@ -76,7 +87,8 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
      */
     deserialize: {
         value: function (instances, element) {
-            if((!this._serializationString || this._serializationString === "") && !this._serialization) {
+            var _serializationString = this._serializationString;
+            if((!_serializationString) && !this._serialization) {
                 return null;
             }
 
@@ -106,7 +118,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
             }
 
             try {
-                var serialization = this._serialization || JSON.parse(this._serializationString);
+                var serialization = this._serialization || JSON_parse(_serializationString);
                 //We need a new JSON.parse every time, so if we had one, we use it, but we trash it after.
                 if(this._serialization) {
                     this._serialization = null;
@@ -129,7 +141,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                 if (this._isSync) {
                     throw ex;
                 } else {
-                    return this._formatSerializationSyntaxError(this._serializationString);
+                    return this._formatSerializationSyntaxError(_serializationString);
                 }
             }
         }
@@ -159,7 +171,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                 promises;
 
             if (serialization !== null) {
-                labels = Object.keys(serialization);
+                labels = ObjectKeys(serialization);
                 for (i = 0; (label = labels[i]); ++i) {
                     object = serialization[label];
                     locationId = object.prototype || object.object;
@@ -192,7 +204,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                 labels = [];
 
             for (var label in serialization) {
-                if (Object.keys(serialization[label]).length === 0) {
+                if (ObjectKeys(serialization[label]).length === 0) {
                     labels.push(label);
                 }
             }
