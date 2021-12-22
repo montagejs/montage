@@ -898,7 +898,8 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
             // Main synchronously executing "require()" function
             var require = function require(id) {
                 //console.log(config.name +" - require("+id+")");
-                return getExports(/*topId*/require.normalizeId(require.resolve(id, viaId), config), viaId);
+                //return getExports(/*topId*/require.normalizeId(require.resolve(id, viaId), config), viaId);
+                return getExports(/*topId*/require.resolve(id, viaId), viaId);
             };
             require.viaId = viaId;
             require.normalizeId = config.normalizeId;
