@@ -127,27 +127,33 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
         Map = global.Map;
     }
 
-    var Module = function Module() {};
-    Module.prototype.id = null;
-    Module.prototype.display = null;
-    Module.prototype.require = null;
-    Module.prototype.factory = void 0;
-    Module.prototype.exports = void 0;
-    Module.prototype.redirect = void 0;
-    Module.prototype.location = null;
-    Module.prototype.directory = null;
-    Module.prototype.injected = false;
-    Module.prototype.mappingRedirect = void 0;
-    Module.prototype.type = null;
-    Module.prototype.text = void 0;
+    var Module = function Module(id, require) {
+            this.id = id;
+            this.require = require;
+            return this;
+        },
+        ModuleProto = Module.prototype;
+
+        ModuleProto.id = null;
+        ModuleProto.display = null;
+        ModuleProto.require = null;
+        ModuleProto.factory = void 0;
+        ModuleProto.exports = void 0;
+        ModuleProto.redirect = void 0;
+        ModuleProto.location = null;
+        ModuleProto.directory = null;
+        ModuleProto.injected = false;
+        ModuleProto.mappingRedirect = void 0;
+        ModuleProto.type = null;
+        ModuleProto.text = void 0;
 
     // for debug
-    // Module.prototype.dependees = null;
-    Module.prototype.extraDependencies = void 0;
-    Module.prototype.uuid = null;
-    Module.prototype._json = undefined;
+    // ModuleProto.dependees = null;
+    ModuleProto.extraDependencies = void 0;
+    ModuleProto.uuid = null;
+    ModuleProto._json = undefined;
 
-    Object.defineProperty(Module.prototype,"json", {
+    Object.defineProperty(ModuleProto,"json", {
         get: function() {
             return this._json || (this._json = JSON.parse(this.text))
         }
@@ -556,8 +562,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
         // up through loading and execution, ultimately serving as the
         // ``module`` free variable inside the corresponding module.
         function _createLowercaseModuleDescriptor(id, lookupId) {
-            var aModule = modules[lookupId] = new Module();
-            aModule.id = id;
+            return (modules[lookupId] = new Module(id, require));
 
             /*
                 .display isn't used anywhere. If it ends up missing, we can always bring it back as a getter
@@ -566,8 +571,6 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
             // aModule.display = (config.name || config.location); // EXTENSION
             // aModule.display += "/"; // EXTENSION
             // aModule.display += id; // EXTENSION
-            aModule.require = require;
-            return aModule;
        }
 
         function _getLowercaseModuleDescriptor(id) {
@@ -988,12 +991,12 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
         require = makeRequire("");
 
 
-        var globalModule = modules["global"] = new Module();
-        globalModule.id = "global";
+        var globalModule = modules["global"] = new Module("global",require);
+        // globalModule.id = "global";
         //Commening out .display as it isn't used anywhere
         //globalModule.display = "global";
         globalModule.exports = global;
-        globalModule.require = require;
+        // globalModule.require = require;
 
         return require;
     };
