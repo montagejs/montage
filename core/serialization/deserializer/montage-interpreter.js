@@ -4,6 +4,7 @@ var Montage = require("../../core").Montage,
     deprecate = require("../../deprecate"),
     Set = require("../../collections/set"),
     ObjectCreate = Object.create,
+    ObjectKeys = Object.keys,
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
     TWO_WAY = "<->";
@@ -51,7 +52,7 @@ var MontageInterpreter = Montage.specialize({
                 promises = [],
                 i, keys, label;
 
-            for (i =0, keys = Object.keys(serialization);(label = keys[i]); i++) {
+            for (i =0, keys = ObjectKeys(serialization);(label = keys[i]); i++) {
                 object = serialization[label];
                 locationId = object.prototype || object.object;
 
@@ -199,7 +200,7 @@ var MontageContext = Montage.specialize({
                 objectKeys;
 
             if(serialization) {
-                objectKeys = Object.keys(serialization);
+                objectKeys = ObjectKeys(serialization);
                 for (var i=0, label;(label = objectKeys[i]); i++) {
                     result = this.getObject(label);
 
@@ -295,44 +296,6 @@ var MontageContext = Montage.specialize({
         }
     },
 
-    _classifyValuesToDeserialize: {
-        value: function (object, objectDesc) {
-            var values,
-                value,
-                keys,
-                bindings;
-
-
-            //This is where we support backward compatib
-             if((values = objectDesc.properties)) {
-                objectDesc.values = values;
-                delete objectDesc.properties;
-             }
-             else {
-                if((values = objectDesc.values)) {
-                    keys = Object.keys(values);
-                    bindings = objectDesc.bindings || (objectDesc.bindings = {});
-                    for (var i=0, key;(key = keys[i]);i++) {
-                        value = values[key];
-
-                        //An expression based property
-                        if (value && (typeof value === "object" &&
-                            (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) ||
-                            key.indexOf('.') > -1
-                        ) {
-                            bindings[key] = value;
-                            delete values[key];
-                        }
-                    }
-
-                }
-            }
-
-
-            return bindings;
-        }
-    },
-
     getBindingsToDeserialize: {
         value: function () {
             return this._bindingsToDeserialize;
@@ -353,11 +316,11 @@ var MontageContext = Montage.specialize({
     propertyToReviveForObjectLiteralValue: {
         value: function (objectLiteralValue) {
 
-            return Object.keys(objectLiteralValue);
+            return ObjectKeys(objectLiteralValue);
 
             var  propertyToRevive;
             // if(!(propertyToRevive = this._propertyToReviveForObjectLiteralValue.get(objectLiteralValue))) {
-                propertyToRevive = Object.keys(objectLiteralValue);
+                propertyToRevive = ObjectKeys(objectLiteralValue);
                 if(propertyToRevive.length === 0) {
                     propertyToRevive = this._propertyToReviveEmptySet;
                 } else {
@@ -385,7 +348,38 @@ var MontageContext = Montage.specialize({
 
     setBindingsToDeserialize: {
         value: function (object, objectDesc) {
-                this._classifyValuesToDeserialize(object, objectDesc);
+            var values;
+
+
+            //This is where we support backward compatib
+             if((values = objectDesc.properties)) {
+                objectDesc.values = values;
+                delete objectDesc.properties;
+             }
+             else {
+                if((values = objectDesc.values)) {
+                    var keys = ObjectKeys(values),
+                        bindings = objectDesc.bindings || (objectDesc.bindings = {}),
+                        value;
+
+                    for (var i=0, key;(key = keys[i]);i++) {
+                        value = values[key];
+
+                        //An expression based property
+                        if (value && (typeof value === "object" &&
+                            (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) ||
+                            key.indexOf('.') > -1
+                        ) {
+                            bindings[key] = value;
+                            delete values[key];
+                        }
+                    }
+
+                }
+            }
+
+
+            return bindings;
         }
     },
 
