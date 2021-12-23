@@ -275,24 +275,38 @@ Date.prototype.toRFC3339LocaleString = function (supressFormating, supressMillis
     return result;
 }
 
+var parseRFC3339_RegExp = /(\d\d\d\d)(-)?(\d\d)(-)?(\d\d)(T)?(\d\d)(:)?(\d\d)?(:)?(\d\d)?([\.,]\d+)?($|Z|([+-])(\d\d)(:)?(\d\d)?)/i;
+
+function _stringMatchRFC3339(dString, isString) {
+
+    // if ((isString !== true || (typeof dString != 'string')) && !dString.endsWith("Z")) return;
+    // return dString.match(_stringMatchRFC3339.parseRFC3339_RegExp);
+
+    if ((isString || typeof dString === 'string') && dString.endsWith("Z")) {
+        return dString.match(_stringMatchRFC3339.parseRFC3339_RegExp);
+    }
+
+}
+_stringMatchRFC3339.parseRFC3339_RegExp = parseRFC3339_RegExp
+
 /*
  * Date.parseRFC3339
  * extend Date with a method parsing ISO8601 / RFC 3339 date strings.
  * Usage: var d = Date.parseRFC3339( "2010-07-20T15:00:00Z" );
  */
-function _parseRFC3339(dString, _typeOf) {
-    if ((_typeOf || (typeof dString)) != 'string' || !_parseRFC3339.endsByZ.test(dString)) return;
+function _parseRFC3339(dString, isString) {
     var result,
-        d = dString.match(_parseRFC3339.parseRFC3339_RegExp);
+        d = _stringMatchRFC3339(dString, isString);
 
     if (d) {
-        var year = parseInt(d[1], 10);
-        var mon = parseInt(d[3], 10) - 1;
-        var day = parseInt(d[5], 10);
-        var hour = parseInt(d[7], 10);
-        var mins = (d[9] ? parseInt(d[9], 10) : 0);
-        var secs = (d[11] ? parseInt(d[11], 10) : 0);
-        var millis = (d[12] ? parseFloat(String(1.5).charAt(1) + d[12].slice(1)) * 1000 : 0);
+        var year = parseInt(d[1], 10),
+            mon = parseInt(d[3], 10) - 1,
+            day = parseInt(d[5], 10),
+            hour = parseInt(d[7], 10),
+            mins = (d[9] ? parseInt(d[9], 10) : 0),
+            secs = (d[11] ? parseInt(d[11], 10) : 0),
+            millis = (d[12] ? parseFloat(String(1.5).charAt(1) + d[12].slice(1)) * 1000 : 0);
+
         if (d[13]) {
             result = new Date(0);
             result.setUTCFullYear(year);
@@ -313,17 +327,20 @@ function _parseRFC3339(dString, _typeOf) {
         }
     }
     return result;
+    //}
+
 };
-_parseRFC3339.parseRFC3339_RegExp = /(\d\d\d\d)(-)?(\d\d)(-)?(\d\d)(T)?(\d\d)(:)?(\d\d)?(:)?(\d\d)?([\.,]\d+)?($|Z|([+-])(\d\d)(:)?(\d\d)?)/i;
+
 _parseRFC3339.endsByZ = /Z$/i;
 Date.parseRFC3339 = _parseRFC3339;
+Date.stringMatchRFC3339 = _stringMatchRFC3339;
 
 
 function isRFC3339DateString(dString) {
     if ((_typeOf || (typeof dString)) != 'string' || !isRFC3339DateString.endsByZ.test(dString)) return false;
     return isRFC3339DateString.parseRFC3339_RegExp.test(dString);
 };
-isRFC3339DateString.parseRFC3339_RegExp = _parseRFC3339.parseRFC3339_RegExp;
+isRFC3339DateString.parseRFC3339_RegExp = parseRFC3339_RegExp;
 isRFC3339DateString.endsByZ = _parseRFC3339.endsByZ;
 Date.isRFC3339DateString = isRFC3339DateString;
 

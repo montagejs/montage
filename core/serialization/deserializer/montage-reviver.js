@@ -23,6 +23,7 @@ var Montage = require("../../core").Montage,
     ObjectCreate = Object.create,
     PromiseIs = Promise.is,
     DateParseRFC3339 = Date.parseRFC3339,
+    stringMatchRFC3339 = Date.stringMatchRFC3339,
     isArray = Array.isArray;
 
 
@@ -282,7 +283,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 ? nullStringConstant
                 : ((typeOf = typeof value) === objectStringConstant)
                     ? this._getTypeOf_object(value)
-                    : (typeOf === "string" && DateParseRFC3339(value, typeOf))
+                    : (typeOf === "string" && stringMatchRFC3339(value, true))
                         ? "date"
                         : typeOf;
         }
@@ -1216,11 +1217,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     reviveDate: {
         value: function reviveDate(value, context, label) {
 
-            var date = DateParseRFC3339(value);
-
-            if (label) {
-                context.setObjectLabel(date, label);
-            }
+            var date = DateParseRFC3339(value, true);
 
             return date;
         }
