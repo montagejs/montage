@@ -1167,17 +1167,19 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     return value;
                 }
 
-                if (_PromiseIs((item = this.reviveValue(iValue, context)))) {
-                    item = item.then(_createAssignValueFunction(value, propertyName));
+                if(iValue !== (item = this.reviveValue(iValue, context))) {
+                    if (_PromiseIs(item)) {
+                        item = item.then(_createAssignValueFunction(value, propertyName));
 
-                    !firstPromise
-                        ? firstPromise = item
-                        : !promises
-                            ? promises = [firstPromise, item]
-                            : promises.push(item);
+                        !firstPromise
+                            ? firstPromise = item
+                            : !promises
+                                ? promises = [firstPromise, item]
+                                : promises.push(item);
 
-                } else if(iValue !== item) {
-                    value[propertyName] = item;
+                    } else {
+                        value[propertyName] = item;
+                    }
                 }
 
                 /*
