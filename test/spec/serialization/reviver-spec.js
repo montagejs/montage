@@ -24,7 +24,7 @@ describe("reviver", function() {
                         getUserObject: function() {
                             return externalObject;
                         },
-                        setObjectLabel: function() {}
+                        setObjectLabel: function(object, label) {return object;}
                     },
                     object = reviver.reviveRootObject({}, context, "external");
 
@@ -40,7 +40,7 @@ describe("reviver", function() {
                         getUserObject: function() {
                             return;
                         },
-                        setObjectLabel: function() {}
+                        setObjectLabel: function(object, label) {return object;}
                     },
                     revived;
 

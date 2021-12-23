@@ -292,9 +292,9 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     _checkLabel: {
         value: function (label, isTemplateProperty) {
             if (isTemplateProperty && label[0] !== ":") {
-                return new Error("Aliases can only be defined in template values (start with a colon (:)), \"" + label + "\".");
+                throw new Error("Aliases can only be defined in template values (start with a colon (:)), \"" + label + "\".");
             } else if (!isTemplateProperty && label[0] === ":") {
-                return new Error("Only aliases are allowed as template values (start with a colon (:), \"" + label + "\".");
+                throw new Error("Only aliases are allowed as template values (start with a colon (:), \"" + label + "\".");
             }
         }
     },
@@ -458,6 +458,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     reviveRootObject: {
         value: function reviveRootObject(value, context, label) {
 
+
             if(value === undefined) {
                 var notFoundError = new Error("Object with label '" + label + "' was not found.");
                 if (this._isSync) {
@@ -466,17 +467,16 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     return Promise.reject(notFoundError);
                 }
             }
-
-            var isAlias = "alias" in value,
-                error = this._checkLabel(label, isAlias),
+            var valueKeys = ObjectKeys(value),
+                isAlias = valueKeys.indexOf("alias") !== -1,
+            // var isAlias = "alias" in value,
                 valueValue,
                 object;
 
             // Only aliases are allowed as template values, everything else
             // should be rejected as an error.
-            if (error) {
-                throw error;
-            }
+            this._checkLabel(label, isAlias);
+
 
             // Check if the optional "debugger" unit is set for this object
             // and stop the execution. This is intended to provide a certain
@@ -505,49 +505,47 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     }
 
                     // return object;
-                }
-
-                var valueType = this.getTypeOf(valueValue),
+                } else {
+                    var valueType = this.getTypeOf(valueValue),
                     revivedValue = this.reviveValue(valueValue, context, label, valueType),
                     revivedUnits = this.reviveObjectLiteral(value, context, undefined, MontageReviver._unitNames);
 
-                context.setObjectLabel(revivedValue, label);
+                    context.setObjectLabel(revivedValue, label);
 
-                if (valueType === "Element") {
-                    if (!PromiseIs(revivedValue)) {
-                        var proxyElement = this.setProxyOnElement(revivedValue, value);
-                        this.setProxyForDatasetOnElement(revivedValue, value);
-                        this.wrapSetAttributeForElement(revivedValue);
+                    if (valueType === "Element") {
+                        if (!PromiseIs(revivedValue)) {
+                            var proxyElement = this.setProxyOnElement(revivedValue, value);
+                            this.setProxyForDatasetOnElement(revivedValue, value);
+                            this.wrapSetAttributeForElement(revivedValue);
 
-                        context.setBindingsToDeserialize(proxyElement, revivedUnits);
+                            context.setBindingsToDeserialize(proxyElement, revivedUnits);
+                            this.deserializeMontageObjectValues(
+                                proxyElement,
+                                revivedUnits.values || revivedUnits.properties, //deprecated
+                                context
+                            );
+                            context.setUnitsToDeserialize(proxyElement, revivedUnits, MontageReviver._unitNames);
+                        }
+                    } else if (valueType === objectStringConstant) {
+                        context.setBindingsToDeserialize(revivedValue, revivedUnits);
                         this.deserializeMontageObjectValues(
-                            proxyElement,
+                            revivedValue,
                             revivedUnits.values || revivedUnits.properties, //deprecated
                             context
                         );
-                        context.setUnitsToDeserialize(proxyElement, revivedUnits, MontageReviver._unitNames);
+                        context.setUnitsToDeserialize(revivedValue, revivedUnits, MontageReviver._unitNames);
                     }
-                } else if (valueType === objectStringConstant) {
-                    context.setBindingsToDeserialize(revivedValue, revivedUnits);
-                    this.deserializeMontageObjectValues(
-                        revivedValue,
-                        revivedUnits.values || revivedUnits.properties, //deprecated
-                        context
-                    );
-                    context.setUnitsToDeserialize(revivedValue, revivedUnits, MontageReviver._unitNames);
+
+                    return revivedValue;
                 }
 
-                return revivedValue;
 
-            } else if (ObjectKeys(value).length === 0) {
+            } else if (valueKeys.length === 0) {
                 // it's an external object
-                if (context.hasUserObject(label)) {
-                    object = context.getUserObject(label);
-                    context.setObjectLabel(object, label);
-                    return object;
-                }
+                return context.hasUserObject(label)
+                    ? context.setObjectLabel(/*object*/ context.getUserObject(label) , label)
+                    : this.reviveExternalObject(value, context, label);
 
-                return this.reviveExternalObject(value, context, label);
             } else if (isAlias) {
                 return this.reviveAlias(value, context, label);
             } else {
@@ -1135,7 +1133,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 A way to efficiently execute context.setObjectLabel(value, label) conditionally while returning value when we do.
             */
             return label
-                ? context.setObjectLabel(value, label) || value
+                ? context.setObjectLabel(value, label) /* setObjectLabel() returns the value set */
                 : value;
         }
     },
@@ -1206,11 +1204,9 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             var valuePath = value["/"],
                 regexp = new RegExp(valuePath.source, valuePath.flags);
 
-            if (label) {
-                context.setObjectLabel(regexp, label);
-            }
-
-            return regexp;
+            return label
+                ? context.setObjectLabel(regexp, label)
+                : regexp;
         }
     },
 
@@ -1219,7 +1215,9 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
             var date = DateParseRFC3339(value, true);
 
-            return date;
+            return label
+                ? context.setObjectLabel(date, label)
+                : date;
         }
     },
 
