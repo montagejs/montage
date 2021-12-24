@@ -1095,7 +1095,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function reviveValue(value, context, label, valueType) {
             var revived = (
                     reviveValue._methodByType[
-                        (valueType = valueType || this.getTypeOf(value))
+                        (valueType || (valueType = this.getTypeOf(value)))
                     ]
                     ||
                     this[("revive" + valueType)]
