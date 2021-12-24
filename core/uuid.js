@@ -37,7 +37,7 @@ if (typeof crypto === 'undefined') {
 
         Adding () around require fools mr into not trying to parse that as a dependency on the client
     */
-        global._crypto = crypto = global._crypto || (require) ('crypto');
+        global.crypto = crypto = global.crypto || (require) ('crypto');
 
         if (!('randomUUID' in crypto)) {
 

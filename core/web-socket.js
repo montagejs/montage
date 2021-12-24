@@ -44,10 +44,111 @@ if(_WebSocket) {
         reconnectionInterval: {
             value: 100
         },
+        reconnectionAttemptCount: {
+            value: 3
+        },
+        reconnectionAttemptDelay: {
+            value: 1000
+        },
 
+        /**
+ * inits a websocket by a given url, returned promise resolves with initialized websocket, rejects after failure/timeout.
+ *
+ * @param url the websocket url to init
+ * @param existingWebsocket if passed and this passed websocket is already open, this existingWebsocket is resolved, no additional websocket is opened
+ * @param timeoutMs the timeout in milliseconds for opening the websocket
+ * @param numberOfRetries the number of times initializing the socket should be retried, if not specified or 0, no retries are made
+ *        and a failure/timeout causes rejection of the returned promise
+ * @return {Promise}
+ */
+
+        /*
+function initWebsocket(url, existingWebsocket, timeoutMs, numberOfRetries) {
+    timeoutMs = timeoutMs ? timeoutMs : 1500;
+    numberOfRetries = numberOfRetries ? numberOfRetries : 0;
+    var hasReturned = false;
+    var promise = new Promise((resolve, reject) => {
+        setTimeout(function () {
+            if(!hasReturned) {
+                console.info('opening websocket timed out: ' + url);
+                rejectInternal();
+            }
+        }, timeoutMs);
+        if (!existingWebsocket || existingWebsocket.readyState != existingWebsocket.OPEN) {
+            if (existingWebsocket) {
+                existingWebsocket.close();
+            }
+            var websocket = new WebSocket(url);
+            websocket.onopen = function () {
+                if(hasReturned) {
+                    websocket.close();
+                } else {
+                    console.info('websocket to opened! url: ' + url);
+                    resolve(websocket);
+                }
+            };
+            websocket.onclose = function () {
+                console.info('websocket closed! url: ' + url);
+                rejectInternal();
+            };
+            websocket.onerror = function () {
+                console.info('websocket error! url: ' + url);
+                rejectInternal();
+            };
+        } else {
+            resolve(existingWebsocket);
+        }
+
+        function rejectInternal() {
+            if(numberOfRetries <= 0) {
+                reject();
+            } else if(!hasReturned) {
+                hasReturned = true;
+                console.info('retrying connection to websocket! url: ' + url + ', remaining retries: ' + (numberOfRetries-1));
+                initWebsocket(url, null, timeoutMs, numberOfRetries-1).then(resolve, reject);
+            }
+        }
+    });
+    promise.then(function () {hasReturned = true;}, function () {hasReturned = true;});
+    return promise;
+};
+*/
         _connect: {
-            value: function () {
+            value: function (timeoutMs) {
+                /*
+                    use navigator.onLine ?
+                */
+                var timeoutMs = timeoutMs
+                        ? timeoutMs
+                        : this.reconnectionAttemptDelay,
+                    self = this;
+
                 this._webSocket = new _WebSocket(this._url, this._protocols);
+                setTimeout( function() {
+                    // console.log("_connect setTimeout: self.readyState is "+self.readyState);
+                    if(self.readyState !== WebSocket.OPEN) {
+
+                        self.reconnectionAttemptCount--;
+                        if(self.reconnectionAttemptCount <= 0) {
+                            // console.info('opening websocket timed out: ' + self._url);
+                            var event = new ErrorEvent('error', {
+                                error : new Error('WebSocketConnectionFailed'),
+                                message : 'WebSocket Connection Failed after '+timeoutMs+'ms and '+self.reconnectionAttemptCount+' reconnection attempts'
+                                /*,
+                                lineno : 402,
+                                filename : 'closet.html'
+                                */
+                            });
+                            self.dispatchEvent(event);
+                        } else {
+                            // console.log("_connect setTimeout: self._reconnect()");
+                            self._reconnect();
+                        }
+                    }
+                }, timeoutMs);
+
+                this.reconnectionAttemptCount = this.reconnectionAttemptCount;
+
                 this._webSocket.addEventListener("error", event => this.handleEvent(event), false);
                 this._webSocket.addEventListener("open", event => this.handleEvent(event), false);
             }
