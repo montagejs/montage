@@ -918,7 +918,8 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
                 return config.normalizeId(config.resolve(id, viaId), config);
             };
 
-            require.getModule = getModuleDescriptor; // XXX deprecated, use:
+            // XXX deprecated
+            // require.getModule = getModuleDescriptor; // XXX deprecated, use:
             require.getModuleDescriptor = getModuleDescriptor;
             require.load = load;
             require.deepLoad = deepLoad;
