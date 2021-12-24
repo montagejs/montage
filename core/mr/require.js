@@ -775,8 +775,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
         // Initializes a module by executing the factory function with a new
         // module "exports" object.
         function getExports(topId, viaId) {
-            var module = getModuleDescriptor(topId),
-                moduleExports = module.exports;
+            var module = getModuleDescriptor(topId);
 
             // check for consistent case convention
             if (module.id !== topId) {
@@ -797,6 +796,17 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
                 throw error;
             }
 
+                // handle redirects
+            return (module.redirect !== void 0)
+                ? getExports(module.redirect, viaId)
+                // handle cross-package linkage
+                : (module.mappingRedirect !== void 0)
+                    ? module.mappingRequire(module.mappingRedirect, viaId)
+                    // do not reinitialize modules
+                    : (module.exports !== void 0)
+                        ? module.exports
+                        : executeModuleCompiler(module, config, topId, viaId);
+
             // handle redirects
             if (module.redirect !== void 0) {
                 return getExports(module.redirect, viaId);
@@ -808,10 +818,17 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
             }
 
             // do not reinitialize modules
-            if (moduleExports !== void 0) {
-                return moduleExports;
+
+            if (module.exports !== void 0) {
+                return module.exports;
             }
 
+            return executeModuleCompiler(module, config, topId);
+        }
+
+
+        // call module's config executeCompiler to get the "exports" object set
+        function executeModuleCompiler(module, config, topId, viaId) {
             // do not initialize modules that do not define a factory function
             if (module.factory === void 0) {
                 throw new Error(
@@ -821,13 +838,10 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
             }
 
             module.directory = locationByRemovingLastURLComponentKeepingSlash(module.location);
-            //module.directory = module.location.substring(0,module.location.lastIndexOf("/")+1);
-            // module.directory = URLResolve(module.location, "./"); // EXTENSION
-            module.exports = moduleExports = {};
 
             try {
                 // Execute the factory function:
-                var returnValue = config.executeCompiler(module.factory, requireForId(topId), moduleExports, module);
+                var returnValue = config.executeCompiler(module.factory, requireForId(topId), (module.exports = {}), module);
             } catch (_error) {
                 // Delete the exports so that the factory is run again if this
                 // module is required again
