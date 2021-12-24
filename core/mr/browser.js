@@ -432,8 +432,8 @@ bootstrap("require/browser", function (require) {
         } else {
             Loader = Require.XhrLoader;
         }
-        return Require.ReelLoader(config,
-            Require.MappingsLoader(
+        return Require.MappingsLoader(config,
+            Require.ReelLoader(
                 config,
                 Require.LocationLoader(
                     config,
