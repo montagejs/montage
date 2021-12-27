@@ -88,173 +88,173 @@ MontageBoot.loadPackage = function (location, config) {
     return Require.loadPackage(config.location, config);
 };
 
-function getMontageMontageDeserializer() {
-    if (getMontageMontageDeserializer._promise) {
-        return getMontageMontageDeserializer._promise;
-    }
+// function getMontageMontageDeserializer() {
+//     if (getMontageMontageDeserializer._promise) {
+//         return getMontageMontageDeserializer._promise;
+//     }
 
-    return (getMontageMontageDeserializer._promise = MontageBoot.loadPackage(PATH.join(__dirname, "."))
-        .then(function (mr) {
-            return mr.async("./core/serialization/deserializer/montage-deserializer")
-            .then(function (MontageDeserializerModule) {
-                return (MontageBoot.MontageDeserializer =
-                    MontageDeserializerModule.MontageDeserializer
-                );
-            });
-    }));
-}
+//     return (getMontageMontageDeserializer._promise = MontageBoot.loadPackage(PATH.join(__dirname, "."))
+//         .then(function (mr) {
+//             return mr.async("./core/serialization/deserializer/montage-deserializer")
+//             .then(function (MontageDeserializerModule) {
+//                 return (MontageBoot.MontageDeserializer =
+//                     MontageDeserializerModule.MontageDeserializer
+//                 );
+//             });
+//     }));
+// }
 
 Require.delegate = MontageBoot;
 
-function parseHtml(html) {
-    var dom, error;
+// function parseHtml(html) {
+//     var dom, error;
 
-    var handler = new htmlparser.DomHandler(function (_error, _dom) {
-        error = _error;
-        dom = _dom;
-    });
+//     var handler = new htmlparser.DomHandler(function (_error, _dom) {
+//         error = _error;
+//         dom = _dom;
+//     });
 
-    // although these functions use callbacks they are actually synchronous
-    var parser = new htmlparser.Parser(handler);
-    parser.write(html);
-    parser.done();
+//     // although these functions use callbacks they are actually synchronous
+//     var parser = new htmlparser.Parser(handler);
+//     parser.write(html);
+//     parser.done();
 
-    if (error) {
-        throw error;
-    } else if (!dom) {
-        throw new Error("HTML parsing did not complete");
-    }
+//     if (error) {
+//         throw error;
+//     } else if (!dom) {
+//         throw new Error("HTML parsing did not complete");
+//     }
 
-    // wrap the returned array in a pseudo-document object for consistency
-    return {type: "document", children: dom};
-}
+//     // wrap the returned array in a pseudo-document object for consistency
+//     return {type: "document", children: dom};
+// }
 
-function visit(element, visitor) {
-    var pruned;
-    var prune = function () {
-        pruned = true;
-    };
-    visitor(element, prune);
-    if (pruned) {
-        return;
-    }
+// function visit(element, visitor) {
+//     var pruned;
+//     var prune = function () {
+//         pruned = true;
+//     };
+//     visitor(element, prune);
+//     if (pruned) {
+//         return;
+//     }
 
-    var children = element.children;
-    var len = children ? children.length : 0;
-    for (var i = 0; i < len; i++) {
-        visit(children[i], visitor);
-    }
-}
+//     var children = element.children;
+//     var len = children ? children.length : 0;
+//     for (var i = 0; i < len; i++) {
+//         visit(children[i], visitor);
+//     }
+// }
 
-function getAttribute(element, name) {
-    return element.attribs ? element.attribs[name] : null;
-}
+// function getAttribute(element, name) {
+//     return element.attribs ? element.attribs[name] : null;
+// }
 
-function getText(element) {
-    return DomUtils.getText(element);
-}
+// function getText(element) {
+//     return DomUtils.getText(element);
+// }
 
-function parsePrototypeForModule(prototype) {
-    return prototype.replace(/\[[^\]]+\]$/, "");
-}
+// function parsePrototypeForModule(prototype) {
+//     return prototype.replace(/\[[^\]]+\]$/, "");
+// }
 
-function collectSerializationDependencies(serializationJSON, dependencies) {
-    Object.keys(serializationJSON).forEach(function (label) {
-        var description = serializationJSON[label];
-        if (description.lazy) {
-            return;
-        }
-        if (typeof description.prototype === "string") {
-            dependencies.push(parsePrototypeForModule(description.prototype));
-        }
-        if (typeof description.object === "string") {
-            dependencies.push(parsePrototypeForModule(description.object));
-        }
-    });
-    return dependencies;
-}
+// function collectSerializationDependencies(serializationJSON, dependencies) {
+//     Object.keys(serializationJSON).forEach(function (label) {
+//         var description = serializationJSON[label];
+//         if (description.lazy) {
+//             return;
+//         }
+//         if (typeof description.prototype === "string") {
+//             dependencies.push(parsePrototypeForModule(description.prototype));
+//         }
+//         if (typeof description.object === "string") {
+//             dependencies.push(parsePrototypeForModule(description.object));
+//         }
+//     });
+//     return dependencies;
+// }
 
-function collectHtmlDependencies(dom, dependencies) {
-    visit(dom, function (element) {
-        if (DomUtils.isTag(element)) {
-            if (element.name === "script") {
-                if (getAttribute(element, "type") === "text/montage-serialization") {
-                    collectSerializationDependencies(JSON.parse(getText(element)), dependencies);
-                }
-            } else if (element.name === "link") {
-                if (getAttribute(element, "type") === "text/montage-serialization") {
-                    dependencies.push(getAttribute(element, "href"));
-                }
-            }
-        }
-    });
-}
+// function collectHtmlDependencies(dom, dependencies) {
+//     visit(dom, function (element) {
+//         if (DomUtils.isTag(element)) {
+//             if (element.name === "script") {
+//                 if (getAttribute(element, "type") === "text/montage-serialization") {
+//                     collectSerializationDependencies(JSON.parse(getText(element)), dependencies);
+//                 }
+//             } else if (element.name === "link") {
+//                 if (getAttribute(element, "type") === "text/montage-serialization") {
+//                     dependencies.push(getAttribute(element, "href"));
+//                 }
+//             }
+//         }
+//     });
+// }
 
-function parseHtmlDependencies(text/*, location*/) {
-    var dependencies = [];
-    var dom = parseHtml(text);
-    collectHtmlDependencies(dom, dependencies);
-    return dependencies;
-}
+// function parseHtmlDependencies(text/*, location*/) {
+//     var dependencies = [];
+//     var dom = parseHtml(text);
+//     collectHtmlDependencies(dom, dependencies);
+//     return dependencies;
+// }
 
-var html_regex = /(.*\/)?(?=[^\/]+\.html$)/,
-    json_regex = /(?=[^\/]+\.json$)/,
-    mjson_regex = /(?=[^\/]+\.(?:mjson|meta)$)/,
-    reel_regex = /(.*\/)?([^\/]+)\.reel\/\2$/;
-MontageBoot.TemplateLoader = function (config, load) {
-    return function (moduleId, module) {
+// var html_regex = /(.*\/)?(?=[^\/]+\.html$)/,
+//     json_regex = /(?=[^\/]+\.json$)/,
+//     mjson_regex = /(?=[^\/]+\.(?:mjson|meta)$)/,
+//     reel_regex = /(.*\/)?([^\/]+)\.reel\/\2$/;
+// MontageBoot.TemplateLoader = function (config, load) {
+//     return function (moduleId, module) {
 
-        //Adding support for modules like:
-        //"prototype": "spec/serialization/bindings-spec[Type]",
+//         //Adding support for modules like:
+//         //"prototype": "spec/serialization/bindings-spec[Type]",
 
-        var bracketIndex = moduleId.indexOf("["),
-            id;
+//         var bracketIndex = moduleId.indexOf("["),
+//             id;
 
-        if (bracketIndex > 0) {
-            id = moduleId.substr(0, bracketIndex);
-        }
-        else {
-            id = moduleId;
-        }
+//         if (bracketIndex > 0) {
+//             id = moduleId.substr(0, bracketIndex);
+//         }
+//         else {
+//             id = moduleId;
+//         }
 
-        var html = id.match(html_regex);
-        var serialization = id.match(json_regex); // XXX this is not necessarily a strong indicator of a serialization alone
-        var meta = id.match(mjson_regex);
-        var reelModule = id.match(reel_regex);
-        if (html) {
-            return load(id, module)
-            .then(function () {
-                module.dependencies = parseHtmlDependencies(module.text, module.location);
-                return module;
-            });
-        } else if (serialization) {
-            return load(id, module)
-            .then(function () {
-                module.dependencies = collectSerializationDependencies(module.json, []);
-                return module;
-            });
-        } else if (meta) {
-            return load(id, module);
-        } else if (reelModule) {
-            return load(id, module)
-            .then(function () {
-                var reelHtml = URL.resolve(module.location, reelModule[2] + ".html");
-                return FS.stat(URL.parse(reelHtml).pathname)
-                .then(function (stat) {
-                    if (stat.isFile()) {
-                        module.extraDependencies = [id + ".html"];
-                    }
-                }, function (error) {
-                    // not a problem
-                    // montage/ui/loader.reel/loader.html": Error: ENOENT: no such file or directory
-                    console.log(error.message);
-                });
-            });
-        } else {
-            return load(id, module);
-        }
-    };
-};
+//         var html = id.match(html_regex);
+//         var serialization = id.match(json_regex); // XXX this is not necessarily a strong indicator of a serialization alone
+//         var meta = id.match(mjson_regex);
+//         var reelModule = id.match(reel_regex);
+//         if (html) {
+//             return load(id, module)
+//             .then(function () {
+//                 module.dependencies = parseHtmlDependencies(module.text, module.location);
+//                 return module;
+//             });
+//         } else if (serialization) {
+//             return load(id, module)
+//             .then(function () {
+//                 module.dependencies = collectSerializationDependencies(module.json, []);
+//                 return module;
+//             });
+//         } else if (meta) {
+//             return load(id, module);
+//         } else if (reelModule) {
+//             return load(id, module)
+//             .then(function () {
+//                 var reelHtml = URL.resolve(module.location, reelModule[2] + ".html");
+//                 return FS.stat(URL.parse(reelHtml).pathname)
+//                 .then(function (stat) {
+//                     if (stat.isFile()) {
+//                         module.extraDependencies = [id + ".html"];
+//                     }
+//                 }, function (error) {
+//                     // not a problem
+//                     // montage/ui/loader.reel/loader.html": Error: ENOENT: no such file or directory
+//                     console.log(error.message);
+//                 });
+//             });
+//         } else {
+//             return load(id, module);
+//         }
+//     };
+// };
 
 if(!global.performance) {
     Object.defineProperties(global,
@@ -272,9 +272,9 @@ if(!global.performance) {
 }
 
 // add the TemplateLoader to the middleware chain
-Require.makeLoader = (function (makeLoader) {
-    return function (config) {
-        return MontageBoot.TemplateLoader(config, makeLoader(config));
-    };
-})(Require.makeLoader);
+// Require.makeLoader = (function (makeLoader) {
+//     return function (config) {
+//         return MontageBoot.TemplateLoader(config, makeLoader(config));
+//     };
+// })(Require.makeLoader);
 
