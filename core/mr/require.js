@@ -175,14 +175,14 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
     normalizeId.cache = new Map();
     normalizeId.pattern = /^(.*)\.js$/;
 
-    var __memoize = function __memoize(callback, key, arg, cache, result) {
+    var __memoizeCallResultForKey = function __memoizeCallResultForKey(cache, result, key) {
         return cache.set(key, result) && result;
     };
 
     function _cacheMemoize(callback, cache) {
 
         var _memoize = function _memoize(key, arg) {
-            return cache.get(key) || __memoize(callback, key, arg, cache, callback(key, arg)) ;
+            return cache.get(key) || __memoizeCallResultForKey(cache, callback(key, arg), key) ;
         };
 
         cache.set(callback,_memoize);
