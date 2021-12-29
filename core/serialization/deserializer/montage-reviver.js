@@ -1139,7 +1139,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     },
 
     reviveObjectLiteral: {
-        value: function reviveObjectLiteral(value, context, label, filterKeys) {
+        value: function reviveObjectLiteral(value, context, label, filterKeys, object) {
             var item,
                 _PromiseIs = PromiseIs,
                 _createAssignValueFunction = this._createAssignValueFunction,
