@@ -359,7 +359,7 @@ var MontageContext = Montage.specialize({
              else {
                 if((values = objectDesc.values)) {
                     var keys = ObjectKeys(values),
-                        bindings = objectDesc.bindings || (objectDesc.bindings = {}),
+                        bindings,
                         value;
 
                     for (var i=0, key;(key = keys[i]);i++) {
@@ -370,7 +370,7 @@ var MontageContext = Montage.specialize({
                             (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) ||
                             key.indexOf('.') > -1
                         ) {
-                            bindings[key] = value;
+                            (bindings || ( bindings = objectDesc.bindings || (objectDesc.bindings = {})))[key] = value;
                             delete values[key];
                         }
                     }
