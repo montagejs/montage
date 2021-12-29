@@ -492,8 +492,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     object = context.getUserObject(label);
                     context.setObjectLabel(object, label);
 
-                    context.setBindingsToDeserialize(object, value);//Looks in values for all "bindings to collect and apply later"
-                    var montageObjectDesc = this.reviveObjectLiteral(value, context,undefined, undefined, object);
+                    //context.setBindingsToDeserialize(object, value);//Looks in values for all "bindings to collect and apply later"
+                    var montageObjectDesc = this.reviveObjectLiteral(value, context, undefined, undefined, object, true);
 
                     if (PromiseIs(montageObjectDesc)) {
                         var self = this;
@@ -508,7 +508,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 } else {
                     var valueType = this.getTypeOf(valueValue),
                     revivedValue = this.reviveValue(valueValue, context, label, valueType),
-                    revivedUnits = this.reviveObjectLiteral(value, context, undefined, MontageReviver._unitNames);
+                    revivedUnits = this.reviveObjectLiteral(value, context, undefined, MontageReviver._unitNames, revivedValue, true);
 
                     context.setObjectLabel(revivedValue, label);
 
@@ -518,7 +518,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                             this.setProxyForDatasetOnElement(revivedValue, value);
                             this.wrapSetAttributeForElement(revivedValue);
 
-                            context.setBindingsToDeserialize(proxyElement, revivedUnits);
+                            //context.setBindingsToDeserialize(proxyElement, revivedUnits);
                             this.deserializeMontageObjectValues(
                                 proxyElement,
                                 revivedUnits.values || revivedUnits.properties, //deprecated
@@ -527,7 +527,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                             context.setUnitsToDeserialize(proxyElement, revivedUnits, MontageReviver._unitNames);
                         }
                     } else if (valueType === objectStringConstant) {
-                        context.setBindingsToDeserialize(revivedValue, revivedUnits);
+                        //context.setBindingsToDeserialize(revivedValue, revivedUnits);
                         this.deserializeMontageObjectValues(
                             revivedValue,
                             revivedUnits.values || revivedUnits.properties, //deprecated
@@ -802,8 +802,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 );
             }
 
-            context.setBindingsToDeserialize(object, serialization);//Looks in values for all "bindings to collect and apply later"
-            montageObjectDesc = this.reviveObjectLiteral(serialization, context,undefined, undefined, object);
+            //context.setBindingsToDeserialize(object, serialization);//Looks in values for all "bindings to collect and apply later"
+            montageObjectDesc = this.reviveObjectLiteral(serialization, context, undefined, undefined, object, true);
 
             if (PromiseIs(montageObjectDesc)) {
                 var self = this;
@@ -1138,38 +1138,101 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         }
     },
 
+    /**
+     * reviveObjectLiteral now takes on what was done in montage-interpreter.js setBindingsToDeserialize().
+     * setBindingsToDeserialize is doing a full loop on all of a top level values entries to figure out
+     * what needs to be processed as binding / expressions, and also handles backward compatibility of the
+     * "properties" block that was designed to only handle simple assignments.
+     *
+     * By inlining that logic here, we can do it in one pass, as reviveObjectLiteral loops over
+     * the very same values block keys again anyway.
+     *
+     * From the places setBindingsToDeserialize() was called rigfht before reviveObjectLiteral(),
+     * we pass a new argument - setBindingsToDeserialize as true, which we use to know we're in a top level
+     * block and we should do something special. Once we detect that, we call directly reviveObjectLiteral()
+     * again this time passing the parent object where a "bindings" entry may need to be created if
+     * relevant entries for {"<-": "..."}, {"<->": "..."} or {"=": "..."} are found, as we're moving them there
+     * and deleting them from "values"
+     *
+     *  @function reviveObjectLiteral
+     *  @returns {Object} - a revived object from the passed value expected to be an object
+    */
+
     reviveObjectLiteral: {
-        value: function reviveObjectLiteral(value, context, label, filterKeys, object) {
+        value: function reviveObjectLiteral(value, context, label, filterKeys, object, setBindingsToDeserialize, bidingParentObject) {
             var item,
+                isNotSync = !this._isSync,
                 _PromiseIs = PromiseIs,
                 _createAssignValueFunction = this._createAssignValueFunction,
                 firstPromise,
                 promises,
-                // propertyNames = context.propertyToReviveForObjectLiteralValue(value),
-                propertyNames = ObjectKeys(value),
+                propertyNames,
                 i = 0,
-                propertyName, iValue;
-                // propertyNamesIterator = propertyNames.values();
+                propertyName,
+                iValue,
+                iValueContainer = value,
+                bindings;
 
 
             if (label) {
                 context.setObjectLabel(value, label);
             }
 
-            //while((propertyName = propertyNamesIterator.next().value)) {
+            if(setBindingsToDeserialize && value.properties) {
+                value.values = value.properties;
+                delete value.properties;
+            }
+
+            propertyNames = ObjectKeys(value);
+
             while((propertyName = propertyNames[i++])) {
+
+                iValue = value[propertyName];
+
+                if(setBindingsToDeserialize) {
+                    if(iValue) {
+
+                        if(object && (propertyName === "values") ) {
+                            this.reviveObjectLiteral(iValue, context, /*label*/undefined, undefined, undefined, setBindingsToDeserialize, value);
+                            continue;
+                        }
+                        else if ((typeof iValue === "object" &&
+                        (ONE_WAY in iValue || TWO_WAY in iValue || ONE_ASSIGNMENT in iValue)) ||
+                        propertyName.indexOf('.') > -1
+                        ) {
+                            if(!bindings || !(bindings = bidingParentObject.bindings)) {
+                                bindings = (bidingParentObject.bindings = {});
+                            }
+                            bindings[propertyName] = iValue;
+                            delete value[propertyName];
+                            /*
+                                If we detect a binding, we set the iValueContainer, where the revived value will go
+                                to be the bindings and make sure we reset it to be the regular passed value object otherwise.
+                            */
+                            iValueContainer = bindings;
+                        } else {
+                            iValueContainer = value;
+                        }
+                    } else {
+                        iValueContainer = value;
+                    }
+
+                }
+
+
                 if ((filterKeys && filterKeys.indexOf(propertyName) === -1)) {
                     continue;
                 }
 
-                if ((iValue = value[propertyName]) === value) {
+                if (iValue === value) {
                     // catch object property that point to its parent
                     return value;
                 }
 
+
                 if(iValue !== (item = this.reviveValue(iValue, context))) {
-                    if (_PromiseIs(item)) {
-                        item = item.then(_createAssignValueFunction(value, propertyName));
+                    if (isNotSync && _PromiseIs(item)) {
+                        item = item.then(_createAssignValueFunction(iValueContainer, propertyName));
 
                         !firstPromise
                             ? firstPromise = item
@@ -1178,7 +1241,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                                 : promises.push(item);
 
                     } else {
-                        value[propertyName] = item;
+                        iValueContainer[propertyName] = item;
                     }
                 }
 
@@ -1188,15 +1251,17 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 //propertyNames.delete(propertyName);
             }
 
-            return firstPromise
-                ? firstPromise.then(function() {
-                    return value;
-                })
-                : promises
-                    ? Promise.all(promises).then(function() {
+            return isNotSync
+                ? firstPromise
+                    ? firstPromise.then(function() {
                         return value;
                     })
-                    : value;
+                    : promises
+                        ? Promise.all(promises).then(function() {
+                            return value;
+                        })
+                        : value
+                : value;
         }
     },
 

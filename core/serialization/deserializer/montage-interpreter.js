@@ -346,42 +346,42 @@ var MontageContext = Montage.specialize({
 
 
 
-    setBindingsToDeserialize: {
-        value: function (object, objectDesc) {
-            var values;
+    // setBindingsToDeserialize: {
+    //     value: function (object, objectDesc) {
+    //         var values;
 
 
-            //This is where we support backward compatib
-             if((values = objectDesc.properties)) {
-                objectDesc.values = values;
-                delete objectDesc.properties;
-             }
-             else {
-                if((values = objectDesc.values)) {
-                    var keys = ObjectKeys(values),
-                        bindings,
-                        value;
+    //         //This is where we support backward compatib
+    //          if((values = objectDesc.properties)) {
+    //             objectDesc.values = values;
+    //             delete objectDesc.properties;
+    //          }
+    //          else {
+    //             if((values = objectDesc.values)) {
+    //                 var keys = ObjectKeys(values),
+    //                     bindings,
+    //                     value;
 
-                    for (var i=0, key;(key = keys[i]);i++) {
-                        value = values[key];
+    //                 for (var i=0, key;(key = keys[i]);i++) {
+    //                     value = values[key];
 
-                        //An expression based property
-                        if (value && (typeof value === "object" &&
-                            (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) ||
-                            key.indexOf('.') > -1
-                        ) {
-                            (bindings || ( bindings = objectDesc.bindings || (objectDesc.bindings = {})))[key] = value;
-                            delete values[key];
-                        }
-                    }
+    //                     //An expression based property
+    //                     if (value && (typeof value === "object" &&
+    //                         (ONE_WAY in value || TWO_WAY in value || ONE_ASSIGNMENT in value)) ||
+    //                         key.indexOf('.') > -1
+    //                     ) {
+    //                         (bindings || ( bindings = objectDesc.bindings || (objectDesc.bindings = {})))[key] = value;
+    //                         delete values[key];
+    //                     }
+    //                 }
 
-                }
-            }
+    //             }
+    //         }
 
 
-            return bindings;
-        }
-    },
+    //         return bindings;
+    //     }
+    // },
 
     setUnitsToDeserialize: {
         value: function (object, objectDesc, unitNames) {
