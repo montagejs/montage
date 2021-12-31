@@ -9,8 +9,9 @@ Promise.is = function (obj) {
     /*
         It's unlikely an object that's neither an object nor a function would have both a then and catch methods, so dropping (typeof obj === 'object' || typeof obj === 'function') for performance optimization. All montage tests pass the same
     */
-	return obj && typeof obj.then === 'function' && typeof obj.catch === 'function';
-	// return obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function' && typeof obj.catch === 'function';
+    return obj && (typeof obj === 'object' || typeof obj === 'function') && ("then" in obj) && ("catch" in obj) && typeof obj.then === "function" && typeof obj.catch === "function";
+    //return obj && typeof obj.then === 'function' && typeof obj.catch === 'function';
+    // return obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function' && typeof obj.catch === 'function';
 };
 
 // Polyfill "Promise.prototypefinally" to support finally
