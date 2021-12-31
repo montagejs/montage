@@ -147,7 +147,7 @@ function initWebsocket(url, existingWebsocket, timeoutMs, numberOfRetries) {
                     }
                 }, timeoutMs);
 
-                this.reconnectionAttemptCount = this.reconnectionAttemptCount;
+                //this.reconnectionAttemptCount = this.reconnectionAttemptCount;
 
                 this._webSocket.addEventListener("error", event => this.handleEvent(event), false);
                 this._webSocket.addEventListener("open", event => this.handleEvent(event), false);
