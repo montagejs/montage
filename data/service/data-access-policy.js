@@ -94,7 +94,7 @@ DataAccessPolicy = exports.DataAccessPolicy = Montage.specialize(/** @lends Data
             value = deserializer.getProperty("dataOperationCriteriaRuleMap");
             if (value !== void 0) {
                 this.dataOperationCriteriaRuleMap = value;
-            } else {
+            } else if(process && process.env.NODE_ENV !== "production") {
                 console.warn("no value for dataOperationCriteriaRuleMap");
             }
 
