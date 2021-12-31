@@ -478,7 +478,7 @@
                 root;
 
             module.deserializer = deserializer;
-            deserializer.init(module.text, deserializerRequire, void 0, module, true);
+            deserializer.init(module.parsedText, deserializerRequire, void 0, module, true, /*useParsedSerialization*/true);
             // deserializer.init(module.json, deserializerRequire, void 0, module, true, true);
 
             try {
