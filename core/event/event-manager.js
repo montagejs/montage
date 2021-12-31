@@ -3912,14 +3912,19 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
 });
 
-Object.defineProperty(exports, "defaultEventManager", {
-    get: function () {
-        if (typeof defaultEventManager === "undefined") {
-            defaultEventManager = new EventManager();
-            if (typeof window !== "undefined") {
-                defaultEventManager.initWithWindow(window);
-            }
-        }
-        return defaultEventManager;
-    }
-});
+// Object.defineProperty(exports, "defaultEventManager", {
+//     get: function () {
+//         if (typeof defaultEventManager === "undefined") {
+//             defaultEventManager = new EventManager();
+//             if (typeof window !== "undefined") {
+//                 defaultEventManager.initWithWindow(window);
+//             }
+//         }
+//         return defaultEventManager;
+//     }
+// });
+
+exports.defaultEventManager = defaultEventManager = new EventManager();
+if (typeof window !== "undefined") {
+    defaultEventManager.initWithWindow(window);
+}
