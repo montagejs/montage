@@ -1628,43 +1628,49 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
                     return moduleExports;
                 }
 
-                /*
-                    FIX ME!!
+                Require.createModuleMetadata(module, require, exports);
 
-                    We're creating object._montage_metadata for third party frameworks that have no need for it.
-
-                    We need to stop doing this to save time and resources.
-
-                */
-
-                var i, object, name,
-                    _Object = Object,
-                    /*
-                        Re-check from module in case it's been overwritten
-                    */
-                    currentExports = module.exports || exports,
-                    keys = ObjectKeys(currentExports);
-
-                for (i = 0, name; (name = keys[i]); i++) {
-                    // avoid attempting to initialize a non-object
-                    if (((object = currentExports[name]) instanceof _Object)) {
-                        // avoid attempting to reinitialize an aliased property
-                        //jshint -W106
-                        if (object.hasOwnProperty(_MONTAGE_METADATA) && !object._montage_metadata.isInstance) {
-                            object._montage_metadata.aliases.push(name);
-                            //object._montage_metadata.objectName = name;
-                            //jshint +W106
-                        } else if ((typeof object.getInfoForObject === "function" || typeof object.constructor.getInfoForObject === "function" ) && !_Object.isSealed(object)) {
-
-                            object._montage_metadata = new MontageMetadata(require, module.id.indexOf(".reel") !== -1 ? module.id.replace(reverseReelExpression, reverseReelFunction) : module.id, name,/*isInstance*/(typeof object !== "function"));
-                        }
-                    }
-                }
             };
 
             return module;
         };
     };
+
+    Require.createModuleMetadata = function createModuleMetadata(module, require, exports) {
+        /*
+            In order to not create object._montage_metadata for third party frameworks that have no need for it, we test for wether objects on exports expose a getInfoForObject() function
+        */
+        var currentExports = module.exports || exports,
+            keys = currentExports ? ObjectKeys(currentExports) : null;
+
+        if(keys) {
+            var i,
+                object,
+                name,
+                _Object = Object;
+
+            for (i = 0, name; (name = keys[i]); i++) {
+                // avoid attempting to initialize a non-object
+                if (((object = currentExports[name]) instanceof _Object)) {
+                    // avoid attempting to reinitialize an aliased property
+                    //jshint -W106
+                    if (object.hasOwnProperty(_MONTAGE_METADATA) && !object._montage_metadata.isInstance) {
+                        object._montage_metadata.aliases.push(name);
+                        //object._montage_metadata.objectName = name;
+                        //jshint +W106
+                    } else if ((typeof object.getInfoForObject === "function" || typeof object.constructor.getInfoForObject === "function" ) && !_Object.isSealed(object)) {
+
+                        object._montage_metadata = new MontageMetadata(require, module.id.indexOf(".reel") !== -1 ? module.id.replace(reverseReelExpression, reverseReelFunction) : module.id, name,/*isInstance*/(typeof object !== "function"));
+                    }
+                }
+            }
+        }
+
+    };
+
+    if(typeof exports !== "undefined") {
+        exports.createModuleMetadata = Require.createModuleMetadata;
+    }
 
     // Built-in loader "middleware":
 
