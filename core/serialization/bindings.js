@@ -4,7 +4,6 @@ var Bindings = require("../frb/bindings"),
     evaluate = require("../frb/evaluate"),
     expand = require("../frb/expand"),
     Scope = require("../frb/scope"),
-    Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
     TWO_WAY = "<->";
