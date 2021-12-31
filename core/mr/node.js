@@ -7,13 +7,15 @@
 /*jshint node:true */
 var Require = require("./require"),
     Promise = require("bluebird"),
+    NodeModule = require("module"),
     FS = require("fs"),
     URL = require("url"),
     PATH = require("path"),
     globalEval = eval,
     // esm = require("esm"),
     emptyFactory = function () {
-    };
+    },
+    NodeBuilInModules = NodeModule.builtinModules;
 
 Require.getLocation = function getLocation() {
     return URL.resolve("file:///", process.cwd() + "/");
@@ -43,29 +45,37 @@ Require.read = function read(location, module) {
         var path = Require.locationToPath(location);
         FS.readFile(path, "utf-8", function (error, text) {
             if (error) {
-                // Re-use xhr on read on .js failure if not /index.js file and
-                // retry on /index.js dynamically.
-                if (
-                    path.indexOf(jsPreffix) !== -1 && // is .js
-                        path.indexOf(jsIndexPrefix) === -1 // is not /index.js
-                ) {
-                    path = path.replace(jsPreffix, jsIndexPrefix);
 
-                    // Attempt to read if file exists
-                    FS.readFile(path, "utf-8", function (error, text) {
-                        if (error) {
-                            reject(new Error(error));
-                        } else {
-                            //We found a folder/index.js, we need to update the module to reflect that somehow
-                            module.location = location.replace(jsPreffix, jsIndexPrefix);
-                            module.redirect = module.id;
-                            module.redirect += "/index";
-                            resolve(text);
-                        }
-                    });
-                } else {
-                    reject(new Error(error));
-                }
+                // if(module && NodeBuilInModules.indexOf(module.id) !== -1) {
+                //     var nodeModule = require(module.id);
+
+                //     module.exports = nodeModule.exports;
+                // } else {
+                    // Re-use xhr on read on .js failure if not /index.js file and
+                    // retry on /index.js dynamically.
+                    if (
+                        path.indexOf(jsPreffix) !== -1 && // is .js
+                            path.indexOf(jsIndexPrefix) === -1 // is not /index.js
+                    ) {
+                        path = path.replace(jsPreffix, jsIndexPrefix);
+
+                        // Attempt to read if file exists
+                        FS.readFile(path, "utf-8", function (error, text) {
+                            if (error) {
+                                reject(new Error(error));
+                            } else {
+                                //We found a folder/index.js, we need to update the module to reflect that somehow
+                                module.location = location.replace(jsPreffix, jsIndexPrefix);
+                                module.redirect = module.id;
+                                module.redirect += "/index";
+                                resolve(text);
+                            }
+                        });
+                    } else {
+                        reject(new Error(error));
+                    }
+                //}
+
             } else {
                 resolve(text);
             }
