@@ -491,13 +491,13 @@
 
             // console.log("********MJSONCompilerFactory END compileMJSONFile",module.id);
 
-            if (module.exports.montageObject && module.exports.montageObject !== root) {
+            if ("montageObject" in module.exports && module.exports.montageObject !== root) {
                 throw new Error(
                     'Final deserialized object is different than one set on module ' +
                     module.location
                 );
             }
-            else if(!module.exports.montageObject) {
+            else if(!("montageObject" in module.exports)) {
 
                 /*
                     The following bellow is an option to avoid doing an Object.assign(),
