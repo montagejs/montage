@@ -152,7 +152,7 @@ Require.Loader = function Loader(config, load) {
         return config.read(location, module)
         .then(function (text) {
 
-            if(/*faster*/(text.indexOf("export ") !== -1) && /*eliminate if in quotes*/(text.match(Require.detect_ES6_export_regex))) {
+            if(Loader.supportsES6 && /*faster*/(text.indexOf("export ") !== -1) && /*eliminate if in quotes*/(text.match(Require.detect_ES6_export_regex))) {
 
                 return import(location).then(function(esModule) {
                     module.type = Require.ES_MODULE_TYPE;
@@ -174,6 +174,10 @@ Require.Loader = function Loader(config, load) {
         });
     };
 };
+/*
+    This is causing confusion if true in uuid/dist/v3.js in the behavior of _interopRequireDefault()
+*/
+Require.Loader.supportsES6 = false;
 
 Require.NodeLoader = function NodeLoader(config) {
     return function nodeLoad(location, module) {
