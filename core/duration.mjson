@@ -1,6 +1,6 @@
 {
     "years_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "years",
             "objectDescriptor": { "@": "root" },
@@ -9,7 +9,7 @@
         }
     },
     "months_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "months",
             "objectDescriptor": { "@": "root" },
@@ -18,7 +18,7 @@
         }
     },
     "weeks_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "weeks",
             "objectDescriptor": { "@": "root" },
@@ -27,7 +27,7 @@
         }
     },
     "days_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "days",
             "objectDescriptor": { "@": "root" },
@@ -36,7 +36,7 @@
         }
     },
     "hours_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "hours",
             "objectDescriptor": { "@": "root" },
@@ -45,7 +45,7 @@
         }
     },
     "minutes_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "minutes",
             "objectDescriptor": { "@": "root" },
@@ -54,7 +54,7 @@
         }
     },
     "seconds_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "seconds",
             "objectDescriptor": { "@": "root" },
@@ -63,7 +63,7 @@
         }
     },
     "milliseconds_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "milliseconds",
             "objectDescriptor": { "@": "root" },
@@ -72,7 +72,7 @@
         }
     },
     "microseconds_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "microseconds",
             "objectDescriptor": { "@": "root" },
@@ -81,7 +81,7 @@
         }
     },
     "nanoseconds_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "nanoseconds",
             "objectDescriptor": { "@": "root" },
@@ -90,7 +90,7 @@
         }
     },
     "sign_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "sign",
             "objectDescriptor": { "@": "root" },
@@ -99,7 +99,7 @@
         }
     },
     "blank_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "isBlank",
             "objectDescriptor": { "@": "root" },
@@ -111,7 +111,7 @@
         "object": "./duration"
     },
     "root": {
-        "prototype": "core/meta/module-object-descriptor",
+        "prototype": "./meta/module-object-descriptor",
         "values": {
             "name": "Duration",
             "propertyDescriptors": [
@@ -145,7 +145,7 @@
                 ]
             },
             "propertyValidationRules": {},
-            "objectDescriptorModule": { "%": "./core/duration.mjson" },
+            "objectDescriptorModule": { "%": "./duration.mjson" },
             "exportName": "Duration",
             "module": { "%": "./duration" },
             "object":{ "@": "duration" }

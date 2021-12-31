@@ -1,9 +1,9 @@
 {
     "converter_descriptor": {
-        "object": "core/converter/converter.mjson"
+        "object": "./converter.mjson"
     },
     "map": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "../meta/property-descriptor",
         "values": {
             "name": "map",
             "valueType": "object",
@@ -11,7 +11,7 @@
         }
     },
     "root": {
-        "prototype": "core/meta/module-object-descriptor",
+        "prototype": "../meta/module-object-descriptor",
         "values": {
             "name": "CollectionIterationConverter",
             "customPrototype": false,
@@ -26,11 +26,11 @@
             },
             "propertyValidationRules": {},
             "objectDescriptorModule": {
-                "%": "core/converter/collection-iteration-converter.mjson"
+                "%": "./collection-iteration-converter.mjson"
             },
             "exportName": "CollectionIterationConverter",
             "module": {
-                "%": "core/converter/collection-iteration-converter"
+                "%": "./collection-iteration-converter"
             }
         }
     }

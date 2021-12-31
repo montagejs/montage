@@ -1,6 +1,6 @@
 {
     "root": {
-        "prototype": "core/meta/module-object-descriptor",
+        "prototype": "../../core/meta/module-object-descriptor",
         "values": {
             "name": "Identity",
             "propertyDescriptors": [
@@ -9,20 +9,20 @@
                  {"@": "scope"}
             ],
             "objectDescriptorModule": {
-                "%": "data/model/identity.mjson"
+                "%": "./identity.mjson"
             },
             "exportName": "Identity",
             "module": {
-                "%": "data/model/identity"
+                "%": "./identity"
             },
             "object":{"@": "Identity"}
         }
     },
     "Identity": {
-        "object": "data/model/identity"
+        "object": "./identity"
     },
     "applicationIdentifier": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "../../core/meta/property-descriptor",
         "values": {
             "name": "applicationIdentifier",
             "cardinality": 1,
@@ -30,7 +30,7 @@
         }
     },
     "applicationCredentials": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "../../core/meta/property-descriptor",
         "values": {
             "name": "applicationCredentials",
             "cardinality": 1,
@@ -38,7 +38,7 @@
         }
     },
     "scope": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "../../core/meta/property-descriptor",
         "values": {
             "name": "scope",
             "cardinality": -1,
@@ -47,7 +47,7 @@
        }
     },
     "queryDescriptor": {
-        "object": "data/model/data-query.mjson"
+        "object": "./data-query.mjson"
     }
 
 }

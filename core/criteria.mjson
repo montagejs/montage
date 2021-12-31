@@ -1,27 +1,27 @@
 {
     "expressionDescriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "expression",
             "valueType": "string"
         }
     },
     "parametersDescriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "parameters",
             "valueType": "object"
         }
     },
     "syntaxDescriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "syntax",
             "valueType": "object"
         }
     },
     "Criteria": {
-        "object": "core/criteria"
+        "object": "./criteria"
     },
     "root": {
         "prototype": "./meta/module-object-descriptor",
@@ -40,9 +40,9 @@
                 ]
             },
             "propertyValidationRules": {},
-            "objectDescriptorModule": { "%": "core/criteria.mjson" },
+            "objectDescriptorModule": { "%": "./criteria.mjson" },
             "exportName": "Criteria",
-            "module": { "%": "core/criteria" },
+            "module": { "%": "./criteria" },
             "object":{ "@": "Criteria" }
         }
     }

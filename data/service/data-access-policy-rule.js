@@ -2,7 +2,7 @@
  * @module montage/data/service/data-access-policy-rule
  */
 
-var Montage = require("core/core").Montage;
+var Montage = require("../../core/core").Montage;
 
 /**
  * Sets an expression (left) on a data operation to the value resulting from the evaluation of a right expression,

@@ -1,5 +1,5 @@
-var RawDataService = require("data/service/raw-data-service").RawDataService,
-    DataOperation = require("data/service/data-operation").DataOperation,
+var RawDataService = require("./raw-data-service").RawDataService,
+    DataOperation = require("./data-operation").DataOperation,
     IdentityAuthorizationService;
 
 

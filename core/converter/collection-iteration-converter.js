@@ -3,7 +3,7 @@
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter,
-    Promise = require("core/promise").Promise;
+    Promise = require("../promise").Promise;
 
 
 /**

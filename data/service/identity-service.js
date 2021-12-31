@@ -1,5 +1,5 @@
-var RawDataService = require("data/service/raw-data-service").RawDataService,
-    IdentityManager = require("data/service/identity-manager").IdentityManager,
+var RawDataService = require("./raw-data-service").RawDataService,
+    IdentityManager = require("./identity-manager").IdentityManager,
     IdentityService;
 
 

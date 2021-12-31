@@ -3,9 +3,9 @@
 */
 
 
-var Montage = require("montage").Montage,
-    Criteria = require("core/criteria").Criteria,
-    ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor;
+var Montage = require("../../core/core").Montage,
+    Criteria = require("../../core/criteria").Criteria,
+    ObjectDescriptor = require("../../core/meta/object-descriptor").ObjectDescriptor;
 
 
 /**

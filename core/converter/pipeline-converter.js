@@ -1,6 +1,6 @@
 var Converter = require("./converter").Converter,
-    Promise = require("core/promise").Promise,
-    Set = require("core/collections/set");
+    Promise = require("../promise").Promise,
+    Set = require("../collections/set");
 
 /**
  * Converter that chains a series of converters together

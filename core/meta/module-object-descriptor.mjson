@@ -1,6 +1,6 @@
 {
     "module_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./property-descriptor",
         "values": {
             "name": "module",
             "objectDescriptor": {
@@ -9,12 +9,12 @@
             "mandatory": true,
             "valueType": "object",
             "valueObjectPrototypeName": "ModuleReference",
-            "valueObjectModuleId": "core/module-reference",
+            "valueObjectModuleId": "../module-reference",
             "helpKey": ""
         }
     },
     "exportName_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./property-descriptor",
         "values": {
             "name": "exportName",
             "objectDescriptor": { "@": "root" },
@@ -23,7 +23,7 @@
         }
     },
     "object_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./property-descriptor",
         "values": {
             "name": "object",
             "objectDescriptor": {
@@ -35,7 +35,7 @@
         }
     },
     "root": {
-        "prototype": "core/meta/module-object-descriptor",
+        "prototype": "./module-object-descriptor",
         "values": {
             "name": "ModuleObjectDescriptor",
             "customPrototype": false,
@@ -65,11 +65,11 @@
             },
             "propertyValidationRules": {},
             "objectDescriptorModule": {
-                "%": "core/meta/module-object-descriptor.mjson"
+                "%": "./module-object-descriptor.mjson"
             },
             "exportName": "ModuleObjectDescriptor",
             "module": {
-                "%": "core/meta/module-object-descriptor"
+                "%": "./module-object-descriptor"
             }
         }
     }

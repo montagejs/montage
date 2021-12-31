@@ -1,6 +1,6 @@
 {
     "begin_property_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "begin",
             "valueType": "object",
@@ -9,7 +9,7 @@
         }
     },
     "end_property_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "end",
             "valueType": "object",
@@ -18,7 +18,7 @@
         }
     },
     "bounds_property_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "bounds",
             "valueType": "string",

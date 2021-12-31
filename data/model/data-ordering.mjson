@@ -1,23 +1,23 @@
 {
     "expressionDescriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "../../core/meta/property-descriptor",
         "values": {
             "name": "expression",
             "valueType": "string"
         }
     },
     "orderDescriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "../../core/meta/property-descriptor",
         "values": {
             "name": "order",
             "valueType": "object"
         }
     },
     "DataOrdering": {
-        "object": "data/model/data-ordering"
+        "object": "./data-ordering"
     },
     "root": {
-        "prototype": "core/meta/module-object-descriptor",
+        "prototype": "../../core/meta/module-object-descriptor",
         "values": {
             "name": "DataOrdering",
             "propertyDescriptors": [
@@ -31,9 +31,9 @@
                 ]
             },
             "propertyValidationRules": {},
-            "objectDescriptorModule": { "%": "data/model/data-ordering.mjson" },
+            "objectDescriptorModule": { "%": "./data-ordering.mjson" },
             "exportName": "DataOrdering",
-            "module": { "%": "data/model/data-ordering" },
+            "module": { "%": "./data-ordering" },
             "object":{ "@": "DataOrdering" }
         }
     }

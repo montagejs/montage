@@ -1,6 +1,6 @@
 {
     "identifier_property_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "identifier",
             "objectDescriptor": { "@": "root" },
@@ -9,7 +9,7 @@
         }
     },
     "language_property_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "language",
             "objectDescriptor": { "@": "root" },
@@ -18,7 +18,7 @@
         }
     },
     "region_property_descriptor": {
-        "prototype": "core/meta/property-descriptor",
+        "prototype": "./meta/property-descriptor",
         "values": {
             "name": "region",
             "objectDescriptor": { "@": "root" },
@@ -27,10 +27,10 @@
         }
     },
     "locale": {
-        "object": "core/locale"
+        "object": "./locale"
     },
     "root": {
-        "prototype": "core/meta/module-object-descriptor",
+        "prototype": "./meta/module-object-descriptor",
         "values": {
             "name": "Locale",
             "propertyDescriptors": [
@@ -46,9 +46,9 @@
                 ]
             },
             "propertyValidationRules": {},
-            "objectDescriptorModule": { "%": "core/locale.mjson" },
+            "objectDescriptorModule": { "%": "./locale.mjson" },
             "exportName": "Locale",
-            "module": { "%": "core/locale" },
+            "module": { "%": "./locale" },
             "object":{ "@": "locale" }
         }
     }
