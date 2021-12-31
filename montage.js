@@ -553,22 +553,28 @@
         }
     }
 
-    exports.parseMJSONDependencies = function parseMJSONDependencies(jsonRoot) {
+    var _dependenciesWorkingSet = new Set();
+    exports.parseMJSONDependencies = function parseMJSONDependencies(jsonRoot, callback) {
+
+        _dependenciesWorkingSet.clear();
 
         var rootEntries = Object.keys(jsonRoot),
-            i=0, iLabel, dependencies = [], iLabelObject;
+            i=0, iLabel, iDependency, dependencies = _dependenciesWorkingSet, iLabelObject;
 
         while ((iLabel = rootEntries[i])) {
             iLabelObject = jsonRoot[iLabel];
             if(iLabelObject.hasOwnProperty("prototype")) {
-                dependencies.push(moduleIdWithoutExportSymbol(iLabelObject["prototype"]));
+                dependencies.add((iDependency = moduleIdWithoutExportSymbol(iLabelObject["prototype"])));
+                if(callback) {
+                    callback(iDependency);
+                }
 
                 //This is to enable expression-data-mapping to deserialize itself synchronously
                 //despite the fact it may have been serialized using object-descriptor-reference.
                 //This allows us to add the objectDescriptorModule's id ("%") as a dependency upfront.
                 //A stronger version would analyze the whole file for the construct: {"%": "someModuleId"}.
                 //But this would impact performance for a use case that we don't need so far.
-                if(dependencies[dependencies.length-1] === "montage/core/meta/object-descriptor-reference") {
+                if(iDependency === "montage/core/meta/object-descriptor-reference") {
                     /*
                         We're adding the module of that referrence, typiacally serialized as:
                         "ObjectDescriptorReference": {
@@ -582,17 +588,30 @@
                             }
                         },
                     */
-                    dependencies.push(iLabelObject.properties.valueReference.objectDescriptorModule["%"]);
+                    dependencies.add((iDependency = iLabelObject.properties.valueReference.objectDescriptorModule["%"]));
+                    if(callback) {
+                        callback(iDependency);
+                    }
                 }
 
             }
             else if(iLabelObject.hasOwnProperty("object")) {
-                dependencies.push(moduleIdWithoutExportSymbol(iLabelObject["object"]));
+                dependencies.add((iDependency = moduleIdWithoutExportSymbol(iLabelObject["object"])));
+                if(callback) {
+                    callback(iDependency);
+                }
             }
+            /*
+                TODO: introspwect values block to detect properties that hold modules.
+            */
+            // else if(iLabelObject.hasOwnProperty("values")) {
+
+            // }
+
 
             i++;
         }
-        return dependencies;
+        return Array.from(dependencies);
     };
 
     var dotMJSON = ".mjson",
