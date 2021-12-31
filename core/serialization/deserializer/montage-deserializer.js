@@ -4,6 +4,7 @@ var Montage = require("../../core").Montage,
     BindingsModule = require("../bindings"),
     Map = require("../../../core/collections/map").Map,
     Promise = require("../../promise").Promise,
+    currentEnvironment = require("../../environment").currentEnvironment,
     deprecate = require("../../deprecate"),
     ObjectKeys = Object.keys,
     JSON_parse = JSON.parse;
@@ -132,6 +133,12 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                     return context.getObjects();
                 } catch (ex) {
                     if (this._isSync) {
+                        if(currentEnvironment.isNode && ex.code === "ERR_INVALID_ARG_VALUE" && ex.message.startsWith("The argument 'filename' must be a file URL object, file URL string, or absolute path string. Received ")) {
+                            var messageParts = ex.message.split("The argument 'filename' must be a file URL object, file URL string, or absolute path string. Received ");
+                            if(messageParts.length === 2) {
+                                console.error("context.getObjects() failed. serialization at "+this._module.id+" contains package-relative moduleId "+messageParts[1]+" that needs to be changed to file relative to be compatible with node's native require");
+                            }
+                        }
                         throw ex;
                     } else {
                         return Promise.reject(ex);
