@@ -121,7 +121,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
      *
      * @type {DataService}
      */
-        mainService: {
+    mainService: {
         get: function () {
             return this._mainService;
         },
