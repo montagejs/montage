@@ -72,7 +72,6 @@
         "karma-phantomjs-launcher": "^1.0.4",
         "karma-safari-launcher": "^1.0.0",
         "marked": "^3.0.7",
-        "mop-integration": "git://github.com/montagejs/mop-integration.git#master",
         "open": "0.0.5",
         "peggy": "^1.2.0",
         "pegjs": "git://github.com/pegjs/pegjs.git",
