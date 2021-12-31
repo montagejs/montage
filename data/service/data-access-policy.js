@@ -2,9 +2,9 @@
  * @module montage/data/service/data-accesss-policy
  */
 
-var Montage = require("core/core").Montage,
-    Promise = require("core/promise").Promise,
-    DataOperation = require("data/service/data-operation").DataOperation,
+var Montage = require("../../core/core").Montage,
+    Promise = require("../../core/promise").Promise,
+    DataOperation = require("./data-operation").DataOperation,
     DataAccessPolicy;
 
 
