@@ -110,22 +110,36 @@ var ModuleLoader = Montage.specialize({
 
     getModuleDescriptor: {
         value: function getModuleDescriptor(_require, moduleId) {
-            var moduleDescriptor = _require.getModuleDescriptor(_require.resolve(moduleId));
 
-            while (moduleDescriptor.redirect !== void 0) {
-                moduleDescriptor = _require.getModuleDescriptor(module.redirect);
+            /*
+                With Mr
+            */
+            if(_require.getModuleDescriptor) {
+
+                var moduleDescriptor = _require.getModuleDescriptor(_require.resolve(moduleId));
+
+                while (moduleDescriptor.redirect !== void 0) {
+                    moduleDescriptor = _require.getModuleDescriptor(module.redirect);
+                }
+
+                if (moduleDescriptor.mappingRedirect !== void 0) {
+                    return moduleDescriptor.mappingRequire.getModuleDescriptor(moduleDescriptor.mappingRedirect);
+
+                    // return this.getExports(
+                    //     moduleDescriptor.mappingRequire,
+                    //     moduleDescriptor.mappingRedirect
+                    // );
+                }
+
+                return moduleDescriptor;
             }
-
-            if (moduleDescriptor.mappingRedirect !== void 0) {
-                return moduleDescriptor.mappingRequire.getModuleDescriptor(moduleDescriptor.mappingRedirect);
-
-                // return this.getExports(
-                //     moduleDescriptor.mappingRequire,
-                //     moduleDescriptor.mappingRedirect
-                // );
+            /*
+                With Node's require
+            */
+            else {
+                //It doesn't look like we have to deal with redirect with node's require?
+                return _require.cache[_require.resolve(moduleId)];
             }
-
-            return moduleDescriptor;
         }
     },
 
@@ -685,7 +699,14 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 }
                 return null;
             } else {
-                return context._require(moduleId).montageObject;
+                var moduleDescriptor = context._require.cache[context._require.resolve(moduleId)],
+                    dependencyContext = this._deserializer.constructor.moduleContexts.get(moduleDescriptor);
+
+                if(dependencyContext) {
+                    return dependencyContext.getObject("root");
+                }
+                return null;
+                //return context._require(moduleId).montageObject;
             }
         }
     },

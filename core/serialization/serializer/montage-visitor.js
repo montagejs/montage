@@ -342,8 +342,19 @@ var MontageVisitor = Montage.specialize({
         value: function (object) {
             var objectInfo = Montage.getInfoForObject(object);
 
-            return this._require.identify(objectInfo.moduleId,
-                                          objectInfo.require);
+            /*
+                Mr
+            */
+            if(this._require.identify) {
+                return this._require.identify(objectInfo.moduleId,
+                    objectInfo.require);
+            }
+            /*
+                Node
+            */
+            else {
+                return objectInfo.moduleId;
+            }
         }
     },
 
