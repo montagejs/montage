@@ -24,7 +24,7 @@ if(_WebSocket) {
                 this._messageQueue = [];
                 this._webSocket = null;
                 this._isReconnecting = false;
-                this._connect();
+                this._reconnect();
                 return this;
             }
         },
@@ -49,6 +49,9 @@ if(_WebSocket) {
         },
         reconnectionAttemptDelay: {
             value: 1000
+        },
+        reconnectionInterval: {
+            value: 0
         },
 
         /**
@@ -115,40 +118,8 @@ function initWebsocket(url, existingWebsocket, timeoutMs, numberOfRetries) {
 */
         _connect: {
             value: function (timeoutMs) {
-                /*
-                    use navigator.onLine ?
-                */
-                var timeoutMs = timeoutMs
-                        ? timeoutMs
-                        : this.reconnectionAttemptDelay,
-                    self = this;
 
                 this._webSocket = new _WebSocket(this._url, this._protocols);
-                setTimeout( function() {
-                    // console.log("_connect setTimeout: self.readyState is "+self.readyState);
-                    if(self.readyState !== WebSocket.OPEN) {
-
-                        self.reconnectionAttemptCount--;
-                        if(self.reconnectionAttemptCount <= 0) {
-                            // console.info('opening websocket timed out: ' + self._url);
-                            var event = new ErrorEvent('error', {
-                                error : new Error('WebSocketConnectionFailed'),
-                                message : 'WebSocket Connection Failed after '+timeoutMs+'ms and '+self.reconnectionAttemptCount+' reconnection attempts'
-                                /*,
-                                lineno : 402,
-                                filename : 'closet.html'
-                                */
-                            });
-                            self.dispatchEvent(event);
-                        } else {
-                            // console.log("_connect setTimeout: self._reconnect()");
-                            self._reconnect();
-                        }
-                    }
-                }, timeoutMs);
-
-                //this.reconnectionAttemptCount = this.reconnectionAttemptCount;
-
                 this._webSocket.addEventListener("error", event => this.handleEvent(event), false);
                 this._webSocket.addEventListener("open", event => this.handleEvent(event), false);
             }
@@ -188,6 +159,10 @@ function initWebsocket(url, existingWebsocket, timeoutMs, numberOfRetries) {
             value: function () {
                 var self;
 
+                /*
+                    use navigator.onLine ?
+                */
+
                 //if (this._messageQueue.length && !this._isReconnecting) {
                 if (!this._isReconnecting) {
                     self = this;
@@ -196,10 +171,10 @@ function initWebsocket(url, existingWebsocket, timeoutMs, numberOfRetries) {
                     setTimeout(function () {
                         self._connect();
                         self._isReconnecting = false;
-                    }, Math.random() * this._reconnectionInterval);
-                    this._reconnectionInterval *= 2;
-                    if (this._reconnectionInterval > 30000) {
-                        this._reconnectionInterval = 30000;
+                    }, Math.random() * this.reconnectionInterval);
+                    this.reconnectionInterval *= 2;
+                    if (this.reconnectionInterval > 30000) {
+                        this.reconnectionInterval = 30000;
                     }
                 }
             }
@@ -213,7 +188,7 @@ function initWebsocket(url, existingWebsocket, timeoutMs, numberOfRetries) {
                         this._sendNextMessage();
                     break;
                     case "open":
-                        this._reconnectionInterval = 100;
+                        this.reconnectionInterval = 100;
                         if (this._webSocket) {
                             this._webSocket.addEventListener("message", event => this.handleEvent(event), false);
                             this._webSocket.addEventListener("close", event => this.handleEvent(event), false);
