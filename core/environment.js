@@ -103,6 +103,26 @@ var Environment = exports.Environment = Montage.specialize({
         }
     },
 
+    _isAWS: {
+        value: undefined
+    },
+
+    /**
+     * Returns true if the code runs in AWS LAMBDA environment using the reserved environment variable
+     *
+     * AWS_EXECUTION_ENV
+     *
+     * more at https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html
+     *
+     * @property {Boolean} value
+     */
+
+    isAWS: {
+        get: function() {
+            return this._isAWS || (this._isAWS = ((typeof process !== 'undefined') && (typeof process.env.AWS_EXECUTION_ENV !== 'undefined')));
+        }
+    },
+
     _userAgent: {
         value: null
     },
