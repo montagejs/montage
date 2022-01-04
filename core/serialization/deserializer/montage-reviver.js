@@ -1217,14 +1217,15 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                             this.reviveObjectLiteral(iValue, context, /*label*/undefined, undefined, undefined, setBindingsToDeserialize, value);
                             continue;
                         }
-                        else if ((typeof iValue === "object" &&
+                        else if ((typeof iValue === "object" && !isArray(iValue) &&
                         (ONE_WAY in iValue || TWO_WAY in iValue || ONE_ASSIGNMENT in iValue)) ||
                         propertyName.indexOf('.') > -1
                         ) {
-                            if(!bindings || !(bindings = bidingParentObject.bindings)) {
-                                bindings = (bidingParentObject.bindings = {});
-                            }
-                            bindings[propertyName] = iValue;
+                            (
+                                bindings ||
+                                (bindings = bidingParentObject.bindings) ||
+                                (bindings = (bidingParentObject.bindings = {}))
+                            )[propertyName] = iValue;
                             delete value[propertyName];
                             /*
                                 If we detect a binding, we set the iValueContainer, where the revived value will go
