@@ -764,7 +764,9 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
                 if(!jModule) {
                     jModuleId = Montage.getInfoForObject(this).moduleId;
                 } else {
-                    jModuleId = [jModule.id, jObjectDescriptor.exportName].join("/");
+                    jModuleId = jModule.id;
+                    jModuleId += "/";
+                    jModuleId += jObjectDescriptor.exportName;
                 }
                 map[jModuleId] = jObjectDescriptor;
 
