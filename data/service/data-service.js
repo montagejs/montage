@@ -516,7 +516,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
 
     addChildServices: {
         value: function (childServices) {
-            var i, countI, iChild, j, countJ, mappings, jMapping, types, jType, jResult, typesPromises;
+            var i, countI, iChild, j, countJ, mappings, jMapping, types;
 
             for(i=0, countI = childServices.length;(i<countI);i++) {
                 iChild = childServices[i];
