@@ -70,7 +70,7 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
         }
     },
 
-        /**
+    /**
      * @private
      * @property {Target} value
      */
