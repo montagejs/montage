@@ -751,7 +751,7 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
     _registerTypesForService: {
         value: function (types, service) {
             var map = this._moduleIdToObjectDescriptorMap, typesPromises,
-                j, countJ, jObjectDescriptor, jModule, jModuleId;
+                j, countJ, jObjectDescriptor, jModule, jModuleId, jResult;
 
             for(j=0, countJ = types.length;(j<countJ);j++ ) {
                 jObjectDescriptor = types[j];
