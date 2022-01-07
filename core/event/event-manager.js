@@ -589,9 +589,11 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             error: {
                 bubbles: function (target) {
                     // error does not bubble when used as a ProgressEvent
-                    return !(XMLHttpRequest.prototype.isPrototypeOf(target) ||
-                    target.tagName && "VIDEO" === target.tagName.toUpperCase() ||
-                    target.tagName && "AUDIO" === target.tagName.toUpperCase());
+                    // return !(XMLHttpRequest.prototype.isPrototypeOf(target) ||
+                    return !(target instanceof XMLHttpRequest ||
+                        target instanceof WebSocket ||
+                        target.tagName && "VIDEO" === target.tagName.toUpperCase() ||
+                        target.tagName && "AUDIO" === target.tagName.toUpperCase());
                 },
                 cancelable: false
             }, //DOM2, DOM3, ProgressEvent
