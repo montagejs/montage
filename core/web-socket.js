@@ -24,7 +24,7 @@ if(_WebSocket) {
                 this._messageQueue = [];
                 this._webSocket = null;
                 this._isReconnecting = false;
-                this._reconnect();
+                this._connect();
                 return this;
             }
         },
@@ -44,14 +44,14 @@ if(_WebSocket) {
         reconnectionInterval: {
             value: 100
         },
+        reconnectionAttemptMaxCount: {
+            value: 5
+        },
         reconnectionAttemptCount: {
-            value: 3
+            value: 0
         },
         reconnectionAttemptDelay: {
             value: 1000
-        },
-        reconnectionInterval: {
-            value: 0
         },
 
         /**
@@ -164,18 +164,22 @@ function initWebsocket(url, existingWebsocket, timeoutMs, numberOfRetries) {
                 */
 
                 //if (this._messageQueue.length && !this._isReconnecting) {
-                if (!this._isReconnecting) {
+                if (!this._isReconnecting/* && this.readyState !== WebSocket.OPEN*/) {
+
                     self = this;
                     this._webSocket = null;
                     this._isReconnecting = true;
                     setTimeout(function () {
+                        self.reconnectionAttemptCount++;
                         self._connect();
                         self._isReconnecting = false;
                     }, Math.random() * this.reconnectionInterval);
+
                     this.reconnectionInterval *= 2;
-                    if (this.reconnectionInterval > 30000) {
-                        this.reconnectionInterval = 30000;
+                    if (this.reconnectionInterval > 3000) {
+                        this.reconnectionInterval = 3000;
                     }
+
                 }
             }
         },
@@ -187,6 +191,7 @@ function initWebsocket(url, existingWebsocket, timeoutMs, numberOfRetries) {
                         this.dispatchEvent(event);
                         this._sendNextMessage();
                     break;
+
                     case "open":
                         this.reconnectionInterval = 100;
                         if (this._webSocket) {
@@ -196,9 +201,17 @@ function initWebsocket(url, existingWebsocket, timeoutMs, numberOfRetries) {
                         this.dispatchEvent(event);
                         this._sendNextMessage();
                     break;
+
+                    case "error":
+                        if(this.reconnectionAttemptCount < this.reconnectionAttemptMaxCount) {
+                            this._reconnect();
+                        } else {
+                            this.dispatchEvent(event);
+                        }
+                        break;
+
                     default:
                         this.dispatchEvent(event);
-                        this._reconnect();
                 }
             }
         },
