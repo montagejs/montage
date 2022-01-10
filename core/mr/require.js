@@ -1305,7 +1305,8 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
     // Tests whether the location or URL is a absolute.
     var isAbsolutePattern = /^[\w\-]+:/;
     Require.isAbsolute = function isAbsolute(location) {
-        return isAbsolutePattern.test(location);
+        return location.charAt(0) === "/" || (location.indexOf("://") !== -1);
+        // return isAbsolutePattern.test(location);
     };
 
     // Extracts dependencies by parsing code and looking for "require" (currently using a simple regexp)
