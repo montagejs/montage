@@ -1689,9 +1689,10 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
 
             // TODO: remove this when all code has been migrated off of the autonomous name-space problem
             if (
-                config.name !== void 0 &&
-                id.indexOf(config.name) === 0 &&
-                id.charAt(config.name.length) === "/"
+                configName !== void 0 &&
+                id.charAt(configName.length) === "/" &&
+                id.indexOf(configName) === 0
+
             ) {
                 console.warn("Package reflexive module ignored:", id);
             }
@@ -1722,11 +1723,11 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
             //             ? mappings[prefix]
             //             : null)))
             // ) {
-            if((aPackage = mappings[(prefix = id.substring(0,id.indexOf("/")))]) || (aPackage = mappings[(prefix = id)])) {
+            if((aPackage = (mappings[(prefix = id.substring(0,id.indexOf("/")))] || mappings[(prefix = id)]))) {
                 return config.loadPackage(aPackage, config)
                     .then(function loadMapping(mappingRequire) {
                         var rest = id.slice(prefix.length + 1);
-                        config.mappings[prefix].mappingRequire = mappingRequire;
+                        mappings[prefix].mappingRequire = mappingRequire;
                         module.mappingRedirect = rest;
                         module.mappingRequire = mappingRequire;
                         return mappingRequire.deepLoad(rest, config.location);
