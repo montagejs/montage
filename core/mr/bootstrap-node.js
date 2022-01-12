@@ -8,7 +8,7 @@
 /*jshint node:true */
 var Require = require("./require");
 require("./node"); // patches Require
-var URL = require("url");
+var URL = require("fast-url-parser");
 var Promise = require("bluebird");
 var FS = require("fs");
 var PATH = require("path");

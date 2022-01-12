@@ -612,7 +612,7 @@
 
             i++;
         }
-        return Array.from(dependencies);
+        return dependencies.size > 0 ? Array.from(dependencies) : null;
     };
 
     var dotMJSON = ".mjson",

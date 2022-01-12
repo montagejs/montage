@@ -5,29 +5,41 @@
     https://github.com/motorola-mobility/montage/blob/master/LICENSE.md
 */
 /*jshint node:true */
-var Require = require("./require"),
+const Require = require("./require"),
     Promise = require("bluebird"),
     NodeModule = require("module"),
     FS = require("fs"),
-    URL = require("url"),
+    URL = require("fast-url-parser"),
+    URLResolve = URL.resolve,
+    CWD = process.cwd(),
+    _RequireGetLocation =  (CWD + "/"),
     PATH = require("path"),
     globalEval = eval,
+    nativeModule = module /* the one provided by native nore require loading this */,
     // esm = require("esm"),
     emptyFactory = function () {
     },
     NodeBuilInModules = NodeModule.builtinModules;
 
 Require.getLocation = function getLocation() {
-    return URL.resolve("file:///", process.cwd() + "/");
+    return _RequireGetLocation;
+    // return  (CWD + "/");
+    // return URLResolve("file:///", CWD + "/");
 };
 
 Require.locationToPath = function locationToPath(location) {
-    var parsed = URL.parse(location);
-    return parsed.path;
+    /*
+        When this is called, location always starts by file://, followed by /some/path...
+        So instead of using the generic URL.parse(), we can handle it directly in a simpler
+        and faster way.
+    */
+    return location.substring(6);
+    // var parsed = URL.parse(location);
+    // return parsed.path;
 };
 
 Require.filePathToLocation = function filePathToLocation(path) {
-    return URL.resolve(Require.getLocation(), path);
+    return URLResolve(Require.getLocation(), path);
 };
 
 Require.directoryPathToLocation = function directoryPathToLocation(path) {
@@ -39,47 +51,35 @@ Require.directoryPathToLocation = function directoryPathToLocation(path) {
 };
 
 var jsIndexPrefix = '/index.js',
-    jsPreffix = '.js';
+    jsPreffix = '.js',
+    utf8 = "utf-8";
 Require.read = function read(location, module) {
     return new Promise(function (resolve, reject) {
-        var path = Require.locationToPath(location);
-        FS.readFile(path, "utf-8", function (error, text) {
-            if (error) {
 
-                // if(module && NodeBuilInModules.indexOf(module.id) !== -1) {
-                //     var nodeModule = require(module.id);
+        try {
+            resolve(FS.readFileSync(location, utf8));
+        } catch (error) {
 
-                //     module.exports = nodeModule.exports;
-                // } else {
-                    // Re-use xhr on read on .js failure if not /index.js file and
-                    // retry on /index.js dynamically.
-                    if (
-                        path.indexOf(jsPreffix) !== -1 && // is .js
-                            path.indexOf(jsIndexPrefix) === -1 // is not /index.js
-                    ) {
-                        path = path.replace(jsPreffix, jsIndexPrefix);
+            if (
+                location.indexOf(jsPreffix) !== -1 && // is .js
+                location.indexOf(jsIndexPrefix) === -1 // is not /index.js
+            ) {
 
-                        // Attempt to read if file exists
-                        FS.readFile(path, "utf-8", function (error, text) {
-                            if (error) {
-                                reject(new Error(error));
-                            } else {
-                                //We found a folder/index.js, we need to update the module to reflect that somehow
-                                module.location = location.replace(jsPreffix, jsIndexPrefix);
-                                module.redirect = module.id;
-                                module.redirect += "/index";
-                                resolve(text);
-                            }
-                        });
-                    } else {
-                        reject(new Error(error));
-                    }
-                //}
+                try {
+                    // Attempt to read if file index.js exists there
+                    var text = FS.readFileSync((location = location.replace(jsPreffix, jsIndexPrefix)), utf8);
 
+                    //We found a folder/index.js, we need to update the module to reflect that somehow
+                    module.location = location;
+                    module.redirect = `${module.id}/index`;
+                    resolve(text);
+                } catch (error) {
+                    reject(error);
+                }
             } else {
-                resolve(text);
+                reject(error);
             }
-        });
+        }
     });
 };
 
@@ -126,8 +126,8 @@ Require.Compiler = function Compiler(config) {
                     we do it here for now
                 */
                 if(scopeNames && scopeNames.length) {
-                    arguments[4] = __filename.substring(7);
-                    arguments[5] = __dirname.substring(7);
+                    arguments[4] = __filename;
+                    arguments[5] = __dirname;
 
                     Array.prototype.push.apply(arguments, scopeNames.map(function (name) {
                         return config.scope[name];
@@ -135,7 +135,7 @@ Require.Compiler = function Compiler(config) {
                     return factory.apply(this, arguments);
                 } else {
                     //return factory.apply(this, arguments);
-                    return factory(require, exports, module, global, __filename.substring(7), __dirname.substring(7));
+                    return factory(require, exports, module, global, __filename, __dirname);
                 }
             };
             // new Function will have its body reevaluated at every call, hence using eval instead
@@ -181,11 +181,16 @@ Require.Loader.supportsES6 = false;
 
 Require.NodeLoader = function NodeLoader(config) {
     return function nodeLoad(location, module) {
-        var id = location.slice(config.location.length);
-        id = id.substr(0,id.lastIndexOf('.'));
+        var id;
+        if(NodeBuilInModules.indexOf(module.id) !== -1) {
+            id = module.id;
+        } else {
+            id = location.slice(config.location.length);
+            id = id.substr(0,id.lastIndexOf('.'));
+            module.location = location;
+        }
         module.type = "native";
         module.exports = require(id);
-        module.location = location;
         return module;
     };
 };
@@ -228,7 +233,7 @@ Require.findPackagePath = function findPackagePath(directory) {
 };
 
 Require.findPackageLocationAndModuleId = function findPackageLocationAndModuleId(path) {
-    path = PATH.resolve(process.cwd(), path);
+    path = PATH.resolve(CWD, path);
     var directory = PATH.dirname(path);
     return Require.findPackagePath(directory)
     .then(function (packageDirectory) {

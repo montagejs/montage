@@ -83,7 +83,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
         // the parens trick the heuristic scanner for static dependencies, so
         // they are not pre-loaded by the asynchronous browser loader
         var Promise = (require)("bluebird");
-        var URL = (require)("url");
+        var URL = (require)("fast-url-parser");
         definition(exports, Promise, URL);
         (require)("./node");
     } else {
@@ -130,6 +130,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
     var Module = function Module(id, require) {
             this.id = id;
             this.require = require;
+            this.dependencies = undefined;
             return this;
         },
         ModuleProto = Module.prototype;
@@ -185,8 +186,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
             return cache.get(key) || __memoizeCallResultForKey(cache, callback(key, arg), key) ;
         };
 
-        cache.set(callback,_memoize);
-        return _memoize;
+        return cache.set(callback,_memoize) && _memoize;
     }
 
     function memoize(callback, cache) {
@@ -647,62 +647,59 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
         // Ensures a module definition is loaded, compiled, analyzed
         var load = memoize(function (topId, viaId) {
             var module = getModuleDescriptor(topId),
-                promise;
 
-            /*
-                Equivallent to:
-
-                return Promise.try(function () {...});
-
-                without the need to be dependent on non-standard Promise.try method
-            */
-        //    return new Promise(function(resolve, reject) {
-        //         resolve((function () {
-        //             // if not already loaded, already instantiated, or
-        //             // configured as a redirection to another module
-        //             if (
-        //                 module.factory === void 0 &&
-        //                     module.exports === void 0 &&
-        //                         module.redirect === void 0
-        //             ) {
-        //                 //return Promise.try(config.load, [topId, module]);
-        //                 return config.load(topId, module);
-        //             }
-        //         })());
-        //     })
-
-
-            // if not already loaded, already instantiated, or
-            // configured as a redirection to another module
-            if (
-                module.factory === void 0 &&
+                // if not already loaded, already instantiated, or
+                // configured as a redirection to another module
+                promise = (
+                    module.factory === void 0 &&
                     module.exports === void 0 &&
-                        module.redirect === void 0
-            ) {
-                promise = config.load(topId, module);
-            }
+                    module.redirect === void 0)
+                    ? config.load(topId, module)
+                    : undefined;
+
+            // // if not already loaded, already instantiated, or
+            // // configured as a redirection to another module
+            // if (
+            //     module.factory === void 0 &&
+            //         module.exports === void 0 &&
+            //             module.redirect === void 0
+            // ) {
+            //     promise = config.load(topId, module);
+            // }
 
             if(!promise || typeof promise.then !== "function") {
-                promise = Promise.resolve(promise);
+                try {
+                    load_compile(config, module);
+                    return Promise.resolve(undefined);
+                } catch(error) {
+                    return Promise.reject(error);
+                }
+            } else {
+                return promise
+                .then(function () {
+                    return load_compile(config, module);
+                },function (error) {
+                    return Promise.reject(error);
+                });
             }
 
-            return promise
-            .then(function () {
-                // compile and analyze dependencies
-                return config.compile(module).then(function () {
-                    if (module.redirect !== void 0) {
-                        module.dependencies = module.dependencies || [];
-                        module.dependencies.push(module.redirect);
-                    }
-                    if (module.extraDependencies !== void 0) {
-                        module.dependencies = module.dependencies || [];
-                        Array.prototype.push.apply(module.dependencies, module.extraDependencies);
-                    }
-                });
-            },function (error) {
-                return Promise.reject(error);
-            });
         }, config.cache);
+
+        function load_compile(config, module) {
+                if(!module.exports) {
+                    // compile and analyze dependencies
+                    config.compile(module);
+                }
+                if (module.redirect !== void 0) {
+                    (module.dependencies || (module.dependencies = [])).push(module.redirect);
+                }
+                if (module.extraDependencies !== void 0) {
+                    module.dependencies = module.dependencies || [];
+                    Array.prototype.push.apply(module.dependencies, module.extraDependencies);
+                }
+                return;
+
+        }
 
         // Load a module definition, and the definitions of its transitive
         // dependencies
@@ -711,7 +708,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
             // this is a memo of modules already being loaded so we don’t
             // data-lock on a cycle of dependencies.
             if(!loading) {
-                loading = (config.loading = ObjectCreate(null));
+                loading =  ObjectCreate(null);
             }
             //loading = loading || (config.loading = ObjectCreate(null));
             // has this all happened before?  will it happen again?
@@ -728,25 +725,28 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
 
                     // load the transitive dependencies using the magic of
                     // recursion.
-                    var i,
-                        countI,
-                        iFirstPromise = null,
-                        promises, iPromise,
-                        dependencies = getModuleDescriptor(topId).dependencies,
-                        scopedTopId = topId,
-                        scopedLoading = loading;
+                    var module = getModuleDescriptor(topId),
+                        dependencies = module.dependencies;
 
-                    if (dependencies && (countI = dependencies.length) > 0) {
-                        var scopedConfig = config;
+                    if (dependencies) {
+                        var scopedConfig = config,
+                            i = 0,
+                            countI = dependencies.length,
+                            iFirstPromise = null,
+                            promises, iPromise,
+                            scopedTopId = module.redirect || topId,
+                            scopedLoading = loading,
+                            scopedDeepLoad = deepLoad;
 
-                        for(i=0; i < countI; i++) {
+
+                        for(; i < countI; i++) {
                             // create dependees set, purely for debug purposes
                             // if (true) {
                             //     var iModule = getModuleDescriptor(depId);
                             //     var dependees = iModule.dependees = iModule.dependees || {};
                             //     dependees[topId] = true;
                             // }
-                            if ((iPromise = deepLoad(scopedConfig.normalizeId(scopedConfig.resolve(dependencies[i], scopedTopId), scopedConfig), scopedTopId, scopedLoading))) {
+                            if ((iPromise = scopedDeepLoad(scopedConfig.normalizeId(scopedConfig.resolve(dependencies[i], scopedTopId), scopedConfig), scopedTopId, scopedLoading))) {
                                 /* jshint expr: true */
 
 
@@ -760,10 +760,10 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
                             }
                         }
                         return promises
-                        ? PromiseAll(promises)
-                        : iFirstPromise;
-                        // return promises ? (promises.push === void 0 ? promises :
-                        //     Promise.all(promises)) : null;
+                            ? Promise.all(promises)
+                            : iFirstPromise;
+                            // return promises ? (promises.push === void 0 ? promises :
+                            //     Promise.all(promises)) : null;
                     }
                     return null;
 
@@ -1068,13 +1068,12 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
         }
         promise = tryPackage(location, dependency, config);
         descriptions[location] = promise;
-        promise.then(function (result) {
+        return promise.then(function (result) {
             // Dependency location may change while being loaded, cache
             // the description at its final location too
             descriptions[dependency.location] = promise;
             return result;
         });
-        return promise;
     };
 
 
@@ -1178,7 +1177,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
                 error.message = "Unable to parse package-lock.json at '" + dependency.location + "'";
                 throw error;
             }
-        }, function () {
+        }, function (error) {
             return null;
         });
     };
@@ -1341,9 +1340,9 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
         // Clear commented require calls
         factory = factory.replace(escapeSimpleComment, '').replace(escapeMultiComment, '');
 
-        var o = [], myArray;
+        var o = null, myArray;
         while ((myArray = requirePattern.exec(factory)) !== null) {
-            o.push(myArray[1]);
+            (o || (o = [])).push(myArray[1]);
         }
         return o;
     };
@@ -1352,15 +1351,13 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
 
     Require.DependenciesCompiler = function DependenciesCompiler(config, compile) {
         return function(module) {
-            if (!module.dependencies && module.text !== void 0) {
+            if (module.dependencies === undefined && module.text !== void 0) {
                 module.dependencies = config.parseDependencies(module.text);
             }
             compile(module);
-            if (module && !module.dependencies && module.type !== Require.ES_MODULE_TYPE) {
+            if (module && module.dependencies === undefined && module.type !== Require.ES_MODULE_TYPE) {
                 if (module.text || module.factory) {
                     module.dependencies = Require.parseDependencies(module.text || module.factory);
-                } else {
-                    module.dependencies = [];
                 }
             }
             //module.text = null;
@@ -1463,7 +1460,8 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
 
     Require.makeCompiler = function makeCompiler(config) {
         return function (module) {
-            return Promise.resolve(syncCompilerChain(config)(module));
+            //return Promise.resolve(syncCompilerChain(config)(module));
+            return syncCompilerChain(config)(module);
         };
     };
 
@@ -1522,7 +1520,6 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
                 var match = location.match(directoryExpression);
 
                 if (match) {
-                    module.dependencies = module.dependencies || [];
                     module.exports = {
                         directory: match[1],
                         content: module.text
