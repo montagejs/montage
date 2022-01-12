@@ -1674,18 +1674,18 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
 
     // Using mappings hash to load modules that match a mapping.
     Require.MappingsLoader = function MappingsLoader(config, load) {
-        config.mappings = config.mappings || ObjectCreate(null);
-        config.name = config.name;
+        var mappings = config.mappings || (config.mappings = ObjectCreate(null)),
+            configName = config.name;
 
         // finds a mapping to follow, if any
         return function (id, module) {
 
-            if (Require.isAbsolute(id)) {
-                return load(id, module);
-            }
-
-            var mappings = config.mappings;
-
+            /*
+                It looks like this is never used, plus a module id can't start by a / nor it is a uri/file url as that's what Require.isAbsolute tests for
+            */
+            // if (Require.isAbsolute(id)) {
+            //     return load(id, module);
+            // }
 
             // TODO: remove this when all code has been migrated off of the autonomous name-space problem
             if (
