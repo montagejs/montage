@@ -52,7 +52,6 @@
         "fast-url-parser": "~1.1.3",
         "htmlparser2": "~3.0.5",
         "ical.js": "~1.4.0",
-        "just-camel-case": "^6.0.1",
         "just-kebab-case": "^4.0.1",
         "proxy-polyfill": "~0.1.7",
         "strange": "^1.7.2"
