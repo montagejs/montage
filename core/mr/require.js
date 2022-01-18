@@ -11,44 +11,6 @@
 */
 
 
-Object.defineProperties(String.prototype, {
-    stringByRemovingPrefix: {
-        value: function stringByRemovingPrefix (prefix) {
-            if(this.startsWith(prefix)) {
-                return this.substring(prefix.length);
-            } else {
-                return this;
-            }
-        },
-        writable: true,
-        configurable: true
-    },
-    stringByRemovingSuffix: {
-        value: function stringByRemovingSuffix (suffix) {
-            if(this.endsWith(suffix)) {
-                return this.substring(0, this.length - suffix.length);
-            } else {
-                return this;
-            }
-        },
-        writable: true,
-        configurable: true
-    },
-
-    stringByRemovingPathExtension: {
-        value: function stringByRemovingPathExtension () {
-            var lastIndex = this.lastIndexOf(".");
-            if(lastIndex !== -1 ) {
-                return this.substring(0,lastIndex);
-            } else {
-                return this;
-            }
-        },
-        writable: true,
-        configurable: true
-    }
-});
-
 function locationByRemovingLastURLComponentKeepingSlash(location) {
     return location ? location.substring(0,location.lastIndexOf("/")+1) : location;
 }
@@ -154,9 +116,18 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
     ModuleProto.uuid = null;
     ModuleProto._json = undefined;
 
+    // Object.defineProperty(ModuleProto,"text", {
+    //     get: function() {
+    //         return this._text;
+    //     },
+    //     set: function(value) {
+    //         this._text = value;
+    //     }
+    // });
+
     Object.defineProperty(ModuleProto,"json", {
         get: function() {
-            return this._json || (this._json = JSON.parse(this.text))
+            return this._json || (this._json = this.parsedText || (this.text ? JSON.parse(this.text) : null))
         }
     });
     function normalizeId(id, config) {
@@ -527,6 +498,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
         return isLowercasePattern.test(id) ? id : id.toLowerCase();
     }
 
+    var defaultModuleTypes = new Set(["html", "mjson"]);
     //Require.detect_ES6_export_regex = /(?<=^([^"]|"[^"]*")*)export /;
     Require.makeRequire = function (config) {
         var require, requireForId;
@@ -541,7 +513,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
         config.paths = config.paths || [config.location];
         config.mappings = config.mappings || ObjectCreate(null); // EXTENSION
         config.exposedConfigs = config.exposedConfigs || Require.exposedConfigs;
-        config.moduleTypes = config.moduleTypes || ["html", "mjson"];
+        config.moduleTypes = config.moduleTypes ? new Set(config.moduleTypes) :  defaultModuleTypes;
         config.makeLoader = config.makeLoader || Require.makeLoader;
         config.load = config.load || config.makeLoader(config);
         config.makeCompiler = config.makeCompiler || Require.makeCompiler;
@@ -1150,7 +1122,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
         return promise.then(function (content) {
             dependency.location = location;
             try {
-                return JSON.parse(content);
+                return typeof content === "object" ? content : JSON.parse(content);
             } catch (error) {
                 error.message = "Loading package description at '" + location + "' failed cause: " + error.message + " in " + JSON.stringify(descriptionLocation);
                 throw error;
@@ -1172,7 +1144,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
         return read(packageLockLocation)
         .then(function (content) {
             try {
-                return JSON.parse(content);
+                return typeof content === "object" ? content : JSON.parse(content);
             } catch (error) {
                 error.message = "Unable to parse package-lock.json at '" + dependency.location + "'";
                 throw error;
@@ -1295,10 +1267,12 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
 
     var extensionPattern = /\.([^\/\.]+)$/;
     Require.extension = function (path) {
-        var match = extensionPattern.exec(path);
-        if (match) {
-            return match[1];
-        }
+
+        return path.substring(path.lastIndexOf(".")+1);
+        // var match = extensionPattern.exec(path);
+        // if (match) {
+        //     return match[1];
+        // }
     };
 
     // Tests whether the location or URL is a absolute.
@@ -1351,7 +1325,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
 
     Require.DependenciesCompiler = function DependenciesCompiler(config, compile) {
         return function(module) {
-            if (module.dependencies === undefined && module.text !== void 0) {
+            if (module.dependencies === undefined  && module.parsedText === void 0 && module.location.endsWith("js") && module.text !== void 0) {
                 module.dependencies = config.parseDependencies(module.text);
             }
             compile(module);
@@ -1484,8 +1458,8 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
                 : false;
 
             if (json) {
-                if (typeof module.exports !== "object" && typeof module.text === "string") {
-                    module.exports = JSON.parse(module.text);
+                if (typeof module.exports !== "object" && (module.parsedText || typeof module.text === "string")) {
+                    module.exports = module.parsedText || JSON.parse(module.text);
                 }
                 //module.text = null;
                 return module;
@@ -1588,7 +1562,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
             (module.exports = exports || {}),     // exports
             module,             // module
             global,
-            (module.filename = module.location),     // __filename
+            module.location,     // __filename
             module.directory     // __dirname
         );
         // return factory.call(global,
@@ -1753,6 +1727,9 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
     };
 
     Require.LocationLoader = function LocationLoader(config, load) {
+        var configModuleTypes = config.moduleTypes,
+            configLocation = config.location,
+            configDelegate = config.delegate;
         function locationLoader(id, module) {
             var location, result,
                 path = id,
@@ -1762,15 +1739,15 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
                 !extension || (
                     extension !== "js" &&
                         extension !== "json" &&
-                            config.moduleTypes.indexOf(extension) === -1
+                            !configModuleTypes.has(extension)
                 )
             ) {
                 path += ".js";
             }
 
-            location = module.location = URLResolve(config.location, path);
-            if (config.delegate && config.delegate.packageWillLoadModuleAtLocation) {
-                result = config.delegate.packageWillLoadModuleAtLocation(module,location);
+            location = module.location = URLResolve(configLocation, path);
+            if (configDelegate && configDelegate.packageWillLoadModuleAtLocation) {
+                result = configDelegate.packageWillLoadModuleAtLocation(module,location);
             }
             return result ? result : load(location, module);
         }

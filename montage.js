@@ -702,7 +702,7 @@
 
 
             // } else {
-                if (module.exports || module.factory || (typeof module.text !== "string") || (typeof module.exports === "object")) {
+                if (module.exports || module.factory || (typeof module.text !== "string" &&  !module.parsedText) || (typeof module.exports === "object")) {
                     return module;
                 }
 
@@ -710,7 +710,7 @@
                     isMJSON = (location && (location.endsWith(dotMJSON) || location.endsWith(dotMJSONLoadJs)));
 
                 if (isMJSON) {
-                    if (typeof module.exports !== "object" && typeof module.text === "string") {
+                    if (typeof module.exports !== "object" && (module.parsedText || typeof module.text === "string")) {
                         try {
                             module.parsedText = module.json;
                         } catch (e) {

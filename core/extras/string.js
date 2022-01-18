@@ -175,3 +175,80 @@ if(typeof String.prototype.stringByDeletingLastPathComponent !== "function") {
         configurable: true
     });
 }
+
+if(typeof String.prototype.stringByRemovingPathExtension !== "function") {
+    Object.defineProperty(String.prototype, 'stringByRemovingPathExtension', {
+        value: function stringByRemovingPathExtension () {
+            var lastIndex = this.lastIndexOf(".");
+            if(lastIndex !== -1 ) {
+                return this.substring(0,lastIndex);
+            } else {
+                return this;
+            }
+        },
+        writable: true,
+        configurable: true
+    });
+}
+
+if(typeof String.prototype.stringByRemovingPrefix !== "function") {
+    Object.defineProperty(String.prototype, 'stringByRemovingPrefix', {
+        value: function stringByRemovingPrefix (prefix) {
+                if(this.startsWith(prefix)) {
+                    return this.substring(prefix.length);
+                } else {
+                    return this;
+                }
+            },
+            writable: true,
+            enumerable: false,
+            configurable: true
+        });
+}
+
+if(typeof String.prototype.stringByRemovingSuffix !== "function") {
+    Object.defineProperty(String.prototype, 'stringByRemovingSuffix', {
+        value: function stringByRemovingSuffix (suffix) {
+            if(this.endsWith(suffix)) {
+                return this.substring(0, this.length - suffix.length);
+            } else {
+                return this;
+            }
+        },
+        writable: true,
+        enumerable: false,
+        configurable: true
+    });
+}
+
+
+if(typeof String.prototype.lastPathComponent !== "function") {
+    Object.defineProperty(String.prototype, 'lastPathComponent', {
+        value: function lastPathComponent () {
+            var lastIndex = this.lastIndexOf("/");
+            if(lastIndex !== -1 ) {
+                return this.substring(lastIndex+1);
+            } else {
+                return this;
+            }
+        },
+        writable: true,
+        configurable: true
+    });
+}
+
+if(typeof String.prototype.lastPathComponentRemovingExtension !== "function") {
+    Object.defineProperty(String.prototype, 'lastPathComponentRemovingExtension', {
+        value: function lastPathComponentRemovingExtension () {
+            var lastSlashIndex = this.lastIndexOf("/");
+            if(lastSlashIndex !== -1) {
+                var lastDotIndex = this.lastIndexOf(".")
+                return this.substring(lastSlashIndex+1, (lastDotIndex > lastSlashIndex ? lastDotIndex : this.length ));
+            } else {
+                return this;
+            }
+        },
+        writable: true,
+        configurable: true
+    });
+}

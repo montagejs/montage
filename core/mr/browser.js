@@ -178,6 +178,39 @@ bootstrap("require/browser", function (require) {
     }
 
     function RequireRead(url, module) {
+
+        // return fetch(url,{ method: 'GET' })
+        // .then((response) => {
+
+        //         if(module) module.location = url;
+
+        //         if(url.endsWith(".js")) {
+        //             if(module) module.type = JAVASCRIPT;
+        //             return response.text().then((content) => {
+        //                 return module ? (module.text = content) : content;
+        //             });
+
+        //         } else if(url.endsWith("json")) {
+        //             return response.json().then((content) => {
+        //                 // if(module) {
+        //                 //     Object.defineProperty(module, "text", {
+        //                 //         get: function() {
+        //                 //             return JSON.stringify(content);
+        //                 //         }
+        //                 //     })
+        //                 // }
+        //                 return  module ? (/*(module.text = JSON.stringify(content)) && */(module.parsedText = content) ) : content;
+        //             });
+        //         } else {
+        //             return response.text().then((content) => {
+        //                 return module ? (module.text = content) : content;
+        //             });
+        //         }
+        // }, function(error) {
+        //     console.log("error: ", error);
+        // });
+
+
         var xhr = RequireRead.xhrPool.length && RequireRead.xhrPool.pop();
 
         if (!xhr) {
@@ -288,13 +321,13 @@ bootstrap("require/browser", function (require) {
     Require.XhrLoader = function XhrLoader(config) {
         return function (url, module) {
             return config.read(url, module)
-            .then(function (text) {
-                if(!module.type) {
-                    module.type = JAVASCRIPT;
-                }
-                 module.text = text;
-                 module.location = url;
-            });
+            // .then(function (text) {
+            //     if(!module.type) {
+            //         module.type = JAVASCRIPT;
+            //     }
+            //      module.text = text;
+            //      module.location = url;
+            // });
         };
     };
 

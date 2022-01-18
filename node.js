@@ -1,60 +1,60 @@
 /*jshint node:true, browser:false */
 var Require = require("./core/mr/require");
-var FS = require("./core/promise-io/fs");
+// var FS = (require) ("./core/promise-io/fs");
 var MontageBoot = require("./montage");
 
-var URL = require("url");
-var htmlparser = require("htmlparser2");
-var DomUtils = htmlparser.DomUtils;
-var PATH = require("path");
+var URL = require("fast-url-parser");
+// var htmlparser = (require) ("htmlparser2");
+// var DomUtils = htmlparser.DomUtils;
+// var PATH = (require) ("path");
 
-function findPackage(path) {
-    var directory = FS.directory(path);
-    if (directory === path) {
-        throw new Error("Can't find package");
-    }
-    var packageJson = FS.join(directory, "package.json");
-    return FS.stat(packageJson).then(function (stat) {
-        if (stat.isFile()) {
-            return directory;
-        } else {
-            return findPackage(directory);
-        }
-    });
-}
+// function findPackage(path) {
+//     var directory = FS.directory(path);
+//     if (directory === path) {
+//         throw new Error("Can't find package");
+//     }
+//     var packageJson = FS.join(directory, "package.json");
+//     return FS.stat(packageJson).then(function (stat) {
+//         if (stat.isFile()) {
+//             return directory;
+//         } else {
+//             return findPackage(directory);
+//         }
+//     });
+// }
 
-function loadFreeModule(/*program, command, args*/) {
-    throw new Error("Can't load module that is not in a package");
-}
+// function loadFreeModule(/*program, command, args*/) {
+//     throw new Error("Can't load module that is not in a package");
+// }
 
-function loadPackagedModule(directory, program/*, command, args*/) {
-    return MontageBoot.loadPackage(directory)
-    .then(function (require) {
-        var id = program.slice(directory.length + 1);
-        return require.async(id);
-    });
-}
+// function loadPackagedModule(directory, program/*, command, args*/) {
+//     return MontageBoot.loadPackage(directory)
+//     .then(function (require) {
+//         var id = program.slice(directory.length + 1);
+//         return require.async(id);
+//     });
+// }
 
-exports.bootstrap = function () {
-    var command = process.argv.slice(0, 3);
-    var args = process.argv.slice(2);
-    var program = args.shift();
-    return FS.canonical(program).then(function (program) {
-        return findPackage(program)
-        .catch(function (error) {
-            if (error.message === "Can't find package") {
-                loadFreeModule(program, command, args);
-            } else {
-                throw new Error(error);
-            }
-        })
-        .then(function (directory) {
-            return loadPackagedModule(directory, program, command, args);
-        });
-    });
-};
+// exports.bootstrap = function () {
+//     var command = process.argv.slice(0, 3);
+//     var args = process.argv.slice(2);
+//     var program = args.shift();
+//     return FS.canonical(program).then(function (program) {
+//         return findPackage(program)
+//         .catch(function (error) {
+//             if (error.message === "Can't find package") {
+//                 loadFreeModule(program, command, args);
+//             } else {
+//                 throw new Error(error);
+//             }
+//         })
+//         .then(function (directory) {
+//             return loadPackagedModule(directory, program, command, args);
+//         });
+//     });
+// };
 
-MontageBoot.loadPackage = function (location, config) {
+MontageBoot.loadPackage = function (location, config, callback) {
 
     if (!location.endsWith("/")) {
         location += "/";
@@ -62,7 +62,9 @@ MontageBoot.loadPackage = function (location, config) {
 
     config = config || {};
     config.overlays = ["node", "server", "montage"];
-    config.location = URL.resolve(Require.getLocation(), location);
+    config.location = location;
+    // config.location = URL.resolve(Require.getLocation(), location);
+    // config.location = Require.getLocation();
 
     //The equivalent is done in montage.js for the browser:
     //install the linter, which loads on the first error

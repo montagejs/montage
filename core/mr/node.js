@@ -54,33 +54,31 @@ var jsIndexPrefix = '/index.js',
     jsPreffix = '.js',
     utf8 = "utf-8";
 Require.read = function read(location, module) {
-    return new Promise(function (resolve, reject) {
 
-        try {
-            resolve(FS.readFileSync(location, utf8));
-        } catch (error) {
+    try {
+        return Promise.resolve(FS.readFileSync(location, utf8));
+    } catch (error) {
 
-            if (
-                location.indexOf(jsPreffix) !== -1 && // is .js
-                location.indexOf(jsIndexPrefix) === -1 // is not /index.js
-            ) {
+        if (
+            location.indexOf(jsPreffix) !== -1 && // is .js
+            location.indexOf(jsIndexPrefix) === -1 // is not /index.js
+        ) {
 
-                try {
-                    // Attempt to read if file index.js exists there
-                    var text = FS.readFileSync((location = location.replace(jsPreffix, jsIndexPrefix)), utf8);
+            try {
+                // Attempt to read if file index.js exists there
+                var text = FS.readFileSync((location = location.replace(jsPreffix, jsIndexPrefix)), utf8);
 
-                    //We found a folder/index.js, we need to update the module to reflect that somehow
-                    module.location = location;
-                    module.redirect = `${module.id}/index`;
-                    resolve(text);
-                } catch (error) {
-                    reject(error);
-                }
-            } else {
-                reject(error);
+                //We found a folder/index.js, we need to update the module to reflect that somehow
+                module.location = location;
+                module.redirect = `${module.id}/index`;
+                return Promise.resolve(text);
+            } catch (error) {
+                return Promise.reject(error);
             }
+        } else {
+            return Promise.reject(error);
         }
-    });
+    }
 };
 
 // Compiles module text into a function.
@@ -105,7 +103,7 @@ Require.Compiler = function Compiler(config) {
     // var names = ["require", "exports", "module", "global", "__filename", "__dirname"];
     // var scopeNames = Object.keys(config.scope);
     // names.push.apply(names, scopeNames);
-    return function (module) {
+    return function node_Compiler(module) {
 
         var location = module.location;
         if (location && location.endsWith(".mjson")) {
