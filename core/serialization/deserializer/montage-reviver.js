@@ -9,7 +9,9 @@ var Montage = require("../../core").Montage,
     Alias = require("../alias").Alias, Bindings = require("../bindings"),
     Promise = require("../../promise").Promise,
     deprecate = require("../../deprecate"),
-    camelCaseConverter = require('../../converter/camel-case-converter').singleton,
+    CamelCaseConverterExports = require('../../converter/camel-case-converter'),
+    camelCaseConverter = CamelCaseConverterExports.singleton,
+    upperCaseCamelCaseConverter = new CamelCaseConverterExports.CamelCaseConverter(),
     kebabCaseConverter = require('../../converter/kebab-case-converter').singleton,
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
@@ -33,6 +35,8 @@ require("../../../core/extras/date");
 
 var PROXY_ELEMENT_MAP = new WeakMap();
 var DATA_ATTRIBUTES_MAP = new Map();
+
+upperCaseCamelCaseConverter.convertFirstLetterToUpperCase = true;
 
 /**
  * Element methods that are implemented natively and throw an invocation error
@@ -1410,31 +1414,35 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     createObjectLocationDesc: {
         value: function (locationId) {
-            var moduleId,
-                objectName,
+            var locationDesc,
                 bracketIndex = locationId.indexOf("[");
 
             if (bracketIndex > 0) {
-                moduleId = locationId.substr(0, bracketIndex);
-                objectName = locationId.slice(bracketIndex + 1, -1);
+                locationDesc = {
+                    moduleId: locationId.substr(0, bracketIndex),
+                    objectName: locationId.slice(bracketIndex + 1, -1)
+                };
             } else {
-                moduleId = locationId;
+                //moduleId = locationId;
                 // if(moduleId.endsWith("html")) {
                 //     objectName = "owner";
                 // } else {
-                this._findObjectNameRegExp.test(locationId);
-                objectName = RegExp.$1.replace(
-                        this._toCamelCaseRegExp,
-                        this._replaceToCamelCase
-                    );
-                // }
 
+                // this._findObjectNameRegExp.test(locationId);
+
+
+                // objectName = RegExp.$1.replace(
+                //         this._toCamelCaseRegExp,
+                //         this._replaceToCamelCase
+                //     );
+
+                // }
+                locationDesc = {
+                    moduleId: locationId,
+                    objectName: upperCaseCamelCaseConverter.convert(locationId.lastPathComponentRemovingExtension())
+                };
             }
 
-            var locationDesc = {
-                moduleId: moduleId,
-                objectName: objectName
-            };
             return this._locationDescCache.set(locationId, locationDesc) && locationDesc;
         }
     },
