@@ -7,6 +7,8 @@
 /*jshint node:true */
 const Require = require("./require"),
     Promise = require("bluebird"),
+    PromiseResolve = Promise.resolve,
+    PromiseReject = Promise.reject,
     NodeModule = require("module"),
     FS = require("fs"),
     URL = require("fast-url-parser"),
@@ -56,7 +58,7 @@ var jsIndexPrefix = '/index.js',
 Require.read = function read(location, module) {
 
     try {
-        return Promise.resolve(FS.readFileSync(location, utf8));
+        return PromiseResolve(FS.readFileSync(location, utf8));
     } catch (error) {
 
         if (
@@ -71,12 +73,12 @@ Require.read = function read(location, module) {
                 //We found a folder/index.js, we need to update the module to reflect that somehow
                 module.location = location;
                 module.redirect = `${module.id}/index`;
-                return Promise.resolve(text);
+                return PromiseResolve(text);
             } catch (error) {
-                return Promise.reject(error);
+                return PromiseReject(error);
             }
         } else {
-            return Promise.reject(error);
+            return PromiseReject(error);
         }
     }
 };
@@ -213,7 +215,7 @@ Require.makeLoader = function makeLoader(config) {
 
 Require.findPackagePath = function findPackagePath(directory) {
     if (directory === PATH.dirname(directory)) {
-        return Promise.reject(new Error("Can't find package"));
+        return PromiseReject(new Error("Can't find package"));
     }
     var packageJson = PATH.join(directory, "package.json");
     return Promise.ninvoke(FS, "stat", packageJson)
