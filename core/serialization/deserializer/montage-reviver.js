@@ -1334,7 +1334,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
             for (var i = 0, ii = value.length; i < ii; i++) {
 
-                if (_PromiseIs((item = this.reviveValue(value[i], context)))) {
+                if ((item = this.reviveValue(value[i], context)) && item !== value[i] && _PromiseIs(item)) {
                     item = item.then(this._createAssignValueFunction(value, i));
                     if(!firstPromise) {
                         firstPromise = item;
