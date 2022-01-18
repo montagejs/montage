@@ -1221,10 +1221,13 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                             this.reviveObjectLiteral(iValue, context, /*label*/undefined, undefined, undefined, setBindingsToDeserialize, value);
                             continue;
                         }
-                        else if ((typeof iValue === "object" && !isArray(iValue) &&
+                        /*
+                            having bidingParentObject indicates we're in a "values" block with frb expressions
+                        */
+                        else if (bidingParentObject && ((typeof iValue === "object" && !isArray(iValue) &&
                         (ONE_WAY in iValue || TWO_WAY in iValue || ONE_ASSIGNMENT in iValue)) ||
-                        propertyName.indexOf('.') > -1
-                        ) {
+                        propertyName.indexOf('.') !== -1
+                        )) {
                             (
                                 bindings ||
                                 (bindings = bidingParentObject.bindings) ||
