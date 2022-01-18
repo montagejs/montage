@@ -240,10 +240,11 @@ if(typeof String.prototype.lastPathComponent !== "function") {
 if(typeof String.prototype.lastPathComponentRemovingExtension !== "function") {
     Object.defineProperty(String.prototype, 'lastPathComponentRemovingExtension', {
         value: function lastPathComponentRemovingExtension () {
-            var lastSlashIndex = this.lastIndexOf("/");
-            if(lastSlashIndex !== -1) {
-                var lastDotIndex = this.lastIndexOf(".")
-                return this.substring(lastSlashIndex+1, (lastDotIndex > lastSlashIndex ? lastDotIndex : this.length ));
+            var indexStart = this.lastIndexOf("/") + 1,
+                lastDotIndex = this.lastIndexOf("."),
+                endIndex = (lastDotIndex > indexStart ? lastDotIndex : this.length );
+            if(indexStart > 0 || endIndex < this.length) {
+                return this.substring(indexStart, endIndex);
             } else {
                 return this;
             }
