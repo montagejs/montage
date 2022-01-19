@@ -16,7 +16,6 @@ const Require = require("./require"),
     CWD = process.cwd(),
     _RequireGetLocation =  (CWD + "/"),
     PATH = require("path"),
-    globalEval = eval,
     nativeModule = module /* the one provided by native nore require loading this */,
     // esm = require("esm"),
     emptyFactory = function () {
@@ -87,6 +86,8 @@ Require.read = function read(location, module) {
 // Can be overriden by the platform to make the engine aware of the source path. Uses sourceURL hack by default.
 var defaultFactoryStart = "(function(require,exports,module,global,__filename,__dirname){";
 Require.Compiler = function Compiler(config) {
+    const globalEval = eval;
+
     var factoryStart, scopeNames;
     if(config.scope) {
         scopeNames = Object.keys(config.scope);
@@ -107,37 +108,31 @@ Require.Compiler = function Compiler(config) {
     // names.push.apply(names, scopeNames);
     return function node_Compiler(module) {
 
-        var location = module.location;
-        if (location && location.endsWith(".mjson")) {
-            return module;
-        }
+        // var location = module.location;
+        // if (location && location.endsWith(".mjson") || module.factory) {
+        //     return module;
+        // }
 
-        if (module.factory) {
-            return module;
-        } else if (
+        if (
             module.text !== void 0 &&
             module.type === "javascript"
         ) {
-            var factory = globalEval(`${factoryStart}${module.text}\n//*/\n})\n//@ sourceURL=${location}`);
-            module.factory = function (require, exports, module, global, __filename, __dirname) {
-                /*
-                    __filename and __dirname are passed starting with file://
-                    This not what's node default value is, so before eventually fixing this where it's sent
-                    we do it here for now
-                */
-                if(scopeNames && scopeNames.length) {
-                    arguments[4] = __filename;
-                    arguments[5] = __dirname;
+            const factory = globalEval(`${factoryStart}${module.text}\n//*/\n})\n//@ sourceURL=${module.location}`);
 
-                    Array.prototype.push.apply(arguments, scopeNames.map(function (name) {
-                        return config.scope[name];
-                    }));
-                    return factory.apply(this, arguments);
-                } else {
-                    //return factory.apply(this, arguments);
-                    return factory(require, exports, module, global, __filename, __dirname);
-                }
-            };
+            if(scopeNames && scopeNames.length) {
+
+                module.factory = function (require, exports, module, global, __filename, __dirname) {
+                        arguments[4] = __filename;
+                        arguments[5] = __dirname;
+
+                        Array.prototype.push.apply(arguments, scopeNames.map(function (name) {
+                            return config.scope[name];
+                        }));
+                        return factory.apply(this, arguments);
+                    }
+            } else {
+                module.factory = factory;
+            }
             // new Function will have its body reevaluated at every call, hence using eval instead
             // https://developer.mozilla.org/en/JavaScript/Reference/Functions_and_function_scope
             //module.factory = new Function("require", "exports", "module", module.text + "\n//*/\n//@ sourceURL="+module.path);
