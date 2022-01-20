@@ -23,13 +23,13 @@ var CamelCaseConverter = exports.CamelCaseConverter = Converter.specialize({
 
     constructor: {
         value: function () {
-            if (this.constructor === CamelCaseConverter) {
-                if (!singleton) {
-                    singleton = this;
-                }
+            // if (this.constructor === CamelCaseConverter) {
+            //     if (!singleton) {
+            //         singleton = this;
+            //     }
 
-                return singleton;
-            }
+            //     return singleton;
+            // }
 
             return this;
         }
