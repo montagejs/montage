@@ -1287,8 +1287,11 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
 
     //This revised regex excludes cases where require() is itself within a litteral string
     var requirePattern = /(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)(?:[^"'])/g,
-        escapeSimpleComment = /\/\/(.*)$/gm,
-        escapeMultiComment = /\/\*([\s\S]*?)\*\//g;
+
+    //var requirePattern = /(?:|[^\"\/*\n/])require\s*\(\s*["']([^"']*)["']\s*\)/g,
+        // escapeSimpleComment = /\/\/(.*)$/gm,
+        // escapeMultiComment = /\/\*([\s\S]*?)\*\//g,
+        commentsCombined = /\/\/(.*)$|\/\*([\s\S]*?)\*\//gm;
 
 
     // Require.parseDependencies = function parseDependencies(factory) {
@@ -1312,7 +1315,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
     Require.parseDependencies = function parseDependencies(factory) {
 
         // Clear commented require calls
-        factory = factory.replace(escapeSimpleComment, '').replace(escapeMultiComment, '');
+        factory = factory.replace(commentsCombined, '');
 
         var o = null, myArray;
         while ((myArray = requirePattern.exec(factory)) !== null) {
