@@ -107,33 +107,36 @@ bootstrap("require/browser", function (require) {
                 module.type = JAVASCRIPT;
                 module.location = xhr.url;
 
+                /*
+                    The followimng indexOf("export ") isn't reliable enough. It causes issues with some mr tests
+                */
                 //var capturedImports = ES6_IMPORT_REGEX.exec(xhr.responseText);
-                if((xhr.responseText.indexOf("export ") !== -1)
+                // if((xhr.responseText.indexOf("export ") !== -1)
 
-                    //Require.detect_ES6_export_regex doesn't worm in WebKit...
-                    //Need to find a new one
-                    /*
-                    && (xhr.responseText.match(Require.detect_ES6_export_regex))
-                    */
-
-
-                    ) {
-                    // var displayName = (`${DoubleUnderscore}${module.require.config.name}${Underscore}${module.id}`.replace(nameRegex, Underscore)),
-                    // src = `export default ${globalEvalConstantA}${displayName}${globalEvalConstantB}${xhr.responseText}${globalEvalConstantC}${module.location}`;
-
-                    import(xhr.url).then(function(esModule) {
-                        module.type = Require.ES_MODULE_TYPE;
-                        module.exports = esModule;
-                        module.factory = emptyFactory;
-                        //module.factory.displayName = displayName;
-                        xhr.resolve();
-                    });
+                //     //Require.detect_ES6_export_regex doesn't worm in WebKit...
+                //     //Need to find a new one
+                //     /*
+                //         && (xhr.responseText.match(Require.detect_ES6_export_regex))
+                //     */
 
 
-                } else {
+                //     ) {
+                //     // var displayName = (`${DoubleUnderscore}${module.require.config.name}${Underscore}${module.id}`.replace(nameRegex, Underscore)),
+                //     // src = `export default ${globalEvalConstantA}${displayName}${globalEvalConstantB}${xhr.responseText}${globalEvalConstantC}${module.location}`;
+
+                //     import(xhr.url).then(function(esModule) {
+                //         module.type = Require.ES_MODULE_TYPE;
+                //         module.exports = esModule;
+                //         module.factory = emptyFactory;
+                //         //module.factory.displayName = displayName;
+                //         xhr.resolve();
+                //     });
+
+
+                // } else {
                     module.text = xhr.responseText;
                     xhr.resolve(xhr.responseText);
-                }
+                // }
 
                 //This is check in Compile, so we should be able to do it earlier
                 // if (module.factory || module.text === void 0) {
@@ -321,13 +324,17 @@ bootstrap("require/browser", function (require) {
     Require.XhrLoader = function XhrLoader(config) {
         return function (url, module) {
             return config.read(url, module)
-            // .then(function (text) {
-            //     if(!module.type) {
-            //         module.type = JAVASCRIPT;
-            //     }
-            //      module.text = text;
-            //      module.location = url;
-            // });
+            .then(function (text) {
+                if(module.type === undefined) {
+                    module.type = JAVASCRIPT;
+                }
+                if(module.text === undefined) {
+                    module.text = text;
+                }
+                if(module.location === undefined) {
+                    module.location = url;
+                }
+            });
         };
     };
 
