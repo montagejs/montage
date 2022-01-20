@@ -152,8 +152,7 @@ var ModuleLoader = Montage.specialize({
             var objectRequires = this._objectRequires,
                 _require = (objectRequires && label in objectRequires)
                     ? objectRequires[label]
-                    : this._require,
-                module;
+                    : this._require;
 
             // if (objectRequires && label in objectRequires) {
             //     _require = objectRequires[label];
@@ -162,7 +161,7 @@ var ModuleLoader = Montage.specialize({
             // }
 
             try {
-                module = _require(moduleId);
+                return _require(moduleId);
             } catch (err) {
 
                 /*
@@ -172,15 +171,16 @@ var ModuleLoader = Montage.specialize({
 
                     if(moduleId === "global") {
                         // module =  this.global_node_Module;
-                        module =  global;
+                        return global;
                     } else {
-                        module = this.node_createRequire(moduleId);
                         console.log("module:",module);
+                        return this.node_createRequire(moduleId);
                     }
 
                } else {
-                if (!module && (moduleId.endsWith(".mjson") /*|| moduleId.endsWith(".html")*/)) {
-                    module = this.getModuleDescriptor(_require, moduleId).text;
+
+                if ((moduleId.endsWith(".mjson") /*|| moduleId.endsWith(".html")*/)) {
+                    var module = this.getModuleDescriptor(_require, moduleId).text;
                 }
 
                 if (!module && !reviver._isSync) {
@@ -222,11 +222,12 @@ var ModuleLoader = Montage.specialize({
                     throw err;
                 }
 
+                return module;
+
                }
 
             }
 
-            return module;
         }
     }
 });
@@ -590,21 +591,21 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     reviveModule: {
         value: function reviveModule(value, context, label) {
-            var moduleId = value["%"],
-                _require = context.getRequire();
+            var _require = context.getRequire();
 
             /*
                 Fork logic between mr where _require.getModuleDescriptor exists and node's native require where it does not.
             */
             if(_require.getModuleDescriptor) {
-                moduleId = _require.resolve(moduleId);
 
-                var module = _require.getModuleDescriptor(moduleId);
+                var module = _require.getModuleDescriptor(_require.resolve(value["%"]));
 
                 return new ModuleReference().initWithIdAndRequire(module.id, module.require);
             } else {
+                var moduleId = value["%"];
+
                 if(moduleId === "global") {
-                    return new ModuleReference().initWithIdAndRequire(moduleId, this.moduleLoader.global_node_Module);
+                    return new ModuleReference().initWithIdAndRequire("global", this.moduleLoader.global_node_Module);
                 } else {
                     moduleId = _require.resolve(moduleId);
                     return new ModuleReference().initWithIdAndRequire(moduleId, this.moduleLoader.node_createRequire(moduleId));
@@ -626,7 +627,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     reviveMontageObject: {
         value: function reviveMontageObject(value, context, label) {
             var locationId = value.prototype || value.object,
-                isObjectDescriptor,
+                isMJSON,
                 module, locationDesc, objectName;
 
             if (locationId) {
@@ -637,12 +638,13 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     locationDesc = MontageReviver.parseObjectLocationId(locationId);
                     module = this.moduleLoader.getModule(locationDesc.moduleId, label, this);
                     objectName = locationDesc.objectName;
+                    isMJSON = locationId.endsWith(".mjson");
                 //}
             }
 
 
             if (    !this._isSync &&
-                    (isObjectDescriptor = !!(locationId && (locationId.endsWith(".mjson")))) &&
+                    isMJSON &&
                     !PromiseIs(module) &&
                     !module.montageObject
                 ) {
