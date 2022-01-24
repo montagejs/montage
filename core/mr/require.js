@@ -1286,7 +1286,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
     //var requirePattern = /(?:^|[^\w\"\'\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g,
 
     //This revised regex excludes cases where require() is itself within a litteral string
-    var requirePattern = /(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)(?:[^"'])/g,
+    var requirePattern = /(?:^|[^\w\$_.]|)require\s*\(\s*["']([^"']*)["']\s*\)(?:[^"'])/g,
 
     //var requirePattern = /(?:|[^\"\/*\n/])require\s*\(\s*["']([^"']*)["']\s*\)/g,
         // escapeSimpleComment = /\/\/(.*)$/gm,
