@@ -54,7 +54,7 @@
         "ical.js": "~1.4.0",
         "just-kebab-case": "^4.0.1",
         "proxy-polyfill": "~0.1.7",
-        "strange": "^1.7.2"
+        "strange": "github:montagejs/js-strange#master"
     },
     "devDependencies": {
         "concurrently": "^3.4.0",
