@@ -24,7 +24,7 @@ function Heap(values, equals, compare) {
     this.addEach(values);
 }
 
-Heap.Heap = Heap; // hack so require("heap").Heap will work in MontageJS
+Heap.Heap = Heap; // hack so (require)("heap").Heap will work in MontageJS
 
 Object.addEach(Heap.prototype, GenericCollection.prototype);
 Object.addEach(Heap.prototype, PropertyChanges.prototype);
