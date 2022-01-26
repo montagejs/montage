@@ -1652,7 +1652,8 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
     // Using mappings hash to load modules that match a mapping.
     Require.MappingsLoader = function MappingsLoader(config, load) {
         var mappings = config.mappings || (config.mappings = ObjectCreate(null)),
-            configName = config.name;
+            configName = config.name,
+            configNameLength = configName !== void 0 ? configName.length : -1;
 
         // finds a mapping to follow, if any
         return function (id, module) {
@@ -1666,9 +1667,9 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
 
             // TODO: remove this when all code has been migrated off of the autonomous name-space problem
             if (
-                configName !== void 0 &&
-                id.charAt(configName.length) === "/" &&
-                id.indexOf(configName) === 0
+                // configName !== void 0 &&
+                id.charAt(configNameLength) === "/" &&
+                id.startsWith(configName)
 
             ) {
                 console.warn("Package reflexive module ignored:", id);
