@@ -78,5 +78,28 @@ if(!Promise.resolveFalse) {
     });
 }
 
+if(!Promise.timeout) {
+    /**
+     * The timeoutPromise helper allows you to wrap any promise to fulfill within a timeout.
+     *
+     * @param {Promise} promise A promise instance
+     * @param {BigInteger} timeoutInMilliseconds The time limit in milliseconds to fulfill or reject the promise.
+     * @returns {Promise} A pending Promise
+     */
+
+     Object.defineProperty(Promise, "timeout", {
+        value: function PromiseTimeout(promise, timeoutInMilliseconds){
+            return Promise.race([
+                promise,
+                new Promise(function(resolve, reject){
+                    setTimeout(function() {
+                        reject(new Error("timeout"));
+                    }, timeoutInMilliseconds);
+                })
+            ]);
+        },
+        enumerable: false
+    });
+}
 
 exports.Promise = Promise;
