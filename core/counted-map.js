@@ -1,4 +1,3 @@
-// var Montage = require("./core").Montage;
 Set = require("core/collections/map");
 
 /**
@@ -6,7 +5,7 @@ Set = require("core/collections/map");
  *
  * @class CountedMap
  * @classdesc todo
- * @extends Montage
+ * @extends Map
  */
 var CountedMap = exports.CountedMap = function CountedMap(iterable) {
 

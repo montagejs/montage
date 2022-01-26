@@ -9,14 +9,15 @@
  * @requires montage/core/messageformat
  * @requires montage/core/messageformat-locale
  */
-var Montage = require("./core").Montage,
+var core = require("./core"),
+    Montage = core.Montage,
     MessageFormat = require("./messageformat"),
     rootComponent = require("../ui/component").__root__,
     logger = require("./logger").logger("localizer"),
     Serializer = require("./serialization/serializer/montage-serializer").MontageSerializer,
     Deserializer = require("./serialization/deserializer/montage-deserializer").MontageDeserializer,
     Promise = require("./promise").Promise,
-    Bindings = require("./core").Bindings,
+    Bindings = core.Bindings,
     FrbBindings = require("core/frb/bindings"),
     stringify = require("core/frb/stringify"),
     expand = require("core/frb/expand"),

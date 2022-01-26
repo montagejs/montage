@@ -1,4 +1,3 @@
-// var Montage = require("./core").Montage;
 Set = require("./collections/set");
 
 /**
@@ -6,7 +5,7 @@ Set = require("./collections/set");
  *
  * @class CountedSet
  * @classdesc todo
- * @extends Montage
+ * @extends Set
  */
 var CountedSet = exports.CountedSet = function CountedSet(iterable) {
     // var element;

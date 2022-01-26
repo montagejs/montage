@@ -1,9 +1,10 @@
 /**
  * @module montage/core/range-controller
  */
-var Montage = require("./core").Montage;
-var GenericCollection = require("core/collections/generic-collection");
-var observableArrayProperties = require("core/collections/listen/array-changes").observableArrayProperties;
+var core = require("./core"),
+    Montage = core.Montage,
+    GenericCollection = require("core/collections/generic-collection"),
+    observableArrayProperties = require("core/collections/listen/array-changes").observableArrayProperties;
 
 // The content controller is responsible for determining which content from a
 // source collection are visible, their order of appearance, and whether they
@@ -892,13 +893,13 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
 }, /** @lends RangeController. */ {
 
-    objectDescriptorModuleId:require("./core")._objectDescriptorModuleIdDescriptor,
+    objectDescriptorModuleId:core._objectDescriptorModuleIdDescriptor,
 
-    objectDescriptor:require("./core")._objectDescriptorDescriptor,
+    objectDescriptor:core._objectDescriptorDescriptor,
 
-    blueprintModuleId:require("./core")._blueprintModuleIdDescriptor,
+    blueprintModuleId:core._blueprintModuleIdDescriptor,
 
-    blueprint:require("./core")._blueprintDescriptor
+    blueprint:core._blueprintDescriptor
 
 });
 
