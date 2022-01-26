@@ -1283,10 +1283,10 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
     };
 
     // Extracts dependencies by parsing code and looking for "require" (currently using a simple regexp)
-    //var requirePattern = /(?:^|[^\w\"\'\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g,
+    var requirePattern = /(?:^|[^\w\"\'\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g,
 
     //This revised regex excludes cases where require() is itself within a litteral string
-    var requirePattern = /(?:^|[^\w\$_.]|)require\s*\(\s*["']([^"']*)["']\s*\)(?:[^"'])/g,
+    //var requirePattern = /(?:^|[^\w\$_.]|)require\s*\(\s*["']([^"']*)["']\s*\)(?:[^"'])/g,
 
     //var requirePattern = /(?:|[^\"\/*\n/])require\s*\(\s*["']([^"']*)["']\s*\)/g,
         // escapeSimpleComment = /\/\/(.*)$/gm,
