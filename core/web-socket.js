@@ -50,8 +50,11 @@ if(_WebSocket) {
         reconnectionAttemptCount: {
             value: 0
         },
-        reconnectionAttemptDelay: {
-            value: 1000
+        firstConnectionAttemptTime: {
+            value: undefined
+        },
+        reconnectionAttemptMaxDuration: {
+            value: 30000
         },
 
         /**
@@ -118,6 +121,10 @@ function initWebsocket(url, existingWebsocket, timeoutMs, numberOfRetries) {
 */
         _connect: {
             value: function (timeoutMs) {
+
+                if(this.firstConnectionAttemptTime === undefined) {
+                    this.firstConnectionAttemptTime = Date.now();
+                }
 
                 this._webSocket = new _WebSocket(this._url, this._protocols);
                 this._webSocket.addEventListener("error", event => this.handleEvent(event), false);
@@ -194,6 +201,7 @@ function initWebsocket(url, existingWebsocket, timeoutMs, numberOfRetries) {
 
                     case "open":
                         this.reconnectionInterval = 100;
+                        this.firstConnectionAttemptTime = undefined;
                         if (this._webSocket) {
                             this._webSocket.addEventListener("message", event => this.handleEvent(event), false);
                             this._webSocket.addEventListener("close", event => this.handleEvent(event), false);
@@ -203,7 +211,7 @@ function initWebsocket(url, existingWebsocket, timeoutMs, numberOfRetries) {
                     break;
 
                     case "error":
-                        if(this.reconnectionAttemptCount < this.reconnectionAttemptMaxCount) {
+                        if((this.reconnectionAttemptCount < this.reconnectionAttemptMaxCount) || ((Date.now() - this.firstConnectionAttemptTime) < this.reconnectionAttemptMaxDuration ) ) {
                             this._reconnect();
                         } else {
                             this.dispatchEvent(event);
