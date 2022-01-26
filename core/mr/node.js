@@ -143,11 +143,13 @@ Require.Compiler = function Compiler(config) {
 //Temporary: only doing this in node as this regex doesn't work in WebKit
 Require.detect_ES6_export_regex = /(?<=^([^"]|"[^"]*")*)export /;
 Require.Loader = function Loader(config, load) {
+    const supportsES6 = Loader.supportsES6;
+
     return function (location, module) {
         return config.read(location, module)
         .then(function (text) {
 
-            if(Loader.supportsES6 && /*faster*/(text.indexOf("export ") !== -1) && /*eliminate if in quotes*/(text.match(Require.detect_ES6_export_regex))) {
+            if(supportsES6 && /*faster*/(text.indexOf("export ") !== -1) && /*eliminate if in quotes*/(text.match(Require.detect_ES6_export_regex))) {
 
                 return import(location).then(function(esModule) {
                     module.type = Require.ES_MODULE_TYPE;
