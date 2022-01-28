@@ -1328,11 +1328,11 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
 
     Require.DependenciesCompiler = function DependenciesCompiler(config, compile) {
         return function(module) {
-            if (module.dependencies === undefined  && module.parsedText === void 0 && module.location.endsWith("js") && module.text !== void 0) {
+            if (module.dependencies === undefined && module.parsedText === void 0  && module.text !== void 0 && module.location.endsWith("js")) {
                 module.dependencies = config.parseDependencies(module.text);
             }
             compile(module);
-            if (module && module.dependencies === undefined && module.type !== Require.ES_MODULE_TYPE) {
+            if (module.dependencies === undefined && module.type !== Require.ES_MODULE_TYPE) {
                 if (module.text || module.factory) {
                     module.dependencies = Require.parseDependencies(module.text || module.factory);
                 }
