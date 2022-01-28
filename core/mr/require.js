@@ -596,6 +596,8 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
             module.error = void 0;
             // delete module.redirect;
             // delete module.mappingRedirect;
+
+            return module;
         }
 
         function extractPrefixFromInjectId(id) {
