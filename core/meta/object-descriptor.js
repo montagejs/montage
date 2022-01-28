@@ -162,8 +162,7 @@ var ObjectDescriptor = exports.ObjectDescriptor = Target.specialize( /** @lends 
 
     _getPropertyWithDefaults: {
         value:function (deserializer, propertyName) {
-            var value = deserializer.getProperty(propertyName);
-            return value || this[propertyName] || Defaults[propertyName];
+            return deserializer.getProperty(propertyName) || this[propertyName] || Defaults[propertyName];
         }
     },
 
