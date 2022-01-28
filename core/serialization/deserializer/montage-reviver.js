@@ -814,7 +814,6 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     instantiateMontageObject: {
         value: function instantiateMontageObject(serialization, object, objectName, context, label) {
-            var montageObjectDesc;
 
             if (object !== null && object !== void 0) {
                 object.isDeserializing = true;
