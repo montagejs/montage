@@ -981,43 +981,33 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     },
 
     _deserializeObjectUnitNamed: {
-        value: function (context, object, unitName, _unitsDesc, _unitDeserializer, _unitNameIndex) {
-            var unitsDesc = _unitsDesc || context.unitsToDeserialize.get(object),
-            objectDesc,
-            unitNames,
-            unitNameIndex,
-            unitDeserializer,
-            moduleId;
+        value: function (context, object, unitName, _unitsDesc, _unitDeserializer, unitNameIndex) {
+            var unitsDesc = _unitsDesc || context.unitsToDeserialize.get(object);
 
             if(!unitsDesc) {
                 return;
             }
 
-            objectDesc = unitsDesc.objectDesc;
-            unitNames = unitsDesc.unitNames;
-            unitNameIndex = _unitNameIndex || unitNames.indexOf(unitName);
-            unitDeserializer = _unitDeserializer || new UnitDeserializer();
-
-
-            if(_unitNameIndex || unitNameIndex !== -1) {
+            var objectDesc = unitsDesc.objectDesc,
+                unitDeserializer = _unitDeserializer || new UnitDeserializer(),
                 moduleId = objectDesc.prototype || objectDesc.object;
-                if(!("isMJSON" in unitsDesc)) {
-                    unitsDesc.isMJSON = moduleId && (moduleId.endsWith(".mjson"));
-                }
 
-                /*
-                 * If unitName === "values", but missing in objectDesc, for backward compatibility,
-                 * we should process it nonetheless as objects expect to be called
-                 * deserializeSelf even if there aren't any value to gained.
-                 * But for .mjson this never happened before so let's not.
-                 * TODO: remove in the future as it's a waste of time.
-                 */
+            if(!("isMJSON" in unitsDesc)) {
+                unitsDesc.isMJSON = moduleId && (moduleId.endsWith(".mjson"));
+            }
 
-                if ((unitName === "values" && !unitsDesc.isMJSON) || unitName in unitsDesc.objectDesc) {
-                    unitDeserializer.initWithContext(context);
-                    //Needs to add the whole unitsDesc.objectDesc as an argument for now as SelfDeserializer currently expects it.
-                    MontageReviver._unitRevivers.get(unitName)(unitDeserializer, object, objectDesc[unitName], unitsDesc);
-                }
+            /*
+                * If unitName === "values", but missing in objectDesc, for backward compatibility,
+                * we should process it nonetheless as objects expect to be called
+                * deserializeSelf even if there aren't any value to gained.
+                * But for .mjson this never happened before so let's not.
+                * TODO: remove in the future as it's a waste of time.
+                */
+
+            if ((unitName === "values" && !unitsDesc.isMJSON) || unitName in unitsDesc.objectDesc) {
+                unitDeserializer.initWithContext(context);
+                //Needs to add the whole unitsDesc.objectDesc as an argument for now as SelfDeserializer currently expects it.
+                MontageReviver._unitRevivers.get(unitName)(unitDeserializer, object, objectDesc[unitName], unitsDesc);
             }
         }
     },
