@@ -249,20 +249,21 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      */
     _overridePropertyWithDefaults: {
         value: function (deserializer, objectKey /*, deserializerKeys... */) {
-            var propertyNames, value, i, n;
+            var value;
 
             if (arguments.length > 2) {
-                propertyNames = Array.prototype.slice.call(arguments, 2, Infinity);
+                var /*propertyNames,*/ i, n;
 
-                for (i = 0, n = propertyNames.length; i < n && !value; i++) {
-                    value = deserializer.getProperty(propertyNames[i]);
+                // propertyNames = Array.prototype.slice.call(arguments, 2, Infinity);
+
+                for (i = 2, n = arguments.length; i < n && !value; i++) {
+                    value = deserializer.getProperty(arguments[i]);
                 }
             } else {
                 value = deserializer.getProperty(objectKey);
-
             }
 
-            this[objectKey] = value === undefined ? Defaults[propertyNames ? propertyNames[0] : objectKey] : value;
+            this[objectKey] = value === undefined ? Defaults[arguments.length > 2 ? arguments[2] : objectKey] : value;
         }
     },
 
