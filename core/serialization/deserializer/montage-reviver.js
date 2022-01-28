@@ -514,7 +514,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     //context.setBindingsToDeserialize(object, value);//Looks in values for all "bindings to collect and apply later"
                     var montageObjectDesc = this.reviveObjectLiteral(value, context, undefined, undefined, object, true);
 
-                    if (PromiseIs(montageObjectDesc)) {
+                    /*
+                        the object literal for a rootObject isn't likely to be a promise, especially it's the same as value
+                    */
+                    if (montageObjectDesc !== value && PromiseIs(montageObjectDesc)) {
                         var self = this;
                         return montageObjectDesc.then(function(montageObjectDesc) {
                             return self.deserializeMontageObject(montageObjectDesc, object, context, label);
@@ -830,9 +833,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             }
 
             //context.setBindingsToDeserialize(object, serialization);//Looks in values for all "bindings to collect and apply later"
-            montageObjectDesc = this.reviveObjectLiteral(serialization, context, undefined, undefined, object, true);
-
-            if (PromiseIs(montageObjectDesc)) {
+            var montageObjectDesc = this.reviveObjectLiteral(serialization, context, undefined, undefined, object, true);
+            /*
+                the object literal for a rootObject isn't likely to be a promise, especially it's the same as value
+            */
+            if (montageObjectDesc !== serialization && PromiseIs(montageObjectDesc)) {
                 var self = this;
                 return montageObjectDesc.then(function(montageObjectDesc) {
                     return self.deserializeMontageObject(montageObjectDesc, object, context, label);
