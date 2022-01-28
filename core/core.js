@@ -150,7 +150,6 @@ valuePropertyDescriptor.value = function specialize(prototypeProperties, constru
                 constructor = function() {
                     return this;
                 };
-                constructor.name = this.name+"Specialized";
             }
         }
 
