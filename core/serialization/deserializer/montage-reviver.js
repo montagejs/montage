@@ -903,15 +903,13 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     _invokeDeserializedFromSerialization: {
         value: function (context) {
             var objects = context._objects,
+                labels = ObjectKeys(objects),
+                i=0, label,
                 object;
 
-            /* jshint forin: true */
-            for (var label in objects) {
-            /* jshint forin: false */
+            while (label = labels[i++]) {
 
-                object = objects[label];
-
-                if (object !== null && object !== void 0) {
+                if ((object = objects[label]) !== null && object !== void 0) {
                     delete object.isDeserializing;
                 }
 
