@@ -169,23 +169,34 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
     var _resolveStringtoArray = new Map();
     var _target = [];
 
-    function _resolveItem(source, part, target, EMPTY_STRING, DOT, DOT_DOT) {
-        /*jshint -W035 */
-        if (part === EMPTY_STRING || part === DOT) {
-        } else if (part === DOT_DOT) {
-            if (target.length) {
-                target.pop();
-            }
-        } else {
-            target.push(part);
-        }
-        /*jshint +W035 */
+    function _resolveItem(part, target, EMPTY_STRING, DOT, DOT_DOT) {
+
+        (part === EMPTY_STRING || part === DOT)
+            ? void 0
+            : (part === DOT_DOT)
+                ? target.length && target.pop()
+                : target.push(part)
+
+        // /*jshint -W035 */
+        // if (part === EMPTY_STRING || part === DOT) {
+        // } else if (part === DOT_DOT) {
+        //     if (target.length) {
+        //         target.pop();
+        //     }
+        // } else {
+        //     target.push(part);
+        // }
+        // /*jshint +W035 */
     }
 
     var EMPTY_STRING = "",
         SLASH = "/",
         DOT = ".",
         DOT_DOT = "..";
+
+    function _resolvedMapForId(id, baseId, resolved, baseIdMap) {
+        return (baseIdMap || ( (resolved || (resolved = _resolved.get(id) || (_resolved.set(id, (resolved = new Map())) && resolved))).set(baseId, (baseIdMap = new Map())) && baseIdMap));
+    }
 
     function _cacheResolve(_id, baseId, resolved, baseIdMap) {
         var id, i, ii, source, parts, resolveItem = _resolveItem, result, target = _target, _EMPTY_STRING = EMPTY_STRING, _DOT = DOT, _DOT_DOT = DOT_DOT;
@@ -198,14 +209,14 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
 
         if (source.length && source[0] === DOT || source[0] === DOT_DOT) {
             for (i = 0, ii = parts.length-1; i < ii; i++) {
-                resolveItem(parts, parts[i], target, _EMPTY_STRING, _DOT, _DOT_DOT);
+                resolveItem(parts[i], target, _EMPTY_STRING, _DOT, _DOT_DOT);
             }
         }
         for (i = 0, ii = source.length; i < ii; i++) {
-            resolveItem(source, source[i], target, _EMPTY_STRING, _DOT, _DOT_DOT);
+            resolveItem(source[i], target, _EMPTY_STRING, _DOT, _DOT_DOT);
         }
 
-        return (baseIdMap || ( resolved.set(baseId, (baseIdMap = new Map())) && baseIdMap)).set(id, (result = target.join(SLASH))) && result;
+        return (_resolvedMapForId(_id, baseId, resolved, baseIdMap)).set(id, (result = target.join(SLASH))) && result;
 
     }
 
@@ -213,10 +224,15 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
         if (id === EMPTY_STRING && baseId === EMPTY_STRING) {
             return EMPTY_STRING;
         } else {
-            var resolved = _resolved.get(id) || (_resolved.set(id, (resolved = new Map())) && resolved),
-                baseIdMap = resolved.get(baseId);
 
-            return (baseIdMap && baseIdMap.get(id)) || _cacheResolve(id, baseId, resolved, baseIdMap);
+            var resolved = _resolved.get(id), baseIdMap;
+
+            return resolved
+                ? (baseIdMap = resolved.get(baseId))
+                    ? baseIdMap.get(id) || _cacheResolve(id, baseId, resolved, baseIdMap)
+                    : _cacheResolve(id, baseId, resolved, baseIdMap)
+                : _cacheResolve(id, baseId, resolved, baseIdMap)
+
         }
     }
 
@@ -610,7 +626,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
                 prefix = prefixes[i];
                 if (
                     id === prefix ||
-                    id.indexOf(prefix) === 0 &&
+                    id.startsWith(prefix) &&
                     id.charAt(prefix.length) === "/"
                 ) {
                     return prefix;
@@ -681,17 +697,17 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
 
             // this is a memo of modules already being loaded so we don’t
             // data-lock on a cycle of dependencies.
-            if(!loading) {
-                loading =  ObjectCreate(null);
-            }
+            // if(!loading) {
+            //     loading = ObjectCreate(null);
+            // }
             //loading = loading || (config.loading = ObjectCreate(null));
             // has this all happened before?  will it happen again?
             // if (topId in _loading) {
             //     return null; // break the cycle of violence.
             // }
-            return (loading[topId])
+            return (loading && loading[topId])
                 ? null // break the cycle of violence.
-                : (loading[topId] = true)
+                : ((loading || (loading = ObjectCreate(null)))[topId] = true)
                 // this has happened before
                 && load(topId, viaId)
                 .then(function deepLoadThen() {
@@ -710,6 +726,8 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
                             promises, iPromise,
                             scopedTopId = module.redirect || topId,
                             scopedLoading = loading,
+                            normalizeId = scopedConfig.normalizeId,
+                            resolve = scopedConfig.resolve,
                             scopedDeepLoad = deepLoad;
 
 
@@ -720,9 +738,8 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
                             //     var dependees = iModule.dependees = iModule.dependees || {};
                             //     dependees[topId] = true;
                             // }
-                            if ((iPromise = scopedDeepLoad(scopedConfig.normalizeId(scopedConfig.resolve(dependencies[i], scopedTopId), scopedConfig), scopedTopId, scopedLoading))) {
+                            if ((iPromise = scopedDeepLoad(normalizeId(resolve(dependencies[i], scopedTopId), scopedConfig), scopedTopId, scopedLoading))) {
                                 /* jshint expr: true */
-
 
                                 !iFirstPromise
                                 ? iFirstPromise = iPromise
@@ -781,23 +798,6 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
                         ? module.exports
                         : executeModuleCompiler(module, config, topId, viaId);
 
-            // handle redirects
-            if (module.redirect !== void 0) {
-                return getExports(module.redirect, viaId);
-            }
-
-            // handle cross-package linkage
-            if (module.mappingRedirect !== void 0) {
-                return module.mappingRequire(module.mappingRedirect, viaId);
-            }
-
-            // do not reinitialize modules
-
-            if (module.exports !== void 0) {
-                return module.exports;
-            }
-
-            return executeModuleCompiler(module, config, topId);
         }
 
 
@@ -882,12 +882,12 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
         // Creates a unique require function for each module that encapsulates
         // that module's id for resolving relative module IDs against.
         function makeRequire(viaId) {
-
+            var require_getExports = getExports;
             // Main synchronously executing "require()" function
             var require = function require(id) {
                 //console.log(config.name +" - require("+id+")");
                 //return getExports(/*topId*/require.normalizeId(require.resolve(id, viaId), config), viaId);
-                return getExports(/*topId*/require.resolve(id, viaId), viaId);
+                return require_getExports(/*topId*/require.resolve(id, viaId), viaId);
             };
             require.viaId = viaId;
             require.normalizeId = config.normalizeId;
