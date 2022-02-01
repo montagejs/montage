@@ -149,9 +149,8 @@ var ModuleLoader = Montage.specialize({
 
     getModule: {
         value: function getModule(moduleId, label, reviver) {
-            var objectRequires = this._objectRequires,
-                _require = (objectRequires && label in objectRequires)
-                    ? objectRequires[label]
+            var _require = (this._objectRequires && label in this._objectRequires)
+                    ? this._objectRequires[label]
                     : this._require;
 
             // if (objectRequires && label in objectRequires) {
@@ -486,8 +485,9 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     return Promise.reject(notFoundError);
                 }
             }
-            var valueKeys = ObjectKeys(value),
-                isAlias = valueKeys.indexOf("alias") !== -1,
+            //var valueKeys = ObjectKeys(value),
+                // isAlias = valueKeys.indexOf("alias") !== -1,
+            var    isAlias = "alias" in value,
             // var isAlias = "alias" in value,
                 valueValue,
                 object;
@@ -512,7 +512,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     context.setObjectLabel(object, label);
 
                     //context.setBindingsToDeserialize(object, value);//Looks in values for all "bindings to collect and apply later"
-                    var montageObjectDesc = this.reviveObjectLiteral(value, context, undefined, undefined, object, true);
+                    //global.reviveRootObjectLiteralA = (global.reviveRootObjectLiteralA || 0)+1;
+                    var montageObjectDesc = this.reviveRootObjectLiteral(value, context);
 
                     /*
                         the object literal for a rootObject isn't likely to be a promise, especially it's the same as value
@@ -529,8 +530,10 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     // return object;
                 } else {
                     var valueType = this.getTypeOf(valueValue),
-                    revivedValue = this.reviveValue(valueValue, context, label, valueType),
-                    revivedUnits = this.reviveObjectLiteral(value, context, undefined, MontageReviver._unitNames, revivedValue, true);
+                        revivedValue = this.reviveValue(valueValue, context, label, valueType),
+                        revivedUnits = this.reviveRootObjectLiteral(value, context);
+
+                    //global.reviveRootObjectLiteralB = (global.reviveRootObjectLiteralB || 0)+1;
 
                     context.setObjectLabel(revivedValue, label);
 
@@ -562,15 +565,15 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 }
 
 
-            } else if (valueKeys.length === 0) {
-                // it's an external object
-                return context.hasUserObject(label)
-                    ? context.setObjectLabel(/*object*/ context.getUserObject(label) , label)
-                    : this.reviveExternalObject(value, context, label);
-
             } else if (isAlias) {
                 return this.reviveAlias(value, context, label);
-            } else {
+            // } else if (valueKeys.length === 0) {
+            //     // it's an external object
+            //     return context.hasUserObject(label)
+            //         ? context.setObjectLabel(/*object*/ context.getUserObject(label) , label)
+            //         : this.reviveExternalObject(value, context, label);
+
+            }  else {
                 return this.reviveMontageObject(value, context, label);
             }
         }
@@ -627,59 +630,68 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         }
     },
 
+    _throwReviveMontageObjectSynchronouslyWithLabelAndModuleNotLoaded: {
+        value: function(label, value) {
+            throw new Error(
+                "Tried to revive montage object with label " + label +
+                " synchronously but the module was not loaded: " + JSON.stringify(value)
+            );
+        }
+    },
+
     reviveMontageObject: {
         value: function reviveMontageObject(value, context, label) {
-            var locationId = value.prototype || value.object,
-                isMJSON,
-                module, locationDesc, objectName;
+            var locationId = value.prototype || value.object;
 
             if (locationId) {
                 // if (locationId.indexOf("/") === -1 && typeof this._global[locationId] === "function") {
                 //     module = this._global;
                 //     objectName = locationId;
                 // } else {
-                    locationDesc = MontageReviver.parseObjectLocationId(locationId);
-                    module = this.moduleLoader.getModule(locationDesc.moduleId, label, this);
-                    objectName = locationDesc.objectName;
-                    isMJSON = locationId.endsWith(".mjson");
+                    var locationDesc = MontageReviver.parseObjectLocationId(locationId),
+                        module = this.moduleLoader.getModule(locationDesc.moduleId, label, this);
+
                 //}
-            }
 
 
-            if (    !this._isSync &&
-                    isMJSON &&
-                    !PromiseIs(module) &&
-                    !module.montageObject
-                ) {
-                module = context._require.async(locationDesc.moduleId);
-            }
+                if(this._isSync) {
+                    return module ? this.instantiateObject(module, locationDesc, value, locationDesc.objectName, context, label) : this._throwReviveMontageObjectSynchronouslyWithLabelAndModuleNotLoaded(label, value);
+                } else {
 
-            if(!module && this._isSync) {
-                throw new Error(
-                    "Tried to revive montage object with label " + label +
-                    " synchronously but the module was not loaded: " + JSON.stringify(value)
-                );
-            } else if (PromiseIs(module)) {
-                if (this._isSync) {
-                    throw new Error(
-                        "Tried to revive montage object with label " + label +
-                        " synchronously but the module was not loaded: " + JSON.stringify(value)
-                    );
-                }
-                var self = this;
-                return module.then(function (exports) {
-                    return self.instantiateObject(exports, locationDesc, value, objectName, context, label);
-                }, function (error) {
-                    if (error.stack) {
-                        console.error(error.stack);
+                    if (locationId.endsWith(".mjson") &&
+                        !module.montageObject &&
+                        !PromiseIs(module)
+                    ) {
+                        module = context._require.async(locationDesc.moduleId);
                     }
-                    throw new Error('Error deserializing "' + label +
-                        '" when loading module "' + locationDesc.moduleId +
-                        "' from '" + value.prototype + "' cause: " + error.message);
-                });
+
+                    if (PromiseIs(module)) {
+                        var self = this;
+
+                        return this._isSync
+                            ? this._throwReviveMontageObjectSynchronouslyWithLabelAndModuleNotLoaded(label, value)
+                            : module.then(function (exports) {
+                                    return self.instantiateObject(exports, locationDesc, value, locationDesc.objectName, context, label);
+                                }, function (error) {
+                                    if (error.stack) {
+                                        console.error(error.stack);
+                                    }
+                                    throw new Error('Error deserializing "' + label +
+                                        '" when loading module "' + locationDesc.moduleId +
+                                        "' from '" + value.prototype + "' cause: " + error.message);
+                                });
+                    }
+                    else {
+                        return this.instantiateObject(module, locationDesc, value, locationDesc.objectName, context, label);
+                    }
+
+                }
             } else {
-                return this.instantiateObject(module, locationDesc, value, objectName, context, label);
+                //In this case we'd better have a label!
+                return this.instantiateObject(/*module*/undefined, /*locationDesc*/undefined, value, /*objectName*/undefined, context, label);
             }
+
+
         }
     },
 
@@ -832,7 +844,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
             }
 
             //context.setBindingsToDeserialize(object, serialization);//Looks in values for all "bindings to collect and apply later"
-            var montageObjectDesc = this.reviveObjectLiteral(serialization, context, undefined, undefined, object, true);
+            //global.reviveRootObjectLiteral = (global.reviveRootObjectLiteral || 0)+1;
+            var montageObjectDesc = this.reviveRootObjectLiteral(serialization, context);
             /*
                 the object literal for a rootObject isn't likely to be a promise, especially it's the same as value
             */
@@ -851,8 +864,13 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function (montageObjectDesc, object, context, label) {
             // Units are deserialized after all objects have been revived.
             // This happens at didReviveObjects.
+            /*
+                Adding a check that the context implements setUnitsToDeserialize before calling it.
+                It's only used
+            */
             context.setUnitsToDeserialize(object, montageObjectDesc, MontageReviver._unitNames);
-            return object;
+            //context.setUnitsToDeserialize && context.setUnitsToDeserialize(object, montageObjectDesc, MontageReviver._unitNames);
+                return object;
         }
     },
 
@@ -1110,6 +1128,12 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         value: function() {}
     },
 
+    _throwUnableToReviveValueSynchronouslyWithLabel : {
+        value: function(value, label) {
+            throw new Error("Unable to revive value with label " + label + " synchronously: " + value);
+        }
+    },
+
     reviveValue: {
         value: function reviveValue(value, context, label, valueType) {
             var revived = (
@@ -1120,14 +1144,22 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                     this[("revive" + valueType)]
                 ).call(this, value, context, label);
 
+
+            return !this._isSync
+            ? revived
+            : (revived === value)
+                ? revived
+                : PromiseIs(revived)
+                    ? this._throwUnableToReviveValueSynchronouslyWithLabel(value, label)
+                    : revived
+
             if(!this._isSync) {
                 return revived;
-            } else if(PromiseIs(revived)) {
-                throw new Error("Unable to revive value with label " + label + " synchronously: " + value);
+            } else if(revived !== value && PromiseIs(revived)) {
+                    throw new Error("Unable to revive value with label " + label + " synchronously: " + value);
             } else {
                 return revived;
             }
-
             // if (this._isSync && PromiseIs(revived)) {
             //     throw new Error("Unable to revive value with label " + label + " synchronously: " + value);
             // } else {
@@ -1157,6 +1189,232 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
         }
     },
 
+
+
+    /**
+     * reviveRootObjectLiteral now takes on what was done in montage-interpreter.js setBindingsToDeserialize().
+     * setBindingsToDeserialize is doing a full loop on all of a top level values entries to figure out
+     * what needs to be processed as binding / expressions, and also handles backward compatibility of the
+     * "properties" block that was designed to only handle simple assignments.
+     *
+     * By inlining that logic here, we can do it in one pass, as reviveObjectLiteral loops over
+     * the very same values block keys again anyway.
+     *
+     * From the places setBindingsToDeserialize() was called rigfht before reviveObjectLiteral(),
+     * we pass a new argument - setBindingsToDeserialize as true, which we use to know we're in a top level
+     * block and we should do something special. Once we detect that, we call directly reviveObjectLiteral()
+     * again this time passing the parent object where a "bindings" entry may need to be created if
+     * relevant entries for {"<-": "..."}, {"<->": "..."} or {"=": "..."} are found, as we're moving them there
+     * and deleting them from "values"
+     *
+     *  @function reviveObjectLiteral
+     *  @returns {Object} - a revived object from the passed value expected to be an object
+    */
+
+     reviveRootObjectLiteral: {
+        value: function reviveRootObjectLiteral(value, context) {
+            var iValue, iValueRevived,
+                isNotSync = !this._isSync,
+                firstPromise,
+                promises;
+
+            //For value.object or value.prototype, nothing to do they stay strings until we use it to instantiate
+            //For value.value, we do it now:
+            // if((iValue = value.value)) {
+            //     iValueRevived = this.reviveValue(iValue, context, label, "object");
+
+            //     if(iValueRevived !== iValue && isNotSync && PromiseIs(iValueRevived)) {
+            //         iValueRevived = iValueRevived.then(this._createAssignValueFunction(value, "value"));
+            //         !firstPromise
+            //         ? firstPromise = item
+            //         : !promises
+            //             ? promises = [firstPromise, item]
+            //             : promises.push(item);
+            //     } else {
+            //         value.value = iValueRevived;
+            //     }
+            // }
+
+            if((iValue = value.properties)) {
+                /*
+                    we know the properties block doesn't contain bindings so if we don't pass value as bidingParentObject pararmeter,
+                    we won't try in the nested call.
+
+                    properties block + bindings block ~= values block
+                */
+                iValueRevived = this.reviveObjectLiteral(iValue, context, /*label*/undefined, undefined, undefined, /*setBindingsToDeserialize*/ true, undefined);
+                if(iValueRevived !== iValue && isNotSync && PromiseIs(iValueRevived)) {
+                    iValueRevived = iValueRevived.then(this._createAssignValueFunction(value, "values"));
+                    !firstPromise
+                    ? firstPromise = iValueRevived
+                    : !promises
+                        ? promises = [firstPromise, iValueRevived]
+                        : promises.push(iValueRevived);
+                } else {
+                    value.values = value.properties;
+                }
+                delete value.properties;
+
+                if((iValue = value.bindings)) {
+                    iValueRevived = this.reviveValuesObjectLiteral(iValue, context, /*label*/undefined, value);
+
+                    if(iValueRevived !== iValue && isNotSync && PromiseIs(iValueRevived)) {
+                        !firstPromise
+                            ? firstPromise = iValueRevived
+                            : !promises
+                                ? promises = [firstPromise, iValueRevived]
+                                : promises.push(iValueRevived);
+                    } else {
+                        if(value.values) {
+                            Object.assign(value.values, iValue)
+                        } else {
+                            value.values = iValue;
+                        }
+                    }
+
+                }
+
+            } else if((iValue = value.values)) {
+                /*iValueRevived = */this.reviveValuesObjectLiteral(iValue, context, /*label*/undefined, value);
+
+                // if(iValueRevived !== iValue && isNotSync && PromiseIs(iValueRevived)) {
+                //     !firstPromise
+                //         ? firstPromise = item
+                //         : !promises
+                //             ? promises = [firstPromise, item]
+                //             : promises.push(item);
+                // }
+
+            }
+
+
+            if((iValue = value.listeners)) {
+                iValueRevived = this.reviveObjectLiteral(iValue, context);
+                if(iValueRevived !== iValue && isNotSync && PromiseIs(iValueRevived)) {
+
+                    !firstPromise
+                        ? firstPromise = iValueRevived
+                        : !promises
+                            ? promises = [firstPromise, iValueRevived]
+                            : promises.push(item);
+                }
+            }
+
+            if((iValue = value.localizations)) {
+                iValueRevived = this.reviveObjectLiteral(iValue, context);
+
+                if(iValueRevived !== iValue && isNotSync && PromiseIs(iValueRevived)) {
+                    iValueRevived = iValueRevived.then(this._createAssignValueFunction(value, "localizations"));
+
+                    !firstPromise
+                        ? firstPromise = iValueRevived
+                        : !promises
+                            ? promises = [firstPromise, iValueRevived]
+                            : promises.push(iValueRevived);
+                }
+
+            }
+
+            return isNotSync
+                ? firstPromise
+                    ? firstPromise.then(function() {
+                        return value;
+                    })
+                    : promises
+                        ? Promise.all(promises).then(function() {
+                            return value;
+                        })
+                        : value
+                : value;
+
+        }
+    },
+
+
+    reviveValuesObjectLiteral: {
+        value: function reviveValuesObjectLiteral(value, context, label, bidingParentObject) {
+            var item,
+                isNotSync = !this._isSync,
+                _PromiseIs = PromiseIs,
+                _isArray = isArray,
+                _createAssignValueFunction,
+                firstPromise,
+                promises,
+                propertyNames = ObjectKeys(value),
+                i = 0,
+                propertyName,
+                iValue,
+                iValueContainer = value,
+                bindings;
+
+
+            if (label) {
+                context.setObjectLabel(value, label);
+            }
+
+            // if(setBindingsToDeserialize && value.properties) {
+            //     value.values = value.properties;
+            //     delete value.properties;
+            // }
+
+            while((propertyName = propertyNames[i++])) {
+
+                if((iValue = value[propertyName]) && ((typeof iValue === "object" && !_isArray(iValue) &&
+                    (ONE_WAY in iValue || TWO_WAY in iValue || ONE_ASSIGNMENT in iValue)) ||
+                    propertyName.includes('.'))
+                    ) {
+                        (
+                            bindings ||
+                            (bindings = bidingParentObject.bindings) ||
+                            (bindings = (bidingParentObject.bindings = {}))
+                        )[propertyName] = iValue;
+                        delete value[propertyName];
+                        /*
+                            If we detect a binding, we set the iValueContainer, where the revived value will go
+                            to be the bindings and make sure we reset it to be the regular passed value object otherwise.
+                        */
+                        iValueContainer = bindings;
+                } else {
+                    iValueContainer = value;
+                }
+
+                    // if (iValue === value) {
+                    //     // catch object property that point to its parent
+                    //     return value;
+                    // }
+
+                if(iValue !== (item = this.reviveValue(iValue, context))) {
+                    if (isNotSync && _PromiseIs(item)) {
+                        item = item.then((_createAssignValueFunction || (_createAssignValueFunction = this._createAssignValueFunction))(iValueContainer, propertyName));
+
+                        !firstPromise
+                            ? firstPromise = item
+                            : !promises
+                                ? promises = [firstPromise, item]
+                                : promises.push(item);
+
+                    } else {
+                        iValueContainer[propertyName] = item;
+                    }
+                }
+
+            }
+
+            return isNotSync
+                ? firstPromise
+                    ? firstPromise.then(function() {
+                        return value;
+                    })
+                    : promises
+                        ? Promise.all(promises).then(function() {
+                            return value;
+                        })
+                        : value
+                : value;
+        }
+    },
+
+
     /**
      * reviveObjectLiteral now takes on what was done in montage-interpreter.js setBindingsToDeserialize().
      * setBindingsToDeserialize is doing a full loop on all of a top level values entries to figure out
@@ -1178,7 +1436,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
     */
 
     reviveObjectLiteral: {
-        value: function reviveObjectLiteral(value, context, label, filterKeys, object, setBindingsToDeserialize, bidingParentObject) {
+        value: function reviveObjectLiteral(value, context, label) {
             var item,
                 isNotSync = !this._isSync,
                 _PromiseIs = PromiseIs,
@@ -1188,74 +1446,29 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 propertyNames,
                 i = 0,
                 propertyName,
-                iValue,
-                iValueContainer = value,
-                bindings;
+                iValue;
 
 
             if (label) {
                 context.setObjectLabel(value, label);
             }
 
-            if(setBindingsToDeserialize && value.properties) {
-                value.values = value.properties;
-                delete value.properties;
-            }
 
             propertyNames = ObjectKeys(value);
 
             while((propertyName = propertyNames[i++])) {
 
-                iValue = value[propertyName];
+                // iValue = value[propertyName];
 
-                if(setBindingsToDeserialize) {
-                    if(iValue) {
-
-                        if(object && (propertyName === "values") ) {
-                            this.reviveObjectLiteral(iValue, context, /*label*/undefined, undefined, undefined, setBindingsToDeserialize, value);
-                            continue;
-                        }
-                        /*
-                            having bidingParentObject indicates we're in a "values" block with frb expressions
-                        */
-                        else if (bidingParentObject && ((typeof iValue === "object" && !isArray(iValue) &&
-                        (ONE_WAY in iValue || TWO_WAY in iValue || ONE_ASSIGNMENT in iValue)) ||
-                        propertyName.indexOf('.') !== -1
-                        )) {
-                            (
-                                bindings ||
-                                (bindings = bidingParentObject.bindings) ||
-                                (bindings = (bidingParentObject.bindings = {}))
-                            )[propertyName] = iValue;
-                            delete value[propertyName];
-                            /*
-                                If we detect a binding, we set the iValueContainer, where the revived value will go
-                                to be the bindings and make sure we reset it to be the regular passed value object otherwise.
-                            */
-                            iValueContainer = bindings;
-                        } else {
-                            iValueContainer = value;
-                        }
-                    } else {
-                        iValueContainer = value;
-                    }
-
-                }
+                // if (iValue === value) {
+                //     // catch object property that point to its parent
+                //     return value;
+                // }
 
 
-                if ((filterKeys && filterKeys.indexOf(propertyName) === -1)) {
-                    continue;
-                }
-
-                if (iValue === value) {
-                    // catch object property that point to its parent
-                    return value;
-                }
-
-
-                if(iValue !== (item = this.reviveValue(iValue, context))) {
+                if((iValue = value[propertyName]) !== (item = this.reviveValue(iValue, context))) {
                     if (isNotSync && _PromiseIs(item)) {
-                        item = item.then(_createAssignValueFunction(iValueContainer, propertyName));
+                        item = item.then(_createAssignValueFunction(value, propertyName));
 
                         !firstPromise
                             ? firstPromise = item
@@ -1264,7 +1477,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                                 : promises.push(item);
 
                     } else {
-                        iValueContainer[propertyName] = item;
+                        value[propertyName] = item;
                     }
                 }
 
@@ -1411,34 +1624,16 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
     createObjectLocationDesc: {
         value: function (locationId) {
-            var locationDesc,
-                bracketIndex = locationId.indexOf("[");
-
-            if (bracketIndex > 0) {
-                locationDesc = {
+            var bracketIndex = locationId.indexOf("["),
+            locationDesc = (bracketIndex > 0)
+                ? {
                     moduleId: locationId.substr(0, bracketIndex),
                     objectName: locationId.slice(bracketIndex + 1, -1)
-                };
-            } else {
-                //moduleId = locationId;
-                // if(moduleId.endsWith("html")) {
-                //     objectName = "owner";
-                // } else {
-
-                // this._findObjectNameRegExp.test(locationId);
-
-
-                // objectName = RegExp.$1.replace(
-                //         this._toCamelCaseRegExp,
-                //         this._replaceToCamelCase
-                //     );
-
-                // }
-                locationDesc = {
+                }
+                : {
                     moduleId: locationId,
                     objectName: upperCaseCamelCaseConverter.convert(locationId.lastPathComponentRemovingExtension())
                 };
-            }
 
             return this._locationDescCache.set(locationId, locationDesc) && locationDesc;
         }
