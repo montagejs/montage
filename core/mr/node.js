@@ -66,8 +66,8 @@ Require.read = function read(location, module) {
     } catch (error) {
 
         if (
-            location.indexOf(jsPreffix) !== -1 && // is .js
-            location.indexOf(jsIndexPrefix) === -1 // is not /index.js
+            location.includes(jsPreffix) && // is .js
+            !location.includes(jsIndexPrefix) // is not /index.js
         ) {
 
             try {
@@ -154,7 +154,7 @@ Require.Loader = function Loader(config, load) {
         return config.read(location, module)
         .then(function (text) {
 
-            if(supportsES6 && /*faster*/(text.indexOf("export ") !== -1) && /*eliminate if in quotes*/(text.match(Require.detect_ES6_export_regex))) {
+            if(supportsES6 && /*faster*/(text.includes("export ")) && /*eliminate if in quotes*/(text.match(Require.detect_ES6_export_regex))) {
 
                 return import(location).then(function(esModule) {
                     module.type = Require.ES_MODULE_TYPE;

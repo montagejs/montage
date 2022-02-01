@@ -37,6 +37,21 @@ Object.defineProperty(String.prototype, "contains", {
     configurable: true
 });
 
+if (!String.prototype.includes) {
+    Object.defineProperty(String.prototype, "includes", {
+        value: function(search, start) {
+        'use strict';
+
+        if (search instanceof RegExp) {
+            throw TypeError('first argument must not be a RegExp');
+        }
+        if (start === undefined) { start = 0; }
+            return this.indexOf(search, start) !== -1;
+        }
+    });
+}
+
+
 /**
  * Capitalizes the first letter in the string.
  *

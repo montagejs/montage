@@ -232,7 +232,7 @@ var Criteria = exports.Criteria = Montage.specialize({
                 /*
                     If our expression has references to other objects in the serialization, we need to build them into our scope so we can evaluate
                 */
-                if(value.indexOf("@") !== -1) {
+                if(value.includes("@")) {
                     var componentIterator = new SyntaxInOrderIterator(this.syntax, "component"),
                         iLabel, iValue,
                         scopeComponents = new Map(),

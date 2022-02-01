@@ -406,7 +406,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
 
                     for (var i = 0, length = propertyNames.length; i < length; i++) {
                         propertyName = propertyNames[i];
-                        if (!(propertyName in element) && propertyName.indexOf('.') === -1) {
+                        if (!(propertyName in element) && !propertyName.includes('.')) {
                             targetObject[propertyName] = void 0;
                         }
                     }

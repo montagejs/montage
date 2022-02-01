@@ -1280,7 +1280,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
     // Tests whether the location or URL is a absolute.
     var isAbsolutePattern = /^[\w\-]+:/;
     Require.isAbsolute = function isAbsolute(location) {
-        return location.charAt(0) === "/" || (location.indexOf("://") !== -1);
+        return location.charAt(0) === "/" || (location.includes("://"));
         // return isAbsolutePattern.test(location);
     };
 
@@ -1637,7 +1637,7 @@ function locationByRemovingLastURLComponentKeepingSlash(location) {
                         //jshint +W106
                     } else if ((typeof object.getInfoForObject === "function" || typeof object.constructor.getInfoForObject === "function" ) && !_Object.isSealed(object)) {
 
-                        object._montage_metadata = new MontageMetadata(require, module.id.indexOf(".reel") !== -1 ? module.id.replace(reverseReelExpression, reverseReelFunction) : module.id, name,/*isInstance*/(typeof object !== "function"));
+                        object._montage_metadata = new MontageMetadata(require, module.id.includes(".reel") ? module.id.replace(reverseReelExpression, reverseReelFunction) : module.id, name,/*isInstance*/(typeof object !== "function"));
                     }
                 }
             }

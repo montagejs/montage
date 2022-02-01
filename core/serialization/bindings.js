@@ -85,7 +85,7 @@ var deserializeObjectBindings = exports.deserializeObjectBindings = function des
         descriptor = bindings[targetPath];
 
         if (typeof descriptor !== "object") {
-            if (targetPath.indexOf('.') === -1) {
+            if (!targetPath.includes('.')) {
                 throw new Error("Binding descriptor must be an object, not " + typeof descriptor);
                 // TODO isolate the source document and produce a more useful error
             } else {
