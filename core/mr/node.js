@@ -23,9 +23,11 @@ const Require = require("./require"),
     NodeBuilInModules = NodeModule.builtinModules;
 
 /*
-    Make all modules use fast-url-parser automatically in the application:
+    URL.replace();
+
+    would make all modules use fast-url-parser automatically in the application.
+    But what fast-url-parser provides isn't compatible with the url module in node 14+
 */
-URL.replace();
 
 Require.getLocation = function getLocation() {
     return _RequireGetLocation;
