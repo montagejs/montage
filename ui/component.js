@@ -4186,7 +4186,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
                     // Only add the internal property, and getter and setter if
                     // they don't already exist.
-                    if(typeof this[property] === 'undefined') {
+                    if(typeof this.prototype[property] === 'undefined') {
                         this.defineAttribute(property, descriptor);
                     }
                 }
@@ -5122,7 +5122,7 @@ Component.addAttributes( /** @lends module:montage/ui/control.Control# */ {
     @default false
 */
     hidden: {dataType: 'boolean'},
-    //id: null,
+    id: null,
 
 /**
     Specifies the primary language for the element's contents and for any of the element's attributes that contain text.
