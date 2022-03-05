@@ -56,6 +56,7 @@ var Defaults = {
     isSearchable: false,
     isOrdered: false,
     isUnique: false,
+    isOneWayEncrypted: false,
     isSerializable: true,
     hasUniqueValues: false,
 };
@@ -161,6 +162,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._setPropertyWithDefaults(serializer, "isSearchable", this.isSearchable);
             this._setPropertyWithDefaults(serializer, "isOrdered", this.isOrdered);
             this._setPropertyWithDefaults(serializer, "isUnique", this.isUnique);
+            this._setPropertyWithDefaults(serializer, "isOneWayEncrypted", this.isOneWayEncrypted);
             this._setPropertyWithDefaults(serializer, "hasUniqueValues", this.hasUniqueValues);
             this._setPropertyWithDefaults(serializer, "description", this.description);
 
@@ -207,6 +209,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._overridePropertyWithDefaults(deserializer, "isSearchable");
             this._overridePropertyWithDefaults(deserializer, "isOrdered");
             this._overridePropertyWithDefaults(deserializer, "isUnique");
+            this._overridePropertyWithDefaults(deserializer, "isOneWayEncrypted");
             this._overridePropertyWithDefaults(deserializer, "hasUniqueValues");
             this._overridePropertyWithDefaults(deserializer, "description");
         }
@@ -431,7 +434,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      */
     isOrdered: {
         value: Defaults.isOrdered
-   },
+    },
 
     /**
      * models if the value of the property is unique among all instances described
@@ -442,8 +445,21 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      */
     isUnique: {
         value: Defaults.isUnique
-   },
+    },
 
+    /**
+     * models the fact that a property value is expected to be encrypted one-way when saved.
+     * Which means such value can't never be read again once saved, just that a provided value
+     * encrypted the same way produces the same value in the end. Most common case is to protect passwords.
+     *
+     * The detailed of what flavor of encryption should be used is left to the layer handling the persistence.
+     *
+     * @type {boolean}
+     * @default false
+     */
+    isOneWayEncrypted: {
+        value: Defaults.isOneWayEncrypted
+    },
 
     /**
      * models if the values of a collection / to-many property should be unique,
@@ -459,7 +475,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      */
     hasUniqueValues: {
         value: Defaults.hasUniqueValues
-   },
+    },
 
 
     /**
