@@ -106,8 +106,22 @@ var ModuleObjectDescriptor = exports.ModuleObjectDescriptor = ObjectDescriptor.s
      * A reference to the actual object that this object descriptor is for.
      * @type {Object}
      */
-    object: {
+    _object: {
         value: null
+    },
+    object: {
+        get: function() {
+            return this._object;
+        },
+        set: function(value) {
+            if(value !== this._object) {
+                this._object = value;
+                value.objectDescriptor = this;
+                if(value.prototype) {
+                    value.prototype.objectDescriptor = this;
+                }
+            }
+        }
     },
 
 
