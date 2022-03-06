@@ -477,7 +477,7 @@ var MontageVisitor = Montage.specialize({
             // the problem here is that the serializable defaults to "reference"
             // for most cases when in reality we probably just want "value".
             return typeof value === "object" &&
-                (value !== null && value !== undefined) &&
+                (value !== null && value !== undefined && !(value instanceof Date)) &&
                     !(typeof Element !== "undefined" && Element.isElement(value));
         }
     },
