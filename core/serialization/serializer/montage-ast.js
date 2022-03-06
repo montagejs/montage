@@ -111,13 +111,9 @@ var Value = exports.Value = Montage.specialize({
 
     toJSON: {
         value: function(index, level) {
-            var value = this._getSerializationValue();
-
-            if (level === 1) {
-                return {value: value};
-            } else {
-                return value;
-            }
+            return (level === 1)
+                ? {value: this._getSerializationValue()}
+                : this._getSerializationValue();
         }
     }
 });
@@ -209,16 +205,9 @@ var CustomObject = exports.CustomObject = Value.specialize( /** @lends CustomObj
 
     toJSON: {
         value: function(index, level) {
-            var reference,
-                value = this._getSerializationValue();
-
-            if (level === 1) {
-                return value;
-            } else {
-                reference = new ObjectReference(this.root, this.label);
-
-                return reference.toJSON();
-            }
+            return (level === 1)
+                ? this._getSerializationValue()
+                : (new ObjectReference(this.root, this.label)).toJSON();
         }
     }
 });
@@ -233,17 +222,11 @@ var ReferenceableValue = exports.ReferenceableValue = Value.specialize( /** @len
 
     toJSON: {
         value: function(index, level) {
-            var reference,
-                value = this._getSerializationValue();
-
-            if (level === 1) {
-                return {value: value};
-            } else if (this.label) {
-                reference = new ObjectReference(this.root, this.label);
-                return reference.toJSON();
-            } else {
-                return value;
-            }
+            return (level === 1)
+                ? {value: this._getSerializationValue()}
+                : (this.label)
+                    ? (new ObjectReference(this.root, this.label)).toJSON()
+                    : this._getSerializationValue();
         }
     }
 });
