@@ -827,6 +827,9 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
         }
     },
 
+
+
+
     __makePrototypeForType: {
         value: function (childService, objectDescriptor, constructor) {
             var prototype = Object.create(constructor.prototype),
@@ -848,7 +851,13 @@ DataService = exports.DataService = Target.specialize(/** @lends DataService.pro
             Object.defineProperty(prototype,"snapshot", {
                 enumerable: true,
                 get: function() {
+                    /*
+                        this is making a big assumption that there's only one raw data service handling this,
+                        but the whole point of introducing data operations was to open up the fact that there could be multiple,
+                        like a cloud + a local.
 
+                        So we might want to keep an eye on this, even though all should be in-sync if they handle the same properties.
+                    */
                     return mainService._getChildServiceForObject(this).snapshotForObject(this);
                 }
             });
