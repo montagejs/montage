@@ -1429,15 +1429,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             components = this.childComponents;
             if (value) {
                 if (!this._componentsPendingBuildOut) {
-                    this._componentsPendingBuildOut = [];
+                    this._componentsPendingBuildOut = new Set;
                 }
                 for (i = components.length - 1; i >= 0; i--) {
-                    if (this._componentsPendingBuildOut.indexOf(components[i]) === -1) {
-                        this._componentsPendingBuildOut.push(components[i]);
+                    if (!this._componentsPendingBuildOut.has(components[i])) {
+                        this._componentsPendingBuildOut.add(components[i]);
                     }
                 }
             } else {
-                this._componentsPendingBuildOut = [];
+                this._componentsPendingBuildOut = new Set;
                 for (i = components.length - 1; i >= 0; i--) {
                     components[i]._shouldBuildOut = true;
                 }
@@ -3198,16 +3198,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             return this.__shouldBuildIn;
         },
         set: function (value) {
-            var index;
-
             value = !!value;
             this.__shouldBuildIn = value;
             if (value) {
                 if (this.parentComponent && this.parentComponent._componentsPendingBuildOut) {
-                    index = this.parentComponent._componentsPendingBuildOut.indexOf(this);
-                    if (index !== -1) {
-                        this.parentComponent._componentsPendingBuildOut.splice(index, 1);
-                    }
+                    this.parentComponent._componentsPendingBuildOut.remove(this);
                 }
                 this._shouldBuildOut = false;
                 if (this.inDocument) {
@@ -3443,9 +3438,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     _childWillEnterDocument: {
         value: function () {
             if (this._componentsPendingBuildOut) {
-                while (this._componentsPendingBuildOut.length) {
-                    this._componentsPendingBuildOut.pop()._shouldBuildOut = true;
-                }
+                this._componentsPendingBuildOut.forEach(function (component) {
+                    component._shouldBuildOut = true;
+                });
+                this._componentsPendingBuildOut.clear();
             }
         }
     },
