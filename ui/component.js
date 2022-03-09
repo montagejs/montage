@@ -3435,12 +3435,16 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
+    _componentsPendingBuildOutForEachFunction: {
+        value: function (component) {
+            component._shouldBuildOut = true;
+        }
+    },
+
     _childWillEnterDocument: {
         value: function () {
             if (this._componentsPendingBuildOut) {
-                this._componentsPendingBuildOut.forEach(function (component) {
-                    component._shouldBuildOut = true;
-                });
+                this._componentsPendingBuildOut.forEach(this._componentsPendingBuildOutForEachFunction);
                 this._componentsPendingBuildOut.clear();
             }
         }
