@@ -6,6 +6,7 @@
             "propertyDescriptors": [
                 {"@": "category"},
                 {"@": "isFeatured"},
+                {"@": "location"},
                 {"@": "plotSummary"},
                 {"@": "releaseDate"},
                 {"@": "title"}
@@ -57,6 +58,14 @@
         "properties": {
             "name": "releaseDate",
             "valueType": "date"
+        }
+    },
+
+    "location": {
+        "prototype": "montage/core/meta/property-descriptor",
+        "properties": {
+            "name": "location",
+            "valueType": "location"
         }
     },
 

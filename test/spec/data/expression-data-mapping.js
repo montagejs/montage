@@ -90,6 +90,7 @@ describe("An Expression Data Mapping", function() {
     movieModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/logic/model/movie", require);
     movieObjectDescriptor = new ModuleObjectDescriptor().initWithModuleAndExportName(movieModuleReference, "Movie");
     movieObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("title", movieObjectDescriptor, 1));
+    movieObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("location", movieObjectDescriptor, 1));
     movieObjectDescriptor.addPropertyDescriptor(new PropertyDescriptor().initWithNameObjectDescriptorAndCardinality("id", movieObjectDescriptor, 1));
     movieSchemaModuleReference = new ModuleReference().initWithIdAndRequire("spec/data/schema/logic/movie", require);
     movieSchema = new ModuleObjectDescriptor().initWithModuleAndExportName(movieSchemaModuleReference, "MovieSchema");
@@ -159,9 +160,9 @@ describe("An Expression Data Mapping", function() {
     movieSchema.addPropertyDescriptor(schemaIsFeaturedPropertyDescriptor);
 
     movieMapping = new ExpressionDataMapping().initWithServiceObjectDescriptorAndSchema(movieService, movieObjectDescriptor, movieSchema);
-    movieMapping.addRequisitePropertyName( "title", "category", "budget", "isFeatured", "releaseDate", "id");
+    movieMapping.addRequisitePropertyName("title", "category", "budget", "isFeatured", "location", "releaseDate", "id");
     movieMapping.addObjectMappingRule("title", {"<->": "name"});
-    
+    movieMapping.addObjectMappingRule("location", {"<-": "$cityState.defined() && $country.defined() ? $cityState + ', ' + $country : 'Los Angeles, CA, USA'"});
     movieMapping.addObjectMappingRule("id", {"<->": "id"});
 
 
@@ -194,6 +195,7 @@ describe("An Expression Data Mapping", function() {
     movieMapping.addRawDataMappingRule("budget", {"<-": "budget"});
     movieMapping.addRawDataMappingRule("is_featured", {"<-": "isFeatured"});
     movieMapping.addRawDataMappingRule("summary", {"<-": "plotSummary.summary"});
+    movieMapping.addRawDataMappingRule("editedBy", {"<-": "$username.defined() ? $username : 'unknown'"});
     movieService.addMappingForType(movieMapping, movieObjectDescriptor);
     movieMapping.rawDataPrimaryKeys = ["id"];
     categoryMapping = new ExpressionDataMapping().initWithServiceObjectDescriptorAndSchema(categoryService, categoryObjectDescriptor);
@@ -224,25 +226,27 @@ describe("An Expression Data Mapping", function() {
         expect(new ExpressionDataMapping()).toBeDefined();
     });
 
-    registrationPromise = Promise.all([
-        mainService.registerChildService(movieService, [movieObjectDescriptor, actionMovieObjectDescriptor]),
-        mainService.registerChildService(categoryService, categoryObjectDescriptor),
-        mainService.registerChildService(countryService, countryObjectDescriptor),
-        mainService.registerChildService(plotSummaryService, plotSummaryObjectDescriptor),
-        mainService.registerChildService(propService, propObjectDescriptor)
-    ]);
+    beforeAll(function (done) {
+        Promise.all([
+            mainService.registerChildService(movieService, [movieObjectDescriptor, actionMovieObjectDescriptor]),
+            mainService.registerChildService(categoryService, categoryObjectDescriptor),
+            mainService.registerChildService(countryService, countryObjectDescriptor),
+            mainService.registerChildService(plotSummaryService, plotSummaryObjectDescriptor),
+            mainService.registerChildService(propService, propObjectDescriptor)
+        ]).then(function () {
+            done();
+        })
+    });
 
     it("properly registers the object descriptor type to the mapping object in a service", function (done) {
-        return registrationPromise.then(function () {
-            expect(movieService.parentService).toBe(mainService);
-            expect(movieService.mappingWithType(movieObjectDescriptor)).toBe(movieMapping);
-            done();
-        });
+        expect(movieService.parentService).toBe(mainService);
+        expect(movieService.mappingWithType(movieObjectDescriptor)).toBe(movieMapping);
+        done();
     });
 
     it("can create the correct number of mapping rules", function () {
-        expect(movieMapping.objectMappingRules.size).toBe(8);
-        expect(movieMapping.rawDataMappingRules.size).toBe(7);
+        expect(movieMapping.objectMappingRules.size).toBe(9);
+        expect(movieMapping.rawDataMappingRules.size).toBe(8);
     });
 
     it("can inherit rawDataPrimaryKeys", function () {
@@ -254,7 +258,7 @@ describe("An Expression Data Mapping", function() {
     });
 
     it("can map raw data to object properties", function (done) {
-        return registrationPromise.then(function () {
+        // return registrationPromise.then(function () {
             var movie = {},
                 data = {
                     name: "Star Wars",
@@ -263,17 +267,21 @@ describe("An Expression Data Mapping", function() {
                     is_featured: "true",
                     release_date: "05/25/1977"
                 };
-            return movieMapping.mapRawDataToObject(data, movie).then(function () {
+            return movieMapping.mapRawDataToObject(data, movie, {cityState: "New York, NY", country: "USA"}).then(function () {
                 expect(movie.title).toBe("Star Wars");
                 expect(movie.category).toBeDefined();
                 expect(movie.category && movie.category.name === "Action").toBeTruthy();
+                expect(movie.location).toBe("New York, NY, USA");
                 expect(typeof movie.releaseDate === "object").toBeTruthy();
                 expect(movie.releaseDate.getDate()).toBe(25);
                 expect(movie.releaseDate.getMonth()).toBe(4);
                 expect(movie.releaseDate.getFullYear()).toBe(1977);
                 done();
-            });
-        });
+            }).catch(function (e) {
+                expect(e).not.toBeDefined();
+                done();
+            })
+        // });
     });
 
     it("can map raw data to object properties with inheritance", function (done) {
@@ -287,16 +295,20 @@ describe("An Expression Data Mapping", function() {
                 fcc_rating: "pg",
                 country_id: 1
             };
-        
+
         return actionMovieMapping.mapRawDataToObject(data, movie).then(function () {
             //Properties defined in parent descriptor
-            expect(movie.title).toBe("Star Wars"); 
+            expect(movie.title).toBe("Star Wars");
             expect(movie.budget).toEqual(14000000);
 
             //Properties defined in own descriptor
-            expect(movie.country).toBeDefined(); 
+            expect(movie.country).toBeDefined();
+            expect(movie.location).toBe("Los Angeles, CA, USA");
             done();
-        });
+        }).catch(function (e) {
+            expect(e).not.toBeDefined();
+            done();
+        })
     });
 
     it("can map inverse in mapping for fetch with updateObjectProperties", function (done) {
@@ -318,7 +330,10 @@ describe("An Expression Data Mapping", function() {
             expect(movie.plotSummary).toBeDefined();
             expect(movie.plotSummary.movie).toBe(movie);
             done();
-        });
+        }).catch(function (e) {
+            expect(e).not.toBeDefined();
+            done();
+        })
     });
 
     it("can map inverse on propertyDescriptor for fetch with updateObjectProperties", function (done) {
@@ -341,7 +356,10 @@ describe("An Expression Data Mapping", function() {
             expect(Array.isArray(movie.props)).toBe(true);
             expect(movie.props[0].movie).toBe(movie);
             done();
-        });
+        }).catch(function (e) {
+            expect(e).not.toBeDefined();
+            done();
+        })
     });
 
     it("can automatically convert raw data to the correct type", function (done) {
@@ -351,7 +369,7 @@ describe("An Expression Data Mapping", function() {
                 category_id: 1,
                 budget: "14000000.00",
                 is_featured: "true",
-                release_date: "05/25/1977"                
+                release_date: "05/25/1977"
             };
         return movieMapping.mapRawDataToObject(data, movie).then(function () {
             expect(typeof movie.budget === "number").toBeTruthy();
@@ -359,7 +377,10 @@ describe("An Expression Data Mapping", function() {
             expect(typeof movie.isFeatured === "boolean").toBeTruthy();
             expect(typeof movie.title === "string").toBeTruthy();
             done();
-        });
+        }).catch(function (e) {
+            expect(e).not.toBeDefined();
+            done();
+        })
     });
 
     it("can map objects to raw data", function (done) {
@@ -379,8 +400,12 @@ describe("An Expression Data Mapping", function() {
             expect(data.is_featured).toBe("true");
             expect(data.release_date).toBe("05/25/1977");
             expect(data.category_id).toBe(1);
+            expect(data.editedBy).toBe("unknown");
             done();
-        });
+        }).catch(function (e) {
+            expect(e).not.toBeDefined();
+            done();
+        })
     });
 
     it("can map objects to raw data with untripped trigger", function (done) {
@@ -393,7 +418,10 @@ describe("An Expression Data Mapping", function() {
         movieMapping.mapObjectToRawData(movie, data).then(function () {
             expect(data.summary).toBeDefined();
             done();
-        });
+        }).catch(function (e) {
+            expect(e).not.toBeDefined();
+            done();
+        })
     });
 
     it("can map objects to raw data with tripped trigger", function (done) {
@@ -403,9 +431,9 @@ describe("An Expression Data Mapping", function() {
             movie = movieService.rootService.createDataObject(movieObjectDescriptor),
             category = new Category(),
             movieTitle = "The Social Network";
-        
-        
-        var title = movie.title; //Trigger Title Getter 
+
+
+        var title = movie.title; //Trigger Title Getter
         movie.title = movieTitle;
         movie.id = 2;
         category.name = "A Category";
@@ -415,7 +443,10 @@ describe("An Expression Data Mapping", function() {
         movieService.saveDataObject(movie).then(function (data) {
             expect(movie.title).toBe(movieTitle);
             done();
-        });
+        }).catch(function (e) {
+            expect(e).not.toBeDefined();
+            done();
+        })
     });
 
     it("can map objects to raw data with inheritance", function (done) {
@@ -431,21 +462,25 @@ describe("An Expression Data Mapping", function() {
             data = {};
 
             country.id = 1;
-        actionMovieMapping.mapObjectToRawData(movie, data).then(function () {
+        actionMovieMapping.mapObjectToRawData(movie, data, {username: "jsmith"}).then(function () {
             //Properties defined in parent descriptor
-            expect(data.name).toBe("Star Wars"); 
-            expect(data.budget).toBe("14000000"); 
-            expect(data.is_featured).toBe("true"); 
-            expect(data.release_date).toBe("05/25/1977"); 
+            expect(data.name).toBe("Star Wars");
+            expect(data.budget).toBe("14000000");
+            expect(data.is_featured).toBe("true");
+            expect(data.release_date).toBe("05/25/1977");
             //Properties defined in own descriptor
-            expect(data.fcc_rating).toBe("pg"); 
+            expect(data.fcc_rating).toBe("pg");
             expect(data.country_id).toEqual(1);
+            expect(data.editedBy).toBe("jsmith");
             done();
-        });
+        }).catch(function (e) {
+            expect(e).not.toBeDefined();
+            done();
+        })
     });
 
     it("can map object to criteria source for property", function (done) {
-        return registrationPromise.then(function () {
+        // return registrationPromise.then(function () {
             var movie = new Movie(),
                 data = {};
                 movie.criticScore = 94;
@@ -454,8 +489,11 @@ describe("An Expression Data Mapping", function() {
                 expect(data.mappedScore).toBe(94);
                 expect(data.mappedRating).toBe("PG");
                 done();
-            });
-        });
+            }).catch(function (e) {
+                expect(e).not.toBeDefined();
+                done();
+            })
+        // });
     });
 
     it("can automatically revert objects to raw data of the correct type", function (done) {
@@ -470,7 +508,10 @@ describe("An Expression Data Mapping", function() {
             expect(typeof data.is_featured === "string").toBeTruthy();
             expect(typeof data.name === "string").toBeTruthy();
             done();
-        });
+        }).catch(function (e) {
+            expect(e).not.toBeDefined();
+            done();
+        })
     });
 
     

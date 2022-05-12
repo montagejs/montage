@@ -158,26 +158,6 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
         }
     },
 
-
-    /***************************************************************************
-     * Properties
-     */
-
-     /**
-     * The scope against which rule expressions will be evaluated
-     * @type {Scope}
-     */
-
-    __scope: {
-        value: null
-    },
-
-    _scope: {
-        get: function() {
-            return this.__scope || new Scope();
-        }
-    },
-
     /***************************************************************************
      * Schema
      */
@@ -419,14 +399,16 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      *                             modified to represent the raw data.
      */
     mapRawDataToObject: {
-        value: function (data, object) {
+        value: function (data, object, context) {
             var iterator = this.requisitePropertyNames.values(),
+                scope = new Scope(data),
                 promises, propertyName, result;
 
+            scope.parameters = context || data;
 
             if (this.requisitePropertyNames.size) {
                 while ((propertyName = iterator.next().value)) {
-                    result = this.mapRawDataToObjectProperty(data, object, propertyName);
+                    result = this.mapRawDataToObjectProperty(data, object, propertyName, scope);
                     if (this._isAsync(result)) {
                         (promises || (promises = [])).push(result);
                     }
@@ -450,22 +432,20 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      *
      */
     mapRawDataToObjectProperty: {
-        value: function (data, object, propertyName) {
+        value: function (data, object, propertyName, scope) {
             var rule = this.objectMappingRules.get(propertyName),
                 propertyDescriptor = rule && this.objectDescriptor.propertyDescriptorForName(propertyName),
                 isRelationship = propertyDescriptor && !propertyDescriptor.definition && propertyDescriptor.valueDescriptor,
                 isDerived = propertyDescriptor && !!propertyDescriptor.definition,
-                scope = this._scope,
                 debug = DataService.debugProperties.has(propertyName);
 
+            scope = scope || new Scope(data);
 
             // Check if property is included in the DataService.debugProperties collection. Intended for debugging.
             if (debug) {
                 console.debug("ExpressionDataMapping.mapRawDataToObjectProperty", object, propertyName);
                 console.debug("To debug ExpressionDataMapping.mapRawDataToObjectProperty for " + propertyName + ", set a breakpoint here.");
             }
-
-            scope.value = data;
 
             this._prepareRawDataToObjectRule(rule, propertyDescriptor);
 
@@ -589,13 +569,16 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      *                             modified to represent the model data
      */
     mapObjectToRawData: {
-        value: function (object, data) {
+        value: function (object, data, context) {
             var keys = this.rawDataMappingRules.keys(),
+                scope = new Scope(object),
                 promises = [],
                 key, result;
 
+            scope.parameters = context || object;
+
             while ((key = keys.next().value)) {
-                result = this.mapObjectToRawDataProperty(object, data, key);
+                result = this.mapObjectToRawDataProperty(object, data, key, scope);
                 if (this._isAsync(result)) {
                     promises = promises || [];
                     promises.push(result);
@@ -618,13 +601,13 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      *                                     to assign the values.
      */
     _mapObjectToRawDataProperty: {
-        value: function(object, data, propertyName) {
+        value: function(object, data, propertyName, scope) {
             var rule = this.rawDataMappingRules.get(propertyName),
-                scope = new Scope(object),
                 propertyDescriptor = rule && rule.propertyDescriptor,
                 isRelationship = propertyDescriptor && propertyDescriptor.valueDescriptor,
                 result;
 
+            scope = scope || new Scope(object);
 
             if (isRelationship && rule.converter) {
                 this._prepareObjectToRawDataRule(rule);
@@ -651,20 +634,19 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      *                                     to assign the values.
      */
     mapObjectToRawDataProperty: {
-        value: function (object, data, propertyName) {
+        value: function (object, data, propertyName, scope) {
             var rule = this.rawDataMappingRules.get(propertyName),
                 requiredObjectProperties = rule ? rule.requirements : [],
                 result, self;
 
             result = this.service.rootService.getObjectPropertyExpressions(object, requiredObjectProperties);
-
             if (this._isAsync(result)) {
                 self = this;
                 result = result.then(function () {
-                    return self._mapObjectToRawDataProperty(object, data, propertyName);
+                    return self._mapObjectToRawDataProperty(object, data, propertyName, scope);
                 });
             } else {
-                result = this._mapObjectToRawDataProperty(object, data, propertyName);
+                result = this._mapObjectToRawDataProperty(object, data, propertyName, scope);
             }
             return result;
         }
@@ -692,7 +674,7 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
 
             while ((key = keys.next().value)) {
                 if (rawRequirementsToMap.has(key)) {
-                    result = this.mapObjectToRawDataProperty(object, data, key, propertyName);
+                    result = this.mapObjectToRawDataProperty(object, data, key);
                     if (this._isAsync(result)) {
                         promises = promises || [];
                         promises.push(result);
@@ -1096,8 +1078,8 @@ exports.ExpressionDataMapping = DataMapping.specialize(/** @lends ExpressionData
      * [mapObjectToRawData()]{@link DataMapping#mapObjectToRawData}
      */
     mapToRawData: {
-        value: function (object, record) {
-            this.mapObjectToRawData(object, record);
+        value: function (object, record, context) {
+            this.mapObjectToRawData(object, record, context);
         }
     }
 

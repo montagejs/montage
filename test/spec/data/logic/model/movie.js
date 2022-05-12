@@ -38,6 +38,13 @@ exports.Movie = Montage.specialize({
     /**
      * @type {string}
      */
+    location: {
+        value: undefined
+    },
+
+    /**
+     * @type {string}
+     */
     title: {
         value: undefined
     }
