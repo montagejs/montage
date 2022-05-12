@@ -2083,7 +2083,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (this._isOffline === undefined) {
                 // Determine the initial value from the navigator state and call
                 // the public setter so _goOnline() is invoked if appropriate.
-                this._isOffline = !navigator.onLine;
+                this._isOffline = !!global.navigator && !global.navigator.onLine;
             }
             return this._isOffline;
         },
