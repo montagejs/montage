@@ -441,6 +441,21 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
         }
     },
 
+    //Remove authorization from manager
+    deleteAuthorizationForService: {
+        value: function (dataService) {
+            var moduleID, i, n;
+            for (i = 0, n = dataService.authorizationServices.length || 0; i < n; ++i) {
+                moduleID = dataService.authorizationServices[i];
+                if (this._authorizationsByProviderModuleID.has(moduleID)) {
+                    this._authorizationsByProviderModuleID.delete(moduleID);
+                }
+            }
+            return this.nullPromise;
+        }
+    },
+
+    //Triggers log out events
     clearAuthorizationForService: {
         value: function (dataService) {
             var promises = [],
