@@ -70,7 +70,7 @@ var Placeholder = exports.Placeholder = Slot.specialize({
 
     enterDocument: {
         value: function () {
-            if (this.componentModule && !this.compoennt) {
+            if (this.componentModule && !this.component) {
                 this._needsFetchingComponent = true;
                 this.needsDraw = true;
             }
