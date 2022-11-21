@@ -1798,12 +1798,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             } else {
                 if (this.authorizationPolicy === AuthorizationPolicy.ON_DEMAND) {
                     var prefetchAuthorization = typeof this.shouldAuthorizeForQuery === "function" && this.shouldAuthorizeForQuery(stream.query);
-                    if (prefetchAuthorization || !this.authorization) {
+                    if ((prefetchAuthorization || !this.authorization) && !this._isPrefetchingAuthorization) {
+                        this._isPrefetchingAuthorization = true;
                         this.authorizationPromise = exports.DataService.authorizationManager.authorizeService(this, prefetchAuthorization).then(function(authorization) {
+                            self._isPrefetchingAuthorization = false;
                             self.authorization = authorization;
                             return authorization;
                         });
-
                     }
                 }
                 this.authorizationPromise.then(function (authorization) {
@@ -1817,6 +1818,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 });
             }
         }
+    },
+
+    _isPrefetchingAuthorization: {
+        value: false
     },
 
     _childServiceForQuery: {
