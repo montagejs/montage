@@ -91,17 +91,21 @@
             }
         },
 
-        load: function (location,loadCallback) {
-            var script = document.createElement("script");
-            script.src = location;
-            script.onload = function () {
-                if(loadCallback) {
-                    loadCallback(script);
-                }
-                // remove clutter
-                script.parentNode.removeChild(script);
-            };
-            document.getElementsByTagName("head")[0].appendChild(script);
+        load: function (location, loadCallback) {
+            if (global.montagePlatformLoadOverride) {
+                global.montagePlatformLoadOverride(location, loadCallback);
+            } else {
+                var script = document.createElement("script");
+                script.src = location;
+                script.onload = function () {
+                    if(loadCallback) {
+                        loadCallback(script);
+                    }
+                    // remove clutter
+                    script.parentNode.removeChild(script);
+                };
+                document.getElementsByTagName("head")[0].appendChild(script);
+            }
         },
 
         getParams: function () {
