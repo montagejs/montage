@@ -1813,6 +1813,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     self.fetchRawData(stream);
                     stream.query = streamSelector;
                 }).catch(function (e) {
+                    self._isPrefetchingAuthorization = false;
                     stream.dataError(e);
                     self.authorizationPromise = Promise.resolve(null);
                 });
