@@ -20,7 +20,7 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
     constructor: {
         value: function () {
             this._providersByModuleID = new Map();
-            this._panelsByModuleID = new Map();
+            this._panelsByProviderAndModuleID = new Map();
             this._authorizationsByProviderModuleID = new Map();
             this._servicesByProviderModuleID = new Map();
             this._pendingServices = new Set();
@@ -45,7 +45,7 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
 
 
     // Module ID to Panel
-    _panelsByModuleID: {
+    _panelsByProviderAndModuleID: {
         value: undefined
     },
 
@@ -85,7 +85,8 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
     _panelForProvider: {
         value: function (provider) {
             var moduleId = this._panelModuleIDForProvider(provider),
-                panel = this._panelsByModuleID.get(moduleId);
+                panelIdentifier = provider.identifier + ":" + moduleId,
+                panel = this._panelsByProviderAndModuleID.get(panelIdentifier);
 
             return panel ? Promise.resolve(panel) : this._makePanelForProvider(moduleId, provider);
         }
@@ -105,6 +106,7 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
                 panelPromise;
 
             if (panelModuleID) {
+                panelIdentifier = provider.identifier + ":" + panelModuleID;
                 panelPromise = providerInfo.require.async(panelModuleID).then(function (exports) {
                     var exportNames = Object.keys(exports),
                         panel, i, n;
@@ -113,7 +115,7 @@ exports.AuthorizationManager = Montage.specialize(/** @lends AuthorizationManage
                         panel = self._panelForConstructorAndProvider(exports[exportNames[i]], provider);
                     }
                     panel.service = provider;
-                    self._panelsByModuleID.set(panelModuleID, panel);
+                    self._panelsByProviderAndModuleID.set(panelIdentifier, panel);
                     return panel;
                 });
             }
