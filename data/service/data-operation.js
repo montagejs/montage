@@ -1,5 +1,177 @@
 var Montage = require("core/core").Montage,
-    Criteria = require("core/criteria").Criteria;
+    MutableEvent = require("core/event/mutable-event").MutableEvent,
+    ModuleObjectDescriptor = require("core/meta/module-object-descriptor").ModuleObjectDescriptor,
+    Criteria = require("core/criteria").Criteria,
+    Enum = require("core/enum").Enum,
+    uuid = require("core/uuid"),
+    defaultEventManager = require("../../core/event/event-manager").defaultEventManager,
+    Locale = require("core/locale").Locale,
+    DataOperationType,
+
+    /* todo: we shpuld add a ...timedout for all operations. */
+    dataOperationTypes = [
+        "noop",
+        "connectOperation",
+        "disconnectOperation",
+        "createOperation",
+        /*
+            Request to cancel a previous create operation, dispatched by the actor that dispatched the matching create ?
+        */
+        "cancelCreateOperation",
+        "createFailedOperation",
+        "createCompletedOperation",
+        "createCanceledOperation",
+        //Additional
+        "copyOperation",
+        "copyFailedOperation",
+        "copyCompletedOperation",
+        /* Read is the first operation that models a query */
+        "readOperation",
+
+        /* ReadUpdated is pushed by server when a query's result changes due to data changes from others */
+        "readUpdatedOperation",
+
+        /* ReadProgress / ReadUpdate / ReadSeek is used to instruct server that more data is required for a "live" read / query
+            Need a better name, and a symetric? Or is ReadUpdated enough if it referes to previous operation
+        */
+        "readProgressOperation", //ReadUpdate
+        "readUpdateOperation", //ReadUpdate
+
+        /* ReadCancel is the operation that instructs baclkend that client isn't interested by a read operastion anymore */
+        "cancelReadOperation",
+
+        /* ReadCanceled is the operation that instructs the client that a read operation is canceled */
+        "readCanceledOperation",
+
+         /* ReadFailed is the operation that instructs the client that a read operation has failed  */
+        "readFailedOperation",
+        /* ReadCompleted is the operation that instructs the client that a read operation has returned all available data */
+        "readCompletedOperation",
+        /* Request to update data, used either by the client sending the server or vice versa */
+        "updateOperation",
+        /* Confirmation that a Request to update data, used either by the client sending the server or vice versa*, has been completed */
+        "updateCompletedOperation",
+        /* Confirmation that a Request to update data, used either by the client sending the server or vice versa*, has failed */
+        "updateFailedOperation",
+        /* Request to cancel an update, used either by the client sending the server or vice versa */
+        "cancelUpdateOperation",
+        /* Confirmation that a Request to cancel an update data, used either by the client sending the server or vice versa*, has completed */
+        "updateCanceledOperation",
+
+        "mergeOperation",
+        /*
+            Request to cancel a previous create operation, dispatched by the actor that dispatched the matching create
+        */
+        "mergeCancelOperation",
+        "mergeFailedOperation",
+        "mergeCompletedOperation",
+        "cancelMergeOperation",
+        "mergeCanceledOperation",
+
+        "deleteOperation",
+        "deleteCompletedOperation",
+        "deleteFailedOperation",
+
+        /* Lock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
+        "lockOperation",
+        "lockCompletedOperation",
+        "lockFailedOperation",
+
+        /* Unlock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
+        "unlockOperation",
+        "unlockCompletedOperation",
+        "unlockFailedOperation",
+
+        /*
+            RemmoteProcedureCall models the ability to invoke code logic on the server-side, being a DB StoredProcedure, or an method/function in a service
+        */
+        "remoteInvocationOperation", /* Execute ? */
+        "remoteInvocationCompletedOperation",  /* ExecuteCompleted ? */
+        "remoteInvocationFailedOperation", /* ExecuteFailed ? */
+
+        /*
+            Batch models the ability to group multiple operation. If a referrer is provided
+            to a BeginTransaction operation, then the batch will be executed within that transaction
+        */
+        "batchOperation",
+        "batchUpdateOperation",
+        "batchCompletedOperation",
+        "batchFailedOperation",
+
+        /*
+            A transaction is a unit of work that is performed atomically against a database.
+            Transactions are units or sequences of work accomplished in a logical order.
+            A transactions begins, operations are grouped, then it is either commited or rolled-back
+        */
+        /*
+            begin/commit, Start/End Open/Close, Commit/Save, rollback/cancel
+
+            as a lower-case event name, committransaction is hard to read, perform is equally easy to understand
+            and less technical.
+
+            so settling on create transaction and perform/rollback transaction
+        */
+        "createTransactionOperation",
+        /* I don't think there's such a thing, keeping for symetry for now */
+        "createTransactionCompletedOperation",
+
+        /* Attempting to create a transaction within an existing one will fail */
+        "createTransactionFailedOperation",
+
+        "transactionUpdatedOperation",
+        "transactionCanceledOperation",
+
+        "createSavePointOperation",
+
+        "performTransactionOperation",
+        "performTransactionProgressOperation",
+        "performTransactionCompletedOperation",
+        "performTransactionFailedOperation",
+
+        "rollbackTransactionOperation",
+        "rollbackTransactionCompletedOperation",
+        "rollbackTransactionFailedOperation",
+
+        /*
+            operations used for the bottom of the stack to get information from a user.
+            This useful for authenticating a user, refreshing a password,
+            could be used to coordinate and solve data conflicts if an update realizes
+            one of the values to change has been changed by someone else in the meantime.
+            Maybe to communicate data validation, like a field missing, or a value that
+            isn't correct. Such validations could then be run server side or in a
+            web/service worker on the client.
+
+            Data components shpuld add themselves as listeners to the data service for events/
+            data operations like that they know how to deal with / can help with.
+        */
+        "userAuthentication",
+        "userAuthenticationUpdate",
+        "userAuthenticationCompleted",
+        "userAuthenticationFailed",
+        "userAuthenticationTimedout",
+        "userInput",
+        "userInputCompleted",
+        "userInputFailed",
+        "userInputCanceled",
+        "userInputTimedout",
+
+        /*
+            Modeling validation operation, either executed locally or server-side.
+            This can be used for expressing that a password value is wrong, that an account
+            isn't confirmed with the Identity authority
+            that a mandatory value is missing, etc...
+        */
+        "validateOperation",
+        "validateFailedOperation",
+        "validateCompletedOperation",
+        "cancelValidateOperation",
+        "validateCanceledOperation",
+        "keepAliveOperation"
+    ];
+
+
+
+exports.DataOperationType = DataOperationType = new Enum().initWithMembersAndValues(dataOperationTypes,dataOperationTypes);
 
 /**
  * Represents
@@ -7,7 +179,7 @@ var Montage = require("core/core").Montage,
  * @class
  * @extends external:Montage
  */
-exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */ {
+exports.DataOperation = MutableEvent.specialize(/** @lends DataOperation.prototype */ {
 
     /***************************************************************************
      * Constructor
@@ -15,14 +187,161 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
 
     constructor: {
         value: function DataOperation() {
-            this.time = Date.now();
-            this.creationIndex = exports.DataOperation.prototype._currentIndex + 1 || 0;
-            exports.DataOperation.prototype._currentIndex = this.creationIndex;
+            this.timeStamp = performance.now();
+            this.id = uuid.generate();
+            this.constructionIndex = exports.DataOperation.prototype.constructionSequence++;
+            exports.DataOperation.prototype.constructionSequence = this.constructionIndex;
         }
     },
 
-    creationIndex: {
-        value: undefined
+    constructionSequence: {
+        value: 0
+    },
+
+    _mainService: {
+        value: 0
+    },
+
+    mainService: {
+        get: function() {
+            return this._mainService || (this.constructor.prototype._mainService = defaultEventManager.application && defaultEventManager.application.mainService)
+        }
+    },
+
+
+    bubbles: {
+        value: true
+    },
+
+    defaultPrevented: {
+        value: false
+    },
+
+    serializeSelf: {
+        value:function (serializer) {
+            serializer.setProperty("id", this.id);
+            //serializer.setProperty("type", DataOperationType.intValueForMember(this.type));
+            serializer.setProperty("type", this.type);
+            serializer.setProperty("timeStamp", this.timeStamp);
+
+            if(this.target) {
+                if(Array.isArray(this.target)) {
+                    serializer.setProperty("targetModuleId", this.target.map((objectDescriptor) => {return typeof objectDescriptor === "string" ? objectDescriptor : objectDescriptor.module.id}));
+                } else {
+                    if(this.target instanceof ModuleObjectDescriptor) {
+                        serializer.setProperty("targetModuleId", this.target.module.id);
+                    } else {
+                        //This is not working as I thought it would yet
+                        //We use DataService.mainService as the target for transaction related operations. That should really be the model.
+                        //serializer.addObjectReference(this.target);
+                        serializer.setProperty("targetModuleId", null);
+                    }
+                }
+            }
+            if(this.referrerId) {
+                serializer.setProperty("referrerId", this.referrerId);
+            }
+            serializer.setProperty("criteria", this._criteria);
+
+            /*
+                Inlining locales for speed and compactness instead of letting locales serialize themselves
+            */
+            if(this.locales) {
+                for(var locales = [], i=0, countI = this.locales.length; (i < countI); i++) {
+                    locales.push(this.locales[i].identifier);
+                }
+                serializer.setProperty("locales", locales);
+            }
+            if(this.data) {
+                serializer.setProperty("data", this.data);
+            }
+            if(this.snapshot) {
+                serializer.setProperty("snapshot", this.snapshot);
+            }
+        }
+    },
+    deserializeSelf: {
+        value:function (deserializer) {
+            var value;
+            value = deserializer.getProperty("id");
+            if (value !== void 0) {
+                this.id = value;
+            }
+
+            value = deserializer.getProperty("type");
+            if (value !== void 0) {
+                this.type = DataOperationType[value];
+            }
+
+            value = deserializer.getProperty("timeStamp");
+            if (value !== void 0) {
+                this.timeStamp = value;
+            }
+            /* keeping dataDescriptor here for temporary backward compatibility */
+            value = deserializer.getProperty("target");
+            if(value === undefined) {
+                value = deserializer.getProperty("targetModuleId");
+            }
+            if(value === undefined) {
+                value = deserializer.getProperty("dataDescriptor");
+            }
+            if (value !== void 0) {
+                if(Array.isArray(value)) {
+                    this.target = value.map((objectDescriptorModuleIid) => {return this.mainService.objectDescriptorWithModuleId(objectDescriptorModuleIid)});
+                } else if(typeof value === "string") {
+
+                    if(this.mainService) {
+                        this.target = this.mainService.objectDescriptorWithModuleId(value);
+                    } else {
+                        //Last resort, if we can't construct the target, let's carry the data that was supposed to help us do so
+                        this.targetModuleId = value;
+                    }
+                } else if(value === null) {
+                    if(this.mainService) {
+                        this.target = this.mainService;
+                    } else {
+                        //Last resort, if we can't construct the target, let's carry the data that was supposed to help us do so
+                        this.targetModuleId = value;
+                    }
+                }
+                else {
+                    this.target = value;
+                }
+            }
+
+            value = deserializer.getProperty("referrerId");
+            if (value !== void 0) {
+                this.referrerId = value;
+            }
+
+            value = deserializer.getProperty("criteria");
+            if (value !== void 0) {
+                this.criteria = value;
+            }
+
+            value = deserializer.getProperty("data");
+            if (value !== void 0) {
+                this.data = value;
+            }
+
+            /*
+                Inlining locales for speed and compactness instead of letting locales deserialize themselves
+            */
+            value = deserializer.getProperty("locales");
+            if (value !== void 0) {
+
+                for(var locales = [], i=0, countI = value.length; (i < countI); i++) {
+                    locales.push(Locale.withIdentifier(value[i]));
+                }
+                this.locales = locales;
+            }
+
+            value = deserializer.getProperty("snapshot");
+            if (value !== void 0) {
+                this.snapshot = value;
+            }
+
+        }
     },
 
     /***************************************************************************
@@ -40,6 +359,12 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      */
     id: {
         value: undefined
+    },
+
+    identifier: {
+        get: function() {
+            return this.id;
+        }
     },
 
     /**
@@ -60,14 +385,6 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      * @type {string}
      */
     name: {
-        value: undefined
-    },
-    /**
-     *  BENOIT: we have an overlap in term of semantics between the type of the operation and the type of the data it applies to. So we either keep "type" for the operation itseld as it is, and dataType, or we flip, calling this operationType and the dataType becomes "type".
-
-     * @type {DataOperation.Type.CREATE|DataOperation.Type.READ|DataOperation.Type.UPDATE|DataOperation.Type.DELETE}
-     */
-    type: {
         value: undefined
     },
 
@@ -104,6 +421,19 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      * Expected to be a boolean expression to be applied to data
      * objects to determine whether they should be impacted by this operation or not.
      *
+     * For modifying one object, we need to be able to build a criteria with the identifier
+     * that can be converted back to the primary key by a RawDataService.
+     *
+     * For example, a DataIdentifier:
+     * "montage-data://environment/type/#12AS7507"
+     * "m-data://environment/type/#12AS7507"
+     * "mdata://environment/type/#12AS7507"
+     * "data-id://environment/type/#12AS7507"
+     *
+     * "montage-data://[dataService.identifier]/[dataService.connectionDescriptor.name || default]/[objectDescriptor.name]/[primaryKey]
+     * "montage-data://[dataService.identifier]/[dataService.connectionDescriptor.name || default]/[objectDescriptor.name]/[primaryKey]
+     *
+     * "identifier = $identifier", {"identifier":"montage-data://[dataService.identifier]/[dataService.connectionDescriptor.name || default]/[objectDescriptor.name]/[primaryKey]}
      * "hazard_ID = #12AS7507"
      *
      * @type {Criteria}
@@ -121,33 +451,30 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
         value: undefined
     },
 
-
-    /**
-     * creationTime
-     * A number used to order operations according to when they were created.
-     * // Add deprecation of "time" bellow
-     * This is initialized when an operation is created to the value of
-     * [Date.now()]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now}.
-     * The value can then be changed, but it should only be changed to values
-     * returned by `Date.now()`.
-     *
-     * Two operations can have the same `time` value if they were created within
-     * a millisecond of each other, and if so the operations'
-     * [index]{@link DataOperation#index} can be used to determine which one was
-     * created first.
-     *
-     * @type {number}
-     */
-    creationTime: {
-        value: undefined
-    },
-
     /**
      * An operation that preceded and this one is related to. For a ReadUpdated, it would be the Read operation.
      *
      * @type {DataOperation}
      */
     referrer: {
+        value: undefined
+    },
+
+    /**
+     * An operation that preceded and this one is related to. For a ReadUpdated, it would be the Read operation.
+     *
+     * @type {String}
+     */
+    referrerId: {
+        value: undefined
+    },
+
+    /**
+     * The identifier of an operation that preceded and this one is related to. For a ReadUpdated, it would be the Read operation.
+     *
+     * @type {DataOperation}
+     */
+    referrerIdentifier: {
         value: undefined
     },
 
@@ -161,11 +488,30 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     },
 
     /**
-     * The authorization object representing an authenticated user, like a JWToken.
+     * The userIdentity object representing the authenticated user.
      *
      * @type {Object}
      */
-    authorization: {
+    userIdentity: {
+        value: undefined
+    },
+
+    /**
+     * The locales relevant to this operation. In an authoring mode/context, there could be multiple ones.
+     *
+     * @type {Array<Locale>}
+     */
+   locales: {
+        value: undefined
+    },
+
+
+    /**
+     * a message about the operation meant for the user.
+     *
+     * @type {Object}
+     */
+    userMessage: {
         value: undefined
     },
 
@@ -201,12 +547,12 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      *
      * @type {number}
      */
-    index: {
+    constructionIndex: {
         value: undefined
     },
 
     /**
-     * Benoit: This property's role is a bit fuzzy. context can be changing and arbitrary. Keep??
+     * Information about the context surrounding the data operation
      * @type {Object}
      */
     context: {
@@ -231,6 +577,9 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
         value: undefined
     },
 
+    /*
+    Might be more straightforward to name this objectDescriptor
+    */
     dataType: {
         value: undefined
     },
@@ -301,6 +650,50 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
      *    }
      *
      *
+     * What if we used 2 new different operators on top of <-, <->, =, as in:?
+     * {
+     *      "root": {
+     *             "prototype": "package/data/main.datareel/model/custom-type",
+     *            "values": {
+     *               "foo": {"=":"Bleh"},
+     *               "toManyProperty": {
+     *                      //We would add the dataService unique objects map in the deserializer's context
+     *                      //so that we can reference this objects if they exists.
+     *                      //we're missing the index to tell us where the change happens.     *
+     *                      "+":"[@identifier1-url,@identifier2-url,@newObject]",
+     *                      "-":"[@identifier4-url]",
+     *                 },
+     *               //Should/could that be done with one expression that roughtl would look like:
+     *              "toManyProperty2.splice(index,add,remove)": {"=":"[@change.index,@change.add,@change.remove]"}
+     *           }
+     *      },
+     *      "change": {
+     *          "prototype": "Object",
+     *          "values": {
+     *              "index": "3",
+     *              "add": "[@identifier1-url,@identifier2-url,@newObject]",
+     *              "remove":"[@identifier4-url]",
+
+     *          }
+     *      }
+     * }
+
+     *      "newObject": {
+     *          "prototype": "module-id",
+     *          "values": {
+     *              "propA": "A",
+     *              "propB": "B"
+     *          }
+     *      }
+     * }
+
+     *
+     * //Transaction. For a Transaction, data would contain the list of data operations grouped together.
+     * //If data is muted, and observed, it could be dynamically processed by RawDataServices.
+     * //The referrer property, which is a pointer to another DatOperaiton would be used by an update/addition
+     * //to the transaction
+     *
+     *
      * @type {Object}
      */
     data: {
@@ -309,34 +702,6 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
 
     snapshotData: {
         value: undefined
-    },
-
-    /***************************************************************************
-     * Deprecated
-     */
-
-    /**
-     * @todo: Deprecate and remove when appropriate.
-     */
-    changes: {
-        get: function () {
-            return this.data;
-        },
-        set: function (data) {
-            this.data = data;
-        }
-    },
-
-    /**
-     * @todo: Deprecate and remove when appropriate.
-     */
-    lastModified: {
-        get: function () {
-            return this.time;
-        },
-        set: function (time) {
-            this.time = time;
-        }
     }
 
 }, /** @lends DataOperation */ {
@@ -347,49 +712,103 @@ exports.DataOperation = Montage.specialize(/** @lends DataOperation.prototype */
     */
 
     Type: {
+
+        /*
+            Search: is a read operation
+
+        */
         value: {
-            Create: {isCreate: true},
-            CreateFailed: {isCreate: true},
-            CreateCompleted: {isCreate: true},
-            //Additional
-            Copy: {isCreate: true},
-            CopyFailed: {isCreate: true},
-            CopyCompleted: {isCreate: true},
-            /* Read is the first operation that mnodels a query */
-            Read: {isRead: true},
+            NoOp: DataOperationType.noop,
+            ConnectOperation: DataOperationType.connectOperation,
+            DisconnectOperation: DataOperationType.disconnectOperation,
+            CreateOperation: DataOperationType.createOperation,
+            CreateFailedOperation: DataOperationType.createFailedOperation,
+            CreateCompletedOperation: DataOperationType.createCompletedOperation,
+            CreateCanceledOperation: DataOperationType.createCanceledOperation,
 
-            /* ReadUpdated is pushed by server when a query's result changes due to data changes from others */
-            ReadUpdated: {isRead: true},
+            CopyOperation: DataOperationType.copyOperation,
+            CopyFailedOperation: DataOperationType.copyFailedOperation,
+            CopyCompletedOperation: DataOperationType.copyCompletedOperation,
 
-            /* ReadProgress / ReadUpdate / ReadSeek is used to instruct server that more data is required for a "live" read / query
-                Need a better name, and a symetric? Or is ReadUpdated enough if it referes to previous operation
-            */
-            ReadProgress: {isRead: true}, //ReadUpdated
+            ReadOperation: DataOperationType.readOperation,
+            ReadUpdatedOperation: DataOperationType.readUpdatedOperation,
+            ReadProgressOperation: DataOperationType.readProgressOperation, //ReadUpdate
+            ReadUpdateOperation: DataOperationType.readUpdateOperation, //ReadUpdate
+            CancelReadOperation: DataOperationType.cancelReadOperation,
+            ReadCanceledOperation: DataOperationType.readCanceledOperation,
+            ReadFailedOperation: DataOperationType.readFailedOperation,
+            ReadCompletedOperation: DataOperationType.readCompletedOperation,
 
-            /* ReadCancel is the operation that instructs baclkend that client isn't interested by a read operastion anymore */
-            ReadCancel: {isRead: true},
+            UpdateOperation: DataOperationType.updateOperation,
+            UpdateCompletedOperation: DataOperationType.updateCompletedOperation,
+            UpdateFailedOperation: DataOperationType.updateFailedOperation,
+            cancelUpdateOperation: DataOperationType.cancelUpdateOperation,
+            UpdateCanceledOperation: DataOperationType.updateCanceledOperation,
 
-            /* ReadCanceled is the operation that instructs the client that a read operation is canceled */
-            ReadCanceled: {isRead: true},
+            MergeOperation: DataOperationType.mergeOperation,
+            MergeFailedOperation: DataOperationType.mergeFailedOperation,
+            MergeCompletedOperation: DataOperationType.mergeCompletedOperation,
+            CancelMergeOperation: DataOperationType.cancelMergeOperation,
+            MergeCanceledOperation: DataOperationType.mergeCanceledOperation,
 
-             /* ReadFailed is the operation that instructs the client that a read operation has failed canceled */
-            ReadFailed: {isRead: true},
-            /* ReadCompleted is the operation that instructs the client that a read operation has returned all available data */
-            ReadCompleted: {isRead: true},
-            Update: {isUpdate: true},
-            UpdateCompleted: {isUpdate: true},
-            UpdateFailed: {isUpdate: true},
-            Delete: {isDelete: true},
-            DeleteCompleted: {isDelete: true},
-            DeleteFailed: {isDelete: true},
-            /* Lock models the ability for a client to prevent others to make changes to a set of objects described by operation's criteria */
-            Lock: {isLock: true},
-            LockCompleted: {isLock: true},
-            LockFailed: {isLock: true},
-            /* RemmoteProcedureCall models the ability to invoke code logic on the server-side, being a DB StoredProcedure, or an method/function in a service */
-            RemoteProcedureCall: {isRemoteProcedureCall: true},
-            RemoteProcedureCallCompleted: {isRemoteProcedureCall: true},
-            RemoteProcedureCallFailed: {isRemoteProcedureCall: true}
+            DeleteOperation: DataOperationType.deleteOperation,
+            DeleteCompletedOperation: DataOperationType.deleteCompletedOperation,
+            DeleteFailedOperation: DataOperationType.deleteFailedOperation,
+
+            LockOperation: DataOperationType.lockOperation,
+            LockCompletedOperation: DataOperationType.lockCompletedOperation,
+            LockFailedOperation: DataOperationType.lockFailedOperation,
+            UnlockOperation: DataOperationType.unlockOperation,
+            UnlockCompletedOperation: DataOperationType.unlockCompletedOperation,
+            UnlockFailedOperation: DataOperationType.unlockFailedOperation,
+
+            RemoteInvocationOperation: DataOperationType.remoteInvocationOperation,
+            RemoteInvocationCompletedOperation: DataOperationType.remoteInvocationCompletedOperation,
+            RemoteInvocationFailedOperation: DataOperationType.remoteInvocationFailedOperation,
+
+            UserAuthentication: DataOperationType.userAuthentication,
+            UserAuthenticationUpdate: DataOperationType.userAuthenticationUpdate,
+            UserAuthenticationCompleted: DataOperationType.userAuthenticationCompleted,
+            UserAuthenticationFailed: DataOperationType.userAuthenticationFailed,
+            UserAuthenticationTimedout: DataOperationType.userAuthenticationTimedout,
+
+            UserInput: DataOperationType.userInput,
+            UserInputCompleted: DataOperationType.userInputCompleted,
+            UserInputFailed: DataOperationType.userInputFailed,
+            UserInputCanceled: DataOperationType.userInputCanceled,
+            UserInputTimedOut: DataOperationType.userInputTimedout,
+
+            ValidateOperation: DataOperationType.validateOperation,
+            ValidateFailedOperation: DataOperationType.validateFailedOperation,
+            ValidateCompletedOperation: DataOperationType.validateCompletedOperation,
+            CancelValidateOperation: DataOperationType.cancelValidateOperation,
+            ValidateCanceledOperation: DataOperationType.validateCanceledOperation,
+
+            BatchOperation: DataOperationType.batchOperation,
+            BatchUpdateOperation: DataOperationType.batchUpdateOperation,
+            BatchCompletedOperation: DataOperationType.batchCompletedOperation,
+            BatchFailedOperation: DataOperationType.batchFailedOperation,
+
+            CreateTransactionOperation: DataOperationType.createTransactionOperation,
+            CreateTransactionCompletedOperation: DataOperationType.createTransactionCompletedOperation,
+            CreateTransactionFailedOperation: DataOperationType.createTransactionFailedOperation,
+
+            TransactionUpdatedOperation: DataOperationType.transactionUpdatedOperation,
+
+
+            CreateSavePointOperation: DataOperationType.createSavePointOperation,
+
+            PerformTransactionOperation: DataOperationType.performTransactionOperation,
+            PerformTransactionProgressOperation: DataOperationType.performTransactionProgressOperation,
+            PerformTransactionCompletedOperation: DataOperationType.performTransactionCompletedOperation,
+            PerformTransactionFailedOperation: DataOperationType.performTransactionFailedOperation,
+
+            RollbackTransactionOperation: DataOperationType.rollbackTransactionOperation,
+            RollbackTransactionCompletedOperation: DataOperationType.rollbackTransactionCompletedOperation,
+            RollbackTransactionFailedOperation: DataOperationType.rollbackTransactionFailedOperation,
+            KeepAliveOperation: DataOperationType.keepAliveOperation,
+
+
         }
     }
 

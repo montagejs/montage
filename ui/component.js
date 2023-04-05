@@ -27,9 +27,11 @@ var Montage = require("../core/core").Montage,
     drawListLogger = require("../core/logger").logger("drawing list").color.blue(),
     needsDrawLogger = require("../core/logger").logger("drawing needsDraw").color.violet(),
     drawLogger = require("../core/logger").logger("drawing").color.blue(),
-    WeakMap = require("collections/weak-map"),
-    Map = require("collections/map"),
-    Set = require("collections/set");
+    WeakMap = require("core/collections/weak-map"),
+    Map = require("core/collections/map"),
+    Set = require("core/collections/set"),
+    currentEnvironment = require("core/environment").currentEnvironment,
+    PropertyChanges = require("core/collections/listen/property-changes");
 
 /**
  * @const
@@ -747,7 +749,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     dragManager: {
         get: function () {
-            return _defaultDragManager || 
+            return _defaultDragManager ||
             ((_defaultDragManager = new DragManager()).initWithComponent(this.rootComponent));
         }
     },
@@ -858,6 +860,18 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             return this._application || (Component.prototype._application = require("../core/application").application);
         }
     },
+
+    _environment: {
+        value: null
+    },
+
+    environment: {
+        enumerable: false,
+        get: function () {
+            return this._environment || (Component.prototype._environment = currentEnvironment);
+        }
+    },
+
 
     /**
      * Convenience to access the defaultEventManager object.
@@ -1204,6 +1218,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     },
 
     _inDocument: {
+        get: function() {
+            return this.inDocument;
+        },
+        set: function(value) {
+            this.inDocument = value;
+        }
+    },
+    inDocument: {
         value: false
     },
 
@@ -1217,9 +1239,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 this.unregisterDroppable();
             }
 
-            if (this._inDocument && typeof this.exitDocument === "function") {                
+            if (this.inDocument && typeof this.exitDocument === "function") {
                 this.exitDocument();
-                this._inDocument = false;
+                this.inDocument = false;
             }
         }
     },
@@ -1241,7 +1263,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         }
                     }
 
-                    if (component._inDocument) {
+                    if (component.inDocument) {
                         component.__exitDocument();
                     }
                 };
@@ -1318,6 +1340,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     _isTemplateLoaded: {
         enumerable: false,
         value: false
+    },
+    isTemplateLoaded: {
+        enumerable: false,
+        get: function() {
+            return this._isTemplateLoaded;
+        }
     },
 
     _isTemplateInstantiated: {
@@ -1699,6 +1727,21 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         this._expandComponentPromise = this._instantiateTemplate().then(function() {
                             self._isComponentExpanded = true;
                             self._addTemplateStylesIfNeeded();
+
+                            /*
+                                Javier found out that there was a double draw in repetition.
+                                Commenting out self.needsDraw = true here fixes it,
+                                which seems to particularly improve performance for repetition
+                                where items’s templates contain repetitions that themselves
+                                have items with templates that contains repetitions, etc …
+                                the impact is on component that have templates. To be benchmarked.
+
+                                But: comenting it out causes 1 repetition tests to fail:
+
+                                repetition/repetition ui/repetition-spec Repetition in a external component should draw the repetition of the 'component repetition'
+
+                                So more to look at before we can enjoy that win.
+                            */
                             self.needsDraw = true;
                         }).catch(function (error) {
                             console.error(error);
@@ -1901,7 +1944,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     },
 
     deserializedFromSerialization: {
-        value: function () {
+        value: function (label) {
             this.attachToParentComponent();
         }
     },
@@ -2384,7 +2427,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         for (i = 0; (component = components[i]); i++) {
                             component.attachToParentComponent();
                         }
-                    }    
+                    }
                 }
             }
         }
@@ -2557,6 +2600,53 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     didDraw: {
         enumerable: false,
         value: Function.noop
+    },
+
+
+    _didDraw: {
+        enumerable: false,
+        value: function(frameTime) {
+            if(this._updatesLayoutProperties) {
+                var ownerStyle = this.ownerComponent && this.ownerComponent.element && this.ownerComponent.element.style;
+
+                if(ownerStyle) {
+                    var boundingRect = this.element.getBoundingClientRect(),
+                        identifier = this.identifier;
+                }
+
+
+
+                if(this._updatesLayoutPropertyX) {
+                    ownerStyle.setProperty(`--${identifier}X`, boundingRect.x);
+                }
+                if(this._updatesLayoutPropertyY) {
+                    ownerStyle.setProperty(`--${identifier}Y`, boundingRect.y);
+                }
+                if(this._updatesLayoutPropertyWidth) {
+                    ownerStyle.setProperty(`--${identifier}Width`, boundingRect.width);
+                }
+                if(this._updatesLayoutPropertyHeight) {
+                    ownerStyle.setProperty(`--${identifier}Height`, boundingRect.height);
+                }
+                if(this._updatesLayoutPropertyTop) {
+                    ownerStyle.setProperty(`--${identifier}Top`, boundingRect.top);
+                    this.top = boundingRect.top;
+                }
+                if(this._updatesLayoutPropertyRight) {
+                    ownerStyle.setProperty(`--${identifier}Right`, boundingRect.right);
+                    this.right = boundingRect.right;
+                }
+                if(this._updatesLayoutPropertyBottom) {
+                    ownerStyle.setProperty(`--${identifier}Bottom`, boundingRect.bottom);
+                    this.bottom = boundingRect.bottom;
+                }
+                if(this._updatesLayoutPropertyLeft) {
+                    ownerStyle.setProperty(`--${identifier}Left`, boundingRect.left);
+                    this.left = boundingRect.left;
+                }
+            }
+            this.didDraw(frameTime);
+        }
     },
 
     /**
@@ -2975,6 +3065,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     /**
      * Register a component for beeing a drag destination.
+     * droppable is the name of the html5 attribrutes,
+     * isDroppable would be a more consistent name while close to standard,
+     * acceptDrop/acceptsDrop could work too
      */
     registerDroppable: {
         value: function () {
@@ -3076,7 +3169,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     }
                 }
                 this._shouldBuildOut = false;
-                if (this._inDocument) {
+                if (this.inDocument) {
                     this._buildIn();
                 }
             }
@@ -3096,7 +3189,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             this.__shouldBuildOut = value;
             if (value) {
                 this._shouldBuildIn = false;
-                if (this._inDocument) {
+                if (this.inDocument) {
                     this._buildOut();
                 }
             }
@@ -3292,7 +3385,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 bubbles: false
             });
             this.dispatchEvent(event);
-            this._inDocument = true;
+            this.inDocument = true;
             if (this.parentComponent) {
                 this.parentComponent._childWillEnterDocument();
             }
@@ -3344,6 +3437,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 // have been set on it.
                 originalElement = this.originalElement;
 
+                /*
+                    Original
+                */
+
                 var attributes, i, length, name, value, attributeName, descriptor;
                 attributes = originalElement.attributes;
                 if (attributes) {
@@ -3365,6 +3462,31 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         }
                     }
                 }
+
+
+/*
+                var attributes, i, length, name, value, attributeName, descriptor;
+                attributes = originalElement.attributes;
+                if (attributes) {
+                    length = attributes.length;
+                    // Iterate over element's attributes
+                    for (name of originalElement.getAttributeNames()) {
+
+                        descriptor = this._getElementAttributeDescriptor(name, this);
+                        // check if this attribute from the markup is a well-defined attribute of the component
+                        if (descriptor || (typeof this[name] !== 'undefined')) {
+                            // only set the value if a value has not already been set by binding
+                            if (typeof this._elementAttributeValues[name] === 'undefined') {
+                                value = originalElement.getAttribute(name);
+                                this._elementAttributeValues[name] = value;
+                                if(this[name] === null || this[name] === undefined) {
+                                    this[name] = value;
+                                }
+                            }
+                        }
+                    }
+                }
+*/
 
                 // textContent is a special case since it isn't an attribute
                 descriptor = this._getElementAttributeDescriptor('textContent', this);
@@ -3389,7 +3511,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                             var _name = "_"+attributeName;
                             if ((this[_name] === null) && descriptor !== null && "value" in descriptor) {
                                 this[_name] = descriptor.value;
-                            }   
+                            }
                         }
                     }
                 }
@@ -3443,6 +3565,24 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
             // classList
             this._drawClassListIntoComponent();
+
+            //Layout
+            var style = this.element && this.element.style;
+            if(style) {
+                if(this.top) {
+                    style.setProperty("top", this.top);
+                }
+                if(this.right) {
+                    style.setProperty("right", this.right);
+                }
+                if(this.bottom) {
+                    style.setProperty("bottom", this.bottom);
+                }
+                if(this.left) {
+                    style.setProperty("left", this.left);
+                }
+            }
+
         }
     },
 
@@ -3586,39 +3726,62 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 false
             );
 
-            if (typeof object === "object" &&
-                (constructor = object.constructor) &&
-                constructor.objectDescriptorModuleId
-            ) {
-                objectDescriptorModuleId = constructor.objectDescriptorModuleId;
+
+            objectDescriptor = object.objectDescriptor;
+            if(objectDescriptor) {
+                if(!Promise.is(objectDescriptor)) {
+                    promise = Promise.resolve(objectDescriptor);
+                }
+                else {
+                    promise = objectDescriptor;
+                    objectDescriptor = undefined;
+                }
             }
 
-            objectDescriptorModuleIdCandidate = this.callDelegateMethod(
-                "componentWillUseObjectDescriptorModuleIdForObject",
-                this,
-                objectDescriptorModuleId,
-                object
-            );
+            if(!promise && this.application.mainService) {
+                objectDescriptor = this.application.mainService.objectDescriptorForObject(object);
 
-            if (objectDescriptorModuleIdCandidate) {
-                infoDelegate = Montage.getInfoForObject(this.delegate);
-                objectDescriptorModuleId = objectDescriptorModuleIdCandidate;
+                if(objectDescriptor) {
+                    promise = Promise.resolve(objectDescriptor);
+                }
             }
 
-            if (objectDescriptorModuleId) {
-                if (objectDescriptorModuleIdCandidate) {
-                    objectDescriptor = getObjectDescriptorWithModuleId(
-                        objectDescriptorModuleId,
-                        infoDelegate ? infoDelegate.require : require
-                    );
-                } else {
-                    objectDescriptor = constructor.objectDescriptor;
+            if(!promise) {
+                if (typeof object === "object" &&
+                    (constructor = object.constructor) &&
+                    constructor.objectDescriptorModuleId
+                ) {
+                    objectDescriptorModuleId = constructor.objectDescriptorModuleId;
                 }
 
-                promise = objectDescriptor;
-            } else {
-                promise = Promise.resolve();
+                objectDescriptorModuleIdCandidate = this.callDelegateMethod(
+                    "componentWillUseObjectDescriptorModuleIdForObject",
+                    this,
+                    objectDescriptorModuleId,
+                    object
+                );
+
+                if (objectDescriptorModuleIdCandidate) {
+                    infoDelegate = Montage.getInfoForObject(this.delegate);
+                    objectDescriptorModuleId = objectDescriptorModuleIdCandidate;
+                }
+
+                if (objectDescriptorModuleId) {
+                    if (objectDescriptorModuleIdCandidate) {
+                        objectDescriptor = getObjectDescriptorWithModuleId(
+                            objectDescriptorModuleId,
+                            infoDelegate ? infoDelegate.require : require
+                        );
+                    } else {
+                        objectDescriptor = constructor.objectDescriptor;
+                    }
+
+                    promise = objectDescriptor;
+                } else {
+                    promise = Promise.resolve(objectDescriptor);
+                }
             }
+
 
             promise = promise.then(function (objectDescriptor) {
                 var moduleInfo = Montage.getInfoForObject(self),
@@ -3626,7 +3789,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     moduleId = packageName + "/" + moduleInfo.moduleId,
                     userInterfaceDescriptorModuleId,
                     userInterfaceDescriptorModuleIdCandidate;
-                
+
                 if (objectDescriptor && objectDescriptor.userInterfaceDescriptorModules) {
                     userInterfaceDescriptorModuleId =
                         objectDescriptor.userInterfaceDescriptorModules[moduleId];
@@ -3672,7 +3835,285 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 );
             });
         }
+    },
+
+    /**
+     * As dispatching has been implemented in key  setters, limit use of default method
+     * for corresponding keys.
+     * @private
+     */
+    _superMakePropertyObservable : {
+        value: PropertyChanges.prototype.makePropertyObservable
+    },
+    makePropertyObservable: {
+        value: function(key) {
+
+            switch(key) {
+                case 'x':
+                    this._updatesLayoutProperties = true;
+                    this._updatesLayoutPropertyX = true;
+                    break;
+
+                case 'y':
+                    this._updatesLayoutProperties = true;
+                    this._updatesLayoutPropertyY = true;
+                    break;
+
+                case 'width':
+                    this._updatesLayoutProperties = true;
+                    this._updatesLayoutPropertyWidth = true;
+                    break;
+
+                case 'height':
+                    this._updatesLayoutProperties = true;
+                    this._updatesLayoutPropertyHeight = true;
+                    break;
+
+               case 'top':
+                    this._updatesLayoutProperties = true;
+                    this._updatesLayoutPropertyTop = true;
+                    break;
+
+                case 'right':
+                    this._updatesLayoutProperties = true;
+                    this._updatesLayoutPropertyRight = true;
+                    break;
+
+                case 'bottom':
+                    this._updatesLayoutProperties = true;
+                    this._updatesLayoutPropertyBottom = true;
+                    break;
+
+               case 'left':
+                this._updatesLayoutProperties = true;
+                this._updatesLayoutPropertyLeft = true;
+                break;
+        }
+            this._superMakePropertyObservable( key);
+        }
+    },
+
+    _updatesLayoutProperties: {
+        value: 0
+    },
+    _updatesLayoutPropertyX: {
+        value: false
+    },
+    updatesLayoutPropertyX: {
+        get: function () {
+            return this._updatesLayoutPropertyX;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyX !== value) {
+                this._updatesLayoutPropertyX = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    _updatesLayoutPropertyY: {
+        value: false
+    },
+    updatesLayoutPropertyY: {
+        get: function () {
+            return this._updatesLayoutPropertyY;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyY !== value) {
+                this._updatesLayoutPropertyY = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    _updatesLayoutPropertyWidth: {
+        value: false
+    },
+    updatesLayoutPropertyWidth: {
+        get: function () {
+            return this._updatesLayoutPropertyWidth;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyWidth !== value) {
+                this._updatesLayoutPropertyWidth = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
     }
+    },
+
+    _updatesLayoutPropertyHeight: {
+        value: false
+    },
+    updatesLayoutPropertyHeight: {
+        get: function () {
+            return this._updatesLayoutPropertyHeight;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyHeight !== value) {
+                this._updatesLayoutPropertyHeight = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    _updatesLayoutPropertyTop: {
+        value: false
+    },
+    updatesLayoutPropertyTop: {
+        get: function () {
+            return this._updatesLayoutPropertyTop;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyTop !== value) {
+                this._updatesLayoutPropertyTop = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    _updatesLayoutPropertyRight: {
+        value: false
+    },
+    updatesLayoutPropertyRight: {
+        get: function () {
+            return this._updatesLayoutPropertyRight;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyRight !== value) {
+                this._updatesLayoutPropertyRight = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    _updatesLayoutPropertyBottom: {
+        value: false
+    },
+    updatesLayoutPropertyBottom: {
+        get: function () {
+            return this._updatesLayoutPropertyBottom;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyBottom !== value) {
+                this._updatesLayoutPropertyBottom = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+
+    _updatesLayoutPropertyLeft: {
+        value: false
+    },
+    updatesLayoutPropertyLeft: {
+        get: function () {
+            return this._updatesLayoutPropertyLeft;
+        },
+        set: function (value) {
+            if (this._updatesLayoutPropertyLeft !== value) {
+                this._updatesLayoutPropertyLeft = value;
+                if(value) {
+                    this._updatesLayoutProperties++;
+                } else {
+                    this._updatesLayoutProperties--;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    _top: {
+        value: undefined
+    },
+    top: {
+        get: function () {
+            return this._top;
+        },
+        set: function (value) {
+            if (this._top !== value) {
+                this._top = value;
+                this.needsDraw = true;
+            }
+        }
+    },
+    _right: {
+        value: undefined
+    },
+    right: {
+        get: function () {
+            return this._right;
+        },
+        set: function (value) {
+            if (this._right !== value) {
+                this._right = value;
+                this.needsDraw = true;
+            }
+        }
+    },
+    _bottom: {
+        value: undefined
+    },
+    bottom: {
+        get: function () {
+            return this._bottom;
+        },
+        set: function (value) {
+            if (this._bottom !== value) {
+                this._bottom = value;
+                this.needsDraw = true;
+            }
+        }
+    },
+    _left: {
+        value: undefined
+    },
+    left: {
+        get: function () {
+            return this._left;
+        },
+        set: function (value) {
+            if (this._left !== value) {
+                this._left = value;
+                this.needsDraw = true;
+            }
+        }
+    }
+
 
 }, {
 
@@ -3734,7 +4175,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         if (setter) {
                             setter.call(this, value);
                         } else {
-                            this[attributeName] = value;                            
+                            this[attributeName] = value;
                         }
 
                         this._elementAttributeValues[name] = value;
@@ -4055,7 +4496,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      * @function
      */
     requestAnimationFrame: {
-        value: (global.requestAnimationFrame || global.webkitRequestAnimationFrame || 
+        value: (global.requestAnimationFrame || global.webkitRequestAnimationFrame ||
                     global.mozRequestAnimationFrame ||  global.msRequestAnimationFrame),
         enumerable: false
     },
@@ -4065,7 +4506,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      * @function
      */
     cancelAnimationFrame: {
-        value: (global.cancelAnimationFrame ||  global.webkitCancelAnimationFrame || 
+        value: (global.cancelAnimationFrame ||  global.webkitCancelAnimationFrame ||
                     global.mozCancelAnimationFrame || global.msCancelAnimationFrame),
         enumerable: false
     },
@@ -4091,7 +4532,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         // Written by John Resig. Used under the Creative Commons Attribution 2.5 License.
         // http://ejohn.org/projects/javascript-diff-algorithm/
         value: function ( o, n ) {
-            var ns = {}, 
+            var ns = {},
                 os = {};
 
             function isNullOrUndefined(o) {
@@ -4100,9 +4541,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
             for (var i = 0; i < n.length; i++ ) {
                 if (isNullOrUndefined(ns[n[i]])) {
-                    ns[n[i]] = { 
-                        rows: [], 
-                        o: null 
+                    ns[n[i]] = {
+                        rows: [],
+                        o: null
                     };
                 }
                 ns[n[i]].rows.push( i );
@@ -4110,9 +4551,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
             for (i = 0; i < o.length; i++ ) {
                 if (isNullOrUndefined(os[o[i]])) {
-                    os[o[i]] = { 
-                        rows: [], 
-                        n: null 
+                    os[o[i]] = {
+                        rows: [],
+                        n: null
                     };
                 }
                 os[o[i]].rows.push(i);
@@ -4120,17 +4561,17 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
             for (i in ns ) {
                 if (
-                    ns[i].rows.length === 1 && 
-                        !isNullOrUndefined(os[i]) && 
+                    ns[i].rows.length === 1 &&
+                        !isNullOrUndefined(os[i]) &&
                             os[i].rows.length === 1
                 ) {
-                    n[ns[i].rows[0]] = { 
-                        text: n[ns[i].rows[0]], 
-                        row: os[i].rows[0] 
+                    n[ns[i].rows[0]] = {
+                        text: n[ns[i].rows[0]],
+                        row: os[i].rows[0]
                     };
-                    o[ os[i].rows[0] ] = { 
-                        text: o[ os[i].rows[0] ], 
-                        row: ns[i].rows[0]  
+                    o[ os[i].rows[0] ] = {
+                        text: o[ os[i].rows[0] ],
+                        row: ns[i].rows[0]
                     };
                 }
             }
@@ -4152,20 +4593,20 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                         n[i].row > 0 && isNullOrUndefined(o[ n[i].row - 1].text) &&
                             n[i - 1] === o[ n[i].row - 1 ]
                 ) {
-                    n[i - 1] = { 
-                        text: n[i - 1], 
-                        row: n[i].row - 1 
+                    n[i - 1] = {
+                        text: n[i - 1],
+                        row: n[i].row - 1
                     };
-                    o[n[i].row-1] = { 
-                        text: o[n[i].row-1], 
-                        row: i - 1 
+                    o[n[i].row-1] = {
+                        text: o[n[i].row-1],
+                        row: i - 1
                     };
                 }
             }
 
-            return { 
-                o: o, 
-                n: n 
+            return {
+                o: o,
+                n: n
             };
         }
     },
@@ -4214,8 +4655,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     addStyleSheetsFromTemplate: {
         value: function(template) {
             if(!this._addedStyleSheetsByTemplate.has(template)) {
-                var resources = template.getResources(), 
-                    ownerDocument = this.element.ownerDocument, 
+                var resources = template.getResources(),
+                    ownerDocument = this.element.ownerDocument,
                     styles = resources.createStylesForDocument(ownerDocument);
 
                 for (var i = 0, style; (style = styles[i]); i++) {
@@ -4509,8 +4950,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             }
             for (i = 0; i < j; i++) {
                 component = needsDrawList[i];
+                component._didDraw(this._frameTime);
                 component.dispatchEvent(this._didDrawEvent);
-                component.didDraw(this._frameTime);
                 if (!component._completedFirstDraw) {
                     firstDrawEvent = document.createEvent("CustomEvent");
                     firstDrawEvent.initCustomEvent("firstDraw", true, false, null);
@@ -4574,7 +5015,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
 
 });
- 
+
 exports.__root__ = rootComponent = new RootComponent().init();
 
 //https://github.com/kangax/html-minifier/issues/63

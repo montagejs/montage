@@ -88,7 +88,27 @@ exports.DataIdentifier = Montage.specialize(/** @lends DataIdentifier.prototype 
     },
 
     _identifier: {
-        value: false
+        get: function() {
+            return this.url;
+        }
+    },
+
+    identifier: {
+        get: function() {
+            return this.url;
+        }
+    },
+
+    toString: {
+        value: function() {
+            return this.url;
+        }
+    },
+
+    valueOf: {
+        value: function() {
+            return this.url;
+        }
     },
 
     _url: {
@@ -106,7 +126,13 @@ exports.DataIdentifier = Montage.specialize(/** @lends DataIdentifier.prototype 
                 var _url = "montage-data://";
                 _url += this.dataService.identifier;
                 _url += "/";
-                _url += this.dataService.connectionDescriptor ? this.dataService.connectionDescriptor.name : "default";
+                _url += this.dataService.connection
+                            ? this.dataService.connection.identifier
+                                ? this.dataService.connection.identifier
+                                : this.dataService.connection.name
+                                    ? this.dataService.connection.name
+                                    : name
+                            : "default";
                 _url += "/";
                 _url += this.objectDescriptor.name;
                 _url += "/";

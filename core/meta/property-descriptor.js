@@ -1,27 +1,9 @@
 var Montage = require("../core").Montage,
     Promise = require("../promise").Promise,
     deprecate = require("../deprecate"),
+    Enum = require("core/enum").Enum,
+    parse = require("core/frb/parse"),
     logger = require("../logger").logger("objectDescriptor");
-
-// TODO change Defaults[*] to Defaults.* throughout. Needless performance
-// degradations.
-var Defaults = {
-    name: "default",
-    cardinality: 1,
-    mandatory: false,
-    readOnly: false,
-    denyDelete: false,
-    inversePropertyName: void 0,
-    valueType: "string",
-    collectionValueType: "list",
-    valueObjectPrototypeName: "",
-    valueObjectModuleId: "",
-    valueDescriptor: void 0,
-    enumValues: [],
-    defaultValue: void 0,
-    helpKey: ""
-};
-
 
 /* TypeDescriptor */
 /* DeleteRules */
@@ -42,13 +24,68 @@ var Defaults = {
 
  For example, if you delete a department, fire all the employees in that department at the same time.
 
- No Action
+ No Action -> IGNORE
  Do nothing to the object at the destination of the relationship.
 
  Default
  Value that will be assigned ?
 
  */
+exports.DeleteRule = DeleteRule = new Enum().initWithMembersAndValues(["NULLIFY","CASCADE","DENY","IGNORE"]);
+
+// TODO: Replace Defaults by leveraging the value set on the prototype which really is the natural default
+var Defaults = {
+    name: "default",
+    cardinality: 1,
+    isMandatory: false,
+    readOnly: false,
+    denyDelete: false,
+    deleteRule: DeleteRule.NULLIFY,
+    inversePropertyName: void 0,
+    keyType: void 0,
+    valueType: "string",
+    collectionValueType: "list",
+    valueObjectPrototypeName: "",
+    valueObjectModuleId: "",
+    valueDescriptor: void 0,
+    keyDescriptor: void 0,
+    enumValues: [],
+    defaultValue: void 0,
+    helpKey: "",
+    isLocalizable: false,
+    isSearchable: false,
+    isOrdered: false,
+    isUnique: false,
+    isSerializable: true,
+    hasUniqueValues: false,
+};
+
+
+/*
+TODO:
+
+-   if a propertyDescriptor's serializable isn't false, it should be persisted,
+    however propertyDescriptors with a definition expression, should not.
+
+-   "valueType": "array" is not enough to persist a property in a modern relational DB,
+    we need the type in the array
+    Cardinality should be > 1, and also why isn't collectionValueType used as well?
+
+-   Number types need more data in term of storage: signed or not, decimal / integer / precision / scale?
+    Or is it a mapping issue?. Look at https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat
+    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#Locale_identification_and_negotiation
+
+    Intl.NumberFormat:
+
+-   Also, we need to model for a toMany, wether it's unique, and if it is ordered. In most classic
+    to-many, order is irrelevant, but it sometimes can be.
+    Unique and ordered makes only sense when cardinality is > 1, or not?
+-   Unique can also means, like in a database, that the value of that property should be unique throughout a table.
+    How do we express this as well, which would be helpful to know to set constraints appropriately.
+
+*/
+
+
 
 
 /**
@@ -66,9 +103,9 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      */
     initWithNameObjectDescriptorAndCardinality: {
         value:function (name, objectDescriptor, cardinality) {
-            this._name = (name !== null ? name : Defaults["name"]);
+            this._name = (name !== null ? name : Defaults.name);
             this._owner = objectDescriptor;
-            this.cardinality = (cardinality > 0 ? cardinality : Defaults["cardinality"]);
+            this.cardinality = (cardinality > 0 ? cardinality : Defaults.cardinality);
             return this;
         }
     },
@@ -97,14 +134,19 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             } else {
                 this._setPropertyWithDefaults(serializer, "cardinality", this.cardinality);
             }
-            this._setPropertyWithDefaults(serializer, "mandatory", this.mandatory);
+            this._setPropertyWithDefaults(serializer, "isMandatory", this.isMandatory);
             this._setPropertyWithDefaults(serializer, "readOnly", this.readOnly);
-            this._setPropertyWithDefaults(serializer, "denyDelete", this.denyDelete);
+            //Not needed anymore as it's now this.deleteRule === DeleteRule.DENY
+            //and deserializing denyDelete will set the equivallent on value deleteRule
+            // this._setPropertyWithDefaults(serializer, "denyDelete", this.denyDelete);
+            this._setPropertyWithDefaults(serializer, "deleteRule", this.deleteRule);
+            this._setPropertyWithDefaults(serializer, "keyType", this.keyType);
             this._setPropertyWithDefaults(serializer, "valueType", this.valueType);
             this._setPropertyWithDefaults(serializer, "collectionValueType", this.collectionValueType);
             this._setPropertyWithDefaults(serializer, "valueObjectPrototypeName", this.valueObjectPrototypeName);
             this._setPropertyWithDefaults(serializer, "valueObjectModuleId", this.valueObjectModuleId);
             this._setPropertyWithDefaults(serializer, "valueDescriptor", this._valueDescriptorReference);
+            this._setPropertyWithDefaults(serializer, "keyDescriptor", this._valueDescriptorReference);
             if (this.enumValues.length > 0) {
                 this._setPropertyWithDefaults(serializer, "enumValues", this.enumValues);
             }
@@ -112,6 +154,13 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._setPropertyWithDefaults(serializer, "helpKey", this.helpKey);
             this._setPropertyWithDefaults(serializer, "definition", this.definition);
             this._setPropertyWithDefaults(serializer, "inversePropertyName", this.inversePropertyName);
+            this._setPropertyWithDefaults(serializer, "isLocalizable", this.isLocalizable);
+            this._setPropertyWithDefaults(serializer, "isSerializable", this.isSerializable);
+            this._setPropertyWithDefaults(serializer, "isSearchable", this.isSearchable);
+            this._setPropertyWithDefaults(serializer, "isOrdered", this.isOrdered);
+            this._setPropertyWithDefaults(serializer, "isUnique", this.isUnique);
+            this._setPropertyWithDefaults(serializer, "hasUniqueValues", this.hasUniqueValues);
+            this._setPropertyWithDefaults(serializer, "description", this.description);
 
         }
     },
@@ -134,19 +183,29 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
                 this.cardinality = Infinity;
             }
 
-            this._overridePropertyWithDefaults(deserializer, "mandatory");
+            this._overridePropertyWithDefaults(deserializer, "isMandatory", "mandatory");
             this._overridePropertyWithDefaults(deserializer, "readOnly");
             this._overridePropertyWithDefaults(deserializer, "denyDelete");
+            this._overridePropertyWithDefaults(deserializer, "deleteRule");
+            this._overridePropertyWithDefaults(deserializer, "keyType");
             this._overridePropertyWithDefaults(deserializer, "valueType");
             this._overridePropertyWithDefaults(deserializer, "collectionValueType");
             this._overridePropertyWithDefaults(deserializer, "valueObjectPrototypeName");
             this._overridePropertyWithDefaults(deserializer, "valueObjectModuleId");
             this._overridePropertyWithDefaults(deserializer, "_valueDescriptorReference", "valueDescriptor", "targetBlueprint");
+            this._overridePropertyWithDefaults(deserializer, "_keyDescriptorReference", "keyDescriptor");
             this._overridePropertyWithDefaults(deserializer, "enumValues");
             this._overridePropertyWithDefaults(deserializer, "defaultValue");
             this._overridePropertyWithDefaults(deserializer, "helpKey");
             this._overridePropertyWithDefaults(deserializer, "definition");
             this._overridePropertyWithDefaults(deserializer, "inversePropertyName");
+            this._overridePropertyWithDefaults(deserializer, "isLocalizable");
+            this._overridePropertyWithDefaults(deserializer, "isSerializable");
+            this._overridePropertyWithDefaults(deserializer, "isSearchable");
+            this._overridePropertyWithDefaults(deserializer, "isOrdered");
+            this._overridePropertyWithDefaults(deserializer, "isUnique");
+            this._overridePropertyWithDefaults(deserializer, "hasUniqueValues");
+            this._overridePropertyWithDefaults(deserializer, "description");
         }
     },
 
@@ -191,15 +250,16 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
 
             if (arguments.length > 2) {
                 propertyNames = Array.prototype.slice.call(arguments, 2, Infinity);
+
+                for (i = 0, n = propertyNames.length; i < n && !value; i++) {
+                    value = deserializer.getProperty(propertyNames[i]);
+                }
             } else {
-                propertyNames = [objectKey];
+                value = deserializer.getProperty(objectKey);
+
             }
 
-            for (i = 0, n = propertyNames.length; i < n && !value; i++) {
-                value = deserializer.getProperty(propertyNames[i]);
-            }
-
-            this[objectKey] = value === undefined ? Defaults[propertyNames[0]] : value;
+            this[objectKey] = value === undefined ? Defaults[propertyNames ? propertyNames[0] : objectKey] : value;
         }
     },
 
@@ -227,10 +287,21 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @type {string}
      */
     name: {
-        serializable:false,
+        serializable:true,
         get:function () {
             return this._name;
         }
+    },
+
+    /**
+     * Description of the property descriptor
+     * object.
+     * @readonly
+     * @type {string}
+     */
+    description: {
+        serializable:true,
+        value: undefined
     },
 
     /**
@@ -257,19 +328,24 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * stored. Only positive values are legal. A value of infinity means that
      * any number of values can be stored.
      *
+     * Right now with just one property forHandling Cardinality, we can't deal with something like
+     * minCount and maxCount. minCount and maxCount with equal value would be similar to cardinality,
+     * or we could make cardinality a Range as well.
+     *
+     *
      * @type {number}
      * @default 1
      */
     cardinality: {
-        value: Defaults["cardinality"]
+        value: Defaults.cardinality
     },
 
     /**
      * @type {boolean}
      * @default false
      */
-    mandatory: {
-        value: Defaults["mandatory"]
+    isMandatory: {
+        value: Defaults.isMandatory
     },
 
     /**
@@ -277,7 +353,20 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @default false
      */
     denyDelete: {
-        value: Defaults["denyDelete"]
+        get: function() {
+            return this.deleteRule === DeleteRule.DENY;
+        },
+        set: function(value) {
+            this.deleteRule = DeleteRule.DENY;
+        }
+    },
+
+    /**
+     * @type {boolean}
+     * @default false
+     */
+    deleteRule: {
+        value: Defaults.deleteRule
     },
 
     /**
@@ -285,7 +374,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * @default false
      */
     readOnly: {
-        value: Defaults["readOnly"]
+        value: Defaults.readOnly
     },
 
     /**
@@ -306,9 +395,68 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      */
     isDerived: {
         get: function () {
-            return false;
+            return !!this.definition;
         }
     },
+
+    /**
+     * Reflect if this property can be used to search with text and find that
+     * objetc. It should be used by data storage to provide the ability to offer
+     * such ability to find objects based on textual content of this property.
+     *
+     * Should it be limited to text/string type?
+     *
+     * @type {boolean}
+     * @default false
+     */
+    isSearchable: {
+         value: Defaults.isSearchable
+    },
+
+    /**
+     * models if the values of a collection / to-many property are ordered or not
+     * This is relevant for example for relationships where a relational DB would
+     * use a traditinal join table with 2 foreign keys to implement a many to many
+     * if isOrdered is false, but if true, that join table should have an index,
+     * or the relationship could be implemented with an array type in postgresql.
+     *
+     * If not ordered, a set could be used to hold data.
+     *
+     * @type {boolean}
+     * @default false
+     */
+    isOrdered: {
+        value: Defaults.isOrdered
+   },
+
+    /**
+     * models if the value of the property is unique among all instances described
+     * by the propertyDescriptor's owner.
+     *
+     * @type {boolean}
+     * @default false
+     */
+    isUnique: {
+        value: Defaults.isUnique
+   },
+
+
+    /**
+     * models if the values of a collection / to-many property should be unique,
+     * This is relevant for example for relationships where a relational DB would
+     * use a traditinal join table with 2 foreign keys to implement a many to many,
+     * in which naturally there could be only one association and therefore be unique
+     * by nature. But a relationship implemented with an array type in postgresql for example,
+     * would naturally offer the ability to hold multiple times the same value at
+     * multiple indexes.
+     *
+     * @type {boolean}
+     * @default false
+     */
+    hasUniqueValues: {
+        value: Defaults.hasUniqueValues
+   },
+
 
     /**
      * @type {string}
@@ -326,6 +474,27 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
         value: null
     },
 
+    _definitionSyntax: {
+        value: null
+    },
+
+    definitionSyntax: {
+        get: function() {
+            return this._definitionSyntax || (this._definitionSyntax = parse(this.definition));
+        }
+    },
+
+
+    /**
+     * @type {string}
+     * TODO: This is semantically similar to keyDescriptor
+     * We should check if keyDescriptor can do the same job and eliminate
+     * this.
+     */
+    keyType: {
+        value: Defaults.keyType
+    },
+
     /**
      * @type {string}
      * TODO: This is semantically similar to valueDescriptor
@@ -333,28 +502,32 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * this.
      */
     valueType: {
-        value: Defaults["valueType"]
+        value: Defaults.valueType
     },
+
 
     /**
      * @type {string}
+     *
+     * This property specifies the type of collection this property should use.
+     * Default is an Array, but this could be a Set or other type of collection.
      */
     collectionValueType: {
-        value: Defaults["collectionValueType"]
+        value: Defaults.collectionValueType
     },
 
     /**
      * @type {string}
      */
     valueObjectPrototypeName: {
-        value: Defaults["valueObjectPrototypeName"]
+        value: Defaults.valueObjectPrototypeName
     },
 
     /**
      * @type {string}
      */
     valueObjectModuleId: {
-        value: Defaults["valueObjectModuleId"]
+        value: Defaults.valueObjectModuleId
     },
 
     /**
@@ -364,6 +537,9 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * return a promise.
      * @type {string}
      */
+    _valueDescriptorReference: {
+        value: undefined
+    },
     valueDescriptor: {
         serializable: false,
         get: function () {
@@ -380,6 +556,34 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             this._valueDescriptorReference = descriptor;
         }
     },
+
+    /**
+     * Promise for the descriptor of objects found as key of the property when it is a Map
+     *
+     * **Note**: The setter expects an actual descriptor but the getter will
+     * return a promise.
+     * @type {string}
+     */
+    _keyDescriptorReference: {
+        value: undefined
+    },
+    keyDescriptor: {
+        serializable: false,
+        get: function () {
+            // TODO: Needed for backwards compatibility with ObjectDescriptorReference.
+            // Remove eventually, this can become completely sync
+            if (this._keyDescriptorReference && typeof this._keyDescriptorReference.promise === "function") {
+                deprecate.deprecationWarningOnce("valueDescriptor reference via ObjectDescriptorReference", "direct reference via object syntax");
+                return this._keyDescriptorReference.promise(this.require);
+            } else {
+                return this._keyDescriptorReference && Promise.resolve(this._keyDescriptorReference);
+            }
+        },
+        set: function (descriptor) {
+            this._keyDescriptorReference = descriptor;
+        }
+    },
+
 
     _targetObjectDescriptorReference: {
         value: null
@@ -408,11 +612,11 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     },
 
     defaultValue: {
-        value: Defaults["defaultValue"]
+        value: Defaults.defaultValue
     },
 
     helpKey:{
-        value: Defaults["helpKey"]
+        value: Defaults.helpKey
     },
 
     objectDescriptorModuleId:require("../core")._objectDescriptorModuleIdDescriptor,
@@ -423,24 +627,59 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
      * possible values are: "reference" | "value" | "auto" | true | false,
      * @default false
      */
-    serializable: {
-        value: true
+    isSerializable: {
+        value: Defaults.isSerializable
     },
+
+    /**
+     * @type {boolean}
+     * Express the fact that the value of this property might change to meet the language,
+     * cultural and other requirements of a specific target market (a locale).
+     *
+     * @default false
+     */
+    isLocalizable: {
+        value: false
+    },
+
 
     /**
      * Property name on the object on the opposite side of the relationship
      * to which the value of this property should be assigned.
-     * 
-     * For example, take the following relationship: 
-     * 
+     *
+     * For example, take the following relationship:
+     *
      * Foo.bars <------->> Bar.foo
-     * 
-     * Each Bar object in Foo.bars will have Foo assigned to it's Bar.foo property. Therefore, 
-     * the inversePropertyName on the 'bars' propertyDescriptor would be 'foo'. 
+     *
+     * Each Bar object in Foo.bars will have Foo assigned to it's Bar.foo property. Therefore,
+     * the inversePropertyName on the 'bars' propertyDescriptor would be 'foo'.
      */
     inversePropertyName: {
         value: undefined
     },
+
+
+    inversePropertyDescriptor: {
+        get: function() {
+            var self = this;
+
+            return this.inversePropertyName
+                ?   this.valueDescriptor.then(function (objectDescriptor) {
+                        return self._inversePropertyDescriptor;
+                    })
+                :   Promise.resolveUndefined;
+
+        }
+    },
+
+    _inversePropertyDescriptor: {
+        get: function() {
+            return (this.inversePropertyName && this._valueDescriptorReference)
+                ? this._valueDescriptorReference.propertyDescriptorForName(this.inversePropertyName)
+                : undefined;
+        }
+    },
+
 
     /********************************************************
      * Deprecated functions
@@ -472,6 +711,6 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     blueprint: require("../core")._objectDescriptorDescriptor,
 
 
-    
+
 
 });

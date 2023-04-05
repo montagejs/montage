@@ -4,13 +4,26 @@ var Montage = require("./core").Montage,
 
 /**
  * A Target is any object that can be a candidate for dispatching and receiving
- * events throughout what is typically considered the "component tree" of a
+ * events distributed troughout a tree. One such tree is the "component tree" of a
  * Montage application.
  *
  * @class Target
  * @extends Montage
  */
 exports.Target = Montage.specialize( /** @lends Target.prototype */{
+
+    /**
+     * Provides a reference to the Montage event manager used in the
+     * application.
+     *
+     * @property {EventManager} value
+     * @default defaultEventManager
+     */
+
+    eventManager: {
+        value: defaultEventManager,
+        serializable: false
+    },
     /**
      * Whether or not this target can accept user focus and become the
      * activeTarget This matches up with the `document.activeElement` property
@@ -123,12 +136,12 @@ exports.Target = Montage.specialize( /** @lends Target.prototype */{
      * @function
      * @param {string} type The event type to listen for.
      * @param {object | function} listener The listener object or function.
-     * @param {boolean} useCapture Specifies whether to listen for the event during the bubble or capture phases.
+     * @param {object | boolean} useCapture Specifies whether to listen for the event during the bubble or capture phases.
      */
     addEventListener: {
-        value: function addEventListener(type, listener, useCapture) {
+        value: function addEventListener(type, listener, optionsOrUseCapture) {
             if (listener) {
-                defaultEventManager.registerEventListener(this, type, listener, useCapture);
+                defaultEventManager.registerTargetEventListener(this, type, listener, optionsOrUseCapture);
             }
         }
     },
@@ -138,12 +151,12 @@ exports.Target = Montage.specialize( /** @lends Target.prototype */{
      * @function
      * @param {string} type The event type.
      * @param {object | function} listener The listener object or function.
-     * @param {boolean} useCapture The phase of the event listener.
+     * @param {object | boolean} useCapture The phase of the event listener.
      */
     removeEventListener: {
-        value: function removeEventListener(type, listener, useCapture) {
+        value: function removeEventListener(type, listener, optionsOrUseCapture) {
             if (listener) {
-                defaultEventManager.unregisterEventListener(this, type, listener, useCapture);
+                defaultEventManager.unregisterTargetEventListener(this, type, listener, optionsOrUseCapture);
             }
         }
     },

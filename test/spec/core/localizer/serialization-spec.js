@@ -35,9 +35,9 @@ var Montage = require("montage").Montage,
     Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer,
     Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
-    Map = require("montage/collections/map"),
+    Map = require("montage/core/collections/map"),
     Bindings = require("montage/core/core").Bindings,
-    FrbBindings = require("montage/frb/bindings");
+    FrbBindings = require("montage/core/frb/bindings");
 
 var stripPP = function stripPrettyPrintting(str) {
     return str.replace(/\n\s*/g, "");

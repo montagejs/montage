@@ -3,9 +3,10 @@
  * @requires montage/core/converter/converter
  */
 var Converter = require("./converter").Converter,
-    parse = require("frb/parse"),
-    Scope = require("frb/scope"),
-    compile = require("frb/compile-evaluator");
+    parse = require("core/frb/parse"),
+    Scope = require("core/frb/scope"),
+    compile = require("core/frb/compile-evaluator")
+    deprecate = require("../deprecate");
 
 /**
  * @class ExpressionConverter
@@ -22,6 +23,47 @@ var Converter = require("./converter").Converter,
  */
 exports.ExpressionConverter = Converter.specialize( /** @lends TrimConverter# */ {
 
+    /*********************************************************************
+     * Initialization
+     */
+
+    /**
+     * @param {string} convertExpression the expression to be used for building a criteria to obtain the object corresponding to the value to convert.
+     * @return itself
+     */
+    initWithConvertExpression: {
+        value: function (convertExpression) {
+            this.convertExpression = convertExpression;
+            return this;
+        }
+    },
+
+    /*********************************************************************
+     * Serialization
+     */
+
+    serializeSelf: {
+        value: function (serializer) {
+
+            serializer.setProperty("convertExpression", this.convertExpression);
+
+            serializer.setProperty("revertExpression", this.revertExpression);
+
+        }
+    },
+    deserializeSelf: {
+        value: function (deserializer) {
+            var value = deserializer.getProperty("convertExpression");
+            if (value) {
+                this.convertExpression = value;
+            }
+
+            value = deserializer.getProperty("revertExpression");
+            if (value) {
+                this.revertExpression = value;
+            }
+        }
+    },
 
     _convertExpression: {
         value: null
@@ -38,22 +80,50 @@ exports.ExpressionConverter = Converter.specialize( /** @lends TrimConverter# */
             if(value !== this._convertExpression) {
                 this._convertExpression = value;
                 //Reset parsed & compiled version:
-                this.__compiledConvertExpression = undefined;
+                this._convertSyntax = undefined;
+                this._compiledConvertSyntax = undefined;
             }
         }
     },
-    __compiledConvertExpression: {
+
+    _convertSyntax: {
         value: undefined
     },
-    _compiledConvertExpression: {
+
+    /**
+     * Object created by parsing .convertExpression using frb/grammar.js that will
+     * be used to initialize the convert query criteria
+     * @type {Object}
+     * */
+
+    convertSyntax: {
         get: function() {
-            return this.__compiledConvertExpression || (this.__compiledConvertExpression = compile(parse(this.convertExpression)));
+            return (this._convertSyntax ||
+                ((this._convertSyntax === undefined)    ? (this._convertSyntax = (this.convertExpression ? parse(this.convertExpression) : null))
+                                                        : null));
         }
     },
 
+    _compiledConvertSyntax: {
+        value: undefined
+    },
+    compiledConvertSyntax: {
+        get: function() {
+            return this._compiledConvertSyntax ||
+                    (this._compiledConvertSyntax === undefined   ? this._compiledConvertSyntax = this.convertSyntax    ? compile(this.convertSyntax)
+                                                                                                                    : null
+                                                                : null);
+        }
+    },
+    _compiledConvertExpression: {
+
+        get: deprecate.deprecateMethod(void 0, function () {
+            return this.compiledConvertSyntax;
+        }, "_compiledConvertExpression", "compiledConvertSyntax", true)
+    },
 
     _revertExpression: {
-        value: "service.dataIdentifierForObject($).primaryKey"
+        value: null
     },
     /**
      * The expression used to revert a value.
@@ -68,38 +138,81 @@ exports.ExpressionConverter = Converter.specialize( /** @lends TrimConverter# */
                 this._revertExpression = value;
                 //Reset parswd & compiled version:
                 this._revertSyntax = undefined;
-                this.__compiledRevertExpression = undefined;
+                this._compiledRevertSyntax = undefined;
             }
         }
     },
 
-    __compiledRevertExpression: {
+    _revertSyntax: {
         value: undefined
     },
-    _compiledRevertExpression: {
+
+    /**
+     * Object created by parsing .revertExpression using frb/grammar.js that will
+     * be used to revert the modeled value into a raw one
+     * @type {Object}
+     * */
+    revertSyntax: {
         get: function() {
-            return this.__compiledRevertExpression || (this.__compiledRevertExpression = compile(parse(this.revertExpression)));
+            return this._revertSyntax ||
+                (this._revertSyntax === undefined  ? this._revertSyntax = this.revertExpression ? parse(this.revertExpression)
+                                                                                                                        : null
+                                                    : null);
         }
     },
+
+    _compiledRevertSyntax: {
+        value: undefined
+    },
+
+    compiledRevertSyntax: {
+        get: function() {
+            return this._compiledRevertSyntax ||
+                    (this._compiledRevertSyntax === undefined   ? this._compiledRevertSyntax = this.revertSyntax    ? compile(this.revertSyntax)
+                                                                                                                    : null
+                                                                : null);
+        }
+    },
+
+    _compiledRevertExpression: {
+
+        get: deprecate.deprecateMethod(void 0, function () {
+            return this.compiledRevertSyntax;
+        }, "_compiledRevertExpression", "compiledRevertSyntax", true)
+    },
+
     __scope: {
         value: null
     },
-    _scope: {
+
+    /**
+     * Scope with which convert and revert expressions are evaluated.
+     * @type {?Scope}
+     **/
+    scope: {
         get: function() {
             return this.__scope || (this.__scope = new Scope());
+        },
+        set: function(value) {
+            this.__scope = value;
         }
+    },
+    _scope: {
+        get: deprecate.deprecateMethod(void 0, function () {
+            return this.scope;
+        }, "_scope", "scope", true)
     },
 
     convert: {
         value: function (v) {
-            this._scope.value = v;
-            return this._compiledConvertExpression(this._scope);
+            this.scope.value = v;
+            return this.compiledConvertSyntax(this.scope);
         }
     },
     revert: {
         value: function (v) {
-            this._scope.value = v;
-            return this._compiledRevertExpression(this._scope);
+            this.scope.value = v;
+            return this.compiledRevertSyntax(this.scope);
         }
     }
 

@@ -1,4 +1,4 @@
-var Set = require("montage/collections/set"),
+var Set = require("montage/core/collections/set"),
     defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager,
     Event = require("mocks/event"),
     Component = require("mocks/component");
@@ -149,7 +149,8 @@ exports.element = function (_document) {
         focus: function () {},
         blur: function () {},
         ownerDocument: _document || exports.document(),
-        tagName: "MOCK"
+        tagName: "MOCK",
+        validity: {}
     };
     Object.addEach(result, EventTarget);
 
@@ -196,7 +197,7 @@ exports.document = function () {
 
     result.rootElement = exports.element(result);
     result.body = exports.element(result);
-    
+
     // configure html element
     result.querySelectorAll = result.rootElement.querySelectorAll;
     result.querySelector = result.rootElement.querySelector;
@@ -253,7 +254,7 @@ exports.keyPressEvent = function (keys, target) {
         customEvent = {};
     for (key in event) {
         if (event.hasOwnProperty(key)) {
-            customEvent[key] = event[key];            
+            customEvent[key] = event[key];
         }
     }
     customEvent.charCode = modifiersAndKeyCode.keyCode;

@@ -2,8 +2,8 @@ var Montage = require("../../core").Montage,
     MontageContext = require("./montage-interpreter").MontageContext,
     MontageReviver = require("./montage-reviver").MontageReviver,
     BindingsModule = require("../bindings"),
-    Map = require("collections/map").Map,
-    Promise = require("core/promise").Promise,
+    Map = require("core/collections/map").Map,
+    Promise = require("../../promise").Promise,
     deprecate = require("../../deprecate");
 
 var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
@@ -25,11 +25,15 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
     },
 
     init: {
-        value: function (serialization, _require, objectRequires, module, isSync) {
+        value: function (serialization, _require, objectRequires, module, isSync, useParsedSerialization) {
             if (typeof serialization === "string") {
                 this._serializationString = serialization;
             } else {
-                this._serializationString = JSON.stringify(serialization);
+                if(useParsedSerialization) {
+                    this._serialization = serialization;
+                } else {
+                    this._serializationString = JSON.stringify(serialization);
+                }
             }
             this._require = _require;
             this._module = module;
@@ -62,6 +66,10 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
      */
     deserialize: {
         value: function (instances, element) {
+            if((!this._serializationString || this._serializationString === "") && !this._serialization) {
+                return null;
+            }
+
             var context = this._module && MontageDeserializer.moduleContexts.get(this._module),
                 circularError;
             if (context) {
@@ -82,7 +90,11 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
             }
 
             try {
-                var serialization = JSON.parse(this._serializationString);
+                var serialization = this._serialization || JSON.parse(this._serializationString);
+                //We need a new JSON.parse every time, so if we had one, we use it, but we trash it after.
+                if(this._serialization) {
+                    this._serialization = null;
+                }
                 context = new MontageContext()
                     .init(serialization, this._reviver, instances, element, this._require, this._isSync);
                 if (this._locationId) {
@@ -144,7 +156,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                             );
                         }
                         locationDesc = MontageReviver.parseObjectLocationId(locationId);
-                        module = moduleLoader.getModule(locationDesc.moduleId, label);
+                        module = moduleLoader.getModule(locationDesc.moduleId, label, this);
                         if (Promise.is(module)) {
                             (promises || (promises = [])).push(module);
                         }

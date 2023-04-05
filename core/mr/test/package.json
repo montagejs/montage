@@ -1,0 +1,34 @@
+{
+    "_comment": [
+        "# If you use npm to generate or modify this file, make sure",
+        "# to restore the file's 4 space indents after the generation",
+        "# or modification so it matches other source files in the",
+        "# project. npm only generates files with 2 space indents",
+        "# (see https://github.com/npm/npm/pull/3180#issuecomment-16336516)."
+    ],
+    "name": "run",
+    "version": "1.0.0-alpha.1",
+    "license": "BSD-3-Clause",
+    "author": "Montage Studio, inc. (http://montagestudio.com/)",
+    "scripts": {
+        "postinstall": "npm link ./.."
+    },
+    "mappings": {
+        "bluebird": "../../../node_modules/bluebird",
+        "concurrently": "../../../node_modules/concurrently",
+        "http-server": "../../../node_modules/http-server",
+        "jasmine-console-reporter": "../../../node_modules/jasmine-console-reporter",
+        "jasmine-core": "../../../node_modules/jasmine-core",
+        "jshint": "../../../node_modules/jshint",
+        "karma": "../../../node_modules/karma",
+        "karma-chrome-launcher": "../../../node_modules/karma-chrome-launcher",
+        "karma-coverage": "../../../node_modules/karma-coverage",
+        "karma-firefox-launcher": "../../../node_modules/karma-firefox-launcher",
+        "karma-jasmine": "../../../node_modules/karma-jasmine",
+        "karma-phantomjs-launcher": "../../../node_modules/karma-phantomjs-launcher",
+        "mop-integration": "../../../node_modules/mop-integration",
+        "open": "../../../node_modules/open"
+        },
+    "dependencies": {},
+    "private": true
+}

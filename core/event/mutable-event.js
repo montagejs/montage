@@ -16,7 +16,7 @@ var wrapPropertyGetter = function (key, storageKey) {
 
 
 // XXX Does not presently function server-side
-if (typeof window !== "undefined") {
+//if (typeof window !== "undefined") {
 
     var _eventConstructorsByType = {};
 
@@ -86,14 +86,26 @@ if (typeof window !== "undefined") {
         },
 
         /**
-         * @function
+         * @function - deprecated
          */
         getPreventDefault: {
             value: function () {
-                if (this._event.getPreventDefault) {
-                    return this._event.getPreventDefault();
+                if (this._event) {
+                    if (this._event.getPreventDefault) {
+                        return this._event.getPreventDefault();
+                    }
+                    return this._event.defaultPrevented;
+                } else {
+                    return this.defaultPrevented;
                 }
-                return this._event.defaultPrevented;
+            }
+        },
+
+        defaultPrevented: {
+            value: function () {
+                return (typeof this._event.defaultPrevented === "boolean")
+                ?  this._event.defaultPrevented
+                :  this.getPreventDefault();
             }
         },
 
@@ -163,7 +175,11 @@ if (typeof window !== "undefined") {
          */
         eventPhase: {
             get: function () {
-                return (this._eventPhase !== void 0) ? this._eventPhase : this._event.eventPhase;
+                return (this._eventPhase !== void 0)
+                ? this._eventPhase
+                : this._event
+                    ? this._event.eventPhase
+                    : undefined;
             },
             set: function (value) {
                 this._eventPhase = value;
@@ -178,7 +194,11 @@ if (typeof window !== "undefined") {
          */
         target: {
             get: function () {
-                return (this._target !== void 0) ? this._target : this._event.target;
+                return (this._target !== void 0)
+                    ? this._target
+                    : this._event
+                        ? this._event.target
+                        : undefined;
             },
             set: function (value) {
                 this._target = value;
@@ -193,7 +213,11 @@ if (typeof window !== "undefined") {
          */
         currentTarget: {
             get: function () {
-                return (this._currentTarget !== void 0) ? this._currentTarget : this._event.currentTarget;
+                return (this._currentTarget !== void 0)
+                    ? this._currentTarget
+                    : this._event
+                        ? this._event.currentTarget
+                        : undefined;
             },
             set: function (value) {
                 this._currentTarget = value;
@@ -223,7 +247,7 @@ if (typeof window !== "undefined") {
          */
         bubbles: {
             get: function () {
-                return (this._bubbles !== void 0) ? this._bubbles : this._event.bubbles;
+                return (this._bubbles !== void 0) ? this._bubbles : (this._event && this._event.bubbles);
             },
             set: function (value) {
                 this._bubbles = value;
@@ -235,7 +259,7 @@ if (typeof window !== "undefined") {
          */
         touches: {
             get: function () {
-                return this._event.touches;
+                return this._event ? this._event.touches : null;
             },
             set: function (value) {
                 this._event.touches = value;
@@ -247,7 +271,7 @@ if (typeof window !== "undefined") {
          */
         changedTouches: {
             get: function () {
-                return this._event.changedTouches;
+                return this._event ? this._event.changedTouches : null;
             },
             set: function (value) {
                 this._event.changedTouches = value;
@@ -259,19 +283,36 @@ if (typeof window !== "undefined") {
          */
         targetTouches: {
             get: function () {
-                return this._event.targetTouches;
+                return this._event ? this._event.targetTouches : null;
             }
         },
+
+        _cancelable: {
+            value: void 0
+        },
+        /**
+         * @type {Property}
+         * @default {boolean} should be false by default
+         */
+        cancelable: {
+            get: function () {
+                return (this._cancelable !== void 0) ? this._cancelable : this._event && this._event.cancelable;
+            },
+            set: function (value) {
+                this._cancelable = value;
+            }
+        },
+
         _defaultPrevented: {
             value: void 0
         },
         /**
          * @type {Property}
-         * @default {Element} null
+         * @default {boolean} false
          */
         defaultPrevented: {
             get: function () {
-                return (this._defaultPrevented !== void 0) ? this._defaultPrevented : this._event.defaultPrevented;
+                return (this._defaultPrevented !== void 0) ? this._defaultPrevented : (this._event ? this._event.defaultPrevented : false);
             },
             set: function (value) {
                 this._defaultPrevented = value;
@@ -286,10 +327,29 @@ if (typeof window !== "undefined") {
          */
         timeStamp: {
             get: function () {
-                return (this._timeStamp !== void 0) ? this._timeStamp : this._event.timeStamp;
+                return (this._timeStamp !== void 0)
+                ? this._timeStamp
+                : this._event
+                    ? this._event.timeStamp
+                    : undefined;
             },
             set: function (value) {
                 this._timeStamp = value;
+            }
+        },
+        _detail: {
+            value: void 0
+        },
+        /**
+         * @type {Property}
+         * @default {Object} null
+         */
+        detail: {
+            get: function () {
+                return (this._detail !== void 0) ? this._detail : (this._event && this._event.detail);
+            },
+            set: function (value) {
+                this._detail = value;
             }
         }
 
@@ -328,11 +388,20 @@ if (typeof window !== "undefined") {
          * @returns this.fromEvent(anEvent)
          */
         fromType: {
-            value: function (type, canBubbleArg, cancelableArg, detail) {
-                return this.fromEvent(new CustomEvent(type, {bubbles: canBubbleArg, cancelable:cancelableArg, detail:detail}));
+            value: function MutableEvent_fromType(type, canBubbleArg, cancelableArg, detail) {
+                var newEvent = new this();
+
+                newEvent.type = type;
+                newEvent.bubbles = typeof canBubbleArg === "boolean" ? canBubbleArg : false;
+                newEvent.cancelable = typeof cancelableArg === "boolean" ? cancelableArg : false;
+                if(detail) newEvent.detail = detail;
+
+                return newEvent;
+
+                //return this.fromEvent(new CustomEvent(type, {bubbles: canBubbleArg, cancelable:cancelableArg, detail:detail}));
             }
         }
 
     });
 
-} // client-side
+//} // client-side

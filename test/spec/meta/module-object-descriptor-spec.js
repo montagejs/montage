@@ -28,7 +28,7 @@ describe("meta/module-object-descriptor-spec", function () {
     };
 
     var objectDescriptorSerialization = {
-        "objectDescriptor_one_a": {
+        "One_a": {
             "prototype": "montage/core/meta/property-descriptor",
             "values": {
                 "name": "a",
@@ -40,7 +40,7 @@ describe("meta/module-object-descriptor-spec", function () {
             "values": {
                 "name": "One",
                 "propertyDescriptors": [
-                    {"@": "objectDescriptor_one_a"}
+                    {"@": "One_a"}
                 ],
                 "maxAge": 240,
                 "module": {"%": "spec/meta/module-object-descriptor-spec"},

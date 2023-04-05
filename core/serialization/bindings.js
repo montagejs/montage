@@ -1,9 +1,9 @@
-var Bindings = require("frb"),
-    stringify = require("frb/stringify"),
-    assign = require("frb/assign"),
-    evaluate = require("frb/evaluate"),
-    expand = require("frb/expand"),
-    Scope = require("frb/scope"),
+var Bindings = require("../frb/bindings"),
+    stringify = require("../frb/stringify"),
+    assign = require("../frb/assign"),
+    evaluate = require("../frb/evaluate"),
+    expand = require("../frb/expand"),
+    Scope = require("../frb/scope"),
     Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
     ONE_ASSIGNMENT = "=",
     ONE_WAY = "<-",
@@ -77,10 +77,12 @@ var deserializeObjectBindings = exports.deserializeObjectBindings = function (de
         components: deserializer
     },
         targetPath,
-        descriptor;
+        descriptor,
+        i, keys;
 
     /* jshint forin: true */
-    for (targetPath in bindings) {
+    //for (targetPath in bindings) {
+    for (i=0, keys = Object.keys(bindings); (targetPath = keys[i]); i++) {
     /* jshint forin: false */
 
         descriptor = bindings[targetPath];
@@ -98,7 +100,7 @@ var deserializeObjectBindings = exports.deserializeObjectBindings = function (de
 
         if (ONE_ASSIGNMENT in descriptor) {
             var value = descriptor[ONE_ASSIGNMENT];
-            
+
             assign(
                 object,
                 targetPath,
@@ -108,7 +110,10 @@ var deserializeObjectBindings = exports.deserializeObjectBindings = function (de
                 deserializer
             );
         } else {
-            Bindings.defineBinding(object, targetPath, descriptor, commonDescriptor);
+            //TODO: use the API on object firt so it has an opportunity to know what's being bound to him.
+            object.defineBinding
+                ? object.defineBinding(targetPath, descriptor, commonDescriptor)
+                : Bindings.defineBinding(object, targetPath, descriptor, commonDescriptor);
         }
     }
 };

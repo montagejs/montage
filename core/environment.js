@@ -16,13 +16,93 @@ var Environment = exports.Environment = Montage.specialize({
         }
     },
 
+    /*
+        set by EventManager to avoid circular dependencies... Should environment be exposed only via application and live inside application.js?
+    */
+    application: {
+        value: null
+    },
+
+    systemLocaleIdentifier: {
+        get: function () {
+            return this.languages[0];
+        }
+    },
+
+    _languages: {
+        value: undefined
+    },
+
+    languages: {
+        get: function() {
+            if(!this._languages) {
+                this._languages = typeof navigator === "object"
+                    ? (navigator.languages && navigator.languages.length)
+                        ? navigator.languages
+                        : [navigator.userLanguage || navigator.language || navigator.browserLanguage || 'en']
+                    : ["en"];
+            }
+            return this._languages;
+        },
+        set: function(value) {
+            this._languages = value;
+        }
+    },
+
+    userAgentIPAddress: {
+        value: undefined
+    },
+
+    /**
+     * The name of the stage the code is running.
+     *
+     * this.application.url.searchParams.get("stage");
+     *
+     * @property {string}
+     */
+    _stage: {
+        value: undefined
+    },
+    stage: {
+        get: function() {
+            if(this._stage === undefined) {
+                //Check if we have an argument:
+                var applicationURL = this.application.url,
+                    stageArgument = applicationURL && applicationURL.searchParams.get("stage");
+
+                if(stageArgument) {
+                    this._stage = stageArgument;
+                } else if(applicationURL && (applicationURL.hostname === "127.0.0.1" || applicationURL.hostname === "localhost" || applicationURL.hostname.endsWith(".local")) ) {
+                    this._stage = "dev";
+                } else {
+                    /*
+                        could be staging or production or anything else, we don't know and stop the guessing game.
+                    */
+                   this._stage = null;
+                }
+            }
+
+            return this._stage;
+        },
+        set: function(value) {
+            this._stage = value;
+        }
+    },
+
+    isBrowser: {
+        value: (typeof window !== "undefined")
+    },
+
     _userAgent: {
         value: null
     },
 
     userAgent: {
         set: function (userAgent) {
-            userAgent = userAgent.toLowerCase();
+
+            if(userAgent) {
+                userAgent = userAgent.toLowerCase();
+            }
 
             if (userAgent !== this._userAgent) {
                 this._userAgent = userAgent;
@@ -52,6 +132,41 @@ var Environment = exports.Environment = Montage.specialize({
             }
 
             return this._device;
+        }
+    },
+
+    _supportsLinkRel: {
+        value: function _supportsLinkRel(feature){
+            var tokenList;
+            var fakeLink = document.createElement('link');
+            try {
+                if(fakeLink.relList && _.isFunction(fakeLink.relList.supports)){
+                    return  fakeLink.relList.supports(feature);
+                }
+            } catch(err){
+                return false;
+            }
+        }
+    },
+
+    _supportsLinkPrefetch: {
+        value: undefined
+    },
+    supportsLinkPrefetch: {
+        value: function() {
+            return typeof this._supportsLinkPrefetch === "boolean"
+                ? this._supportsLinkPrefetch
+                : (this._supportsLinkPrefetch = (this.isBrowser && this._supportsLinkRel('prefetch')));
+        }
+    },
+    _supportsLinkPreload: {
+        value: undefined
+    },
+    supportsLinkPreload: {
+        value: function() {
+            return typeof this._supportsLinkPreload === "boolean"
+                ? this._supportsLinkPreload
+                : (this._supportsLinkPreload = (this.isBrowser && this._supportsLinkRel('preload')));
         }
     },
 

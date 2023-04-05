@@ -1,6 +1,6 @@
 console.log('montage-testing', 'Start');
 
-module.exports = require("montage-testing").run(require, [
+module.exports = require("montage/testing/run").run(require, [
     // App
     {name: "spec/application-spec", node: false},
     // Internal
@@ -28,6 +28,7 @@ module.exports = require("montage-testing").run(require, [
     "spec/core/request-spec",
     "spec/core/selector-spec",
     "spec/core/criteria-spec",
+    "spec/core/date-spec",
     "spec/core/super-spec",
     "spec/core/super-for-spec",
     {name: "spec/core/undo-manager-spec", node: false},
@@ -35,6 +36,7 @@ module.exports = require("montage-testing").run(require, [
     "spec/core/extras/function",
     "spec/core/extras/string",
     "spec/core/set-spec",
+    "spec/core/counted-set-spec",
     {name: "spec/core/dom-spec", node: false, karma: false},
     {name: "spec/core/extras/url", node: false},
     "spec/core/range-controller-spec",
@@ -74,7 +76,8 @@ module.exports = require("montage-testing").run(require, [
     "spec/serialization/alias-spec",
     "spec/serialization/labeler-spec",
     "spec/serialization/reviver-spec",
-    "spec/serialization/interpreter-spec",
+    //deprecated
+    //"spec/serialization/interpreter-spec",
     "spec/serialization/visitor-spec",
     "spec/serialization/serialization-extractor-spec",
     "spec/serialization/bindings-spec",

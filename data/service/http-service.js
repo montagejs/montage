@@ -1,12 +1,12 @@
 var RawDataService = require("data/service/raw-data-service").RawDataService,
     DataQuery = require("data/model/data-query").DataQuery,
     Enumeration = require("data/model/enumeration").Enumeration,
-    Map = require("collections/map"),
+    Map = require("core/collections/map"),
     Montage = require("montage").Montage,
-    parse = require("frb/parse"),
-    compile = require("frb/compile-evaluator"),
-    evaluate = require("frb/evaluate"),
-    Scope = require("frb/scope"),
+    parse = require("core/frb/parse"),
+    compile = require("core/frb/compile-evaluator"),
+    evaluate = require("core/frb/evaluate"),
+    Scope = require("core/frb/scope"),
     Promise = require("core/promise").Promise;
 
 
@@ -294,7 +294,7 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
             }
 
             return new Promise(function (resolve, reject) {
-                var i, keys, key,
+                var i, keys, key, iValue,
                     startTime = new Date().getTime();
 
                 // Report errors or fetch the requested raw data.
@@ -309,7 +309,7 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
                             // console.log("Completed request for (", parsed.url, ") in (", ((new Date().getTime() - startTime)), ") ms");
                         }
                     };
-                    request.onerror = function () {
+                    request.onerror = function (event) {
                         error = HttpError.withRequestAndURL(request, parsed.url);
                         reject(error);
                     };
@@ -319,7 +319,9 @@ var HttpService = exports.HttpService = RawDataService.specialize(/** @lends Htt
 
                     keys = Object.keys(parsed.headers);
                     for (i = 0; (key = keys[i]); ++i) {
-                        request.setRequestHeader(key, parsed.headers[key]);
+                        if(iValue = parsed.headers[key]) {
+                            request.setRequestHeader(key, iValue);
+                        }
                     }
                     request.withCredentials = parsed.credentials;
                     request.send(parsed.body);

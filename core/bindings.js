@@ -8,4 +8,4 @@ require("./deprecate").deprecationWarning("montage/core/bindings", "montage/core
 /**
  * @deprecated console.log montage/core/bindings is deprecated, use montage/core/core instead
  */
-exports.Bindings = require("frb");
+exports.Bindings = require("core/frb/bindings");

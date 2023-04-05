@@ -1,3 +1,8 @@
+/**
+    @module montage/data/service/raw-data-type-mapping
+*/
+
+
 var Montage = require("montage").Montage,
     Criteria = require("core/criteria").Criteria,
     ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor;
@@ -6,7 +11,7 @@ var Montage = require("montage").Montage,
 /**
  * Instructions for a [RawDataService]{@link RawDataService} to use
  * to determine if a rawData object corresponds to a particular class.
- * 
+ *
  * @class RawDataTypeMapping
  * @extends Montage
  */
@@ -23,11 +28,11 @@ exports.RawDataTypeMapping = Montage.specialize({
             } else {
                 value = deserializer.getProperty("expression");
                 this.expression = value;
-            }            
-            
+            }
+
         }
     },
-    
+
 
     serializeSelf: {
         value: function (serializer) {
@@ -36,8 +41,8 @@ exports.RawDataTypeMapping = Montage.specialize({
     },
 
     /**
-     * Criteria to evaluate against the rawData object to determine 
-     * if it represents an instance of the class defined by the 
+     * Criteria to evaluate against the rawData object to determine
+     * if it represents an instance of the class defined by the
      * object descriptor assigned to RawDataTypeMapping.type.
      * @type {Criteria}
      */
@@ -47,8 +52,8 @@ exports.RawDataTypeMapping = Montage.specialize({
 
 
     /**
-     * Expression to evaluate against the rawData object to determine 
-     * if it represents an instance of the class defined by the 
+     * Expression to evaluate against the rawData object to determine
+     * if it represents an instance of the class defined by the
      * object descriptor assigned to RawDataTypeMapping.type.
      * @type {string}
      */
@@ -66,6 +71,36 @@ exports.RawDataTypeMapping = Montage.specialize({
     },
 
 
+    expressionSyntax: {
+        get: function() {
+            return this.criteria.syntax;
+        }
+    },
+
+    _rawDataProperty: {
+        value: undefined
+    },
+
+    /*
+        Assuming the raw-data-type-mapping expressions are of the form: "aForeignKeyId.defined()" . We might have to make it mmore general?
+    */
+
+    rawDataProperty: {
+        get: function() {
+            if(this._rawDataProperty === undefined) {
+                var expressionSyntax = this.expressionSyntax;
+
+                if(expressionSyntax.type === "defined" && expressionSyntax.args[0].type === "property") {
+                    this._rawDataProperty = expressionSyntax.args[0].args[1].value;
+                } else {
+                    console.error("Couldn't determine rawDataProperty from  RawDataTypeMapping:",this, " expressionSyntax:", this.expressionSyntax);
+                    this._rawDataProperty = null;
+                }
+            }
+            return this._rawDataProperty;
+        }
+    },
+
     /**
      * Class to create an instance of when RawDataTypeMapping.criteria.evaluate
      * evaluates a rawData object to true
@@ -79,12 +114,12 @@ exports.RawDataTypeMapping = Montage.specialize({
     /**
      * Return whether a rawDataObject matches this.criteria
      * @method
-     * @param {Object} rawData 
+     * @param {Object} rawData
      */
     match: {
         value: function (rawData) {
             return !!this.criteria.evaluate(rawData);
-        }  
+        }
     },
 
 }, {
@@ -107,4 +142,4 @@ exports.RawDataTypeMapping = Montage.specialize({
         }
     }
 
-}); 
+});

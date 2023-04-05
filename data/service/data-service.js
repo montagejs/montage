@@ -1,22 +1,48 @@
 var Montage = require("core/core").Montage,
+    Target = require("core/target").Target,
     AuthorizationManager = require("data/service/authorization-manager").defaultAuthorizationManager,
     AuthorizationPolicy = require("data/service/authorization-policy").AuthorizationPolicy,
+    UserAuthenticationPolicy = require("data/service/user-authentication-policy").UserAuthenticationPolicy,
+    UserIdentityManager = require("data/service/user-identity-manager").UserIdentityManager,
     DataObjectDescriptor = require("data/model/data-object-descriptor").DataObjectDescriptor,
+    Criteria = require("core/criteria").Criteria,
     DataQuery = require("data/model/data-query").DataQuery,
     DataStream = require("data/service/data-stream").DataStream,
     DataTrigger = require("data/service/data-trigger").DataTrigger,
-    Map = require("collections/map"),
+    Map = require("core/collections/map"),
     Promise = require("core/promise").Promise,
     ObjectDescriptor = require("core/meta/object-descriptor").ObjectDescriptor,
-    Set = require("collections/set"),
-    WeakMap = require("collections/weak-map");
+    Set = require("core/collections/set"),
+    CountedSet = require("core/counted-set").CountedSet,
+    WeakMap = require("core/collections/weak-map"),
+    ObjectPool = require("core/object-pool").ObjectPool,
+    defaultEventManager = require("core/event/event-manager").defaultEventManager,
+    DataEvent = require("data/model/data-event").DataEvent,
+    PropertyDescriptor = require("core/meta/property-descriptor").PropertyDescriptor,
+    DeleteRule = require("core/meta/property-descriptor").DeleteRule,
+    deprecate = require("../../core/deprecate"),
+    currentEnvironment = require("core/environment").currentEnvironment,
+    PropertyChanges = require("../../core/collections/listen/property-changes"),
+    Locale = require("core/locale").Locale;
 
+    require("core/extras/string");
 
 var AuthorizationPolicyType = new Montage();
 AuthorizationPolicyType.NoAuthorizationPolicy = AuthorizationPolicy.NONE;
 AuthorizationPolicyType.UpfrontAuthorizationPolicy = AuthorizationPolicy.UP_FRONT;
 AuthorizationPolicyType.OnDemandAuthorizationPolicy = AuthorizationPolicy.ON_DEMAND;
 AuthorizationPolicyType.OnFirstFetchAuthorizationPolicy = AuthorizationPolicy.ON_FIRST_FETCH;
+
+UserAuthenticationPolicy.NoAuthenticationPolicy = UserAuthenticationPolicy.NONE;
+UserAuthenticationPolicy.UpfrontAuthenticationPolicy = UserAuthenticationPolicy.UP_FRONT;
+UserAuthenticationPolicy.OnDemandAuthenticationPolicy = UserAuthenticationPolicy.ON_DEMAND;
+UserAuthenticationPolicy.OnFirstFetchAuthenticationPolicy = UserAuthenticationPolicy.ON_FIRST_FETCH;
+
+
+
+/**
+ * Future: Look at https://www.npmjs.com/package/broadcast-channel to implement cross-tab event distribution?
+ */
 
 /**
  * Provides data objects and manages changes to them.
@@ -32,10 +58,11 @@ AuthorizationPolicyType.OnFirstFetchAuthorizationPolicy = AuthorizationPolicy.ON
  * instance of DataService or a DataService subclasses must either be that root
  * service or be set as a descendent of that root service.
  *
+ *
  * @class
  * @extends external:Montage
  */
-exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
+exports.DataService = Target.specialize(/** @lends DataService.prototype */ {
 
     /***************************************************************************
      * Initializing
@@ -43,8 +70,27 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     constructor: {
         value: function DataService() {
+
+            this.defineBinding("mainService", {"<-": "mainService", source: defaultEventManager.application});
+
             exports.DataService.mainService = exports.DataService.mainService || this;
-            this._initializeAuthorization();
+            if(this === DataService.mainService) {
+                // UserIdentityManager.mainService = DataService.mainService;
+                //this.addOwnPropertyChangeListener("userLocales", this);
+                this.addRangeAtPathChangeListener("userLocales", this, "handleUserLocalesRangeChange");
+            }
+
+            //Deprecated now
+            //this._initializeAuthorization();
+
+            if (this.providesAuthorization) {
+                exports.DataService.authorizationManager.registerAuthorizationService(this);
+            }
+
+            if(this.providesUserIdentity === true) {
+                UserIdentityManager.registerUserIdentityService(this);
+            }
+
             this._initializeOffline();
         }
     },
@@ -91,21 +137,46 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
             value = deserializer.getProperty("childServices");
             if (value) {
-                this._childServices = value;
+                this._deserializedChildServices = value;
+            }
+
+            value = deserializer.getProperty("authorizationPolicy");
+            if (value) {
+                this.authorizationPolicy = value;
+            }
+
+            value = deserializer.getProperty("userAuthenticationPolicy");
+            if (value) {
+                this.userAuthenticationPolicy = value;
             }
 
             return this;
         }
     },
 
+    _deserializedChildServices: {
+        value: undefined
+    },
+
     deserializedFromSerialization: {
-        value: function () {
-            if(Array.isArray(this._childServices)) {
-                var childServices = this._childServices;
-                this._childServices = [];
-                this.addChildServices(childServices);
+        value: function (label) {
+            if(Array.isArray(this._deserializedChildServices) && this._deserializedChildServices.length > 0) {
+                //var childServices = this._childServices;
+                if(!this._childServices) {
+                    this._childServices = [];
+                }
+                this.addChildServices(this._deserializedChildServices);
             }
+
+            if (this.authorizationPolicy === AuthorizationPolicyType.UpfrontAuthorizationPolicy) {
+                exports.DataService.authorizationManager.registerServiceWithUpfrontAuthorizationPolicy(this);
+            }
+
         }
+    },
+
+    currentEnvironment: {
+        value: currentEnvironment
     },
 
     delegate: {
@@ -255,6 +326,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     },
 
 
+    /**
+     * Adds child Services to the receiving service.
+     *
+     * @param {Array.<DataServices>} childServices. childServices to add.
+     */
 
     addChildServices: {
         value: function (childServices) {
@@ -263,16 +339,20 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             for(i=0, countI = childServices.length;(i<countI);i++) {
                 iChild = childServices[i];
 
-                if((types = iChild.types)) {
-                    this._registerTypesByModuleId(types);
+                if(this._childServices.indexOf(iChild) !== -1) {
+                    continue;
+                }
 
-                    for(j=0, countJ = types.length;(j<countJ);j++ ) {
-                        jType = types[j];
-                        jResult = this._makePrototypeForType(iChild, jType);
-                        if(Promise.is(jResult)) {
-                            (typesPromises || (typesPromises = [])).push(jResult);
-                        }
-                    }
+                if((types = iChild.types)) {
+                    this._registerTypesForService(types,iChild);
+
+                    // for(j=0, countJ = types.length;(j<countJ);j++ ) {
+                    //     jType = types[j];
+                    //     jResult = this._makePrototypeForType(iChild, jType);
+                    //     if(Promise.is(jResult)) {
+                    //         (typesPromises || (typesPromises = [])).push(jResult);
+                    //     }
+                    // }
 
                 }
 
@@ -290,9 +370,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
             }
 
-            if(typesPromises) {
-                this._childServiceRegistrationPromise = Promise.all(typesPromises);
-            }
+            // if(typesPromises) {
+            //     this._childServiceRegistrationPromise = Promise.all(typesPromises);
+            // }
 
         }
     },
@@ -365,7 +445,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 }
             }
             // Set the new child service's parent.
-            child._parentService = this;
+            child._parentService = child.nextTarget = this;
         }
     },
 
@@ -457,7 +537,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 objectDescriptors;
             return this._resolveAsynchronousTypes(types).then(function (descriptors) {
                 objectDescriptors = descriptors;
-                self._registerTypesByModuleId(objectDescriptors);
+                self._registerTypesForService(objectDescriptors,child);
                 return self._registerChildServiceMappings(child, mappings);
             }).then(function () {
                 return self._makePrototypesForTypes(child, objectDescriptors);
@@ -485,14 +565,43 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-    _registerTypesByModuleId: {
-        value: function (types) {
-            var map = this._moduleIdToObjectDescriptorMap;
-            types.forEach(function (objectDescriptor) {
-                var module = objectDescriptor.module,
-                    moduleId = [module.id, objectDescriptor.exportName].join("/");
-                map[moduleId] = objectDescriptor;
-            });
+    _registerTypesForService: {
+        value: function (types, service) {
+            var map = this._moduleIdToObjectDescriptorMap, typesPromises,
+                j, countJ, jObjectDescriptor, jModule, jModuleId;
+
+            for(j=0, countJ = types.length;(j<countJ);j++ ) {
+                jObjectDescriptor = types[j];
+                jResult = this._makePrototypeForType(service, jObjectDescriptor);
+                if(Promise.is(jResult)) {
+                    (typesPromises || (typesPromises = [])).push(jResult);
+                }
+
+                jModule = jObjectDescriptor.module;
+                if(!jModule) {
+                    jModuleId = Montage.getInfoForObject(this).moduleId;
+                } else {
+                    jModuleId = [jModule.id, jObjectDescriptor.exportName].join("/");
+                }
+                map[jModuleId] = jObjectDescriptor;
+
+                //Setup the event propagation chain
+                /*
+                    this is now done in objectDescriptor as it follows the hierachy of objectDescriptor before getting to DataServices.
+                */
+                // jObjectDescriptor.nextTarget = service;
+            }
+
+            // types.forEach(function (objectDescriptor) {
+            //     var module = objectDescriptor.module,
+            //         moduleId = [module.id, objectDescriptor.exportName].join("/");
+            //     map[moduleId] = objectDescriptor;
+            // });
+
+            if(typesPromises) {
+                this._childServiceRegistrationPromise = Promise.all(typesPromises);
+            }
+
         }
     },
 
@@ -522,9 +631,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             } else {
                 var self = this,
                 module = objectDescriptor.module;
-                return module.require.async(module.id).then(function (exports) {
-                    return self.__makePrototypeForType(childService, objectDescriptor, exports[objectDescriptor.exportName]);
-                });
+                if(module) {
+                    return module.require.async(module.id).then(function (exports) {
+                        return self.__makePrototypeForType(childService, objectDescriptor, exports[objectDescriptor.exportName]);
+                    });
+                } else {
+                    return Promise.resolveNull;
+                }
             }
         }
     },
@@ -532,9 +645,23 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     __makePrototypeForType: {
         value: function (childService, objectDescriptor, constructor) {
             var prototype = Object.create(constructor.prototype),
-            mapping = childService.mappingWithType(objectDescriptor),
+            mapping = childService.mappingForType(objectDescriptor),
             requisitePropertyNames = mapping && mapping.requisitePropertyNames || new Set(),
-            dataTriggers = DataTrigger.addTriggers(this, objectDescriptor, prototype, requisitePropertyNames);
+            dataTriggers = this.DataTrigger.addTriggers(this, objectDescriptor, prototype, requisitePropertyNames),
+            mainService = this.rootService;
+
+            Object.defineProperty(prototype,"dataIdentifier", {
+                enumerable: true,
+                get: function() {
+                    return mainService.dataIdentifierForObject(this);
+                }
+            });
+            Object.defineProperty(prototype,"nextTarget", {
+                enumerable: true,
+                    get: function() {
+                        return objectDescriptor;
+                }
+            });
 
         this._dataObjectPrototypes.set(constructor, prototype);
         this._dataObjectPrototypes.set(objectDescriptor, prototype);
@@ -564,12 +691,18 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
-    _objectDescriptorForType: {
+    objectDescriptorForType: {
         value: function (type) {
             var descriptor = this._constructorToObjectDescriptorMap.get(type) ||
                              typeof type === "string" && this._moduleIdToObjectDescriptorMap[type];
 
             return  descriptor || type;
+        }
+    },
+
+    _objectDescriptorForType: {
+        value: function (type) {
+            return this.objectDescriptorForType(type);
         }
     },
 
@@ -684,6 +817,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: undefined
     },
 
+    handlesType: {
+        value: function(type) {
+            return (this.rootService._childServicesByType.get(type).indexOf(this) !== -1);
+        }
+    },
+
     _childServicesByIdentifier: {
         get: function () {
             if (!this.__childServicesByIdentifier) {
@@ -747,7 +886,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     childServiceForType: {
         value: function (type) {
             var services;
-            type = type instanceof ObjectDescriptor ? type : this._objectDescriptorForType(type);
+            type = type instanceof ObjectDescriptor ? type : this.objectDescriptorForType(type);
             services = this._childServicesByType.get(type) || this._childServicesByType.get(null);
             return services && services[0] || null;
         }
@@ -776,16 +915,35 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * @param {ObjectDescriptor} type.
      * @returns {DataMapping|null} returns the specified mapping or null
      * if a mapping is not defined for the specified type.
+     *
+     * If an immediate mapping isn't found, we look up the parent chain
      */
-    mappingWithType: {
+    mappingForType: {
         value: function (type) {
-            var mapping;
-            type = this._objectDescriptorForType(type);
-            mapping = this._mappingByType.has(type) && this._mappingByType.get(type);
-            return mapping || null;
+
+            if(this.isRootService) {
+                var childService = this.childServiceForType(type);
+                if(childService) {
+                    return childService.mappingForType(type);
+                } else {
+                    return null;
+                }
+            } else {
+                var mapping, localType = this.objectDescriptorForType(type);
+
+                while(localType && !(mapping = this._mappingByType.has(localType) && this._mappingByType.get(localType))) {
+                    localType = localType.parent;
+                }
+                return mapping || null;
+            }
         }
     },
 
+    mappingWithType: {
+        value: deprecate.deprecateMethod(void 0, function (type) {
+            return this.mappingForType(type);
+        }, "mappingWithType", "mappingForType")
+    },
 
     _mappingByType: {
         get: function () {
@@ -926,6 +1084,67 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: undefined
     },
 
+    /********* New set of methods for user identity and authentication **********/
+
+    /**
+     * Indicates whether a service can provide application user-identity .
+     * Defaults to false. Concrete services need to override this as
+     * needed.
+     *
+     * @type {boolean}
+     */
+
+    providesUserIdentity: {
+        value: false
+    },
+
+    /**
+     * Returns the UserAuthenticationPolicyType used by a DataService. For enabling both
+     * system to co-exists for upgradability, there is no default here.
+     * DataServices suclass have to provide it.
+     *
+     * @type {AuthorizationPolicyType}
+     */
+    userAuthenticationPolicy: {
+        value: AuthorizationPolicyType.NoAuthorizationPolicy
+    },
+
+    /**
+     * The user identity for the data service. It could be an unauthenticated/
+     * anonymous user identity
+     *
+     * @type {Object}
+     */
+
+    userIdentity: {
+        value: undefined
+    },
+
+    /**
+     * a promise to the user identity for the data service. This is necessary to buffer
+     * fetch/data operations that can't be executed until a valid user identity is known.
+     *
+     * @type {Object}
+     */
+
+    userIdentityPromise: {
+        value: Promise.resolve()
+    },
+
+    /**
+     * The list of DataServices a service accepts to provide
+     * authorization on its behalf. If an array has multiple
+     * authorizationServices, the final choice will be up to the App user
+     * regarding which one to use. This array is expected to return moduleIds,
+     * not objects, allowing the AuthorizationManager to manage unicity
+     *
+     * @type {string[]}
+     */
+    userIdentityServices: {
+        value: null
+    },
+
+
     /**
      *
      * @method
@@ -944,6 +1163,10 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * Returns an object descriptor for the provided object.  If this service
      * does not have an object descriptor for this object it will ask its
      * parent for one.
+     *
+     * TODO: looks like we're looping all the time and not caching a lookup"
+     * Why isn't objectDescriptorWithModuleId used??
+     *
      * @param {object}
      * @returns {ObjectDescriptor|null} if an object descriptor is not found this
      * method will return null.
@@ -955,14 +1178,51 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 moduleId = objectInfo.moduleId,
                 objectName = objectInfo.objectName,
                 module, exportName, objectDescriptor, i, n;
+
+            objectDescriptor = this.objectDescriptorWithModuleId(moduleId);
             for (i = 0, n = types.length; i < n && !objectDescriptor; i += 1) {
                 module = types[i].module;
                 exportName = module && types[i].exportName;
                 if (module && moduleId === module.id && objectName === exportName) {
+                    if(objectDescriptor !== types[i]) {
+                        console.error("objectDescriptorWithModuleId cached an objectDescriptor and objectDescriptorForObject finds another")
+                    }
                     objectDescriptor = types[i];
                 }
             }
             return objectDescriptor || this.parentService && this.parentService.objectDescriptorForObject(object);
+        }
+    },
+
+    _objectDescriptorByModuleId: {
+        value:undefined
+    },
+    _mjsonExtension: {
+        value: ".mjson"
+    },
+    objectDescriptorWithModuleId: {
+        value: function (objectDescriptorModuleId) {
+
+            if(!this._objectDescriptorByModuleId) {
+                var map = this._objectDescriptorByModuleId = new Map();
+
+                var types = this.types, i, n, iType, iInfo, iModuleId, mjsonExtension = this._mjsonExtension;
+                for (i = 0, n = types.length; i < n; i++) {
+                    iType = types[i];
+                    if(!iType.module) {
+                        iInfo = Montage.getInfoForObject(iType);
+                        iModuleId = iInfo.moduleId;
+                        if(iModuleId.endsWith(mjsonExtension)) {
+                            iModuleId = iModuleId.removeSuffix(mjsonExtension);
+                        }
+                        map.set(iModuleId,types[i]);
+                    } else {
+                        map.set(iType.module.id,types[i]);
+                    }
+                }
+
+            }
+            return this._objectDescriptorByModuleId.get(objectDescriptorModuleId);
         }
     },
 
@@ -1042,7 +1302,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     _getPrototypeForType: {
         value: function (type) {
             var info, triggers, prototypeToExtend, prototype;
-            type = this._objectDescriptorForType(type);
+            type = this.objectDescriptorForType(type);
             prototype = this._dataObjectPrototypes.get(type);
             if (type && !prototype) {
                 //type.objectPrototype is legacy and should be depreated over time
@@ -1057,7 +1317,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
                 this._dataObjectPrototypes.set(type, prototype);
                 if (type instanceof ObjectDescriptor || type instanceof DataObjectDescriptor) {
-                    triggers = DataTrigger.addTriggers(this, type, prototype);
+                    triggers = this.DataTrigger.addTriggers(this, type, prototype);
                 } else {
                     info = Montage.getInfoForObject(type.prototype);
                     console.warn("Data Triggers cannot be created for this type. (" + (info && info.objectName) + ") is not an ObjectDescriptor");
@@ -1078,6 +1338,21 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 //          get: this.__object_primaryKeyMethodImplementation
                 //      }
                 //  });
+
+                //Adds support for event structure, setting the classes as instances next target
+                //if there's type.module
+                if(type.module) {
+                    Object.defineProperty(prototype, "nextTarget", { value: type.module });
+
+                    //setting objectDescriptor as classes next target:
+                    Object.defineProperty(type.module, "nextTarget", { value: type });
+                } else {
+                    //If no known custom JS constructor, we go straight to the object descriptor:
+                    Object.defineProperty(prototype, "nextTarget", { value: type });
+                }
+
+                // //set data service as objectDescriptor next target:
+                // Object.defineProperty(type, "nextTarget", { value: this.mainService });
 
             }
             return prototype;
@@ -1215,11 +1490,34 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     getObjectProperties: {
         value: function (object, propertyNames) {
-             if (this.isRootService) {
+
+            if(!object) {
+                return Promise.resolve(null);
+            }
+            /*
+                Benoit:
+
+                - If we create an object, properties that are not relations can't
+                be fetched. We need to make sure we don't actually try.
+
+
+                COUNTER: If an object created already has the info to make it's primary key, we should go forward.
+
+                The real test could be that if it's mapped as a relationship, then we might be able to get something.
+
+                - If a property is a relationship and it wasn't set on the object,
+                as an object, we can't get it either.
+            */
+            // if(this.isObjectCreated(object)) {
+            //     //Not much we can do there anyway, punt
+            //     return Promise.resolve(true);
+            // } else
+            if (this.isRootService) {
                 // Get the data, accepting property names as an array or as a list
                 // of string arguments while avoiding the creation of any new array.
+                //var names = Array.isArray(propertyNames) ? propertyNames : Array.prototype.slice.call(arguments, 1),
                 var names = Array.isArray(propertyNames) ? propertyNames : arguments,
-                    start = names === propertyNames ? 0 : 1;
+                start = names === propertyNames ? 0 : 1;
                 return this._getOrUpdateObjectProperties(object, names, start, false);
             }
             else {
@@ -1240,6 +1538,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
 
                 expressions.forEach(function (expression) {
+                    /*
+                        This only works for expressions that are pure, chained
+                        property traversals, aka property path. A more general walk
+                        would be needed using the expression syntax to be totally
+                        generic and support any kind of expression.
+                    */
                     var split = expression.split(".");
                     // if (split.length == 1) {
                     //     promises.push(self.getObjectProperties(object, split[0]));
@@ -1350,21 +1654,26 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * this method.
      *
      * @method
-     * @argument {object} object   - The object whose property value is being
-     *                               requested.
-     * @argument {string} name     - The name of the single property whose value
-     *                               is being requested.
+     * @argument {object} object            - The object whose property value is being
+     *                                      requested.
+     *
+     * @argument {string} name              - The name of the single property whose value
+     *                                      is being requested.
+     *
+     * @argument {array} readExpressions    - A list of object[propertyName] properties to get
+     *                                      at the same time we're getting object[propertyName].
      * @returns {external:Promise} - A promise fulfilled when the requested
      * value has been received and set on the specified property of the passed
      * in object.
      */
     fetchObjectProperty: {
-        value: function (object, propertyName) {
+        value: function (object, propertyName, isObjectCreated, readExpressions) {
             var isHandler = this.parentService && this.parentService._getChildServiceForObject(object) === this,
                 useDelegate = isHandler && typeof this.fetchRawObjectProperty === "function",
                 delegateFunction = !useDelegate && isHandler && this._delegateFunctionForPropertyName(propertyName),
                 propertyDescriptor = !useDelegate && !delegateFunction && isHandler && this._propertyDescriptorForObjectAndName(object, propertyName),
                 childService = !isHandler && this._getChildServiceForObject(object),
+                isObjectCreated = this.isObjectCreated(object),
                 debug = exports.DataService.debugProperties.has(propertyName);
 
 
@@ -1374,11 +1683,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 console.debug("To debug ExpressionDataMapping.mapRawDataToObjectProperty for " + propertyName + ", set a breakpoint here.");
             }
 
-            return  useDelegate ?                       this.fetchRawObjectProperty(object, propertyName) :
-                    delegateFunction ?                  delegateFunction.call(this, object) :
-                    isHandler && propertyDescriptor ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor) :
-                    childService ?                      childService.fetchObjectProperty(object, propertyName) :
-                                                        this.nullPromise;
+            return  useDelegate
+                        ?   this.fetchRawObjectProperty(object, propertyName)
+                        :   delegateFunction
+                                ?   delegateFunction.call(this, object)
+                                :   isHandler && propertyDescriptor
+                                    ?   this._fetchObjectPropertyWithPropertyDescriptor(object, propertyName, propertyDescriptor, isObjectCreated)
+                                    : childService
+                                        ?   childService.fetchObjectProperty(object, propertyName)
+                                        :   this.nullPromise;
         }
     },
 
@@ -1396,16 +1709,91 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    /* TODO: Remove when mapping is moved in the webworker. This is used right now to know
+    when an object is bieng mapped so we can avoid tracking changes happening during that time. This issue will disappear when mapping is done in a web worker and not on the object directly.
+    */
+    _objectsBeingMapped: {
+        value: new CountedSet()
+    },
+
+    _rawDataToObjectMappingPromiseByObject: {
+        value: new Map()
+    },
+
+    _setMapRawDataToObjectPromise: {
+        value: function (rawData, object, promise) {
+            var objectMap = this._rawDataToObjectMappingPromiseByObject.get(object),
+                rawDataPromise;
+            if(!objectMap) {
+                objectMap = new Map();
+                this._rawDataToObjectMappingPromiseByObject.set(object,objectMap);
+            }
+
+            if(!objectMap.has(rawData)) {
+                objectMap.set(rawData,promise);
+            } else {
+                if(objectMap.get(rawData) !== promise) {
+                    console.error("Overriding existing mapping promise for object:",object," rawData:",rawData," existing Promise:",objectMap.get(rawData)," new Promise:", promise) ;
+                } else {
+                    console.error("Overriding existing mapping promise with same promise for object:",object," rawData:",rawData," existing Promise:",objectMap.get(rawData));
+                }
+            }
+        }
+    },
+
+    _getMapRawDataToObjectPromise: {
+        value: function (rawData, object) {
+            var objectMap = this._rawDataToObjectMappingPromiseByObject.get(object);
+            return objectMap && objectMap.get(rawData);
+        }
+    },
+
+    _deleteMapRawDataToObjectPromise: {
+        value: function (rawData, object) {
+            var objectMap = this._rawDataToObjectMappingPromiseByObject.get(object);
+            // console.log(object.dataIdentifier.objectDescriptor.name+" _deleteMapRawDataToObjectPromise: id: "+object.dataIdentifier.primaryKey);
+            // if(!objectMap.has(rawData)) {
+            //     console.log(object.dataIdentifier.objectDescriptor.name+" _deleteMapRawDataToObjectPromise: id: "+object.dataIdentifier.primaryKey+" !!! COULDN'T FIND rawData entry");
+            // }
+            return objectMap && objectMap.delete(rawData);
+        }
+    },
+
+
     _fetchObjectPropertyWithPropertyDescriptor: {
-        value: function (object, propertyName, propertyDescriptor) {
+        value: function (object, propertyName, propertyDescriptor, isObjectCreated) {
             var self = this,
-                objectDescriptor = propertyDescriptor.owner,
-                mapping = objectDescriptor && this.mappingWithType(objectDescriptor),
+            objectDescriptor = this.objectDescriptorForObject(object),
+            mapping = objectDescriptor && this.mappingForType(objectDescriptor),
                 data = {},
                 result;
 
 
             if (mapping) {
+
+                /*
+                    To open the ability to get derived values from non-saved objects, some failsafes blocking a non-saved created object to get any kind of property resolved/fetched were removed. So we need to be smarter here and do the same.
+
+                    If an object is created (which we don't know here, but we can check), fetching a property relies on the primary key and that the primarty key is one property only (like a uuid) and there's already a value (client-side generated like uuid can be), than it can't be fetched and we shoould resolve to null.
+
+                    Another approch would be to map all dependencies and let the rule's converter assess if it has everytrhing it needs to do the job, but at that level, the converter doesn't know the object, but it has the primaryKey in the criteria's syntax and the value in the associated parameters, so it could find out if there's a corresponding object that is created. It might be needed, let's see if this first heuristic works first.
+                */
+                if(isObjectCreated) {
+                    var rule = mapping.objectMappingRules.get(propertyName),
+                        rawDataPrimaryKeys = mapping.rawDataPrimaryKeys,
+                        requiredRawProperties = rule && rule.requirements;
+
+                    /*
+                        rawDataPrimaryKeys.length === 1 is to assess if it's a traditional id with no intrinsic meaning
+                    */
+                    if(rawDataPrimaryKeys.length === 1 && requiredRawProperties.indexOf(rawDataPrimaryKeys[0] !== -1)){
+                        /*
+                            Fetching depends on something that doesn't exists on the other side, we bail:
+                        */
+                       return this.nullPromise;
+                    }
+                }
+
                 /*
                     @marchant: Why aren't we passing this.snapshotForObject(object) instead of copying everying in a new empty object?
 
@@ -1420,11 +1808,32 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     All of this said, I don't know this is the right way to solve the problem. The issue at the moment is that this functionality is being used so we cannot remove it without an alternative.
                 */
                 Object.assign(data, this.snapshotForObject(object));
+
+                self._objectsBeingMapped.add(object);
+
                 result = mapping.mapObjectToCriteriaSourceForProperty(object, data, propertyName);
                 if (this._isAsync(result)) {
                     return result.then(function() {
                         Object.assign(data, self.snapshotForObject(object));
-                        return mapping.mapRawDataToObjectProperty(data, object, propertyName);
+                        result = mapping.mapRawDataToObjectProperty(data, object, propertyName);
+
+                        if (!self._isAsync(result)) {
+                            result = this.nullPromise;
+                            self._objectsBeingMapped.delete(object);
+                        }
+                        else {
+                            result = result.then(function(resolved) {
+
+                                self._objectsBeingMapped.delete(object);
+                                return resolved;
+                            }, function(failed) {
+                                self._objectsBeingMapped.delete(object);
+                            });
+                        }
+                        return result;
+                    }, function(error) {
+                        self._objectsBeingMapped.delete(object);
+                        throw error;
                     });
                 } else {
                     //This was already done a few lines up. Why are we re-doing this?
@@ -1432,6 +1841,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                     result = mapping.mapRawDataToObjectProperty(data, object, propertyName);
                     if (!this._isAsync(result)) {
                         result = this.nullPromise;
+                        this._objectsBeingMapped.delete(object);
+                    }
+                    else {
+                        result = result.then(function(resolved) {
+                            self._objectsBeingMapped.delete(object);
+                            return resolved;
+                        }, function(failed) {
+                            self._objectsBeingMapped.delete(object);
+                        });
                     }
                     return result;
                 }
@@ -1478,6 +1896,22 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             return !promises ?     this.nullPromise :
                    !promises.set ? promises.array[0] :
                                    Promise.all(promises.array).then(this.nullFunction);
+        }
+    },
+
+    /**
+     * @private
+     * @method
+     */
+    _setObjectPropertyValue: {
+        value: function (object, propertyName, propertyValue, updateInverse) {
+            var triggers = this._getTriggersForObject(object),
+                trigger = triggers ? triggers[propertyName] : null;
+
+            if(trigger) {
+                trigger._setValue(object,propertyValue, false)
+            }
+
         }
     },
 
@@ -1581,6 +2015,9 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     recordDataIdentifierForObject: {
         value: function(dataIdentifier, object) {
+            if(this._dataIdentifierByObject.has(object) && this._dataIdentifierByObject.get(object) !== dataIdentifier) {
+                throw new Error("recordDataIdentifierForObject when one already exists:"+JSON.stringify(object));
+            }
             this._dataIdentifierByObject.set(object, dataIdentifier);
         }
     },
@@ -1593,6 +2030,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     removeDataIdentifierForObject: {
         value: function(object) {
+            console.log("removeDataIdentifierForObject(",object);
             this._dataIdentifierByObject.delete(object);
         }
     },
@@ -1644,6 +2082,71 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             this._objectByDataIdentifier.delete(dataIdentifier);
         }
     },
+    _eventPoolFactoryForEventType: {
+        value: function () {
+            return new DataEvent();
+        }
+    },
+
+    __dataEventPoolByEventType: {
+        value: null
+    },
+    _dataEventPoolForEventType: {
+        value: function (eventType) {
+            var pool = (this.__dataEventPoolByEventType || (this.__dataEventPoolByEventType = new Map())).get(eventType);
+            if(!pool) {
+                this.__dataEventPoolByEventType.set(eventType,(pool = new ObjectPool(this._eventPoolFactoryForEventType)));
+            }
+            return pool;
+        }
+    },
+    __preparedConstructorsForDataEvents: {
+        value: null
+    },
+
+    isConstructorPreparedToHandleDataEvents: {
+        value: function (objectConstructor) {
+            return (this.__preparedConstructorsForDataEvents || (this.__preparedConstructorsForDataEvents = new Set())).has(objectConstructor);
+        }
+    },
+
+    prepareConstructorToHandleDataEvents: {
+        value: function (objectConstructor, event) {
+            if(typeof objectConstructor.prepareToHandleDataEvents === "function") {
+                objectConstructor.prepareToHandleDataEvents(event);
+            }
+            //prepareToHandleDataEvent or prepareToHandleCreateEvent
+            this.__preparedConstructorsForDataEvents.add(objectConstructor);
+        }
+    },
+
+    dispatchDataEventTypeForObject: {
+        value: function (eventType, object, detail) {
+            /*
+                This needs to be made more generic in EventManager, which has "prepareForActivationEvent,
+                but it's very specialized for components. Having all prototypes of DO register as eventListeners upfront
+                would be damaging performance wise. We should do it as things happen.
+            */
+            if(object.dispatchEvent) {
+                var eventPool = this._dataEventPoolForEventType(eventType),
+                objectDescriptor = this.objectDescriptorForObject(object),
+                objectConstructor = object.constructor,
+                dataEvent = eventPool.checkout();
+
+                dataEvent.type = eventType;
+                dataEvent.target = objectDescriptor;
+                dataEvent.dataService = this;
+                dataEvent.dataObject = object;
+                dataEvent.detail = detail;
+
+                if(!this.isConstructorPreparedToHandleDataEvents(objectConstructor)) {
+                    this.prepareConstructorToHandleDataEvents(objectConstructor, dataEvent);
+                }
+
+                object.dispatchEvent(dataEvent);
+            }
+        }
+    },
 
     /**
      * Create a new data object of the specified type.
@@ -1660,8 +2163,15 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     createDataObject: {
         value: function (type) {
             if (this.isRootService) {
-                var object = this._createDataObject(type);
+                var service = this.childServiceForType(type),
+                    //Gives a chance to raw data service to provide a primary key for clien-side creation/
+                    //Especially useful for systems that use uuid as primary keys.
+                    //object = this._createDataObject(type, service.dataIdentifierForNewDataObject(type));
+                    object = this._createDataObject(type, service.dataIdentifierForNewDataObject(this.objectDescriptorForType(type)));
                 this.createdDataObjects.add(object);
+
+                this.dispatchDataEventTypeForObject(DataEvent.create, object);
+
                 return object;
             } else {
                 this.rootService.createDataObject(type);
@@ -1679,7 +2189,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     _createDataObject: {
         value: function (type, dataIdentifier) {
-            var objectDescriptor = this._objectDescriptorForType(type),
+            var objectDescriptor = this.objectDescriptorForType(type),
                 object = Object.create(this._getPrototypeForType(objectDescriptor));
             if (object) {
 
@@ -1713,6 +2223,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
    registerUniqueObjectWithDataIdentifier: {
         value: function(object, dataIdentifier) {
+            //Benoit, this is currently relying on a manual turn-on of isUniquing on the MainService, which is really not something people should have to worry about...
             if (object && dataIdentifier && this.isRootService && this.isUniquing) {
                 this.recordDataIdentifierForObject(dataIdentifier, object);
                 this.recordObjectForDataIdentifier(object, dataIdentifier);
@@ -1750,8 +2261,43 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+    isObjectCreated: {
+        value: function(object) {
+            var isObjectCreated = this.createdDataObjects.has(object);
+
+            if(!isObjectCreated) {
+                var service = this._getChildServiceForObject(object);
+                if(service) {
+                    isObjectCreated = (service.isObjectCreated(object) || !service.hasSnapshotForObject(object));
+                } else {
+                    isObjectCreated = false;
+                }
+            }
+            return isObjectCreated;
+        }
+    },
+
     /**
-     * A set of the data objects managed by this service or any other descendent
+     * A set of the data objects moified by the user after they were fetched.
+     *     *
+     * @type {Set.<Object>}
+     */
+    changedDataObjects: {
+        get: function () {
+            if (this.isRootService) {
+                if (!this._changedDataObjects) {
+                    this._changedDataObjects = new Set();
+                }
+                return this._changedDataObjects;
+            }
+            else {
+                return this.rootService.changedDataObjects;
+            }
+        }
+    },
+
+    /**
+     * A Map of the data objects managed by this service or any other descendent
      * of this service's [root service]{@link DataService#rootService} that have
      * been changed since that root service's data was last saved, or since the
      * root service was created if that service's data hasn't been saved yet
@@ -1760,23 +2306,564 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      * whose instances will not be root services should override this property
      * to return their root service's value for it.
      *
-     * @type {Set.<Object>}
+     * The key are the objects, the value is a Set containing the property changed
+     *
+     * @type {Map.<Object>}
      */
-    changedDataObjects: {
+    dataObjectChanges: {
         get: function () {
             if (this.isRootService) {
-                this._changedDataObjects = this._changedDataObjects || new Set();
-                return this._changedDataObjects;
+                return this._dataObjectChanges || (this._dataObjectChanges = new Map());
             }
             else {
-                return this.rootService.changedDataObjects();
+                return this.rootService.dataObjectChanges;
             }
         }
     },
 
-    _changedDataObjects: {
+    _dataObjectChanges: {
         value: undefined
     },
+
+    /**
+     * A Map containing the changes for an object. Keys are the property modified,
+     * values are either a single value, or a map with added/removed keys for properties
+     * that have a cardinality superior to 1. The underlyinng collection doesn't matter
+     * at that level.
+     *
+     * Retuns undefined if no changes have been registered.
+     *
+     * @type {Map.<Object>}
+     */
+
+    changesForDataObject: {
+        value: function (dataObject) {
+            return this.dataObjectChanges.get(dataObject);
+        }
+    },
+
+    /**
+     * handles the propagation of a value set to a property's inverse property, fka "addToBothSidesOfRelationship..."
+     * This doesn't handle range changes, which is done in another method.
+     *
+     * @private
+     * @method
+     * @argument {Object} dataObject
+     * @returns {Promise}
+
+     */
+    _setDataObjectPropertyDescriptorValueForInversePropertyName: {
+        value: function (dataObject, propertyDescriptor, value, inversePropertyName) {
+            //Now set the inverse if any
+            if(inversePropertyName) {
+                var inversePropertyDescriptor = propertyDescriptor._inversePropertyDescriptor /* Sync */;
+                if(!inversePropertyDescriptor) {
+                    var self = this;
+                    return propertyDescriptor.inversePropertyDescriptor.then(function(inversePropertyDescriptorResolved) {
+                        self._setDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, value, inversePropertyDescriptorResolved);
+                    })
+                } else {
+                    this._setDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, value, inversePropertyDescriptor);
+                    return Promise.resolveTrue;
+                }
+            }
+       }
+    },
+
+    _setDataObjectPropertyDescriptorValueForInversePropertyDescriptor: {
+        value: function (dataObject, propertyDescriptor, value, inversePropertyDescriptor, previousValue) {
+            if(!inversePropertyDescriptor) {
+                return;
+            }
+
+            var inversePropertyName = inversePropertyDescriptor.name,
+                inversePropertyCardinality = inversePropertyDescriptor.cardinality,
+                inverseValue;
+
+            if(propertyDescriptor.cardinality === 1) {
+                //value should not be an array
+                if(Array.isArray(value)) {
+                    console.warn("Something's off...., the value of propertyDescriptor:",propertyDescriptor, " of data object:",dataObject," should not be an array");
+                }
+
+                if(value) {
+                    if(inversePropertyCardinality > 1) {
+                        /*
+                            value needs to be added to the other's side:
+
+                            BUT - TODO - doing value[inversePropertyName] actually fires the trigger if wasn't there alredy.
+                            In some cases, we rely on the value being there so it gets saved properly, by putting a foreignKey in for example.
+                            It might be possible to handle that when we save only, or we could do the lookup using the property getter's secret shouldFetch argument.
+
+                             inverseValue = Object.getPropertyDescriptor(value,inversePropertyName).get(false); //<-shouldFetch false
+
+                            If we add the value and we don't know what was there (because we didn't fetch), we won't be able to do optimistic locking
+                            We also would need to mark that property as "incommplete?", which we would need to do to able to add to a relationship without resolving it.
+                            such that if the user actually fetch that property we can re-apply what was added/removed locally to what was actually fetched.
+
+                            Also value[inversePropertyName] does fire the trigger, but it's async, so we're likely missing the value here and we migh need to use a promise with
+                            getObjectProperty/ies
+
+                        */
+                        inverseValue = value[inversePropertyName];
+                        if(inverseValue) {
+                            /*
+                                We might be looping back, but in any case, we shouldn't add the same object again, so we need to check if it is there. I really don't like doinf indexOf() here, but it's not a set...
+                            */
+                           if(inverseValue.indexOf(dataObject) === -1) {
+                            inverseValue.push(dataObject)
+                           }
+                        } else {
+                            //No existing array so we create one on the fly
+                            value[inversePropertyName] = [dataObject];
+                        }
+                    } else {
+                        /*
+                            A 1-1 then. Let's not set if it's the same...
+                        */
+                        if(value[inversePropertyName] !== dataObject) {
+                            value[inversePropertyName] = dataObject;
+                        }
+                    }
+                }
+
+                if(previousValue) {
+                    if(inversePropertyCardinality > 1) {
+                        /*
+                            previousValue needs to be removed from the other's side:
+                        */
+                        inverseValue = previousValue[inversePropertyName];
+                        if(inverseValue) {
+                            /*
+                                Assuming it only exists once in the array as it should...
+                            */
+                            inverseValue.delete(dataObject)
+                        }
+                        // else {
+                        //     //No existing array so nothing to do....
+                        // }
+                    } else {
+                        //A 1-1 then
+                        previousValue[inversePropertyName] = null;
+                    }
+
+                }
+
+            } else if(propertyDescriptor.cardinality > 1) {
+                //value should  be an array
+                if(!Array.isArray(value)) {
+                    console.warn("Something's off...., the value of propertyDescriptor:",propertyDescriptor, " of data object:",dataObject," should be an array");
+                }
+
+                this._addDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, value, inversePropertyDescriptor);
+
+                if(previousValue) {
+                    this._removeDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, previousValue, inversePropertyDescriptor);
+                }
+                // for(var i=0, countI = value.length, iValue; (i<countI); i++) {
+                //     iValue = value[i];
+
+                //     if(inversePropertyCardinality > 1) {
+                //         //many to many:
+                //         //value needs to be added to the other's side:
+                //         inverseValue = value[inversePropertyName];
+                //         if(inverseValue) {
+                //             inverseValue.push(dataObject)
+                //         } else {
+                //             //No existing array so we create one on the fly
+                //             value[inversePropertyName] = [dataObject];
+                //         }
+
+                //     } else {
+                //         //A many-to-one
+                //         iValue[inversePropertyName] = dataObject;
+                //     }
+
+                // }
+
+            }
+        }
+    },
+
+
+    /**
+     * handles the propagation of a values added to a property's array value to it's inverse property, fka "addToBothSidesOfRelationship..."
+     *
+     * @private
+     * @method
+     * @argument {Object} dataObject
+     * @returns {Promise}
+
+     */
+    _addDataObjectPropertyDescriptorValuesForInversePropertyName: {
+        value: function (dataObject, propertyDescriptor, value, inversePropertyName) {
+            //Now set the inverse if any
+            if(inversePropertyName) {
+                var inversePropertyDescriptor = propertyDescriptor._inversePropertyDescriptor /* Sync */;
+                if(!inversePropertyDescriptor) {
+                    var self = this;
+                    return propertyDescriptor.inversePropertyDescriptor.then(function(inversePropertyDescriptorResolved) {
+                        self._addDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, value, inversePropertyDescriptorResolved);
+                    })
+                } else {
+                    this._addDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, value, inversePropertyDescriptor);
+                    return Promise.resolveTrue;
+                }
+            }
+       }
+    },
+
+    _addDataObjectPropertyDescriptorValuesForInversePropertyDescriptor: {
+        value: function (dataObject, propertyDescriptor, values, inversePropertyDescriptor) {
+            if(inversePropertyDescriptor) {
+                //value should  be an array
+                if(!Array.isArray(values) || !(propertyDescriptor.cardinality > 0)) {
+                    console.warn("Something's off...., values added to propertyDescriptor:",propertyDescriptor, " of data object:",dataObject," should be an array");
+                }
+
+                var inversePropertyName = inversePropertyDescriptor.name,
+                    inversePropertyCardinality = inversePropertyDescriptor.cardinality,
+                    i, countI;
+
+                for(i=0, countI = values.length; (i<countI); i++) {
+                    this._addDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, values[i], inversePropertyDescriptor, inversePropertyCardinality, inversePropertyName);
+
+                }
+                }
+        }
+    },
+
+    _addDataObjectPropertyDescriptorValueForInversePropertyDescriptor: {
+        value: function (dataObject, propertyDescriptor, value, inversePropertyDescriptor, _inversePropertyCardinality, _inversePropertyName) {
+            if(inversePropertyDescriptor && value) {
+
+                if((_inversePropertyCardinality || inversePropertyDescriptor.cardinality) > 1) {
+                    //many to many:
+                    //value, if there is one, needs to be added to the other's side:
+                    inverseValue = value[_inversePropertyName || inversePropertyDescriptor.name];
+                    if(inverseValue) {
+                        /*
+                            We shouldn't add the same object again, so we need to check if it is there. I really don't like doinf indexOf() here, but it's not a set...
+                        */
+                        if(inverseValue.indexOf(dataObject) === -1) {
+                            inverseValue.push(dataObject);
+                        }
+                    } else {
+                        //No existing array so we create one on the fly
+                        value[_inversePropertyName || inversePropertyDescriptor.name] = [dataObject];
+                    }
+
+                } else {
+                    //A many-to-one
+                    if(value[_inversePropertyName || inversePropertyDescriptor.name] !== dataObject) {
+                        value[_inversePropertyName || inversePropertyDescriptor.name] = dataObject;
+                    }
+                }
+            }
+        }
+    },
+
+
+    /**
+     * handles the propagation of a values added to a property's array value to it's inverse property, fka "addToBothSidesOfRelationship..."
+     *
+     * @private
+     * @method
+     * @argument {Object} dataObject
+     * @returns {Promise}
+
+     */
+    _removeDataObjectPropertyDescriptorValuesForInversePropertyName: {
+        value: function (dataObject, propertyDescriptor, value, inversePropertyName) {
+            //Now set the inverse if any
+            if(inversePropertyName) {
+                var inversePropertyDescriptor = propertyDescriptor._inversePropertyDescriptor /* Sync */;
+                if(!inversePropertyDescriptor) {
+                    var self = this;
+                    return propertyDescriptor.inversePropertyDescriptor.then(function(inversePropertyDescriptorResolved) {
+                        self._removeDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, value, inversePropertyDescriptorResolved);
+                    })
+                } else {
+                    this._removeDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, value, inversePropertyDescriptor);
+                    return Promise.resolveTrue;
+                }
+            }
+       }
+    },
+
+
+    _removeDataObjectPropertyDescriptorValuesForInversePropertyDescriptor: {
+        value: function (dataObject, propertyDescriptor, values, inversePropertyDescriptor) {
+            if(inversePropertyDescriptor) {
+
+                //value should  be an array
+                if(!Array.isArray(values) || !(propertyDescriptor.cardinality > 0)) {
+                    console.warn("Something's off...., values added to propertyDescriptor:",propertyDescriptor, " of data object:",dataObject," should be an array");
+                }
+
+                var inversePropertyName = inversePropertyDescriptor.name,
+                    inversePropertyCardinality = inversePropertyDescriptor.cardinality,
+                    i, countI;
+
+                for(i=0, countI = values.length; (i<countI); i++) {
+                    this._removeDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, values[i], inversePropertyDescriptor, inversePropertyCardinality, inversePropertyName);
+                }
+            }
+        }
+    },
+
+    _removeDataObjectPropertyDescriptorValueForInversePropertyDescriptor: {
+        value: function (dataObject, propertyDescriptor, value, inversePropertyDescriptor, _inversePropertyCardinality, _inversePropertyName) {
+            if(inversePropertyDescriptor && value) {
+
+                if((_inversePropertyCardinality || inversePropertyDescriptor.cardinality) > 1) {
+                    /*
+                        many to many:
+                        value needs to be renoved to the other's side, unless it doesn't exists (which would be the case if it wasn't fetched).
+                    */
+                    inverseValue = value[_inversePropertyName || inversePropertyDescriptor.name];
+                    if(inverseValue) {
+                        inverseValue.delete(dataObject);
+                    }
+
+                } else {
+                    //A many-to-one, sever the ties
+                    value[_inversePropertyName || inversePropertyDescriptor.name] = null;
+                }
+            }
+        }
+    },
+
+    registerDataObjectChangesFromEvent: {
+        value: function (changeEvent) {
+            var dataObject =  changeEvent.target,
+                key = changeEvent.key,
+                objectDescriptor = this.objectDescriptorForObject(dataObject),
+                propertyDescriptor = objectDescriptor.propertyDescriptorForName(key);
+
+
+            //Property with definitions are read-only shortcuts, we don't want to treat these as changes the raw layers will want to know about
+            if(propertyDescriptor.definition) {
+                return;
+            }
+
+
+            var inversePropertyName = propertyDescriptor.inversePropertyName,
+                inversePropertyDescriptor;
+
+            if(inversePropertyName) {
+                inversePropertyDescriptor = propertyDescriptor._inversePropertyDescriptor /* Sync */;
+                if(!inversePropertyDescriptor) {
+                    var self = this;
+                    return propertyDescriptor.inversePropertyDescriptor.then(function(_inversePropertyDescriptor) {
+                        if(!_inversePropertyDescriptor) {
+                            console.error("objectDescriptor "+objectDescriptor.name+"'s propertyDescriptor "+propertyDescriptor.name+ " declares an inverse property named "+inversePropertyName+" on objectDescriptor "+propertyDescriptor._valueDescriptorReference.name+", no matching propertyDescriptor could be found on "+propertyDescriptor._valueDescriptorReference.name);
+                        } else {
+                            self._registerDataObjectChangesFromEvent(changeEvent, propertyDescriptor, _inversePropertyDescriptor);
+                        }
+                    });
+                } else {
+                    this._registerDataObjectChangesFromEvent(changeEvent, propertyDescriptor, inversePropertyDescriptor);
+                }
+            } else {
+                this._registerDataObjectChangesFromEvent(changeEvent, propertyDescriptor, inversePropertyDescriptor);
+            }
+
+        }
+    },
+
+    _registerDataObjectChangesFromEvent: {
+        value: function (changeEvent, propertyDescriptor, inversePropertyDescriptor) {
+
+            var dataObject =  changeEvent.target,
+                isCreatedObject = this.isObjectCreated(dataObject),
+                key = changeEvent.key,
+                keyValue = changeEvent.keyValue,
+                addedValues = changeEvent.addedValues,
+                removedValues = changeEvent.removedValues,
+                changesForDataObject = this.dataObjectChanges.get(dataObject),
+                inversePropertyDescriptor,
+                self = this;
+
+
+
+
+            if(!isCreatedObject) {
+                this.changedDataObjects.add(dataObject);
+            }
+
+            if(!changesForDataObject) {
+                changesForDataObject = new Map();
+                this.dataObjectChanges.set(dataObject,changesForDataObject);
+            }
+
+
+            /*
+
+                TODO / WARNING / FIX: If an object's property that has not been fetched, mapped and assigned is accessed, it will be undefined and will trigger a fetch to get it. If the business logic then assumes it's not there and set a value synchronously, when the fetch comes back, we will have a value and the set will look like an update.
+
+                This situation is poorly handled and should be made more robust, here and in DataTrigger.
+
+                Should we look into the snapshot to help? Then map what's there first, and then compare before acting?
+
+                var dataObjectSnapshot = this._getChildServiceForObject(dataObject)._snapshot.get(dataObject.dataIdentifier);
+
+                Just because it's async, doesn't mean we couldn't get it right, since we can act after the sync code action and reconciliate the 2 sides.
+
+            */
+
+
+
+
+            /*
+                While a single change Event should be able to model both a range change
+                equivalent of minus/plus and a related length property change at
+                the same time, a changeEvent from the perspective of tracking data changes
+                doesn't really care about length, or the array itself. The key of the changeEvent will be one of the target's and the added/removedValues would be from that property's array if it's one.
+
+                Which means that data objects setters should keep track of an array
+                changing on the object itself, as well as mutation done to the array itself while modeling that object's relatioonship.
+
+                Client side we're going to have partial views of a whole relationship
+                as we may not want to fetch everything at once if it's big. Which means
+                that even if we can track add / removes to a property's array, what we
+                may consider as an add / remove client side, may be a no-op while it reaches the server, and we may want to be able to tell the client about that specific fact.
+
+
+            */
+            if( changeEvent.hasOwnProperty("key") && changeEvent.hasOwnProperty("keyValue") && key !== "length" &&
+            /* new for blocking re-entrant */ changesForDataObject.get(key) !== keyValue) {
+            changesForDataObject.set(key,keyValue);
+
+                //Now set the inverse if any
+                if(inversePropertyDescriptor) {
+                    self._setDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, keyValue, inversePropertyDescriptor, changeEvent.previousKeyValue);
+                }
+            }
+
+            //A change event could carry both a key/value change and addedValues/remove, like a splice, where the key would be "length"
+
+            if(addedValues || removedValues) {
+                //For key that can have add/remove the value of they key is an object
+                //that itself has two keys: addedValues and removedValues
+                //which value will be a set;
+                var manyChanges = changesForDataObject.get(key),
+                    i, countI;
+
+                if(!manyChanges) {
+                    manyChanges = {};
+                    changesForDataObject.set(key,manyChanges);
+                }
+
+                //Not sure if we should consider evaluating added values regarded
+                //removed ones, one could be added and later removed.
+                //We later need to convert these into dataIdentifers, we could avoid a loop later
+                //doing so right here.
+                if(addedValues) {
+
+                    /*
+                        In this case, the array already contains the added value and we'll save it all anyway. So we just propagate.
+                    */
+                    if(Array.isArray(manyChanges) && isCreatedObject) {
+                        self._addDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, addedValues, inversePropertyDescriptor);
+                    } else {
+                        var registeredAddedValues = manyChanges.addedValues;
+                        if(!registeredAddedValues) {
+                            /*
+                                FIXME: we ended up here with manyChanges being an array, containing the same value as addedValues. And we end up setting addedValues property on that array. So let's correct it. We might not want to track toMany as set at all, and just stick to added /remove. This might happens on remove as well, we need to check further.
+                            */
+                           if(Array.isArray(manyChanges) && manyChanges.equals(addedValues)) {
+                                manyChanges = {};
+                                changesForDataObject.set(key, manyChanges);
+                           }
+
+                            manyChanges.addedValues = (registeredAddedValues = new Set(addedValues));
+                            self._addDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, addedValues, inversePropertyDescriptor);
+
+                        } else {
+
+                            for(i=0, countI=addedValues.length;i<countI;i++) {
+                                registeredAddedValues.add(addedValues[i]);
+                                self._addDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, addedValues[i], inversePropertyDescriptor);
+                            }
+                        }
+                    }
+                }
+
+                if(removedValues) {
+                    /*
+                        In this case, the array already contains the added value and we'll save it all anyway. So we just propagate.
+                    */
+                    if(Array.isArray(manyChanges) && isCreatedObject) {
+                        self._removeDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, removedValues, inversePropertyDescriptor);
+                    } else {
+                        var registeredRemovedValues = manyChanges.removedValues;
+                        if(!registeredRemovedValues) {
+                            manyChanges.removedValues = (registeredRemovedValues = new Set(removedValues));
+                            self._removeDataObjectPropertyDescriptorValuesForInversePropertyDescriptor(dataObject, propertyDescriptor, removedValues, inversePropertyDescriptor);
+                        } else {
+                            for(i=0, countI=removedValues.length;i<countI;i++) {
+                                registeredRemovedValues.delete(removedValues[i]);
+                                self._removeDataObjectPropertyDescriptorValueForInversePropertyDescriptor(dataObject, propertyDescriptor, removedValues[i], inversePropertyDescriptor);
+                            }
+                        }
+                    }
+                    /*
+                        Work on local graph integrity. When objects are disassociated, it could mean some deletions may happen bases on delete rules.
+                        App side goal is to maintain the App graph, server's side is to maintain database integrity. Both needs to act on delete rules:
+                        - get object's descriptor
+                        - get PropertyDescriptor from key
+                        - get PropertyDescriptor's .deleteRule
+                            deleteRule can be:
+                                - DeleteRule.NULLIFY
+                                - DeleteRule.CASCADE
+                                - DeleteRule.DENY
+                                - DeleteRule.IGNORE
+                    */
+
+                    //,,,,,TODO
+                }
+            }
+
+
+
+        }
+    },
+
+    clearRegisteredChangesForDataObject: {
+        value: function (dataObject) {
+            this.dataObjectChanges.set(dataObject,null);
+        }
+    },
+
+    /**
+     * A set of the data objects managed by this service or any other descendent
+     * of this service's [root service]{@link DataService#rootService} that have
+     * been set for deletion since that root service's data was last saved, or since the
+     * root service was created if that service's data hasn't been saved yet
+     *
+     * Since root services are responsible for tracking data objects, subclasses
+     * whose instances will not be root services should override this property
+     * to return their root service's value for it.
+     *
+     * @type {Set.<Object>}
+     */
+    deletedDataObjects: {
+        get: function () {
+            if (this.isRootService) {
+                this._deletedDataObjects = this._deletedDataObjects || new Set();
+                return this._deletedDataObjects;
+            }
+            else {
+                return this.rootService.deletedDataObjects;
+            }
+        }
+    },
+
+    _deletedDataObjects: {
+        value: undefined
+    },
+
 
     /***************************************************************************
      * Fetching Data
@@ -1835,6 +2922,11 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     fetchData: {
         value: function (queryOrType, optionalCriteria, optionalStream) {
+
+            if(!queryOrType) {
+                return Promise.resolveNull;
+            }
+
             var self = this,
                 isSupportedType = !(queryOrType instanceof DataQuery),
                 type = isSupportedType && queryOrType,
@@ -1843,7 +2935,7 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
                 stream = optionalCriteria instanceof DataStream ? optionalCriteria : optionalStream;
 
             // make sure type is an object descriptor or a data object descriptor.
-            query.type = this._objectDescriptorForType(query.type);
+            query.type = this.objectDescriptorForType(query.type);
 
             // Set up the stream.
             stream = stream || new DataStream();
@@ -1892,28 +2984,182 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             if (childService) {
                 childService._fetchRawData(stream);
             } else {
-                if (this.authorizationPolicy === AuthorizationPolicy.ON_DEMAND) {
-                    var prefetchAuthorization = typeof this.shouldAuthorizeForQuery === "function" && this.shouldAuthorizeForQuery(stream.query);
-                    if (prefetchAuthorization || !this.authorization) {
-                        this.authorizationPromise = exports.DataService.authorizationManager.authorizeService(this, prefetchAuthorization).then(function(authorization) {
-                            self.authorization = authorization;
-                            return authorization;
+                //this is the new path for services with a userAuthenticationPolicy
+                if (this.userAuthenticationPolicy) {
+                    var userIdentityPromise,
+                        shouldAuthenticate;
+                    //If this is the service providing providesUserIdentity for the query's type: UserIdentityService for the UserIdentity type required.
+                    //the query is either for the UserIdentity itself, or something else.
+                    //If it's for the user identity itself, it's a simple fetch
+                    //but if it's for something else, we may need to fetch the identity first, and then move on to the query at hand.
+                    if(this.providesUserIdentity) {
+                        //Regardless of the policy, we're asked to fetch a user identity
+                        var streamQuery = stream.query;
+                        if(stream.query.criteria) {
+                            stream.query = self.mapSelectorToRawDataQuery(streamQuery);
+                        }
+                        this.fetchRawData(stream);
+                        //Switch it back
+                        stream.query = streamQuery;
+                    }
+                    else {
+                        if(!this.userIdentity) {
+                            if(this.userIdentityPromise) {
+                                userIdentityPromise = this.userIdentityPromise;
+                            }
+                            else if ((this.authenticationPolicy === AuthenticationPolicyType.UpfrontAuthenticationPolicy) ||
+                                    (
+                                        (this.authenticationPolicy === AuthenticationPolicy.ON_DEMAND) &&
+                                        (shouldAuthenticate = typeof this.queryRequireAuthentication === "function") && this.queryRequireAuthentication(stream.query)
+                                    )) {
+
+                                        this.userIdentityPromise = userIdentityPromise = new Promise(function(resolve,reject) {
+                                        var userIdentityServices = this.userIdentityServices,
+                                        userIdentityObjectDescriptors,
+                                        selfUserCriteria,
+                                        userIdentityQuery;
+
+
+                                        //Shortcut, there could be multiple one we need to flatten.
+                                        userIdentityObjectDescriptors = userIdentityServices[0].types;
+                                        //selfUserCriteria = new Criteria().initWithExpression("identity == $", "self");
+                                        userIdentityQuery = DataQuery.withTypeAndCriteria(userIdentityObjectDescriptors[0]);
+
+                                        this.rootService.fetchData(userIdentityQuery)
+                                        .then(function(userIdenties) {
+                                            self.userIdentity = userIdenties[0];
+                                            resolve(self.userIdentity);
+                                        },
+                                        function(error) {
+                                            console.error(error);
+                                            reject(error);
+                                        });
+
+                                    });
+
+                                }
+                                else userIdentityPromise = Promise.resolve(true);
+                        }
+                        else {
+                            userIdentityPromise = Promise.resolve(true);
+                        }
+
+                        userIdentityPromise.then(function (authorization) {
+                            var streamSelector = stream.query;
+                            stream.query = self.mapSelectorToRawDataQuery(streamSelector);
+                            self.fetchRawData(stream);
+                            stream.query = streamSelector;
+                        }).catch(function (e) {
+                            stream.dataError(e);
+                            self.userIdentityPromise = Promise.resolve(null);
                         });
 
                     }
                 }
-                this.authorizationPromise.then(function (authorization) {
-                    var streamSelector = stream.query;
-                    stream.query = self.mapSelectorToRawDataQuery(streamSelector);
-                    self.fetchRawData(stream);
-                    stream.query = streamSelector;
-                }).catch(function (e) {
-                    stream.dataError(e);
-                    self.authorizationPromise = Promise.resolve(null);
-                });
+                else {
+                    if (this.authorizationPolicy === AuthorizationPolicy.ON_DEMAND) {
+                        var prefetchAuthorization = typeof this.shouldAuthorizeForQuery === "function" && this.shouldAuthorizeForQuery(stream.query);
+                        if (prefetchAuthorization || !this.authorization) {
+                            this.authorizationPromise = exports.DataService.authorizationManager.authorizeService(this, prefetchAuthorization).then(function(authorization) {
+                                self.authorization = authorization;
+                                return authorization;
+                            });
+
+                        }
+                    }
+
+                    this.authorizationPromise.then(function (authorization) {
+                        var streamSelector = stream.query;
+                        stream.query = self.mapSelectorToRawDataQuery(streamSelector);
+                        self.fetchRawData(stream);
+                        stream.query = streamSelector;
+                    }).catch(function (e) {
+                        stream.dataError(e);
+                        self.authorizationPromise = Promise.resolve(null);
+                    });
+                }
             }
         }
     },
+
+
+    /*
+        ObjectDescriptors are what should dispatch events, as well as model objec intances
+        So an imperative method on DataService would internally create the operation/event and dispatch it on the object descriptor. It would internally addEventListener for the "symetric event", for a Read, it would be a ReadUpdated, for a ReadUpdate/ a ReadUpdated as well.
+
+        This would help re-implementing fetchData to be backward compatible.
+
+        What is clear is that we need for a read for example, a stable array that can be relied on by bindings and be mutated over time.
+
+        If we have anObjecDescriptor.dispatchEvent("read"), then someone whose job it to act on that read is an EventListener for it, and that's the RawDataServices running in the DataServiceWorker. This is where we need an intermediary whose job is to send these events over postMesssage so they get dispatched in the DataServiceWorker.
+
+        So as a developer what am I writing if I'm not doing
+
+            mainService.fetchData(query); //?
+
+            mainService.readData(query); //?
+            mainService.saveData(query); //?
+
+            mainService.performOperation(readOperation);
+
+
+    */
+
+   readData: {
+        value: function (dataOperation, optionalStream) {
+            var self = this,
+                objectDescriptor = dataOperation.objectDescriptor || dataOperation.dataType,
+                stream = optionalStream,
+                dataService, dataServicePromise;
+
+            // Set up the stream.
+            stream = stream || new DataStream();
+            stream.operation = dataOperation;
+
+            if(!(dataService = this._dataServiceByDataStream.get(stream))) {
+                this._dataServiceByDataStream.set(stream, (dataServicePromise = this._childServiceRegistrationPromise.then(function() {
+                    var service;
+                    //This is a workaround, we should clean that up so we don't
+                    //have to go up to answer that question. The difference between
+                    //.TYPE and Objectdescriptor still creeps-in when it comes to
+                    //the service to answer that to itself
+                    if (self.parentService && self.parentService.childServiceForType(objectDescriptor) === self && typeof self.fetchRawData === "function") {
+                        service = self;
+                        service._fetchRawData(stream);
+                    } else {
+
+                        // Use a child service to fetch the data.
+                            service = self.childServiceForType(objectDescriptor);
+                            if (service) {
+                                //Here we end up creating an extra stream for nothing because it should be third argument.
+                                self._dataServiceByDataStream.set(stream, service);
+                            } else {
+                                throw new Error("Can't fetch data of unknown type - " + objectDescriptor.name);
+                            }
+                    }
+
+                    return service;
+                })));
+            }
+            else {
+                dataServicePromise = Promise.resolve(dataService);
+            }
+
+            dataServicePromise.then(function(dataService) {
+                try {
+                    //Direct access for now
+                    stream = dataService.handleRead(dataOperation);
+                } catch (e) {
+                    stream.dataError(e);
+                }
+
+            })
+
+            // Return the passed in or created stream.
+            return stream;
+        }
+    },
+
 
     _childServiceForQuery: {
         value: function (query) {
@@ -1932,12 +3178,12 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
 
     _serviceIdentifierForQuery: {
         value: function (query) {
-            var parameters = query.criteria.parameters,
+            var parameters = (query && query.criteria) ? query.criteria.parameters : null,
                 serviceModuleID = parameters && parameters.serviceIdentifier,
                 mapping, propertyName;
 
             if (!serviceModuleID) {
-                mapping = this.mappingWithType(query.type);
+                mapping = this.mappingForType(query.type);
                 propertyName = mapping && parameters && parameters.propertyName;
                 serviceModuleID = propertyName && mapping.serviceIdentifierForProperty(propertyName);
             }
@@ -1997,6 +3243,32 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+
+    /**
+     * EventChange handler, begining of tracking objects changes via Triggers right now,
+     * which are installed on propertyDescriptors. We might need to refine that by adding the
+     * ability to model wether a property is persisted or not. If it's not meant to be persisted,
+     * then a DataService most likely doesn't have much to do with it.
+     * Right now, this is unfortunately called even during the mapRawDataToObject.
+     * We need a way to ignore this as early as possible
+     *
+     * @method
+     * @argument {ChangeEvent} [changeEvent] - The changeEvent
+     *
+     */
+    handleChange: {
+        value: function(changeEvent) {
+            //Commentting out the restriction to exclude created objects as we might want to
+            //use it for them as well
+
+            // if(!this._createdDataObjects || (this._createdDataObjects && !this._createdDataObjects.has(changeEvent.target))) {
+                //Needs to register the change so saving changes / update operations can use it later to decise what to send
+                //console.log("handleChange:",changeEvent);
+                this.registerDataObjectChangesFromEvent(changeEvent);
+            //}
+        }
+    },
+
     /***************************************************************************
      * Saving Data
      */
@@ -2011,7 +3283,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      */
     deleteDataObject: {
         value: function (object) {
-            var saved = !this.createdDataObjects.has(object);
+            var saved = !this.isObjectCreated(object);
+            this.deletedDataObjects.add(object);
             return this._updateDataObject(object, saved && "deleteDataObject");
         }
     },
@@ -2048,6 +3321,13 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         value: function (object) {
             //return this._updateDataObject(object, "saveDataObject");
 
+            //TODO
+            //First thing we should be doing here is run validation
+            //on the object, using objectDescriptor's
+            //draft: - could/should become async and return a promise.
+            //var validatity = this.objectDescriptorForObject(object).evaluateRules(object);
+
+
             var self = this,
                 service,
                 promise = this.nullPromise,
@@ -2070,7 +3350,23 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             else {
                 service = this._getChildServiceForObject(object);
                 if (service) {
-                    return service.saveDataObject(object);
+                    var result = service.saveDataObject(object);
+                    if(result) {
+                        return result.then(function(success) {
+                            self.rootService.createdDataObjects.delete(object);
+                            //Duck test of an operation
+                            // if(success.data) {
+                            //     return success.data;
+                            // }
+                            // else {
+                                return success;
+                            // }
+
+                        }, function(error) {
+                            console.log(error);
+                            return Promise.reject(error);
+                        });
+                    }
                 }
                 else {
                     return promise;
@@ -2132,6 +3428,49 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
     //         return promise;
     //     }
     // },
+
+    /**
+     * Returns a pomise of a DataOperation to save (create/updates) pending changes to an object
+     * @method
+     * @argument {Object} object - The object who will be reset.
+     * @returns {external:Promise} - A promise fulfilled when the data operation is ready.
+     */
+    saveDataOperationFoObject: {
+        value: function (object) {
+
+        }
+    },
+
+
+    /**
+     * Save all changes made since the last call. This method currently delegates to rawDataServices for the actual work
+     * Some of it might migrate back up here later when the dust settles.
+     *
+     * TEMPORARY implementation assuming a single RawDataService that creates
+     * operations. We might need to officially make that kind of subclass the
+     * mainService.
+     *
+     * @method
+     * @returns {external:Promise} - A promise fulfilled when the save operation is complete or failed.
+     */
+
+    saveChanges: {
+        value: function () {
+            var self = this,
+                service,
+                promise = this.nullPromise,
+
+                service = this.childServices[0];
+                if (service && typeof service.saveChanges === "function") {
+                    return service.saveChanges();
+                }
+                else {
+                    return promise;
+                }
+            }
+    },
+
+
 
     /***************************************************************************
      * Offline
@@ -2511,6 +3850,57 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
         }
     },
 
+
+
+    /***************************************************************************
+     * Access Control methods
+     */
+
+    /**
+     * Answers wether logged-in application user can create a DataObject.
+     *
+     * Services overriding the (plural)
+     * @method
+     * @argument {ObjectDescriptor} dataObjectDescriptor
+     * @returns {Promise} - A promise fulfilled with a boolean value.
+     *
+     */
+    canUserCreateDataObject: {
+        value: function(dataObjectDescriptor) {
+            /*
+                TODO: implement by leveraging Expression Based Access Control mapping/rules if available
+            */
+            return Promise.resolve(true);
+        }
+    },
+
+    /**
+     * Answers wether logged-in application user can edit/update? a DataObject.
+     *
+     * Services overriding the (plural)
+     * @method
+     * @argument {Object} dataObject
+     * @returns {Promise} - A promise fulfilled with a boolean value.
+     *
+     */
+    canUserEditDataObject: {
+        value: function(dataObject) {
+            /*
+                	return this.canPerfomDataOperation(DataOperation.toUpdateDataObject(dataObject));
+            */
+           return Promise.resolve(true);
+        }
+    },
+    canUserDeleteDataObject: {
+        value: function(dataObject) {
+            /*
+                	return this.canPerfomDataOperation(DataOperation.toDeleteDataObject(dataObject));
+            */
+            return Promise.resolve(true);
+        }
+    },
+
+
     /***************************************************************************
      * Utilities
      */
@@ -2611,10 +4001,115 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
             return insert ? array.splice.apply(array, [index, length].concat(insert)) :
                             array.splice(index, length);
         }
-    }
+    },
 
+    /**
+     * Returns by default an array the Locale.systemLocale
+     * Subclasses have the opporyunity to oveorrides to get useLocale
+     * from more specific data objects (DO)
+     *
+     * @property Array {Locale}
+     */
+
+    _userLocales: {
+        value: undefined
+   },
+
+   userLocales: {
+       get: function() {
+           return this.isRootService
+                ? this._userLocales || ((this._userLocales = [Locale.systemLocale]) && this._userLocales)
+                : this.rootService.userLocales;
+       },
+       set: function(value) {
+           if(value !== this._userLocales) {
+               this._userLocales = value;
+           }
+       }
+   },
+
+   _userLocalesCriteria: {
+       value: undefined
+   },
+
+   userLocalesCriteria: {
+       get: function() {
+        return this.isRootService
+            ?  this._userLocalesCriteria || (this._userLocalesCriteria = this._createUserLocalesCriteria())
+            : this.rootService.userLocalesCriteria;
+
+       },
+       set: function(value) {
+           if(value !== this._userLocalesCriteria) {
+               this._userLocalesCriteria = value;
+           }
+       }
+   },
+
+   _createUserLocalesCriteria: {
+        value: function() {
+            return new Criteria().initWithExpression("locales == $DataServiceUserLocales", {
+                DataServiceUserLocales: this.userLocales
+            });
+        }
+   },
+
+    handleUserLocalesChange: {
+        value: function (value, key, object) {
+            this.userLocalesCriteria = this._createUserLocalesCriteria();
+        }
+    },
+
+    handleUserLocalesRangeChange: {
+        value: function (plus, minus){
+            this.userLocalesCriteria = this._createUserLocalesCriteria();
+        }
+    },
+
+    /**
+     * Returns the locales for a specific object's locale. Default implementation
+     * returns userLocales. Subclasses can override to offer a per-object
+     * localization to be different than the session's one.
+     * Subclasses have the opporyunity to oveorrides to get useLocale
+     * from more specific data objects (DO)
+     *
+     * @returns Array{Locale}
+     */
+
+    localesForObject: {
+        value: function(object) {
+            return this.userLocales;
+        }
+    },
+
+    /**
+     * Returns a criteria the locales for a specific object. Default implementation
+     * returns userLocales. Subclasses can override to offer a per-object
+     * localization to be different than the session's one.
+     * Subclasses have the opporyunity to oveorrides to get useLocale
+     * from more specific data objects (DO)
+     *
+     * @returns Array{Locale}
+     */
+
+    localesCriteriaForObject: {
+        value: function(object) {
+            return this.userLocalesCriteria;
+        }
+    },
+
+    /**
+     * The DataTrigger class used by the montage data stack
+     *
+     * @property {DataTrigger}
+     */
+
+    DataTrigger: {
+        value: DataTrigger
+    },
 
 }, /** @lends DataService */ {
+
 
     /***************************************************************************
      * Service Hierarchy
@@ -2673,3 +4168,8 @@ exports.DataService = Montage.specialize(/** @lends DataService.prototype */ {
      }
 
 });
+
+
+
+//WARNING Shouldn't be a problem, but avoiding a potential require-cycle for now:
+DataStream.DataService = exports.DataService;

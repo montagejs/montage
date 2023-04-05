@@ -1,18 +1,27 @@
 var DataService = require("data/service/data-service").DataService,
-    compile = require("frb/compile-evaluator"),
+    compile = require("core/frb/compile-evaluator"),
     DataMapping = require("data/service/data-mapping").DataMapping,
     DataIdentifier = require("data/model/data-identifier").DataIdentifier,
     Deserializer = require("core/serialization/deserializer/montage-deserializer").MontageDeserializer,
-    Map = require("collections/map"),
+    Map = require("core/collections/map"),
     Montage = require("montage").Montage,
-    parse = require("frb/parse"),
-    Scope = require("frb/scope"),
-    WeakMap = require("collections/weak-map"),
+    parse = require("core/frb/parse"),
+    Scope = require("core/frb/scope"),
+    WeakMap = require("core/collections/weak-map"),
     deprecate = require("core/deprecate"),
-    parse = require("frb/parse"),
-    Scope = require("frb/scope"),
-    compile = require("frb/compile-evaluator"),
-    Promise = require("core/promise").Promise;
+    parse = require("core/frb/parse"),
+    Scope = require("core/frb/scope"),
+    compile = require("core/frb/compile-evaluator"),
+    DataOrdering = require("data/model/data-ordering").DataOrdering,
+    DESCENDING = DataOrdering.DESCENDING,
+    evaluate = require("core/frb/evaluate"),
+    RawForeignValueToObjectConverter = require("data/converter/raw-foreign-value-to-object-converter").RawForeignValueToObjectConverter,
+    DataOperation = require("./data-operation").DataOperation,
+    DataOperationType = require("./data-operation").DataOperationType,
+    Promise = require("../../core/promise").Promise,
+    SyntaxInOrderIterator = require("core/frb/syntax-iterator").SyntaxInOrderIterator;
+
+    require("core/collections/shim-object");
 
 /**
  * Provides data objects of certain types and manages changes to them based on
@@ -73,16 +82,124 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             this.super(deserializer);
             var value = deserializer.getProperty("rawDataTypeMappings");
             this._registerRawDataTypeMappings(value || []);
+
+            value = deserializer.getProperty("connectionDescriptor");
+            if (value) {
+                this.connectionDescriptor = value;
+            }
+
+            /*
+                setting connectionIdentifier will set the current connection
+                based on connectionDescriptor.
+
+                I can still be overriden by the direct setting of connection bellow
+            */
+            value = deserializer.getProperty("connectionIdentifier");
+            if (value) {
+                this.connectionIdentifier = value;
+            }
+
+            value = deserializer.getProperty("connection");
+            if (value) {
+                this.connection = value;
+            }
+
         }
     },
+
 
     /*
      * The ConnectionDescriptor object where possible connections will be found
      *
      * @type {ConnectionDescriptor}
      */
-    connectionDescriptor: {
+    _connectionDescriptor: {
         value: undefined
+    },
+    connectionDescriptor: {
+        get: function() {
+            return this._connectionDescriptor;
+        },
+        set: function(value) {
+            if(value !== this._connectionDescriptor) {
+                this._connectionDescriptor = value;
+                this._registeredConnectionsByIdentifier = null;
+                this.registerConnections(value);
+            }
+        }
+    },
+    /**
+     * Description...
+     *
+     * @method
+     * @argument {Array} [connectionDescription] - The different known connections to the database
+     *
+     */
+    _registeredConnectionsByIdentifier: {
+        value: undefined,
+    },
+    registerConnections: {
+        value: function(connectionDescriptor) {
+
+            this._registeredConnectionsByIdentifier = connectionDescriptor;
+
+            for(var i=0, connections = Object.keys(connectionDescriptor), countI = connections.length, iConnectionIdentifier, iConnection;(i<countI); i++) {
+                iConnectionIdentifier = connections[i];
+                iConnection = connectionDescriptor[iConnectionIdentifier];
+
+                Object.defineProperty(iConnection, "identifier", {
+                    value: iConnectionIdentifier,
+                    enumerable: false,
+                    configurable: true,
+                    writable: true
+                });
+
+                //this._registeredConnectionsByIdentifier.set(iConnectionIdentifier,iConnection);
+            }
+        }
+    },
+
+    connectionForIdentifier: {
+        value: function(connectionIdentifier) {
+            return this._registeredConnectionsByIdentifier[connectionIdentifier];
+            //return this._registeredConnectionsByIdentifier.get(connectionIdentifier);
+        }
+    },
+
+    connectionWithKeyValue: {
+        value: function(connectionKey, conectionValue) {
+            for(var i=0, connections = Object.keys(connectionDescriptor), countI = connections.length, iConnection;(i<countI); i++) {
+                iConnection = connectionDescriptor[connections[i]];
+                if(iConnection[connectionKey] === conectionValue) {
+                    return iConnection;
+                }
+            }
+            return null;
+        }
+    },
+    /*
+     * The current DataConnection object used to connect to data source
+     *
+     * @type {DataConnection}
+     */
+    _connectionIdentifier: {
+        value: undefined
+    },
+
+    connectionIdentifier: {
+        get: function() {
+            return this._connectionIdentifier;
+        },
+        set: function(value) {
+            if(value !== this._connectionIdentifier) {
+                this._connectionIdentifier = value;
+
+                /*
+                    The region where the database lives is in the resourceArn, no need to add it on top
+                */
+                this.connection = this.connectionForIdentifier(value);
+            }
+        }
     },
 
     /*
@@ -105,23 +222,24 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
-    _objectDescriptorForObject: {
-        value: function (object) {
-            var types = this.types,
-                objectInfo = Montage.getInfoForObject(object),
-                moduleId = objectInfo.moduleId,
-                objectName = objectInfo.objectName,
-                module, exportName, objectDescriptor, i, n;
-            for (i = 0, n = types.length; i < n && !objectDescriptor; i += 1) {
-                module = types[i].module;
-                exportName = module && types[i].exportName;
-                if (module && moduleId === module.id && objectName === exportName) {
-                    objectDescriptor = types[i];
-                }
-            }
-            return objectDescriptor;
-        }
-    },
+    //Benoit: 2/25/2020 Doesn't seem to be used anywhere.
+    // _objectDescriptorForObject: {
+    //     value: function (object) {
+    //         var types = this.types,
+    //             objectInfo = Montage.getInfoForObject(object),
+    //             moduleId = objectInfo.moduleId,
+    //             objectName = objectInfo.objectName,
+    //             module, exportName, objectDescriptor, i, n;
+    //         for (i = 0, n = types.length; i < n && !objectDescriptor; i += 1) {
+    //             module = types[i].module;
+    //             exportName = module && types[i].exportName;
+    //             if (module && moduleId === module.id && objectName === exportName) {
+    //                 objectDescriptor = types[i];
+    //             }
+    //         }
+    //         return objectDescriptor;
+    //     }
+    // },
 
     _mapObjectPropertyValue: {
         value: function (object, propertyDescriptor, value) {
@@ -397,6 +515,51 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     /**
+     * When we fetch to complete an object, we know client side for which object it is,
+     * so the backend may not have to send it back and save data.
+     * So here we check if rawData has primaryKey entries. If it doesn't, we try to find it
+     * in the query criteria. We can't rely on just looking up the parameters as we're
+     * sometine alias the criteria parameters when we combine them. Only the property value
+     * in the expression is reliable.
+     */
+
+    _addRawDataPrimaryKeyValuesIfNeeded: {
+        value: function(rawData, type, query) {
+            var mapping = this.mappingForObjectDescriptor(type),
+            rawDataPrimaryKeys = mapping.rawDataPrimaryKeys,
+            i, countI, iKey,
+            iterator, parentSyntax, currentSyntax, propertyName, propertyValue, firstArgSyntax, propertyName, secondArgSyntax,
+            criteriaParameters,
+            criteriaSyntax,
+            syntaxPropertyByName;
+
+            for(i=0, countI = rawDataPrimaryKeys.length; (i<countI); i++ ) {
+                if(!rawData.hasOwnProperty(rawDataPrimaryKeys[i])) {
+                    //Needs to find among the equals syntax the one that matches the current key.
+                    iterator = new SyntaxInOrderIterator(query.criteria.syntax, "equals");
+                    criteriaParameters = query.criteria.parameters;
+                    while ((currentSyntax = iterator.next("equals").value)) {
+                        firstArgSyntax = currentSyntax.args[0];
+                        secondArgSyntax = currentSyntax.args[1];
+
+                        if(firstArgSyntax.type === "property" && firstArgSyntax.args[0].type === "value") {
+                            propertyName = firstArgSyntax.args[1].value;
+                            propertyValue = criteriaParameters[secondArgSyntax.args[1].value];
+                        } else {
+                            propertyName = secondArgSyntax.args[1].value;
+                            propertyValue = criteriaParameters[firstArgSyntax.args[1].value];
+                        }
+
+                        if(rawDataPrimaryKeys.indexOf(propertyName) !== -1) {
+                            rawData[propertyName] = propertyValue;
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    /**
      * Called by [addRawData()]{@link RawDataService#addRawData} to add an object
      * for the passed record to the stream. This method both takes care of doing
      * mapRawDataToObject and add the object to the stream.
@@ -421,11 +584,40 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     addOneRawData: {
         value: function (stream, rawData, context) {
             var type = this._descriptorForParentAndRawData(stream.query.type, rawData),
-                object = this.objectForTypeRawData(type, rawData, context),
-                result = this._mapRawDataToObject(rawData, object, context);
+                readExpressions = stream.query.readExpressions,
+                dataIdentifier,
+                object,
+                //object = this.rootService.objectForDataIdentifier(dataIdentifier),
+                isUpdateToExistingObject = false,
+                result;
+
+                this._addRawDataPrimaryKeyValuesIfNeeded(rawData, type, stream.query);
+
+                dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData),
+
+                // if(!object) {
+                object = this.objectForTypeRawData(type, rawData, context);
+                // }
+                // else {
+                //     isUpdateToExistingObject = true;
+                // }
+
+                //If we're already have a snapshot, we've already fetched and
+                //instanciated an object for that identifier previously.
+                if(this.hasSnapshotForDataIdentifier(dataIdentifier)) {
+                    isUpdateToExistingObject = true;
+                }
+
+                //Record the snapshot before we map.
+                this.recordSnapshot(object.dataIdentifier, rawData);
+
+
+                result = this._mapRawDataToObject(rawData, object, context, readExpressions);
 
             if (this._isAsync(result)) {
                 result = result.then(function () {
+                    // console.log(object.dataIdentifier.objectDescriptor.name +" addOneRawData id:"+rawData.id+"  MAPPING PROMISE RESOLVED -> stream.addData(object)");
+
                     stream.addData(object);
                     return object;
                 });
@@ -433,6 +625,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 stream.addData(object);
                 result = Promise.resolve(object);
             }
+
             this._addMapDataPromiseForStream(result, stream);
 
 
@@ -493,13 +686,17 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                 //Retrieves an existing object is responsible data service is uniquing, or creates one
                 object, result;
 
-            //Record snapshot before we may create an object
-            this.recordSnapshot(dataIdentifier, rawData);
 
             //Retrieves an existing object is responsible data service is uniquing, or creates one
             object = this.getDataObject(type, rawData, context, dataIdentifier);
 
+            //Record snapshot before mapping
+            this.recordSnapshot(dataIdentifier, rawData);
+
             result = this._mapRawDataToObject(rawData, object, context);
+
+            // //Record snapshot when done mapping
+            // this.recordSnapshot(dataIdentifier, rawData);
 
             if (Promise.is(result)) {
                 return result.then(function () {
@@ -514,11 +711,26 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
     objectForTypeRawData: {
         value:function(type, rawData, context) {
-            var dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData);
+            // var dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData);
+
+            // return this.rootService.objectForDataIdentifier(dataIdentifier) ||
+            //         this.getDataObject(type, rawData, context, dataIdentifier);
+
+
+            var dataIdentifier = this.dataIdentifierForTypeRawData(type,rawData),
+                object = this.rootService.objectForDataIdentifier(dataIdentifier);
+
+            //Consolidation, recording snapshot even if we already had an object
             //Record snapshot before we may create an object
-            this.recordSnapshot(dataIdentifier, rawData);
-            //iDataIdentifier argument should be all we need later on
-            return this.getDataObject(type, rawData, context, dataIdentifier);
+            //Benoit: commenting out, done twice when fetching now
+            //this.recordSnapshot(dataIdentifier, rawData);
+
+            if(!object) {
+                //iDataIdentifier argument should be all we need later on
+                return this.getDataObject(type, rawData, context, dataIdentifier);
+            }
+            return object;
+
         }
     },
 
@@ -526,11 +738,49 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         value: undefined
     },
 
-    //This should belong on the
-    //Gives us an indirection layer to deal with backward compatibility.
-    dataIdentifierForTypeRawData: {
+    /**
+     * Called by [DataService createDataObject()]{@link DataService#createDataObject} to allow
+     * RawDataService to provide a primiary key on the client side as soon as an object is created.
+     * Especially useful for uuid based primary keys that can be generated eithe client or server side.
+     *
+     * @method
+     * @argument {DataStream} stream
+     *                           - The stream to which the data objects created
+     *                             from the raw data should be added.
+     * @argument {Object} rawData - An anonymnous object whose properties'
+     *                             values hold the raw data. This array
+     *                             will be modified by this method.
+     * @argument {?} context     - An arbitrary value that will be passed to
+     *                             [getDataObject()]{@link RawDataService#getDataObject}
+     *                             and
+     *                             [mapRawDataToObject()]{@link RawDataService#mapRawDataToObject}
+     *                             if it is provided.
+     *
+     * @returns {Promise<MappedObject>} - A promise resolving to the mapped object.
+     *
+     */
+
+    primaryKeyForNewDataObject: {
+        value: function (type) {
+            return undefined;
+        }
+    },
+
+    dataIdentifierForNewDataObject: {
+        value: function (type) {
+            var primaryKey = this.primaryKeyForNewDataObject(type);
+
+            if(primaryKey) {
+                return this.dataIdentifierForTypePrimaryKey(type,primaryKey);
+            }
+            return undefined;
+        }
+    },
+
+
+    primaryKeyForTypeRawData: {
         value: function (type, rawData) {
-            var mapping = this.mappingWithType(type),
+            var mapping = this.mappingForType(type),
                 rawDataPrimaryKeys = mapping ? mapping.rawDataPrimaryKeyExpressions : null,
                 scope = new Scope(rawData),
                 rawDataPrimaryKeysValues,
@@ -538,20 +788,77 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
             if(rawDataPrimaryKeys && rawDataPrimaryKeys.length) {
 
-                dataIdentifierMap = this._typeIdentifierMap.get(type);
-
-                if(!dataIdentifierMap) {
-                    this._typeIdentifierMap.set(type,(dataIdentifierMap = new Map()));
-                }
-
                 for(var i=0, expression; (expression = rawDataPrimaryKeys[i]); i++) {
                     rawDataPrimaryKeysValues = rawDataPrimaryKeysValues || [];
                     rawDataPrimaryKeysValues[i] = expression(scope);
                 }
                 if(rawDataPrimaryKeysValues) {
                     primaryKey = rawDataPrimaryKeysValues.join("/");
-                    dataIdentifier = dataIdentifierMap.get(primaryKey);
+                    // dataIdentifier = dataIdentifierMap.get(primaryKey);
                 }
+
+                return primaryKey;
+            }
+            return undefined;
+        }
+    },
+
+    registerDataIdentifierForTypeRawData: {
+        value: function (dataIdentifier, type, rawData) {
+            var primaryKey = this.primaryKeyForTypeRawData(type, rawData);
+
+            this.registerDataIdentifierForTypePrimaryKey(dataIdentifier, type, primaryKey);
+        }
+    },
+
+    //This should belong on the
+    //Gives us an indirection layer to deal with backward compatibility.
+    dataIdentifierForTypeRawData: {
+        value: function (type, rawData) {
+            var primaryKey = this.primaryKeyForTypeRawData(type, rawData);
+
+            if(primaryKey) {
+                return this.dataIdentifierForTypePrimaryKey(type,primaryKey);
+            }
+            return undefined;
+        }
+    },
+
+    /**
+     * In most cases a RawDataService will register a dataIdentifier created during
+     * the mapping process, but in some cases where an object created by the upper
+     * layers fitst, this can be used direcly to reconcilate things.
+     *
+     * @method
+     * @argument {DataIdentifier} dataIdentifier - The dataIdentifier representing the type's rawData.
+     * @argument {ObjectDescriptor} type - the type of the raw data.
+     * @argument {?} primaryKey     - An arbitrary value that that is the primary key
+     *
+     *
+     *
+     * @returns {Promise<MappedObject>} - A promise resolving to the mapped object.
+     *
+     */
+    registerDataIdentifierForTypePrimaryKey: {
+        value: function (dataIdentifier, type, primaryKey) {
+            var dataIdentifierMap = this._typeIdentifierMap.get(type);
+
+            if(!dataIdentifierMap) {
+                this._typeIdentifierMap.set(type,(dataIdentifierMap = new Map()));
+            }
+
+            dataIdentifierMap.set(primaryKey,dataIdentifier);
+        }
+    },
+
+    dataIdentifierForTypePrimaryKey: {
+        value: function (type, primaryKey) {
+            var dataIdentifierMap = this._typeIdentifierMap.get(type),
+                dataIdentifier;
+
+                dataIdentifier = dataIdentifierMap
+                                    ? dataIdentifierMap.get(primaryKey)
+                                    : null;
 
                 if(!dataIdentifier) {
                     var typeName = type.typeName /*DataDescriptor*/ || type.name;
@@ -562,14 +869,15 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
                         dataIdentifier.objectDescriptor = type;
                         dataIdentifier.dataService = this;
                         dataIdentifier.typeName = type.name;
-                        dataIdentifier._identifier = dataIdentifier.primaryKey = primaryKey;
+                        //dataIdentifier._identifier = dataIdentifier.primaryKey = primaryKey;
+                        dataIdentifier.primaryKey = primaryKey;
 
-                        dataIdentifierMap.set(primaryKey,dataIdentifier);
+                        // dataIdentifierMap.set(primaryKey,dataIdentifier);
+                        this.registerDataIdentifierForTypePrimaryKey(dataIdentifier,type, primaryKey);
                 }
                 return dataIdentifier;
-            }
-            return undefined;
         }
+
     },
 
     __snapshot: {
@@ -591,8 +899,81 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @argument  {Object} rawData
      */
     recordSnapshot: {
-        value: function (dataIdentifier, rawData) {
-            this._snapshot.set(dataIdentifier, rawData);
+        value: function (dataIdentifier, rawData, isFromUpdate) {
+            if(!dataIdentifier) {
+                return;
+            }
+
+            var snapshot = this._snapshot.get(dataIdentifier);
+            if(!snapshot) {
+                this._snapshot.set(dataIdentifier, rawData);
+            }
+            else {
+                var rawDataKeys = Object.keys(rawData),
+                    i, countI, iUpdatedRawDataValue, iCurrentRawDataValue, iDiffValues, iRemovedValues,
+                    j, countJ, jDiffValue, jDiffValueIndex;
+
+                for(i=0, countI = rawDataKeys.length; (i<countI); i++) {
+                    iUpdatedRawDataValue = rawData[rawDataKeys[i]];
+                    if(isFromUpdate) {
+                        iCurrentRawDataValue = snapshot[rawDataKeys[i]];
+
+                        if(iUpdatedRawDataValue.hasOwnProperty("addedValues")) {
+                            iDiffValues = iUpdatedRawDataValue.addedValues;
+
+                            if(iCurrentRawDataValue) {
+                                if(Array.isArray(iCurrentRawDataValue)) {
+                                    for(j=0, countJ = iDiffValues.length; (j<countJ); j++) {
+                                        jDiffValue = iDiffValues[j];
+                                        /*
+                                            We shouldn't have to worry about the value alredy being in iCurrentRawDataValue, but we're going to safe and check
+                                        */
+                                        if(iCurrentRawDataValue.indexOf(jDiffValue) === -1) {
+                                            iCurrentRawDataValue.push(jDiffValue);
+                                        }
+                                    }
+                                } else {
+                                    console.warn("recordSnapshot from Update: snapshot for '"+awDataKeys[i]+"' is not an Array but addedValues:",iDiffValues);
+                                    snapshot[rawDataKeys[i]] = iDiffValues;
+                                }
+                            } else {
+                                console.warn("recordSnapshot from Update: No entry in snapshot for '"+rawDataKeys[i]+"' but addedValues:",iDiffValues);
+                                /*
+                                    We could reconstruct from the object value, but we should relly not be here.
+                                */
+                                snapshot[rawDataKeys[i]] = iDiffValues;
+                            }
+                        }
+
+                        if(iUpdatedRawDataValue.hasOwnProperty("removedValues")) {
+                            iDiffValues = iUpdatedRawDataValue.removedValues;
+
+                            if(iCurrentRawDataValue) {
+                                if(Array.isArray(iCurrentRawDataValue)) {
+                                    for(j=0, countJ = iDiffValues.length; (j<countJ); j++) {
+                                        jDiffValue = iDiffValues[j];
+                                        /*
+                                            We shouldn't have to worry about the value alredy being in iCurrentRawDataValue, but we're going to safe and check
+                                        */
+                                        if((jDiffValueIndex = iCurrentRawDataValue.indexOf(jDiffValue)) !== -1) {
+                                            iCurrentRawDataValue.splice(jDiffValueIndex,1);
+                                        }
+                                    }
+                                } else {
+                                    console.warn("recordSnapshot from Update: snapshot for '"+awDataKeys[i]+"' is not an Array but removedValues:",iDiffValues);
+                                    console.error("removedValues but no entry in snapshot for ")
+                                    //snapshot[rawDataKeys[i]] = iDiffValues;
+                                }
+                            } else {
+                                console.warn("recordSnapshot from Update: No entry in snapshot for '"+awDataKeys[i]+"' but removedValues:",iDiffValues);
+                            }
+                        }
+
+                    } else {
+                        snapshot[rawDataKeys[i]] = iUpdatedRawDataValue;
+                    }
+                }
+            }
         }
     },
 
@@ -614,14 +995,26 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * @private
      * @argument {DataIdentifier} dataIdentifier
      */
-   snapshotForDataIdentifier: {
+    snapshotForDataIdentifier: {
         value: function (dataIdentifier) {
             return this._snapshot.get(dataIdentifier);
        }
     },
 
     /**
-     * Returns the snapshot associated with the DataIdentifier argument if available
+     * Returns wether a snapshot is associated with the DataIdentifier argument
+     *
+     * @private
+     * @argument {DataIdentifier} dataIdentifier
+     */
+    hasSnapshotForDataIdentifier: {
+        value: function (dataIdentifier) {
+            return this._snapshot.has(dataIdentifier);
+        }
+    },
+
+    /**
+     * Returns the snapshot associated with the object argument if available
      *
      * @private
      * @argument {DataIdentifier} dataIdentifier
@@ -629,6 +1022,70 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
    snapshotForObject: {
         value: function (object) {
             return this.snapshotForDataIdentifier(this.dataIdentifierForObject(object));
+        }
+    },
+
+    /**
+     * Returns wether a snapshot is associated with the object argument
+     *
+     * @private
+     * @argument {DataIdentifier} dataIdentifier
+     */
+    hasSnapshotForObject: {
+        value: function (object) {
+            return this.hasSnapshotForDataIdentifier(this.dataIdentifierForObject(object));
+        }
+    },
+
+    /**
+     * Returns true as default so data are sorted according to a query's
+     * orderings. Subclasses can override this if they cam delegate sorting
+     * to another system, like a database for example, or an API, entirely,
+     * or selectively, using the aDataStream passed as an argument, wbich can
+     * help conditionally decide what to do based on the query's objectDescriptor
+     * or the quwery's orderings themselves.
+     *
+     * @public
+     * @argument {DataStream} dataStream
+     */
+
+    shouldSortDataStream: {
+        value: function (dataStream) {
+            return true;
+        }
+    },
+
+    sortDataStream: {
+        value: function (dataStream) {
+            var query = dataStream.query,
+                orderings = query.orderings;
+
+            if (orderings) {
+                var expression = "",
+                    data = dataStream.data;
+
+                //Build combined expression
+                for (var i=0,iDataOrdering,iExpression;(iDataOrdering = orderings[i]);i++) {
+                    iExpression = iDataOrdering.expression;
+
+                    if (expression.length) {
+                        expression += ".";
+                    }
+
+                    expression += "sorted{";
+                    expression += iExpression;
+                    expression += "}";
+
+                    if (iDataOrdering.order === DESCENDING) {
+                        expression += ".reversed()";
+                    }
+                }
+                results = evaluate(expression, data);
+
+                //Now change the data array
+                Array.prototype.splice.apply(data, [0,data.length].concat(results));
+            }
+
         }
     },
 
@@ -653,6 +1110,44 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             var self = this,
                 dataToPersist = this._streamRawData.get(stream),
                 mappingPromises = this._streamMapDataPromises.get(stream),
+                dataReadyPromise = mappingPromises
+                                        ? mappingPromises.length === 1
+                                           ? mappingPromises[0]
+                                           : Promise.all(mappingPromises)
+                                        : this.nullPromise;
+
+            if (mappingPromises) {
+                this._streamMapDataPromises.delete(stream);
+            }
+
+            if (dataToPersist) {
+                this._streamRawData.delete(stream);
+            }
+
+            //console.log("rawDataDone for "+stream.query.type.name);
+
+            dataReadyPromise.then(function (results) {
+                // console.log("dataReadyPromise for "+stream.query.type.name);
+                return dataToPersist ? self.writeOfflineData(dataToPersist, stream.query, context) : null;
+            }).then(function () {
+                // console.log("stream.dataDone() for "+stream.query.type.name);
+                if(stream.query.orderings && self.shouldSortDataStream(stream)) {
+                    self.sortDataStream(stream);
+                }
+                stream.dataDone();
+                return null;
+            }).catch(function (e) {
+                console.error(e,stream);
+            });
+
+        }
+    },
+
+    rawDataError: {
+        value: function (stream, error) {
+            var self = this,
+                dataToPersist = this._streamRawData.get(stream),
+                mappingPromises = this._streamMapDataPromises.get(stream),
                 dataReadyPromise = mappingPromises ? Promise.all(mappingPromises) : this.nullPromise;
 
             if (mappingPromises) {
@@ -665,12 +1160,47 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
 
             dataReadyPromise.then(function (results) {
 
-                return dataToPersist ? self.writeOfflineData(dataToPersist, stream.query, context) : null;
+                //return dataToPersist ? self.writeOfflineData(dataToPersist, stream.query, context) : null;
             }).then(function () {
-                stream.dataDone();
+                stream.dataError(error);
                 return null;
             }).catch(function (e) {
-                console.error(e);
+                console.error(e,stream);
+            });
+
+        }
+    },
+
+
+        /**
+     * To be called once for each [fetchData()]{@link RawDataService#fetchData}
+     * or [fetchRawData()]{@link RawDataService#fetchRawData} call received to
+     * indicate that all the raw data meant for the specified stream has been
+     * added to that stream.
+     *
+     * Subclasses should not override this method.
+     *
+     * @method
+     * @argument {DataStream} stream - The stream to which the data objects
+     *                                 corresponding to the raw data have been
+     *                                 added.
+     * @argument {?} context         - An arbitrary value that will be passed to
+     *                                 [writeOfflineData()]{@link RawDataService#writeOfflineData}
+     *                                 if it is provided.
+     */
+    rawDataBatchDone: {
+        value: function (stream, context) {
+            var self = this,
+                dataToPersist = this._streamRawData.get(stream),
+                mappingPromises = this._streamMapDataPromises.get(stream),
+                dataReadyPromise = mappingPromises ? Promise.all(mappingPromises) : this.nullPromise;
+
+            dataReadyPromise
+            .then(function () {
+                stream.dataBatchDone();
+                return null;
+            }).catch(function (e) {
+                console.error(e,stream);
             });
 
         }
@@ -735,6 +1265,38 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }, "mapSelectorToRawDataSelector", "mapSelectorToRawDataQuery"),
     },
 
+    _defaultDataMapping : {
+        value: new DataMapping
+    },
+
+    /**
+     * Retrieve DataMapping for passed objectDescriptor.
+     *
+     * @method
+     * @argument {Object} object - An object whose object descriptor has a DataMapping
+     */
+    mappingForObjectDescriptor: {
+        value: function (objectDescriptor) {
+            var mapping = objectDescriptor && this.mappingForType(objectDescriptor);
+
+
+            if (!mapping) {
+                if(objectDescriptor) {
+                    mapping = this._objectDescriptorMappings.get(objectDescriptor);
+                    if (!mapping) {
+                        mapping = DataMapping.withObjectDescriptor(objectDescriptor);
+                        this._objectDescriptorMappings.set(objectDescriptor, mapping);
+                    }
+                }
+                else {
+                    mapping = this._defaultDataMapping;
+                }
+            }
+
+            return mapping;
+        }
+    },
+
     /**
      * Retrieve DataMapping for this object.
      *
@@ -743,19 +1305,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     mappingForObject: {
         value: function (object) {
-            var objectDescriptor = this.objectDescriptorForObject(object),
-                mapping = objectDescriptor && this.mappingWithType(objectDescriptor);
-
-
-            if (!mapping && objectDescriptor) {
-                mapping = this._objectDescriptorMappings.get(objectDescriptor);
-                if (!mapping) {
-                    mapping = DataMapping.withObjectDescriptor(objectDescriptor);
-                    this._objectDescriptorMappings.set(objectDescriptor, mapping);
-                }
-            }
-
-            return mapping;
+            return this.mappingForObjectDescriptor(this.objectDescriptorForObject(object));
         }
     },
 
@@ -765,7 +1315,7 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      * Subclasses should override this method to map properties of the raw data
      * to data objects:
      * @method
-     * @argument {Object} record - An object whose properties' values hold
+     * @argument {Object} rawData - An object whose properties' values hold
      *                             the raw data.
      * @argument {Object} object - An object whose properties must be set or
      *                             modified to represent the raw data.
@@ -780,6 +1330,54 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
             return this.mapFromRawData(object, rawData, context);
         }
     },
+
+
+    /**
+     * Called by a mapping before doing it's mapping work, giving the data service.
+     * an opportunity to intervene.
+     *
+     * Subclasses should override this method to influence how are properties of
+     * the raw mapped data to data objects:
+     *
+     * @method
+     * @argument {Object} mapping - A DataMapping object handing the mapping.
+     * @argument {Object} rawData - An object whose properties' values hold
+     *                             the raw data.
+     * @argument {Object} object - An object whose properties must be set or
+     *                             modified to represent the raw data.
+     * @argument {?} context     - The value that was passed in to the
+     *                             [addRawData()]{@link RawDataService#addRawData}
+     *                             call that invoked this method.
+     */
+    willMapRawDataToObject: {
+        value: function (mapping, rawData, object, context) {
+            return rawData;
+        }
+    },
+
+    /**
+     * Called by a mapping before doing it's mapping work, giving the data service.
+     * an opportunity to intervene.
+     *
+     * Subclasses should override this method to influence how are properties of
+     * the raw mapped data to data objects:
+     *
+     * @method
+     * @argument {Object} mapping - A DataMapping object handing the mapping.
+     * @argument {Object} rawData - An object whose properties' values hold
+     *                             the raw data.
+     * @argument {Object} object - An object whose properties must be set or
+     *                             modified to represent the raw data.
+     * @argument {?} context     - The value that was passed in to the
+     *                             [addRawData()]{@link RawDataService#addRawData}
+     *                             call that invoked this method.
+     */
+    didMapRawDataToObject: {
+        value: function (mapping, rawData, object, context) {
+            return rawData;
+        }
+    },
+
     /**
      * Convert raw data to data objects of an appropriate type.
      *
@@ -814,23 +1412,131 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      *                             call that invoked this method.
      */
     _mapRawDataToObject: {
-        value: function (record, object, context) {
+        value: function (record, object, context, readExpressions) {
             var self = this,
                 mapping = this.mappingForObject(object),
+                snapshot,
                 result;
 
+            // console.log(object.dataIdentifier.objectDescriptor.name +" _mapRawDataToObject id:"+record.id);
             if (mapping) {
-                result = mapping.mapRawDataToObject(record, object, context);
+
+                /*
+                    When we fetch objects that have inverse relationships on each others none could complete their mapRawDataProcess because the first one's promise for mapping the relationship to the second never commpletes because the second one itself has it's raw data's foreignKey value to the first one converted/fetched, unique object is found, but that second mapping attenpt to map it gets stuck on the reverse to the second, etc...
+
+                    So to break the cycle, if there's a known snapshot and the object is being mapped, then we don't return a promise, knowing there's already one pending for the first pass.
+                */
+                snapshot = this.snapshotForObject(object);
+                //Changed order of snapshot being set before mapping so thqt doesn't work
+                //if(Object.equals(snapshot,record) ) {
+
+                //Replacing with:
+                if(this._objectsBeingMapped.has(object)) {
+                        return undefined;
+
+                    if(this._objectsBeingMapped.has(object)) {
+                        console.log(object.dataIdentifier.objectDescriptor.name +" _mapRawDataToObject id:"+record.id+" FOUND EXISTING MAPPING PROMISE");
+                        return undefined;
+                        return Promise.resolve(object);
+                        return this._getMapRawDataToObjectPromise(snapshot,object);
+                    } else {
+                        //rawData is un-changed, no point doing anything...
+                        return undefined;
+                    }
+                }
+
+
+                this._objectsBeingMapped.add(object);
+
+                result = mapping.mapRawDataToObject(record, object, context, readExpressions);
+
+                //Recording snapshot even if we already had an object
+                //Record snapshot before we may create an object
+                //this.recordSnapshot(object.dataIdentifier, record);
+
+                // console.log(object.dataIdentifier.objectDescriptor.name +" _mapRawDataToObject id:"+record.id+" FIRST NEW MAPPING PROMISE");
+
                 if (result) {
                     result = result.then(function () {
-                        return self.mapRawDataToObject(record, object, context);
+                        result = self.mapRawDataToObject(record, object, context, readExpressions);
+                        if (!self._isAsync(result)) {
+                            // self._deleteMapRawDataToObjectPromise(record, object);
+                            self._objectsBeingMapped.delete(object);
+
+                            return result;
+                        }
+                        else {
+                            result = result.then(function(resolved) {
+
+                                // self._deleteMapRawDataToObjectPromise(record, object);
+                                self._objectsBeingMapped.delete(object);
+
+                                return resolved;
+                            }, function(failed) {
+
+                                // self._deleteMapRawDataToObjectPromise(record, object);
+                                self._objectsBeingMapped.delete(object);
+
+                            });
+                            return result;
+                        }
+
+                    }, function(error) {
+                        // self._deleteMapRawDataToObjectPromise(record, object);
+                        self._objectsBeingMapped.delete(object);
+                        throw error;
                     });
                 } else {
-                    result = this.mapRawDataToObject(record, object, context);
+                    result = this.mapRawDataToObject(record, object, context, readExpressions);
+                    if (!this._isAsync(result)) {
+
+                        self._objectsBeingMapped.delete(object);
+                        return result;
+                    }
+                    else {
+                        result = result.then(function(resolved) {
+
+                            // self._deleteMapRawDataToObjectPromise(record, object);
+                            self._objectsBeingMapped.delete(object);
+
+                            return resolved;
+                        }, function(failed) {
+                            // self._deleteMapRawDataToObjectPromise(record, object);
+                            self._objectsBeingMapped.delete(object);
+
+                        });
+                        //return result;
+                    }
                 }
             } else {
-                result = this.mapRawDataToObject(record, object, context);
+
+
+                this._objectsBeingMapped.add(object);
+
+                result = this.mapRawDataToObject(record, object, context, readExpressions);
+
+                if (!this._isAsync(result)) {
+
+                    // self._deleteMapRawDataToObjectPromise(record, object);
+                    self._objectsBeingMapped.delete(object);
+
+                    return result;
+                }
+                else {
+                    result = result.then(function(resolved) {
+                        // self._deleteMapRawDataToObjectPromise(record, object);
+                        self._objectsBeingMapped.delete(object);
+
+                        return resolved;
+                    }, function(failed) {
+                        // self._deleteMapRawDataToObjectPromise(record, object);
+                        self._objectsBeingMapped.delete(object);
+                    });
+                    //return result;
+                }
             }
+
+            //this._setMapRawDataToObjectPromise(record, object, result);
 
             return result;
 
@@ -860,31 +1566,183 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
     },
 
     /**
+     * Called by a mapping before doing it's mapping work, giving the data service.
+     * an opportunity to intervene.
+     *
+     * Subclasses should override this method to influence how properties of
+     * data objects are mapped back to raw data:
+     *
+     * @method
+     * @argument {Object} mapping - A DataMapping object handing the mapping.
+     * @argument {Object} rawData - An object whose properties' values hold
+     *                             the raw data.
+     * @argument {Object} object - An object whose properties must be set or
+     *                             modified to represent the raw data.
+     * @argument {?} context     - The value that was passed in to the
+     *                             [addRawData()]{@link RawDataService#addRawData}
+     *                             call that invoked this method.
+     */
+    willMapObjectToRawData: {
+        value: function (mapping, object, rawData, context) {
+            return rawData;
+        }
+    },
+    /**
+     * Called by a mapping after doing it's mapping work.
+     *
+     * Subclasses should override this method as needed:
+     *
+     * @method
+     * @argument {Object} mapping - A DataMapping object handing the mapping.
+     * @argument {Object} rawData - An object whose properties' values hold
+     *                             the raw data.
+     * @argument {Object} object - An object whose properties must be set or
+     *                             modified to represent the raw data.
+     * @argument {?} context     - The value that was passed in to the
+     *                             [addRawData()]{@link RawDataService#addRawData}
+     *                             call that invoked this method.
+     */
+    didMapObjectToRawData: {
+        value: function (mapping, object, rawData, context) {
+            return rawData;
+        }
+    },
+
+
+    /**
+     * Public method invoked by the framework during the conversion from
+     * an object to a raw data.
+     * Designed to be overriden by concrete RawDataServices to allow fine-graine control
+     * when needed, beyond transformations offered by an ObjectDescriptorDataMapping or
+     * an ExpressionDataMapping
+     *
+     * @method
+     * @argument {Object} object - An object whose properties must be set or
+     *                             modified to represent the raw data.
+     * @argument {String} propertyName - The name of a property whose values
+     *                                      should be converted to raw data.
+     * @argument {Object} data - An object whose properties' values hold
+     *                             the raw data.
+     */
+
+    mapObjectPropertyToRawData: {
+        value: function (object, propertyName, data) {
+        }
+    },
+
+        /**
      * @todo Document.
      * @todo Make this method overridable by type name with methods like
      * `mapHazardToRawData()` and `mapProductToRawData()`.
      *
      * @method
      */
-    _mapObjectToRawData: {
-        value: function (object, record, context) {
+    _mapObjectPropertyToRawData: {
+        value: function (object, propertyName, record, context, added, removed, lastReadSnapshot, rawDataSnapshot) {
             var mapping = this.mappingForObject(object),
                 result;
 
             if (mapping) {
-                result = mapping.mapObjectToRawData(object, record, context);
+                result = mapping.mapObjectPropertyToRawData(object, propertyName, record, context, added, removed, lastReadSnapshot, rawDataSnapshot);
             }
 
             if (record) {
                 if (result) {
-                    var otherResult = this.mapObjectToRawData(object, record, context);
+                    var otherResult = this.mapObjectPropertyToRawData(object, propertyName, record, context, added, removed, lastReadSnapshot, rawDataSnapshot);
                     if (this._isAsync(result) && this._isAsync(otherResult)) {
                         result = Promise.all([result, otherResult]);
                     } else if (this._isAsync(otherResult)) {
                         result = otherResult;
                     }
                 } else {
-                    result = this.mapObjectToRawData(object, record, context);
+                    result = this.mapObjectPropertyToRawData(object, propertyName, record, context, added, removed, lastReadSnapshot, rawDataSnapshot);
+                }
+            }
+
+            return result;
+        }
+    },
+    /**
+     * Method called by mappings when a mapObjectToRawDataProperty is complete.
+     *
+     * @method
+     * @argument {Object} mapping        - the mapping object
+     * @argument {Object} object         - An object whose properties' values
+     *                                     hold the model data.
+     * @argument {Object} data           - The object on which to assign the property
+     * @argument {string} propertyName   - The name of the raw property to which
+     *                                     to assign the values.
+     */
+    mappingDidMapObjectToRawDataProperty: {
+        value: function (mapping, object, data, propertyName) {
+
+        }
+    },
+
+    /**
+    * Method called by mappings when a mapObjectPropertyToRawData is complete.
+    *
+    * @method
+    * @argument {Object} mapping        - the mapping object
+    * @argument {Object} object         - An object whose properties' values
+    *                                     hold the model data.
+    * @argument {string} propertyName   - The name of the property being mapped
+    * @argument {Object} data           - The raw data object on which to assign the property
+    * @argument {string} propertyName   - The name of the raw property to which
+    *                                     to assign the values.
+    */
+   mappingDidMapObjectPropertyToRawDataProperty: {
+       value: function (mapping, object, propertyName, data, rawPropertyName) {
+
+       }
+   },
+
+    /**
+     * Method called by mappings when asked for a schemaDescriptor and don't have one.
+     *
+     * @method
+     * @argument {Object} mapping        - the mapping object
+     *                                     to assign the values.
+     * @returns {ObjectDescriptor}  -
+     */
+    // mappingRequestsSchemaDescriptor: {
+    //     value: function (mapping) {
+    //         return null;
+    //     }
+    // },
+
+    /**
+     * @todo Document.
+     * @todo Make this method overridable by type name with methods like
+     * `mapHazardToRawData()` and `mapProductToRawData()`.
+     * @todo: context should be last, but that's a breaking change
+     * @todo: It would be much more efficient to drive the iteration from here
+     * instead of doing it once with the mapping and then offering the data service to loop again on the mapping's results.
+     *
+     *
+     * @method
+     */
+    _mapObjectToRawData: {
+        value: function (object, record, context, keyIterator) {
+            var mapping = this.mappingForObject(object),
+                result;
+
+            if (mapping) {
+                //Benoit: third argument was context but it's not defined on
+                //ExpressionDataMapping's mapObjectToRawData method
+                result = mapping.mapObjectToRawData(object, record, keyIterator);
+            }
+
+            if (record) {
+                if (result) {
+                    var otherResult = this.mapObjectToRawData(object, record, context, keyIterator);
+                    if (this._isAsync(result) && this._isAsync(otherResult)) {
+                        result = Promise.all([result, otherResult]);
+                    } else if (this._isAsync(otherResult)) {
+                        result = otherResult;
+                    }
+                } else {
+                    result = this.mapObjectToRawData(object, record, context, keyIterator);
                 }
             }
 
@@ -991,6 +1849,61 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
         }
     },
 
+    canMapObjectDescriptorRawDataToObjectPropertyWithoutFetch: {
+
+        value: function(objectDescriptor, propertyName) {
+            var mapping = this.mappingForType(objectDescriptor),
+                objectRule = mapping.objectMappingRules.get(propertyName),
+                objectRuleConverter = objectRule && objectRule.converter,
+                valueDescriptor = objectRule && objectRule.propertyDescriptor._valueDescriptorReference;
+
+            return (
+            objectRule && (
+                !valueDescriptor ||
+                (valueDescriptor && objectRuleConverter && !(objectRuleConverter instanceof RawForeignValueToObjectConverter))
+                )
+            );
+        }
+    },
+
+
+    responseOperationForReadOperation: {
+        value: function(readOperation, err, data, isNotLast) {
+            var operation = new DataOperation();
+
+            operation.referrerId = readOperation.id;
+            operation.target = readOperation.target;
+
+            //Carry on the details needed by the coordinator to dispatch back to client
+            // operation.connection = readOperation.connection;
+            operation.clientId = readOperation.clientId;
+            //console.log("executed Statement err:",err, "data:",data);
+
+            if (err) {
+                // an error occurred
+                //console.log("!!! handleRead FAILED:", err, err.stack, rawDataOperation.sql);
+                operation.type = DataOperation.Type.ReadFailedOperation;
+                //Should the data be the error?
+                operation.data = err;
+            }
+            else {
+                // successful response
+
+                //If we need to take care of readExpressions, we can't send a ReadCompleted until we have returnes everything that we asked for.
+                if(isNotLast) {
+                    operation.type = DataOperation.Type.ReadUpdateOperation;
+                } else {
+                    operation.type = DataOperation.Type.ReadCompletedOperation;
+                }
+
+                //We provide the inserted record as the operation's payload
+                operation.data = data;
+            }
+            return operation;
+        }
+    },
+
+
     /***************************************************************************
      * Deprecated
      */
@@ -1029,6 +1942,33 @@ exports.RawDataService = DataService.specialize(/** @lends RawDataService.protot
      */
     offlineService: {
         value: undefined
+    },
+
+    /**
+     * Allows DataService to provide a rawDataTypeId for a Mapping's
+     * ObjectDescriptor
+     *
+     * @method
+     * @param {DataMapping} aMapping
+     */
+
+    rawDataTypeIdForMapping: {
+        value: function (aMapping) {
+            console.warn("rawDataTypeIdForMapping() needs to be overriden with a concrete implementation by subclasses of RawDataService")
+        }
+    },
+    /**
+     * Allows DataService to provide a rawDataTypeId for a Mapping's
+     * ObjectDescriptor
+     *
+     * @method
+     * @param {DataMapping} aMapping
+     */
+
+    rawDataTypeNameForMapping: {
+        value: function (aMapping) {
+            // console.warn("rawDataTypeNameForMapping() needs to be overriden with a concrete implementation by subclasses of RawDataService")
+        }
     }
 
 });

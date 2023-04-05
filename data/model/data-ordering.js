@@ -1,10 +1,10 @@
 var Montage = require("core/core").Montage,
     ASCENDING = {name: "Ascending"},
     DESCENDING = {name: "Descending"};
-    // parse = require("frb/parse"),
-    // compile = require("frb/compile-evaluator"),
-    // evaluate = require("frb/evaluate"),
-    // Scope = require("frb/scope");
+    // parse = require("core/frb/parse"),
+    // compile = require("core/frb/compile-evaluator"),
+    // evaluate = require("core/frb/evaluate"),
+    // Scope = require("core/frb/scope");
 
 /*
  * var syntax = parse("a.b");

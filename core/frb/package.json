@@ -1,0 +1,46 @@
+{
+    "name": "frb",
+    "version": "4.0.3",
+    "description": "Functional reactive bindings",
+    "keywords": [
+        "functional",
+        "reactive",
+        "bindings",
+        "observe",
+        "change"
+    ],
+    "author": "Kris Kowal <kris@cixar.com> (http://github.com/kriskowal/)",
+    "contributors": [
+        "Kris Kowal <kris@cixar.com> (http://github.com/kriskowal/)",
+        "Benoit Marchant <benoit@montagestudio.com> (http://github.com/marchant/)"
+    ],
+    "bugs": {
+        "mail": "benoit@montagestudio.com",
+        "url": "http://github.com/montagejs/frb/issues"
+    },
+    "licenses": [{
+        "type": "MIT",
+        "url": "http://github.com/montagejs/frb/raw/master/LICENSE.md"
+    }],
+    "license": "BSD-3-Clause",
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/montagejs/frb.git"
+    },
+    "main": "bindings",
+    "dependencies": {
+        "collections": "file:../collections"
+    },
+    "mappings": {
+        "collections": "../collections"
+    },
+    "devDependencies": {
+        "jasmine-node": "montagestudio/jasmine-node#master",
+        "@airbnb/node-memwatch": "^1.0.2",
+        "pegjs": "git://github.com/dmajda/pegjs.git"
+    },
+    "scripts": {
+        "test": "jasmine-node spec",
+        "build-parser": "pegjs --allowed-start-rules expression,sheet grammar.pegjs"
+    }
+}

@@ -2,7 +2,17 @@
  * @module montage/core/core
  */
 
-require("collections/shim");
+ /**
+ * The Montage constructor provides conveniences for sub-typing
+ * ([specialize]{@link Montage.specialize}) and common methods for Montage
+ * prototype chains.
+ *
+ * @class Montage
+ * @classdesc The basis of all types using the MontageJS framework.
+ */
+var Montage = exports.Montage = function Montage() {};
+
+require("./collections/shim");
 require("./shim/object");
 require("./shim/array");
 require("./extras/object");
@@ -17,15 +27,18 @@ require("./extras/weak-map");
 require("proxy-polyfill/proxy.min");
 
 
-var Map = require("collections/map");
-var WeakMap = require("collections/weak-map");
-var Set = require("collections/set");
+var Map = require("./collections/map"),
+    WeakMap = require("./collections/weak-map"),
+    Set = require("./collections/set"),
+    deprecate = require("./deprecate");
 
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
     PROTO = "__proto__",
     VALUE = "value",
+    WRITABLE = "writable",
     ENUMERABLE = "enumerable",
+    CONFIGURABLE = "configurable",
     SERIALIZABLE = "serializable",
     FUNCTION = "function",
     UNDERSCORE_UNICODE = 95,
@@ -68,15 +81,6 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
         });
     }
 
-/**
- * The Montage constructor provides conveniences for sub-typing
- * ([specialize]{@link Montage.specialize}) and common methods for Montage
- * prototype chains.
- *
- * @class Montage
- * @classdesc The basis of all types using the MontageJS framework.
- */
-var Montage = exports.Montage = function Montage() {};
 
 var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;
 var PROTO_PROPERTIES_BLACKLIST = {"_montage_metadata": 1, "__state__": 1, "_hasUserDefinedConstructor": 1};
@@ -425,9 +429,60 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
 
         var isValueDescriptor = (VALUE in descriptor);
 
+
         // reset defaults appropriately for framework.
         if (PROTO in descriptor) {
-            descriptor.__proto__ = (isValueDescriptor ? (typeof descriptor.value === FUNCTION ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
+            //Replaces the tweak of __proto__
+            if(isValueDescriptor) {
+                if(typeof descriptor.value === FUNCTION) {
+                    // _defaultFunctionValueProperty = {
+                    //     writable: true,
+                    //     enumerable: false,
+                    //     configurable: true
+                    //     /*,
+                    //     serializable: false
+                    //     */
+                    // };
+
+                    //Montage objects defineProperty function value : should be non-enumerable by default
+                    if(!hasProperty.call(descriptor, ENUMERABLE)) descriptor.enumerable = false;
+
+                    if(!hasProperty.call(descriptor, WRITABLE)) descriptor.writable = true;
+                    if(!hasProperty.call(descriptor, CONFIGURABLE)) descriptor.configurable = true;
+
+                } else {
+                    // var _defaultObjectValueProperty = {
+                    //     writable: true,
+                    //     enumerable: true,
+                    //     configurable: true,
+                    //     serializable: "reference"
+                    // };
+
+                    if(!hasProperty.call(descriptor, ENUMERABLE)) {
+                        descriptor.enumerable = prop.charCodeAt(0) === UNDERSCORE_UNICODE ? false : true;
+                    }
+
+                    if(!hasProperty.call(descriptor, WRITABLE)) descriptor.writable = true;
+                    if(!hasProperty.call(descriptor, CONFIGURABLE)) descriptor.configurable = true;
+                    if(!hasProperty.call(descriptor, SERIALIZABLE) && descriptor.enumerable && descriptor.writable) descriptor.serializable = "reference";
+
+                }
+            } else {
+                // var _defaultAccessorProperty = {s
+                //     enumerable: true,
+                //     configurable: true,
+                //     serializable: true
+                // };
+
+                if(!hasProperty.call(descriptor, ENUMERABLE)) {
+                    descriptor.enumerable = prop.charCodeAt(0) === UNDERSCORE_UNICODE ? false : true;
+                }
+
+                if(!hasProperty.call(descriptor, CONFIGURABLE)) descriptor.configurable = true;
+                if(!hasProperty.call(descriptor, SERIALIZABLE) && descriptor.enumerable && descriptor.writable) descriptor.serializable = true;
+            }
+
+            //descriptor.__proto__ = (isValueDescriptor ? (typeof descriptor.value === FUNCTION ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
         } else {
             var defaults;
             if (isValueDescriptor) {
@@ -448,19 +503,24 @@ valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descr
             }
         }
 
-        if (!hasProperty.call(descriptor, ENUMERABLE) && prop.charCodeAt(0) === UNDERSCORE_UNICODE) {
-            descriptor.enumerable = false;
+        // if (!hasProperty.call(descriptor, ENUMERABLE) && prop.charCodeAt(0) === UNDERSCORE_UNICODE) {
+        //     descriptor.enumerable = false;
+        // }
+
+        if(prop !== "_localization") {
+
+            if (!hasProperty.call(descriptor, SERIALIZABLE)) {
+                if (! descriptor.enumerable) {
+                    descriptor.serializable = false;
+                } else if (descriptor.get && !descriptor.set) {
+                    descriptor.serializable = false;
+                } else if (descriptor.writable === false) {
+                    descriptor.serializable = false;
+                }
+            }
+
         }
 
-        if (!hasProperty.call(descriptor, SERIALIZABLE)) {
-            if (! descriptor.enumerable) {
-                descriptor.serializable = false;
-            } else if (descriptor.get && !descriptor.set) {
-                descriptor.serializable = false;
-            } else if (descriptor.writable === false) {
-                descriptor.serializable = false;
-            }
-        }
 
         if (SERIALIZABLE in descriptor) {
             // get the _serializableAttributeProperties property or creates it through the entire chain if missing.
@@ -557,7 +617,7 @@ function __findSuperMethodImplementation( method, classFn, isFunctionSuper, meth
                     if ((property = Object.getOwnPropertyDescriptor(context, propertyName))) {
                         func = property.value;
                         if (func !== undefined && func !== null) {
-                            if (func === method || func.deprecatedFunction === method) {
+                            if (func === method || (isValueArg && methodPropertyNameArg && propertyName === methodPropertyNameArg) || func.deprecatedFunction === method) {
                                 methodPropertyName = propertyName;
                                 isValue = true;
                                 break;
@@ -566,7 +626,7 @@ function __findSuperMethodImplementation( method, classFn, isFunctionSuper, meth
                         else {
                             func = property.get;
                             if (func !== undefined && func !== null) {
-                                if (func === method || func.deprecatedFunction === method) {
+                                if (func === method || (isGetterArg && methodPropertyNameArg && propertyName === methodPropertyNameArg) || func.deprecatedFunction === method) {
                                     methodPropertyName = propertyName;
                                     isGetter = true;
                                     break;
@@ -574,7 +634,7 @@ function __findSuperMethodImplementation( method, classFn, isFunctionSuper, meth
                             }
                             func = property.set;
                             if (func !== undefined && func !== null) {
-                                if (func === method || func.deprecatedFunction === method) {
+                                if (func === method || (isSetterArg && methodPropertyNameArg && propertyName === methodPropertyNameArg) || func.deprecatedFunction === method) {
                                     methodPropertyName = propertyName;
                                     isSetter = true;
                                     break;
@@ -675,9 +735,12 @@ function __super(callerFn, methodPropertyName, isValue, isGetter, isSetter) {
  */
 function _super() {
     // Figure out which function called us.
-    var callerFn = ( _super && _super.caller ) ? _super.caller : arguments.callee.caller,
-        superFn = __super.call(this,callerFn);
-    return superFn ? superFn.apply(this, arguments) : undefined;
+    // var callerFn = ( _super && _super.caller ) ? _super.caller : arguments.callee.caller,
+    //     superFn = __super.call(this,callerFn);
+    // return superFn ? superFn.apply(this, arguments) : undefined;
+
+    return ((__super.call(this, /* callerFn - Figure out which function called us.*/ (( _super && _super.caller ) ? _super.caller : arguments.callee.caller))) || Function.noop).apply(this, arguments);
+
 }
 
 function _superForValue(methodName) {
@@ -968,6 +1031,10 @@ Montage.defineProperty(Montage, "equals", {
  * This method calls the method named with the identifier prefix if it exists.
  * Example: If the name parameter is "shouldDoSomething" and the caller's identifier is "bob", then
  * this method will try and call "bobShouldDoSomething"
+ *
+ * TODO: Cache!!!! We're unlikely to remove a delegate method dynamically, so we should avoid checking all
+ * that and just cache the function found, using a weak map, so don't retain delegates.
+ *
  * @function Montage#callDelegateMethod
  * @param {string} name
 */
@@ -977,7 +1044,9 @@ Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
 
         if (delegate) {
 
-            var delegateFunctionName = this.identifier + name.toCapitalized();
+            var delegateFunctionName = this.identifier;
+            delegateFunctionName += name.toCapitalized();
+
             if (
                 typeof this.identifier === "string" &&
                     typeof delegate[delegateFunctionName] === FUNCTION
@@ -1012,7 +1081,7 @@ Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
 
 // Property Changes
 
-var PropertyChanges = require("collections/listen/property-changes");
+var PropertyChanges = require("./collections/listen/property-changes");
 Object.addEach(Montage, PropertyChanges.prototype);
 Object.addEach(Montage.prototype, PropertyChanges.prototype);
 
@@ -1127,7 +1196,7 @@ Object.addEach(Montage.prototype, PropertyChanges.prototype);
  * @extends frb
  * @typedef {string} FRBExpression
  */
-var Bindings = exports.Bindings = require("frb");
+var Bindings = exports.Bindings = require("./frb/bindings");
 
 var bindingPropertyDescriptors = {
 
@@ -1173,7 +1242,12 @@ var bindingPropertyDescriptors = {
      */
     defineBindings: {
         value: function (descriptors, commonDescriptor) {
-            return Bindings.defineBindings(this, descriptors, commonDescriptor);
+            if (descriptors) {
+                for (var i=0, name, keys = Object.keys(descriptors); (name = keys[i]); i++) {
+                        this.defineBinding(name, descriptors[name], commonDescriptor);
+                }
+            }
+            //return Bindings.defineBindings(this, descriptors, commonDescriptor);
         }
     },
 
@@ -1240,13 +1314,13 @@ Montage.defineProperties(Montage.prototype, bindingPropertyDescriptors);
 
 // Paths
 
-var parse = require("frb/parse"),
-    evaluate = require("frb/evaluate"),
-    assign = require("frb/assign"),
-    bind = require("frb/bind"),
-    compileObserver = require("frb/compile-observer"),
-    Scope = require("frb/scope"),
-    Observers = require("frb/observers"),
+var parse = require("./frb/parse"),
+    evaluate = require("./frb/evaluate"),
+    assign = require("./frb/assign"),
+    bind = require("./frb/bind"),
+    compileObserver = require("./frb/compile-observer"),
+    Scope = require("./frb/scope"),
+    Observers = require("./frb/observers"),
     autoCancelPrevious = Observers.autoCancelPrevious;
 
 
@@ -1279,19 +1353,19 @@ Object.defineProperties(PathChangeDescriptor.prototype, {
 
 var pathChangeDescriptors = new WeakMap();
 
-var pathPropertyDescriptors = {
+var expressionPropertyDescriptors = {
 
     /**
      * Evaluates an FRB expression from this object and returns the value.
      * The evaluator does not establish any change listeners.
-     * @function Montage#getPath
+     * @function Montage#valueForExpression
      * @param {string} path an FRB expression
      * @returns the current value of the expression
      */
-    getPath: {
-        value: function (path, parameters, document, components) {
+    valueForExpression: {
+        value: function (expression, parameters, document, components) {
             return evaluate(
-                path,
+                expression,
                 this,
                 parameters || this,
                 document,
@@ -1299,20 +1373,26 @@ var pathPropertyDescriptors = {
             );
         }
     },
+    getPath: {
+        value: deprecate.deprecateMethod(void 0, function (path, parameters, document, components) {
+            this.valueForExpression(path, parameters, document, components);
+        }, "getPath", "valueForExpression", true)
+    },
+
 
     /**
      * Assigns a value to the FRB expression from this object. Not all
      * expressions can be assigned to. Property chains will work, but will
      * silently fail if the target object does not exist.
-     * @function Montage#setPath
+     * @function Montage#setValueForExpression
      * @param {string} path an FRB expression designating the value to replace
      * @param value the new value
      */
-    setPath: {
-        value: function (path, value, parameters, document, components) {
+    setValueForExpression: {
+        value: function (value, expression, parameters, document, components) {
             return assign(
                 this,
-                path,
+                expression,
                 value,
                 parameters || this,
                 document,
@@ -1320,11 +1400,17 @@ var pathPropertyDescriptors = {
             );
         }
     },
+    setPath: {
+        value: deprecate.deprecateMethod(void 0, function (path, value, parameters, document, components) {
+            console.warn("setValueForExpression arguments 'value' and 'path' are now in reverse order of setPath()");
+            this.setValueForExpression(value, path, parameters, document, components);
+        }, "setPath", "setValueForExpression", true)
+    },
 
     /**
      * Observes changes to the value of an FRB expression.  The content of the
      * emitted value may react to changes, particularly if it is an array.
-     * @function Montage#observePath
+     * @function Montage#observeExpression
      * @param {string} path an FRB expression
      * @param {function} emit a function that receives new values in response
      * to changes.  The emitter may return a `cancel` function if it manages
@@ -1333,12 +1419,17 @@ var pathPropertyDescriptors = {
      * change listeners, prevent new values from being observed, and prevent
      * previously emitted values from reacting to any further changes.
      */
-    observePath: {
-        value: function (path, emit) {
-            var syntax = parse(path);
+    observeExpression: {
+        value: function (expression, emit) {
+            var syntax = parse(expression);
             var observe = compileObserver(syntax);
             return observe(autoCancelPrevious(emit), new Scope(this));
         }
+    },
+    observePath: {
+        value: deprecate.deprecateMethod(void 0, function (path, emit) {
+            this.observeExpression(path, emit);
+        }, "observePath", "observeExpression", true)
     },
 
     /**
@@ -1604,8 +1695,8 @@ var pathPropertyDescriptors = {
 
 };
 
-Montage.defineProperties(Montage, pathPropertyDescriptors);
-Montage.defineProperties(Montage.prototype, pathPropertyDescriptors);
+Montage.defineProperties(Montage, expressionPropertyDescriptors);
+Montage.defineProperties(Montage.prototype, expressionPropertyDescriptors);
 
 /*
  * Defines the module Id for object descriptors. This is externalized so that it can be subclassed.

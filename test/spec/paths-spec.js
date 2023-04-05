@@ -1,5 +1,5 @@
 var Montage = require("montage").Montage;
-var Map = require("montage/collections/map");
+var Map = require("montage/core/collections/map");
 
 describe("paths-spec", function () {
 
@@ -422,8 +422,8 @@ describe("paths-spec", function () {
 
             spy = jasmine.createSpy();
             object.array = [1, 2];
-            expect(spy).toHaveBeenCalledWith([2, 4], [], 0); 
-        }) 
+            expect(spy).toHaveBeenCalledWith([2, 4], [], 0);
+        })
 
     });
 

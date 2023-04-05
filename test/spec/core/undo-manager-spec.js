@@ -1,5 +1,5 @@
 var Montage = require("montage").Montage,
-    Set = require("montage/collections/set"),
+    Set = require("montage/core/collections/set"),
     UndoManager = require("montage/core/undo-manager").UndoManager,
     Promise = require("montage/core/promise").Promise,
     WAITS_FOR_TIMEOUT = 2500;
@@ -97,9 +97,9 @@ var Roster = Montage.specialize( {
                     deferredAddResolve = resolve;
                 });
             deferredAdd.resolve = deferredAddResolve;
-            
+
             this.members.add(member);
-            
+
             this.undoManager.register("Add Member", deferredAdd);
 
             return deferredAdd;

@@ -170,10 +170,19 @@
         },
 
         bootstrap: function (callback) {
-            var Require, DOM, Promise, URL;
+            var Require, DOM, Promise, URL,
+                params = this.getParams(),
+                resolve = this.makeResolve(),
+                montageLocation, appLocation;
 
-            var params = this.getParams();
-            var resolve = this.makeResolve();
+                montageLocation = montageLocation || resolve(global.location, params.montageLocation);
+                if(params.package) {
+                    appLocation = resolve(global.location, params.package);
+                    if(!appLocation.lastIndexOf("/") !== appLocation.length-1) {
+                        appLocation += "/";
+                    }
+                }
+
 
             // observe dom loading and load scripts in parallel
             function callbackIfReady() {
@@ -215,9 +224,12 @@
 
             // determine which scripts to load
             var pending = {
-                "require": "node_modules/mr/require.js",
-                "require/browser": "node_modules/mr/browser.js",
-                "promise": "node_modules/bluebird/js/browser/bluebird.min.js"
+                "require": montageLocation+"core/mr/require.js",
+                "require/browser": montageLocation+"core/mr/browser.js",
+                //"promise": montageLocation+"node_modules/bluebird/js/browser/bluebird.min.js"
+                "promise": (params.montageLocation === (global.location.origin+"/"))
+                            ? montageLocation+"node_modules/bluebird/js/browser/bluebird.min.js" //montage in test
+                            : montageLocation+"../bluebird/js/browser/bluebird.min.js" //anything else
                 // "shim-string": "core/shim/string.js" // needed for the `endsWith` function.
             };
 
@@ -262,11 +274,9 @@
                 allModulesLoaded();
             };
 
-            var montageLocation;
             function loadModuleScript(path, callback) {
-                montageLocation = montageLocation || resolve(global.location, params.montageLocation);
                 // try loading script relative to app first (npm 3+)
-                browser.load(resolve(global.location, path), function (err, script) {
+                browser.load(resolve(appLocation || global.location, path), function (err, script) {
                     if (err) {
                         // if that fails, the app may have been installed with
                         // npm 2 or with --legacy-bundling, in which case the
@@ -337,7 +347,7 @@
                 "core/logger"
             ];
 
-            var Promise = montageRequire("core/promise").Promise;
+            var Promise = montageRequire("./core/promise").Promise;
             var deepLoadPromises = [];
             var self = this;
 
@@ -366,8 +376,10 @@
                     global.montageWillLoad();
                 }
 
-                // Load the application
 
+
+
+                // Load the application
                 var appProto = applicationRequire.packageDescription.applicationPrototype,
                     applicationLocation, appModulePromise;
 
@@ -384,19 +396,51 @@
                     defaultEventManager.application = application;
                     application.eventManager = defaultEventManager;
 
-                    return application._load(applicationRequire, function () {
-                        if (params.module) {
-                            // If a module was specified in the config then we initialize it now
-                            applicationRequire.async(params.module);
-                        }
-                        if (typeof global.montageDidLoad === "function") {
-                            global.montageDidLoad();
-                        }
+                    // Load main.datareel/main.mjson
+                    var mainDatareel = applicationRequire.packageDescription.mainDatareel,
+                    mainDatareelLocation, mainDatareelModulePromise;
 
-                        if (window.MontageElement) {
-                            MontageElement.ready(applicationRequire, application, MontageReviver);
-                        }
+                    if (mainDatareel) {
+                        mainDatareelLocation = MontageReviver.parseObjectLocationId(mainDatareel);
+                        mainDatareelModulePromise = applicationRequire.async(mainDatareelLocation.moduleId);
+                    } else {
+                        //mainDatareelModulePromise = applicationRequire.makeRequire("data/main.datareel/main.mjson").async("data/main.datareel/main.mjson");
+                        mainDatareelLocation = "data/main.datareel/main.mjson";
+
+                        //Check if we have a redirection in mappings. Mr does that, when we bring mr inside montage.js, we should be able to simplify this.
+                        // mainDatareelLocation = applicationRequire.mappings[mainDatareelLocation].location || mainDatareelLocation;
+
+                        mainDatareelModulePromise = applicationRequire.async(mainDatareelLocation);
+                        //mainDatareelModulePromise = mrPromise.resolve();
+                    }
+
+
+                    return mainDatareelModulePromise.then(function(mainDataServiceExport) {
+                        // fulfillment
+                        application.service = application.dataService =  application.mainService = mainDataServiceExport.montageObject;
+                        return application;
+                    }, function(reason) {
+                        // rejection
+                        console.log("App failed to load datareel at location:",mainDatareelLocation,reason);
+                        return application;
+                    }).finally(function() {
+
+                        return application._load(applicationRequire, function () {
+                            if (params.module) {
+                                // If a module was specified in the config then we initialize it now
+                                applicationRequire.async(params.module);
+                            }
+                            if (typeof global.montageDidLoad === "function") {
+                                global.montageDidLoad();
+                            }
+
+                            if (window.MontageElement) {
+                                MontageElement.ready(applicationRequire, application, MontageReviver);
+                            }
+                        });
+
                     });
+
                 });
             });
         }
@@ -416,7 +460,8 @@
             if(!module.deserializer) {
                 // var root =  Require.delegate.compileMJSONFile(module.text, require.config.requireForId(module.id), module, /*isSync*/ true);
                 if(!montageExports.MontageDeserializer) {
-                    montageExports.MontageDeserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer;
+                    var MontageDeserializerModule = montageExports.config.modules["core/serialization/deserializer/montage-deserializer"];
+                    montageExports.MontageDeserializer = MontageDeserializerModule.require("./core/serialization/deserializer/montage-deserializer").MontageDeserializer;
                 }
 
                 var deserializer = new montageExports.MontageDeserializer(),
@@ -424,7 +469,15 @@
                     root;
                 module.deserializer = deserializer;
                 deserializer.init(module.text, deserializerRequire, void 0, module, true);
-                root = deserializer.deserializeObject();
+                // deserializer.init(module.json, deserializerRequire, void 0, module, true, true);
+
+                try {
+                    root = deserializer.deserializeObject();
+                } catch(error) {
+                    console.log(module.id+" deserializeObject() failed with error:",error);
+
+                    throw error;
+                }
 
                 // console.log("********MJSONCompilerFactory END compileMJSONFile",module.id);
 
@@ -514,6 +567,9 @@
         dotMJSONLoadJs = ".mjson.load.js";
 
     exports.Compiler = function (config, compile) {
+        if(!exports.config && config.name === "montage") {
+            exports.config = config;
+        }
         return function(module) {
 
             if (module.exports || module.factory || (typeof module.text !== "string") || (typeof module.exports === "object")) {
@@ -526,7 +582,7 @@
             if (isMJSON) {
                 if (typeof module.exports !== "object" && typeof module.text === "string") {
                     try {
-                        module.parsedText = JSON.parse(module.text);
+                        module.parsedText = module.json;
                     } catch (e) {
                         if (e instanceof SyntaxError) {
                             console.error("SyntaxError parsing JSON at "+location);
@@ -975,7 +1031,7 @@
                 });
 
             // Will throw error if there is one
-            }).done();
+            });
         });
     };
 

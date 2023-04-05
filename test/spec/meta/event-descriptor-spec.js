@@ -54,10 +54,10 @@ describe("meta/event-descriptor-spec", function () {
                         "prototype": "montage/core/meta/event-descriptor",
                         "values": {
                             "name": "event",
-                            "objectDescriptor": {"@": "objectDescriptor_testobjectdescriptor"}
+                            "objectDescriptor": {"@": "testObjectDescriptor"}
                         }
                     },
-                    "objectDescriptor_testobjectdescriptor": {}
+                    "testObjectDescriptor": {}
                 };
                 serializer = new Serializer().initWithRequire(require);
                 serializer.setSerializationIndentation(4);

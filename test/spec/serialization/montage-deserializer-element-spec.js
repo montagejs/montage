@@ -4,7 +4,7 @@ var Montage = require("montage").Montage,
     Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     deserialize = require("montage/core/serialization/deserializer/montage-deserializer").deserialize,
     Alias = require("montage/core/serialization/alias").Alias,
-    Bindings = require("montage/frb"),
+    Bindings = require("montage/core/frb/bindings"),
     defaultEventManager = require("montage/core/event/event-manager").defaultEventManager,
     Promise = require("montage/core/promise").Promise,
     objects = require("spec/serialization/testobjects-v2").objects;
@@ -66,9 +66,9 @@ describe("serialization/montage-deserializer-element-spec", function () {
             deserializer.init(serializationString, require);
 
             deserializer.deserialize(null, rootEl).then(function (objects) {
-                expect(defaultEventManager._registeredBubbleEventListeners.has("click")).toBe(true);
-                var registeredEventListeners = defaultEventManager._registeredBubbleEventListeners.get("click");
-                var proxyElement = registeredEventListeners.keysArray()[0];
+                var registeredEventListeners = defaultEventManager.registeredEventListenersForEventType_("click");
+                expect(registeredEventListeners).toBeDefined();
+                var proxyElement = registeredEventListeners[0];
                 return new Promise(function (resolve) {
                     expect(proxyElement).toBeTruthy();
                     objects.rootEl.addEventListener("action", function () {

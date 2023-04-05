@@ -1,0 +1,6 @@
+{
+    "production": true,
+    "devDependencies": {
+        "dev-dependency": "*"
+    }
+}

@@ -33,7 +33,7 @@ var Montage = require("montage").Montage,
     Localizer = require("montage/core/localizer"),
     Promise = require("montage/core/promise").Promise,
     Bindings = require("montage/core/core").Bindings,
-    Map = require("montage/collections/map");
+    Map = require("montage/core/collections/map");
 
 describe("core/localizer-spec", function () {
 
@@ -318,7 +318,7 @@ describe("core/localizer-spec", function () {
         });
 
         describe("loadMessages", function () {
-            
+
             it("fails when package.json has no localizer/no-package-manifest/manifest", function (done) {
                 require.loadPackage(module.directory + "localizer/no-package-manifest/", {}).then(function (r){
                     l.require = r;

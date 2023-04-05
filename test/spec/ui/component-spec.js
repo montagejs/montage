@@ -453,7 +453,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
 
                 xit("should receive a first draw event after its first draw", function (done) {
                     // TODO: we can't make this working at the moment because
-                    // enter/exitDocument is implemented by forcing a draw                        
+                    // enter/exitDocument is implemented by forcing a draw
                     testPage.test.componentB1.addEventListener("firstDraw", testPage.test.componentB1, false);
                     testPage.test.componentB.addEventListener("firstDraw", testPage.test.componentB, false);
 
@@ -526,7 +526,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                     expect(testPage.test.componentE.childComponents.length).toBe(1);
                     expect(testPage.test.componentE.childComponents[0]).toBe(componentE1);
                     expect(componentE1.childComponents.length).toBe(1);
-                    expect(componentE1.childComponents[0]).toBe(testPage.test.componentE11);  
+                    expect(componentE1.childComponents[0]).toBe(testPage.test.componentE11);
                 });
 
                 it("should remove a component from its previous parent component childComponent's when it is reattached in another part of the component tree", function () {
@@ -1266,9 +1266,9 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                 componentB._needsEnterDocument = false;
                 componentC._needsEnterDocument = false;
 
-                componentA._inDocument = true;
-                componentB._inDocument = false;
-                componentC._inDocument = false;
+                componentA.inDocument = true;
+                componentB.inDocument = false;
+                componentC.inDocument = false;
 
                 componentA._firstDraw = false;
                 componentB._firstDraw = false;
@@ -1308,9 +1308,9 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                 componentB._needsEnterDocument = false;
                 componentC._needsEnterDocument = false;
 
-                componentA._inDocument = true;
-                componentB._inDocument = true;
-                componentC._inDocument = true;
+                componentA.inDocument = true;
+                componentB.inDocument = true;
+                componentC.inDocument = true;
             });
 
             it("should exit the document in bottom-up order", function () {
