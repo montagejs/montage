@@ -527,6 +527,9 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                     message = message.message;
                 }
             } else {
+                window.unlocalizedMessages = window.unlocalizedMessages || {};
+                window.unlocalizedMessages[this.locale] = window.unlocalizedMessages[this.locale] || {};
+                window.unlocalizedMessages[this.locale][key] = defaultMessage;
                 message = defaultMessage;
             }
 
