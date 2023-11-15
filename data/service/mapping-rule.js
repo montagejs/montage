@@ -52,12 +52,18 @@ exports.MappingRule = Montage.specialize(/** @lends MappingRule.prototype */ {
     },
 
     inversePropertyName: {
-        get: deprecate.deprecateMethod(void 0, function () {
+        get: function () {
             return this._inversePropertyName;
-        }, "MappingRule.inversePropertyName", "PropertyDescriptor.inversePropertyName", true),
-        set: deprecate.deprecateMethod(void 0, function (value) {
+        },
+        set: function (value) {
+            if (value !== undefined) {
+                deprecate.deprecationWarningOnce(
+                    "MappingRule.inversePropertyName.get", 
+                    "PropertyDescriptor.inversePropertyName.get",
+                    3);
+            }
             this._inversePropertyName = value;
-        }, "MappingRule.inversePropertyName", "PropertyDescriptor.inversePropertyName", true)
+        }
     },
 
 
