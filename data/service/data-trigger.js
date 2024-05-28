@@ -319,7 +319,14 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
         value: function (object) {
             var self = this,
                 status = this._getValueStatus(object) || {};
-            if (!status.promise) {
+
+            if (this._overwriteActiveUpdate) {
+                status.promise = new Promise(function (resolve, reject) {
+                    status.resolve = resolve;
+                    status.reject = reject;
+                    self._fetchObjectProperty(object, status);
+                });
+            } else if (!status.promise) {
                 this._setValueStatus(object, status);
                 status.promise = new Promise(function (resolve, reject) {
                     status.resolve = resolve;
@@ -339,19 +346,21 @@ exports.DataTrigger.prototype = Object.create({}, /** @lends DataTrigger.prototy
      * @returns {external:Promise}
      */
     _fetchObjectProperty: {
-        value: function (object) {
+        value: function (object, status) {
             var self = this;
             this._service.fetchObjectProperty(object, this._propertyName).then(function () {
-                return self._fulfillObjectPropertyFetch(object);
+                return self._fulfillObjectPropertyFetch(object, null, status);
             }).catch(function (error) {
-                return self._fulfillObjectPropertyFetch(object, error);
+                return self._fulfillObjectPropertyFetch(object, error, status);
             });
         }
     },
 
     _fulfillObjectPropertyFetch: {
-        value: function (object, error) {
-            var status = this._getValueStatus(object);
+        value: function (object, error, status) {
+            if (!status) {
+                status = this._getValueStatus(object);
+            }
             this._setValueStatus(object, null);
             if (status && !error) {
                 status.resolve(null);
@@ -445,6 +454,7 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
                 trigger._objectPrototype = prototype;
                 trigger._propertyName = name;
                 trigger._isGlobal = descriptor.isGlobal;
+                trigger._overwriteActiveUpdate = descriptor.overwrite;
                 Montage.defineProperty(prototype, name, {
                     get: function () {
                         return trigger._getValue(this);
@@ -481,6 +491,7 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
             trigger._objectPrototype = prototype;
             trigger._propertyName = name;
             trigger._isGlobal = propertyDescriptor.isGlobal;
+            trigger._overwriteActiveUpdate = descriptor.overwrite;
             if(!serviceTriggers) {
                 serviceTriggers = {};
                 service._dataObjectTriggers.set(objectDescriptor,serviceTriggers);
@@ -498,6 +509,7 @@ Object.defineProperties(exports.DataTrigger, /** @lends DataTrigger */ {
                 trigger._objectPrototype = prototype;
                 trigger._propertyName = name;
                 trigger._isGlobal = descriptor.isGlobal;
+                trigger._overwriteActiveUpdate = descriptor.overwrite;
                 if (descriptor.definition) {
                     Montage.defineProperty(prototype, name, {
                         get: function () {

@@ -10,6 +10,7 @@ var Defaults = {
     cardinality: 1,
     mandatory: false,
     readOnly: false,
+    overwrite: false,
     denyDelete: false,
     inversePropertyName: void 0,
     valueType: "string",
@@ -99,6 +100,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
             }
             this._setPropertyWithDefaults(serializer, "mandatory", this.mandatory);
             this._setPropertyWithDefaults(serializer, "readOnly", this.readOnly);
+            this._setPropertyWithDefaults(serializer, "overwrite", this.overwrite);
             this._setPropertyWithDefaults(serializer, "denyDelete", this.denyDelete);
             this._setPropertyWithDefaults(serializer, "valueType", this.valueType);
             this._setPropertyWithDefaults(serializer, "collectionValueType", this.collectionValueType);
@@ -136,6 +138,7 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
 
             this._overridePropertyWithDefaults(deserializer, "mandatory");
             this._overridePropertyWithDefaults(deserializer, "readOnly");
+            this._overridePropertyWithDefaults(deserializer, "overwrite");
             this._overridePropertyWithDefaults(deserializer, "denyDelete");
             this._overridePropertyWithDefaults(deserializer, "valueType");
             this._overridePropertyWithDefaults(deserializer, "collectionValueType");
@@ -287,6 +290,15 @@ exports.PropertyDescriptor = Montage.specialize( /** @lends PropertyDescriptor# 
     readOnly: {
         value: Defaults["readOnly"]
     },
+
+    /**
+     * @type {boolean}
+     * @default false
+     */
+    overwrite: {
+        value: Defaults["overwrite"]
+    },
+    
 
     /**
      * Returns true if the cardinality is more than one.
